@@ -1,16 +1,16 @@
-url: https://zhanghao-njmu.github.io/SCP/
+url: https://mengxu98.github.io/scop/
 
 template:
-  bootstrap: 5
+  package: mxtemplate
 
 code:
   width: 120
 
 navbar:
-  title: "SCP"
+  title: "scop"
   right:
     - icon: fa-github
-      href: https://github.com/zhanghao-njmu/SCP
+      href: https://github.com/mengxu98/scop
   figures:
     dev: ragg::agg_png
     dpi: 96

@@ -19,7 +19,7 @@ check_Python(
 
 \item{envname}{The name of a conda environment.}
 
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow SCP to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{force}{Whether to force package installation. Default is \code{FALSE}.}
 
@@ -35,6 +35,6 @@ Check and install python packages
 \examples{
 check_Python(packages = c("bbknn", "scanorama"))
 \dontrun{
-check_Python(packages = "scvi-tools==0.20.0", envname = "SCP_env", pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple")
+check_Python(packages = "scvi-tools==0.20.0", envname = "scop_env", pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple")
 }
 }

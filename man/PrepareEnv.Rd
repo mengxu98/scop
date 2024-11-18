@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{PrepareEnv}
 \alias{PrepareEnv}
-\title{This function prepares the SCP Python environment by installing the required dependencies and setting up the environment.}
+\title{This function prepares the scop Python environment by installing the required dependencies and setting up the environment.}
 \usage{
 PrepareEnv(
   conda = "auto",
@@ -14,7 +14,7 @@ PrepareEnv(
 )
 }
 \arguments{
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow SCP to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{miniconda_repo}{Repositories for miniconda. Default is \code{https://repo.anaconda.com/miniconda}}
 
@@ -27,10 +27,10 @@ PrepareEnv(
 \item{...}{Other arguments passed to \code{\link[reticulate]{conda_install}}}
 }
 \description{
-This function prepares the SCP Python environment by installing the required dependencies and setting up the environment.
+This function prepares the scop Python environment by installing the required dependencies and setting up the environment.
 }
 \details{
-This function prepares the SCP Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with SCP.
+This function prepares the scop Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with scop.
 In order to create the environment, this function requires the path to the conda binary. If \code{conda} is set to \code{"auto"}, it will attempt to automatically find the conda binary.
 If a conda environment with the specified name already exists and \code{force} is set to \code{FALSE}, the function will use the existing environment. If \code{force} set to \code{TRUE}, the existing environment will be recreated. Note that recreating the environment will remove any existing data in the environment.
 The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter. The default is \code{3.8-1}.

@@ -27,7 +27,7 @@ NULL
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "Seurat")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection
@@ -269,7 +269,7 @@ RunKNNMap <- function(srt_query, srt_ref, query_assay = NULL, ref_assay = NULL, 
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "Seurat")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection
@@ -370,7 +370,7 @@ RunPCAMap <- function(srt_query, srt_ref, query_assay = NULL, ref_assay = srt_re
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "Seurat")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection
@@ -396,8 +396,8 @@ RunSeuratMap <- function(srt_query, srt_ref, query_assay = NULL, ref_assay = srt
     if (any(grepl("pca", Reductions(srt_ref), ignore.case = TRUE))) {
       ref_pca <- sort(Reductions(srt_ref)[grep("pca", Reductions(srt_ref))])[1]
     } else {
-      cat("'ref_pca' is NUll and no pca reduction detected. Run Standard_SCP first.\n")
-      srt_ref <- Standard_SCP(srt_ref)
+      cat("'ref_pca' is NUll and no pca reduction detected. Run Standard_scop first.\n")
+      srt_ref <- Standard_scop(srt_ref)
       ref_pca <- "Standardpca"
     }
     cat("Set the ref_pca to '", ref_pca, "'\n", sep = "")
@@ -459,7 +459,7 @@ RunSeuratMap <- function(srt_query, srt_ref, query_assay = NULL, ref_assay = srt
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "CSS")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "CSS")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection
@@ -552,7 +552,7 @@ RunCSSMap <- function(srt_query, srt_ref, query_assay = NULL, ref_assay = srt_re
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "Harmony")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Harmony")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection

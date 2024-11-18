@@ -67,9 +67,10 @@
 #' @importFrom reshape2 dcast melt
 #' @importFrom biomaRt listEnsemblArchives useMart listDatasets useDataset getBM listAttributes useEnsembl
 #' @export
-GeneConvert <- function(geneID, geneID_from_IDtype = "symbol", geneID_to_IDtype = "entrez_id",
-                        species_from = "Homo_sapiens", species_to = NULL,
-                        Ensembl_version = 103, biomart = NULL, mirror = NULL, max_tries = 5) {
+GeneConvert <- function(
+    geneID, geneID_from_IDtype = "symbol", geneID_to_IDtype = "entrez_id",
+    species_from = "Homo_sapiens", species_to = NULL,
+    Ensembl_version = 103, biomart = NULL, mirror = NULL, max_tries = 5) {
   if (requireNamespace("httr", quietly = TRUE)) {
     httr::set_config(httr::config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
   }
@@ -680,7 +681,7 @@ AddModuleScore2 <- function(object, slot = "data", features, pool = NULL, nbin =
 #'
 #' \dontrun{
 #' data("panc8_sub")
-#' panc8_sub <- Integration_SCP(panc8_sub,
+#' panc8_sub <- Integration_scop(panc8_sub,
 #'   batch = "tech", integration_method = "Seurat"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
@@ -691,7 +692,7 @@ AddModuleScore2 <- function(object, slot = "data", features, pool = NULL, nbin =
 #'   minGSSize = 10, maxGSSize = 100,
 #'   method = "Seurat", name = "GO", new_assay = TRUE
 #' )
-#' panc8_sub <- Integration_SCP(panc8_sub,
+#' panc8_sub <- Integration_scop(panc8_sub,
 #'   assay = "GO",
 #'   batch = "tech", integration_method = "Seurat"
 #' )
@@ -703,11 +704,11 @@ AddModuleScore2 <- function(object, slot = "data", features, pool = NULL, nbin =
 #'   termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
 #'   method = "Seurat", name = "GO", new_assay = TRUE
 #' )
-#' pancreas_sub <- Standard_SCP(pancreas_sub, assay = "GO")
+#' pancreas_sub <- Standard_scop(pancreas_sub, assay = "GO")
 #' CellDimPlot(pancreas_sub, "SubCellType")
 #'
 #' pancreas_sub[["tech"]] <- "Mouse"
-#' panc_merge <- Integration_SCP(
+#' panc_merge <- Integration_scop(
 #'   srtList = list(panc8_sub, pancreas_sub),
 #'   assay = "GO",
 #'   batch = "tech", integration_method = "Seurat"
@@ -717,7 +718,7 @@ AddModuleScore2 <- function(object, slot = "data", features, pool = NULL, nbin =
 #' genenames <- make.unique(capitalize(rownames(panc8_sub[["RNA"]]), force_tolower = TRUE))
 #' panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames, assay = "RNA")
 #' head(rownames(panc8_sub))
-#' panc_merge <- Integration_SCP(
+#' panc_merge <- Integration_scop(
 #'   srtList = list(panc8_sub, pancreas_sub),
 #'   assay = "RNA",
 #'   batch = "tech", integration_method = "Seurat"
@@ -1217,21 +1218,36 @@ FindConservedMarkers2 <- function(object, grouping.var, ident.1, ident.2 = NULL,
   return(markers.combined)
 }
 
-#' @examples
-#' markers <- FindExpressedMarkers(pancreas_sub, cells.1 = WhichCells(pancreas_sub, expression = Phase == "G2M"))
-#' head(markers)
-#' FeatureStatPlot(pancreas_sub, rownames(markers)[1], group.by = "Phase", add_point = TRUE)
+#' @title FindExpressedMarkers
+#'
 #' @importFrom Matrix rowSums
 #' @importFrom SeuratObject PackageCheck FetchData WhichCells SetIdent Idents
 #' @importFrom Seurat FindMarkers FoldChange Command
 #' @importFrom pbapply pbsapply
 #' @export
-FindExpressedMarkers <- function(object, ident.1 = NULL, ident.2 = NULL, cells.1 = NULL, cells.2 = NULL,
-                                 features = NULL, assay = NULL, slot = "data", min.expression = 0,
-                                 test.use = "wilcox", logfc.threshold = 0.25, base = 2, pseudocount.use = 1, mean.fxn = NULL, fc.name = NULL,
-                                 min.pct = 0.1, min.diff.pct = -Inf, max.cells.per.ident = Inf, latent.vars = NULL, only.pos = FALSE,
-                                 min.cells.group = 3, min.cells.feature = 3,
-                                 norm.method = "LogNormalize", verbose = TRUE, ...) {
+#'
+#' @examples
+#' markers <- FindExpressedMarkers(
+#'   pancreas_sub,
+#'   cells.1 = WhichCells(pancreas_sub, expression = Phase == "G2M")
+#' )
+#' head(markers)
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   rownames(markers)[1],
+#'   group.by = "Phase",
+#'   add_point = TRUE
+#' )
+FindExpressedMarkers <- function(
+    object,
+    ident.1 = NULL, ident.2 = NULL, cells.1 = NULL, cells.2 = NULL,
+    features = NULL, assay = NULL, slot = "data", min.expression = 0,
+    test.use = "wilcox", logfc.threshold = 0.25, base = 2,
+    pseudocount.use = 1, mean.fxn = NULL, fc.name = NULL,
+    min.pct = 0.1, min.diff.pct = -Inf, max.cells.per.ident = Inf,
+    latent.vars = NULL, only.pos = FALSE,
+    min.cells.group = 3, min.cells.feature = 3,
+    norm.method = "LogNormalize", verbose = TRUE, ...) {
   ########## FindMarkers.Seurat ##########
 
   assay <- assay %||% DefaultAssay(object)
@@ -1430,6 +1446,7 @@ FindExpressedMarkers <- function(object, ident.1 = NULL, ident.2 = NULL, cells.1
   return(de.results)
 }
 
+#' @export
 FoldChange.default <- function(object, cells.1, cells.2, mean.fxn, fc.name, features = NULL, ...) {
   features <- features %||% rownames(x = object)
   # Calculate percent expressed
@@ -1613,7 +1630,7 @@ WilcoxDETest <- function(data.use, cells.1, cells.2, verbose = TRUE, ...) {
 #' ht3$plot
 #'
 #' data("panc8_sub")
-#' panc8_sub <- Integration_SCP(panc8_sub, batch = "tech", integration_method = "Seurat")
+#' panc8_sub <- Integration_scop(panc8_sub, batch = "tech", integration_method = "Seurat")
 #' CellDimPlot(panc8_sub, group.by = c("celltype", "tech"))
 #'
 #' panc8_sub <- RunDEtest(panc8_sub, group_by = "celltype", grouping.var = "tech", markers_type = "conserved")
@@ -4298,7 +4315,7 @@ RunGSEA <- function(srt = NULL, group_by = NULL, test.use = "wilcox", DE_thresho
 #' CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", lineages = paste0("Lineage", 1:2), lineages_span = 0.1)
 #'
 #' # 3D lineage
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "StandardpcaUMAP3D")
 #' CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", lineages = paste0("Lineage", 1:3), lineages_span = 0.1, lineages_trim = c(0.05, 0.95))
 #' @importFrom Seurat AddMetaData as.SingleCellExperiment
@@ -4346,9 +4363,9 @@ RunSlingshot <- function(srt, group.by, reduction = NULL, dims = NULL, start = N
 
   if (isTRUE(show_plot)) {
     if (ncol(srt[[reduction]]@cell.embeddings) == 2 || ncol(srt[[reduction]]@cell.embeddings) > 3) {
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scp(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
+      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
       # lines(slingshot::SlingshotDataSet(sl), lwd = 2, type = "lineages", col = "black")
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scp(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
+      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
       # lines(slingshot::SlingshotDataSet(sl), lwd = 3, col = 1:length(slingshot::SlingshotDataSet(sl)@lineages))
       p <- CellDimPlot(srt, group.by = group.by, reduction = reduction, dims = c(1, 2), lineages = colnames(df))
       print(p)
@@ -4714,7 +4731,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'   # CellDimPlot(pancreas_sub, group.by = "SubCellType", lineages = "Lineages_1", lineages_span = 0.1, theme_use = "theme_blank")
 #'
 #'   # Use Seurat clusters to infer the trajectories
-#'   pancreas_sub <- Standard_SCP(pancreas_sub)
+#'   pancreas_sub <- Standard_scop(pancreas_sub)
 #'   CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE, theme_use = "theme_blank")
 #'   pancreas_sub <- RunMonocle3(srt = pancreas_sub, clusters = "Standardclusters")
 #'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
@@ -4723,7 +4740,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'   FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "StandardUMAP2D", theme_use = "theme_blank") + trajectory
 #'
 #'   # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
-#'   pancreas_sub <- Standard_SCP(pancreas_sub, cluster_resolution = 5)
+#'   pancreas_sub <- Standard_scop(pancreas_sub, cluster_resolution = 5)
 #'   CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE)
 #'   pancreas_sub <- RunMonocle3(
 #'     srt = pancreas_sub,
@@ -5061,7 +5078,7 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
     #   geom_point() +
     #   geom_abline(slope = 1, intercept = 0, color = "red") +
     #   labs(title = l, subtitle = "Var VS Mean") +
-    #   theme_scp()
+    #   theme_scop()
     # print(p)
 
     message("Calculate dynamic features for ", l, "...")
@@ -5830,10 +5847,10 @@ RunPAGA <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_layers
     )
   }
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scp(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
+  args[["palette"]] <- palette_scop(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
 
-  SCP_analysis <- reticulate::import_from_path("SCP_analysis", path = system.file("python", package = "SCP", mustWork = TRUE), convert = TRUE)
-  adata <- do.call(SCP_analysis$PAGA, args)
+  scop_analysis <- reticulate::import_from_path("scop_analysis", path = system.file("python", package = "scop", mustWork = TRUE), convert = TRUE)
+  adata <- do.call(scop_analysis$PAGA, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -5888,7 +5905,7 @@ RunPAGA <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_layers
 #' VelocityPlot(pancreas_sub, reduction = "UMAP", plot_type = "stream")
 #' CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", pt.size = NA, velocity = "stochastic")
 #'
-#' pancreas_sub <- Standard_SCP(pancreas_sub, normalization_method = "SCT", nonlinear_reduction = "tsne")
+#' pancreas_sub <- Standard_scop(pancreas_sub, normalization_method = "SCT", nonlinear_reduction = "tsne")
 #' pancreas_sub <- RunSCVELO(srt = pancreas_sub, assay_X = "SCT", group_by = "SubCellType", linear_reduction = "Standardpca", nonlinear_reduction = "StandardTSNE2D")
 #'
 #' @export
@@ -5947,10 +5964,10 @@ RunSCVELO <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_laye
     )
   }
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scp(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
+  args[["palette"]] <- palette_scop(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
 
-  SCP_analysis <- reticulate::import_from_path("SCP_analysis", path = system.file("python", package = "SCP", mustWork = TRUE), convert = TRUE)
-  adata <- do.call(SCP_analysis$SCVELO, args)
+  scop_analysis <- reticulate::import_from_path("scop_analysis", path = system.file("python", package = "scop", mustWork = TRUE), convert = TRUE)
+  adata <- do.call(scop_analysis$SCVELO, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -6051,10 +6068,10 @@ RunPalantir <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_la
     )
   }
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scp(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
+  args[["palette"]] <- palette_scop(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
 
-  SCP_analysis <- reticulate::import_from_path("SCP_analysis", path = system.file("python", package = "SCP", mustWork = TRUE), convert = TRUE)
-  adata <- do.call(SCP_analysis$Palantir, args)
+  scop_analysis <- reticulate::import_from_path("scop_analysis", path = system.file("python", package = "scop", mustWork = TRUE), convert = TRUE)
+  adata <- do.call(scop_analysis$Palantir, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -6136,10 +6153,10 @@ RunWOT <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_layers 
     )
   }
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scp(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
+  args[["palette"]] <- palette_scop(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
 
-  SCP_analysis <- reticulate::import_from_path("SCP_analysis", path = system.file("python", package = "SCP", mustWork = TRUE), convert = TRUE)
-  adata <- do.call(SCP_analysis$WOT, args)
+  scop_analysis <- reticulate::import_from_path("scop_analysis", path = system.file("python", package = "scop", mustWork = TRUE), convert = TRUE)
+  adata <- do.call(scop_analysis$WOT, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -6210,10 +6227,10 @@ RunCellRank <- function(srt = NULL, assay_X = "RNA", slot_X = "counts", assay_la
     )
   }
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scp(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
+  args[["palette"]] <- palette_scop(levels(groups) %||% unique(groups), palette = palette, palcolor = palcolor)
 
-  SCP_analysis <- reticulate::import_from_path("SCP_analysis", path = system.file("python", package = "SCP", mustWork = TRUE), convert = TRUE)
-  adata <- do.call(SCP_analysis$CellRank, args)
+  scop_analysis <- reticulate::import_from_path("scop_analysis", path = system.file("python", package = "scop", mustWork = TRUE), convert = TRUE)
+  adata <- do.call(scop_analysis$CellRank, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)

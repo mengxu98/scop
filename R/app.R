@@ -242,7 +242,7 @@ CreateMetaFile <- function(srt, MetaFile, name = NULL, write_tools = FALSE, writ
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' }
 #' @importFrom Seurat Reductions Assays DefaultAssay
@@ -325,7 +325,7 @@ PrepareSCExplorer <- function(object,
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' srt <- FetchH5(
 #'   DataFile = "./SCExplorer/Data.hdf5",
@@ -519,7 +519,7 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' @param initial_label A string. Whether to add labels in the initial plot. Default is FALSE.
 #' @param initial_cell_palette A string. The initial color palette for cells. Default is "Paired".
 #' @param initial_feature_palette A string. The initial color palette for features. Default is "Spectral".
-#' @param initial_theme A string. The initial theme for plots. Default is "theme_scp".
+#' @param initial_theme A string. The initial theme for plots. Default is "theme_scop".
 #' @param initial_size A numeric. The initial size of plots. Default is 4.
 #' @param initial_ncol A numeric. The initial number of columns for arranging plots. Default is 3.
 #' @param initial_arrange A logical. Whether to use "Row" as the initial arrangement. Default is TRUE.
@@ -536,9 +536,9 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' data("panc8_sub")
-#' panc8_sub <- Integration_SCP(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
+#' panc8_sub <- Integration_scop(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
 #'
 #' PrepareSCExplorer(list(mouse_pancreas = pancreas_sub, human_pancreas = panc8_sub), base_dir = "./SCExplorer", overwrite = TRUE)
 #'
@@ -557,7 +557,7 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' if (interactive()) {
 #'   shiny::runApp(app)
 #' }
-#' # Note: If SCP installed in the isolated environment using renv, you need to add `renv::activate(project = "path/to/SCP_env")` to the app.R script.
+#' # Note: If scop installed in the isolated environment using renv, you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 #'
 #' ####################################################################################################################
 #' # You can deploy the app on the self-hosted shiny server(https://www.rstudio.com/products/shiny/shiny-server/).
@@ -591,7 +591,7 @@ RunSCExplorer <- function(base_dir = "SCExplorer",
                           initial_label = FALSE,
                           initial_cell_palette = "Paired",
                           initial_feature_palette = "Spectral",
-                          initial_theme = "theme_scp",
+                          initial_theme = "theme_scop",
                           initial_size = 4,
                           initial_ncol = 3,
                           initial_arrange = NULL,
@@ -672,9 +672,9 @@ if (is.null(initial_raster)) {
   initial_raster <- length(all_cells) > 1e5
 }
 
-palette_list <- SCP::palette_list
+palette_list <- scop::palette_list
 theme_list <- list(
-  SCP = c("theme_scp", "theme_blank"),
+  scop = c("theme_scop", "theme_blank"),
   ggplot2 = c("theme_classic", "theme_linedraw", "theme_minimal", "theme_void", "theme_grey", "theme_dark", "theme_light")
 )
 themes <- setNames(rep(names(theme_list), sapply(theme_list, length)), unlist(theme_list))
@@ -1651,7 +1651,7 @@ server <- function(input, output, session) {
         # print("******************************** New task ********************************")
         # print(">>> fetch data:")
         # print(system.time(
-        srt_tmp <- SCP::FetchH5(
+        srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset1,
           metanames = unique(c(group1, split1)), reduction = reduction1
         )
@@ -1661,7 +1661,7 @@ server <- function(input, output, session) {
 
         # print(">>> plot:")
         # print(system.time(
-        p1_dim <- SCP::CellDimPlot(srt_tmp,
+        p1_dim <- scop::CellDimPlot(srt_tmp,
           group.by = group1, split.by = split1, reduction = reduction1, raster = raster1, pt.size = pt_size1,
           label = label1, palette = palette1, theme_use = theme1,
           ncol = ncol1, byrow = byrow1, force = TRUE
@@ -1670,12 +1670,12 @@ server <- function(input, output, session) {
 
         # print(">>> panel_fix:")
         # print(system.time(
-        p1_dim <- SCP::panel_fix(SCP::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         # ))
         attr(p1_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
-          p1_3d <- SCP::CellDimPlot3D(srt_tmp, group.by = group1, pt.size = pt_size1 * 2, reduction = reduction1, palette = palette1, force = TRUE)
+          p1_3d <- scop::CellDimPlot3D(srt_tmp, group.by = group1, pt.size = pt_size1 * 2, reduction = reduction1, palette = palette1, force = TRUE)
         } else {
           p1_3d <- NULL
         }
@@ -1803,7 +1803,7 @@ server <- function(input, output, session) {
         # print("******************************** New task ********************************")
         # print(">>> fetch data:")
         # print(system.time(
-        srt_tmp <- SCP::FetchH5(
+        srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset2,
           features = features2, slot = slots2, assay = assays2,
           metanames = split2, reduction = reduction2
@@ -1814,7 +1814,7 @@ server <- function(input, output, session) {
 
         # print(">>> plot:")
         # print(system.time(
-        p2_dim <- SCP::FeatureDimPlot(
+        p2_dim <- scop::FeatureDimPlot(
           srt = srt_tmp, features = features2, split.by = split2, reduction = reduction2, slot = "data", raster = raster2, pt.size = pt_size2,
           calculate_coexp = coExp2, keep_scale = scale2, palette = palette2, theme_use = theme2,
           ncol = ncol2, byrow = byrow2, force = TRUE
@@ -1823,12 +1823,12 @@ server <- function(input, output, session) {
 
         # print(">>> panel_fix:")
         # print(system.time(
-        p2_dim <- SCP::panel_fix(SCP::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         # ))
         attr(p2_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
-          p2_3d <- SCP::FeatureDimPlot3D(
+          p2_3d <- scop::FeatureDimPlot3D(
             srt = srt_tmp, features = features2, reduction = reduction2, pt.size = pt_size2 * 2,
             calculate_coexp = coExp2, force = TRUE
           )
@@ -1958,7 +1958,7 @@ server <- function(input, output, session) {
         # print("******************************** New task ********************************")
         # print(">>> fetch data:")
         # print(system.time(
-        srt_tmp <- SCP::FetchH5(
+        srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset3,
           metanames = unique(c(stat3, group3, split3))
         )
@@ -1981,7 +1981,7 @@ server <- function(input, output, session) {
 
         # print(">>> plot:")
         # print(system.time(
-        p3 <- SCP::CellStatPlot(
+        p3 <- scop::CellStatPlot(
           srt = srt_tmp, stat.by = stat3, group.by = group3, split.by = split3, cells = cells,
           plot_type = plottype3, stat_type = stattype3, position = position3,
           label = label3, label.size = labelsize3, flip = flip3, palette = palette3, theme_use = theme3,
@@ -1993,9 +1993,9 @@ server <- function(input, output, session) {
         # print(">>> panel_fix:")
         # print(system.time(
         if (flip3) {
-          p3 <- SCP::panel_fix(SCP::slim_data(p3), width = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         } else {
-          p3 <- SCP::panel_fix(SCP::slim_data(p3), height = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         }
         # ))
         attr(p3, "dpi") <- 300
@@ -2122,7 +2122,7 @@ server <- function(input, output, session) {
         # print("******************************** New task ********************************")
         # print(">>> fetch data:")
         # print(system.time(
-        srt_tmp <- SCP::FetchH5(
+        srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset4,
           features = features4, slot = slots4, assay = assays4,
           metanames = unique(c(group4, split4))
@@ -2146,7 +2146,7 @@ server <- function(input, output, session) {
 
         # print(">>> plot:")
         # print(system.time(
-        p4 <- SCP::FeatureStatPlot(
+        p4 <- scop::FeatureStatPlot(
           srt = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, slot = "data", plot_type = plottype4,
           calculate_coexp = coExp4, stack = stack4, flip = flip4,
           add_box = addbox4, add_point = addpoint4, add_trend = addtrend4,
@@ -2159,9 +2159,9 @@ server <- function(input, output, session) {
         # print(">>> panel_fix:")
         # print(system.time(
         if (flip4) {
-          p4 <- SCP::panel_fix(SCP::slim_data(p4), width = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         } else {
-          p4 <- SCP::panel_fix(SCP::slim_data(p4), height = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
         }
 
         # ))
@@ -2244,16 +2244,16 @@ server <- function(input, output, session) {
   }
   app_code <- c(
     "# !/usr/bin/env Rscript",
-    "if (!requireNamespace('SCP', quietly = TRUE)) {
+    "if (!requireNamespace('scop', quietly = TRUE)) {
       if (!requireNamespace('devtools', quietly = TRUE)) {install.packages('devtools')}
-      devtools::install_github('zhanghao-njmu/SCP')
+      devtools::install_github('mengxu98/scop')
     }",
-    "options(SCP_virtualenv_init = FALSE)",
-    paste0("app_SCP_version <- package_version('", as.character(packageVersion("SCP")), "')"),
-    paste0("if (utils::packageVersion('SCP') < app_SCP_version) {
-      stop(paste0('SCExplorer requires SCP >= ", as.character(packageVersion("SCP")), "'))
+    "options(scop_virtualenv_init = FALSE)",
+    paste0("app_scop_version <- package_version('", as.character(packageVersion("scop")), "')"),
+    paste0("if (utils::packageVersion('scop') < app_scop_version) {
+      stop(paste0('SCExplorer requires scop >= ", as.character(packageVersion("scop")), "'))
     }"),
-    "SCP::check_R(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
+    "scop::check_R(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
     "library(shiny)",
     "library(bslib)",
     "library(future)",

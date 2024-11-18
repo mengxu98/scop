@@ -13,7 +13,7 @@ Env_requirements(version = "3.8-1")
 A list of requirements for the specified version.
 }
 \description{
-This function provides the SCP python environment requirements for a specific version.
+This function provides the scop python environment requirements for a specific version.
 }
 \details{
 The function returns a list of requirements including the required Python version

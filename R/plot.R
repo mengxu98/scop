@@ -1,6 +1,6 @@
-#' SCP theme
+#' scop theme
 #'
-#' The default theme for SCP plot function.
+#' The default theme for scop plot function.
 #'
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param base_size Base font size
@@ -10,10 +10,10 @@
 #' library(ggplot2)
 #' p <- ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +
 #'   geom_point()
-#' p + theme_scp()
+#' p + theme_scop()
 #' @importFrom ggplot2 theme element_blank element_text element_rect margin
 #' @export
-theme_scp <- function(aspect.ratio = NULL, base_size = 12, ...) {
+theme_scop <- function(aspect.ratio = NULL, base_size = 12, ...) {
   text_size_scale <- base_size / 12
   args1 <- list(
     aspect.ratio = aspect.ratio,
@@ -123,17 +123,17 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
     ))
     return(list(
       list(annotation_custom(g)),
-      list(theme_scp() + out),
+      list(theme_scop() + out),
       list(coord_cartesian(clip = "off"))
     ))
   } else {
     return(list(
-      list(theme_scp() + out)
+      list(theme_scop() + out)
     ))
   }
 }
 
-#' Color palettes collected in SCP.
+#' Color palettes collected in scop.
 #'
 #' @param x A vector of character/factor or numeric values. If missing, numeric values 1:n will be used as x.
 #' @param n The number of colors to return for numeric values.
@@ -149,13 +149,13 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
 #'
 #' @examples
 #' x <- c(1:3, NA, 3:5)
-#' (pal1 <- palette_scp(x, palette = "Spectral"))
-#' (pal2 <- palette_scp(x, palcolor = c("red", "white", "blue")))
-#' (pal3 <- palette_scp(x, palette = "Spectral", n = 10))
-#' (pal4 <- palette_scp(x, palette = "Spectral", n = 10, reverse = TRUE))
-#' (pal5 <- palette_scp(x, palette = "Spectral", matched = TRUE))
-#' (pal6 <- palette_scp(x, palette = "Spectral", matched = TRUE, NA_keep = TRUE))
-#' (pal7 <- palette_scp(x, palette = "Paired", type = "discrete"))
+#' (pal1 <- palette_scop(x, palette = "Spectral"))
+#' (pal2 <- palette_scop(x, palcolor = c("red", "white", "blue")))
+#' (pal3 <- palette_scop(x, palette = "Spectral", n = 10))
+#' (pal4 <- palette_scop(x, palette = "Spectral", n = 10, reverse = TRUE))
+#' (pal5 <- palette_scop(x, palette = "Spectral", matched = TRUE))
+#' (pal6 <- palette_scop(x, palette = "Spectral", matched = TRUE, NA_keep = TRUE))
+#' (pal7 <- palette_scop(x, palette = "Paired", type = "discrete"))
 #' show_palettes(list(pal1, pal2, pal3, pal4, pal5, pal6, pal7))
 #'
 #' all_palettes <- show_palettes(return_palettes = TRUE)
@@ -165,9 +165,9 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
 #' @importFrom stats setNames
 #' @export
 #'
-palette_scp <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = "auto",
+palette_scop <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = "auto",
                         matched = FALSE, reverse = FALSE, NA_keep = FALSE, NA_color = "grey80") {
-  palette_list <- SCP::palette_list
+  palette_list <- scop::palette_list
   if (missing(x)) {
     x <- 1:n
     type <- "continuous"
@@ -277,11 +277,11 @@ palette_scp <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = 
 #' @param palettes A list of color palettes. If `NULL`, uses default palettes.
 #' @param type A character vector specifying the type of palettes to include. Default is "discrete".
 #' @param index A numeric vector specifying the indices of the palettes to include. Default is `NULL`.
-#' @param palette_names A character vector specifying the names of the SCP palettes to include. Default is `NULL`.
+#' @param palette_names A character vector specifying the names of the scop palettes to include. Default is `NULL`.
 #' @param return_names A logical value indicating whether to return the names of the selected palettes. Default is `TRUE`.
 #' @param return_palettes A logical value indicating whether to return the colors of selected palettes. Default is `FALSE`.
 #'
-#' @seealso \code{\link{palette_scp}} \code{\link{palette_list}}
+#' @seealso \code{\link{palette_scop}} \code{\link{palette_list}}
 #'
 #' @examples
 #' show_palettes(palettes = list(c("red", "blue", "green"), c("yellow", "purple", "orange")))
@@ -296,7 +296,7 @@ palette_scp <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = 
 #' @importFrom ggplot2 ggplot geom_col scale_fill_manual scale_x_continuous element_blank
 #' @export
 show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), index = NULL, palette_names = NULL, return_names = TRUE, return_palettes = FALSE) {
-  palette_list <- SCP::palette_list
+  palette_list <- scop::palette_list
   if (!is.null(palettes)) {
     palette_list <- palettes
   } else {
@@ -326,7 +326,7 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
     geom_col(show.legend = FALSE) +
     scale_fill_manual(values = df[["color"]]) +
     scale_x_continuous(expand = c(0, 0), trans = "reverse") +
-    theme_scp(
+    theme_scop(
       axis.title = element_blank(),
       axis.ticks = element_blank(),
       axis.text.x = element_blank(),
@@ -450,10 +450,24 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
 #' @importFrom grid grob unit convertWidth convertHeight convertUnit is.unit unitType
 #' @export
 #'
-panel_fix <- function(x = NULL, panel_index = NULL, respect = NULL,
-                      width = NULL, height = NULL, margin = 1, padding = 0, units = "in",
-                      raster = FALSE, dpi = 300, BPPARAM = BiocParallel::SerialParam(),
-                      return_grob = FALSE, bg_color = "white", save = NULL, verbose = FALSE, ...) {
+panel_fix <- function(
+  x = NULL,
+  panel_index = NULL,
+  respect = NULL,
+  width = NULL,
+  height = NULL,
+  margin = 1,
+  padding = 0,
+  units = "in",
+  raster = FALSE,
+  dpi = 300,
+  BPPARAM = BiocParallel::SerialParam(),
+  return_grob = FALSE,
+  bg_color = "white",
+  save = NULL,
+  verbose = FALSE,
+  ...
+) {
   if (!inherits(x, "gtable")) {
     tryCatch(
       {
@@ -473,8 +487,15 @@ panel_fix <- function(x = NULL, panel_index = NULL, respect = NULL,
   }
 
   if (is.null(panel_index)) {
-    non_zero <- grep(pattern = "zeroGrob", vapply(gtable$grobs, as.character, character(1)), invert = TRUE)
-    panel_index <- grep("panel|full", gtable[["layout"]][["name"]])
+    non_zero <- grep(
+      pattern = "zeroGrob",
+      vapply(gtable$grobs, as.character, character(1)),
+      invert = TRUE
+    )
+    panel_index <- grep(
+      pattern = "panel|full",
+      gtable[["layout"]][["name"]]
+    )
     panel_index <- intersect(panel_index, non_zero)
   }
   if (length(panel_index) == 0 && length(gtable$grobs) == 1) {
@@ -482,25 +503,42 @@ panel_fix <- function(x = NULL, panel_index = NULL, respect = NULL,
   }
   add_margin <- TRUE
   for (i in panel_index) {
-    geom_index <- grep("GeomDrawGrob", names(gtable$grobs[[i]][["children"]]))
+    geom_index <- grep(
+      pattern = "GeomDrawGrob",
+      names(gtable$grobs[[i]][["children"]])
+    )
     if (length(geom_index) > 0) {
       if (isTRUE(verbose)) {
         message("panel ", i, " is detected as generated by plot_grid.")
       }
       for (j in geom_index) {
         subgrob <- gtable$grobs[[i]][["children"]][[j]][["children"]][[1]][["children"]][[1]]
-        # print(subgrob$grobs[[1]][["children"]])
+
         if (length(subgrob$grobs[[1]][["children"]]) > 0 && all(sapply(subgrob$grobs[[1]][["children"]], function(x) inherits(x, "recordedGrob")))) {
-          subgrob <- panel_fix_overall(subgrob$grobs[[1]][["children"]], width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE)
+          subgrob <- panel_fix_overall(
+            x = subgrob$grobs[[1]][["children"]],
+            width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE
+          )
         } else {
-          subgrob <- panel_fix(subgrob, width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE, verbose = verbose, depth = depth + 1)
+          subgrob <- panel_fix(
+            x = subgrob, width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE, verbose = verbose, depth = depth + 1
+          )
         }
         gtable$grobs[[i]][["children"]][[j]][["children"]][[1]][["children"]][[1]] <- subgrob
-        # print(paste0("plot_width:",plot_width," plot_height:",plot_height))
       }
-      sum_width <- convertWidth(sum(subgrob[["widths"]]), unitTo = units, valueOnly = TRUE) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$width)
-      sum_height <- convertHeight(sum(subgrob[["heights"]]), unitTo = units, valueOnly = TRUE) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$height)
-      gtable <- panel_fix_overall(gtable, panel_index = i, width = sum_width, height = sum_height, margin = ifelse(depth == 1, margin, 0), units = units, raster = FALSE, return_grob = TRUE)
+      sum_width <- convertWidth(
+        sum(subgrob[["widths"]]),
+        unitTo = units,
+        valueOnly = TRUE
+      ) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$width)
+      sum_height <- convertHeight(
+        sum(subgrob[["heights"]]),
+        unitTo = units,
+        valueOnly = TRUE
+      ) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$height)
+      gtable <- panel_fix_overall(
+        gtable, panel_index = i, width = sum_width, height = sum_height, margin = ifelse(depth == 1, margin, 0), units = units, raster = FALSE, return_grob = TRUE
+      )
     } else if (gtable$grobs[[i]]$name == "layout" || inherits(x, "patchwork")) {
       if (isTRUE(verbose)) {
         message("panel ", i, " is detected as generated by patchwork.")
@@ -510,17 +548,45 @@ panel_fix <- function(x = NULL, panel_index = NULL, respect = NULL,
       # }
       subgrob <- gtable$grobs[[i]]
       if (length(subgrob[["children"]]) > 0 && all(sapply(subgrob[["children"]], function(x) inherits(x, "recordedGrob")))) {
-        subgrob <- panel_fix_overall(subgrob[["children"]], width = width, height = height, margin = 0, units = units, raster = raster, dpi = dpi, return_grob = TRUE)
+        subgrob <- panel_fix_overall(
+          subgrob[["children"]], 
+          width = width, 
+          height = height,
+          margin = 0,
+          units = units,
+          raster = raster,
+          dpi = dpi,
+          return_grob = TRUE
+        )
       } else {
-        subgrob <- panel_fix(subgrob, width = width, height = height, margin = 0, units = units, raster = raster, dpi = dpi, return_grob = TRUE, verbose = verbose, depth = depth + 1)
+        subgrob <- panel_fix(
+          subgrob,
+          width = width,
+          height = height,
+          margin = 0,
+          units = units,
+          raster = raster,
+          dpi = dpi,
+          return_grob = TRUE,
+          verbose = verbose,
+          depth = depth + 1
+        )
       }
       gtable$grobs[[i]] <- subgrob
       layout <- gtable$layout
-      layout[["rowranges"]] <- lapply(seq_len(nrow(layout)), function(n) layout$t[n]:layout$b[n])
-      layout[["colranges"]] <- lapply(seq_len(nrow(layout)), function(n) layout$l[n]:layout$r[n])
+      layout[["rowranges"]] <- lapply(
+        seq_len(nrow(layout)),
+        function(n) layout$t[n]:layout$b[n]
+      )
+      layout[["colranges"]] <- lapply(
+        seq_len(nrow(layout)),
+        function(n) layout$l[n]:layout$r[n]
+      )
       p_row <- c(layout$t[i], layout$b[i])
       p_col <- c(layout$l[i], layout$r[i])
-      background_index <- grep("background", layout$name)
+      background_index <- grep(
+        pattern = "background", layout$name
+      )
       background_index <- background_index[order(layout$z[background_index], decreasing = TRUE)]
       for (bgi in background_index) {
         if (all(p_row %in% layout[["rowranges"]][[bgi]]) && all(p_col %in% layout[["colranges"]][[bgi]])) {
@@ -528,20 +594,63 @@ panel_fix <- function(x = NULL, panel_index = NULL, respect = NULL,
           break
         }
       }
-      gtable <- gtable_add_rows(gtable, heights = unit(padding, units), pos = layout$t[p_background_index] - 1)
-      gtable <- gtable_add_rows(gtable, heights = unit(padding, units), pos = layout$b[p_background_index])
-      gtable <- gtable_add_cols(gtable, widths = unit(padding, units), pos = layout$l[p_background_index] - 1)
-      gtable <- gtable_add_cols(gtable, widths = unit(padding, units), pos = layout$r[p_background_index])
-      sum_width <- convertWidth(sum(subgrob[["widths"]]), unitTo = units, valueOnly = TRUE)
-      sum_height <- convertHeight(sum(subgrob[["heights"]]), unitTo = units, valueOnly = TRUE)
+      gtable <- gtable_add_rows(
+        gtable,
+        heights = unit(padding, units),
+        pos = layout$t[p_background_index] - 1
+      )
+      gtable <- gtable_add_rows(
+        gtable,
+        heights = unit(padding, units),
+        pos = layout$b[p_background_index]
+      )
+      gtable <- gtable_add_cols(
+        gtable,
+        widths = unit(padding, units),
+        pos = layout$l[p_background_index] - 1
+      )
+      gtable <- gtable_add_cols(
+        gtable,
+        widths = unit(padding, units),
+        pos = layout$r[p_background_index]
+      )
+      sum_width <- convertWidth(
+        sum(subgrob[["widths"]]),
+        unitTo = units,
+        valueOnly = TRUE
+      )
+      sum_height <- convertHeight(
+        sum(subgrob[["heights"]]),
+        unitTo = units,
+        valueOnly = TRUE
+      )
 
-      gtable <- panel_fix_overall(gtable, panel_index = i, width = sum_width, height = sum_height, margin = ifelse(depth == 1 & add_margin, margin, 0), units = units, raster = FALSE, respect = TRUE, return_grob = TRUE)
+      gtable <- panel_fix_overall(
+        gtable,
+        panel_index = i,
+        width = sum_width,
+        height = sum_height,
+        margin = ifelse(depth == 1 & add_margin, margin, 0),
+        units = units,
+        raster = FALSE,
+        respect = TRUE,
+        return_grob = TRUE
+      )
       if (depth == 1 & add_margin) {
         add_margin <- FALSE
       }
     } else {
-      # print("fix the gtable")
-      gtable <- panel_fix_overall(gtable, panel_index = i, width = width, height = height, margin = margin, units = units, raster = raster, dpi = dpi, return_grob = TRUE)
+      gtable <- panel_fix_overall(
+        gtable,
+        panel_index = i,
+        width = width,
+        height = height,
+        margin = margin,
+        units = units,
+        raster = raster,
+        dpi = dpi,
+        return_grob = TRUE
+      )
     }
   }
 
@@ -821,7 +930,7 @@ panel_fix_overall <- function(x, panel_index = NULL, respect = NULL,
 #'   geom_point() +
 #'   scale_x_continuous(limits = c(10, 30)) +
 #'   scale_y_continuous(limits = c(1, 6)) +
-#'   theme_scp()
+#'   theme_scop()
 #' object.size(p)
 #'
 #' p_drop <- drop_data(p)
@@ -1101,7 +1210,7 @@ BlendRGBList <- function(Clist, mode = "blend", RGB_BackGround = c(1, 1, 1)) {
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
 #' @param reduction Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
 #' @param split.by Name of a column in meta.data column to split plot by.
-#' @param palette Name of a color palette name collected in SCP. Default is "Paired".
+#' @param palette Name of a color palette name collected in scop. Default is "Paired".
 #' @param palcolor Custom colors used to create a color palette.
 #' @param bg_color Color value for background(NA) points.
 #' @param pt.size Point size.
@@ -1276,7 +1385,7 @@ BlendRGBList <- function(Clist, mode = "blend", RGB_BackGround = c(1, 1, 1)) {
 #' CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "UMAP", hex = TRUE, hex.count = FALSE)
 #'
 #' # Show neighbors graphs on the plot
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "UMAP", graph = "Standardpca_SNN")
 #' CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "UMAP", graph = "Standardpca_SNN", edge_color = "grey80")
 #'
@@ -1354,7 +1463,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
                         raster = NULL, raster.dpi = c(512, 512),
                         aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                         legend.position = "right", legend.direction = "vertical",
-                        theme_use = "theme_scp", theme_args = list(),
+                        theme_use = "theme_scop", theme_args = list(),
                         combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
   mark_type <- match.arg(mark_type)
@@ -1513,7 +1622,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
   plist <- lapply(setNames(rownames(comb), rownames(comb)), function(i) {
     g <- comb[i, "group"]
     s <- comb[i, "split"]
-    colors <- palette_scp(levels(dat_use[[g]]), palette = palette, palcolor = palcolor, NA_keep = TRUE)
+    colors <- palette_scop(levels(dat_use[[g]]), palette = palette, palcolor = palcolor, NA_keep = TRUE)
     dat <- dat_use
     cells_mask <- dat[[split.by]] != s
     # dat[[split.by]] <- NULL
@@ -1610,7 +1719,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
 
     if (isTRUE(add_density)) {
       if (isTRUE(density_filled)) {
-        filled_color <- palette_scp(palette = density_filled_palette, palcolor = density_filled_palcolor)
+        filled_color <- palette_scop(palette = density_filled_palette, palcolor = density_filled_palcolor)
         density <- list(
           stat_density_2d(
             geom = "raster", aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
@@ -1744,7 +1853,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
       suppressMessages({
         legend_list[["lineages"]] <- get_legend(ggplot() +
           lineages_layers +
-          theme_scp(
+          theme_scop(
             legend.position = "bottom",
             legend.direction = legend.direction
           ))
@@ -1762,7 +1871,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
         suppressMessages({
           legend_list[["paga"]] <- get_legend(ggplot() +
             paga_layers +
-            theme_scp(
+            theme_scop(
               legend.position = "bottom",
               legend.direction = legend.direction
             ))
@@ -1781,7 +1890,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
         suppressMessages({
           legend_list[["velocity"]] <- get_legend(ggplot() +
             velocity_layers +
-            theme_scp(
+            theme_scop(
               legend.position = "bottom",
               legend.direction = legend.direction
             ))
@@ -1822,7 +1931,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
     }
     if (length(legend_list) > 0) {
       legend_list <- legend_list[!sapply(legend_list, is.null)]
-      legend_base <- get_legend(p_base + theme_scp(
+      legend_base <- get_legend(p_base + theme_scop(
         legend.position = "bottom",
         legend.direction = legend.direction
       ))
@@ -1858,7 +1967,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
 #' @param features A character vector or a named list of features to plot. Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param reduction Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
 #' @param split.by Name of a column in meta.data to split plot by.
-#' @param palette Name of a color palette name collected in SCP.
+#' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
 #' @param pt.size Point size for plotting.
 #' @param pt.alpha Point transparency.
@@ -1949,7 +2058,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
 #' FeatureDimPlot(pancreas_sub, features = "G2M_score", reduction = "UMAP", theme_use = ggplot2::theme_classic, theme_args = list(base_size = 16))
 #' FeatureDimPlot(pancreas_sub, features = "G2M_score", reduction = "UMAP") %>% panel_fix(height = 2, raster = TRUE, dpi = 30)
 #'
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' FeatureDimPlot(pancreas_sub, features = c("StandardPC_1", "StandardPC_2"), reduction = "UMAP", bg_cutoff = -Inf)
 #'
 #' # Label and highlight cell points
@@ -2059,7 +2168,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
                            raster = NULL, raster.dpi = c(512, 512),
                            aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                            legend.position = "right", legend.direction = "vertical",
-                           theme_use = "theme_scp", theme_args = list(),
+                           theme_use = "theme_scop", theme_args = list(),
                            combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
   color_blend_mode <- match.arg(color_blend_mode)
@@ -2268,15 +2377,15 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
       dat[, "split.by"] <- s
       dat[, "features"] <- paste(features, collapse = "|")
       subtitle_use <- paste0(subtitle, collapse = "|") %||% s
-      colors <- palette_scp(features, type = "discrete", palette = palette, palcolor = palcolor)
+      colors <- palette_scop(features, type = "discrete", palette = palette, palcolor = palcolor)
       colors_list <- list()
       value_list <- list()
       pal_list <- list()
       temp_geom <- list()
       legend_list <- list()
       for (i in seq_along(colors)) {
-        colors_list[[i]] <- palette_scp(dat[, names(colors)[i]], type = "continuous", NA_color = NA, NA_keep = TRUE, matched = TRUE, palcolor = c(adjcolors(colors[i], 0.1), colors[i]))
-        pal_list[[i]] <- palette_scp(dat[, names(colors)[i]], type = "continuous", NA_color = NA, NA_keep = FALSE, matched = FALSE, palcolor = c(adjcolors(colors[i], 0.1), colors[i]))
+        colors_list[[i]] <- palette_scop(dat[, names(colors)[i]], type = "continuous", NA_color = NA, NA_keep = TRUE, matched = TRUE, palcolor = c(adjcolors(colors[i], 0.1), colors[i]))
+        pal_list[[i]] <- palette_scop(dat[, names(colors)[i]], type = "continuous", NA_color = NA, NA_keep = FALSE, matched = FALSE, palcolor = c(adjcolors(colors[i], 0.1), colors[i]))
         value_list[[i]] <- seq(min(dat[, names(colors)[i]], na.rm = TRUE), max(dat[, names(colors)[i]], na.rm = TRUE), length.out = 100)
         temp_geom[[i]] <- list(
           geom_point(data = dat, mapping = aes(x = .data[["x"]], y = .data[["y"]], color = .data[[names(colors)[i]]]))
@@ -2344,7 +2453,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
       }
       if (isTRUE(add_density)) {
         if (isTRUE(density_filled)) {
-          filled_color <- palette_scp(palette = density_filled_palette, palcolor = density_filled_palcolor)
+          filled_color <- palette_scop(palette = density_filled_palette, palcolor = density_filled_palcolor)
           density <- list(
             stat_density_2d(
               geom = "raster", aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
@@ -2534,7 +2643,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
         suppressMessages({
           legend_curve <- get_legend(ggplot() +
             lineages_layers +
-            theme_scp())
+            theme_scop())
         })
         legend <- add_grob(legend, legend_curve, "top")
         p <- suppressMessages({
@@ -2556,7 +2665,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
     rownames(comb) <- paste0(comb[["split"]], ":", comb[["feature"]])
     dat_all <- cbind(dat_use, dat_exp[row.names(dat_use), features, drop = FALSE])
     dat_split <- split.data.frame(dat_all, dat_all[[split.by]])
-    colors <- palette_scp(type = "continuous", palette = palette, palcolor = palcolor)
+    colors <- palette_scop(type = "continuous", palette = palette, palcolor = palcolor)
     plist <- lapply(setNames(rownames(comb), rownames(comb)), function(i) {
       f <- comb[i, "feature"]
       s <- comb[i, "split"]
@@ -2621,7 +2730,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
       }
       if (isTRUE(add_density)) {
         if (isTRUE(density_filled)) {
-          filled_color <- palette_scp(palette = density_filled_palette, palcolor = density_filled_palcolor)
+          filled_color <- palette_scop(palette = density_filled_palette, palcolor = density_filled_palcolor)
           density <- list(
             stat_density_2d(
               geom = "raster", aes(x = .data[["x"]], y = .data[["y"]], fill = after_stat(density)),
@@ -2748,7 +2857,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
         suppressMessages({
           legend_list[["lineages"]] <- get_legend(ggplot() +
             lineages_layers +
-            theme_scp(
+            theme_scop(
               legend.position = "bottom",
               legend.direction = legend.direction
             ))
@@ -2830,7 +2939,7 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' CellDimPlot3D(pancreas_sub, group.by = "SubCellType", reduction = "StandardpcaUMAP3D")
 #'
 #' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "StandardpcaUMAP3D")
@@ -2923,7 +3032,7 @@ CellDimPlot3D <- function(srt, group.by, reduction = NULL, dims = c(1, 2, 3), ax
   }
 
   dat_use[["color"]] <- dat_use[[group.by]]
-  colors <- palette_scp(dat_use[["group.by"]], palette = palette, palcolor = palcolor, NA_color = bg_color, NA_keep = TRUE)
+  colors <- palette_scop(dat_use[["group.by"]], palette = palette, palcolor = palcolor, NA_color = bg_color, NA_keep = TRUE)
 
   dat_use[[paste0(reduction_key, dims[1], "All_cells")]] <- dat_use[[paste0(reduction_key, dims[1])]]
   dat_use[[paste0(reduction_key, dims[2], "All_cells")]] <- dat_use[[paste0(reduction_key, dims[2])]]
@@ -2999,7 +3108,7 @@ CellDimPlot3D <- function(srt, group.by, reduction = NULL, dims = c(1, 2, 3), ax
         ),
         type = "scatter3d",
         mode = "lines",
-        line = list(width = 6, color = palette_scp(x = lineages, palette = lineages_palette)[l], reverscale = FALSE),
+        line = list(width = 6, color = palette_scop(x = lineages, palette = lineages_palette)[l], reverscale = FALSE),
         name = l,
         showlegend = TRUE,
         visible = TRUE
@@ -3053,7 +3162,7 @@ CellDimPlot3D <- function(srt, group.by, reduction = NULL, dims = c(1, 2, 3), ax
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' FeatureDimPlot3D(pancreas_sub, features = c("Ghrl", "Ins1", "Gcg", "Ins2"), reduction = "StandardpcaUMAP3D")
 #' FeatureDimPlot3D(pancreas_sub, features = c("StandardPC_1", "StandardPC_2"), reduction = "StandardpcaUMAP3D")
 #'
@@ -3435,7 +3544,7 @@ FeatureDimPlot3D <- function(srt, features, reduction = NULL, dims = c(1, 2, 3),
 #' @param ylab A string specifying the label of the y-axis. Default is "Expression level".
 #' @param legend.position A string specifying the position of the legend. Possible values are "right", "left", "top", "bottom", or "none". Default is "right".
 #' @param legend.direction A string specifying the direction of the legend. Possible values are "vertical" or "horizontal". Default is "vertical".
-#' @param theme_use A string specifying the theme to use for the plot. Default is "theme_scp".
+#' @param theme_use A string specifying the theme to use for the plot. Default is "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function. Default is an empty list.
 #' @param combine A logical indicating whether to combine the individual plots into a single plot. Default is TRUE.
 #' @param nrow An integer specifying the number of rows for the combined plot. Default is NULL.
@@ -3540,7 +3649,7 @@ FeatureStatPlot <- function(srt, stat.by, group.by = NULL, split.by = NULL, bg.b
                             sig_label = c("p.signif", "p.format"), sig_labelsize = 3.5,
                             aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = "Expression level",
                             legend.position = "right", legend.direction = "vertical",
-                            theme_use = "theme_scp", theme_args = list(),
+                            theme_use = "theme_scop", theme_args = list(),
                             combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   if (is.null(group.by)) {
     group.by <- "All.groups" # avoid having the same name with split.by. split.by will be All.groups by default
@@ -3739,7 +3848,7 @@ ExpressionStatPlot <- function(exp.data, meta.data, stat.by, group.by = NULL, sp
                                sig_label = c("p.signif", "p.format"), sig_labelsize = 3.5,
                                aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = "Expression level",
                                legend.position = "right", legend.direction = "vertical",
-                               theme_use = "theme_scp", theme_args = list(),
+                               theme_use = "theme_scop", theme_args = list(),
                                force = FALSE, seed = 11) {
   set.seed(seed)
 
@@ -3970,19 +4079,19 @@ ExpressionStatPlot <- function(exp.data, meta.data, stat.by, group.by = NULL, sp
       theme_args[["ylab"]] <- ylab
     }
     if (fill.by == "feature") {
-      colors <- palette_scp(stat.by, palette = palette, palcolor = palcolor)
+      colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
     }
     if (fill.by == "group") {
       if (split.by != "All.groups") {
-        colors <- palette_scp(levels(dat_use[[split.by]]), palette = palette, palcolor = palcolor)
+        colors <- palette_scop(levels(dat_use[[split.by]]), palette = palette, palcolor = palcolor)
       } else {
-        colors <- palette_scp(levels(dat_use[[g]]), palette = palette, palcolor = palcolor)
+        colors <- palette_scop(levels(dat_use[[g]]), palette = palette, palcolor = palcolor)
       }
     }
     if (fill.by == "expression") {
       median_values <- aggregate(dat_use[, stat.by, drop = FALSE], by = list(dat_use[[g]], dat_use[[split.by]]), FUN = median)
       rownames(median_values) <- paste0(median_values[, 1], "-", median_values[, 2])
-      colors <- palette_scp(unlist(median_values[, stat.by]), type = "continuous", palette = palette, palcolor = palcolor)
+      colors <- palette_scop(unlist(median_values[, stat.by]), type = "continuous", palette = palette, palcolor = palcolor)
       colors_limits <- range(median_values[, stat.by])
     }
 
@@ -3990,10 +4099,10 @@ ExpressionStatPlot <- function(exp.data, meta.data, stat.by, group.by = NULL, sp
     dat[[g]] <- factor(dat[[g]], levels = levels(dat[[g]])[levels(dat[[g]]) %in% dat[[g]]])
     if (!is.null(bg.by)) {
       bg <- bg.by
-      bg_color <- palette_scp(levels(dat[[bg]]), palette = bg_palette, palcolor = bg_palcolor)
+      bg_color <- palette_scop(levels(dat[[bg]]), palette = bg_palette, palcolor = bg_palcolor)
     } else {
       bg <- g
-      bg_color <- palette_scp(levels(dat[[bg]]), palcolor = bg_palcolor %||% rep(c("transparent", "grey85"), nlevels(dat[[bg]])))
+      bg_color <- palette_scop(levels(dat[[bg]]), palcolor = bg_palcolor %||% rep(c("transparent", "grey85"), nlevels(dat[[bg]])))
     }
     dat[["bg.by"]] <- dat[[bg]]
     dat[["value"]] <- dat[[f]]
@@ -4469,7 +4578,7 @@ CellStatPlot <- function(srt, stat.by, group.by = NULL, split.by = NULL, bg.by =
                          label = FALSE, label.size = 3.5, label.fg = "black", label.bg = "white", label.bg.r = 0.1,
                          aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                          legend.position = "right", legend.direction = "vertical",
-                         theme_use = "theme_scp", theme_args = list(),
+                         theme_use = "theme_scop", theme_args = list(),
                          combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta.data <- srt@meta.data[cells, , drop = FALSE]
@@ -4570,7 +4679,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
                      label = FALSE, label.size = 3.5, label.fg = "black", label.bg = "white", label.bg.r = 0.1,
                      aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                      legend.position = "right", legend.direction = "vertical",
-                     theme_use = "theme_scp", theme_args = list(),
+                     theme_use = "theme_scop", theme_args = list(),
                      combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
 
@@ -4703,7 +4812,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
         theme_args[["add_coord"]] <- FALSE
       }
     }
-    colors <- palette_scp(dat_all[[stat.by]], palette = palette, palcolor = palcolor, NA_color = NA_color, NA_keep = TRUE)
+    colors <- palette_scop(dat_all[[stat.by]], palette = palette, palcolor = palcolor, NA_color = NA_color, NA_keep = TRUE)
 
     comb_list <- list()
     comb <- expand.grid(stat_name = stat.by, group_name = group.by, stringsAsFactors = FALSE)
@@ -4762,10 +4871,10 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       dat <- dat[!is.na(dat[["value"]]), , drop = FALSE]
       if (!is.null(bg.by)) {
         bg <- bg.by
-        bg_color <- palette_scp(levels(dat_all[[bg]]), palette = bg_palette, palcolor = bg_palcolor)
+        bg_color <- palette_scop(levels(dat_all[[bg]]), palette = bg_palette, palcolor = bg_palcolor)
       } else {
         bg <- g
-        bg_color <- palette_scp(levels(dat_all[[bg]]), palcolor = bg_palcolor %||% rep(c("transparent", "grey85"), nlevels(dat_all[[bg]])))
+        bg_color <- palette_scop(levels(dat_all[[bg]]), palcolor = bg_palcolor %||% rep(c("transparent", "grey85"), nlevels(dat_all[[bg]])))
       }
 
       if (isTRUE(flip)) {
@@ -4958,7 +5067,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       return(p)
     })
   } else if (plot_type %in% c("chord", "sankey", "venn", "upset")) {
-    colors <- palette_scp(stat.by, palette = palette, palcolor = palcolor)
+    colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
     if (plot_type == "chord" && isTRUE(combine)) {
       temp <- tempfile(fileext = "png")
       png(temp)
@@ -5058,8 +5167,8 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
           ) +
           labs(title = title, subtitle = subtitle, x = sp, y = "Intersection size") +
           ggupset::scale_x_upset(sets = stat.by, n_intersections = 20) +
-          scale_fill_gradientn(colors = palette_scp(palette = "material-indigo")) +
-          theme_scp(
+          scale_fill_gradientn(colors = palette_scop(palette = "material-indigo")) +
+          theme_scop(
             aspect.ratio = 0.6,
             panel.grid.major = element_line(colour = "grey80", linetype = 2)
           ) +
@@ -5070,7 +5179,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
         p <- p + labs(title = title, subtitle = subtitle)
       }
       if (plot_type == "sankey") {
-        colors <- palette_scp(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
+        colors <- palette_scop(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
         legend_list <- list()
         for (l in stat.by) {
           df <- data.frame(factor(levels(dat_use[[l]]), levels = levels(dat_use[[l]])))
@@ -5084,7 +5193,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
               order = 1,
               override.aes = list(size = 4, color = "black", alpha = 1)
             )) +
-            theme_scp(
+            theme_scop(
               legend.position = "bottom",
               legend.direction = legend.direction
             ))
@@ -5113,7 +5222,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
         p <- wrap_plots(gtable)
       }
       if (plot_type == "chord") {
-        colors <- palette_scp(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
+        colors <- palette_scop(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
         M <- table(dat_use[[stat.by[1]]], dat_use[[stat.by[2]]], useNA = "ifany")
         m <- matrix(M, ncol = ncol(M), dimnames = dimnames(M))
         colnames(m)[is.na(colnames(m))] <- "NA"
@@ -5196,7 +5305,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
 #' @param subtitle A character string specifying the subtitle for the correlation plot. Defaults to NULL.
 #' @param legend.position A character string specifying the position of the legend. Can be "right" (default), "left", "top", or "bottom".
 #' @param legend.direction A character string specifying the direction of the legend. Can be "vertical" (default) or "horizontal".
-#' @param theme_use A character string specifying the name of the theme to use for the plot. Defaults to "theme_scp".
+#' @param theme_use A character string specifying the name of the theme to use for the plot. Defaults to "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
 #' @param combine A logical value indicating whether to combine the plots into a single plot. Defaults to TRUE.
 #' @param nrow A numeric value specifying the number of rows in the combined plot. If NULL (default), the number of rows will be automatically determined.
@@ -5239,7 +5348,7 @@ FeatureCorPlot <- function(srt, features, group.by = NULL, split.by = NULL, cell
                            raster = NULL, raster.dpi = c(512, 512),
                            aspect.ratio = 1, title = NULL, subtitle = NULL,
                            legend.position = "right", legend.direction = "vertical",
-                           theme_use = "theme_scp", theme_args = list(),
+                           theme_use = "theme_scop", theme_args = list(),
                            combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
 
@@ -5354,8 +5463,8 @@ FeatureCorPlot <- function(srt, features, group.by = NULL, split.by = NULL, cell
   }
 
   plist <- list()
-  colors <- palette_scp(levels(dat_use[[group.by]]), palette = palette, palcolor = palcolor)
-  cor_colors <- palette_scp(x = seq(cor_range[1], cor_range[2], length.out = 200), palette = cor_palette, palcolor = cor_palcolor)
+  colors <- palette_scop(levels(dat_use[[group.by]]), palette = palette, palcolor = palcolor)
+  cor_colors <- palette_scop(x = seq(cor_range[1], cor_range[2], length.out = 200), palette = cor_palette, palcolor = cor_palcolor)
   bound <- strsplit(gsub("\\(|\\)|\\[|\\]", "", names(cor_colors)), ",")
   bound <- lapply(bound, as.numeric)
   df_bound <- do.call(rbind, bound)
@@ -5653,7 +5762,7 @@ FeatureCorPlot <- function(srt, features, group.by = NULL, split.by = NULL, cell
 #' @param subtitle A character specifying the subtitle of the plot. Default is NULL.
 #' @param legend.position A character specifying the position of the legend. Default is "right".
 #' @param legend.direction A character specifying the direction of the legend. Default is "vertical".
-#' @param theme_use A character specifying the theme to use. Default is "theme_scp".
+#' @param theme_use A character specifying the theme to use. Default is "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function.
 #' @param combine A logical indicating whether to combine multiple plots into a single plot. Default is TRUE.
 #' @param nrow An integer specifying the number of rows in the combined plot.
@@ -5683,7 +5792,7 @@ CellDensityPlot <- function(srt, features, group.by = NULL, split.by = NULL, ass
                             y.nbreaks = 4, y.min = NULL, y.max = NULL, same.y.lims = FALSE,
                             aspect.ratio = NULL, title = NULL, subtitle = NULL,
                             legend.position = "right", legend.direction = "vertical",
-                            theme_use = "theme_scp", theme_args = list(),
+                            theme_use = "theme_scop", theme_args = list(),
                             combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE) {
   check_R("ggridges")
   assay <- assay %||% DefaultAssay(srt)
@@ -5767,7 +5876,7 @@ CellDensityPlot <- function(srt, features, group.by = NULL, split.by = NULL, ass
   plist <- list()
   for (f in features) {
     for (g in group.by) {
-      colors <- palette_scp(levels(dat_use[[g]]), palette = palette, palcolor = palcolor)
+      colors <- palette_scop(levels(dat_use[[g]]), palette = palette, palcolor = palcolor)
       for (s in levels(dat_use[[split.by]])) {
         dat <- dat_use[dat_use[[split.by]] == s, , drop = FALSE]
         if (any(is.infinite(dat[, f]))) {
@@ -5922,7 +6031,7 @@ LineagePlot <- function(srt, lineages, reduction = NULL, dims = c(1, 2), cells =
                         whiskers = FALSE, whiskers_linewidth = 0.5, whiskers_alpha = 0.5,
                         aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                         legend.position = "right", legend.direction = "vertical",
-                        theme_use = "theme_scp", theme_args = list(),
+                        theme_use = "theme_scop", theme_args = list(),
                         return_layer = FALSE, seed = 11) {
   set.seed(seed)
 
@@ -5953,7 +6062,7 @@ LineagePlot <- function(srt, lineages, reduction = NULL, dims = c(1, 2), cells =
     theme_args[["ylab"]] <- ylab
   }
 
-  colors <- palette_scp(lineages, palette = palette, palcolor = palcolor)
+  colors <- palette_scop(lineages, palette = palette, palcolor = palcolor)
   axes <- paste0(reduction_key, dims)
   fitted_list <- lapply(lineages, function(l) {
     trim_pass <- dat[[l]] > quantile(dat[[l]], trim[1], na.rm = TRUE) & dat[[l]] < quantile(dat[[l]], trim[2], na.rm = TRUE)
@@ -6090,7 +6199,7 @@ LineagePlot <- function(srt, lineages, reduction = NULL, dims = c(1, 2), cells =
 #' @param ylab The label for the y-axis. Defaults to \code{NULL}.
 #' @param legend.position The position of the legend. Possible values are "right", "left", "bottom", and "top". Defaults to "right".
 #' @param legend.direction The direction of the legend. Possible values are "vertical" and "horizontal". Defaults to "vertical".
-#' @param theme_use The name of the theme to use for the plot. Defaults to "theme_scp".
+#' @param theme_use The name of the theme to use for the plot. Defaults to "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
 #' @param return_layer A logical value indicating whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.
 #'
@@ -6134,7 +6243,7 @@ PAGAPlot <- function(srt, paga = srt@misc$paga, type = "connectivities",
                      transition_shorten = 0.05, transition_offset = 0, transition_highlight = NULL, transition_highlight_color = "red",
                      aspect.ratio = 1, title = "PAGA", subtitle = NULL, xlab = NULL, ylab = NULL,
                      legend.position = "right", legend.direction = "vertical",
-                     theme_use = "theme_scp", theme_args = list(),
+                     theme_use = "theme_scop", theme_args = list(),
                      return_layer = FALSE) {
   if (is.null(paga)) {
     stop("Cannot find the paga result.")
@@ -6299,7 +6408,7 @@ GraphPlot <- function(node, edge, transition = NULL,
                       transition_shorten = 0.05, transition_offset = 0, transition_highlight = NULL, transition_highlight_color = "red",
                       aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
                       legend.position = "right", legend.direction = "vertical",
-                      theme_use = "theme_scp", theme_args = list(),
+                      theme_use = "theme_scop", theme_args = list(),
                       return_layer = FALSE) {
   use_triangular <- match.arg(use_triangular)
   edge_line <- match.arg(edge_line)
@@ -6563,7 +6672,7 @@ GraphPlot <- function(node, edge, transition = NULL,
   }
   node_layer <- c(node_layer, list(
     scale_color_manual(
-      name = node_group, values = palette_scp(node[["node_group"]], palette = node_palette, palcolor = node_palcolor), labels = label_use,
+      name = node_group, values = palette_scop(node[["node_group"]], palette = node_palette, palcolor = node_palcolor), labels = label_use,
       guide = guide_legend(
         title.hjust = 0,
         order = 1,
@@ -6721,7 +6830,7 @@ segementsDf <- function(data, shorten_start, shorten_end, offset) {
 #' @param ylab y-axis label. Defaults to NULL.
 #' @param legend.position Position of the legend. Defaults to "right".
 #' @param legend.direction Direction of the legend. Defaults to "vertical".
-#' @param theme_use Name of the theme to use for plotting. Defaults to "theme_scp".
+#' @param theme_use Name of the theme to use for plotting. Defaults to "theme_scop".
 #' @param theme_args List of theme arguments for customization. Defaults to list().
 #' @param return_layer Whether to return the plot layers as a list. Defaults to FALSE.
 #' @param seed Random seed for reproducibility. Defaults to 11.
@@ -6751,7 +6860,7 @@ VelocityPlot <- function(srt, reduction, dims = c(1, 2), cells = NULL, velocity 
                          streamline_bg_color = "white", streamline_bg_stroke = 0.5,
                          aspect.ratio = 1, title = "Cell velocity", subtitle = NULL, xlab = NULL, ylab = NULL,
                          legend.position = "right", legend.direction = "vertical",
-                         theme_use = "theme_scp", theme_args = list(),
+                         theme_use = "theme_scop", theme_args = list(),
                          return_layer = FALSE, seed = 11) {
   set.seed(seed)
 
@@ -6805,7 +6914,7 @@ VelocityPlot <- function(srt, reduction, dims = c(1, 2), cells = NULL, velocity 
           lineend = "round", linejoin = "mitre", inherit.aes = FALSE
         ),
         scale_color_manual(
-          name = group_by, values = palette_scp(df_field[["group_by"]], palette = group_palette, palcolor = group_palcolor),
+          name = group_by, values = palette_scop(df_field[["group_by"]], palette = group_palette, palcolor = group_palcolor),
           guide = guide_legend(title.hjust = 0, order = 1, override.aes = list(linewidth = 2, alpha = 1))
         )
       )
@@ -6914,7 +7023,7 @@ VelocityPlot <- function(srt, reduction, dims = c(1, 2), cells = NULL, velocity 
           lineend = "round", linejoin = "mitre", inherit.aes = FALSE
         ),
         scale_color_gradientn(
-          name = "Velocity", colors = palette_scp(palette = streamline_palette, palcolor = streamline_palcolor),
+          name = "Velocity", colors = palette_scop(palette = streamline_palette, palcolor = streamline_palcolor),
           guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0, order = 1)
         ),
         scale_size(range = range(streamline_width), guide = "none")
@@ -7064,7 +7173,7 @@ compute_velocity_on_grid <- function(X_emb, V_emb,
 #' @param aspect.ratio A numeric value specifying the aspect ratio of the plot. Default is `NULL`.
 #' @param xlab A character string specifying the x-axis label. Default is the value of `x_metric`.
 #' @param ylab A character string specifying the y-axis label. Default is "-log10(p-adjust)".
-#' @param theme_use A character string specifying the theme to use for the plot. Default is "theme_scp".
+#' @param theme_use A character string specifying the theme to use for the plot. Default is "theme_scop".
 #' @param theme_args A list of theme arguments to pass to the `theme_use` function. Default is an empty list.
 #' @param combine A logical value indicating whether to combine the plots for each group into a single plot. Default is `TRUE`.
 #' @param nrow An integer value specifying the number of rows in the combined plot. Default is `NULL`.
@@ -7090,7 +7199,7 @@ VolcanoPlot <- function(srt, group_by = NULL, test.use = "wilcox", DE_threshold 
                         cols.highlight = "black", sizes.highlight = 1, alpha.highlight = 1, stroke.highlight = 0.5,
                         nlabel = 5, features_label = NULL, label.fg = "black", label.bg = "white", label.bg.r = 0.1, label.size = 4,
                         aspect.ratio = NULL, xlab = x_metric, ylab = "-log10(p-adjust)",
-                        theme_use = "theme_scp", theme_args = list(),
+                        theme_use = "theme_scop", theme_args = list(),
                         combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE) {
   if (is.null(group_by)) {
     group_by <- "custom"
@@ -7171,7 +7280,7 @@ VolcanoPlot <- function(srt, group_by = NULL, test.use = "wilcox", DE_threshold 
       ) +
       labs(x = xlab, y = ylab) +
       scale_color_gradientn(
-        name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"), colors = palette_scp(palette = palette, palcolor = palcolor),
+        name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"), colors = palette_scop(palette = palette, palcolor = palcolor),
         values = rescale(unique(c(min(c(df[, color_by], 0), na.rm = TRUE), 0, max(df[, color_by], na.rm = TRUE)))),
         guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0, order = 1)
       ) +
@@ -7304,7 +7413,7 @@ heatmap_enrichment <- function(geneID, geneID_groups, feature_split_palette = "s
                                GO_simplify = FALSE, GO_simplify_cutoff = "p.adjust < 0.05", simplify_method = "Wang", simplify_similarityCutoff = 0.7,
                                pvalueCutoff = NULL, padjustCutoff = 0.05, topTerm = 5, show_termid = FALSE, topWord = 20, words_excluded = NULL) {
   res <- NULL
-  words_excluded <- words_excluded %||% SCP::words_excluded
+  words_excluded <- words_excluded %||% scop::words_excluded
 
   if (isTRUE(anno_keys) || isTRUE(anno_features) || isTRUE(anno_terms)) {
     if (isTRUE(flip)) {
@@ -7316,7 +7425,7 @@ heatmap_enrichment <- function(geneID, geneID_groups, feature_split_palette = "s
     if (!is.factor(geneID_groups)) {
       geneID_groups <- factor(geneID_groups, levels = unique(geneID_groups))
     }
-    fill_split <- palette_scp(levels(geneID_groups), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor)[levels(geneID_groups) %in% geneID_groups]
+    fill_split <- palette_scop(levels(geneID_groups), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor)[levels(geneID_groups) %in% geneID_groups]
     res <- RunEnrichment(
       geneID = geneID, geneID_groups = geneID_groups, IDtype = IDtype, species = species,
       db_update = db_update, db_version = db_version, db_combine = db_combine, convert_species = convert_species, Ensembl_version = Ensembl_version, mirror = mirror,
@@ -7376,7 +7485,7 @@ heatmap_enrichment <- function(geneID, geneID_groups, feature_split_palette = "s
                 terms <- capitalize(terms)
               }
               df_out <- data.frame(keyword = terms)
-              df_out[["col"]] <- palette_scp(-log10(head(df[, metric], topTerm)), type = "continuous", palette = "Spectral", matched = TRUE)
+              df_out[["col"]] <- palette_scop(-log10(head(df[, metric], topTerm)), type = "continuous", palette = "Spectral", matched = TRUE)
               df_out[["col"]] <- sapply(df_out[["col"]], function(x) blendcolors(c(x, "black")))
               df_out[["fontsize"]] <- rep(terms_fontsize, nrow(df_out))
               return(df_out)
@@ -7449,7 +7558,7 @@ heatmap_enrichment <- function(geneID, geneID_groups, feature_split_palette = "s
                 df <- df[head(order(df[["score"]], decreasing = TRUE), topWord), , drop = FALSE]
               }
               if (isTRUE(nrow(df) > 0)) {
-                df[["col"]] <- palette_scp(df[, "score"], type = "continuous", palette = "Spectral", matched = TRUE)
+                df[["col"]] <- palette_scop(df[, "score"], type = "continuous", palette = "Spectral", matched = TRUE)
                 df[["col"]] <- sapply(df[["col"]], function(x) blendcolors(c(x, "black")))
                 df[["fontsize"]] <- rescale(df[, "count"], to = keys_fontsize)
                 return(df)
@@ -7497,7 +7606,7 @@ heatmap_enrichment <- function(geneID, geneID_groups, feature_split_palette = "s
                 mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))) %>%
                 as.data.frame()
               df <- df[head(order(df[["score"]], decreasing = TRUE), topWord), , drop = FALSE]
-              df[["col"]] <- palette_scp(df[, "score"], type = "continuous", palette = "Spectral", matched = TRUE)
+              df[["col"]] <- palette_scop(df[, "score"], type = "continuous", palette = "Spectral", matched = TRUE)
               df[["col"]] <- sapply(df[["col"]], function(x) blendcolors(c(x, "black")))
               df[["fontsize"]] <- rescale(df[, "count"], to = features_fontsize)
               return(df)
@@ -8233,13 +8342,13 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
   if (is.null(limits)) {
     if (!is.function(exp_method) && exp_method %in% c("zscore", "log2fc")) {
       b <- ceiling(min(abs(quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)), na.rm = TRUE) * 2) / 2
-      colors <- colorRamp2(seq(-b, b, length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(-b, b, length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     } else {
       b <- quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
-      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     }
   } else {
-    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
   }
 
   cell_metadata <- cbind.data.frame(
@@ -8297,7 +8406,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
     if (cell_group != "All.groups") {
       funbody <- paste0(
         "
-        grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"), "')"), ",palette = '", group_palette[i], "',palcolor=c(", paste0("'", paste0(group_palcolor[[i]], collapse = "','"), "'"), "))[nm]))
+        grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"), "')"), ",palette = '", group_palette[i], "',palcolor=c(", paste0("'", paste0(group_palcolor[[i]], collapse = "','"), "'"), "))[nm]))
       "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -8314,14 +8423,14 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
       ha_top_list[[cell_group]] <- ha_cell_group
       #   lgd[[cell_group]] <- Legend(
       #     title = cell_group, labels = levels(srt@meta.data[[cell_group]]),
-      #     legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[cell_group]]), palette = group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
+      #     legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[cell_group]]), palette = group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
       #   )
     }
 
     if (!is.null(split.by)) {
       funbody <- paste0(
         "
-      grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt@meta.data[[split.by]]), collapse = "','"), "')"), ",palette = '", cell_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(cell_split_palcolor), collapse = "','"), "'"), "))[nm]))
+      grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt@meta.data[[split.by]]), collapse = "','"), "')"), ",palette = '", cell_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(cell_split_palcolor), collapse = "','"), "'"), "))[nm]))
     "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -8348,7 +8457,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
     if (cell_group != "All.groups") {
       lgd[[cell_group]] <- Legend(
         title = cell_group, labels = levels(srt@meta.data[[cell_group]]),
-        legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[cell_group]]), palette = raw.group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
+        legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[cell_group]]), palette = raw.group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
       )
     }
   }
@@ -8356,7 +8465,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
   if (!is.null(split.by)) {
     lgd[[split.by]] <- Legend(
       title = split.by, labels = levels(srt@meta.data[[split.by]]),
-      legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[split.by]]), palette = cell_split_palette, palcolor = cell_split_palcolor)), border = TRUE
+      legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[split.by]]), palette = cell_split_palette, palcolor = cell_split_palcolor)), border = TRUE
     )
   }
 
@@ -8426,7 +8535,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
         }
         lgd[[cellan]] <- Legend(
           title = cellan, labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         for (cell_group in group.by) {
@@ -8481,7 +8590,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
         }
         # lgd[[cellan]] <- Legend(
         #   title = cellan, labels = levels(cell_anno),
-        #   legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+        #   legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         # )
       }
     }
@@ -8570,7 +8679,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
     }
     funbody <- paste0(
       "
-      grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
+      grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
     "
     )
     funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -8594,7 +8703,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
     }
     lgd[["Cluster"]] <- Legend(
       title = "Cluster", labels = intersect(levels(row_split_raw), row_split_raw),
-      legend_gp = gpar(fill = palette_scp(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
+      legend_gp = gpar(fill = palette_scop(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
     )
   }
 
@@ -8682,7 +8791,7 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
           x = as.character(featan_values),
-          col = palette_scp(featan_values, palette = palette, palcolor = palcolor),
+          col = palette_scop(featan_values, palette = palette, palcolor = palcolor),
           na_col = "transparent",
           which = ifelse(flip, "column", "row"),
           border = TRUE
@@ -8697,12 +8806,12 @@ GroupHeatmap <- function(srt, features = NULL, group.by = NULL, split.by = NULL,
         }
         lgd[[featan]] <- Legend(
           title = featan, labels = levels(featan_values),
-          legend_gp = gpar(fill = palette_scp(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         col_fun <- colorRamp2(
           breaks = seq(min(featan_values, na.rm = TRUE), max(featan_values, na.rm = TRUE), length = 100),
-          colors = palette_scp(palette = palette, palcolor = palcolor)
+          colors = palette_scop(palette = palette, palcolor = palcolor)
         )
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
@@ -9378,13 +9487,13 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
   if (is.null(limits)) {
     if (!is.function(exp_method) && exp_method %in% c("zscore", "log2fc")) {
       b <- ceiling(min(abs(quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)), na.rm = TRUE) * 2) / 2
-      colors <- colorRamp2(seq(-b, b, length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(-b, b, length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     } else {
       b <- quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
-      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     }
   } else {
-    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
   }
 
   cell_metadata <- cbind.data.frame(
@@ -9423,7 +9532,7 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
     if (cell_group != "All.groups") {
       funbody <- paste0(
         "
-        grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"), "')"), ",palette = '", group_palette[i], "',palcolor=c(", paste0("'", paste0(group_palcolor[[i]], collapse = "','"), "'"), "))[nm]))
+        grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"), "')"), ",palette = '", group_palette[i], "',palcolor=c(", paste0("'", paste0(group_palcolor[[i]], collapse = "','"), "'"), "))[nm]))
       "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -9440,14 +9549,14 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
       ha_top_list[[cell_group]] <- ha_cell_group
       # lgd[[cell_group]] <- Legend(
       #   title = cell_group, labels = levels(srt@meta.data[[cell_group]]),
-      #   legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[cell_group]]), palette = group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
+      #   legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[cell_group]]), palette = group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
       # )
     }
 
     if (!is.null(split.by)) {
       funbody <- paste0(
         "
-      grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt@meta.data[[split.by]]), collapse = "','"), "')"), ",palette = '", cell_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(cell_split_palcolor), collapse = "','"), "'"), "))[nm]))
+      grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt@meta.data[[split.by]]), collapse = "','"), "')"), ",palette = '", cell_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(cell_split_palcolor), collapse = "','"), "'"), "))[nm]))
     "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -9473,14 +9582,14 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
     if (cell_group != "All.groups") {
       lgd[[cell_group]] <- Legend(
         title = cell_group, labels = levels(srt@meta.data[[cell_group]]),
-        legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[cell_group]]), palette = raw.group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
+        legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[cell_group]]), palette = raw.group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
       )
     }
   }
   if (!is.null(split.by)) {
     lgd[[split.by]] <- Legend(
       title = split.by, labels = levels(srt@meta.data[[split.by]]),
-      legend_gp = gpar(fill = palette_scp(levels(srt@meta.data[[split.by]]), palette = cell_split_palette, palcolor = cell_split_palcolor)), border = TRUE
+      legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[split.by]]), palette = cell_split_palette, palcolor = cell_split_palcolor)), border = TRUE
     )
   }
 
@@ -9501,7 +9610,7 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
             x = as.character(cell_anno[names(cell_groups[[cell_group]])]),
-            col = palette_scp(cell_anno, palette = palette, palcolor = palcolor),
+            col = palette_scop(cell_anno, palette = palette, palcolor = palcolor),
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
             border = TRUE
@@ -9521,12 +9630,12 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
         }
         lgd[[cellan]] <- Legend(
           title = cellan, labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         col_fun <- colorRamp2(
           breaks = seq(min(cell_anno, na.rm = TRUE), max(cell_anno, na.rm = TRUE), length = 100),
-          colors = palette_scp(palette = palette, palcolor = palcolor)
+          colors = palette_scop(palette = palette, palcolor = palcolor)
         )
         for (cell_group in group.by) {
           ha_cell <- list()
@@ -9639,7 +9748,7 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
     }
     funbody <- paste0(
       "
-      grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
+      grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
     "
     )
     funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -9663,7 +9772,7 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
     }
     lgd[["Cluster"]] <- Legend(
       title = "Cluster", labels = intersect(levels(row_split_raw), row_split_raw),
-      legend_gp = gpar(fill = palette_scp(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
+      legend_gp = gpar(fill = palette_scop(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
     )
   }
 
@@ -9752,7 +9861,7 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
           x = as.character(featan_values),
-          col = palette_scp(featan_values, palette = palette, palcolor = palcolor),
+          col = palette_scop(featan_values, palette = palette, palcolor = palcolor),
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
           border = TRUE
@@ -9767,12 +9876,12 @@ FeatureHeatmap <- function(srt, features = NULL, cells = NULL, group.by = NULL, 
         }
         lgd[[featan]] <- Legend(
           title = featan, labels = levels(featan_values),
-          legend_gp = gpar(fill = palette_scp(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         col_fun <- colorRamp2(
           breaks = seq(min(featan_values, na.rm = TRUE), max(featan_values, na.rm = TRUE), length = 100),
-          colors = palette_scp(palette = palette, palcolor = palcolor)
+          colors = palette_scop(palette = palette, palcolor = palcolor)
         )
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
@@ -10066,7 +10175,7 @@ FeatureCorHeatmap <- function(srt, features, cells) {
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' ht1 <- CellCorHeatmap(srt_query = pancreas_sub, query_group = "SubCellType")
 #' ht1$plot
 #'
@@ -10284,9 +10393,9 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
     cluster_columns <- cluster_rows_raw
   }
   if (is.null(limits)) {
-    colors <- colorRamp2(seq(min(simil_matrix, na.rm = TRUE), max(simil_matrix, na.rm = TRUE), length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+    colors <- colorRamp2(seq(min(simil_matrix, na.rm = TRUE), max(simil_matrix, na.rm = TRUE), length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
   } else {
-    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
   }
 
   cell_metadata <- data.frame(
@@ -10317,7 +10426,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
     } else {
       funbody <- paste0(
         "
-        grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt_query[[query_group, drop = TRUE]]), collapse = "','"), "')"), ",palette = '", query_group_palette, "',palcolor=c(", paste0("'", paste0(query_group_palcolor, collapse = "','"), "'"), "))[nm]))
+        grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt_query[[query_group, drop = TRUE]]), collapse = "','"), "')"), ",palette = '", query_group_palette, "',palcolor=c(", paste0("'", paste0(query_group_palcolor, collapse = "','"), "'"), "))[nm]))
       "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -10343,7 +10452,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
       ha_query_list[[paste0(c("Query", query_group), collapse = ":")]] <- ha_cell_group
       lgd[[paste0(c("Query", query_group), collapse = ":")]] <- Legend(
         title = paste0(c("Query", query_group), collapse = ":"), labels = levels(srt_query[[query_group, drop = TRUE]]),
-        legend_gp = gpar(fill = palette_scp(levels(srt_query[[query_group, drop = TRUE]]), palette = query_group_palette, palcolor = query_group_palcolor)), border = TRUE
+        legend_gp = gpar(fill = palette_scop(levels(srt_query[[query_group, drop = TRUE]]), palette = query_group_palette, palcolor = query_group_palcolor)), border = TRUE
       )
     }
   }
@@ -10357,7 +10466,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
     } else {
       funbody <- paste0(
         "
-        grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(srt_ref[[ref_group, drop = TRUE]]), collapse = "','"), "')"), ",palette = '", ref_group_palette, "',palcolor=c(", paste0("'", paste0(ref_group_palcolor, collapse = "','"), "'"), "))[nm]))
+        grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(srt_ref[[ref_group, drop = TRUE]]), collapse = "','"), "')"), ",palette = '", ref_group_palette, "',palcolor=c(", paste0("'", paste0(ref_group_palcolor, collapse = "','"), "'"), "))[nm]))
       "
       )
       funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -10383,7 +10492,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
       ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- ha_cell_group
       lgd[[paste0(c("Ref", ref_group), collapse = ":")]] <- Legend(
         title = paste0(c("Ref", ref_group), collapse = ":"), labels = levels(srt_ref[[ref_group, drop = TRUE]]),
-        legend_gp = gpar(fill = palette_scp(levels(srt_ref[[ref_group, drop = TRUE]]), palette = ref_group_palette, palcolor = ref_group_palcolor)), border = TRUE
+        legend_gp = gpar(fill = palette_scop(levels(srt_ref[[ref_group, drop = TRUE]]), palette = ref_group_palette, palcolor = ref_group_palcolor)), border = TRUE
       )
     }
   }
@@ -10455,7 +10564,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
             x = as.character(cell_anno[paste0("query_", names(cell_groups[["query_group"]]))]),
-            col = palette_scp(cell_anno, palette = palette, palcolor = palcolor),
+            col = palette_scop(cell_anno, palette = palette, palcolor = palcolor),
             which = ifelse(flip, "column", "row"),
             na_col = "transparent",
             border = TRUE
@@ -10475,7 +10584,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
         }
         lgd[[paste0(c("Query", cellan), collapse = ":")]] <- Legend(
           title = paste0(c("Query", cellan), collapse = ":"), labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         if (isTRUE(query_collapsing)) {
@@ -10531,7 +10640,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
         } else {
           col_fun <- colorRamp2(
             breaks = seq(min(cell_anno, na.rm = TRUE), max(cell_anno, na.rm = TRUE), length = 100),
-            colors = palette_scp(palette = palette, palcolor = palcolor)
+            colors = palette_scop(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
@@ -10628,7 +10737,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
             x = as.character(cell_anno[paste0("ref_", names(cell_groups[["ref_group"]]))]),
-            col = palette_scp(cell_anno, palette = palette, palcolor = palcolor),
+            col = palette_scop(cell_anno, palette = palette, palcolor = palcolor),
             which = ifelse(!flip, "column", "row"),
             na_col = "transparent",
             border = TRUE
@@ -10648,7 +10757,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
         }
         lgd[[paste0(c("Ref", cellan), collapse = ":")]] <- Legend(
           title = paste0(c("Ref", cellan), collapse = ":"), labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         if (isTRUE(ref_collapsing)) {
@@ -10704,7 +10813,7 @@ CellCorHeatmap <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
         } else {
           col_fun <- colorRamp2(
             breaks = seq(min(cell_anno, na.rm = TRUE), max(cell_anno, na.rm = TRUE), length = 100),
-            colors = palette_scp(palette = palette, palcolor = palcolor)
+            colors = palette_scop(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
@@ -11321,13 +11430,13 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
   if (is.null(limits)) {
     if (!is.function(exp_method) && exp_method %in% c("zscore", "log2fc")) {
       b <- ceiling(min(abs(quantile(mat, c(0.01, 0.99), na.rm = TRUE)), na.rm = TRUE) * 2) / 2
-      colors <- colorRamp2(seq(-b, b, length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(-b, b, length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     } else {
       b <- quantile(mat, c(0.01, 0.99), na.rm = TRUE)
-      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+      colors <- colorRamp2(seq(b[1], b[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
     }
   } else {
-    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scp(palette = heatmap_palette, palcolor = heatmap_palcolor))
+    colors <- colorRamp2(seq(limits[1], limits[2], length = 100), palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor))
   }
 
   lgd <- list()
@@ -11337,7 +11446,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
   pseudotime <- na.omit(unlist(cell_metadata[, lineages]))
   pseudotime_col <- colorRamp2(
     breaks = seq(min(pseudotime, na.rm = TRUE), max(pseudotime, na.rm = TRUE), length = 100),
-    colors = palette_scp(palette = pseudotime_palette, palcolor = pseudotime_palcolor)
+    colors = palette_scop(palette = pseudotime_palette, palcolor = pseudotime_palcolor)
   )
   for (l in lineages) {
     ha_top_list[[l]] <- HeatmapAnnotation(
@@ -11370,7 +11479,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
           ha_cell <- list()
           ha_cell[[cellan]] <- anno_simple(
             x = as.character(cell_anno[lineage_cells]),
-            col = palette_scp(cell_anno, palette = palette, palcolor = palcolor),
+            col = palette_scop(cell_anno, palette = palette, palcolor = palcolor),
             which = ifelse(flip, "row", "column"),
             na_col = "transparent",
             border = TRUE
@@ -11386,12 +11495,12 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
         }
         lgd[[cellan]] <- Legend(
           title = cellan, labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         col_fun <- colorRamp2(
           breaks = seq(min(cell_anno, na.rm = TRUE), max(cell_anno, na.rm = TRUE), length = 100),
-          colors = palette_scp(palette = palette, palcolor = palcolor)
+          colors = palette_scop(palette = palette, palcolor = palcolor)
         )
         for (l in lineages) {
           lineage_cells <- gsub(pattern = l, replacement = "", x = cell_order_list[[l]])
@@ -11479,7 +11588,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
         }
         lgd[[paste0("separate:", cellan)]] <- Legend(
           title = paste0(cellan, "\n(separate)"), labels = levels(cell_anno),
-          legend_gp = gpar(fill = palette_scp(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         for (l in lineages) {
@@ -11525,7 +11634,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
         }
         lgd[[paste0("separate:", paste0(cellan, collapse = ","))]] <- Legend(
           title = "Features\n(separate)", labels = cellan,
-          legend_gp = gpar(fill = palette_scp(cellan, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(cellan, palette = palette, palcolor = palcolor)), border = TRUE
         )
       }
     }
@@ -11621,7 +11730,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
     }
     funbody <- paste0(
       "
-      grid.rect(gp = gpar(fill = palette_scp(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
+      grid.rect(gp = gpar(fill = palette_scop(", paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"), ",palette = '", feature_split_palette, "',palcolor=c(", paste0("'", paste0(unlist(feature_split_palcolor), collapse = "','"), "'"), "))[nm]))
     "
     )
     funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
@@ -11645,7 +11754,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
     }
     lgd[["Cluster"]] <- Legend(
       title = "Cluster", labels = intersect(levels(row_split_raw), row_split_raw),
-      legend_gp = gpar(fill = palette_scp(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
+      legend_gp = gpar(fill = palette_scop(intersect(levels(row_split_raw), row_split_raw), type = "discrete", palette = feature_split_palette, palcolor = feature_split_palcolor, matched = TRUE)), border = TRUE
     )
   }
 
@@ -11751,7 +11860,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
           x = as.character(featan_values),
-          col = palette_scp(featan_values, palette = palette, palcolor = palcolor),
+          col = palette_scop(featan_values, palette = palette, palcolor = palcolor),
           which = ifelse(flip, "column", "row"),
           na_col = "transparent",
           border = TRUE
@@ -11766,12 +11875,12 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
         }
         lgd[[featan]] <- Legend(
           title = featan, labels = levels(featan_values),
-          legend_gp = gpar(fill = palette_scp(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
+          legend_gp = gpar(fill = palette_scop(featan_values, palette = palette, palcolor = palcolor)), border = TRUE
         )
       } else {
         col_fun <- colorRamp2(
           breaks = seq(min(featan_values, na.rm = TRUE), max(featan_values, na.rm = TRUE), length = 100),
-          colors = palette_scp(palette = palette, palcolor = palcolor)
+          colors = palette_scop(palette = palette, palcolor = palcolor)
         )
         ha_feature <- list()
         ha_feature[[featan]] <- anno_simple(
@@ -12054,7 +12163,7 @@ DynamicHeatmap <- function(srt, lineages, features = NULL, use_fitted = FALSE, b
 #' @param aspect.ratio A numeric specifying the aspect ratio of the plot. Default is NULL.
 #' @param legend.position A character string specifying the position of the legend in the plot. Default is "right".
 #' @param legend.direction A character string specifying the direction of the legend in the plot. Default is "vertical".
-#' @param theme_use A character string specifying the name of the theme to use for the plot. Default is "theme_scp".
+#' @param theme_use A character string specifying the name of the theme to use for the plot. Default is "theme_scop".
 #' @param theme_args A list specifying the arguments to pass to the theme function. Default is list().
 #' @param combine A boolean specifying whether to combine multiple plots into a single plot. Default is TRUE.
 #' @param nrow A numeric specifying the number of rows in the combined plot. Default is NULL.
@@ -12107,7 +12216,7 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
                         add_rug = TRUE, flip = FALSE, reverse = FALSE, x_order = c("value", "rank"),
                         aspect.ratio = NULL,
                         legend.position = "right", legend.direction = "vertical",
-                        theme_use = "theme_scp", theme_args = list(),
+                        theme_use = "theme_scop", theme_args = list(),
                         combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, seed = 11) {
   set.seed(seed)
 
@@ -12341,10 +12450,10 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
             raw_point <- list(
               geom_point(data = df_point, mapping = aes(x = .data[["x_assign"]], y = .data[["exp"]], color = .data[[group.by]]), size = pt.size, alpha = 0.8),
               scale_color_manual(
-                values = palette_scp(df[[group.by]], palette = point_palette, palcolor = point_palcolor)
+                values = palette_scop(df[[group.by]], palette = point_palette, palcolor = point_palcolor)
               ),
               scale_fill_manual(
-                values = palette_scp(df[[group.by]], palette = point_palette, palcolor = point_palcolor),
+                values = palette_scop(df[[group.by]], palette = point_palette, palcolor = point_palcolor),
                 guide = guide_legend(override.aes = list(alpha = 1, size = 3), order = 1)
               ),
               new_scale_color(),
@@ -12362,7 +12471,7 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
           rug <- list(
             geom_rug(data = df_point, mapping = aes(x = .data[["x_assign"]], color = .data[[group.by]]), alpha = 1, length = unit(0.05, "npc"), show.legend = isTRUE(compare_features)),
             scale_color_manual(
-              values = palette_scp(df[[group.by]], palette = point_palette, palcolor = point_palcolor)
+              values = palette_scop(df[[group.by]], palette = point_palette, palcolor = point_palcolor)
             ),
             new_scale_color()
           )
@@ -12382,7 +12491,7 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
             alpha = 0.4, color = "grey90"
           ),
           scale_fill_manual(
-            values = palette_scp(df[[fill_by]], palette = line_palette, palcolor = line_palcolor),
+            values = palette_scop(df[[fill_by]], palette = line_palette, palcolor = line_palcolor),
             guide = if (fill_by == "Features" || lineages_guide || length(l) == 1) "none" else guide_legend()
           ),
           new_scale_fill()
@@ -12401,7 +12510,7 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
             linewidth = line.size, alpha = 0.8
           ),
           scale_color_manual(
-            values = palette_scp(df[["Features"]], palette = line_palette, palcolor = line_palcolor),
+            values = palette_scop(df[["Features"]], palette = line_palette, palcolor = line_palcolor),
             guide = if (features_guide) guide_legend(override.aes = list(alpha = 1, size = 2), order = 2) else "none"
           ),
           new_scale_color()
@@ -12414,7 +12523,7 @@ DynamicPlot <- function(srt, lineages, features, group.by = NULL, cells = NULL, 
               mapping = aes(x = .data[["Pseudotime"]], y = .data[["exp"]], color = .data[["Lineages"]], group = .data[["LineagesFeatures"]]), linewidth = line.size, alpha = 0.8
             ),
             scale_color_manual(
-              values = palette_scp(df[["Lineages"]], palette = line_palette, palcolor = line_palcolor),
+              values = palette_scop(df[["Lineages"]], palette = line_palette, palcolor = line_palcolor),
               guide = if (lineages_guide) guide_legend(override.aes = list(alpha = 1, size = 2), order = 2) else "none"
             ),
             new_scale_color()
@@ -12494,7 +12603,7 @@ GroupTreePlot <- function() {
 #' data("panc8_sub")
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-#' srt_ref <- Integration_SCP(srt_ref, batch = "tech", integration_method = "Seurat")
+#' srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
 #' CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 #'
 #' # Projection
@@ -12605,7 +12714,7 @@ ProjectionPlot <- function(srt_query, srt_ref,
 #' @param topWord The number of top words to display for wordcloud. Default is 100.
 #' @param word_type The type of words to display in wordcloud. Options are "term" and "feature". Default is "term".
 #' @param word_size The size range for words in wordcloud. Default is c(2, 8).
-#' @param words_excluded Words to be excluded from the wordcloud. The default value is NULL, which means that the built-in words (SCP::words_excluded) will be used.
+#' @param words_excluded Words to be excluded from the wordcloud. The default value is NULL, which means that the built-in words (scop::words_excluded) will be used.
 #' @param network_layout The layout algorithm to use for network plot. Options are "fr", "kk","random", "circle", "tree", "grid", or other algorithm from 'igraph' package. Default is "fr".
 #' @param network_labelsize The label size for network plot. Default is 5.
 #' @param network_blendmode The blend mode for network plot. Default is "blend".
@@ -12627,7 +12736,7 @@ ProjectionPlot <- function(srt_query, srt_ref,
 #' @param aspect.ratio The aspect ratio of the plot. Default is 1.
 #' @param legend.position The position of the legend. Default is "right".
 #' @param legend.direction The direction of the legend. Default is "vertical".
-#' @param theme_use The theme to use for the plot. Default is "theme_scp".
+#' @param theme_use The theme to use for the plot. Default is "theme_scop".
 #' @param theme_args The arguments to pass to the theme. Default is an empty list.
 #' @param combine Whether to combine multiple plots into a single plot. Default is TRUE.
 #' @param nrow The number of rows in the combined plot. Default is NULL, calculated based on the number of plots.
@@ -12737,14 +12846,14 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
                            character_width = 50, lineheight = 0.5,
                            palette = "Spectral", palcolor = NULL,
                            aspect.ratio = 1, legend.position = "right", legend.direction = "vertical",
-                           theme_use = "theme_scp", theme_args = list(),
+                           theme_use = "theme_scop", theme_args = list(),
                            combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, seed = 11) {
   set.seed(seed)
   plot_type <- match.arg(plot_type)
   word_type <- match.arg(word_type)
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
-  words_excluded <- words_excluded %||% SCP::words_excluded
+  words_excluded <- words_excluded %||% scop::words_excluded
 
   if (any(!split_by %in% c("Database", "Groups"))) {
     stop("'split_by' must be either 'Database', 'Groups', or both of them")
@@ -12875,7 +12984,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
         name = paste0(metric),
         limits = c(0, min(metric_value, 1)),
         n.breaks = 3,
-        colors = palette_scp(palette = palette, palcolor = palcolor, reverse = TRUE),
+        colors = palette_scop(palette = palette, palcolor = palcolor, reverse = TRUE),
         na.value = "grey80",
         guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0, order = 2)
       ) +
@@ -12919,7 +13028,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
         geom_text(hjust = -0.5, size = 3.5) +
         labs(x = "", y = paste0("-log10(", metric, ")")) +
         scale_fill_manual(
-          values = palette_scp(levels(df[[color_by]]), palette = palette, palcolor = palcolor),
+          values = palette_scop(levels(df[[color_by]]), palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = "none"
         ) +
@@ -12969,7 +13078,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_scp(palette = palette, palcolor = palcolor),
+          colors = palette_scop(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0)
         ) +
@@ -13036,7 +13145,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_scp(palette = palette, palcolor = palcolor),
+          colors = palette_scop(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0),
           aesthetics = c("color", "fill")
@@ -13112,7 +13221,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
-      colors <- palette_scp(levels(df[["Description"]]), palette = palette, palcolor = palcolor)
+      colors <- palette_scop(levels(df[["Description"]]), palette = palette, palcolor = palcolor)
       df_edges[["color"]] <- colors[df_edges$from]
       node_colors <- aggregate(df_unnest$Description, by = list(df_unnest$geneID), FUN = function(x) blendcolors(colors = colors[x], mode = network_blendmode))
       colors <- c(colors, setNames(node_colors[, 2], node_colors[, 1]))
@@ -13312,7 +13421,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
             "term" = "Feature:",
             "feature" = "Term:"
           ),
-          values = palette_scp(levels(df_nodes[["clusters"]]), palette = palette, palcolor = palcolor),
+          values = palette_scop(levels(df_nodes[["clusters"]]), palette = palette, palcolor = palcolor),
           labels = if (enrichmap_label == "term") df_keyword2[levels(df_nodes[["clusters"]]), "label"] else df_keyword1[levels(df_nodes[["clusters"]]), "label"],
           na.value = "grey80",
           aesthetics = c("colour", "fill")
@@ -13403,7 +13512,7 @@ EnrichmentPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilco
           as.data.frame()
         df <- df[head(order(df[["score"]], decreasing = TRUE), topWord), , drop = FALSE]
       }
-      colors <- palette_scp(df[["score"]], type = "continuous", palette = palette, palcolor = palcolor, matched = FALSE)
+      colors <- palette_scop(df[["score"]], type = "continuous", palette = palette, palcolor = palcolor, matched = FALSE)
       colors_value <- seq(min(df[["score"]], na.rm = TRUE), quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001, length.out = 100)
       p <- ggplot(df, aes(label = .data[["keyword"]], size = .data[["count"]], color = .data[["score"]], angle = .data[["angle"]])) +
         ggwordcloud::geom_text_wordcloud(rm_outside = TRUE, eccentricity = 1, shape = "square", show.legend = TRUE, grid_margin = 3) +
@@ -13575,7 +13684,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
                      character_width = 50, lineheight = 0.5,
                      palette = "Spectral", palcolor = NULL,
                      aspect.ratio = NULL, legend.position = "right", legend.direction = "vertical",
-                     theme_use = "theme_scp", theme_args = list(),
+                     theme_use = "theme_scop", theme_args = list(),
                      combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, seed = 11) {
   set.seed(seed)
   plot_type <- match.arg(plot_type)
@@ -13583,7 +13692,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
   direction <- match.arg(direction)
   enrichmap_label <- match.arg(enrichmap_label)
   enrichmap_mark <- match.arg(enrichmap_mark)
-  words_excluded <- words_excluded %||% SCP::words_excluded
+  words_excluded <- words_excluded %||% scop::words_excluded
 
   subplots <- 1:3
   rel_heights <- c(1.5, 0.5, 1)
@@ -13714,7 +13823,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
         name = "NES",
         n.breaks = 4,
         limits = c(-max(abs(enrichment_sub[["NES"]])), max(abs(enrichment_sub[["NES"]]))),
-        colors = palette_scp(palette = palette, palcolor = palcolor),
+        colors = palette_scop(palette = palette, palcolor = palcolor),
         guide = guide_colorbar(frame.colour = "black", ticks.colour = "black", title.hjust = 0, order = 1)
       ) +
       scale_color_manual(
@@ -13961,7 +14070,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
         p1 <- p1 + ggtitle(gsdata$Description[1], subtitle = subtitle_use)
       }
       if (length(line_color) != length(geneSetID_use)) {
-        color_use <- palette_scp(levels(gsdata$DescriptionP), palette = palette, palcolor = palcolor)
+        color_use <- palette_scop(levels(gsdata$DescriptionP), palette = palette, palcolor = palcolor)
       } else {
         color_use <- line_color
       }
@@ -14062,7 +14171,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
           fontface = ifelse(grepl("\n", levels(stat[["Description"]])), "italic", "plain")
         ) +
         scale_fill_manual(
-          values = palette_scp(x = rev(levels(stat[["Direction"]])), palette = palette, palcolor = rev(palcolor)),
+          values = palette_scop(x = rev(levels(stat[["Direction"]])), palette = palette, palcolor = rev(palcolor)),
           guide = if (direction == "both") guide_legend(order = 1) else guide_none()
         ) +
         facet_grid(Database ~ Groups, scales = "free") +
@@ -14165,7 +14274,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
-      colors <- palette_scp(levels(df[["Description"]]), palette = palette, palcolor = palcolor)
+      colors <- palette_scop(levels(df[["Description"]]), palette = palette, palcolor = palcolor)
       df_edges[["color"]] <- colors[df_edges$from]
       node_colors <- aggregate(df_unnest$Description, by = list(df_unnest$geneID), FUN = function(x) blendcolors(colors = colors[x], mode = network_blendmode))
       colors <- c(colors, setNames(node_colors[, 2], node_colors[, 1]))
@@ -14393,7 +14502,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
             "term" = "Feature:",
             "feature" = "Term:"
           ),
-          values = palette_scp(levels(df_nodes[["clusters"]]), palette = palette, palcolor = palcolor),
+          values = palette_scop(levels(df_nodes[["clusters"]]), palette = palette, palcolor = palcolor),
           labels = if (enrichmap_label == "term") df_keyword2[levels(df_nodes[["clusters"]]), "label"] else df_keyword1[levels(df_nodes[["clusters"]]), "label"],
           na.value = "grey80",
           aesthetics = c("colour", "fill")
@@ -14508,7 +14617,7 @@ GSEAPlot <- function(srt, db = "GO_BP", group_by = NULL, test.use = "wilcox", re
           as.data.frame()
         df <- df[head(order(df[["score"]], decreasing = TRUE), topWord), , drop = FALSE]
       }
-      colors <- palette_scp(df[["score"]], type = "continuous", palette = palette, palcolor = palcolor, matched = FALSE)
+      colors <- palette_scop(df[["score"]], type = "continuous", palette = palette, palcolor = palcolor, matched = FALSE)
       colors_value <- seq(min(df[["score"]], na.rm = TRUE), quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001, length.out = 100)
       p <- ggplot(df, aes(label = .data[["keyword"]], size = .data[["count"]], color = .data[["score"]], angle = .data[["angle"]])) +
         ggwordcloud::geom_text_wordcloud(rm_outside = TRUE, eccentricity = 1, shape = "square", show.legend = TRUE, grid_margin = 3) +

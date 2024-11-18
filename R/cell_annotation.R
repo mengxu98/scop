@@ -7,7 +7,7 @@ NULL
 #'
 #' @param srt_query An object of class Seurat to be annotated with cell types.
 #' @param srt_ref An object of class Seurat storing the reference cells.
-#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows, for example, SCP::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.
+#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows, for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.
 #' @param query_group A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.
 #' @param ref_group A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.
 #' @param query_assay A character vector specifying the assay to be used for the query data. Defaults to the default assay of the `srt_query` object.
@@ -35,7 +35,7 @@ NULL
 #' # Annotate cells using bulk RNA-seq data
 #' data("pancreas_sub")
 #' data("ref_scMCA")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, bulk_ref = ref_scMCA)
 #' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
 #'
@@ -509,7 +509,7 @@ RunKNNPredict <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
 #'
 #' # Annotation
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunScmap(
 #'   srt_query = pancreas_sub, srt_ref = panc8_sub,
 #'   ref_group = "celltype", method = "scmapCluster"
@@ -637,7 +637,7 @@ RunScmap <- function(srt_query, srt_ref, ref_group = NULL, query_assay = "RNA", 
 #'
 #' # Annotation
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSingleR(
 #'   srt_query = pancreas_sub, srt_ref = panc8_sub,
 #'   query_group = "Standardclusters", ref_group = "celltype",

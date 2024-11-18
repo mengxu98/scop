@@ -328,7 +328,7 @@ check_srtList <- function(srtList, batch, assay = NULL,
 #' @inheritParams check_srtList
 #' @param srtMerge A merged Seurat object that includes the batch information.
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @importFrom Seurat GetAssayData SplitObject SetAssayData VariableFeatures VariableFeatures<-
 #' @export
 check_srtMerge <- function(srtMerge, batch = NULL, assay = NULL,
@@ -1085,7 +1085,7 @@ DefaultReduction <- function(srt, pattern = NULL, min_dim = 2, max_distance = 0.
 
 #' Uncorrected_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #'
 #' @importFrom Seurat GetAssayData SetAssayData VariableFeatures VariableFeatures<-
 #' @export
@@ -1265,7 +1265,7 @@ Uncorrected_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, 
 
 #' Seurat_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function, default is an empty list.
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function, default is an empty list.
 #' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function, default is an empty list.
@@ -1560,7 +1560,7 @@ Seurat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
 
 #' scVI_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used. Options are "SCVI" and "PEAKVI". Default is "SCVI".
 #' @param SCVI_params A list of parameters for the SCVI model, default is an empty list.
@@ -1754,7 +1754,7 @@ scVI_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtList
 
 #' MNN_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function, default is an empty list.
 #'
 #' @importFrom Seurat CreateSeuratObject GetAssayData SetAssayData DefaultAssay DefaultAssay<- Embeddings FindNeighbors FindClusters Idents VariableFeatures VariableFeatures<-
@@ -1959,7 +1959,7 @@ MNN_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtList 
 
 #' fastMNN_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param fastMNN_dims_use A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param fastMNN_params A list of parameters for the batchelor::fastMNN function, default is an empty list.
 #'
@@ -2131,7 +2131,7 @@ fastMNN_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtL
 
 #' Harmony_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param Harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param RunHarmony_params A list of parameters for the harmony::RunHarmony function, default is an empty list.
 #'
@@ -2335,7 +2335,7 @@ Harmony_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtL
 
 #' Scanorama_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param return_corrected Logical indicating whether to return the corrected data. Default is FALSE.
 #' @param Scanorama_params A list of parameters for the scanorama.correct function, default is an empty list.
@@ -2531,7 +2531,7 @@ Scanorama_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, sr
 
 #' BBKNN_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
 #'
 #' @importFrom Seurat GetAssayData ScaleData SetAssayData DefaultAssay DefaultAssay<- as.Graph Embeddings FindClusters Idents VariableFeatures VariableFeatures<- as.sparse
@@ -2756,7 +2756,7 @@ BBKNN_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLis
 
 #' CSS_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function, default is an empty list.
 #'
@@ -2961,7 +2961,7 @@ CSS_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtList 
 
 #' LIGER_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param optimizeALS_params A list of parameters for the rliger::optimizeALS function, default is an empty list.
 #' @param quantilenorm_params A list of parameters for the rliger::quantile_norm function, default is an empty list.
@@ -3173,7 +3173,7 @@ LIGER_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLis
 
 #' Conos_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param buildGraph_params A list of parameters for the buildGraph function, default is an empty list.
 #' @param num_threads  An integer setting the number of threads for Conos, default is 2.
 #'
@@ -3387,7 +3387,7 @@ Conos_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLis
 
 #' Combat_integrate
 #'
-#' @inheritParams Integration_SCP
+#' @inheritParams Integration_scop
 #' @param ComBat_params A list of parameters for the sva::ComBat function, default is an empty list.
 #'
 #' @importFrom Seurat GetAssayData ScaleData SetAssayData DefaultAssay DefaultAssay<- SplitObject CreateAssayObject CreateDimReducObject Embeddings FindNeighbors FindClusters Idents
@@ -3582,7 +3582,7 @@ ComBat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
   }
 }
 
-#' Standard SCP
+#' Standard scop
 #'
 #' This function performs a standard single-cell analysis workflow.
 #'
@@ -3615,16 +3615,16 @@ ComBat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
 #'
 #' @return A \code{Seurat} object.
 #'
-#' @seealso \code{\link{Integration_SCP}}
+#' @seealso \code{\link{Integration_scop}}
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_SCP(pancreas_sub)
+#' pancreas_sub <- Standard_scop(pancreas_sub)
 #' CellDimPlot(pancreas_sub, group.by = "SubCellType")
 #'
 #' # Use a combination of different linear or non-linear dimension reduction methods
 #' linear_reductions <- c("pca", "ica", "nmf", "mds", "glmpca")
-#' pancreas_sub <- Standard_SCP(
+#' pancreas_sub <- Standard_scop(
 #'   pancreas_sub,
 #'   linear_reduction = linear_reductions,
 #'   nonlinear_reduction = "umap"
@@ -3641,7 +3641,7 @@ ComBat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
 #' patchwork::wrap_plots(plotlist = plist1)
 #'
 #' nonlinear_reductions <- c("umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr")
-#' pancreas_sub <- Standard_SCP(
+#' pancreas_sub <- Standard_scop(
 #'   pancreas_sub,
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = nonlinear_reductions
@@ -3660,7 +3660,7 @@ ComBat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
 #' @importFrom Seurat Assays GetAssayData NormalizeData SCTransform SCTResults ScaleData SetAssayData DefaultAssay DefaultAssay<- FindNeighbors FindClusters Idents VariableFeatures VariableFeatures<-
 #' @importFrom Matrix rowSums
 #' @export
-Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
+Standard_scop <- function(srt, prefix = "Standard", assay = NULL,
                          do_normalization = NULL, normalization_method = "LogNormalize",
                          do_HVF_finding = TRUE, HVF_method = "vst", nHVF = 2000, HVF = NULL,
                          do_scaling = TRUE, vars_to_regress = NULL, regression_model = "linear",
@@ -3696,7 +3696,7 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
   time_start <- Sys.time()
   set.seed(seed)
 
-  cat(paste0("[", time_start, "] ", "Start Standard_SCP\n"))
+  cat(paste0("[", time_start, "] ", "Start Standard_scop\n"))
 
   checked <- check_srtList(
     srtList = list(srt), batch = "", assay = assay,
@@ -3807,19 +3807,19 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
   VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   time_end <- Sys.time()
-  cat(paste0("[", time_end, "] ", "Standard_SCP done\n"))
+  cat(paste0("[", time_end, "] ", "Standard_scop done\n"))
   cat("Elapsed time:", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S"), "\n")
 
   return(srt)
 }
 
-#' Integration_SCP
+#' Integration_scop
 #'
 #' Integrate single-cell RNA-seq data using various integration methods.
 #'
 #' @inheritParams check_srtList
 #' @inheritParams check_srtMerge
-#' @inheritParams Standard_SCP
+#' @inheritParams Standard_scop
 #' @param scale_within_batch  Whether to scale data within each batch. Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.
 #' @param integration_method  A character string specifying the integration method to use.
 #'   Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"}, \code{"Harmony"},
@@ -3829,37 +3829,37 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
 #'
 #' @return A \code{Seurat} object.
 #'
-#' @seealso \code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{Standard_SCP}}
+#' @seealso \code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{Standard_scop}}
 #'
 #' @examples
 #' data("panc8_sub")
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Uncorrected"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Uncorrected",
 #'   HVF_min_intersection = 5
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Uncorrected",
 #'   HVF_min_intersection = 5, scale_within_batch = TRUE
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Seurat"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Seurat",
 #'   FindIntegrationAnchors_params = list(reduction = "rpca")
@@ -3872,7 +3872,7 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
 #'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
 #' )
 #' for (method in integration_methods) {
-#'   panc8_sub <- Integration_SCP(
+#'   panc8_sub <- Integration_scop(
 #'     srtMerge = panc8_sub, batch = "tech",
 #'     integration_method = method,
 #'     linear_reduction_dims_use = 1:50,
@@ -3887,7 +3887,7 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
 #' }
 #'
 #' nonlinear_reductions <- c("umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr")
-#' panc8_sub <- Integration_SCP(
+#' panc8_sub <- Integration_scop(
 #'   srtMerge = panc8_sub, batch = "tech",
 #'   integration_method = "Seurat",
 #'   linear_reduction_dims_use = 1:50,
@@ -3904,7 +3904,7 @@ Standard_SCP <- function(srt, prefix = "Standard", assay = NULL,
 #' }
 #'
 #' @export
-Integration_SCP <- function(srtMerge = NULL, batch, append = TRUE, srtList = NULL, assay = NULL,
+Integration_scop <- function(srtMerge = NULL, batch, append = TRUE, srtList = NULL, assay = NULL,
                             integration_method = "Uncorrected",
                             do_normalization = NULL, normalization_method = "LogNormalize",
                             do_HVF_finding = TRUE, HVF_source = "separate", HVF_method = "vst", nHVF = 2000, HVF_min_intersection = 1, HVF = NULL,

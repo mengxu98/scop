@@ -1,15 +1,15 @@
 
-# SCP: Single-Cell Pipeline
+# scop: Single-Cell Omics analysis Pipeline
 
 <!-- badges: start -->
 
-[![version](https://img.shields.io/github/r-package/v/zhanghao-njmu/SCP)](https://github.com/zhanghao-njmu/SCP)
-[![codesize](https://img.shields.io/github/languages/code-size/zhanghao-njmu/SCP.svg)](https://github.com/zhanghao-njmu/SCP)
-[![license](https://img.shields.io/github/license/zhanghao-njmu/SCP)](https://github.com/zhanghao-njmu/SCP)
+[![version](https://img.shields.io/github/r-package/v/mengxu98/scop)](https://github.com/mengxu98/scop)
+[![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop)
+[![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop)
 
 <!-- badges: end -->
 
-SCP provides a comprehensive set of tools for single-cell data
+scop provides a comprehensive set of tools for single-cell data
 processing and downstream analysis.
 
 The package includes the following facilities:
@@ -46,7 +46,7 @@ The package includes the following facilities:
   app](https://shiny.rstudio.com/) that provides an interactive
   visualization interface.
 
-The functions in the SCP package are all developed around the [Seurat
+The functions in the scop package are all developed around the [Seurat
 object](https://github.com/mojaveazure/seurat-object) and are compatible
 with other Seurat functions.
 
@@ -56,45 +56,45 @@ with other Seurat functions.
 
 ## Installation in the global R environment
 
-You can install the latest version of SCP from
-[GitHub](https://github.com/zhanghao-njmu/SCP) with:
+You can install the latest version of scop from
+[GitHub](https://github.com/mengxu98/scop) with:
 
 ``` r
 if (!require("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
-devtools::install_github("zhanghao-njmu/SCP")
+devtools::install_github("mengxu98/scop")
 ```
 
-#### Create a python environment for SCP
+#### Create a python environment for scop
 
-To run functions such as `RunPAGA` or `RunSCVELO`, SCP requires
+To run functions such as `RunPAGA` or `RunSCVELO`, scop requires
 [conda](https://docs.conda.io/en/latest/miniconda.html) to create a
 separate python environment. The default environment name is
-`"SCP_env"`. You can specify the environment name for SCP by setting
-`options(SCP_env_name="new_name")`
+`"scop_env"`. You can specify the environment name for scop by setting
+`options(scop_env_name="new_name")`
 
 Now, you can run `PrepareEnv()` to create the python environment for
-SCP. If the conda binary is not found, it will automatically download
+scop. If the conda binary is not found, it will automatically download
 and install miniconda.
 
 ``` r
-SCP::PrepareEnv()
+scop::PrepareEnv()
 ```
 
-To force SCP to use a specific conda binary, it is recommended to set
+To force scop to use a specific conda binary, it is recommended to set
 `reticulate.conda_binary` R option:
 
 ``` r
 options(reticulate.conda_binary = "/path/to/conda")
-SCP::PrepareEnv()
+scop::PrepareEnv()
 ```
 
 If the download of miniconda or pip packages is slow, you can specify
 the miniconda repo and PyPI mirror according to your network region.
 
 ``` r
-SCP::PrepareEnv(
+scop::PrepareEnv(
   miniconda_repo = "https://mirrors.bfsu.edu.cn/anaconda/miniconda",
   pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
 )
@@ -140,7 +140,7 @@ Available PyPI mirrors:
 
 If you do not want to change your current R environment or require
 reproducibility, you can use the [renv](https://rstudio.github.io/renv/)
-package to install SCP into an isolated R environment.
+package to install scop into an isolated R environment.
 
 #### Create an isolated R environment
 
@@ -148,84 +148,73 @@ package to install SCP into an isolated R environment.
 if (!require("renv", quietly = TRUE)) {
   install.packages("renv")
 }
-dir.create("~/SCP_env", recursive = TRUE) # It cannot be the home directory "~" !
-renv::init(project = "~/SCP_env", bare = TRUE, restart = TRUE)
+dir.create("~/scop_env", recursive = TRUE) # It cannot be the home directory "~" !
+renv::init(project = "~/scop_env", bare = TRUE, restart = TRUE)
 ```
 
-Option 1: Install SCP from GitHub and create SCP python environment
+Option 1: Install scop from GitHub and create scop python environment
 
 ``` r
-renv::activate(project = "~/SCP_env")
+renv::activate(project = "~/scop_env")
 renv::install("BiocManager")
-renv::install("zhanghao-njmu/SCP", repos = BiocManager::repositories())
-SCP::PrepareEnv()
+renv::install("mengxu98/scop", repos = BiocManager::repositories())
+scop::PrepareEnv()
 ```
 
-Option 2: If SCP is already installed in the global environment, copy
-SCP from the local library
+Option 2: If scop is already installed in the global environment, copy
+scop from the local library
 
 ``` r
-renv::activate(project = "~/SCP_env")
-renv::hydrate("SCP")
-SCP::PrepareEnv()
+renv::activate(project = "~/scop_env")
+renv::hydrate("scop")
+scop::PrepareEnv()
 ```
 
-#### Activate SCP environment first before use
+#### Activate scop environment first before use
 
 ``` r
-renv::activate(project = "~/SCP_env")
+renv::activate(project = "~/scop_env")
 
-library(SCP)
+library(scop)
 data("pancreas_sub")
 pancreas_sub <- RunPAGA(srt = pancreas_sub, group_by = "SubCellType", linear_reduction = "PCA", nonlinear_reduction = "UMAP")
 CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "draw_graph_fr")
 ```
 
-#### Save and restore the state of SCP environment
+#### Save and restore the state of scop environment
 
 ``` r
-renv::snapshot(project = "~/SCP_env")
-renv::restore(project = "~/SCP_env")
+renv::snapshot(project = "~/scop_env")
+renv::restore(project = "~/scop_env")
 ```
 
 ## Quick Start
 
-- [Data exploration](#data-exploration)
-
-- [CellQC](#cellqc)
-
-- [Standard pipeline](#standard-pipeline)
-
-- [Integration pipeline](#integration-pipeline)
-
-- [Cell projection between single-cell
-  datasets](#cell-projection-between-single-cell-datasets)
-
-- [Cell annotation using bulk RNA-seq
-  datasets](#cell-annotation-using-bulk-rna-seq-datasets)
-
-- [Cell annotation using single-cell
-  datasets](#cell-annotation-using-single-cell-datasets)
-
-- [PAGA analysis](#paga-analysis)
-
-- [Velocity analysis](#velocity-analysis)
-
-- [Differential expression analysis](#differential-expression-analysis)
-
-- [Enrichment
-  analysis(over-representation)](#enrichment-analysisover-representation)
-
-- [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
-
-- [Trajectory inference](#trajectory-inference)
-
-- [Dynamic features](#dynamic-features)
-
-- [Interactive data visualization with
-  SCExplorer](#interactive-data-visualization-with-scexplorer)
-
-- [Other visualization examples](#other-visualization-examples)
+- [scop: Single-Cell Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
+  - [R version requirement](#r-version-requirement)
+  - [Installation in the global R environment](#installation-in-the-global-r-environment)
+      - [Create a python environment for scop](#create-a-python-environment-for-scop)
+  - [Installation in an isolated R environment using renv](#installation-in-an-isolated-r-environment-using-renv)
+      - [Create an isolated R environment](#create-an-isolated-r-environment)
+      - [Activate scop environment first before use](#activate-scop-environment-first-before-use)
+      - [Save and restore the state of scop environment](#save-and-restore-the-state-of-scop-environment)
+  - [Quick Start](#quick-start)
+    - [Data exploration](#data-exploration)
+    - [CellQC](#cellqc)
+    - [Standard pipeline](#standard-pipeline)
+    - [Integration pipeline](#integration-pipeline)
+    - [Cell projection between single-cell datasets](#cell-projection-between-single-cell-datasets)
+    - [Cell annotation using bulk RNA-seq datasets](#cell-annotation-using-bulk-rna-seq-datasets)
+    - [Cell annotation using single-cell datasets](#cell-annotation-using-single-cell-datasets)
+    - [PAGA analysis](#paga-analysis)
+    - [Velocity analysis](#velocity-analysis)
+    - [Differential expression analysis](#differential-expression-analysis)
+    - [Enrichment analysis(over-representation)](#enrichment-analysisover-representation)
+    - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
+    - [Trajectory inference](#trajectory-inference)
+    - [Dynamic features](#dynamic-features)
+    - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
+    - [Other visualization examples](#other-visualization-examples)
 
 ### Data exploration
 
@@ -233,7 +222,7 @@ The analysis is based on a subsetted version of [mouse pancreas
 data](https://doi.org/10.1242/dev.173849).
 
 ``` r
-library(SCP)
+library(scop)
 library(BiocParallel)
 register(MulticoreParam(workers = 8, progressbar = TRUE))
 
@@ -336,14 +325,14 @@ CellStatPlot(
 ### Standard pipeline
 
 ``` r
-pancreas_sub <- Standard_SCP(srt = pancreas_sub)
+pancreas_sub <- Standard_scop(srt = pancreas_sub)
 CellDimPlot(
   srt = pancreas_sub, group.by = c("CellType", "SubCellType"),
   reduction = "StandardUMAP2D", theme_use = "theme_blank"
 )
 ```
 
-<img src="man/figures/Standard_SCP-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Standard_scop-1.png" width="100%" style="display: block; margin: auto;" />
 
 ``` r
 CellDimPlot3D(srt = pancreas_sub, group.by = "SubCellType")
@@ -364,16 +353,16 @@ human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
 ``` r
 data("panc8_sub")
-panc8_sub <- Integration_SCP(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
+panc8_sub <- Integration_scop(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
 CellDimPlot(
   srt = panc8_sub, group.by = c("celltype", "tech"), reduction = "SeuratUMAP2D",
   title = "Seurat", theme_use = "theme_blank"
 )
 ```
 
-<img src="man/figures/Integration_SCP-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Integration_scop-1.png" width="100%" style="display: block; margin: auto;" />
 
-UMAP embeddings based on different integration methods in SCP:
+UMAP embeddings based on different integration methods in scop:
 
 ![Integration-all](man/figures/Integration-all.png)
 
@@ -670,14 +659,14 @@ if (interactive()) {
 
 ### Other visualization examples
 
-[**CellDimPlot**](https://zhanghao-njmu.github.io/SCP/reference/CellDimPlot.html)![Example1](man/figures/Example-1.jpg)
-[**CellStatPlot**](https://zhanghao-njmu.github.io/SCP/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg)
-[**FeatureStatPlot**](https://zhanghao-njmu.github.io/SCP/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg)
-[**GroupHeatmap**](https://zhanghao-njmu.github.io/SCP/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.jpg)
+[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg)
+[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg)
+[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
 
 You can also find more examples in the documentation of the function:
-[Integration_SCP](https://zhanghao-njmu.github.io/SCP/reference/Integration_SCP.html),
-[RunKNNMap](https://zhanghao-njmu.github.io/SCP/reference/RunKNNMap.html),
-[RunMonocle3](https://zhanghao-njmu.github.io/SCP/reference/RunMonocle3.html),
-[RunPalantir](https://zhanghao-njmu.github.io/SCP/reference/RunPalantir.html),
+[Integration_scop](https://mengxu98.github.io/scop/reference/Integration_scop.html),
+[RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html),
+[RunMonocle3](https://mengxu98.github.io/scop/reference/RunMonocle3.html),
+[RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html),
 etc.

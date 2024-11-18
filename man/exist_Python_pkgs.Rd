@@ -11,7 +11,7 @@ exist_Python_pkgs(packages, envname = NULL, conda = "auto")
 
 \item{envname}{The name of a conda environment.}
 
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow SCP to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 }
 \description{
 Check if the python package exists in the environment

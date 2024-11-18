@@ -1777,7 +1777,7 @@ RunFR.default <- function(object, ndim = 2, niter = 500,
 #' @param ... Additional arguments to be passed to the \link[harmony]{RunHarmony} function.
 #'
 #' @examples
-#' panc8_sub <- Standard_SCP(panc8_sub)
+#' panc8_sub <- Standard_scop(panc8_sub)
 #' panc8_sub <- RunHarmony2(panc8_sub, group.by.vars = "tech", reduction = "Standardpca")
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"), reduction = "Standardpca")
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"), reduction = "Harmony")
