@@ -898,29 +898,6 @@ unnest <- function(
   return(data)
 }
 
-# #' Attempts to turn a dgCMatrix into a dense matrix
-# #'
-# #' @examples
-# #' data("pancreas_sub")
-# #' system.time(mat1 <- as.matrix(slot(pancreas_sub[["RNA"]], "counts")))
-# #' system.time(mat2 <- as_matrix(slot(pancreas_sub[["RNA"]], "counts")))
-# #' identical(mat1, mat2)
-# #'
-# #' @param x A matrix.
-# #' @useDynLib scop
-# #' @export
-# as_matrix <- function(x) {
-#   if (!inherits(matrix, "dgCMatrix")) {
-#     return(Matrix::as.matrix(x))
-#   } else {
-#     row_pos <- x@i
-#     col_pos <- findInterval(seq_along(x@x) - 1, x@p[-1])
-#     out <- asMatrix(rp = row_pos, cp = col_pos, z = x@x, nrows = x@Dim[1], ncols = x@Dim[2])
-#     attr(out, "dimnames") <- list(x@Dimnames[[1]], x@Dimnames[[2]])
-#     return(out)
-#   }
-# }
-
 #' Capitalizes the characters
 #' Making the first letter uppercase
 #'
@@ -957,7 +934,13 @@ str_wrap <- function(x, width = 80) {
   if (inherits(x, "factor")) {
     x <- as.character(x)
   }
-  x_wrap <- unlist(lapply(x, function(i) paste0(strwrap(i, width = width), collapse = "\n")))
+  x_wrap <- unlist(
+    lapply(
+      x, function(i) {
+        paste0(strwrap(i, width = width), collapse = "\n")
+      }
+    )
+  )
   return(x_wrap)
 }
 

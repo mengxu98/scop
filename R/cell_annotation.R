@@ -95,18 +95,19 @@ NULL
 #' @importFrom proxyC simil dist
 #' @export
 #'
-RunKNNPredict <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
-                          query_group = NULL, ref_group = NULL,
-                          query_assay = NULL, ref_assay = NULL,
-                          query_reduction = NULL, ref_reduction = NULL,
-                          query_dims = 1:30, ref_dims = 1:30,
-                          query_collapsing = !is.null(query_group), ref_collapsing = TRUE,
-                          return_full_distance_matrix = FALSE,
-                          features = NULL, features_type = c("HVF", "DE"), feature_source = "both", nfeatures = 2000,
-                          DEtest_param = list(max.cells.per.ident = 200, test.use = "wilcox"),
-                          DE_threshold = "p_val_adj < 0.05",
-                          nn_method = NULL, distance_metric = "cosine", k = 30,
-                          filter_lowfreq = 0, prefix = "KNNPredict") {
+RunKNNPredict <- function(
+    srt_query, srt_ref = NULL, bulk_ref = NULL,
+    query_group = NULL, ref_group = NULL,
+    query_assay = NULL, ref_assay = NULL,
+    query_reduction = NULL, ref_reduction = NULL,
+    query_dims = 1:30, ref_dims = 1:30,
+    query_collapsing = !is.null(query_group), ref_collapsing = TRUE,
+    return_full_distance_matrix = FALSE,
+    features = NULL, features_type = c("HVF", "DE"), feature_source = "both", nfeatures = 2000,
+    DEtest_param = list(max.cells.per.ident = 200, test.use = "wilcox"),
+    DE_threshold = "p_val_adj < 0.05",
+    nn_method = NULL, distance_metric = "cosine", k = 30,
+    filter_lowfreq = 0, prefix = "KNNPredict") {
   query_assay <- query_assay %||% DefaultAssay(srt_query)
   features_type <- match.arg(features_type, choices = c("HVF", "DE"))
   if (is.null(query_reduction) + is.null(ref_reduction) == 1) {
@@ -197,6 +198,7 @@ RunKNNPredict <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
     } else {
       stop("ref_group must be provided.")
     }
+
     drop_cell <- colnames(srt_ref)[is.na(srt_ref[["ref_group", drop = TRUE]])]
     if (length(drop_cell) > 0) {
       message("Drop ", length(drop_cell), " cells with NA in the ref_group")
@@ -524,8 +526,11 @@ RunKNNPredict <- function(srt_query, srt_ref = NULL, bulk_ref = NULL,
 #'
 #' @importFrom Seurat GetAssayData
 #' @export
-RunScmap <- function(srt_query, srt_ref, ref_group = NULL, query_assay = "RNA", ref_assay = "RNA",
-                     method = "scmapCluster", nfeatures = 500, threshold = 0.5, k = 10) {
+RunScmap <- function(
+  srt_query, srt_ref, ref_group = NULL, 
+  query_assay = "RNA", ref_assay = "RNA",
+                     method = "scmapCluster", nfeatures = 500, 
+                     threshold = 0.5, k = 10) {
   check_R("scmap")
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
