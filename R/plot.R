@@ -1,1207 +1,3 @@
-#' scop theme
-#'
-#' The default theme for scop plot function.
-#'
-#' @param aspect.ratio Aspect ratio of the panel.
-#' @param base_size Base font size
-#' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
-#'
-#' @examples
-#' library(ggplot2)
-#' p <- ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +
-#'   geom_point()
-#' p + theme_scop()
-#' @importFrom ggplot2 theme element_blank element_text element_rect margin
-#' @export
-theme_scop <- function(aspect.ratio = NULL, base_size = 12, ...) {
-  text_size_scale <- base_size / 12
-  args1 <- list(
-    aspect.ratio = aspect.ratio,
-    text = element_text(size = 12 * text_size_scale, color = "black"),
-    plot.title = element_text(size = 14 * text_size_scale, colour = "black", vjust = 1),
-    plot.subtitle = element_text(size = 13 * text_size_scale, hjust = 0, margin = margin(b = 3)),
-    plot.background = element_rect(fill = "white", color = "white"),
-    axis.line = element_blank(),
-    axis.title = element_text(size = 13 * text_size_scale, colour = "black"),
-    axis.text = element_text(size = 12 * text_size_scale, colour = "black"),
-    strip.text = element_text(size = 12.5 * text_size_scale, colour = "black", hjust = 0.5, margin = margin(3, 3, 3, 3)),
-    strip.background = element_rect(fill = "transparent", linetype = 0),
-    strip.switch.pad.grid = unit(-1, "pt"),
-    strip.switch.pad.wrap = unit(-1, "pt"),
-    strip.placement = "outside",
-    legend.title = element_text(size = 12 * text_size_scale, colour = "black", hjust = 0),
-    legend.text = element_text(size = 11 * text_size_scale, colour = "black"),
-    legend.key = element_rect(fill = "transparent", color = "transparent"),
-    legend.key.size = unit(10, "pt"),
-    legend.background = element_blank(),
-    panel.background = element_rect(fill = "white", color = "white"),
-    panel.border = element_rect(fill = "transparent", colour = "black", linewidth = 1)
-  )
-  args2 <- as.list(match.call())[-1]
-  call.envir <- parent.frame(1)
-  args2 <- lapply(args2, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
-    } else {
-      arg
-    }
-  })
-  for (n in names(args2)) {
-    args1[[n]] <- args2[[n]]
-  }
-  args <- args1[names(args1) %in% formalArgs(theme)]
-  out <- do.call(
-    what = theme,
-    args = args
-  )
-  return(out)
-}
-
-#' Blank theme
-#'
-#' This function creates a theme with all elements blank except for axis lines and labels.
-#' It can optionally add coordinate axes in the plot.
-#'
-#' @param add_coord Whether to add coordinate arrows. Default is \code{TRUE}.
-#' @param xlen_npc The length of the x-axis arrow in "npc".
-#' @param ylen_npc The length of the y-axis arrow in "npc".
-#' @param xlab x-axis label.
-#' @param ylab y-axis label.
-#' @param lab_size Label size.
-#' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
-#'
-#' @examples
-#' library(ggplot2)
-#' p <- ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +
-#'   geom_point()
-#' p + theme_blank()
-#' p + theme_blank(xlab = "x-axis", ylab = "y-axis", lab_size = 16)
-#' @importFrom ggplot2 theme element_blank margin annotation_custom coord_cartesian
-#' @importFrom grid grobTree gList linesGrob textGrob arrow gpar
-#' @export
-theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab = "", ylab = "", lab_size = 12, ...) {
-  args1 <- list(
-    panel.border = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank(),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank(),
-    legend.background = element_blank(),
-    legend.box.margin = margin(0, 0, 0, 0),
-    legend.margin = margin(0, 0, 0, 0),
-    legend.key.size = unit(10, "pt"),
-    plot.margin = margin(lab_size + 2, lab_size + 2, lab_size + 2, lab_size + 2, unit = "points")
-  )
-  args2 <- as.list(match.call())[-1]
-  call.envir <- parent.frame(1)
-  args2 <- lapply(args2, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
-    } else {
-      arg
-    }
-  })
-  for (n in names(args2)) {
-    args1[[n]] <- args2[[n]]
-  }
-  args <- args1[names(args1) %in% formalArgs(theme)]
-  out <- do.call(
-    what = theme,
-    args = args
-  )
-  if (isTRUE(add_coord)) {
-    g <- grobTree(gList(
-      linesGrob(x = unit(c(0, xlen_npc), "npc"), y = unit(c(0, 0), "npc"), arrow = arrow(length = unit(0.02, "npc")), gp = gpar(lwd = 2)),
-      textGrob(label = xlab, x = unit(0, "npc"), y = unit(0, "npc"), vjust = 4 / 3, hjust = 0, gp = gpar(fontsize = lab_size)),
-      linesGrob(x = unit(c(0, 0), "npc"), y = unit(c(0, ylen_npc), "npc"), arrow = arrow(length = unit(0.02, "npc")), gp = gpar(lwd = 2)),
-      textGrob(label = ylab, x = unit(0, "npc"), y = unit(0, "npc"), vjust = -2 / 3, hjust = 0, rot = 90, gp = gpar(fontsize = lab_size))
-    ))
-    return(list(
-      list(annotation_custom(g)),
-      list(theme_scop() + out),
-      list(coord_cartesian(clip = "off"))
-    ))
-  } else {
-    return(list(
-      list(theme_scop() + out)
-    ))
-  }
-}
-
-#' Color palettes collected in scop.
-#'
-#' @param x A vector of character/factor or numeric values. If missing, numeric values 1:n will be used as x.
-#' @param n The number of colors to return for numeric values.
-#' @param palette Palette name. All available palette names can be queried with \code{show_palettes()}.
-#' @param palcolor Custom colors used to create a color palette.
-#' @param type Type of \code{x}. Can be one of "auto", "discrete" or "continuous". The default is "auto", which automatically detects if \code{x} is a numeric value.
-#' @param matched If \code{TRUE}, will return a color vector of the same length as \code{x}.
-#' @param reverse Whether to invert the colors.
-#' @param NA_keep Whether to keep the color assignment to NA in \code{x}.
-#' @param NA_color Color assigned to NA if NA_keep is \code{TRUE}.
-#'
-#' @seealso \code{\link{show_palettes}} \code{\link{palette_list}}
-#'
-#' @examples
-#' x <- c(1:3, NA, 3:5)
-#' (pal1 <- palette_scop(x, palette = "Spectral"))
-#' (pal2 <- palette_scop(x, palcolor = c("red", "white", "blue")))
-#' (pal3 <- palette_scop(x, palette = "Spectral", n = 10))
-#' (pal4 <- palette_scop(x, palette = "Spectral", n = 10, reverse = TRUE))
-#' (pal5 <- palette_scop(x, palette = "Spectral", matched = TRUE))
-#' (pal6 <- palette_scop(x, palette = "Spectral", matched = TRUE, NA_keep = TRUE))
-#' (pal7 <- palette_scop(x, palette = "Paired", type = "discrete"))
-#' show_palettes(list(pal1, pal2, pal3, pal4, pal5, pal6, pal7))
-#'
-#' all_palettes <- show_palettes(return_palettes = TRUE)
-#' names(all_palettes)
-#'
-#' @importFrom grDevices colorRampPalette
-#' @importFrom stats setNames
-#' @export
-#'
-palette_scop <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = "auto",
-                        matched = FALSE, reverse = FALSE, NA_keep = FALSE, NA_color = "grey80") {
-  palette_list <- scop::palette_list
-  if (missing(x)) {
-    x <- 1:n
-    type <- "continuous"
-  }
-  if (!palette %in% names(palette_list)) {
-    stop("The palette name (", palette, ") is invalid! You can check the available palette names with 'show_palettes()'. Or pass palette colors via the 'palcolor' parameter.")
-  }
-  if (is.list(palcolor)) {
-    palcolor <- unlist(palcolor)
-  }
-  if (all(palcolor == "")) {
-    palcolor <- palette_list[[palette]]
-  }
-  if (is.null(palcolor) || length(palcolor) == 0) {
-    palcolor <- palette_list[[palette]]
-  }
-  if (!is.null(names(palcolor))) {
-    if (all(x %in% names(palcolor))) {
-      palcolor <- palcolor[intersect(names(palcolor), x)]
-    }
-  }
-  pal_n <- length(palcolor)
-
-  if (!type %in% c("auto", "discrete", "continuous")) {
-    stop("'type' must be one of 'auto','discrete' and 'continuous'.")
-  }
-  if (type == "auto") {
-    if (is.numeric(x)) {
-      type <- "continuous"
-    } else {
-      type <- "discrete"
-    }
-  }
-
-  if (type == "discrete") {
-    if (!is.factor(x)) {
-      x <- factor(x, levels = unique(x))
-    }
-    n_x <- nlevels(x)
-    if (isTRUE(attr(palcolor, "type") == "continuous")) {
-      color <- colorRampPalette(palcolor)(n_x)
-    } else {
-      color <- ifelse(rep(n_x, n_x) <= pal_n,
-        palcolor[1:n_x],
-        colorRampPalette(palcolor)(n_x)
-      )
-    }
-    names(color) <- levels(x)
-    if (any(is.na(x))) {
-      color <- c(color, setNames(NA_color, "NA"))
-    }
-    if (isTRUE(matched)) {
-      color <- color[x]
-      color[is.na(color)] <- NA_color
-    }
-  } else if (type == "continuous") {
-    if (!is.numeric(x) && all(!is.na(x))) {
-      stop("'x' must be type of numeric when use continuous color palettes.")
-    }
-    if (all(is.na(x))) {
-      values <- as.factor(rep(0, n))
-    } else if (length(unique(na.omit(as.numeric(x)))) == 1) {
-      values <- as.factor(rep(unique(na.omit(as.numeric(x))), n))
-    } else {
-      if (isTRUE(matched)) {
-        values <- cut(x, breaks = seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = n + 1), include.lowest = TRUE)
-      } else {
-        values <- cut(1:100, breaks = seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = n + 1), include.lowest = TRUE)
-      }
-    }
-
-    n_x <- nlevels(values)
-    color <- ifelse(rep(n_x, n_x) <= pal_n,
-      palcolor[1:n_x],
-      colorRampPalette(palcolor)(n_x)
-    )
-    names(color) <- levels(values)
-    if (any(is.na(x))) {
-      color <- c(color, setNames(NA_color, "NA"))
-    }
-    if (isTRUE(matched)) {
-      if (all(is.na(x))) {
-        color <- NA_color
-      } else if (length(unique(na.omit(x))) == 1) {
-        color <- color[as.character(unique(na.omit(x)))]
-        color[is.na(color)] <- NA_color
-      } else {
-        color <- color[as.character(values)]
-        color[is.na(color)] <- NA_color
-      }
-    }
-  }
-
-  if (isTRUE(reverse)) {
-    color <- rev(color)
-  }
-  if (!isTRUE(NA_keep)) {
-    color <- color[names(color) != "NA"]
-  }
-  return(color)
-}
-
-#' Show the color palettes
-#'
-#' This function displays color palettes using ggplot2.
-#'
-#' @param palettes A list of color palettes. If `NULL`, uses default palettes.
-#' @param type A character vector specifying the type of palettes to include. Default is "discrete".
-#' @param index A numeric vector specifying the indices of the palettes to include. Default is `NULL`.
-#' @param palette_names A character vector specifying the names of the scop palettes to include. Default is `NULL`.
-#' @param return_names A logical value indicating whether to return the names of the selected palettes. Default is `TRUE`.
-#' @param return_palettes A logical value indicating whether to return the colors of selected palettes. Default is `FALSE`.
-#'
-#' @seealso \code{\link{palette_scop}} \code{\link{palette_list}}
-#'
-#' @examples
-#' show_palettes(palettes = list(c("red", "blue", "green"), c("yellow", "purple", "orange")))
-#' all_palettes <- show_palettes(return_palettes = TRUE)
-#' names(all_palettes)
-#' all_palettes[["simspec"]]
-#' show_palettes(index = 1:10)
-#' show_palettes(type = "discrete", index = 1:10)
-#' show_palettes(type = "continuous", index = 1:10)
-#' show_palettes(palette_names = c("Paired", "nejm", "simspec", "Spectral", "jet"), return_palettes = TRUE)
-#'
-#' @importFrom ggplot2 ggplot geom_col scale_fill_manual scale_x_continuous element_blank
-#' @export
-show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), index = NULL, palette_names = NULL, return_names = TRUE, return_palettes = FALSE) {
-  palette_list <- scop::palette_list
-  if (!is.null(palettes)) {
-    palette_list <- palettes
-  } else {
-    palette_list <- palette_list[unlist(lapply(palette_list, function(x) isTRUE(attr(x, "type") %in% type)))]
-  }
-  index <- index[index %in% seq_along(palette_list)]
-  if (!is.null(index)) {
-    palette_list <- palette_list[index]
-  }
-  if (is.null(names(palette_list))) {
-    names(palette_list) <- seq_along(palette_list)
-  }
-  if (is.null(palette_names)) {
-    palette_names <- palette_names %||% names(palette_list)
-  }
-  if (any(!palette_names %in% names(palette_list))) {
-    stop(paste("Can not find the palettes: ", paste0(palette_names[!palette_names %in% names(palette_list)], collapse = ",")))
-  }
-  palette_list <- palette_list[palette_names]
-
-  df <- data.frame(palette = rep(names(palette_list), sapply(palette_list, length)), color = unlist(palette_list))
-  df[["palette"]] <- factor(df[["palette"]], levels = rev(unique(df[["palette"]])))
-  df[["color_order"]] <- factor(seq_len(nrow(df)), levels = seq_len(nrow(df)))
-  df[["proportion"]] <- as.numeric(1 / table(df$palette)[df$palette])
-
-  p <- ggplot(data = df, aes(y = .data[["palette"]], x = .data[["proportion"]], fill = .data[["color_order"]])) +
-    geom_col(show.legend = FALSE) +
-    scale_fill_manual(values = df[["color"]]) +
-    scale_x_continuous(expand = c(0, 0), trans = "reverse") +
-    theme_scop(
-      axis.title = element_blank(),
-      axis.ticks = element_blank(),
-      axis.text.x = element_blank(),
-      panel.border = element_blank()
-    )
-  print(p)
-
-  if (isTRUE(return_palettes)) {
-    return(palette_list)
-  }
-  if (isTRUE(return_names)) {
-    return(palette_names)
-  }
-}
-
-#' Set the panel width/height of a plot object to a fixed value.
-#'
-#' The ggplot object, when stored, can only specify the height and width of the entire plot, not the panel.
-#' The latter is obviously more important to control the final result of a plot.
-#' This function can set the panel width/height of plot to a fixed value and rasterize it.
-#'
-#' @param x A ggplot object, a grob object, or a combined plot made by patchwork or cowplot package.
-#' @param panel_index Specify the panel to be fixed. If NULL, will fix all panels.
-#' @param respect If a logical, this indicates whether row heights and column widths should respect each other.
-#' @param width The desired width of the fixed panels.
-#' @param height The desired height of the fixed panels.
-#' @param margin The margin to add around each panel, in inches. The default is 1 inch.
-#' @param padding The padding to add around each panel, in inches. The default is 0 inches.
-#' @param units The units in which \code{height}, \code{width} and \code{margin} are given. Can be \code{mm}, \code{cm}, \code{in}, etc. See \code{\link[grid]{unit}}.
-#' @param raster Whether to rasterize the panel.
-#' @param dpi Plot resolution.
-#' @param BPPARAM An \code{\link[BiocParallel]{BiocParallelParam}} instance determining the parallel back-end to be used during building the object made by patchwork package.
-#' @param return_grob If \code{TRUE} then return a grob object instead of a wrapped \code{patchwork} object.
-#' @param save NULL or the file name used to save the plot.
-#' @param bg_color Plot background color.
-#' @param verbose Whether to print messages.
-#' @param ... Unused.
-#'
-#' @examples
-#' library(ggplot2)
-#' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
-#'   geom_point() +
-#'   facet_wrap(~gear, nrow = 2)
-#' # fix the size of panel
-#' panel_fix(p, width = 5, height = 3, units = "cm")
-#' # rasterize the panel
-#' panel_fix(p, width = 5, height = 3, units = "cm", raster = TRUE, dpi = 30)
-#'
-#' # panel_fix will build and render the plot when the input is a ggplot object.
-#' # so after panel_fix, the size of the object will be changed.
-#' object.size(p)
-#' object.size(panel_fix(p, width = 5, height = 3, units = "cm"))
-#'
-#' ## save the plot with appropriate size
-#' # p_fix <- panel_fix(p, width = 5, height = 3, units = "cm")
-#' # plot_size <- attr(p_fix, "size")
-#' # ggsave(
-#' #   filename = "p_fix.png", plot = p_fix,
-#' #   units = plot_size$units, width = plot_size$width, height = plot_size$height
-#' # )
-#' ## or save the plot directly
-#' # p_fix <- panel_fix(p, width = 5, height = 3, units = "cm", save = "p_fix.png")
-#'
-#' # fix the panel of the plot combined by patchwork
-#' data("pancreas_sub")
-#' p1 <- CellDimPlot(pancreas_sub, "Phase", aspect.ratio = 1) # ggplot object
-#' p2 <- FeatureDimPlot(pancreas_sub, "Ins1", aspect.ratio = 0.5) # ggplot object
-#' p <- p1 / p2 # plot is combined by patchwork
-#' # fix the panel size for each plot, the width will be calculated automatically based on aspect.ratio
-#' panel_fix(p, height = 1)
-#'
-#' # fix the panel of the plot combined by plot_grid
-#' if (requireNamespace("cowplot", quietly = TRUE)) {
-#'   p1 <- CellDimPlot(pancreas_sub, c("Phase", "SubCellType"), label = TRUE) # plot is combined by patchwork
-#'   p2 <- FeatureDimPlot(pancreas_sub, c("Ins1", "Gcg"), label = TRUE) # plot is combined by patchwork
-#'   p <- cowplot::plot_grid(p1, p2, nrow = 2) # plot is combined by plot_grid
-#'   # fix the size of panel for each plot
-#'   panel_fix(p, height = 1)
-#'   # rasterize the panel while keeping all labels and text in vector format
-#'   panel_fix(p, height = 1, raster = TRUE, dpi = 30)
-#' }
-#'
-#' # fix the panel of the heatmap
-#' ht1 <- GroupHeatmap(pancreas_sub,
-#'   features = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-#'   ),
-#'   group.by = c("CellType", "SubCellType"),
-#'   show_row_names = TRUE
-#' )
-#' # the size of the heatmap is not fixed and can be resized by zooming the viewport.
-#' ht1$plot
-#' # fix the size of the heatmap according the current viewport
-#' panel_fix(ht1$plot)
-#' # rasterize the heatmap body
-#' panel_fix(ht1$plot, raster = TRUE, dpi = 30)
-#' # fix the size of overall heatmap including annotation and legend
-#' panel_fix(ht1$plot, height = 4, width = 6)
-#'
-#' ht2 <- GroupHeatmap(pancreas_sub,
-#'   features = pancreas_sub[["RNA"]]@var.features,
-#'   group.by = "SubCellType",
-#'   n_split = 5, nlabel = 20,
-#'   db = "GO_BP", species = "Mus_musculus", anno_terms = TRUE,
-#'   height = 4, width = 1 # Heatmap body size for two groups
-#' )
-#' # the size of the heatmap is already fixed
-#' ht2$plot
-#' # when no height/width is specified, panel_fix does not change the size of the heatmap.
-#' panel_fix(ht2$plot)
-#' # rasterize the heatmap body
-#' panel_fix(ht2$plot, raster = TRUE, dpi = 30)
-#' # however, gene labels on the left and enrichment annotations on the right cannot be adjusted
-#' panel_fix(ht2$plot, height = 5, width = 10)
-#'
-#' @importFrom ggplot2 ggsave
-#' @importFrom grid grob unit convertWidth convertHeight convertUnit is.unit unitType
-#' @export
-#'
-panel_fix <- function(
-  x = NULL,
-  panel_index = NULL,
-  respect = NULL,
-  width = NULL,
-  height = NULL,
-  margin = 1,
-  padding = 0,
-  units = "in",
-  raster = FALSE,
-  dpi = 300,
-  BPPARAM = BiocParallel::SerialParam(),
-  return_grob = FALSE,
-  bg_color = "white",
-  save = NULL,
-  verbose = FALSE,
-  ...
-) {
-  if (!inherits(x, "gtable")) {
-    tryCatch(
-      {
-        gtable <- as_gtable(x, BPPARAM = BPPARAM)
-      },
-      error = function(error) {
-        stop(error, "\nCannot convert the x to a gtable object.")
-      }
-    )
-  } else {
-    gtable <- x
-  }
-  args <- as.list(match.call())[-1]
-  depth <- args[["depth"]]
-  if (is.null(depth)) {
-    depth <- 1
-  }
-
-  if (is.null(panel_index)) {
-    non_zero <- grep(
-      pattern = "zeroGrob",
-      vapply(gtable$grobs, as.character, character(1)),
-      invert = TRUE
-    )
-    panel_index <- grep(
-      pattern = "panel|full",
-      gtable[["layout"]][["name"]]
-    )
-    panel_index <- intersect(panel_index, non_zero)
-  }
-  if (length(panel_index) == 0 && length(gtable$grobs) == 1) {
-    panel_index <- 1
-  }
-  add_margin <- TRUE
-  for (i in panel_index) {
-    geom_index <- grep(
-      pattern = "GeomDrawGrob",
-      names(gtable$grobs[[i]][["children"]])
-    )
-    if (length(geom_index) > 0) {
-      if (isTRUE(verbose)) {
-        message("panel ", i, " is detected as generated by plot_grid.")
-      }
-      for (j in geom_index) {
-        subgrob <- gtable$grobs[[i]][["children"]][[j]][["children"]][[1]][["children"]][[1]]
-
-        if (length(subgrob$grobs[[1]][["children"]]) > 0 && all(sapply(subgrob$grobs[[1]][["children"]], function(x) inherits(x, "recordedGrob")))) {
-          subgrob <- panel_fix_overall(
-            x = subgrob$grobs[[1]][["children"]],
-            width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE
-          )
-        } else {
-          subgrob <- panel_fix(
-            x = subgrob, width = width, height = height, margin = padding, units = units, raster = raster, dpi = dpi, return_grob = TRUE, verbose = verbose, depth = depth + 1
-          )
-        }
-        gtable$grobs[[i]][["children"]][[j]][["children"]][[1]][["children"]][[1]] <- subgrob
-      }
-      sum_width <- convertWidth(
-        sum(subgrob[["widths"]]),
-        unitTo = units,
-        valueOnly = TRUE
-      ) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$width)
-      sum_height <- convertHeight(
-        sum(subgrob[["heights"]]),
-        unitTo = units,
-        valueOnly = TRUE
-      ) / as.numeric(gtable$grobs[[i]][["children"]][[j]]$vp$height)
-      gtable <- panel_fix_overall(
-        gtable, panel_index = i, width = sum_width, height = sum_height, margin = ifelse(depth == 1, margin, 0), units = units, raster = FALSE, return_grob = TRUE
-      )
-    } else if (gtable$grobs[[i]]$name == "layout" || inherits(x, "patchwork")) {
-      if (isTRUE(verbose)) {
-        message("panel ", i, " is detected as generated by patchwork.")
-      }
-      # if (i == panel_index[1] && length(panel_index) > 1 && isTRUE(verbose)) {
-      #   message("More than 2 panels detected. panel_fix may not work as expected.")
-      # }
-      subgrob <- gtable$grobs[[i]]
-      if (length(subgrob[["children"]]) > 0 && all(sapply(subgrob[["children"]], function(x) inherits(x, "recordedGrob")))) {
-        subgrob <- panel_fix_overall(
-          subgrob[["children"]], 
-          width = width, 
-          height = height,
-          margin = 0,
-          units = units,
-          raster = raster,
-          dpi = dpi,
-          return_grob = TRUE
-        )
-      } else {
-        subgrob <- panel_fix(
-          subgrob,
-          width = width,
-          height = height,
-          margin = 0,
-          units = units,
-          raster = raster,
-          dpi = dpi,
-          return_grob = TRUE,
-          verbose = verbose,
-          depth = depth + 1
-        )
-      }
-      gtable$grobs[[i]] <- subgrob
-      layout <- gtable$layout
-      layout[["rowranges"]] <- lapply(
-        seq_len(nrow(layout)),
-        function(n) layout$t[n]:layout$b[n]
-      )
-      layout[["colranges"]] <- lapply(
-        seq_len(nrow(layout)),
-        function(n) layout$l[n]:layout$r[n]
-      )
-      p_row <- c(layout$t[i], layout$b[i])
-      p_col <- c(layout$l[i], layout$r[i])
-      background_index <- grep(
-        pattern = "background", layout$name
-      )
-      background_index <- background_index[order(layout$z[background_index], decreasing = TRUE)]
-      for (bgi in background_index) {
-        if (all(p_row %in% layout[["rowranges"]][[bgi]]) && all(p_col %in% layout[["colranges"]][[bgi]])) {
-          p_background_index <- bgi
-          break
-        }
-      }
-      gtable <- gtable_add_rows(
-        gtable,
-        heights = unit(padding, units),
-        pos = layout$t[p_background_index] - 1
-      )
-      gtable <- gtable_add_rows(
-        gtable,
-        heights = unit(padding, units),
-        pos = layout$b[p_background_index]
-      )
-      gtable <- gtable_add_cols(
-        gtable,
-        widths = unit(padding, units),
-        pos = layout$l[p_background_index] - 1
-      )
-      gtable <- gtable_add_cols(
-        gtable,
-        widths = unit(padding, units),
-        pos = layout$r[p_background_index]
-      )
-      sum_width <- convertWidth(
-        sum(subgrob[["widths"]]),
-        unitTo = units,
-        valueOnly = TRUE
-      )
-      sum_height <- convertHeight(
-        sum(subgrob[["heights"]]),
-        unitTo = units,
-        valueOnly = TRUE
-      )
-
-      gtable <- panel_fix_overall(
-        gtable,
-        panel_index = i,
-        width = sum_width,
-        height = sum_height,
-        margin = ifelse(depth == 1 & add_margin, margin, 0),
-        units = units,
-        raster = FALSE,
-        respect = TRUE,
-        return_grob = TRUE
-      )
-      if (depth == 1 & add_margin) {
-        add_margin <- FALSE
-      }
-    } else {
-      gtable <- panel_fix_overall(
-        gtable,
-        panel_index = i,
-        width = width,
-        height = height,
-        margin = margin,
-        units = units,
-        raster = raster,
-        dpi = dpi,
-        return_grob = TRUE
-      )
-    }
-  }
-
-  if (!is.null(respect)) {
-    gtable$respect <- respect
-  }
-
-  if (isTRUE(return_grob)) {
-    return(gtable)
-  } else {
-    p <- wrap_plots(gtable) + theme(plot.background = element_rect(fill = bg_color, color = bg_color))
-    if (units != "null") {
-      plot_width <- convertWidth(sum(gtable[["widths"]]), unitTo = units, valueOnly = TRUE)
-      plot_height <- convertHeight(sum(gtable[["heights"]]), unitTo = units, valueOnly = TRUE)
-      attr(p, "size") <- list(width = plot_width, height = plot_height, units = units)
-    }
-
-    if (!is.null(save) && is.character(save) && nchar(save) > 0) {
-      if (units == "null") {
-        stop("units can not be 'null' if want to save the plot.")
-      }
-      filename <- normalizePath(save)
-      if (isTRUE(verbose)) {
-        message("Save the plot to the file: ", filename)
-      }
-      if (!dir.exists(dirname(filename))) {
-        dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
-      }
-      ggsave(
-        plot = p, filename = filename, width = plot_width, height = plot_height, units = units, dpi = dpi, limitsize = FALSE
-      )
-    }
-    return(p)
-  }
-}
-
-#' @rdname panel_fix
-#' @importFrom ggplot2 ggsave zeroGrob
-#' @importFrom gtable gtable_add_padding
-#' @importFrom grid grob unit unitType convertWidth convertHeight convertUnit viewport grid.draw rasterGrob grobTree addGrob
-#' @importFrom patchwork wrap_plots
-#' @importFrom grDevices dev.off
-#' @export
-panel_fix_overall <- function(x, panel_index = NULL, respect = NULL,
-                              width = NULL, height = NULL, margin = 1, units = "in",
-                              raster = FALSE, dpi = 300, BPPARAM = BiocParallel::SerialParam(),
-                              return_grob = FALSE, bg_color = "white", save = NULL, verbose = TRUE) {
-  if (!inherits(x, "gtable")) {
-    if (inherits(x, "gTree")) {
-      x <- x[["children"]]
-    }
-    tryCatch(
-      {
-        gtable <- as_gtable(x, BPPARAM = BPPARAM)
-      },
-      error = function(error) {
-        stop(error, "\nCannot convert the x to a gtable object")
-      }
-    )
-  } else {
-    gtable <- x
-  }
-
-  if (is.null(panel_index)) {
-    non_zero <- grep(pattern = "zeroGrob", vapply(gtable$grobs, as.character, character(1)), invert = TRUE)
-    panel_index <- grep("panel|full", gtable[["layout"]][["name"]])
-    panel_index <- intersect(panel_index, non_zero)
-  }
-  if (length(panel_index) == 0 && length(gtable$grobs) == 1) {
-    panel_index <- 1
-  }
-  if (!length(width) %in% c(0, 1, length(panel_index)) || !length(height) %in% c(0, 1, length(panel_index))) {
-    stop("The length of 'width' and 'height' must be 1 or the length of panels.")
-  }
-
-  if (inherits(x, "gList")) {
-    panel_index <- 1
-    panel_index_h <- panel_index_w <- list(1)
-    w_comp <- h_comp <- list(unit(1, "null"))
-    w <- h <- list(unit(1, "null"))
-  } else if (length(panel_index) > 0) {
-    panel_index_w <- panel_index_h <- list()
-    w_comp <- h_comp <- list()
-    w <- h <- list()
-    for (i in seq_along(panel_index)) {
-      index <- panel_index[i]
-      panel_index_h[[i]] <- sort(unique(c(gtable[["layout"]][["t"]][index], gtable[["layout"]][["b"]][index])))
-      panel_index_w[[i]] <- sort(unique(c(gtable[["layout"]][["l"]][index], gtable[["layout"]][["r"]][index])))
-      w_comp[[i]] <- gtable[["widths"]][seq(min(panel_index_w[[i]]), max(panel_index_w[[i]]))]
-      h_comp[[i]] <- gtable[["heights"]][seq(min(panel_index_h[[i]]), max(panel_index_h[[i]]))]
-
-      if (length(w_comp[[i]]) == 1) {
-        w[[i]] <- w_comp[[i]]
-      } else if (length(w_comp[[i]]) > 1 && any(unitType(w_comp[[i]]) == "null")) {
-        w[[i]] <- unit(1, units = "null")
-      } else {
-        w[[i]] <- sum(w_comp[[i]])
-      }
-      if (length(h_comp[[i]]) == 1) {
-        h[[i]] <- h_comp[[i]]
-      } else if (length(h_comp[[i]]) > 1 && any(unitType(h_comp[[i]]) == "null")) {
-        h[[i]] <- unit(1, units = "null")
-      } else {
-        h[[i]] <- sum(h_comp[[i]])
-      }
-    }
-  } else {
-    stop("No panel detected.")
-  }
-
-  if (units != "null") {
-    raw_w <- sapply(w, function(x) convertWidth(x, unitTo = units, valueOnly = TRUE))
-    raw_h <- sapply(h, function(x) convertHeight(x, unitTo = units, valueOnly = TRUE))
-    for (i in seq_along(w)) {
-      if (unitType(w[[i]]) == "null" || convertUnit(w[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
-        raw_w[i] <- 0
-      }
-    }
-    for (i in seq_along(h)) {
-      if (unitType(h[[i]]) == "null" || convertUnit(h[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
-        raw_h[i] <- 0
-      }
-    }
-    if (isTRUE(gtable$respect)) {
-      raw_aspect <- sapply(h, as.vector) / sapply(w, as.vector)
-    } else {
-      if (all(raw_w != 0) && all(raw_h != 0)) {
-        raw_aspect <- raw_h / raw_w
-      } else {
-        raw_aspect <- convertHeight(unit(1, "npc"), "cm", valueOnly = TRUE) / convertWidth(unit(1, "npc"), "cm", valueOnly = TRUE)
-      }
-    }
-
-    if (is.null(width) && is.null(height)) {
-      width <- raw_w
-      height <- raw_h
-      if (all(width == 0) && all(height == 0)) {
-        width <- convertWidth(unit(1, "npc"), units, valueOnly = TRUE)
-        height <- convertHeight(unit(1, "npc"), units, valueOnly = TRUE)
-        if (isTRUE(gtable$respect)) {
-          if (raw_aspect <= 1) {
-            height <- width * raw_aspect
-          } else {
-            width <- height / raw_aspect
-          }
-        }
-      }
-    }
-
-    for (i in seq_along(raw_aspect)) {
-      if (is.finite(raw_aspect[i]) && raw_aspect[i] != 0) {
-        if (is.null(width[i]) || is.na(width[i]) || width[i] == 0) {
-          width[i] <- height[i] / raw_aspect[i]
-        }
-        if (is.null(height[i]) || is.na(height[i]) || height[i] == 0) {
-          height[i] <- width[i] * raw_aspect[i]
-        }
-      }
-    }
-
-    for (i in seq_along(width)) {
-      if (inherits(width[i], "unit")) {
-        width[i] <- convertWidth(width[i], unitTo = units, valueOnly = TRUE)
-      }
-    }
-    for (i in seq_along(height)) {
-      if (inherits(height[i], "unit")) {
-        height[i] <- convertHeight(height[i], unitTo = units, valueOnly = TRUE)
-      }
-    }
-  }
-
-  if (length(width) == 1) {
-    width <- rep(width, length(panel_index))
-  }
-  if (length(height) == 1) {
-    height <- rep(height, length(panel_index))
-  }
-  for (i in seq_along(panel_index)) {
-    if (!is.null(width)) {
-      width_unit <- width[i] / length(w_comp[[i]])
-      gtable[["widths"]][seq(min(panel_index_w[[i]]), max(panel_index_w[[i]]))] <- rep(unit(width_unit, units = units), length(w_comp[[i]]))
-    }
-    if (!is.null(height)) {
-      height_unit <- height[i] / length(h_comp[[i]])
-      gtable[["heights"]][seq(min(panel_index_h[[i]]), max(panel_index_h[[i]]))] <- rep(unit(height_unit, units = units), length(h_comp[[i]]))
-    }
-  }
-  gtable <- gtable_add_padding(gtable, padding = unit(margin, units = units))
-
-  # print(paste0("width:", width))
-  # print(paste0("height:", height))
-
-  if (isTRUE(raster)) {
-    check_R(c("png", "ragg"))
-    for (i in seq_along(panel_index)) {
-      index <- panel_index[i]
-      g <- g_new <- gtable$grobs[[index]]
-      vp <- g$vp
-      childrenOrder <- g$childrenOrder
-      if (is.null(g$vp)) {
-        g$vp <- viewport()
-      }
-      # child_list <- NULL
-      for (j in seq_along(g[["children"]])) {
-        child <- g[["children"]][[j]]
-        child_nm <- names(g[["children"]])[j]
-        if (!is.null(child$vp) ||
-          any(grepl("(text)|(label)", child_nm)) ||
-          any(grepl("(text)|(segments)|(legend)", class(child$list[[1]])))) {
-          zero <- zeroGrob()
-          zero$name <- g[["children"]][[j]]$name
-          g[["children"]][[j]] <- zero
-          # child_list[[child_nm]] <- child
-          # print(j)
-        } else if (inherits(child$list[[1]], "grob") || is.null(child$list[[1]])) {
-          g_new[["children"]][[j]] <- zeroGrob()
-          # print(j)
-        }
-      }
-      temp <- tempfile(fileext = "png")
-      ragg::agg_png(temp, width = width[i], height = height[i], bg = "transparent", res = dpi, units = units)
-      grid.draw(g)
-      dev.off()
-      g_ras <- rasterGrob(png::readPNG(temp, native = TRUE))
-      unlink(temp)
-      # g <- do.call(grobTree, c(list(g_ras), child_list))
-      g <- addGrob(g_new, g_ras)
-      g$vp <- vp
-      g$childrenOrder <- c(g_ras$name, childrenOrder)
-      gtable$grobs[[index]] <- g
-
-      # grid.draw(gtable)
-    }
-  }
-
-  if (!is.null(respect)) {
-    gtable$respect <- respect
-  }
-
-  if (isTRUE(return_grob)) {
-    return(gtable)
-  } else {
-    p <- wrap_plots(gtable) + theme(plot.background = element_rect(fill = bg_color, color = bg_color))
-    if (units != "null") {
-      plot_width <- convertWidth(sum(gtable[["widths"]]), unitTo = units, valueOnly = TRUE)
-      plot_height <- convertHeight(sum(gtable[["heights"]]), unitTo = units, valueOnly = TRUE)
-      attr(p, "size") <- list(width = plot_width, height = plot_height, units = units)
-    }
-
-    if (!is.null(save) && is.character(save) && nchar(save) > 0) {
-      if (units == "null") {
-        stop("units can not be 'null' if want to save the plot.")
-      }
-      filename <- normalizePath(save)
-      if (isTRUE(verbose)) {
-        message("Save the plot to the file: ", filename)
-      }
-      if (!dir.exists(dirname(filename))) {
-        dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
-      }
-      ggsave(
-        plot = p, filename = filename, width = plot_width, height = plot_height, units = units,
-        dpi = dpi, limitsize = FALSE
-      )
-    }
-    return(p)
-  }
-}
-
-#' Drop all data in the plot (only one observation is kept)
-#'
-#' @param p A \code{ggplot} object or a \code{patchwork} object.
-#' @examples
-#' library(ggplot2)
-#' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
-#'   geom_point() +
-#'   scale_x_continuous(limits = c(10, 30)) +
-#'   scale_y_continuous(limits = c(1, 6)) +
-#'   theme_scop()
-#' object.size(p)
-#'
-#' p_drop <- drop_data(p)
-#' object.size(p_drop)
-#'
-#' p / p_drop
-#'
-#' @export
-drop_data <- function(p) {
-  UseMethod(generic = "drop_data", object = p)
-}
-
-#' @param p A \code{ggplot} object.
-#' @export
-#' @rdname drop_data
-#' @method drop_data ggplot
-drop_data.ggplot <- function(p) {
-  p <- ggplot2:::plot_clone(p)
-
-  # fix the scales for x/y axis and 'fill', 'color', 'shape',...
-  for (i in seq_along(p$scales$scales)) {
-    if (inherits(p$scales$scales[[i]], "ScaleDiscrete")) {
-      p$scales$scales[[i]][["drop"]] <- FALSE
-    }
-    if (inherits(p$scales$scales[[i]], "ScaleContinuous")) {
-      limits <- p$scales$scales[[i]]$get_limits()
-      if (p$scales$scales[[i]]$aesthetics[1] == "x") {
-        p$coordinates$limits$x <- limits
-      }
-      if (p$scales$scales[[i]]$aesthetics[1] == "y") {
-        p$coordinates$limits$y <- limits
-      }
-    }
-  }
-
-  vars <- get_vars(p)
-  # drop main data
-  if (length(p$data) > 0) {
-    vars_modified <- names(which(sapply(p$data[, intersect(colnames(p$data), vars), drop = FALSE], class) == "character"))
-    for (v in vars_modified) {
-      p$data[[v]] <- as.factor(p$data[[v]])
-    }
-    p$data <- p$data[1, , drop = FALSE]
-  }
-
-  # drop layer data
-  for (i in seq_along(p$layers)) {
-    if (length(p$layers[[i]]$data) > 0) {
-      vars_modified <- names(which(sapply(p$layers[[i]]$data[, intersect(colnames(p$layers[[i]]$data), vars), drop = FALSE], class) == "character"))
-      for (v in vars_modified) {
-        p$layers[[i]]$data[[v]] <- as.factor(p$layers[[i]]$data[[v]])
-      }
-      p$layers[[i]]$data <- p$layers[[i]]$data[1, , drop = FALSE]
-    }
-  }
-
-  return(p)
-}
-
-#' @param p A \code{patchwork} object.
-#' @export
-#' @rdname drop_data
-#' @method drop_data patchwork
-drop_data.patchwork <- function(p) {
-  for (i in seq_along(p$patches$plots)) {
-    p$patches$plots[[i]] <- drop_data(p$patches$plots[[i]])
-  }
-  p <- drop_data.ggplot(p)
-  return(p)
-}
-
-#' @export
-#' @rdname drop_data
-#' @method drop_data default
-drop_data.default <- function(p) {
-  return(p)
-}
-
-#' Drop unused data from the plot to reduce the object size
-#'
-#' @param p A \code{ggplot} object or a \code{patchwork} object.
-#' @examples
-#' library(ggplot2)
-#' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
-#'   geom_point()
-#' object.size(p)
-#' colnames(p$data)
-#'
-#' p_slim <- slim_data(p)
-#' object.size(p_slim)
-#' colnames(p_slim$data)
-#'
-#' @export
-slim_data <- function(p) {
-  UseMethod(generic = "slim_data", object = p)
-}
-
-#' @param p A \code{ggplot} object.
-#' @export
-#' @rdname slim_data
-#' @method slim_data ggplot
-slim_data.ggplot <- function(p) {
-  vars <- get_vars(p)
-  if (length(vars) > 0) {
-    p$data <- p$data[, intersect(colnames(p$data), vars), drop = FALSE]
-    for (i in seq_along(p$layers)) {
-      if (length(p$layers[[i]]$data) > 0) {
-        p$layers[[i]]$data <- p$layers[[i]]$data[, intersect(colnames(p$layers[[i]]$data), vars), drop = FALSE]
-      }
-    }
-  }
-  return(p)
-}
-
-#' @param p A \code{patchwork} object.
-#' @export
-#' @rdname slim_data
-#' @method slim_data patchwork
-slim_data.patchwork <- function(p) {
-  for (i in seq_along(p$patches$plots)) {
-    p$patches$plots[[i]] <- slim_data(p$patches$plots[[i]])
-  }
-  p <- slim_data.ggplot(p)
-  return(p)
-}
-
-#' @export
-#' @method slim_data default
-slim_data.default <- function(p) {
-  return(p)
-}
-
-
-#' Get used vars in a ggplot object
-#' @param p A \code{ggplot} object.
-#' @param reverse If \code{TRUE} then will return unused vars.
-#' @param verbose Whether to print messages.
-#' @export
-get_vars <- function(p, reverse, verbose = FALSE) {
-  mappings <- c(
-    as.character(p$mapping),
-    unlist(lapply(p$layers, function(x) as.character(x$mapping))),
-    unlist(lapply(p$layers, function(x) names(p$layers[[1]]$aes_params))),
-    names(p$facet$params$facets), names(p$facet$params$rows), names(p$facet$params$cols)
-  )
-  vars <- unique(unlist(strsplit(gsub("[~\\[\\]\\\"\\(\\)]", " ", unique(mappings), perl = TRUE), " ")))
-  vars_used <- intersect(unique(c(colnames(p$data), unlist(lapply(p$layers, function(x) colnames(x$data))))), vars)
-  if (verbose) {
-    message(
-      "vars_used: ", paste0(vars_used, collapse = ","), "\n",
-      "vars_notused: ", paste0(setdiff(names(p$data), vars), collapse = ",")
-    )
-  }
-  return(vars_used)
-}
-
-#' Convert a color with arbitrary transparency to a fixed color
-#'
-#' This function takes a vector of colors and an alpha level and converts the colors
-#' to fixed colors with the specified alpha level.
-#'
-#' @param colors Color vectors.
-#' @param alpha Alpha level in [0,1]
-#' @examples
-#' colors <- c("red", "blue", "green")
-#' adjcolors(colors, 0.5)
-#' ggplot2::alpha(colors, 0.5)
-#'
-#' show_palettes(list(
-#'   "raw" = colors,
-#'   "adjcolors" = adjcolors(colors, 0.5),
-#'   "ggplot2::alpha" = ggplot2::alpha(colors, 0.5)
-#' ))
-#'
-#' @export
-adjcolors <- function(colors, alpha) {
-  color_df <- as.data.frame(col2rgb(colors) / 255)
-  colors_out <- sapply(color_df, function(color) {
-    color_rgb <- RGBA2RGB(list(color, alpha))
-    return(rgb(color_rgb[1], color_rgb[2], color_rgb[3]))
-  })
-  return(colors_out)
-}
-
-#' Blend colors
-#'
-#' This function blends a list of colors using the specified blend mode.
-#'
-#' @param colors Color vectors.
-#' @param mode Blend mode. One of "blend", "average", "screen", or "multiply".
-#'
-#' @seealso \code{\link{FeatureDimPlot}}
-#'
-#' @examples
-#' blend <- c("red", "green", blendcolors(c("red", "green"), mode = "blend"))
-#' average <- c("red", "green", blendcolors(c("red", "green"), mode = "average"))
-#' screen <- c("red", "green", blendcolors(c("red", "green"), mode = "screen"))
-#' multiply <- c("red", "green", blendcolors(c("red", "green"), mode = "multiply"))
-#' show_palettes(list("blend" = blend, "average" = average, "screen" = screen, "multiply" = multiply))
-#'
-#' @export
-blendcolors <- function(colors, mode = c("blend", "average", "screen", "multiply")) {
-  mode <- match.arg(mode)
-  colors <- colors[!is.na(colors)]
-  if (length(colors) == 0) {
-    return(NA)
-  }
-  if (length(colors) == 1) {
-    return(colors)
-  }
-  rgb <- as.list(as.data.frame(col2rgb(colors) / 255))
-  Clist <- lapply(rgb, function(x) {
-    list(x, 1)
-  })
-  blend_color <- BlendRGBList(Clist, mode = mode)
-  blend_color <- rgb(blend_color[1], blend_color[2], blend_color[3])
-  return(blend_color)
-}
-
-RGBA2RGB <- function(RGBA, BackGround = c(1, 1, 1)) {
-  A <- RGBA[[length(RGBA)]]
-  RGB <- RGBA[[-length(RGBA)]] * A + BackGround * (1 - A)
-  return(RGB)
-}
-
-Blend2Color <- function(C1, C2, mode = "blend") {
-  c1 <- C1[[1]]
-  c1a <- C1[[2]]
-  c2 <- C2[[1]]
-  c2a <- C2[[2]]
-  A <- 1 - (1 - c1a) * (1 - c2a)
-  if (A < 1.0e-6) {
-    return(list(c(0, 0, 0), 1))
-  }
-  if (mode == "blend") {
-    out <- (c1 * c1a + c2 * c2a * (1 - c1a)) / A
-    A <- 1
-  }
-  if (mode == "average") {
-    out <- (c1 + c2) / 2
-    out[out > 1] <- 1
-  }
-  if (mode == "screen") {
-    out <- 1 - (1 - c1) * (1 - c2)
-  }
-  if (mode == "multiply") {
-    out <- c1 * c2
-  }
-  return(list(out, A))
-}
-
-BlendRGBList <- function(Clist, mode = "blend", RGB_BackGround = c(1, 1, 1)) {
-  N <- length(Clist)
-  ClistUse <- Clist
-  while (N != 1) {
-    temp <- ClistUse
-    ClistUse <- list()
-    for (C in temp[1:(length(temp) - 1)]) {
-      c1 <- C[[1]]
-      a1 <- C[[2]]
-      c2 <- temp[[length(temp)]][[1]]
-      a2 <- temp[[length(temp)]][[2]]
-      ClistUse <- append(ClistUse, list(Blend2Color(C1 = list(c1, a1 * (1 - 1 / N)), C2 = list(c2, a2 * 1 / N), mode = mode)))
-    }
-    N <- length(ClistUse)
-  }
-  Result <- list(ClistUse[[1]][[1]], ClistUse[[1]][[2]])
-  Result <- RGBA2RGB(Result, BackGround = RGB_BackGround)
-  return(Result)
-}
-
 #' Visualize cell groups on a 2-dimensional reduction plot
 #'
 #' Plotting cell points on a reduced 2D plane and coloring according to the groups.
@@ -1434,37 +230,45 @@ BlendRGBList <- function(Clist, mode = "blend", RGB_BackGround = c(1, 1, 1)) {
 #' @importFrom utils askYesNo
 #' @export
 #'
-CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.by = NULL, cells = NULL,
-                        show_na = FALSE, show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
-                        pt.size = NULL, pt.alpha = 1, palette = "Paired", palcolor = NULL, bg_color = "grey80",
-                        label = FALSE, label.size = 4, label.fg = "white", label.bg = "black", label.bg.r = 0.1,
-                        label_insitu = FALSE, label_repel = FALSE, label_repulsion = 20,
-                        label_point_size = 1, label_point_color = "black", label_segment_color = "black",
-                        cells.highlight = NULL, cols.highlight = "black", sizes.highlight = 1, alpha.highlight = 1, stroke.highlight = 0.5,
-                        add_density = FALSE, density_color = "grey80", density_filled = FALSE, density_filled_palette = "Greys", density_filled_palcolor = NULL,
-                        add_mark = FALSE, mark_type = c("hull", "ellipse", "rect", "circle"), mark_expand = unit(3, "mm"), mark_alpha = 0.1, mark_linetype = 1,
-                        lineages = NULL, lineages_trim = c(0.01, 0.99), lineages_span = 0.75,
-                        lineages_palette = "Dark2", lineages_palcolor = NULL, lineages_arrow = arrow(length = unit(0.1, "inches")),
-                        lineages_linewidth = 1, lineages_line_bg = "white", lineages_line_bg_stroke = 0.5,
-                        lineages_whiskers = FALSE, lineages_whiskers_linewidth = 0.5, lineages_whiskers_alpha = 0.5,
-                        stat.by = NULL, stat_type = "percent", stat_plot_type = "pie", stat_plot_position = c("stack", "dodge"), stat_plot_size = 0.15,
-                        stat_plot_palette = "Set1", stat_palcolor = NULL, stat_plot_alpha = 1, stat_plot_label = FALSE, stat_plot_label_size = 3,
-                        graph = NULL, edge_size = c(0.05, 0.5), edge_alpha = 0.1, edge_color = "grey40",
-                        paga = NULL, paga_type = "connectivities", paga_node_size = 4,
-                        paga_edge_threshold = 0.01, paga_edge_size = c(0.2, 1), paga_edge_color = "grey40", paga_edge_alpha = 0.5,
-                        paga_transition_threshold = 0.01, paga_transition_size = c(0.2, 1), paga_transition_color = "black", paga_transition_alpha = 1, paga_show_transition = FALSE,
-                        velocity = NULL, velocity_plot_type = "raw", velocity_n_neighbors = ceiling(ncol(srt@assays[[1]]) / 50),
-                        velocity_density = 1, velocity_smooth = 0.5, velocity_scale = 1, velocity_min_mass = 1, velocity_cutoff_perc = 5,
-                        velocity_arrow_color = "black", velocity_arrow_angle = 20,
-                        streamline_L = 5, streamline_minL = 1, streamline_res = 1, streamline_n = 15,
-                        streamline_width = c(0, 0.8), streamline_alpha = 1, streamline_color = NULL, streamline_palette = "RdYlBu", streamline_palcolor = NULL,
-                        streamline_bg_color = "white", streamline_bg_stroke = 0.5,
-                        hex = FALSE, hex.linewidth = 0.5, hex.count = TRUE, hex.bins = 50, hex.binwidth = NULL,
-                        raster = NULL, raster.dpi = c(512, 512),
-                        aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
-                        legend.position = "right", legend.direction = "vertical",
-                        theme_use = "theme_scop", theme_args = list(),
-                        combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
+CellDimPlot <- function(
+    srt,
+    group.by,
+    reduction = NULL, dims = c(1, 2), split.by = NULL, cells = NULL,
+    show_na = FALSE, show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
+    pt.size = NULL, pt.alpha = 1, palette = "Paired", palcolor = NULL, bg_color = "grey80",
+    label = FALSE, label.size = 4, label.fg = "white", label.bg = "black", label.bg.r = 0.1,
+    label_insitu = FALSE, label_repel = FALSE, label_repulsion = 20,
+    label_point_size = 1, label_point_color = "black", label_segment_color = "black",
+    cells.highlight = NULL, cols.highlight = "black", sizes.highlight = 1,
+    alpha.highlight = 1, stroke.highlight = 0.5,
+    add_density = FALSE, density_color = "grey80", density_filled = FALSE,
+    density_filled_palette = "Greys", density_filled_palcolor = NULL,
+    add_mark = FALSE, mark_type = c("hull", "ellipse", "rect", "circle"),
+    mark_expand = unit(3, "mm"), mark_alpha = 0.1, mark_linetype = 1,
+    lineages = NULL, lineages_trim = c(0.01, 0.99), lineages_span = 0.75,
+    lineages_palette = "Dark2", lineages_palcolor = NULL,
+    lineages_arrow = arrow(length = unit(0.1, "inches")),
+    lineages_linewidth = 1, lineages_line_bg = "white",
+    lineages_line_bg_stroke = 0.5,
+    lineages_whiskers = FALSE, lineages_whiskers_linewidth = 0.5, lineages_whiskers_alpha = 0.5,
+    stat.by = NULL, stat_type = "percent", stat_plot_type = "pie", stat_plot_position = c("stack", "dodge"), stat_plot_size = 0.15,
+    stat_plot_palette = "Set1", stat_palcolor = NULL, stat_plot_alpha = 1, stat_plot_label = FALSE, stat_plot_label_size = 3,
+    graph = NULL, edge_size = c(0.05, 0.5), edge_alpha = 0.1, edge_color = "grey40",
+    paga = NULL, paga_type = "connectivities", paga_node_size = 4,
+    paga_edge_threshold = 0.01, paga_edge_size = c(0.2, 1), paga_edge_color = "grey40", paga_edge_alpha = 0.5,
+    paga_transition_threshold = 0.01, paga_transition_size = c(0.2, 1), paga_transition_color = "black", paga_transition_alpha = 1, paga_show_transition = FALSE,
+    velocity = NULL, velocity_plot_type = "raw", velocity_n_neighbors = ceiling(ncol(srt@assays[[1]]) / 50),
+    velocity_density = 1, velocity_smooth = 0.5, velocity_scale = 1, velocity_min_mass = 1, velocity_cutoff_perc = 5,
+    velocity_arrow_color = "black", velocity_arrow_angle = 20,
+    streamline_L = 5, streamline_minL = 1, streamline_res = 1, streamline_n = 15,
+    streamline_width = c(0, 0.8), streamline_alpha = 1, streamline_color = NULL, streamline_palette = "RdYlBu", streamline_palcolor = NULL,
+    streamline_bg_color = "white", streamline_bg_stroke = 0.5,
+    hex = FALSE, hex.linewidth = 0.5, hex.count = TRUE, hex.bins = 50, hex.binwidth = NULL,
+    raster = NULL, raster.dpi = c(512, 512),
+    aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
+    legend.position = "right", legend.direction = "vertical",
+    theme_use = "theme_scop", theme_args = list(),
+    combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
   mark_type <- match.arg(mark_type)
 
@@ -1594,15 +398,33 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
     if (split.by != "All.groups") {
       stop("velocity can only plot on the non-split data")
     }
-    velocity_layers <- VelocityPlot(srt,
+    velocity_layers <- VelocityPlot(
+      srt,
       cells = cells,
-      reduction = reduction, dims = dims, velocity = velocity, plot_type = velocity_plot_type, group_by = group.by, group_palette = palette, group_palcolor = palcolor,
-      n_neighbors = velocity_n_neighbors, density = velocity_density, smooth = velocity_smooth, scale = velocity_scale, min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,
-      arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,
-      streamline_L = streamline_L, streamline_minL = streamline_minL, streamline_res = streamline_res, streamline_n = streamline_n,
-      streamline_width = streamline_width, streamline_alpha = streamline_alpha, streamline_color = streamline_color, streamline_palette = streamline_palette, streamline_palcolor = streamline_palcolor,
-      streamline_bg_color = streamline_bg_color, streamline_bg_stroke = streamline_bg_stroke,
-      aspect.ratio = aspect.ratio, title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
+      reduction = reduction,
+      dims = dims, velocity = velocity,
+      plot_type = velocity_plot_type,
+      group_by = group.by, group_palette = palette,
+      group_palcolor = palcolor,
+      n_neighbors = velocity_n_neighbors,
+      density = velocity_density, smooth = velocity_smooth,
+      scale = velocity_scale, min_mass = velocity_min_mass,
+      cutoff_perc = velocity_cutoff_perc,
+      arrow_color = velocity_arrow_color,
+      arrow_angle = velocity_arrow_angle,
+      streamline_L = streamline_L,
+      streamline_minL = streamline_minL,
+      streamline_res = streamline_res,
+      streamline_n = streamline_n,
+      streamline_width = streamline_width,
+      streamline_alpha = streamline_alpha,
+      streamline_color = streamline_color,
+      streamline_palette = streamline_palette,
+      streamline_palcolor = streamline_palcolor,
+      streamline_bg_color = streamline_bg_color,
+      streamline_bg_stroke = streamline_bg_stroke,
+      aspect.ratio = aspect.ratio,
+      title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,
       legend.position = "bottom", legend.direction = legend.direction,
       theme_use = theme_void, theme_args = theme_args,
       return_layer = TRUE
@@ -1840,13 +662,23 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
 
       stat_plot_list <- list()
       for (i in seq_len(nrow(coor_df))) {
-        stat_plot_list[[i]] <- annotation_custom(as_grob(stat_plot[[coor_df[i, "group"]]] + theme_void() + theme(legend.position = "none")),
-          xmin = coor_df[i, "x"] - x_range * stat_plot_size / 2, ymin = coor_df[i, "y"] - y_range * stat_plot_size / 2,
-          xmax = coor_df[i, "x"] + x_range * stat_plot_size / 2, ymax = coor_df[i, "y"] + y_range * stat_plot_size / 2
+        stat_plot_list[[i]] <- annotation_custom(
+          as_grob(
+            stat_plot[[coor_df[i, "group"]]] +
+              theme_void() +
+              theme(legend.position = "none")
+          ),
+          xmin = coor_df[i, "x"] - x_range * stat_plot_size / 2,
+          ymin = coor_df[i, "y"] - y_range * stat_plot_size / 2,
+          xmax = coor_df[i, "x"] + x_range * stat_plot_size / 2,
+          ymax = coor_df[i, "y"] + y_range * stat_plot_size / 2
         )
       }
       p <- p + stat_plot_list
-      legend_list[["stat.by"]] <- get_legend(stat_plot[[coor_df[i, "group"]]] + theme(legend.position = "bottom"))
+      legend_list[["stat.by"]] <- get_legend(
+        stat_plot[[coor_df[i, "group"]]] +
+          theme(legend.position = legend.position)
+      )
     }
     if (!is.null(lineages)) {
       lineages_layers <- c(list(new_scale_color()), lineages_layers)
@@ -1854,7 +686,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
         legend_list[["lineages"]] <- get_legend(ggplot() +
           lineages_layers +
           theme_scop(
-            legend.position = "bottom",
+            # legend.position = legend.position,
             legend.direction = legend.direction
           ))
       })
@@ -1872,7 +704,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
           legend_list[["paga"]] <- get_legend(ggplot() +
             paga_layers +
             theme_scop(
-              legend.position = "bottom",
+              # legend.position = legend.position,
               legend.direction = legend.direction
             ))
         })
@@ -1891,7 +723,7 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
           legend_list[["velocity"]] <- get_legend(ggplot() +
             velocity_layers +
             theme_scop(
-              legend.position = "bottom",
+              # legend.position = legend.position,
               legend.direction = legend.direction
             ))
         })
@@ -1931,10 +763,12 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
     }
     if (length(legend_list) > 0) {
       legend_list <- legend_list[!sapply(legend_list, is.null)]
-      legend_base <- get_legend(p_base + theme_scop(
-        legend.position = "bottom",
-        legend.direction = legend.direction
-      ))
+      legend_base <- get_legend(
+        p_base + theme_scop(
+          # legend.position = legend.position,
+          legend.direction = legend.direction
+        )
+      )
       if (legend.direction == "vertical") {
         legend <- do.call(cbind, c(list(base = legend_base), legend_list))
       } else {
@@ -2148,28 +982,33 @@ CellDimPlot <- function(srt, group.by, reduction = NULL, dims = c(1, 2), split.b
 #' @importFrom methods slot
 #' @importFrom reshape2 melt
 #' @export
-FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), split.by = NULL, cells = NULL, slot = "data", assay = NULL,
-                           show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
-                           palette = ifelse(isTRUE(compare_features), "Set1", "Spectral"), palcolor = NULL,
-                           pt.size = NULL, pt.alpha = 1, bg_cutoff = 0, bg_color = "grey80",
-                           keep_scale = "feature", lower_quantile = 0, upper_quantile = 0.99, lower_cutoff = NULL, upper_cutoff = NULL,
-                           add_density = FALSE, density_color = "grey80", density_filled = FALSE, density_filled_palette = "Greys", density_filled_palcolor = NULL,
-                           cells.highlight = NULL, cols.highlight = "black", sizes.highlight = 1, alpha.highlight = 1, stroke.highlight = 0.5,
-                           calculate_coexp = FALSE, compare_features = FALSE, color_blend_mode = c("blend", "average", "screen", "multiply"),
-                           label = FALSE, label.size = 4, label.fg = "white", label.bg = "black", label.bg.r = 0.1,
-                           label_insitu = FALSE, label_repel = FALSE, label_repulsion = 20,
-                           label_point_size = 1, label_point_color = "black", label_segment_color = "black",
-                           lineages = NULL, lineages_trim = c(0.01, 0.99), lineages_span = 0.75,
-                           lineages_palette = "Dark2", lineages_palcolor = NULL, lineages_arrow = arrow(length = unit(0.1, "inches")),
-                           lineages_linewidth = 1, lineages_line_bg = "white", lineages_line_bg_stroke = 0.5,
-                           lineages_whiskers = FALSE, lineages_whiskers_linewidth = 0.5, lineages_whiskers_alpha = 0.5,
-                           graph = NULL, edge_size = c(0.05, 0.5), edge_alpha = 0.1, edge_color = "grey40",
-                           hex = FALSE, hex.linewidth = 0.5, hex.color = "grey90", hex.bins = 50, hex.binwidth = NULL,
-                           raster = NULL, raster.dpi = c(512, 512),
-                           aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
-                           legend.position = "right", legend.direction = "vertical",
-                           theme_use = "theme_scop", theme_args = list(),
-                           combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
+FeatureDimPlot <- function(
+    srt, features,
+    reduction = NULL, dims = c(1, 2),
+    split.by = NULL, cells = NULL,
+    slot = "data", assay = NULL,
+    show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
+    palette = ifelse(isTRUE(compare_features), "Set1", "Spectral"), palcolor = NULL,
+    pt.size = NULL, pt.alpha = 1, bg_cutoff = 0, bg_color = "grey80",
+    keep_scale = "feature",
+    lower_quantile = 0, upper_quantile = 0.99, lower_cutoff = NULL, upper_cutoff = NULL,
+    add_density = FALSE, density_color = "grey80", density_filled = FALSE, density_filled_palette = "Greys", density_filled_palcolor = NULL,
+    cells.highlight = NULL, cols.highlight = "black", sizes.highlight = 1, alpha.highlight = 1, stroke.highlight = 0.5,
+    calculate_coexp = FALSE, compare_features = FALSE, color_blend_mode = c("blend", "average", "screen", "multiply"),
+    label = FALSE, label.size = 4, label.fg = "white", label.bg = "black", label.bg.r = 0.1,
+    label_insitu = FALSE, label_repel = FALSE, label_repulsion = 20,
+    label_point_size = 1, label_point_color = "black", label_segment_color = "black",
+    lineages = NULL, lineages_trim = c(0.01, 0.99), lineages_span = 0.75,
+    lineages_palette = "Dark2", lineages_palcolor = NULL, lineages_arrow = arrow(length = unit(0.1, "inches")),
+    lineages_linewidth = 1, lineages_line_bg = "white", lineages_line_bg_stroke = 0.5,
+    lineages_whiskers = FALSE, lineages_whiskers_linewidth = 0.5, lineages_whiskers_alpha = 0.5,
+    graph = NULL, edge_size = c(0.05, 0.5), edge_alpha = 0.1, edge_color = "grey40",
+    hex = FALSE, hex.linewidth = 0.5, hex.color = "grey90", hex.bins = 50, hex.binwidth = NULL,
+    raster = NULL, raster.dpi = c(512, 512),
+    aspect.ratio = 1, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
+    legend.position = "right", legend.direction = "vertical",
+    theme_use = "theme_scop", theme_args = list(),
+    combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
   color_blend_mode <- match.arg(color_blend_mode)
   if (!is.null(keep_scale)) {
@@ -2632,7 +1471,10 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
         if (i %% legend_nrow != 0 && i == total) {
           ncol_insert <- dim(leg_list[[n - 1]])[2] - dim(leg)[2]
           for (col_insert in 1:ncol_insert) {
-            leg <- gtable_add_cols(leg, sum(leg_list[[n - 1]]$widths) / ncol_insert, -1)
+            leg <- gtable::gtable_add_cols(
+              leg,
+              sum(leg_list[[n - 1]]$widths) / ncol_insert, -1
+            )
           }
           leg_list[[n]] <- leg
         }
@@ -2855,12 +1697,14 @@ FeatureDimPlot <- function(srt, features, reduction = NULL, dims = c(1, 2), spli
       if (!is.null(lineages)) {
         lineages_layers <- c(list(new_scale_color()), lineages_layers)
         suppressMessages({
-          legend_list[["lineages"]] <- get_legend(ggplot() +
-            lineages_layers +
-            theme_scop(
-              legend.position = "bottom",
-              legend.direction = legend.direction
-            ))
+          legend_list[["lineages"]] <- get_legend(
+            ggplot() +
+              lineages_layers +
+              theme_scop(
+                # legend.position = legend.position,
+                legend.direction = legend.direction
+              )
+          )
         })
         p <- suppressWarnings({
           p + lineages_layers + theme(legend.position = "none")
@@ -4670,17 +3514,18 @@ CellStatPlot <- function(srt, stat.by, group.by = NULL, split.by = NULL, bg.by =
 #' @importFrom gtable gtable_add_rows gtable_add_cols gtable_add_grob
 #' @importFrom grDevices png dev.control recordPlot dev.off
 #' @export
-StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by = NULL, flip = FALSE,
-                     NA_color = "grey", NA_stat = TRUE, keep_empty = FALSE, individual = FALSE, stat_level = NULL,
-                     plot_type = c("bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", "upset"),
-                     stat_type = c("percent", "count"), position = c("stack", "dodge"),
-                     palette = "Paired", palcolor = NULL, alpha = 1,
-                     bg_palette = "Paired", bg_palcolor = NULL, bg_alpha = 0.2,
-                     label = FALSE, label.size = 3.5, label.fg = "black", label.bg = "white", label.bg.r = 0.1,
-                     aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
-                     legend.position = "right", legend.direction = "vertical",
-                     theme_use = "theme_scop", theme_args = list(),
-                     combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
+StatPlot <- function(
+    meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by = NULL, flip = FALSE,
+    NA_color = "grey", NA_stat = TRUE, keep_empty = FALSE, individual = FALSE, stat_level = NULL,
+    plot_type = c("bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", "upset"),
+    stat_type = c("percent", "count"), position = c("stack", "dodge"),
+    palette = "Paired", palcolor = NULL, alpha = 1,
+    bg_palette = "Paired", bg_palcolor = NULL, bg_alpha = 0.2,
+    label = FALSE, label.size = 3.5, label.fg = "black", label.bg = "white", label.bg.r = 0.1,
+    aspect.ratio = NULL, title = NULL, subtitle = NULL, xlab = NULL, ylab = NULL,
+    legend.position = "right", legend.direction = "vertical",
+    theme_use = "theme_scop", theme_args = list(),
+    combine = TRUE, nrow = NULL, ncol = NULL, byrow = TRUE, force = FALSE, seed = 11) {
   set.seed(seed)
 
   stat_type <- match.arg(stat_type)
@@ -4708,6 +3553,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       meta.data[[i]] <- factor(meta.data[[i]], levels = unique(meta.data[[i]]))
     }
   }
+
   bg_map <- NULL
   if (!is.null(bg.by)) {
     for (g in group.by) {
@@ -4723,6 +3569,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       bg_map[[g]] <- setNames(levels(meta.data[[g]]), levels(meta.data[[g]]))
     }
   }
+
   for (i in unique(stat.by)) {
     if (!i %in% colnames(meta.data)) {
       stop(paste0(i, " is not in the meta.data."))
@@ -4747,14 +3594,21 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       stop("'stat.by' can only be a vector of length <= 7 when 'plot_type' is 'venn'.")
     }
   }
-  levels <- unique(unlist(lapply(meta.data[, stat.by, drop = FALSE], function(x) {
-    if (is.factor(x)) {
-      return(levels(x))
-    }
-    if (is.logical(x)) {
-      return(as.character(unique(x)))
-    }
-  })))
+
+  levels <- unique(
+    unlist(
+      lapply(
+        meta.data[, stat.by, drop = FALSE], function(x) {
+          if (is.factor(x)) {
+            return(levels(x))
+          }
+          if (is.logical(x)) {
+            return(as.character(unique(x)))
+          }
+        }
+      )
+    )
+  )
 
   if (plot_type %in% c("venn", "upset")) {
     if (is.null(stat_level)) {
@@ -4789,6 +3643,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
     warning("stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset", immediate. = TRUE)
     stat_type <- "count"
   }
+
   dat_all <- meta.data[, unique(c(stat.by, group.by, split.by, bg.by)), drop = FALSE]
   nlev <- sapply(dat_all, nlevels)
   nlev <- nlev[nlev > 100]
@@ -5085,17 +3940,20 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
       }
       par(mfrow = c(nrow, ncol))
     }
+
     for (sp in levels(dat_all[[split.by]])) {
       dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]]
       if (plot_type == "venn") {
         check_R(c("ggVennDiagram", "sf"))
         dat_list <- as.list(dat_use[, stat.by])
-        dat_list <- lapply(setNames(names(dat_list), names(dat_list)), function(x) {
-          lg <- dat_list[[x]]
-          names(lg) <- rownames(dat_use)
-          cellkeep <- names(lg)[lg]
-          return(cellkeep)
-        })
+        dat_list <- lapply(
+          setNames(names(dat_list), names(dat_list)), function(x) {
+            lg <- dat_list[[x]]
+            names(lg) <- rownames(dat_use)
+            cellkeep <- names(lg)[lg]
+            return(cellkeep)
+          }
+        )
         venn <- ggVennDiagram::Venn(dat_list)
         data <- ggVennDiagram::process_data(venn)
         dat_venn_region <- ggVennDiagram::venn_region(data)
@@ -5150,6 +4008,7 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
           )
         p <- p + labs(x = sp, title = title, subtitle = subtitle)
       }
+
       if (plot_type == "upset") {
         check_R("ggupset")
         for (n in seq_len(nrow(dat_use))) {
@@ -5178,25 +4037,54 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
           )
         p <- p + labs(title = title, subtitle = subtitle)
       }
+
       if (plot_type == "sankey") {
-        colors <- palette_scop(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
+        colors <- palette_scop(
+          c(unique(
+            unlist(
+              lapply(
+                dat_all[, stat.by, drop = FALSE], levels
+              )
+            )
+          ), NA),
+          palette = palette,
+          palcolor = palcolor,
+          NA_keep = TRUE,
+          NA_color = NA_color
+        )
+
         legend_list <- list()
         for (l in stat.by) {
-          df <- data.frame(factor(levels(dat_use[[l]]), levels = levels(dat_use[[l]])))
+          df <- data.frame(
+            factor(levels(dat_use[[l]]),
+              levels = levels(dat_use[[l]])
+            )
+          )
           colnames(df) <- l
-          legend_list[[l]] <- get_legend(ggplot(data = df) +
-            geom_col(aes(x = 1, y = 1, fill = .data[[l]]), color = "black") +
-            scale_fill_manual(values = colors[levels(dat_use[[l]])]) +
-            guides(fill = guide_legend(
-              title.hjust = 0,
-              title.vjust = 0,
-              order = 1,
-              override.aes = list(size = 4, color = "black", alpha = 1)
-            )) +
-            theme_scop(
-              legend.position = "bottom",
-              legend.direction = legend.direction
-            ))
+
+          legend_list[[l]] <- get_legend(
+            ggplot(data = df) +
+              geom_col(
+                aes(x = 1, y = 1, fill = .data[[l]]),
+                color = "black"
+              ) +
+              scale_fill_manual(
+                values = colors[levels(dat_use[[l]])]
+              ) +
+              guides(
+                fill = guide_legend(
+                  title.hjust = 0,
+                  title.vjust = 0,
+                  order = 1,
+                  override.aes = list(size = 4, color = "black", alpha = 1)
+                )
+              ) +
+              theme_scop(
+                # legend.position = legend.position,
+                legend.direction = legend.direction
+              )
+          )
+
           if (any(is.na(dat_use[[l]]))) {
             raw_levels <- levels(dat_use[[l]])
             dat_use[[l]] <- as.character(dat_use[[l]])
@@ -5204,11 +4092,13 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
             dat_use[[l]] <- factor(dat_use[[l]], levels = c(raw_levels, "NA"))
           }
         }
+
         if (legend.direction == "vertical") {
           legend <- do.call(cbind, legend_list)
         } else {
           legend <- do.call(rbind, legend_list)
         }
+
         dat <- suppressWarnings(make_long(dat_use, all_of(stat.by)))
         dat$node <- factor(dat$node, levels = rev(names(colors)))
         p0 <- ggplot(dat, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = node)) +
@@ -5218,11 +4108,30 @@ StatPlot <- function(meta.data, stat.by, group.by = NULL, split.by = NULL, bg.by
           theme_void() +
           theme(axis.text.x = element_text())
         gtable <- as_grob(p0)
-        gtable <- add_grob(gtable, legend, legend.position)
+        gtable <- add_grob(
+          gtable = gtable,
+          grob = legend,
+          position = legend.position
+        )
         p <- wrap_plots(gtable)
       }
+
       if (plot_type == "chord") {
-        colors <- palette_scop(c(unique(unlist(lapply(dat_all[, stat.by, drop = FALSE], levels))), NA), palette = palette, palcolor = palcolor, NA_keep = TRUE, NA_color = NA_color)
+        colors <- palette_scop(
+          c(
+            unique(
+              unlist(
+                lapply(
+                  dat_all[, stat.by, drop = FALSE], levels
+                )
+              )
+            ), NA
+          ),
+          palette = palette,
+          palcolor = palcolor,
+          NA_keep = TRUE,
+          NA_color = NA_color
+        )
         M <- table(dat_use[[stat.by[1]]], dat_use[[stat.by[2]]], useNA = "ifany")
         m <- matrix(M, ncol = ncol(M), dimnames = dimnames(M))
         colnames(m)[is.na(colnames(m))] <- "NA"
@@ -12613,7 +11522,6 @@ GroupTreePlot <- function() {
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous ggplot_build theme geom_point aes scale_fill_identity facet_null
 #' @importFrom ggnewscale new_scale_fill new_scale_color
 #' @importFrom gtable gtable_add_cols gtable_add_grob
-#' @importFrom grid grob
 #' @importFrom rlang  %||%
 #' @importFrom patchwork wrap_plots
 #' @export
@@ -14700,204 +13608,4 @@ gseaScores <- function(geneList, geneSet, exponent = 1) {
     position = as.integer(hits), gene = names(geneList)
   )
   return(df)
-}
-
-#' @importFrom ggplot2 ggplot_build ggplot_gtable panel_rows panel_cols wrap_dims
-#' @importFrom gtable gtable
-#' @importFrom grid unit unit.pmax is.unit
-#' @importFrom utils modifyList
-#' @importFrom stats na.omit
-#' @importFrom BiocParallel bplapply
-build_patchwork <- function(x, guides = "auto", BPPARAM = BiocParallel::SerialParam()) {
-  x$layout <- modifyList(patchwork:::default_layout, x$layout[!vapply(x$layout, is.null, logical(1))])
-
-  guides <- if (guides == "collect" && x$layout$guides != "keep") {
-    "collect"
-  } else {
-    x$layout$guides
-  }
-  # bpprogressbar(BPPARAM) <- TRUE
-  gt <- bplapply(x$plots, patchwork:::plot_table, guides = guides, BPPARAM = BPPARAM)
-  fixed_asp <- vapply(gt, function(x) isTRUE(x$respect), logical(1))
-  guide_grobs <- unlist(lapply(gt, `[[`, "collected_guides"), recursive = FALSE)
-  gt <- bplapply(gt, patchwork:::simplify_gt, BPPARAM = BPPARAM)
-  gt <- patchwork:::add_insets(gt)
-  if (is.null(x$layout$design)) {
-    if (is.null(x$layout$ncol) && !is.null(x$layout$widths) && length(x$layout$widths) > 1) {
-      x$layout$ncol <- length(x$layout$widths)
-    }
-    if (is.null(x$layout$nrow) && !is.null(x$layout$heights) && length(x$layout$heights) > 1) {
-      x$layout$nrow <- length(x$layout$heights)
-    }
-    dims <- wrap_dims(length(gt), nrow = x$layout$nrow, ncol = x$layout$ncol)
-    x$layout$design <- patchwork:::create_design(dims[2], dims[1], x$layout$byrow)
-  } else {
-    dims <- c(
-      max(x$layout$design$b),
-      max(x$layout$design$r)
-    )
-  }
-
-  TABLE_COLS <- patchwork:::TABLE_COLS
-  TABLE_ROWS <- patchwork:::TABLE_ROWS
-  PANEL_ROW <- patchwork:::PANEL_ROW
-  PANEL_COL <- patchwork:::PANEL_COL
-
-  gt_new <- gtable(
-    unit(rep(0, TABLE_COLS * dims[2]), "null"),
-    unit(rep(0, TABLE_ROWS * dims[1]), "null")
-  )
-  design <- as.data.frame(unclass(x$layout$design))
-  if (nrow(design) < length(gt)) {
-    warning("Too few patch areas to hold all plots. Dropping plots", call. = FALSE)
-    gt <- gt[seq_len(nrow(design))]
-    fixed_asp <- fixed_asp[seq_len(nrow(design))]
-  } else {
-    design <- design[seq_along(gt), ]
-  }
-  if (any(design$t < 1)) design$t[design$t < 1] <- 1
-  if (any(design$l < 1)) design$l[design$l < 1] <- 1
-  if (any(design$b > dims[1])) design$b[design$b > dims[1]] <- dims[1]
-  if (any(design$r > dims[2])) design$r[design$r > dims[2]] <- dims[2]
-  max_z <- lapply(gt, function(x) max(x$layout$z))
-  max_z <- c(0, cumsum(max_z))
-  gt_new$layout <- do.call(rbind, lapply(seq_along(gt), function(i) {
-    loc <- design[i, ]
-    lay <- gt[[i]]$layout
-    lay$name <- paste0(lay$name, "-", i)
-    lay$t <- lay$t + ifelse(lay$t <= PANEL_ROW, (loc$t - 1) * TABLE_ROWS, (loc$b - 1) * TABLE_ROWS)
-    lay$l <- lay$l + ifelse(lay$l <= PANEL_COL, (loc$l - 1) * TABLE_COLS, (loc$r - 1) * TABLE_COLS)
-    lay$b <- lay$b + ifelse(lay$b < PANEL_ROW, (loc$t - 1) * TABLE_ROWS, (loc$b - 1) * TABLE_ROWS)
-    lay$r <- lay$r + ifelse(lay$r < PANEL_COL, (loc$l - 1) * TABLE_COLS, (loc$r - 1) * TABLE_COLS)
-    lay$z <- lay$z + max_z[i]
-    lay
-  }))
-  table_dimensions <- patchwork:::table_dims(
-    lapply(gt, `[[`, "widths"),
-    lapply(gt, `[[`, "heights"),
-    design,
-    dims[2],
-    dims[1]
-  )
-  gt_new$grobs <- patchwork:::set_grob_sizes(gt, table_dimensions$widths, table_dimensions$heights, design)
-  gt_new$widths <- table_dimensions$widths
-  gt_new$heights <- table_dimensions$heights
-  widths <- rep(x$layout$widths, length.out = dims[2])
-  heights <- rep(x$layout$heights, length.out = dims[1])
-  gt_new <- patchwork:::set_panel_dimensions(gt_new, gt, widths, heights, fixed_asp, design)
-  if (x$layout$guides == "collect") {
-    guide_grobs <- patchwork:::collapse_guides(guide_grobs)
-    if (length(guide_grobs) != 0) {
-      theme <- x$annotation$theme
-      if (!attr(theme, "complete")) {
-        theme <- theme_get() + theme
-      }
-      guide_grobs <- patchwork:::assemble_guides(guide_grobs, theme)
-      gt_new <- patchwork:::attach_guides(gt_new, guide_grobs, theme)
-    }
-  } else {
-    gt_new$collected_guides <- guide_grobs
-  }
-
-  class(gt_new) <- c("gtable_patchwork", class(gt_new))
-  gt_new
-}
-
-#' @importFrom utils modifyList
-patchworkGrob <- function(x, BPPARAM = BiocParallel::SerialParam(), ...) {
-  annotation <- modifyList(patchwork:::default_annotation, x$patches$annotation[!vapply(x$patches$annotation, is.null, logical(1))])
-  x <- patchwork:::recurse_tags(x, annotation$tag_levels, annotation$tag_prefix, annotation$tag_suffix, annotation$tag_sep)$patches
-  plot <- patchwork:::get_patches(x)
-  gtable <- build_patchwork(plot, BPPARAM = BPPARAM)
-  gtable <- patchwork:::annotate_table(gtable, annotation)
-  class(gtable) <- setdiff(class(gtable), "gtable_patchwork")
-  gtable
-}
-
-#' @importFrom grid grobTree
-#' @importFrom ggplot2 ggplotGrob
-as_grob <- function(plot, ...) {
-  if (inherits(plot, "gList")) {
-    grobTree(plot)
-  } else if (inherits(plot, "patchwork")) {
-    patchworkGrob(plot, ...)
-  } else if (inherits(plot, "ggplot")) {
-    ggplotGrob(plot)
-  } else {
-    warning("Cannot convert object of class ", paste0(class(plot), collapse = ","), " into a grob.")
-  }
-}
-
-#' @importFrom grid unit
-#' @importFrom gtable gtable_col
-as_gtable <- function(plot, ...) {
-  if (inherits(plot, "gtable")) {
-    return(plot)
-  }
-  if (inherits(plot, "grob")) {
-    u <- unit(1, "null")
-    gt <- gtable_col(NULL, list(plot), u, u)
-    gt$layout$clip <- "inherit"
-    return(gt)
-  } else {
-    grob <- as_grob(plot, ...)
-    if (inherits(grob, "gtable")) {
-      return(grob)
-    } else {
-      return(as_gtable(grob, ...))
-    }
-  }
-}
-
-get_legend <- function(plot) {
-  plot <- as_gtable(plot)
-  grob_names <- plot$layout$name
-  grobs <- plot$grobs
-  grobIndex <- which(grepl("guide-box", grob_names))
-  grobIndex <- grobIndex[1]
-  matched_grobs <- grobs[[grobIndex]]
-  return(matched_grobs)
-}
-
-#' @importFrom grid is.grob grobWidth grobHeight
-#' @importFrom gtable is.gtable gtable_add_rows gtable_add_cols gtable_add_grob
-add_grob <- function(gtable, grob, position = c("top", "bottom", "left", "right", "none"), space = NULL, clip = "on") {
-  position <- match.arg(position)
-  if (position == "none" || is.null(grob)) {
-    return(gtable)
-  }
-
-  if (is.null(space)) {
-    if (is.gtable(grob)) {
-      if (position %in% c("top", "bottom")) {
-        space <- sum(grob$heights)
-      } else {
-        space <- sum(grob$widths)
-      }
-    } else if (is.grob(grob)) {
-      if (position %in% c("top", "bottom")) {
-        space <- grobHeight(grob)
-      } else {
-        space <- grobWidth(grob)
-      }
-    }
-  }
-
-  if (position == "top") {
-    gtable <- gtable_add_rows(gtable, space, 0)
-    gtable <- gtable_add_grob(gtable, grob, t = 1, l = mean(gtable$layout[grepl(pattern = "panel", x = gtable$layout$name), "l"]), clip = clip)
-  }
-  if (position == "bottom") {
-    gtable <- gtable_add_rows(gtable, space, -1)
-    gtable <- gtable_add_grob(gtable, grob, t = dim(gtable)[1], l = mean(gtable$layout[grepl(pattern = "panel", x = gtable$layout$name), "l"]), clip = clip)
-  }
-  if (position == "left") {
-    gtable <- gtable_add_cols(gtable, space, 0)
-    gtable <- gtable_add_grob(gtable, grob, t = mean(gtable$layout[grep("panel", gtable$layout$name), "t"]), l = 1, clip = clip)
-  }
-  if (position == "right") {
-    gtable <- gtable_add_cols(gtable, space, -1)
-    gtable <- gtable_add_grob(gtable, grob, t = mean(gtable$layout[grep("panel", gtable$layout$name), "t"]), l = dim(gtable)[2], clip = clip)
-  }
-  return(gtable)
 }

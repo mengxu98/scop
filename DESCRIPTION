@@ -119,7 +119,6 @@ Suggests:
     umap,
     UCell,
     withr
-LinkingTo: Rcpp
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/mxtemplate
 Config/testthat/edition: 3
