@@ -10,8 +10,12 @@
 #' The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter. The default is \code{3.8-1}.
 #'
 #' @export
-PrepareEnv <- function(conda = "auto", miniconda_repo = "https://repo.anaconda.com/miniconda",
-                       envname = NULL, version = "3.8-1", force = FALSE, ...) {
+PrepareEnv <- function(
+    conda = "auto",
+    miniconda_repo = "https://repo.anaconda.com/miniconda",
+    envname = NULL,
+    version = "3.8-1",
+    force = FALSE, ...) {
   envname <- get_envname(envname)
 
   requirements <- Env_requirements(version = version)
@@ -283,7 +287,11 @@ installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
   if (isFALSE(env)) {
     stop("Can not find the conda environment: ", envname)
   }
-  all_installed <- reticulate:::conda_list_packages(conda = conda, envname = envname, no_pip = FALSE)
+  all_installed <- reticulate:::conda_list_packages(
+    conda = conda,
+    envname = envname,
+    no_pip = FALSE
+  )
   return(all_installed)
 }
 
@@ -291,7 +299,10 @@ installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
 #'
 #' @inheritParams check_Python
 #' @export
-exist_Python_pkgs <- function(packages, envname = NULL, conda = "auto") {
+exist_Python_pkgs <- function(
+    packages,
+    envname = NULL,
+    conda = "auto") {
   envname <- get_envname(envname)
   if (identical(conda, "auto")) {
     conda <- find_conda()
@@ -607,7 +618,6 @@ check_R <- function(
   for (pkg in packages) {
     version <- NULL
     if (grepl("/", pkg)) {
-      # github package
       pkg_name <- strsplit(pkg, split = "/|@|==", perl = TRUE)[[1]][[2]]
     } else {
       pkg_name <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]][[1]]
@@ -702,7 +712,6 @@ try_get <- function(
   ntry <- 0
   while (inherits(out, "error")) {
     ntry <- ntry + 1
-    # print(paste0("ntry: ", ntry, collapse = ""))
     out <- tryCatch(
       expr = eval.parent(substitute(expr)),
       error = function(error) {
@@ -729,7 +738,8 @@ try_get <- function(
 #' Download File from the Internet
 #'
 #' @inheritParams utils::download.file
-#' @param methods Methods to be used for downloading files. The default is to try different download methods in turn until the download is successfully completed.
+#' @param methods Methods to be used for downloading files.
+#' The default is to try different download methods in turn until the download is successfully completed.
 #' @param max_tries Number of tries for each download method.
 #' @param ... Other arguments passed to \code{\link[utils]{download.file}}
 #'
@@ -803,7 +813,9 @@ rescale <- function(
   }
 }
 
-zero_range <- function(x, tol = 1000 * .Machine$double.eps) {
+zero_range <- function(
+    x,
+    tol = 1000 * .Machine$double.eps) {
   if (length(x) == 1) {
     return(TRUE)
   }
@@ -826,10 +838,13 @@ zero_range <- function(x, tol = 1000 * .Machine$double.eps) {
   abs((x[1] - x[2]) / m) < tol
 }
 
-#' @importFrom grDevices col2rgb rgb
 col2hex <- function(cname) {
-  colMat <- col2rgb(cname)
-  rgb(red = colMat[1, ] / 255, green = colMat[2, ] / 255, blue = colMat[3, ] / 255)
+  colMat <- grDevices::col2rgb(cname)
+  grDevices::rgb(
+    red = colMat[1, ] / 255,
+    green = colMat[2, ] / 255,
+    blue = colMat[3, ] / 255
+  )
 }
 
 #' Invoke a function with a list of arguments
@@ -942,65 +957,4 @@ str_wrap <- function(x, width = 80) {
     )
   )
   return(x_wrap)
-}
-
-#' Split a vector into the chunks
-#'
-#' @param x A vector.
-#' @param nchunks Number of chunks.
-#' @examples
-#' x <- 1:10
-#' names(x) <- letters[1:10]
-#' tochunks(x, nchunks = 3)
-#' @export
-tochunks <- function(x, nchunks) {
-  split(x, cut(seq_along(x), nchunks, labels = FALSE))
-}
-
-#' Generate a iterator along chunks of a vector
-#' @param x A vector.
-#' @param nchunks Number of chunks.
-#' @examples
-#' \dontrun{
-#' library(BiocParallel)
-#' x <- 1:100
-#' BPPARAM <- bpparam()
-#' bpprogressbar(BPPARAM) <- TRUE
-#' bpworkers(BPPARAM) <- 10
-#' slow_fun <- function(x) {
-#'   out <- NULL
-#'   for (i in seq_along(x)) {
-#'     Sys.sleep(0.5)
-#'     out[[i]] <- x[[i]] + 3
-#'   }
-#'   return(out)
-#' }
-#' system.time({
-#'   res0 <- lapply(x, FUN = slow_fun)
-#' })
-#' unlist(res0, recursive = FALSE, use.names = FALSE)[71:73]
-#' system.time({
-#'   res1 <- bplapply(x, FUN = slow_fun, BPPARAM = BPPARAM)
-#' })
-#' unlist(res1, recursive = FALSE, use.names = FALSE)[71:73]
-#' system.time({
-#'   res2 <- bplapply(tochunks(x, nchunks = bpworkers(BPPARAM)), FUN = slow_fun, BPPARAM = BPPARAM)
-#' })
-#' unlist(res2, recursive = FALSE, use.names = FALSE)[71:73]
-#' system.time({
-#'   res3 <- bpiterate(ITER = iterchunks(x, nchunks = bpworkers(BPPARAM)), FUN = slow_fun, BPPARAM = BPPARAM)
-#' })
-#' unlist(res3, recursive = FALSE, use.names = FALSE)[71:73]
-#' }
-#' @export
-iterchunks <- function(x, nchunks) {
-  chunks <- tochunks(x, nchunks)
-  i <- 0L
-  function() {
-    if (i >= length(chunks)) {
-      return(NULL)
-    }
-    i <<- i + 1L
-    x[chunks[[i]]]
-  }
 }

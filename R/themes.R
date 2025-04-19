@@ -13,29 +13,75 @@
 #' p + theme_scop()
 #' @importFrom ggplot2 theme element_blank element_text element_rect margin
 #' @export
-theme_scop <- function(aspect.ratio = NULL, base_size = 12, ...) {
+theme_scop <- function(
+    aspect.ratio = NULL,
+    base_size = 12,
+    ...) {
   text_size_scale <- base_size / 12
   args1 <- list(
     aspect.ratio = aspect.ratio,
-    text = element_text(size = 12 * text_size_scale, color = "black"),
-    plot.title = element_text(size = 14 * text_size_scale, colour = "black", vjust = 1),
-    plot.subtitle = element_text(size = 13 * text_size_scale, hjust = 0, margin = margin(b = 3)),
-    plot.background = element_rect(fill = "white", color = "white"),
+    text = element_text(
+      size = 12 * text_size_scale,
+      color = "black"
+    ),
+    plot.title = element_text(
+      size = 14 * text_size_scale,
+      colour = "black", vjust = 1
+    ),
+    plot.subtitle = element_text(
+      size = 13 * text_size_scale,
+      hjust = 0,
+      margin = margin(b = 3)
+    ),
+    plot.background = element_rect(
+      fill = "white",
+      color = "white"
+    ),
     axis.line = element_blank(),
-    axis.title = element_text(size = 13 * text_size_scale, colour = "black"),
-    axis.text = element_text(size = 12 * text_size_scale, colour = "black"),
-    strip.text = element_text(size = 12.5 * text_size_scale, colour = "black", hjust = 0.5, margin = margin(3, 3, 3, 3)),
-    strip.background = element_rect(fill = "transparent", linetype = 0),
+    axis.title = element_text(
+      size = 13 * text_size_scale,
+      colour = "black"
+    ),
+    axis.text = element_text(
+      size = 12 * text_size_scale,
+      colour = "black"
+    ),
+    strip.text = element_text(
+      size = 12.5 * text_size_scale,
+      colour = "black",
+      hjust = 0.5,
+      margin = margin(3, 3, 3, 3)
+    ),
+    strip.background = element_rect(
+      fill = "transparent", linetype = 0
+    ),
     strip.switch.pad.grid = unit(-1, "pt"),
     strip.switch.pad.wrap = unit(-1, "pt"),
     strip.placement = "outside",
-    legend.title = element_text(size = 12 * text_size_scale, colour = "black", hjust = 0),
-    legend.text = element_text(size = 11 * text_size_scale, colour = "black"),
-    legend.key = element_rect(fill = "transparent", color = "transparent"),
+    legend.title = element_text(
+      size = 12 * text_size_scale,
+      colour = "black",
+      hjust = 0
+    ),
+    legend.text = element_text(
+      size = 11 * text_size_scale,
+      colour = "black"
+    ),
+    legend.key = element_rect(
+      fill = "transparent",
+      color = "transparent"
+    ),
     legend.key.size = unit(10, "pt"),
     legend.background = element_blank(),
-    panel.background = element_rect(fill = "white", color = "white"),
-    panel.border = element_rect(fill = "transparent", colour = "black", linewidth = 1)
+    panel.background = element_rect(
+      fill = "white",
+      color = "white"
+    ),
+    panel.border = element_rect(
+      fill = "transparent",
+      colour = "black",
+      linewidth = 1
+    )
   )
   args2 <- as.list(match.call())[-1]
   call.envir <- parent.frame(1)
@@ -81,7 +127,13 @@ theme_scop <- function(aspect.ratio = NULL, base_size = 12, ...) {
 #' @importFrom ggplot2 theme element_blank margin annotation_custom coord_cartesian
 #' @importFrom grid grobTree gList linesGrob textGrob arrow gpar
 #' @export
-theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab = "", ylab = "", lab_size = 12, ...) {
+theme_blank <- function(
+    add_coord = TRUE,
+    xlen_npc = 0.15,
+    ylen_npc = 0.15,
+    xlab = "",
+    ylab = "",
+    lab_size = 12, ...) {
   args1 <- list(
     panel.border = element_blank(),
     panel.grid = element_blank(),
@@ -93,7 +145,13 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
     legend.box.margin = margin(0, 0, 0, 0),
     legend.margin = margin(0, 0, 0, 0),
     legend.key.size = unit(10, "pt"),
-    plot.margin = margin(lab_size + 2, lab_size + 2, lab_size + 2, lab_size + 2, unit = "points")
+    plot.margin = margin(
+      lab_size + 2,
+      lab_size + 2,
+      lab_size + 2,
+      lab_size + 2,
+      unit = "points"
+    )
   )
   args2 <- as.list(match.call())[-1]
   call.envir <- parent.frame(1)
@@ -115,16 +173,44 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
     args = args
   )
   if (isTRUE(add_coord)) {
-    g <- grobTree(gList(
-      linesGrob(x = unit(c(0, xlen_npc), "npc"), y = unit(c(0, 0), "npc"), arrow = arrow(length = unit(0.02, "npc")), gp = gpar(lwd = 2)),
-      textGrob(label = xlab, x = unit(0, "npc"), y = unit(0, "npc"), vjust = 4 / 3, hjust = 0, gp = gpar(fontsize = lab_size)),
-      linesGrob(x = unit(c(0, 0), "npc"), y = unit(c(0, ylen_npc), "npc"), arrow = arrow(length = unit(0.02, "npc")), gp = gpar(lwd = 2)),
-      textGrob(label = ylab, x = unit(0, "npc"), y = unit(0, "npc"), vjust = -2 / 3, hjust = 0, rot = 90, gp = gpar(fontsize = lab_size))
-    ))
+    g <- grid::grobTree(
+      grid::gList(
+        grid::linesGrob(
+          x = unit(c(0, xlen_npc), "npc"),
+          y = unit(c(0, 0), "npc"),
+          arrow = grid::arrow(
+            length = unit(0.02, "npc")
+          ),
+          gp = grid::gpar(lwd = 2)
+        ),
+        grid::textGrob(
+          label = xlab,
+          x = unit(0, "npc"),
+          y = unit(0, "npc"),
+          vjust = 4 / 3,
+          hjust = 0,
+          gp = grid::gpar(fontsize = lab_size)
+        ),
+        grid::linesGrob(
+          x = unit(c(0, 0), "npc"),
+          y = unit(c(0, ylen_npc), "npc"),
+          arrow = grid::arrow(length = unit(0.02, "npc")),
+          gp = grid::gpar(lwd = 2)
+        ),
+        grid::textGrob(
+          label = ylab, x = unit(0, "npc"),
+          y = unit(0, "npc"),
+          vjust = -2 / 3,
+          hjust = 0,
+          rot = 90,
+          gp = grid::gpar(fontsize = lab_size)
+        )
+      )
+    )
     return(list(
-      list(annotation_custom(g)),
+      list(ggplot2::annotation_custom(g)),
       list(theme_scop() + out),
-      list(coord_cartesian(clip = "off"))
+      list(ggplot2::coord_cartesian(clip = "off"))
     ))
   } else {
     return(list(
@@ -135,11 +221,13 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
 
 #' Color palettes collected in scop.
 #'
-#' @param x A vector of character/factor or numeric values. If missing, numeric values 1:n will be used as x.
+#' @param x A vector of character/factor or numeric values.
+#' If missing, numeric values 1:n will be used as x.
 #' @param n The number of colors to return for numeric values.
 #' @param palette Palette name. All available palette names can be queried with \code{show_palettes()}.
 #' @param palcolor Custom colors used to create a color palette.
-#' @param type Type of \code{x}. Can be one of "auto", "discrete" or "continuous". The default is "auto", which automatically detects if \code{x} is a numeric value.
+#' @param type Type of \code{x}. Can be one of "auto", "discrete" or "continuous".
+#' The default is "auto", which automatically detects if \code{x} is a numeric value.
 #' @param matched If \code{TRUE}, will return a color vector of the same length as \code{x}.
 #' @param reverse Whether to invert the colors.
 #' @param NA_keep Whether to keep the color assignment to NA in \code{x}.
@@ -149,31 +237,62 @@ theme_blank <- function(add_coord = TRUE, xlen_npc = 0.15, ylen_npc = 0.15, xlab
 #'
 #' @examples
 #' x <- c(1:3, NA, 3:5)
-#' (pal1 <- palette_scop(x, palette = "Spectral"))
-#' (pal2 <- palette_scop(x, palcolor = c("red", "white", "blue")))
-#' (pal3 <- palette_scop(x, palette = "Spectral", n = 10))
-#' (pal4 <- palette_scop(x, palette = "Spectral", n = 10, reverse = TRUE))
-#' (pal5 <- palette_scop(x, palette = "Spectral", matched = TRUE))
-#' (pal6 <- palette_scop(x, palette = "Spectral", matched = TRUE, NA_keep = TRUE))
-#' (pal7 <- palette_scop(x, palette = "Paired", type = "discrete"))
-#' show_palettes(list(pal1, pal2, pal3, pal4, pal5, pal6, pal7))
+#' (pal1 <- palette_scop(
+#'   x,
+#'   palette = "Spectral"
+#' ))
+#' (pal2 <- palette_scop(
+#'   x,
+#'   palcolor = c("red", "white", "blue")
+#' ))
+#' (pal3 <- palette_scop(
+#'   x,
+#'   palette = "Spectral",
+#'   n = 10
+#' ))
+#' (pal4 <- palette_scop(
+#'   x,
+#'   palette = "Spectral",
+#'   n = 10,
+#'   reverse = TRUE
+#' ))
+#' (pal5 <- palette_scop(
+#'   x,
+#'   palette = "Spectral",
+#'   matched = TRUE
+#' ))
+#' (pal6 <- palette_scop(
+#'   x,
+#'   palette = "Spectral",
+#'   matched = TRUE,
+#'   NA_keep = TRUE
+#' ))
+#' show_palettes(
+#'   list(pal1, pal2, pal3, pal4, pal5, pal6, pal7)
+#' )
 #'
 #' all_palettes <- show_palettes(return_palettes = TRUE)
 #' names(all_palettes)
 #'
-#' @importFrom grDevices colorRampPalette
-#' @importFrom stats setNames
 #' @export
-#'
-palette_scop <- function(x, n = 100, palette = "Paired", palcolor = NULL, type = "auto",
-                         matched = FALSE, reverse = FALSE, NA_keep = FALSE, NA_color = "grey80") {
+palette_scop <- function(
+    x, n = 100,
+    palette = "Paired",
+    palcolor = NULL,
+    type = "auto",
+    matched = FALSE,
+    reverse = FALSE,
+    NA_keep = FALSE,
+    NA_color = "grey80") {
   palette_list <- scop::palette_list
   if (missing(x)) {
     x <- 1:n
     type <- "continuous"
   }
   if (!palette %in% names(palette_list)) {
-    stop("The palette name (", palette, ") is invalid! You can check the available palette names with 'show_palettes()'. Or pass palette colors via the 'palcolor' parameter.")
+    stop(
+      "The palette name (", palette, ") is invalid! You can check the available palette names with 'show_palettes()'. Or pass palette colors via the 'palcolor' parameter."
+    )
   }
   if (is.list(palcolor)) {
     palcolor <- unlist(palcolor)
@@ -208,16 +327,16 @@ palette_scop <- function(x, n = 100, palette = "Paired", palcolor = NULL, type =
     }
     n_x <- nlevels(x)
     if (isTRUE(attr(palcolor, "type") == "continuous")) {
-      color <- colorRampPalette(palcolor)(n_x)
+      color <- grDevices::colorRampPalette(palcolor)(n_x)
     } else {
       color <- ifelse(rep(n_x, n_x) <= pal_n,
         palcolor[1:n_x],
-        colorRampPalette(palcolor)(n_x)
+        grDevices::colorRampPalette(palcolor)(n_x)
       )
     }
     names(color) <- levels(x)
     if (any(is.na(x))) {
-      color <- c(color, setNames(NA_color, "NA"))
+      color <- c(color, stats::setNames(NA_color, "NA"))
     }
     if (isTRUE(matched)) {
       color <- color[x]
@@ -233,26 +352,40 @@ palette_scop <- function(x, n = 100, palette = "Paired", palcolor = NULL, type =
       values <- as.factor(rep(unique(na.omit(as.numeric(x))), n))
     } else {
       if (isTRUE(matched)) {
-        values <- cut(x, breaks = seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = n + 1), include.lowest = TRUE)
+        values <- cut(
+          x,
+          breaks = seq(min(x, na.rm = TRUE),
+            max(x, na.rm = TRUE),
+            length.out = n + 1
+          ),
+          include.lowest = TRUE
+        )
       } else {
-        values <- cut(1:100, breaks = seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), length.out = n + 1), include.lowest = TRUE)
+        values <- cut(
+          1:100,
+          breaks = seq(min(x, na.rm = TRUE),
+            max(x, na.rm = TRUE),
+            length.out = n + 1
+          ),
+          include.lowest = TRUE
+        )
       }
     }
 
     n_x <- nlevels(values)
     color <- ifelse(rep(n_x, n_x) <= pal_n,
       palcolor[1:n_x],
-      colorRampPalette(palcolor)(n_x)
+      grDevices::colorRampPalette(palcolor)(n_x)
     )
     names(color) <- levels(values)
     if (any(is.na(x))) {
-      color <- c(color, setNames(NA_color, "NA"))
+      color <- c(color, stats::setNames(NA_color, "NA"))
     }
     if (isTRUE(matched)) {
       if (all(is.na(x))) {
         color <- NA_color
-      } else if (length(unique(na.omit(x))) == 1) {
-        color <- color[as.character(unique(na.omit(x)))]
+      } else if (length(unique(stats::na.omit(x))) == 1) {
+        color <- color[as.character(unique(stats::na.omit(x)))]
         color[is.na(color)] <- NA_color
       } else {
         color <- color[as.character(values)]
@@ -1203,11 +1336,6 @@ BlendRGBList <- function(Clist, mode = "blend", RGB_BackGround = c(1, 1, 1)) {
 }
 
 
-#' @importFrom ggplot2 ggplot_build ggplot_gtable panel_rows panel_cols wrap_dims
-#' @importFrom gtable gtable
-#' @importFrom grid unit unit.pmax is.unit
-#' @importFrom stats na.omit
-#' @importFrom BiocParallel bplapply
 build_patchwork <- function(
     x,
     guides = "auto",
@@ -1222,11 +1350,24 @@ build_patchwork <- function(
   } else {
     x$layout$guides
   }
-  # bpprogressbar(BPPARAM) <- TRUE
-  gt <- bplapply(x$plots, patchwork:::plot_table, guides = guides, BPPARAM = BPPARAM)
-  fixed_asp <- vapply(gt, function(x) isTRUE(x$respect), logical(1))
-  guide_grobs <- unlist(lapply(gt, `[[`, "collected_guides"), recursive = FALSE)
-  gt <- bplapply(gt, patchwork:::simplify_gt, BPPARAM = BPPARAM)
+  gt <- BiocParallel::bplapply(
+    x$plots,
+    patchwork:::plot_table,
+    guides = guides,
+    BPPARAM = BPPARAM
+  )
+  fixed_asp <- vapply(
+    gt, function(x) isTRUE(x$respect), logical(1)
+  )
+  guide_grobs <- unlist(
+    lapply(gt, `[[`, "collected_guides"),
+    recursive = FALSE
+  )
+  gt <- BiocParallel::bplapply(
+    gt,
+    patchwork:::simplify_gt,
+    BPPARAM = BPPARAM
+  )
   gt <- patchwork:::add_insets(gt)
   if (is.null(x$layout$design)) {
     if (is.null(x$layout$ncol) && !is.null(x$layout$widths) && length(x$layout$widths) > 1) {
@@ -1235,8 +1376,16 @@ build_patchwork <- function(
     if (is.null(x$layout$nrow) && !is.null(x$layout$heights) && length(x$layout$heights) > 1) {
       x$layout$nrow <- length(x$layout$heights)
     }
-    dims <- wrap_dims(length(gt), nrow = x$layout$nrow, ncol = x$layout$ncol)
-    x$layout$design <- patchwork:::create_design(dims[2], dims[1], x$layout$byrow)
+    dims <- ggplot2::wrap_dims(
+      length(gt),
+      nrow = x$layout$nrow,
+      ncol = x$layout$ncol
+    )
+    x$layout$design <- patchwork:::create_design(
+      dims[2],
+      dims[1],
+      x$layout$byrow
+    )
   } else {
     dims <- c(
       max(x$layout$design$b),
@@ -1249,7 +1398,7 @@ build_patchwork <- function(
   PANEL_ROW <- patchwork:::PANEL_ROW
   PANEL_COL <- patchwork:::PANEL_COL
 
-  gt_new <- gtable(
+  gt_new <- gtable::gtable(
     unit(rep(0, TABLE_COLS * dims[2]), "null"),
     unit(rep(0, TABLE_ROWS * dims[1]), "null")
   )
@@ -1271,10 +1420,27 @@ build_patchwork <- function(
     loc <- design[i, ]
     lay <- gt[[i]]$layout
     lay$name <- paste0(lay$name, "-", i)
-    lay$t <- lay$t + ifelse(lay$t <= PANEL_ROW, (loc$t - 1) * TABLE_ROWS, (loc$b - 1) * TABLE_ROWS)
-    lay$l <- lay$l + ifelse(lay$l <= PANEL_COL, (loc$l - 1) * TABLE_COLS, (loc$r - 1) * TABLE_COLS)
-    lay$b <- lay$b + ifelse(lay$b < PANEL_ROW, (loc$t - 1) * TABLE_ROWS, (loc$b - 1) * TABLE_ROWS)
-    lay$r <- lay$r + ifelse(lay$r < PANEL_COL, (loc$l - 1) * TABLE_COLS, (loc$r - 1) * TABLE_COLS)
+    lay$t <- lay$t +
+      ifelse(
+        lay$t <= PANEL_ROW, (loc$t - 1) * TABLE_ROWS,
+        (loc$b - 1) * TABLE_ROWS
+      )
+    lay$l <- lay$l +
+      ifelse(
+        lay$l <= PANEL_COL,
+        (loc$l - 1) * TABLE_COLS,
+        (loc$r - 1) * TABLE_COLS
+      )
+    lay$b <- lay$b +
+      ifelse(lay$b < PANEL_ROW,
+        (loc$t - 1) * TABLE_ROWS,
+        (loc$b - 1) * TABLE_ROWS
+      )
+    lay$r <- lay$r +
+      ifelse(lay$r < PANEL_COL,
+        (loc$l - 1) * TABLE_COLS,
+        (loc$r - 1) * TABLE_COLS
+      )
     lay$z <- lay$z + max_z[i]
     lay
   }))
@@ -1285,18 +1451,29 @@ build_patchwork <- function(
     dims[2],
     dims[1]
   )
-  gt_new$grobs <- patchwork:::set_grob_sizes(gt, table_dimensions$widths, table_dimensions$heights, design)
+  gt_new$grobs <- patchwork:::set_grob_sizes(
+    gt,
+    table_dimensions$widths,
+    table_dimensions$heights, design
+  )
   gt_new$widths <- table_dimensions$widths
   gt_new$heights <- table_dimensions$heights
   widths <- rep(x$layout$widths, length.out = dims[2])
   heights <- rep(x$layout$heights, length.out = dims[1])
-  gt_new <- patchwork:::set_panel_dimensions(gt_new, gt, widths, heights, fixed_asp, design)
+  gt_new <- patchwork:::set_panel_dimensions(
+    gt_new,
+    gt,
+    widths,
+    heights,
+    fixed_asp,
+    design
+  )
   if (x$layout$guides == "collect") {
     guide_grobs <- patchwork:::collapse_guides(guide_grobs)
     if (length(guide_grobs) != 0) {
       theme <- x$annotation$theme
       if (!attr(theme, "complete")) {
-        theme <- theme_get() + theme
+        theme <- ggplot2::theme_get() + theme
       }
       guide_grobs <- patchwork:::assemble_guides(guide_grobs, theme)
       gt_new <- patchwork:::attach_guides(gt_new, guide_grobs, theme)
@@ -1309,7 +1486,7 @@ build_patchwork <- function(
   gt_new
 }
 
-patchworkGrob <- function(
+patchwork_grob <- function(
     x,
     BPPARAM = BiocParallel::SerialParam(),
     ...) {
@@ -1331,29 +1508,25 @@ patchworkGrob <- function(
   gtable
 }
 
-#' @importFrom grid grobTree
-#' @importFrom ggplot2 ggplotGrob
 as_grob <- function(plot, ...) {
   if (inherits(plot, "gList")) {
-    grobTree(plot)
+    grid::grobTree(plot)
   } else if (inherits(plot, "patchwork")) {
-    patchworkGrob(plot, ...)
+    patchwork_grob(plot, ...)
   } else if (inherits(plot, "ggplot")) {
-    ggplotGrob(plot)
+    ggplot2::ggplotGrob(plot)
   } else {
     warning("Cannot convert object of class ", paste0(class(plot), collapse = ","), " into a grob.")
   }
 }
 
-#' @importFrom grid unit
-#' @importFrom gtable gtable_col
 as_gtable <- function(plot, ...) {
   if (inherits(plot, "gtable")) {
     return(plot)
   }
   if (inherits(plot, "grob")) {
-    u <- unit(1, "null")
-    gt <- gtable_col(NULL, list(plot), u, u)
+    u <- grid::unit(1, "null")
+    gt <- gtable::gtable_col(NULL, list(plot), u, u)
     gt$layout$clip <- "inherit"
     return(gt)
   } else {
@@ -1370,9 +1543,10 @@ get_legend <- function(plot) {
   plot <- as_gtable(plot)
   grob_names <- plot$layout$name
   grobs <- plot$grobs
-  grobIndex <- which(grepl("guide-box", grob_names))
-  grobIndex <- grobIndex[1]
-  matched_grobs <- grobs[[grobIndex]]
+  grob_index <- which(grepl("guide-box", grob_names))
+  grob_index <- grob_index[1]
+  matched_grobs <- grobs[[grob_index]]
+
   return(matched_grobs)
 }
 

@@ -11,7 +11,10 @@
 #'
 #' @importFrom Seurat DefaultAssay GetAssayData
 #' @export
-check_DataType <- function(srt, data = NULL, slot = "data", assay = NULL) {
+check_DataType <- function(
+    srt, data = NULL,
+    slot = "data",
+    assay = NULL) {
   if (is.null(data)) {
     assay <- assay %||% DefaultAssay(srt)
     data <- GetAssayData(srt, slot = slot, assay = assay)
@@ -3661,13 +3664,13 @@ ComBat_integrate <- function(srtMerge = NULL, batch = NULL, append = TRUE, srtLi
 #' @importFrom Matrix rowSums
 #' @export
 Standard_scop <- function(srt, prefix = "Standard", assay = NULL,
-                         do_normalization = NULL, normalization_method = "LogNormalize",
-                         do_HVF_finding = TRUE, HVF_method = "vst", nHVF = 2000, HVF = NULL,
-                         do_scaling = TRUE, vars_to_regress = NULL, regression_model = "linear",
-                         linear_reduction = "pca", linear_reduction_dims = 50, linear_reduction_dims_use = NULL, linear_reduction_params = list(), force_linear_reduction = FALSE,
-                         nonlinear_reduction = "umap", nonlinear_reduction_dims = c(2, 3), nonlinear_reduction_params = list(), force_nonlinear_reduction = TRUE,
-                         neighbor_metric = "euclidean", neighbor_k = 20L, cluster_algorithm = "louvain", cluster_resolution = 0.6,
-                         seed = 11) {
+                          do_normalization = NULL, normalization_method = "LogNormalize",
+                          do_HVF_finding = TRUE, HVF_method = "vst", nHVF = 2000, HVF = NULL,
+                          do_scaling = TRUE, vars_to_regress = NULL, regression_model = "linear",
+                          linear_reduction = "pca", linear_reduction_dims = 50, linear_reduction_dims_use = NULL, linear_reduction_params = list(), force_linear_reduction = FALSE,
+                          nonlinear_reduction = "umap", nonlinear_reduction_dims = c(2, 3), nonlinear_reduction_params = list(), force_nonlinear_reduction = TRUE,
+                          neighbor_metric = "euclidean", neighbor_k = 20L, cluster_algorithm = "louvain", cluster_resolution = 0.6,
+                          seed = 11) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
@@ -3905,14 +3908,14 @@ Standard_scop <- function(srt, prefix = "Standard", assay = NULL,
 #'
 #' @export
 Integration_scop <- function(srtMerge = NULL, batch, append = TRUE, srtList = NULL, assay = NULL,
-                            integration_method = "Uncorrected",
-                            do_normalization = NULL, normalization_method = "LogNormalize",
-                            do_HVF_finding = TRUE, HVF_source = "separate", HVF_method = "vst", nHVF = 2000, HVF_min_intersection = 1, HVF = NULL,
-                            do_scaling = TRUE, vars_to_regress = NULL, regression_model = "linear", scale_within_batch = FALSE,
-                            linear_reduction = "pca", linear_reduction_dims = 50, linear_reduction_dims_use = NULL, linear_reduction_params = list(), force_linear_reduction = FALSE,
-                            nonlinear_reduction = "umap", nonlinear_reduction_dims = c(2, 3), nonlinear_reduction_params = list(), force_nonlinear_reduction = TRUE,
-                            neighbor_metric = "euclidean", neighbor_k = 20L, cluster_algorithm = "louvain", cluster_resolution = 0.6,
-                            seed = 11, ...) {
+                             integration_method = "Uncorrected",
+                             do_normalization = NULL, normalization_method = "LogNormalize",
+                             do_HVF_finding = TRUE, HVF_source = "separate", HVF_method = "vst", nHVF = 2000, HVF_min_intersection = 1, HVF = NULL,
+                             do_scaling = TRUE, vars_to_regress = NULL, regression_model = "linear", scale_within_batch = FALSE,
+                             linear_reduction = "pca", linear_reduction_dims = 50, linear_reduction_dims_use = NULL, linear_reduction_params = list(), force_linear_reduction = FALSE,
+                             nonlinear_reduction = "umap", nonlinear_reduction_dims = c(2, 3), nonlinear_reduction_params = list(), force_nonlinear_reduction = TRUE,
+                             neighbor_metric = "euclidean", neighbor_k = 20L, cluster_algorithm = "louvain", cluster_resolution = 0.6,
+                             seed = 11, ...) {
   if (is.null(srtList) && is.null(srtMerge)) {
     stop("Neither 'srtList' nor 'srtMerge' was found.")
   }
