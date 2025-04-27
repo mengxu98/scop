@@ -578,31 +578,46 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #'
 #' @importFrom utils packageVersion
 #' @export
-RunSCExplorer <- function(base_dir = "SCExplorer",
-                          DataFile = "Data.hdf5",
-                          MetaFile = "Meta.hdf5",
-                          title = "SCExplorer",
-                          initial_dataset = NULL,
-                          initial_reduction = NULL,
-                          initial_group = NULL,
-                          initial_feature = NULL,
-                          initial_assay = NULL,
-                          initial_slot = NULL,
-                          initial_label = FALSE,
-                          initial_cell_palette = "Paired",
-                          initial_feature_palette = "Spectral",
-                          initial_theme = "theme_scop",
-                          initial_size = 4,
-                          initial_ncol = 3,
-                          initial_arrange = NULL,
-                          initial_raster = NULL,
-                          session_workers = 2,
-                          plotting_workers = 8,
-                          create_script = TRUE,
-                          style_script = require("styler", quietly = TRUE),
-                          overwrite = FALSE,
-                          return_app = TRUE) {
-  check_R(c("rhdf5", "HDF5Array", "shiny@1.6.0", "ggplot2", "ragg", "htmlwidgets", "plotly", "bslib", "future", "promises", "BiocParallel"))
+RunSCExplorer <- function(
+    base_dir = "SCExplorer",
+    DataFile = "Data.hdf5",
+    MetaFile = "Meta.hdf5",
+    title = "SCExplorer",
+    initial_dataset = NULL,
+    initial_reduction = NULL,
+    initial_group = NULL,
+    initial_feature = NULL,
+    initial_assay = NULL,
+    initial_slot = NULL,
+    initial_label = FALSE,
+    initial_cell_palette = "Paired",
+    initial_feature_palette = "Spectral",
+    initial_theme = "theme_scop",
+    initial_size = 4,
+    initial_ncol = 3,
+    initial_arrange = NULL,
+    initial_raster = NULL,
+    session_workers = 2,
+    plotting_workers = 8,
+    create_script = TRUE,
+    style_script = require("styler", quietly = TRUE),
+    overwrite = FALSE,
+    return_app = TRUE) {
+  check_R(
+    c(
+      "rhdf5",
+      "HDF5Array",
+      "shiny@1.6.0",
+      "ggplot2",
+      "ragg",
+      "htmlwidgets",
+      "plotly",
+      "bslib",
+      "future",
+      "promises",
+      "BiocParallel"
+    )
+  )
   DataFile_full <- paste0(base_dir, "/", DataFile)
   MetaFile_full <- paste0(base_dir, "/", MetaFile)
   if (!file.exists(DataFile_full) || !file.exists(MetaFile_full)) {

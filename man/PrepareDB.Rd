@@ -84,7 +84,8 @@ if (interactive()) {
   ListDB(species = "Homo_sapiens", db = "GO_BP")
   head(db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]])
 
-  # Based on homologous gene conversion, prepare a gene annotation database that originally does not exist in the species.
+  # Based on homologous gene conversion,
+  # prepare a gene annotation database that originally does not exist in the species.
   db_list <- PrepareDB(species = "Homo_sapiens", db = "MP")
   ListDB(species = "Homo_sapiens", db = "MP")
   head(db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]])
@@ -119,14 +120,20 @@ if (interactive()) {
 
   # Set convert_species = TRUE to build a custom database for both species, with the name "CellCycle"
   db_list <- PrepareDB(
-    species = c("Homo_sapiens", "Mus_musculus"), db = "CellCycle", convert_species = TRUE,
-    custom_TERM2GENE = custom_TERM2GENE, custom_species = "Homo_sapiens", custom_IDtype = "symbol", custom_version = "Seurat_v4"
+    species = c("Homo_sapiens", "Mus_musculus"),
+    db = "CellCycle",
+    convert_species = TRUE,
+    custom_TERM2GENE = custom_TERM2GENE,
+    custom_species = "Homo_sapiens",
+    custom_IDtype = "symbol",
+    custom_version = "Seurat_v4"
   )
   ListDB(db = "CellCycle")
 
   db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
   head(db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]])
 }
+
 }
 \seealso{
 \code{\link{ListDB}}

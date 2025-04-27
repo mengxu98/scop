@@ -50,9 +50,7 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 
 \item{aggr.ref, aggr.args}{Arguments controlling the aggregation of the references prior to annotation, see \code{\link[SingleR]{trainSingleR}}.}
 
-\item{quantile, fine.tune, tune.thresh, prune}{Further arguments to pass to \code{\link[SingleR]{classifySingleR}}.}
-
-\item{BPPARAM}{A \linkS4class{BiocParallelParam} object specifying how parallelization should be performed in other steps,
+\item{BPPARAM}{A \link[BiocParallel]{BiocParallelParam} object specifying how parallelization should be performed in other steps,
 see \code{?\link[SingleR]{trainSingleR}} and \code{?\link[SingleR]{classifySingleR}} for more details.}
 }
 \description{

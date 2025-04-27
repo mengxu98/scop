@@ -22,7 +22,8 @@ download(
     argument) with the file path where the downloaded file is to be
     saved.  Tilde-expansion is performed.}
 
-\item{methods}{Methods to be used for downloading files. The default is to try different download methods in turn until the download is successfully completed.}
+\item{methods}{Methods to be used for downloading files.
+The default is to try different download methods in turn until the download is successfully completed.}
 
 \item{quiet}{If \code{TRUE}, suppress status messages (if any), and
     the progress bar.}

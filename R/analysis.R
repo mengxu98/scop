@@ -12,6 +12,9 @@
 #' @param max_tries The maximum number of attempts to connect with the BioMart service.
 #' @param mirror Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.
 #'
+#' @importFrom reshape2 dcast melt
+#' @importFrom biomaRt listEnsemblArchives useMart listDatasets useDataset getBM listAttributes useEnsembl
+#'
 #' @return A list with the following elements:
 #'   \itemize{
 #'     \item{\code{geneID_res:}}{ A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'}
@@ -63,9 +66,6 @@
 #' homologs_counts <- as(Matrix::as.matrix(homologs_counts[, -1]), "dgCMatrix")
 #' homologs_counts
 #'
-#' @importFrom R.cache loadCache saveCache
-#' @importFrom reshape2 dcast melt
-#' @importFrom biomaRt listEnsemblArchives useMart listDatasets useDataset getBM listAttributes useEnsembl
 #' @export
 GeneConvert <- function(
     geneID, geneID_from_IDtype = "symbol", geneID_to_IDtype = "entrez_id",
@@ -468,7 +468,6 @@ searchDatasets <- function(datasets, pattern) {
 #' str(ccgenes)
 #' ccgenes <- CC_GenePrefetch("Mus_musculus")
 #' str(ccgenes)
-#' @importFrom R.cache loadCache saveCache
 #' @export
 CC_GenePrefetch <- function(species = "Homo_sapiens", Ensembl_version = 103, mirror = NULL, max_tries = 5, use_cached_gene = TRUE) {
   S <- Seurat::cc.genes.updated.2019$s.genes
@@ -476,7 +475,7 @@ CC_GenePrefetch <- function(species = "Homo_sapiens", Ensembl_version = 103, mir
   res <- NULL
   if (species != "Homo_sapiens") {
     if (isTRUE(use_cached_gene)) {
-      res <- loadCache(key = list(species))
+      res <- R.cache::loadCache(key = list(species))
     }
     if (is.null(res)) {
       res <- GeneConvert(
@@ -489,7 +488,7 @@ CC_GenePrefetch <- function(species = "Homo_sapiens", Ensembl_version = 103, mir
         max_tries = max_tries,
         mirror = mirror
       )
-      saveCache(res, key = list(species))
+      R.cache::saveCache(res, key = list(species))
     } else {
       message("Using cached conversion results for ", species)
     }
@@ -2131,7 +2130,6 @@ RunDEtest <- function(srt, group_by = NULL, group1 = NULL, group2 = NULL, cells1
 #'
 #' @seealso \code{\link{PrepareDB}}
 #'
-#' @importFrom R.cache getCacheRootPath readCacheHeader
 #' @export
 #' @examples
 #' ListDB(species = "Homo_sapiens")
@@ -2140,12 +2138,16 @@ RunDEtest <- function(srt, group_by = NULL, group1 = NULL, group2 = NULL, cells1
 ListDB <- function(species = "Homo_sapiens",
                    db = NULL) {
   stopifnot(length(species) == 1)
-  pathnames <- dir(path = getCacheRootPath(), pattern = "[.]Rcache$", full.names = TRUE)
+  pathnames <- dir(
+    path = R.cache::getCacheRootPath(),
+    pattern = "[.]Rcache$",
+    full.names = TRUE
+  )
   if (length(pathnames) == 0) {
     return(NULL)
   }
   dbinfo <- lapply(pathnames, function(x) {
-    info <- readCacheHeader(x)
+    info <- R.cache::readCacheHeader(x)
     info[["date"]] <- as.character(info[["timestamp"]])
     info[["db_version"]] <- strsplit(info[["comment"]], "\\|")[[1]][1]
     info[["db_name"]] <- strsplit(info[["comment"]], "\\|")[[1]][2]
@@ -2207,7 +2209,8 @@ ListDB <- function(species = "Homo_sapiens",
 #'   ListDB(species = "Homo_sapiens", db = "GO_BP")
 #'   head(db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]])
 #'
-#'   # Based on homologous gene conversion, prepare a gene annotation database that originally does not exist in the species.
+#'   # Based on homologous gene conversion,
+#'   # prepare a gene annotation database that originally does not exist in the species.
 #'   db_list <- PrepareDB(species = "Homo_sapiens", db = "MP")
 #'   ListDB(species = "Homo_sapiens", db = "MP")
 #'   head(db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]])
@@ -2242,16 +2245,21 @@ ListDB <- function(species = "Homo_sapiens",
 #'
 #'   # Set convert_species = TRUE to build a custom database for both species, with the name "CellCycle"
 #'   db_list <- PrepareDB(
-#'     species = c("Homo_sapiens", "Mus_musculus"), db = "CellCycle", convert_species = TRUE,
-#'     custom_TERM2GENE = custom_TERM2GENE, custom_species = "Homo_sapiens", custom_IDtype = "symbol", custom_version = "Seurat_v4"
+#'     species = c("Homo_sapiens", "Mus_musculus"),
+#'     db = "CellCycle",
+#'     convert_species = TRUE,
+#'     custom_TERM2GENE = custom_TERM2GENE,
+#'     custom_species = "Homo_sapiens",
+#'     custom_IDtype = "symbol",
+#'     custom_version = "Seurat_v4"
 #'   )
 #'   ListDB(db = "CellCycle")
 #'
 #'   db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
 #'   head(db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]])
 #' }
-#' @importFrom R.cache loadCache saveCache readCacheHeader
-#' @importFrom utils packageVersion read.table
+#'
+#' @importFrom utils read.table
 #' @importFrom stats na.omit
 #' @importFrom AnnotationDbi select keys columns mappedkeys
 #' @importFrom clusterProfiler read.gmt
@@ -2309,10 +2317,10 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             }
           }
           if (!is.na(pathname)) {
-            header <- readCacheHeader(pathname)
+            header <- R.cache::readCacheHeader(pathname)
             cached_version <- strsplit(header[["comment"]], "\\|")[[1]][1]
             message("Loading cached db: ", term, " version:", cached_version, " created:", header[["timestamp"]])
-            db_loaded <- loadCache(pathname = pathname)
+            db_loaded <- R.cache::loadCache(pathname = pathname)
             Sys.sleep(0.5)
             db_list[[sps]][[term]] <- db_loaded
           }
@@ -2398,13 +2406,13 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             }
             TERM2GENE <- na.omit(unique(TERM2GENE))
             TERM2NAME <- na.omit(unique(TERM2NAME))
-            version <- packageVersion(org_sp)
+            version <- utils::packageVersion(org_sp)
             db_list[[db_species[subterm]]][[subterm]][["TERM2GENE"]] <- TERM2GENE
             db_list[[db_species[subterm]]][[subterm]][["TERM2NAME"]] <- TERM2NAME
             db_list[[db_species[subterm]]][[subterm]][["semData"]] <- semData
             db_list[[db_species[subterm]]][[subterm]][["version"]] <- version
             if (sps == db_species[subterm]) {
-              saveCache(db_list[[db_species[subterm]]][[subterm]],
+              R.cache::saveCache(db_list[[db_species[subterm]]][[subterm]],
                 key = list(version, as.character(db_species[subterm]), subterm),
                 comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species[subterm], "-", subterm)
               )
@@ -2460,7 +2468,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["KEGG"]]][["KEGG"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["KEGG"]]][["KEGG"]][["version"]] <- version
           if (sps == db_species["KEGG"]) {
-            saveCache(db_list[[db_species["KEGG"]]][["KEGG"]],
+            R.cache::saveCache(db_list[[db_species["KEGG"]]][["KEGG"]],
               key = list(version, as.character(db_species["KEGG"]), "KEGG"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["KEGG"], "-KEGG")
             )
@@ -2513,7 +2521,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["WikiPathway"]]][["WikiPathway"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["WikiPathway"]]][["WikiPathway"]][["version"]] <- version
           if (sps == db_species["WikiPathway"]) {
-            saveCache(db_list[[db_species["WikiPathway"]]][["WikiPathway"]],
+            R.cache::saveCache(db_list[[db_species["WikiPathway"]]][["WikiPathway"]],
               key = list(version, as.character(db_species["WikiPathway"]), "WikiPathway"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["WikiPathway"], "-WikiPathway")
             )
@@ -2547,12 +2555,12 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           colnames(TERM2NAME) <- c("Term", "Name")
           TERM2GENE <- na.omit(unique(TERM2GENE))
           TERM2NAME <- na.omit(unique(TERM2NAME))
-          version <- packageVersion("reactome.db")
+          version <- utils::packageVersion("reactome.db")
           db_list[[db_species["Reactome"]]][["Reactome"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["Reactome"]]][["Reactome"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["Reactome"]]][["Reactome"]][["version"]] <- version
           if (sps == db_species["Reactome"]) {
-            saveCache(db_list[[db_species["Reactome"]]][["Reactome"]],
+            R.cache::saveCache(db_list[[db_species["Reactome"]]][["Reactome"]],
               key = list(version, as.character(db_species["Reactome"]), "Reactome"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["Reactome"], "-Reactome")
             )
@@ -2586,7 +2594,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["CORUM"]]][["CORUM"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["CORUM"]]][["CORUM"]][["version"]] <- version
           if (sps == db_species["CORUM"]) {
-            saveCache(db_list[[db_species["CORUM"]]][["CORUM"]],
+            R.cache::saveCache(db_list[[db_species["CORUM"]]][["CORUM"]],
               key = list(version, as.character(db_species["CORUM"]), "CORUM"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["CORUM"], "-CORUM")
             )
@@ -2627,7 +2635,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
         #   db_list[[db_species["DGI"]]][["DGI"]][["TERM2NAME"]] <- TERM2NAME
         #   db_list[[db_species["DGI"]]][["DGI"]][["version"]] <- version
         #   if (sps == db_species["DGI"]) {
-        #     saveCache(db_list[[db_species["DGI"]]][["DGI"]],
+        #     R.cache::saveCache(db_list[[db_species["DGI"]]][["DGI"]],
         #       key = list(version, as.character(db_species["DGI"]), "DGI"),
         #       comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["DGI"], "-DGI")
         #     )
@@ -2683,7 +2691,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["MP"]]][["MP"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["MP"]]][["MP"]][["version"]] <- version
           if (sps == db_species["MP"]) {
-            saveCache(db_list[[db_species["MP"]]][["MP"]],
+            R.cache::saveCache(db_list[[db_species["MP"]]][["MP"]],
               key = list(version, as.character(db_species["MP"]), "MP"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["MP"], "-MP")
             )
@@ -2721,7 +2729,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["DO"]]][["DO"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["DO"]]][["DO"]][["version"]] <- version
           if (sps == db_species["DO"]) {
-            saveCache(db_list[[db_species["DO"]]][["DO"]],
+            R.cache::saveCache(db_list[[db_species["DO"]]][["DO"]],
               key = list(version, as.character(db_species["DO"]), "DO"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["DO"], "-DO")
             )
@@ -2759,7 +2767,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["HPO"]]][["HPO"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["HPO"]]][["HPO"]][["version"]] <- version
           if (sps == db_species["HPO"]) {
-            saveCache(db_list[[db_species["HPO"]]][["HPO"]],
+            R.cache::saveCache(db_list[[db_species["HPO"]]][["HPO"]],
               key = list(version, as.character(db_species["HPO"]), "HPO"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["HPO"], "-HPO")
             )
@@ -2784,12 +2792,12 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             colnames(TERM2NAME) <- c("Term", "Name")
             TERM2GENE <- na.omit(unique(TERM2GENE))
             TERM2NAME <- na.omit(unique(TERM2NAME))
-            version <- packageVersion(org_sp)
+            version <- utils::packageVersion(org_sp)
             db_list[[db_species["PFAM"]]][["PFAM"]][["TERM2GENE"]] <- TERM2GENE
             db_list[[db_species["PFAM"]]][["PFAM"]][["TERM2NAME"]] <- TERM2NAME
             db_list[[db_species["PFAM"]]][["PFAM"]][["version"]] <- version
             if (sps == db_species["PFAM"]) {
-              saveCache(db_list[[db_species["PFAM"]]][["PFAM"]],
+              R.cache::saveCache(db_list[[db_species["PFAM"]]][["PFAM"]],
                 key = list(version, as.character(db_species["PFAM"]), "PFAM"),
                 comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["PFAM"], "-PFAM")
               )
@@ -2809,12 +2817,12 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           colnames(TERM2NAME) <- c("Term", "Name")
           TERM2GENE <- na.omit(unique(TERM2GENE))
           TERM2NAME <- na.omit(unique(TERM2NAME))
-          version <- packageVersion(org_sp)
+          version <- utils::packageVersion(org_sp)
           db_list[[db_species["Chromosome"]]][["Chromosome"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["Chromosome"]]][["Chromosome"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["Chromosome"]]][["Chromosome"]][["version"]] <- version
           if (sps == db_species["Chromosome"]) {
-            saveCache(db_list[[db_species["Chromosome"]]][["Chromosome"]],
+            R.cache::saveCache(db_list[[db_species["Chromosome"]]][["Chromosome"]],
               key = list(version, as.character(db_species["Chromosome"]), "Chromosome"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["Chromosome"], "-Chromosome")
             )
@@ -2834,12 +2842,12 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             colnames(TERM2NAME) <- c("Term", "Name")
             TERM2GENE <- na.omit(unique(TERM2GENE))
             TERM2NAME <- na.omit(unique(TERM2NAME))
-            version <- packageVersion(org_sp)
+            version <- utils::packageVersion(org_sp)
             db_list[[db_species["GeneType"]]][["GeneType"]][["TERM2GENE"]] <- TERM2GENE
             db_list[[db_species["GeneType"]]][["GeneType"]][["TERM2NAME"]] <- TERM2NAME
             db_list[[db_species["GeneType"]]][["GeneType"]][["version"]] <- version
             if (sps == db_species["GeneType"]) {
-              saveCache(db_list[[db_species["GeneType"]]][["GeneType"]],
+              R.cache::saveCache(db_list[[db_species["GeneType"]]][["GeneType"]],
                 key = list(version, as.character(db_species["GeneType"]), "GeneType"),
                 comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["GeneType"], "-GeneType")
               )
@@ -2881,12 +2889,12 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             colnames(TERM2NAME) <- c("Term", "Name")
             TERM2GENE <- na.omit(unique(TERM2GENE))
             TERM2NAME <- na.omit(unique(TERM2NAME))
-            version <- packageVersion(org_sp)
+            version <- utils::packageVersion(org_sp)
             db_list[[db_species["Enzyme"]]][["Enzyme"]][["TERM2GENE"]] <- TERM2GENE
             db_list[[db_species["Enzyme"]]][["Enzyme"]][["TERM2NAME"]] <- TERM2NAME
             db_list[[db_species["Enzyme"]]][["Enzyme"]][["version"]] <- version
             if (sps == db_species["Enzyme"]) {
-              saveCache(db_list[[db_species["Enzyme"]]][["Enzyme"]],
+              R.cache::saveCache(db_list[[db_species["Enzyme"]]][["Enzyme"]],
                 key = list(version, as.character(db_species["Enzyme"]), "Enzyme"),
                 comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["Enzyme"], "-Enzyme")
               )
@@ -2965,7 +2973,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["TF"]]][["TF"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["TF"]]][["TF"]][["version"]] <- version
           if (sps == db_species["TF"]) {
-            saveCache(db_list[[db_species["TF"]]][["TF"]],
+            R.cache::saveCache(db_list[[db_species["TF"]]][["TF"]],
               key = list(version, as.character(db_species["TF"]), "TF"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["TF"], "-TF")
             )
@@ -3005,7 +3013,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["CSPA"]]][["CSPA"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["CSPA"]]][["CSPA"]][["version"]] <- version
           if (sps == db_species["CSPA"]) {
-            saveCache(db_list[[db_species["CSPA"]]][["CSPA"]],
+            R.cache::saveCache(db_list[[db_species["CSPA"]]][["CSPA"]],
               key = list(version, as.character(db_species["CSPA"]), "CSPA"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["CSPA"], "-CSPA")
             )
@@ -3041,7 +3049,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["Surfaceome"]]][["Surfaceome"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["Surfaceome"]]][["Surfaceome"]][["version"]] <- version
           if (sps == db_species["Surfaceome"]) {
-            saveCache(db_list[[db_species["Surfaceome"]]][["Surfaceome"]],
+            R.cache::saveCache(db_list[[db_species["Surfaceome"]]][["Surfaceome"]],
               key = list(version, as.character(db_species["Surfaceome"]), "Surfaceome"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["Surfaceome"], "-Surfaceome")
             )
@@ -3076,7 +3084,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["SPRomeDB"]]][["SPRomeDB"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["SPRomeDB"]]][["SPRomeDB"]][["version"]] <- version
           if (sps == db_species["SPRomeDB"]) {
-            saveCache(db_list[[db_species["SPRomeDB"]]][["SPRomeDB"]],
+            R.cache::saveCache(db_list[[db_species["SPRomeDB"]]][["SPRomeDB"]],
               key = list(version, as.character(db_species["SPRomeDB"]), "SPRomeDB"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["SPRomeDB"], "-SPRomeDB")
             )
@@ -3121,7 +3129,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["VerSeDa"]]][["VerSeDa"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["VerSeDa"]]][["VerSeDa"]][["version"]] <- version
           if (sps == db_species["VerSeDa"]) {
-            saveCache(db_list[[db_species["VerSeDa"]]][["VerSeDa"]],
+            R.cache::saveCache(db_list[[db_species["VerSeDa"]]][["VerSeDa"]],
               key = list(version, as.character(db_species["VerSeDa"]), "VerSeDa"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["VerSeDa"], "-VerSeDa")
             )
@@ -3155,7 +3163,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["TFLink"]]][["TFLink"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["TFLink"]]][["TFLink"]][["version"]] <- version
           if (sps == db_species["TFLink"]) {
-            saveCache(db_list[[db_species["TFLink"]]][["TFLink"]],
+            R.cache::saveCache(db_list[[db_species["TFLink"]]][["TFLink"]],
               key = list(version, as.character(db_species["TFLink"]), "TFLink"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["TFLink"], "-TFLink")
             )
@@ -3188,7 +3196,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["hTFtarget"]]][["hTFtarget"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["hTFtarget"]]][["hTFtarget"]][["version"]] <- version
           if (sps == db_species["hTFtarget"]) {
-            saveCache(db_list[[db_species["hTFtarget"]]][["hTFtarget"]],
+            R.cache::saveCache(db_list[[db_species["hTFtarget"]]][["hTFtarget"]],
               key = list(version, as.character(db_species["hTFtarget"]), "hTFtarget"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["hTFtarget"], "-hTFtarget")
             )
@@ -3231,7 +3239,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["TRRUST"]]][["TRRUST"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["TRRUST"]]][["TRRUST"]][["version"]] <- version
           if (sps == db_species["TRRUST"]) {
-            saveCache(db_list[[db_species["TRRUST"]]][["TRRUST"]],
+            R.cache::saveCache(db_list[[db_species["TRRUST"]]][["TRRUST"]],
               key = list(version, as.character(db_species["TRRUST"]), "TRRUST"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["TRRUST"], "-TRRUST")
             )
@@ -3265,7 +3273,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["JASPAR"]]][["JASPAR"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["JASPAR"]]][["JASPAR"]][["version"]] <- version
           if (sps == db_species["JASPAR"]) {
-            saveCache(db_list[[db_species["JASPAR"]]][["JASPAR"]],
+            R.cache::saveCache(db_list[[db_species["JASPAR"]]][["JASPAR"]],
               key = list(version, as.character(db_species["JASPAR"]), "JASPAR"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["JASPAR"], "-JASPAR")
             )
@@ -3299,7 +3307,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["ENCODE"]]][["ENCODE"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["ENCODE"]]][["ENCODE"]][["version"]] <- version
           if (sps == db_species["ENCODE"]) {
-            saveCache(db_list[[db_species["ENCODE"]]][["ENCODE"]],
+            R.cache::saveCache(db_list[[db_species["ENCODE"]]][["ENCODE"]],
               key = list(version, as.character(db_species["ENCODE"]), "ENCODE"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["ENCODE"], "-ENCODE")
             )
@@ -3362,7 +3370,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["MSigDB"]]][["MSigDB"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["MSigDB"]]][["MSigDB"]][["version"]] <- version
           if (sps == db_species["MSigDB"]) {
-            saveCache(db_list[[db_species["MSigDB"]]][["MSigDB"]],
+            R.cache::saveCache(db_list[[db_species["MSigDB"]]][["MSigDB"]],
               key = list(version, as.character(db_species["MSigDB"]), "MSigDB"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["MSigDB"], "-MSigDB")
             )
@@ -3377,7 +3385,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
             db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]][["TERM2NAME"]] <- TERM2NAME_sub
             db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]][["version"]] <- version
             if (sps == db_species["MSigDB"]) {
-              saveCache(db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]],
+              R.cache::saveCache(db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]],
                 key = list(version, as.character(db_species["MSigDB"]), paste0("MSigDB_", collection)),
                 comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["MSigDB"], "-MSigDB_", collection)
               )
@@ -3422,7 +3430,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["CellTalk"]]][["CellTalk"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["CellTalk"]]][["CellTalk"]][["version"]] <- version
           if (sps == db_species["CellTalk"]) {
-            saveCache(db_list[[db_species["CellTalk"]]][["CellTalk"]],
+            R.cache::saveCache(db_list[[db_species["CellTalk"]]][["CellTalk"]],
               key = list(version, as.character(db_species["CellTalk"]), "CellTalk"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["CellTalk"], "-CellTalk")
             )
@@ -3487,7 +3495,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
           db_list[[db_species["CellChat"]]][["CellChat"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["CellChat"]]][["CellChat"]][["version"]] <- version
           if (sps == db_species["CellChat"]) {
-            saveCache(db_list[[db_species["CellChat"]]][["CellChat"]],
+            R.cache::saveCache(db_list[[db_species["CellChat"]]][["CellChat"]],
               key = list(version, as.character(db_species["CellChat"]), "CellChat"),
               comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["CellChat"], "-CellChat")
             )
@@ -3519,7 +3527,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
         db_list[[db_species[db]]][[db]][["TERM2NAME"]] <- TERM2NAME
         db_list[[db_species[db]]][[db]][["version"]] <- custom_version
         if (sps == db_species[db]) {
-          saveCache(db_list[[db_species[db]]][[db]],
+          R.cache::saveCache(db_list[[db_species[db]]][[db]],
             key = list(custom_version, as.character(db_species[db]), db),
             comment = paste0(custom_version, " nterm:", length(TERM2NAME[[1]]), "|", db_species[db], "-", db)
           )
@@ -3578,11 +3586,11 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
       #   bg[is.na(bg[["PFAM_name"]]), "PFAM_name"] <- bg[is.na(bg[["PFAM_name"]]), "PFAM"]
       #   TERM2GENE <- bg[, c(2, 1)]
       #   TERM2NAME <- bg[, c(2, 3)]
-      #   version <- packageVersion(org_sp)
+      #   version <- utils::packageVersion(org_sp)
       #   db_list[[sps]][["PFAM"]][["TERM2GENE"]] <- TERM2GENE
       #   db_list[[sps]][["PFAM"]][["TERM2NAME"]] <- TERM2NAME
       #   db_list[[sps]][["PFAM"]][["version"]] <- version
-      #   saveCache(db_list[[sps]][["PFAM"]],
+      #   R.cache::saveCache(db_list[[sps]][["PFAM"]],
       #     key = list(sps, "PFAM"),
       #     comment = paste0(version, " nterm:", length(unique(TERM2NAME[[1]])))
       #   )
@@ -3637,7 +3645,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
         db_list[[sps]][[term]] <- db_info
         default_IDtypes[[term]] <- "ensembl_id"
         ### save cache
-        saveCache(db_list[[sps]][[term]],
+        R.cache::saveCache(db_list[[sps]][[term]],
           key = list(version, sps, term),
           comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", sps, "-", term)
         )
@@ -3685,7 +3693,7 @@ PrepareDB <- function(species = c("Homo_sapiens", "Mus_musculus"),
         db_list[[sps]][[term]][["TERM2GENE"]] <- TERM2GENE
         ### save cache
         version <- db_list[[sps]][[term]][["version"]]
-        saveCache(db_list[[sps]][[term]],
+        R.cache::saveCache(db_list[[sps]][[term]],
           key = list(version, sps, term),
           comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", sps, "-", term)
         )
@@ -4288,632 +4296,6 @@ RunGSEA <- function(srt = NULL, group_by = NULL, test.use = "wilcox", DE_thresho
   }
 }
 
-#' RunSlingshot
-#'
-#' Runs the Slingshot algorithm on a Seurat object.
-#'
-#' @param srt A Seurat object.
-#' @param group.by The variable to group the cells by.
-#' @param reduction The reduction technique to use for dimensionality reduction. Default is NULL, which uses the default reduction for the Seurat object.
-#' @param dims The dimensions to use for the Slingshot algorithm. Default is NULL, which uses first two dimensions.
-#' @param start The starting group for the Slingshot algorithm. Default is NULL.
-#' @param end The ending group for the Slingshot algorithm. Default is NULL.
-#' @param prefix The prefix to add to the column names of the resulting pseudotime variable. Default is NULL.
-#' @param reverse Logical value indicating whether to reverse the pseudotime variable. Default is FALSE.
-#' @param align_start Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime. Default is FALSE.
-#' @param show_plot Logical value indicating whether to show the dimensionality plot. Default is TRUE.
-#' @param lineage_palette The color palette to use for the lineages in the plot. Default is "Dark2".
-#' @param seed The random seed to use for reproducibility. Default is 11.
-#' @param ... Additional arguments to be passed to the \code{\link[slingshot]{slingshot}} function.
-#'
-#' @seealso \code{\link{CellDimPlot}} \code{\link{RunDynamicFeatures}}
-#'
-#' @examples
-#' data("pancreas_sub")
-#' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP")
-#' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "PCA", dims = 1:10)
-#' CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", lineages = paste0("Lineage", 1:2), lineages_span = 0.1)
-#'
-#' # 3D lineage
-#' pancreas_sub <- Standard_scop(pancreas_sub)
-#' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "StandardpcaUMAP3D")
-#' CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP", lineages = paste0("Lineage", 1:3), lineages_span = 0.1, lineages_trim = c(0.05, 0.95))
-#' @importFrom Seurat AddMetaData as.SingleCellExperiment
-#' @importFrom slingshot slingshot slingPseudotime slingBranchID
-#' @export
-RunSlingshot <- function(srt, group.by, reduction = NULL, dims = NULL, start = NULL, end = NULL, prefix = NULL,
-                         reverse = FALSE, align_start = FALSE, show_plot = TRUE, lineage_palette = "Dark2", seed = 11, ...) {
-  if (missing(group.by)) {
-    stop("group.by is missing")
-  }
-  if (is.null(reduction)) {
-    reduction <- DefaultReduction(srt)
-  } else {
-    reduction <- DefaultReduction(srt, pattern = reduction)
-  }
-  if (is.null(prefix)) {
-    prefix <- ""
-  } else {
-    prefix <- paste0(prefix, "_")
-  }
-  srt_sub <- srt[, !is.na(srt[[group.by, drop = TRUE]])]
-  if (is.null(dims)) {
-    dims <- 1:2
-  }
-
-  set.seed(seed)
-  sl <- slingshot(
-    data = as.data.frame(srt_sub[[reduction]]@cell.embeddings[, dims]),
-    clusterLabels = as.character(srt_sub[[group.by, drop = TRUE]]),
-    start.clus = start, end.clus = end, ...
-  )
-
-  srt@tools[[paste("Slingshot", group.by, reduction, sep = "_")]] <- sl
-  df <- as.data.frame(slingPseudotime(sl))
-  colnames(df) <- paste0(prefix, colnames(df))
-  if (isTRUE(reverse)) {
-    if (isTRUE(align_start)) {
-      df <- apply(df, 2, function(x) max(x, na.rm = TRUE) - x)
-    } else {
-      df <- max(df, na.rm = TRUE) - df
-    }
-  }
-  srt <- AddMetaData(srt, metadata = df)
-  srt <- AddMetaData(srt, metadata = slingBranchID(sl), col.name = paste0(prefix, "BranchID"))
-
-  if (isTRUE(show_plot)) {
-    if (ncol(srt[[reduction]]@cell.embeddings) == 2 || ncol(srt[[reduction]]@cell.embeddings) > 3) {
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
-      # lines(slingshot::SlingshotDataSet(sl), lwd = 2, type = "lineages", col = "black")
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
-      # lines(slingshot::SlingshotDataSet(sl), lwd = 3, col = 1:length(slingshot::SlingshotDataSet(sl)@lineages))
-      p <- CellDimPlot(srt, group.by = group.by, reduction = reduction, dims = c(1, 2), lineages = colnames(df))
-      print(p)
-    } else if (ncol(srt[[reduction]]@cell.embeddings) == 3) {
-      p <- CellDimPlot3D(srt, group.by = group.by, reduction = reduction, lineages = colnames(df))
-      print(p)
-    }
-  }
-  return(srt)
-}
-
-#' Run Monocle2 analysis
-#'
-#' Runs the Monocle2 algorithm on a Seurat object.
-#'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.
-#' @param slot The slot in the Seurat object to use for analysis. Default is "counts".
-#' @param expressionFamily The distribution family to use for modeling gene expression. Default is "negbinomial.size".
-#' @param features A vector of gene names or indices specifying the features to use in the analysis. Defaults to NULL, in which case features were determined by \code{feature_type}.
-#' @param feature_type The type of features to use in the analysis. Possible values are "HVF" for highly variable features
-#'   or "Disp" for features selected based on dispersion. Default is "HVF".
-#' @param disp_filter A string specifying the filter to use when \code{feature_type} is "Disp". Default is
-#'   "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit".
-#' @param max_components The maximum number of dimensions to use for dimensionality reduction. Default is 2.
-#' @param reduction_method The dimensionality reduction method to use. Possible values are "DDRTree" and "UMAP". Default is "DDRTree".
-#' @param norm_method The normalization method to use. Possible values are "log" and "none". Default is "log".
-#' @param residualModelFormulaStr A model formula specifying the effects to subtract. Default is NULL.
-#' @param pseudo_expr Amount to increase expression values before dimensionality reduction. Default is 1.
-#' @param root_state The state to use as the root of the trajectory. If NULL, will prompt for user input.
-#' @param seed An integer specifying the random seed to use. Default is 11.
-#'
-#' @examples
-#' if (interactive()) {
-#'   data("pancreas_sub")
-#'   pancreas_sub <- RunMonocle2(srt = pancreas_sub)
-#'   names(pancreas_sub@tools$Monocle2)
-#'   trajectory <- pancreas_sub@tools$Monocle2$trajectory
-#'
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle2_State", reduction = "DDRTree", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle2_State", reduction = "UMAP", label = TRUE, theme_use = "theme_blank")
-#'   FeatureDimPlot(pancreas_sub, features = "Monocle2_Pseudotime", reduction = "UMAP", theme_use = "theme_blank")
-#'
-#'   pancreas_sub <- RunMonocle2(
-#'     srt = pancreas_sub,
-#'     feature_type = "Disp", disp_filter = "mean_expression >= 0.01 & dispersion_empirical >= 1 * dispersion_fit"
-#'   )
-#'   trajectory <- pancreas_sub@tools$Monocle2$trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle2_State", reduction = "DDRTree", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle2_State", reduction = "UMAP", label = TRUE, theme_use = "theme_blank")
-#'   FeatureDimPlot(pancreas_sub, features = "Monocle2_Pseudotime", reduction = "UMAP", theme_use = "theme_blank")
-#' }
-#' @importFrom Seurat DefaultAssay CreateDimReducObject GetAssayData VariableFeatures FindVariableFeatures
-#' @importFrom SeuratObject as.sparse
-#' @importFrom igraph as_data_frame
-#' @importFrom ggplot2 geom_segment
-#' @importFrom utils select.list
-#' @export
-RunMonocle2 <- function(srt, assay = NULL, slot = "counts", expressionFamily = "negbinomial.size",
-                        features = NULL, feature_type = "HVF", disp_filter = "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit",
-                        max_components = 2, reduction_method = "DDRTree", norm_method = "log", residualModelFormulaStr = NULL, pseudo_expr = 1,
-                        root_state = NULL, seed = 11) {
-  set.seed(seed)
-  check_R(c("monocle", "DDRTree", "BiocGenerics", "Biobase", "VGAM"))
-
-  if (!"package:DDRTree" %in% search()) {
-    attachNamespace("DDRTree")
-  }
-
-  assay <- assay %||% DefaultAssay(srt)
-  expr_matrix <- as.sparse(GetAssayData(srt, assay = assay, slot = slot))
-  p_data <- srt@meta.data
-  f_data <- data.frame(gene_short_name = row.names(expr_matrix), row.names = row.names(expr_matrix))
-  pd <- new("AnnotatedDataFrame", data = p_data)
-  fd <- new("AnnotatedDataFrame", data = f_data)
-  cds <- monocle::newCellDataSet(expr_matrix,
-    phenoData = pd,
-    featureData = fd,
-    expressionFamily = do.call(get(expressionFamily, envir = getNamespace("VGAM")), args = list())
-  )
-  if (any(c("negbinomial", "negbinomial.size") %in% expressionFamily)) {
-    cds <- BiocGenerics::estimateSizeFactors(cds)
-    cds <- BiocGenerics::estimateDispersions(cds)
-  }
-  if (is.null(features)) {
-    if (feature_type == "HVF") {
-      features <- VariableFeatures(srt, assay = assay)
-      if (length(features) == 0) {
-        features <- VariableFeatures(FindVariableFeatures(srt, assay = assay), assay = assay)
-      }
-    }
-    if (feature_type == "Disp") {
-      features <- subset(monocle::dispersionTable(cds), eval(rlang::parse_expr(disp_filter)))$gene_id
-    }
-  }
-  message("features number: ", length(features))
-  cds <- monocle::setOrderingFilter(cds, features)
-  p <- monocle::plot_ordering_genes(cds)
-  print(p)
-
-  cds <- monocle::reduceDimension(
-    cds = cds,
-    max_components = max_components,
-    reduction_method = reduction_method,
-    norm_method = norm_method,
-    residualModelFormulaStr = residualModelFormulaStr,
-    pseudo_expr = pseudo_expr
-  )
-  cds <- orderCells(cds)
-
-  embeddings <- t(cds@reducedDimS)
-  colnames(embeddings) <- paste0(cds@dim_reduce_type, "_", 1:ncol(embeddings))
-  srt[[cds@dim_reduce_type]] <- CreateDimReducObject(embeddings = embeddings, key = paste0(cds@dim_reduce_type, "_"), assay = assay)
-  srt[["Monocle2_State"]] <- cds[["State"]]
-  if (cds@dim_reduce_type == "ICA") {
-    reduced_dim_coords <- as.data.frame(t(cds@reducedDimS))
-  } else if (cds@dim_reduce_type %in% c("simplePPT", "DDRTree")) {
-    reduced_dim_coords <- as.data.frame(t(cds@reducedDimK))
-  }
-  edge_df <- as_data_frame(cds@minSpanningTree)
-  edge_df[, c("x", "y")] <- reduced_dim_coords[edge_df[["from"]], 1:2]
-  edge_df[, c("xend", "yend")] <- reduced_dim_coords[edge_df[["to"]], 1:2]
-  trajectory <- geom_segment(data = edge_df, aes(x = x, y = y, xend = xend, yend = yend))
-  p <- CellDimPlot(srt, group.by = "Monocle2_State", reduction = reduction_method, label = TRUE, force = TRUE) +
-    trajectory
-  print(p)
-  if (is.null(root_state)) {
-    root_state <- select.list(sort(unique(cds[["State"]])), title = "Select the root state to order cells:")
-    if (root_state == "" || length(root_state) == 0) {
-      root_state <- NULL
-    }
-  }
-  cds <- orderCells(cds, root_state = root_state)
-  srt[["Monocle2_State"]] <- cds[["State"]]
-  srt[["Monocle2_Pseudotime"]] <- cds[["Pseudotime"]]
-  srt@tools$Monocle2 <- list(cds = cds, features = features, trajectory = trajectory)
-
-  p1 <- CellDimPlot(srt, group.by = "Monocle2_State", reduction = reduction_method, label = TRUE, force = TRUE) + trajectory
-  p2 <- FeatureDimPlot(srt, features = "Monocle2_Pseudotime", reduction = reduction_method) + trajectory
-  print(p1)
-  Sys.sleep(1)
-  print(p2)
-  return(srt)
-}
-
-orderCells <- function(cds, root_state = NULL, num_paths = NULL, reverse = NULL) {
-  if (class(cds)[1] != "CellDataSet") {
-    stop("Error cds is not of type 'CellDataSet'")
-  }
-  if (is.null(cds@dim_reduce_type)) {
-    stop("Error: dimensionality not yet reduced. Please call reduceDimension() before calling this function.")
-  }
-  if (any(c(length(cds@reducedDimS) == 0, length(cds@reducedDimK) == 0))) {
-    stop("Error: dimension reduction didn't prodvide correct results. Please check your reduceDimension() step and ensure correct dimension reduction are performed before calling this function.")
-  }
-  root_cell <- monocle:::select_root_cell(cds, root_state, reverse)
-  cds@auxOrderingData <- new.env(hash = TRUE)
-  if (cds@dim_reduce_type == "ICA") {
-    if (is.null(num_paths)) {
-      num_paths <- 1
-    }
-    adjusted_S <- t(cds@reducedDimS)
-    dp <- Matrix::as.matrix(stats::dist(adjusted_S))
-    cellPairwiseDistances(cds) <- Matrix::as.matrix(stats::dist(adjusted_S))
-    gp <- igraph::graph.adjacency(dp, mode = "undirected", weighted = TRUE)
-    dp_mst <- igraph::minimum.spanning.tree(gp)
-    monocle::minSpanningTree(cds) <- dp_mst
-    next_node <<- 0
-    res <- monocle:::pq_helper(dp_mst, use_weights = FALSE, root_node = root_cell)
-    cds@auxOrderingData[[cds@dim_reduce_type]]$root_cell <- root_cell
-    order_list <- monocle:::extract_good_branched_ordering(res$subtree, res$root, monocle::cellPairwiseDistances(cds), num_paths, FALSE)
-    cc_ordering <- order_list$ordering_df
-    row.names(cc_ordering) <- cc_ordering$sample_name
-    monocle::minSpanningTree(cds) <- igraph::as.undirected(order_list$cell_ordering_tree)
-    cds[["Pseudotime"]] <- cc_ordering[row.names(Biobase::pData(cds)), ]$pseudo_time
-    cds[["State"]] <- cc_ordering[row.names(Biobase::pData(cds)), ]$cell_state
-    mst_branch_nodes <- igraph::V(monocle::minSpanningTree(cds))[which(igraph::degree(monocle::minSpanningTree(cds)) > 2)]$name
-    monocle::minSpanningTree(cds) <- dp_mst
-    cds@auxOrderingData[[cds@dim_reduce_type]]$cell_ordering_tree <- igraph::as.undirected(order_list$cell_ordering_tree)
-  } else if (cds@dim_reduce_type == "DDRTree") {
-    if (is.null(num_paths) == FALSE) {
-      message("Warning: num_paths only valid for method 'ICA' in reduceDimension()")
-    }
-    cc_ordering <- extract_ddrtree_ordering(cds, root_cell)
-    cds[["Pseudotime"]] <- cc_ordering[row.names(Biobase::pData(cds)), ]$pseudo_time
-    K_old <- monocle::reducedDimK(cds)
-    old_dp <- monocle::cellPairwiseDistances(cds)
-    old_mst <- monocle::minSpanningTree(cds)
-    old_A <- monocle::reducedDimA(cds)
-    old_W <- monocle::reducedDimW(cds)
-    cds <- project2MST(cds, monocle:::project_point_to_line_segment)
-    monocle::minSpanningTree(cds) <- cds@auxOrderingData[[cds@dim_reduce_type]]$pr_graph_cell_proj_tree
-    root_cell_idx <- which(igraph::V(old_mst)$name == root_cell, arr.ind = TRUE)
-    cells_mapped_to_graph_root <- which(cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex == root_cell_idx)
-    if (length(cells_mapped_to_graph_root) == 0) {
-      cells_mapped_to_graph_root <- root_cell_idx
-    }
-    cells_mapped_to_graph_root <- igraph::V(monocle::minSpanningTree(cds))[cells_mapped_to_graph_root]$name
-    tip_leaves <- names(which(igraph::degree(monocle::minSpanningTree(cds)) == 1))
-    root_cell <- cells_mapped_to_graph_root[cells_mapped_to_graph_root %in% tip_leaves][1]
-    if (is.na(root_cell)) {
-      root_cell <- monocle:::select_root_cell(cds, root_state, reverse)
-    }
-    cds@auxOrderingData[[cds@dim_reduce_type]]$root_cell <- root_cell
-    cc_ordering_new_pseudotime <- extract_ddrtree_ordering(cds, root_cell)
-    cds[["Pseudotime"]] <- cc_ordering_new_pseudotime[row.names(Biobase::pData(cds)), ]$pseudo_time
-    if (is.null(root_state) == TRUE) {
-      closest_vertex <- cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex
-      cds[["State"]] <- cc_ordering[closest_vertex[, 1], ]$cell_state
-    }
-    cds@reducedDimK <- K_old
-    cds@cellPairwiseDistances <- old_dp
-    cds@minSpanningTree <- old_mst
-    cds@reducedDimA <- old_A
-    cds@reducedDimW <- old_W
-    mst_branch_nodes <- igraph::V(monocle::minSpanningTree(cds))[which(igraph::degree(monocle::minSpanningTree(cds)) > 2)]$name
-  } else if (cds@dim_reduce_type == "SimplePPT") {
-    if (is.null(num_paths) == FALSE) {
-      message("Warning: num_paths only valid for method 'ICA' in reduceDimension()")
-    }
-    cc_ordering <- extract_ddrtree_ordering(cds, root_cell)
-    cds[["Pseudotime"]] <- cc_ordering[row.names(Biobase::pData(cds)), ]$pseudo_time
-    cds[["State"]] <- cc_ordering[row.names(Biobase::pData(cds)), ]$cell_state
-    mst_branch_nodes <- igraph::V(monocle::minSpanningTree(cds))[which(igraph::degree(monocle::minSpanningTree(cds)) > 2)]$name
-  }
-  cds@auxOrderingData[[cds@dim_reduce_type]]$branch_points <- mst_branch_nodes
-  cds
-}
-project2MST <- function(cds, Projection_Method) {
-  dp_mst <- monocle::minSpanningTree(cds)
-  Z <- monocle::reducedDimS(cds)
-  Y <- monocle::reducedDimK(cds)
-  cds <- monocle:::findNearestPointOnMST(cds)
-  closest_vertex <- cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex
-  closest_vertex_names <- colnames(Y)[closest_vertex]
-  closest_vertex_df <- Matrix::as.matrix(closest_vertex)
-  row.names(closest_vertex_df) <- row.names(closest_vertex)
-  tip_leaves <- names(which(igraph::degree(dp_mst) == 1))
-  if (!is.function(Projection_Method)) {
-    P <- Y[, closest_vertex]
-  } else {
-    P <- matrix(rep(0, length(Z)), nrow = nrow(Z))
-    for (i in 1:length(closest_vertex)) {
-      neighbors <- names(igraph::V(dp_mst)[suppressWarnings(nei(closest_vertex_names[i], mode = "all"))])
-      projection <- NULL
-      distance <- NULL
-      Z_i <- Z[, i]
-      for (neighbor in neighbors) {
-        if (closest_vertex_names[i] %in% tip_leaves) {
-          tmp <- monocle:::projPointOnLine(Z_i, Y[, c(closest_vertex_names[i], neighbor)])
-        } else {
-          tmp <- Projection_Method(Z_i, Y[, c(closest_vertex_names[i], neighbor)])
-        }
-        projection <- rbind(projection, tmp)
-        distance <- c(distance, stats::dist(rbind(Z_i, tmp)))
-      }
-      if (!inherits(projection, "matrix")) {
-        projection <- Matrix::as.matrix(projection)
-      }
-      P[, i] <- projection[which(distance == min(distance))[1], ]
-    }
-  }
-  colnames(P) <- colnames(Z)
-  dp <- Matrix::as.matrix(stats::dist(t(P)))
-  min_dist <- min(dp[dp != 0])
-  dp <- dp + min_dist
-  diag(dp) <- 0
-  monocle::cellPairwiseDistances(cds) <- dp
-  gp <- igraph::graph.adjacency(dp, mode = "undirected", weighted = TRUE)
-  dp_mst <- igraph::minimum.spanning.tree(gp)
-  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_tree <- dp_mst
-  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_dist <- P
-  cds@auxOrderingData[["DDRTree"]]$pr_graph_cell_proj_closest_vertex <- closest_vertex_df
-  cds
-}
-extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
-  dp <- monocle::cellPairwiseDistances(cds)
-  dp_mst <- monocle::minSpanningTree(cds)
-  curr_state <- 1
-  res <- list(subtree = dp_mst, root = root_cell)
-  states <- rep(1, ncol(dp))
-  names(states) <- igraph::V(dp_mst)$name
-  pseudotimes <- rep(0, ncol(dp))
-  names(pseudotimes) <- igraph::V(dp_mst)$name
-  parents <- rep(NA, ncol(dp))
-  names(parents) <- igraph::V(dp_mst)$name
-  mst_traversal <- igraph::graph.dfs(dp_mst,
-    root = root_cell, mode = "all",
-    unreachable = FALSE, father = TRUE
-  )
-  mst_traversal$father <- as.numeric(mst_traversal$father)
-  curr_state <- 1
-  for (i in 1:length(mst_traversal$order)) {
-    curr_node <- mst_traversal$order[i]
-    curr_node_name <- igraph::V(dp_mst)[curr_node]$name
-    if (is.na(mst_traversal$father[curr_node]) == FALSE) {
-      parent_node <- mst_traversal$father[curr_node]
-      parent_node_name <- igraph::V(dp_mst)[parent_node]$name
-      parent_node_pseudotime <- pseudotimes[parent_node_name]
-      parent_node_state <- states[parent_node_name]
-      curr_node_pseudotime <- parent_node_pseudotime +
-        dp[curr_node_name, parent_node_name]
-      if (igraph::degree(dp_mst, v = parent_node_name) > 2) {
-        curr_state <- curr_state + 1
-      }
-    } else {
-      parent_node <- NA
-      parent_node_name <- NA
-      curr_node_pseudotime <- 0
-    }
-    curr_node_state <- curr_state
-    pseudotimes[curr_node_name] <- curr_node_pseudotime
-    states[curr_node_name] <- curr_node_state
-    parents[curr_node_name] <- parent_node_name
-  }
-  ordering_df <- data.frame(
-    sample_name = names(states), cell_state = factor(states),
-    pseudo_time = as.vector(pseudotimes), parent = parents
-  )
-  row.names(ordering_df) <- ordering_df$sample_name
-  return(ordering_df)
-}
-
-#' Run Monocle3 analysis
-#'
-#' Runs the Monocle3 algorithm on a Seurat object.
-#'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.
-#' @param slot The slot in the Seurat object to use for analysis. Default is "counts".
-#' @param reduction The reduction used. Defaults to NULL, in which case the default reduction of the Seurat object is used.
-#' @param clusters The cluster variable in the Seurat object to use for analysis. Defaults to NULL, in which case use Monocle clusters is used.
-#' @param graph The name of the graph slot in the Seurat object to use for analysis. Defaults to NULL, in which case Monocle graph is used.
-#' @param partition_qval The q-value threshold for partitioning cells. Defaults to 0.05.
-#' @param k The number of nearest neighbors to consider for clustering. Defaults to 50.
-#' @param cluster_method The clustering method to use. Defaults to "louvain".
-#' @param num_iter The number of iterations for clustering. Defaults to 2.
-#' @param resolution The resolution parameter for clustering. Defaults to NULL.
-#' @param use_partition Whether to use partitions to learn disjoint graph in each partition. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param close_loop Whether to close loops in the graph. Defaults to TRUE.
-#' @param root_pr_nodes The root nodes to order cells. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param root_cells The root cells to order cells. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param seed The random seed to use for reproducibility. Defaults to 11.
-#'
-#' @examples
-#' if (interactive()) {
-#'   data("pancreas_sub")
-#'   # Use Monocle clusters to infer the trajectories
-#'   pancreas_sub <- RunMonocle3(srt = pancreas_sub, reduction = "UMAP")
-#'   names(pancreas_sub@tools$Monocle3)
-#'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-#'   milestones <- pancreas_sub@tools$Monocle3$milestones
-#'
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_partitions", reduction = "UMAP", label = TRUE, theme_use = "theme_blank") + trajectory + milestones
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_clusters", reduction = "UMAP", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "UMAP", theme_use = "theme_blank") + trajectory
-#'
-#'   ## Select the lineage using monocle3::choose_graph_segments
-#'   # cds <- pancreas_sub@tools$Monocle3$cds
-#'   # cds_sub <- monocle3::choose_graph_segments(cds, starting_pr_node = NULL, ending_pr_nodes = NULL)
-#'   # pancreas_sub$Lineages_1 <- NA
-#'   # pancreas_sub$Lineages_1[colnames(cds_sub)] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
-#'   # CellDimPlot(pancreas_sub, group.by = "SubCellType", lineages = "Lineages_1", lineages_span = 0.1, theme_use = "theme_blank")
-#'
-#'   # Use Seurat clusters to infer the trajectories
-#'   pancreas_sub <- Standard_scop(pancreas_sub)
-#'   CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE, theme_use = "theme_blank")
-#'   pancreas_sub <- RunMonocle3(srt = pancreas_sub, clusters = "Standardclusters")
-#'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_partitions", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_clusters", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "StandardUMAP2D", theme_use = "theme_blank") + trajectory
-#'
-#'   # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
-#'   pancreas_sub <- Standard_scop(pancreas_sub, cluster_resolution = 5)
-#'   CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE)
-#'   pancreas_sub <- RunMonocle3(
-#'     srt = pancreas_sub,
-#'     clusters = "Standardclusters", graph = "Standardpca_SNN"
-#'   )
-#'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_partitions", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   CellDimPlot(pancreas_sub, group.by = "Monocle3_clusters", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-#'   FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "StandardUMAP2D", theme_use = "theme_blank") + trajectory
-#' }
-#' @importFrom SeuratObject as.sparse Embeddings Loadings Stdev
-#' @importFrom Seurat DefaultAssay GetAssayData
-#' @importFrom igraph as_data_frame
-#' @importFrom ggplot2 geom_segment
-#' @importFrom ggrepel geom_text_repel
-#' @importFrom ggnewscale new_scale_color
-#' @importFrom utils packageVersion select.list
-#' @export
-RunMonocle3 <- function(srt, assay = NULL, slot = "counts",
-                        reduction = DefaultReduction(srt), clusters = NULL, graph = NULL, partition_qval = 0.05,
-                        k = 50, cluster_method = "louvain", num_iter = 2, resolution = NULL,
-                        use_partition = NULL, close_loop = TRUE,
-                        root_pr_nodes = NULL, root_cells = NULL, seed = 11) {
-  set.seed(seed)
-  if (!requireNamespace("monocle3", quietly = TRUE) || packageVersion("monocle3") < package_version("1.2.0")) {
-    check_R("cole-trapnell-lab/monocle3", force = TRUE)
-  }
-  assay <- assay %||% DefaultAssay(srt)
-  expr_matrix <- as.sparse(GetAssayData(srt, assay = assay, slot = slot))
-  p_data <- srt@meta.data
-  f_data <- data.frame(gene_short_name = row.names(expr_matrix), row.names = row.names(expr_matrix))
-  cds <- monocle3::new_cell_data_set(
-    expression_data = expr_matrix,
-    cell_metadata = p_data,
-    gene_metadata = f_data
-  )
-  if (!"Size_Factor" %in% colnames(cds@colData)) {
-    size.factor <- paste0("nCount_", assay)
-    if (size.factor %in% colnames(srt@meta.data)) {
-      cds[["Size_Factor"]] <- cds[[size.factor, drop = TRUE]]
-    }
-  }
-  reduction <- reduction %||% DefaultReduction(srt)
-  SingleCellExperiment::reducedDims(cds)[["UMAP"]] <- Embeddings(srt[[reduction]])
-  loadings <- Loadings(object = srt[[reduction]])
-  if (length(loadings) > 0) {
-    slot(object = cds, name = "reduce_dim_aux")[["gene_loadings"]] <- loadings
-  }
-  stdev <- Stdev(object = srt[[reduction]])
-  if (length(stdev) > 0) {
-    slot(object = cds, name = "reduce_dim_aux")[["prop_var_expl"]] <- stdev
-  }
-
-  if (!is.null(clusters)) {
-    if (!is.null(graph)) {
-      g <- igraph::graph_from_adjacency_matrix(
-        adjmatrix = srt[[graph]],
-        weighted = TRUE
-      )
-      cluster_result <- list(
-        g = g,
-        relations = NULL,
-        distMatrix = "matrix",
-        coord = NULL,
-        edge_links = NULL,
-        optim_res = list(
-          membership = as.integer(as.factor(srt[[clusters, drop = TRUE]])),
-          modularity = NA_real_
-        )
-      )
-      if (length(unique(cluster_result$optim_res$membership)) > 1) {
-        cluster_graph_res <- monocle3:::compute_partitions(cluster_result$g, cluster_result$optim_res, partition_qval)
-        partitions <- igraph::components(cluster_graph_res$cluster_g)$membership[cluster_result$optim_res$membership]
-        partitions <- as.factor(partitions)
-      } else {
-        partitions <- rep(1, ncol(srt))
-      }
-      names(partitions) <- colnames(cds)
-      cds@clusters[["UMAP"]] <- list(
-        cluster_result = cluster_result,
-        partitions = partitions,
-        clusters = as.factor(srt[[clusters, drop = TRUE]])
-      )
-      cds[["clusters"]] <- cds[[clusters]]
-      cds <- monocle3:::add_citation(cds, "clusters")
-      cds <- monocle3:::add_citation(cds, "partitions")
-    } else {
-      cds <- monocle3::cluster_cells(cds,
-        reduction_method = "UMAP", partition_qval = partition_qval,
-        k = k, cluster_method = cluster_method, num_iter = num_iter, resolution = resolution
-      )
-      cds[["clusters"]] <- cds@clusters[["UMAP"]]$clusters <- as.factor(srt[[clusters, drop = TRUE]])
-    }
-  } else {
-    cds <- monocle3::cluster_cells(cds,
-      reduction_method = "UMAP", partition_qval = partition_qval,
-      k = k, cluster_method = cluster_method, num_iter = num_iter, resolution = resolution
-    )
-    cds[["clusters"]] <- cds@clusters[["UMAP"]]$clusters
-  }
-  srt[["Monocle3_clusters"]] <- cds@clusters[["UMAP"]]$clusters
-  srt[["Monocle3_partitions"]] <- cds@clusters[["UMAP"]]$partitions
-  p1 <- CellDimPlot(srt, "Monocle3_partitions", reduction = reduction, label = FALSE, force = TRUE)
-  p2 <- CellDimPlot(srt, "Monocle3_clusters", reduction = reduction, label = FALSE, force = TRUE)
-  print(p1)
-  Sys.sleep(1)
-  print(p2)
-  if (is.null(use_partition)) {
-    use_partition <- select.list(c(TRUE, FALSE), title = "Whether to use partitions to learn disjoint graph in each partition?")
-    if (use_partition == "" || length(use_partition) == 0) {
-      use_partition <- TRUE
-    }
-  }
-  cds <- monocle3::learn_graph(cds = cds, use_partition = use_partition, close_loop = close_loop)
-
-  reduced_dim_coords <- t(cds@principal_graph_aux[["UMAP"]]$dp_mst)
-  edge_df <- as_data_frame(cds@principal_graph[["UMAP"]])
-  edge_df[, c("x", "y")] <- reduced_dim_coords[edge_df[["from"]], 1:2]
-  edge_df[, c("xend", "yend")] <- reduced_dim_coords[edge_df[["to"]], 1:2]
-  mst_branch_nodes <- monocle3:::branch_nodes(cds, "UMAP")
-  mst_leaf_nodes <- monocle3:::leaf_nodes(cds, "UMAP")
-  mst_root_nodes <- monocle3:::root_nodes(cds, "UMAP")
-  pps <- c(mst_branch_nodes, mst_leaf_nodes, mst_root_nodes)
-  point_df <- data.frame(nodes = names(pps), x = reduced_dim_coords[pps, 1], y = reduced_dim_coords[pps, 2])
-  point_df[, "is_branch"] <- names(pps) %in% names(mst_branch_nodes)
-  trajectory <- list(
-    geom_segment(data = edge_df, aes(x = x, y = y, xend = xend, yend = yend))
-  )
-  milestones <- list(
-    geom_point(
-      data = point_df[point_df[["is_branch"]] == FALSE, , drop = FALSE], aes(x = x, y = y),
-      shape = 21, color = "white", fill = "black", size = 3, stroke = 1
-    ),
-    geom_point(
-      data = point_df[point_df[["is_branch"]] == TRUE, , drop = FALSE], aes(x = x, y = y),
-      shape = 21, color = "white", fill = "red", size = 3, stroke = 1
-    ),
-    new_scale_color(),
-    geom_text_repel(
-      data = point_df, aes(x = x, y = y, label = nodes, color = is_branch),
-      fontface = "bold", min.segment.length = 0,
-      point.size = 3, max.overlaps = 100,
-      bg.color = "white", bg.r = 0.1, size = 3.5
-    ),
-    scale_color_manual(values = setNames(c("red", "black"), nm = c(TRUE, FALSE)))
-  )
-  p <- CellDimPlot(srt, group.by = "Monocle3_partitions", reduction = reduction, label = FALSE, force = TRUE) +
-    trajectory + milestones
-  print(p)
-
-  if (is.null(root_pr_nodes) && is.null(root_cells)) {
-    root_pr_nodes <- select.list(names(pps), title = "Select the root nodes to order cells, or leave blank for interactive selection:", multiple = TRUE)
-    if (root_pr_nodes == "" || length(root_pr_nodes) == 0) {
-      root_pr_nodes <- NULL
-    }
-  }
-  cds <- monocle3::order_cells(cds, root_pr_nodes = root_pr_nodes, root_cells = root_cells)
-  pseudotime <- cds@principal_graph_aux[["UMAP"]]$pseudotime
-  pseudotime[is.infinite(pseudotime)] <- NA
-  srt[["Monocle3_Pseudotime"]] <- pseudotime
-  srt@tools$Monocle3 <- list(cds = cds, trajectory = trajectory, milestones = milestones)
-
-  p1 <- CellDimPlot(srt, group.by = "Monocle3_partitions", reduction = reduction, label = FALSE, force = TRUE) +
-    trajectory
-  p2 <- FeatureDimPlot(srt, features = "Monocle3_Pseudotime", reduction = reduction) +
-    theme(legend.position = "none") +
-    trajectory
-  print(p1)
-  Sys.sleep(1)
-  print(p2)
-  return(srt)
-}
-
 #' RunDynamicFeatures
 #'
 #' Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
@@ -4931,14 +4313,28 @@ RunMonocle3 <- function(srt, assay = NULL, slot = "counts",
 #' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for computing dynamic features. Defaults to BiocParallel::bpparam().
 #' @param seed An integer specifying the seed for random number generation. Defaults to 11.
 #'
+#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures AddMetaData
+#' @importFrom stats p.adjust
+#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
+#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
 #'
 #' @seealso \code{\link{DynamicHeatmap}} \code{\link{DynamicPlot}} \code{\link{RunDynamicEnrichment}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP")
-#' pancreas_sub <- RunDynamicFeatures(pancreas_sub, lineages = c("Lineage1", "Lineage2"), n_candidates = 200)
+#' pancreas_sub <- RunSlingshot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP"
+#' )
+#' pancreas_sub <- RunDynamicFeatures(
+#'   pancreas_sub,
+#'   lineages = c("Lineage1", "Lineage2"),
+#'   n_candidates = 200
+#' )
 #' names(pancreas_sub@tools$DynamicFeatures_Lineage1)
 #' head(pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures)
 #' ht <- DynamicHeatmap(
@@ -4957,16 +4353,19 @@ RunMonocle3 <- function(srt, assay = NULL, slot = "counts",
 #'   compare_lineages = TRUE,
 #'   compare_features = FALSE
 #' )
-#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures as.SingleCellExperiment AddMetaData
-#' @importFrom stats p.adjust
-#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
-#' @export
-RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages,
-                               n_candidates = 1000, minfreq = 5,
-                               family = NULL,
-                               slot = "counts", assay = NULL, libsize = NULL,
-                               BPPARAM = BiocParallel::bpparam(), seed = 11) {
+RunDynamicFeatures <- function(
+    srt,
+    lineages,
+    features = NULL,
+    suffix = lineages,
+    n_candidates = 1000,
+    minfreq = 5,
+    family = NULL,
+    slot = "counts",
+    assay = NULL,
+    libsize = NULL,
+    BPPARAM = BiocParallel::bpparam(),
+    seed = 11) {
   set.seed(seed)
   bpprogressbar(BPPARAM) <- TRUE
   bpRNGseed(BPPARAM) <- seed
@@ -4984,7 +4383,11 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
     meta <- features[features %in% colnames(srt@meta.data)]
     isnum <- sapply(srt@meta.data[, meta, drop = FALSE], is.numeric)
     if (!all(isnum)) {
-      warning(paste0(meta[!isnum], collapse = ","), " is not numeric and will be dropped.", immediate. = TRUE)
+      warning(
+        paste0(meta[!isnum], collapse = ","),
+        " is not numeric and will be dropped.",
+        immediate. = TRUE
+      )
       meta <- meta[isnum]
     }
     features <- c(gene, meta)
@@ -4993,7 +4396,7 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
     }
   }
 
-  Y <- GetAssayData(srt, slot = slot, assay = assay)
+  Y <- GetAssayData(srt, layer = slot, assay = assay)
   if (is.null(libsize)) {
     status <- check_DataType(srt, assay = assay, slot = "counts")
     if (status != "raw_counts") {
@@ -5018,12 +4421,22 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
   features_list <- c()
   srt_sub_list <- list()
   for (l in lineages) {
-    srt_sub <- subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])])
+    srt_sub <- subset(
+      srt,
+      cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]
+    )
     if (is.null(features)) {
       if (is.null(n_candidates)) {
         stop("'features' or 'n_candidates' must provided at least one.")
       }
-      HVF <- VariableFeatures(FindVariableFeatures(srt_sub, nfeatures = n_candidates, assay = assay), assay = assay)
+      HVF <- VariableFeatures(
+        FindVariableFeatures(
+          srt_sub,
+          nfeatures = n_candidates,
+          assay = assay
+        ),
+        assay = assay
+      )
       HVF_counts <- srt_sub[[assay]]@counts[HVF, , drop = FALSE]
       HVF <- HVF[apply(HVF_counts, 1, function(x) {
         length(unique(x))
@@ -5083,69 +4496,104 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
 
     message("Calculate dynamic features for ", l, "...")
     system.time({
-      gam_out <- bplapply(seq_len(nrow(Y_ordered)), function(n, Y_ordered, t_ordered, l_libsize, family) {
-        feature_nm <- rownames(Y_ordered)[n]
-        family_current <- family[feature_nm]
-        if (min(Y_ordered[feature_nm, ]) < 0 && family_current %in% c("nb", "poisson", "binomial")) {
-          warning("Negative values detected. Replace family with 'gaussian' for the feature: ", feature_nm, immediate. = TRUE)
-          family_use <- "gaussian"
-        } else {
-          family_use <- family_current
-        }
-        if (slot == "counts" && family_use != "gaussian" && !feature_nm %in% meta) {
-          l_libsize <- l_libsize
-        } else {
-          l_libsize <- rep(median(Y_libsize), ncol(Y_ordered))
-        }
-        sizefactror <- median(Y_libsize) / l_libsize
-        mod <- mgcv::gam(y ~ s(x, bs = "cs") + offset(log(l_libsize)),
-          family = family_use,
-          data = data.frame(y = Y_ordered[feature_nm, ], x = t_ordered, l_libsize = l_libsize)
-        )
-        pre <- predict(mod, type = "link", se.fit = TRUE)
-        upr <- pre$fit + (2 * pre$se.fit)
-        lwr <- pre$fit - (2 * pre$se.fit)
-        upr <- mod$family$linkinv(upr)
-        lwr <- mod$family$linkinv(lwr)
-        res <- summary(mod)
-        fitted <- fitted(mod)
-        pvalue <- res$s.table[[4]]
-        dev.expl <- res$dev.expl
-        r.sq <- res$r.sq
-        fitted.values <- fitted * sizefactror
-        upr.values <- upr * sizefactror
-        lwr.values <- lwr * sizefactror
-        exp_ncells <- sum(Y_ordered[feature_nm, ] > min(Y_ordered[feature_nm, ]), na.rm = TRUE)
-        peaktime <- median(t_ordered[fitted.values > quantile(fitted.values, 0.99, na.rm = TRUE)])
-        valleytime <- median(t_ordered[fitted.values < quantile(fitted.values, 0.01, na.rm = TRUE)])
+      gam_out <- bplapply(
+        seq_len(nrow(Y_ordered)),
+        function(n,
+                 Y_ordered,
+                 t_ordered,
+                 l_libsize,
+                 family) {
+          feature_nm <- rownames(Y_ordered)[n]
+          family_current <- family[feature_nm]
+          if (min(Y_ordered[feature_nm, ]) < 0 && family_current %in% c("nb", "poisson", "binomial")) {
+            warning(
+              "Negative values detected. Replace family with 'gaussian' for the feature: ",
+              feature_nm,
+              immediate. = TRUE
+            )
+            family_use <- "gaussian"
+          } else {
+            family_use <- family_current
+          }
+          if (slot == "counts" && family_use != "gaussian" && !feature_nm %in% meta) {
+            l_libsize <- l_libsize
+          } else {
+            l_libsize <- rep(median(Y_libsize), ncol(Y_ordered))
+          }
+          sizefactror <- median(Y_libsize) / l_libsize
+          mod <- mgcv::gam(
+            y ~ s(x, bs = "cs") + offset(log(l_libsize)),
+            family = family_use,
+            data = data.frame(
+              y = Y_ordered[feature_nm, ],
+              x = t_ordered,
+              l_libsize = l_libsize
+            )
+          )
+          pre <- predict(mod, type = "link", se.fit = TRUE)
+          upr <- pre$fit + (2 * pre$se.fit)
+          lwr <- pre$fit - (2 * pre$se.fit)
+          upr <- mod$family$linkinv(upr)
+          lwr <- mod$family$linkinv(lwr)
+          res <- summary(mod)
+          fitted <- fitted(mod)
+          pvalue <- res$s.table[[4]]
+          dev.expl <- res$dev.expl
+          r.sq <- res$r.sq
+          fitted.values <- fitted * sizefactror
+          upr.values <- upr * sizefactror
+          lwr.values <- lwr * sizefactror
+          exp_ncells <- sum(
+            Y_ordered[feature_nm, ] > min(Y_ordered[feature_nm, ]),
+            na.rm = TRUE
+          )
+          peaktime <- median(
+            t_ordered[fitted.values > quantile(fitted.values, 0.99, na.rm = TRUE)]
+          )
+          valleytime <- median(
+            t_ordered[fitted.values < quantile(fitted.values, 0.01, na.rm = TRUE)]
+          )
 
-        # ggplot(data = data.frame(
-        #   x = t_ordered,
-        #   raw = FetchData(srt_sub, vars = feature_nm, slot = "counts")[names(t_ordered), feature_nm, drop = TRUE],
-        #   fitted = fitted.values,
-        #   upr.values = upr.values,
-        #   lwr.values = lwr.values,
-        #   l_libsize = l_libsize
-        # )) +
-        #   geom_point(aes(x = x, y = raw), color = "black", size = 0.5) +
-        #   geom_point(aes(x = x, y = fitted), color = "red", size = 0.5) +
-        #   geom_path(aes(x = x, y = upr.values), color = "blue") +
-        #   geom_path(aes(x = x, y = lwr.values), color = "green")
+          # ggplot(data = data.frame(
+          #   x = t_ordered,
+          #   raw = FetchData(srt_sub, vars = feature_nm, slot = "counts")[names(t_ordered), feature_nm, drop = TRUE],
+          #   fitted = fitted.values,
+          #   upr.values = upr.values,
+          #   lwr.values = lwr.values,
+          #   l_libsize = l_libsize
+          # )) +
+          #   geom_point(aes(x = x, y = raw), color = "black", size = 0.5) +
+          #   geom_point(aes(x = x, y = fitted), color = "red", size = 0.5) +
+          #   geom_path(aes(x = x, y = upr.values), color = "blue") +
+          #   geom_path(aes(x = x, y = lwr.values), color = "green")
 
-        # a <- data.frame(x = t_ordered, y = Y_ordered[feature_nm, ])
-        # qplot(a$x, a$y)
-        # length(unique(a$y) > 5)
-        # a <- a[a$y > 0, ]
-        # qplot(a$x, a$y)
+          # a <- data.frame(x = t_ordered, y = Y_ordered[feature_nm, ])
+          # qplot(a$x, a$y)
+          # length(unique(a$y) > 5)
+          # a <- a[a$y > 0, ]
+          # qplot(a$x, a$y)
 
-        return(list(
-          features = feature_nm, exp_ncells = exp_ncells,
-          r.sq = r.sq, dev.expl = dev.expl,
-          peaktime = peaktime, valleytime = valleytime,
-          pvalue = pvalue, fitted.values = fitted.values,
-          upr.values = upr.values, lwr.values = lwr.values
-        ))
-      }, BPPARAM = BPPARAM, Y_ordered = Y_ordered, t_ordered = t_ordered, l_libsize = l_libsize, family = family)
+          return(
+            list(
+              features = feature_nm,
+              exp_ncells = exp_ncells,
+              r.sq = r.sq,
+              dev.expl = dev.expl,
+              peaktime = peaktime,
+              valleytime = valleytime,
+              pvalue = pvalue,
+              fitted.values = fitted.values,
+              upr.values = upr.values,
+              lwr.values = lwr.values
+            )
+          )
+        },
+        BPPARAM = BPPARAM,
+        Y_ordered = Y_ordered,
+        t_ordered = t_ordered,
+        l_libsize = l_libsize,
+        family = family
+      )
     })
     fitted_matrix <- do.call(cbind, lapply(gam_out, function(x) x[["fitted.values"]]))
     colnames(fitted_matrix) <- rownames(Y_ordered)
@@ -5159,7 +4607,17 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
     colnames(lwr_matrix) <- rownames(Y_ordered)
     lwr_matrix <- cbind(pseudotime = t_ordered, lwr_matrix)
 
-    DynamicFeatures <- as.data.frame(do.call(rbind.data.frame, lapply(gam_out, function(x) x[!names(x) %in% c("fitted.values", "upr.values", "lwr.values")])))
+    DynamicFeatures <- as.data.frame(
+      do.call(
+        rbind.data.frame,
+        lapply(
+          gam_out,
+          function(x) {
+            x[!names(x) %in% c("fitted.values", "upr.values", "lwr.values")]
+          }
+        )
+      )
+    )
     char_var <- c("features")
     numb_var <- colnames(DynamicFeatures)[!colnames(DynamicFeatures) %in% char_var]
     DynamicFeatures[, char_var] <- lapply(DynamicFeatures[, char_var, drop = FALSE], as.character)
@@ -5182,7 +4640,12 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
 
   time_end <- Sys.time()
   message(paste0("[", time_end, "] ", "RunDynamicFeatures done"))
-  message("Elapsed time:", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S"))
+  message(
+    "Elapsed time:",
+    format(round(difftime(time_end, time_start), 2),
+      format = "%Y-%m-%d %H:%M:%S"
+    )
+  )
 
   return(srt)
 }
@@ -5197,8 +4660,14 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
 #' @inheritParams CellScoring
 #' @param score_method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".
 #'
+#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures AddMetaData
+#' @importFrom stats p.adjust
+#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
+#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
+#'
 #' @seealso \code{\link{RunDynamicFeatures}} \code{\link{DynamicHeatmap}}
 #'
+#' @export
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- RunSlingshot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP")
@@ -5227,20 +4696,29 @@ RunDynamicFeatures <- function(srt, lineages, features = NULL, suffix = lineages
 #'   split_method = "kmeans-peaktime"
 #' )
 #' ht2$plot
-#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures as.SingleCellExperiment AddMetaData
-#' @importFrom stats p.adjust
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
-#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
-#' @export
-RunDynamicEnrichment <- function(srt, lineages,
-                                 score_method = "AUCell",
-                                 slot = "data", assay = NULL,
-                                 min_expcells = 20, r.sq = 0.2, dev.expl = 0.2, padjust = 0.05,
-                                 IDtype = "symbol", species = "Homo_sapiens",
-                                 db = "GO_BP", db_update = FALSE, db_version = "latest", convert_species = TRUE,
-                                 Ensembl_version = 103, mirror = NULL,
-                                 TERM2GENE = NULL, TERM2NAME = NULL, minGSSize = 10, maxGSSize = 500,
-                                 BPPARAM = BiocParallel::bpparam(), seed = 11) {
+RunDynamicEnrichment <- function(
+    srt,
+    lineages,
+    score_method = "AUCell",
+    slot = "data",
+    assay = NULL,
+    min_expcells = 20,
+    r.sq = 0.2,
+    dev.expl = 0.2,
+    padjust = 0.05,
+    IDtype = "symbol",
+    species = "Homo_sapiens",
+    db = "GO_BP",
+    db_update = FALSE,
+    db_version = "latest",
+    convert_species = TRUE,
+    Ensembl_version = 103,
+    mirror = NULL,
+    TERM2GENE = NULL,
+    TERM2NAME = NULL,
+    minGSSize = 10,
+    maxGSSize = 500,
+    BPPARAM = BiocParallel::bpparam(), seed = 11) {
   set.seed(seed)
   bpprogressbar(BPPARAM) <- TRUE
   bpRNGseed(BPPARAM) <- seed
@@ -5267,8 +4745,14 @@ RunDynamicEnrichment <- function(srt, lineages,
 
   if (is.null(TERM2GENE)) {
     db_list <- PrepareDB(
-      species = species, db = db, db_update = db_update, db_version = db_version,
-      db_IDtypes = IDtype, convert_species = convert_species, Ensembl_version = Ensembl_version, mirror = mirror
+      species = species,
+      db = db,
+      db_update = db_update,
+      db_version = db_version,
+      db_IDtypes = IDtype,
+      convert_species = convert_species,
+      Ensembl_version = Ensembl_version,
+      mirror = mirror
     )
   } else {
     colnames(TERM2GENE) <- c("Term", IDtype)
@@ -5322,7 +4806,12 @@ RunDynamicEnrichment <- function(srt, lineages,
 
   time_end <- Sys.time()
   message(paste0("[", time_end, "] ", "RunDynamicEnrichment done"))
-  message("Elapsed time:", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S"))
+  message(
+    "Elapsed time:",
+    format(round(difftime(time_end, time_start), 2),
+      format = "%Y-%m-%d %H:%M:%S"
+    )
+  )
 
   return(srt)
 }

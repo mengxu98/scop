@@ -17,7 +17,8 @@ palette_scop(
 )
 }
 \arguments{
-\item{x}{A vector of character/factor or numeric values. If missing, numeric values 1:n will be used as x.}
+\item{x}{A vector of character/factor or numeric values.
+If missing, numeric values 1:n will be used as x.}
 
 \item{n}{The number of colors to return for numeric values.}
 
@@ -25,7 +26,8 @@ palette_scop(
 
 \item{palcolor}{Custom colors used to create a color palette.}
 
-\item{type}{Type of \code{x}. Can be one of "auto", "discrete" or "continuous". The default is "auto", which automatically detects if \code{x} is a numeric value.}
+\item{type}{Type of \code{x}. Can be one of "auto", "discrete" or "continuous".
+The default is "auto", which automatically detects if \code{x} is a numeric value.}
 
 \item{matched}{If \code{TRUE}, will return a color vector of the same length as \code{x}.}
 
@@ -40,14 +42,39 @@ Color palettes collected in scop.
 }
 \examples{
 x <- c(1:3, NA, 3:5)
-(pal1 <- palette_scop(x, palette = "Spectral"))
-(pal2 <- palette_scop(x, palcolor = c("red", "white", "blue")))
-(pal3 <- palette_scop(x, palette = "Spectral", n = 10))
-(pal4 <- palette_scop(x, palette = "Spectral", n = 10, reverse = TRUE))
-(pal5 <- palette_scop(x, palette = "Spectral", matched = TRUE))
-(pal6 <- palette_scop(x, palette = "Spectral", matched = TRUE, NA_keep = TRUE))
-(pal7 <- palette_scop(x, palette = "Paired", type = "discrete"))
-show_palettes(list(pal1, pal2, pal3, pal4, pal5, pal6, pal7))
+(pal1 <- palette_scop(
+  x,
+  palette = "Spectral"
+))
+(pal2 <- palette_scop(
+  x,
+  palcolor = c("red", "white", "blue")
+))
+(pal3 <- palette_scop(
+  x,
+  palette = "Spectral",
+  n = 10
+))
+(pal4 <- palette_scop(
+  x,
+  palette = "Spectral",
+  n = 10,
+  reverse = TRUE
+))
+(pal5 <- palette_scop(
+  x,
+  palette = "Spectral",
+  matched = TRUE
+))
+(pal6 <- palette_scop(
+  x,
+  palette = "Spectral",
+  matched = TRUE,
+  NA_keep = TRUE
+))
+show_palettes(
+  list(pal1, pal2, pal3, pal4, pal5, pal6, pal7)
+)
 
 all_palettes <- show_palettes(return_palettes = TRUE)
 names(all_palettes)

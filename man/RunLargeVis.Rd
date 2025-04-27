@@ -108,8 +108,8 @@ manifold approximation. This is the analogous to \code{n_neighbors} in
 
 \item{n_components}{An integer specifying the number of LargeVis components. Default is 2.}
 
-\item{metric}{Type of distance metric to use to find nearest neighbors. One
-  of:
+\item{metric}{Type of distance metric to use to find nearest neighbors. For
+ \code{nn_method = "annoy"} this can be one of:
 \itemize{
   \item \code{"euclidean"} (the default)
   \item \code{"cosine"}
@@ -118,8 +118,36 @@ manifold approximation. This is the analogous to \code{n_neighbors} in
   \item \code{"correlation"} (a distance based on the Pearson correlation)
   \item \code{"categorical"} (see below)
 }
-Only applies if \code{nn_method = "annoy"} (for \code{nn_method = "fnn"}, the
-distance metric is always "euclidean").
+For \code{nn_method = "hnsw"} this can be one of:
+\itemize{
+  \item \code{"euclidean"}
+  \item \code{"cosine"}
+  \item \code{"correlation"}
+}
+If \href{https://cran.r-project.org/package=rnndescent}{rnndescent} is
+installed and \code{nn_method = "nndescent"} is specified then many more
+metrics are avaiable, including:
+\itemize{
+\item \code{"braycurtis"}
+\item \code{"canberra"}
+\item \code{"chebyshev"}
+\item \code{"dice"}
+\item \code{"hamming"}
+\item \code{"hellinger"}
+\item \code{"jaccard"}
+\item \code{"jensenshannon"}
+\item \code{"kulsinski"}
+\item \code{"rogerstanimoto"}
+\item \code{"russellrao"}
+\item \code{"sokalmichener"}
+\item \code{"sokalsneath"}
+\item \code{"spearmanr"}
+\item \code{"symmetrickl"}
+\item \code{"tsss"}
+\item \code{"yule"}
+}
+For more details see the package documentation of \code{rnndescent}.
+For \code{nn_method = "fnn"}, the distance metric is always "euclidean".
 
 If \code{X} is a data frame or matrix, then multiple metrics can be
 specified, by passing a list to this argument, where the name of each item in
@@ -238,6 +266,20 @@ embedding.}
     \href{https://cran.r-project.org/package=FNN}{FNN} package.
   \item \code{"annoy"} Use approximate nearest neighbors via the
     \href{https://cran.r-project.org/package=RcppAnnoy}{RcppAnnoy} package.
+  \item \code{"hnsw"} Use approximate nearest neighbors with the
+    Hierarchical Navigable Small World (HNSW) method (Malkov and Yashunin,
+    2018) via the
+    \href{https://cran.r-project.org/package=RcppHNSW}{RcppHNSW} package.
+    \code{RcppHNSW} is not a dependency of this package: this option is
+    only available if you have installed \code{RcppHNSW} yourself. Also,
+    HNSW only supports the following arguments for \code{metric}:
+    \code{"euclidean"}, \code{"cosine"} and \code{"correlation"}.
+  \item \code{"nndescent"} Use approximate nearest neighbors with the
+    Nearest Neighbor Descent method (Dong et al., 2011) via the
+    \href{https://cran.r-project.org/package=rnndescent}{rnndescent}
+    package. \code{rnndescent} is not a dependency of this package: this
+    option is only available if you have installed \code{rnndescent}
+    yourself.
  }
 By default, if \code{X} has less than 4,096 vertices, the exact nearest
 neighbors are found. Otherwise, approximate nearest neighbors are used.
@@ -314,7 +356,8 @@ carrying out PCA. For binary data, it's recommended to set this to
 \item{pcg_rand}{If \code{TRUE}, use the PCG random number generator (O'Neill,
 2014) during optimization. Otherwise, use the faster (but probably less
 statistically good) Tausworthe "taus88" generator. The default is
-\code{TRUE}.}
+\code{TRUE}. This parameter has been superseded by \code{rng_type} -- if
+both are set, \code{rng_type} takes precedence.}
 
 \item{fast_sgd}{If \code{TRUE}, then the following combination of parameters
 is set: \code{pcg_rand = TRUE} and \code{n_sgd_threads = "auto"}. The
