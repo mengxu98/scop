@@ -12,7 +12,7 @@ RunNMF(object, ...)
 \method{RunNMF}{Seurat}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   features = NULL,
   nbes = 50,
   nmf.method = "RcppML",
@@ -31,7 +31,7 @@ RunNMF(object, ...)
 \method{RunNMF}{Assay}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   features = NULL,
   nbes = 50,
   nmf.method = "RcppML",
@@ -49,7 +49,7 @@ RunNMF(object, ...)
 \method{RunNMF}{default}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   nbes = 50,
   nmf.method = "RcppML",
   tol = 1e-05,
@@ -70,7 +70,7 @@ RunNMF(object, ...)
 
 \item{assay}{A character string specifying the assay to be used for the analysis. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used for the analysis. Default is "data".}
+\item{layer}{A character string specifying the layer to be used for the analysis. Default is "data".}
 
 \item{features}{A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.}
 
@@ -101,6 +101,10 @@ Run NMF (non-negative matrix factorization)
 }
 \examples{
 pancreas_sub <- RunNMF(object = pancreas_sub)
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "nmf")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "nmf"
+)
 
 }

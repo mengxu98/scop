@@ -16,7 +16,7 @@ RunUMAP2(object, ...)
   neighbor = NULL,
   graph = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   umap.method = "uwot",
   reduction.model = NULL,
   n_threads = NULL,
@@ -84,7 +84,7 @@ RunUMAP2(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{umap.method}{A character string specifying the UMAP method to be used. Options are "naive" and uwot". Default is "uwot".}
 
@@ -131,7 +131,14 @@ Run UMAP (Uniform Manifold Approximation and Projection)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunUMAP2(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "umap")
+pancreas_sub <- RunUMAP2(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "umap"
+)
 
 }

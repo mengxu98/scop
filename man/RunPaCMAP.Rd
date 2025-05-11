@@ -14,7 +14,7 @@ RunPaCMAP(object, ...)
   dims = NULL,
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   n_components = 2,
   n.neighbors = NULL,
   MN_ratio = 0.5,
@@ -62,7 +62,7 @@ RunPaCMAP(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{n_components}{An integer specifying the number of PaCMAP components. Default is 2.}
 
@@ -95,7 +95,14 @@ Run PaCMAP (Pairwise Controlled Manifold Approximation)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunPaCMAP(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "pacmap")
+pancreas_sub <- RunPaCMAP(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "pacmap"
+)
 
 }

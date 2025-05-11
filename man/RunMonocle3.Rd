@@ -7,7 +7,7 @@
 RunMonocle3(
   srt,
   assay = NULL,
-  slot = "counts",
+  layer = "counts",
   reduction = DefaultReduction(srt),
   clusters = NULL,
   graph = NULL,
@@ -28,7 +28,7 @@ RunMonocle3(
 
 \item{assay}{The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.}
 
-\item{slot}{The slot in the Seurat object to use for analysis. Default is "counts".}
+\item{layer}{The layer in the Seurat object to use for analysis. Default is "counts".}
 
 \item{reduction}{The reduction used. Defaults to NULL, in which case the default reduction of the Seurat object is used.}
 
@@ -63,7 +63,10 @@ Runs the Monocle3 algorithm on a Seurat object.
 if (interactive()) {
   data("pancreas_sub")
   # Use Monocle clusters to infer the trajectories
-  pancreas_sub <- RunMonocle3(srt = pancreas_sub, reduction = "UMAP")
+  pancreas_sub <- RunMonocle3(
+    srt = pancreas_sub,
+    reduction = "UMAP"
+  )
   names(pancreas_sub@tools$Monocle3)
   trajectory <- pancreas_sub@tools$Monocle3$trajectory
   milestones <- pancreas_sub@tools$Monocle3$milestones
@@ -95,30 +98,86 @@ if (interactive()) {
 
   ## Select the lineage using monocle3::choose_graph_segments
   # cds <- pancreas_sub@tools$Monocle3$cds
-  # cds_sub <- monocle3::choose_graph_segments(cds, starting_pr_node = NULL, ending_pr_nodes = NULL)
+  # cds_sub <- monocle3::choose_graph_segments(
+  # cds,
+  # starting_pr_node = NULL,
+  # ending_pr_nodes = NULL
+  # )
   # pancreas_sub$Lineages_1 <- NA
   # pancreas_sub$Lineages_1[colnames(cds_sub)] <- pancreas_sub$Monocle3_Pseudotime[colnames(cds_sub)]
-  # CellDimPlot(pancreas_sub, group.by = "SubCellType", lineages = "Lineages_1", lineages_span = 0.1, theme_use = "theme_blank")
+  # CellDimPlot(
+  # pancreas_sub,
+  # group.by = "SubCellType",
+  # lineages = "Lineages_1",
+  # lineages_span = 0.1,
+  # theme_use = "theme_blank"
+  # )
 
   # Use Seurat clusters to infer the trajectories
   pancreas_sub <- Standard_scop(pancreas_sub)
-  CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE, theme_use = "theme_blank")
-  pancreas_sub <- RunMonocle3(srt = pancreas_sub, clusters = "Standardclusters")
-  trajectory <- pancreas_sub@tools$Monocle3$trajectory
-  CellDimPlot(pancreas_sub, group.by = "Monocle3_partitions", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-  CellDimPlot(pancreas_sub, group.by = "Monocle3_clusters", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-  FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "StandardUMAP2D", theme_use = "theme_blank") + trajectory
-
-  # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
-  pancreas_sub <- Standard_scop(pancreas_sub, cluster_resolution = 5)
-  CellDimPlot(pancreas_sub, group.by = c("Standardclusters", "CellType"), label = TRUE)
+  CellDimPlot(
+    pancreas_sub,
+    group.by = c("Standardclusters", "CellType"),
+    label = TRUE,
+    theme_use = "theme_blank"
+  )
   pancreas_sub <- RunMonocle3(
     srt = pancreas_sub,
-    clusters = "Standardclusters", graph = "Standardpca_SNN"
+    clusters = "Standardclusters"
   )
   trajectory <- pancreas_sub@tools$Monocle3$trajectory
-  CellDimPlot(pancreas_sub, group.by = "Monocle3_partitions", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-  CellDimPlot(pancreas_sub, group.by = "Monocle3_clusters", reduction = "StandardUMAP2D", label = TRUE, theme_use = "theme_blank") + trajectory
-  FeatureDimPlot(pancreas_sub, features = "Monocle3_Pseudotime", reduction = "StandardUMAP2D", theme_use = "theme_blank") + trajectory
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "Monocle3_partitions",
+    reduction = "StandardUMAP2D",
+    label = TRUE, theme_use = "theme_blank"
+  ) + trajectory
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "Monocle3_clusters",
+    reduction = "StandardUMAP2D",
+    label = TRUE, theme_use = "theme_blank"
+  ) + trajectory
+  FeatureDimPlot(
+    pancreas_sub,
+    features = "Monocle3_Pseudotime",
+    reduction = "StandardUMAP2D",
+    theme_use = "theme_blank"
+  ) + trajectory
+
+  # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
+  pancreas_sub <- Standard_scop(
+    pancreas_sub,
+    cluster_resolution = 5
+  )
+  CellDimPlot(
+    pancreas_sub,
+    group.by = c("Standardclusters", "CellType"),
+    label = TRUE
+  )
+  pancreas_sub <- RunMonocle3(
+    srt = pancreas_sub,
+    clusters = "Standardclusters",
+    graph = "Standardpca_SNN"
+  )
+  trajectory <- pancreas_sub@tools$Monocle3$trajectory
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "Monocle3_partitions",
+    reduction = "StandardUMAP2D",
+    label = TRUE, theme_use = "theme_blank"
+  ) + trajectory
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "Monocle3_clusters",
+    reduction = "StandardUMAP2D",
+    label = TRUE, theme_use = "theme_blank"
+  ) + trajectory
+  FeatureDimPlot(
+    pancreas_sub,
+    features = "Monocle3_Pseudotime",
+    reduction = "StandardUMAP2D",
+    theme_use = "theme_blank"
+  ) + trajectory
 }
 }

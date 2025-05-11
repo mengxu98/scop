@@ -21,6 +21,13 @@ This function performs doublet-calling using the scrublet(python) package on a S
 \examples{
 data("pancreas_sub")
 pancreas_sub <- db_Scrublet(pancreas_sub)
-CellDimPlot(pancreas_sub, reduction = "umap", group.by = "db.Scrublet_class")
-FeatureDimPlot(pancreas_sub, reduction = "umap", features = "db.Scrublet_score")
+CellDimPlot(
+  srt = pancreas_sub,
+  reduction = "umap",
+  group.by = "db.Scrublet_class"
+)
+FeatureDimPlot(
+  srt = pancreas_sub,
+  reduction = "umap", features = "db.Scrublet_score"
+)
 }

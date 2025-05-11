@@ -14,7 +14,7 @@ RunFR(object, ...)
   dims = NULL,
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   graph = NULL,
   neighbor = NULL,
   k.param = 20,
@@ -50,7 +50,7 @@ RunFR(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{graph}{A character string specifying the name of the Graph object to be used. Default is NULL.}
 
@@ -75,7 +75,14 @@ Run Force-Directed Layout (Fruchterman-Reingold algorithm)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunFR(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "fr")
+pancreas_sub <- RunFR(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "fr"
+)
 
 }

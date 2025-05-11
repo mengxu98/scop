@@ -98,7 +98,9 @@ pancreas_sub <- Standard_scop(pancreas_sub)
 CellDimPlot(pancreas_sub, group.by = "SubCellType")
 
 # Use a combination of different linear or non-linear dimension reduction methods
-linear_reductions <- c("pca", "ica", "nmf", "mds", "glmpca")
+linear_reductions <- c(
+  "pca", "ica", "nmf", "mds", "glmpca"
+)
 pancreas_sub <- Standard_scop(
   pancreas_sub,
   linear_reduction = linear_reductions,
@@ -115,7 +117,9 @@ plist1 <- lapply(linear_reductions, function(lr) {
 })
 patchwork::wrap_plots(plotlist = plist1)
 
-nonlinear_reductions <- c("umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr")
+nonlinear_reductions <- c(
+  "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+)
 pancreas_sub <- Standard_scop(
   pancreas_sub,
   linear_reduction = "pca",

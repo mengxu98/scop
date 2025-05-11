@@ -14,7 +14,7 @@ RunPHATE(object, ...)
   dims = NULL,
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   n_components = 2,
   knn = 5,
   decay = 40,
@@ -70,7 +70,7 @@ RunPHATE(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{n_components}{An integer specifying the number of PHATE components. Default is 2.}
 
@@ -111,7 +111,14 @@ Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunPHATE(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "phate")
+pancreas_sub <- RunPHATE(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "phate"
+)
 
 }

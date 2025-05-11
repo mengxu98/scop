@@ -66,11 +66,22 @@ This function performs single-cell reference mapping using the K-nearest neighbo
 data("panc8_sub")
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
+srt_ref <- Integration_scop(
+  srt_ref,
+  batch = "tech",
+  integration_method = "Seurat"
+)
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 # Projection
-srt_query <- RunKNNMap(srt_query = srt_query, srt_ref = srt_ref, ref_umap = "SeuratUMAP2D")
-ProjectionPlot(srt_query = srt_query, srt_ref = srt_ref, query_group = "celltype", ref_group = "celltype")
-
+srt_query <- RunKNNMap(
+  srt_query = srt_query,
+  srt_ref = srt_ref,
+  ref_umap = "SeuratUMAP2D"
+)
+ProjectionPlot(
+  srt_query = srt_query,
+  srt_ref = srt_ref,
+  query_group = "celltype", ref_group = "celltype"
+)
 }

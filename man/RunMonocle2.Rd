@@ -7,7 +7,7 @@
 RunMonocle2(
   srt,
   assay = NULL,
-  slot = "counts",
+  layer = "counts",
   expressionFamily = "negbinomial.size",
   features = NULL,
   feature_type = "HVF",
@@ -26,7 +26,7 @@ RunMonocle2(
 
 \item{assay}{The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.}
 
-\item{slot}{The slot in the Seurat object to use for analysis. Default is "counts".}
+\item{layer}{The layer in the Seurat object to use for analysis. Default is "counts".}
 
 \item{expressionFamily}{The distribution family to use for modeling gene expression. Default is "negbinomial.size".}
 

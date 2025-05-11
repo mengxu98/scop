@@ -7,10 +7,10 @@
 srt_to_adata(
   srt,
   features = NULL,
-  assay_X = "RNA",
-  slot_X = "counts",
-  assay_layers = c("spliced", "unspliced"),
-  slot_layers = "counts",
+  assay_x = "RNA",
+  layer_x = "counts",
+  assay_y = c("spliced", "unspliced"),
+  layer_y = "counts",
   convert_tools = FALSE,
   convert_misc = FALSE,
   verbose = TRUE
@@ -19,15 +19,16 @@ srt_to_adata(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{Optional vector of features to include in the anndata object. Defaults to all features in assay_X.}
+\item{features}{Optional vector of features to include in the anndata object.
+Defaults to all features in assay_x.}
 
-\item{assay_X}{Assay to convert as the main data matrix (X) in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix (X) in the anndata object.}
 
-\item{slot_X}{Slot name for assay_X in the Seurat object.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_layers}{Assays to convert as layers in the anndata object.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{slot_layers}{Slot names for the assay_layers in the Seurat object.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
 \item{convert_tools}{Logical indicating whether to convert the tool-specific data.}
 
@@ -36,8 +37,6 @@ srt_to_adata(
 \item{verbose}{Logical indicating whether to print verbose messages during the conversion process.}
 }
 \value{
-An anndata object.
-
 A \code{anndata} object.
 }
 \description{
@@ -48,8 +47,12 @@ data("pancreas_sub")
 adata <- srt_to_adata(pancreas_sub)
 adata
 
-### Or save as an h5ad file or a loom file
-# adata$write_h5ad("pancreas_sub.h5ad")
-# adata$write_loom("pancreas_sub.loom", write_obsm_varm = TRUE)
-
+## Or save as an h5ad file or a loom file
+# adata$write_h5ad(
+#   "pancreas_sub.h5ad"
+# )
+# adata$write_loom(
+#   "pancreas_sub.loom", 
+#   write_obsm_varm = TRUE
+# )
 }

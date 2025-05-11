@@ -9,7 +9,7 @@ FetchH5(
   MetaFile,
   name = NULL,
   features = NULL,
-  slot = NULL,
+  layer = NULL,
   assay = NULL,
   metanames = NULL,
   reduction = NULL
@@ -24,7 +24,7 @@ FetchH5(
 
 \item{features}{The names of the genes or features to fetch. If specified, only these features will be fetched.}
 
-\item{slot}{The slot for the counts in the hdf5 file. If not specified, the first slot will be used.}
+\item{layer}{The layer for the counts in the hdf5 file. If not specified, the first layer will be used.}
 
 \item{assay}{The name of the assay to use. If not specified, the default assay in the hdf5 file will be used.}
 
@@ -50,8 +50,16 @@ srt <- FetchH5(
   metanames = c("SubCellType", "Phase"),
   reduction = "UMAP"
 )
-CellDimPlot(srt, group.by = c("SubCellType", "Phase"), reduction = "UMAP")
-FeatureDimPlot(srt, features = c("Ins1", "Ghrl"), reduction = "UMAP")
+CellDimPlot(
+  srt,
+  group.by = c("SubCellType", "Phase"),
+  reduction = "UMAP"
+)
+FeatureDimPlot(
+  srt,
+  features = c("Ins1", "Ghrl"),
+  reduction = "UMAP"
+)
 }
 }
 \seealso{

@@ -9,7 +9,13 @@ A list of palettes for use in data visualization
 \examples{
 \dontrun{
 if (interactive()) {
-  check_R(c("stringr", "RColorBrewer", "ggsci", "Redmonder", "rcartocolor", "nord", "viridis", "pals", "oompaBase", "dichromat", "jaredhuling/jcolors"))
+  check_R(
+    c(
+      "stringr", "RColorBrewer", "ggsci", "Redmonder",
+      "rcartocolor", "nord", "viridis", "pals", "oompaBase",
+      "dichromat", "jaredhuling/jcolors"
+    )
+  )
   library(stringr)
   library(RColorBrewer)
   library(ggsci)
@@ -26,16 +32,38 @@ if (interactive()) {
   metacartocolors <- rcartocolor::metacartocolors
   rownames(metacartocolors) <- metacartocolors$Name
   nord_palettes <- nord::nord_palettes
-  viridis_names <- c("magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", "turbo")
-  viridis_palettes <- lapply(setNames(viridis_names, viridis_names), function(x) viridis::viridis(100, option = x))
-  ocean_names <- names(pals:::syspals)[grep("ocean", names(pals:::syspals))]
+  viridis_names <- c(
+    "magma", "inferno", "plasma", "viridis",
+    "cividis", "rocket", "mako", "turbo"
+  )
+  viridis_palettes <- lapply(
+    setNames(viridis_names, viridis_names),
+    function(x) viridis::viridis(100, option = x)
+  )
+  ocean_names <- names(
+    pals:::syspals
+  )[grep(
+    "ocean",
+    names(pals:::syspals)
+  )]
   ocean_palettes <- pals:::syspals[ocean_names]
   dichromat_palettes <- dichromat::colorschemes
-  jcolors_names <- paste0("jcolors-", c("default", "pal2", "pal3", "pal4", "pal5", "pal6", "pal7", "pal8", "pal9", "pal10", "pal11", "pal12", "rainbow"))
+  jcolors_names <- paste0(
+    "jcolors-",
+    c(
+      "default", "pal2", "pal3", "pal4", "pal5",
+      "pal6", "pal7", "pal8", "pal9", "pal10",
+      "pal11", "pal12", "rainbow"
+    )
+  )
   custom_names <- c("jet", "simspec", "GdRd")
   custom_palettes <- list(
     oompaBase::jetColors(N = 100),
-    c("#c22b86", "#f769a1", "#fcc5c1", "#253777", "#1d92c0", "#9ec9e1", "#015b33", "#42aa5e", "#d9f0a2", "#E66F00", "#f18c28", "#FFBB61"),
+    c(
+      "#c22b86", "#f769a1", "#fcc5c1", "#253777",
+      "#1d92c0", "#9ec9e1", "#015b33", "#42aa5e",
+      "#d9f0a2", "#E66F00", "#f18c28", "#FFBB61"
+    ),
     c("gold", "red3")
   )
   names(custom_palettes) <- custom_names

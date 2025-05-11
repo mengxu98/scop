@@ -9,7 +9,7 @@ RunDimReduction(
   prefix = "",
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   linear_reduction = NULL,
   linear_reduction_dims = 50,
   linear_reduction_params = list(),
@@ -35,7 +35,7 @@ RunDimReduction(
 
 \item{assay}{Specific assay to get data from.}
 
-\item{slot}{Specific slot to get data from.}
+\item{layer}{Specific layer to get data from.}
 
 \item{linear_reduction}{Method of linear dimensionality reduction. Options are "pca", "ica", "nmf", "mds", "glmpca".}
 

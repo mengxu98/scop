@@ -9,7 +9,7 @@ CreateDataFile(
   DataFile,
   name = NULL,
   assays = "RNA",
-  slots = "data",
+  layers = "data",
   compression_level = 6,
   overwrite = FALSE
 )
@@ -23,7 +23,7 @@ CreateDataFile(
 
 \item{assays}{Character vector specifying the assays to include in the data file. Default is "RNA".}
 
-\item{slots}{Character vector specifying the slots to include in the data file. Default is "data".}
+\item{layers}{Character vector specifying the layers to include in the data file. Default is "data".}
 
 \item{compression_level}{Compression level for the HDF5 dataset. Default is 6.}
 

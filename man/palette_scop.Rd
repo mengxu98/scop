@@ -73,12 +73,11 @@ x <- c(1:3, NA, 3:5)
   NA_keep = TRUE
 ))
 show_palettes(
-  list(pal1, pal2, pal3, pal4, pal5, pal6, pal7)
+  list(pal1, pal2, pal3, pal4, pal5, pal6)
 )
 
 all_palettes <- show_palettes(return_palettes = TRUE)
 names(all_palettes)
-
 }
 \seealso{
 \code{\link{show_palettes}} \code{\link{palette_list}}

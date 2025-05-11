@@ -50,7 +50,7 @@ RunSCExplorer(
 
 \item{initial_assay}{A string. The initial assay to be loaded into the app. Default is NULL.}
 
-\item{initial_slot}{A string. The initial slot to be loaded into the app. Default is NULL.}
+\item{initial_slot}{A string. The initial layer to be loaded into the app. Default is NULL.}
 
 \item{initial_label}{A string. Whether to add labels in the initial plot. Default is FALSE.}
 
@@ -88,9 +88,20 @@ RunSCExplorer
 data("pancreas_sub")
 pancreas_sub <- Standard_scop(pancreas_sub)
 data("panc8_sub")
-panc8_sub <- Integration_scop(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
+panc8_sub <- Integration_scop(
+  srtMerge = panc8_sub,
+  batch = "tech",
+  integration_method = "Seurat"
+)
 
-PrepareSCExplorer(list(mouse_pancreas = pancreas_sub, human_pancreas = panc8_sub), base_dir = "./SCExplorer", overwrite = TRUE)
+PrepareSCExplorer(
+  list(
+    mouse_pancreas = pancreas_sub,
+    human_pancreas = panc8_sub
+  ),
+  base_dir = "./SCExplorer",
+  overwrite = TRUE
+)
 
 # Create the app.R script
 app <- RunSCExplorer(

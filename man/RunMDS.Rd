@@ -12,7 +12,7 @@ RunMDS(object, ...)
 \method{RunMDS}{Seurat}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   features = NULL,
   nmds = 50,
   dist.method = "euclidean",
@@ -28,7 +28,7 @@ RunMDS(object, ...)
 \method{RunMDS}{Assay}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   features = NULL,
   nmds = 50,
   dist.method = "euclidean",
@@ -43,7 +43,7 @@ RunMDS(object, ...)
 \method{RunMDS}{default}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   nmds = 50,
   dist.method = "euclidean",
   mds.method = "cmdscale",
@@ -61,7 +61,7 @@ RunMDS(object, ...)
 
 \item{assay}{A character string specifying the assay to be used for the analysis. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used for the analysis. Default is "data".}
+\item{layer}{A character string specifying the layer to be used for the analysis. Default is "data".}
 
 \item{features}{A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.}
 
@@ -86,6 +86,10 @@ Run MDS (multi-dimensional scaling)
 }
 \examples{
 pancreas_sub <- RunMDS(object = pancreas_sub)
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "mds")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "mds"
+)
 
 }

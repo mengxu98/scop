@@ -68,7 +68,8 @@ RunSlingshot <- function(
     align_start = FALSE,
     show_plot = TRUE,
     lineage_palette = "Dark2",
-    seed = 11, ...) {
+    seed = 11,
+    ...) {
   if (missing(group.by)) {
     stop("group.by is missing")
   }
@@ -118,7 +119,10 @@ RunSlingshot <- function(
   )
 
   if (isTRUE(show_plot)) {
-    if (ncol(srt[[reduction]]@cell.embeddings) == 2 || ncol(srt[[reduction]]@cell.embeddings) > 3) {
+    if (
+      ncol(srt[[reduction]]@cell.embeddings) == 2 ||
+        ncol(srt[[reduction]]@cell.embeddings) > 3
+    ) {
       # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
       # lines(slingshot::SlingshotDataSet(sl), lwd = 2, type = "lineages", col = "black")
       # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)

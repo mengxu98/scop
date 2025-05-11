@@ -8,7 +8,7 @@ SrtReorder(
   srt,
   features = NULL,
   reorder_by = NULL,
-  slot = "data",
+  layer = "data",
   assay = NULL,
   log = TRUE,
   distance_metric = "euclidean"
@@ -21,7 +21,7 @@ SrtReorder(
 
 \item{reorder_by}{Reorder groups instead of idents.}
 
-\item{slot}{Specific slot to get data from.}
+\item{layer}{Specific layer to get data from.}
 
 \item{assay}{Specific assay to get data from.}
 

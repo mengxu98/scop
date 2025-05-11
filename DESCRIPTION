@@ -1,11 +1,11 @@
 Package: scop
 Type: Package
-Title: Single Cell Pipeline
+Title: Single Cell Omics analysis Pipeline
 Version: 0.0.1
 Authors@R: 
     person("Meng", "Xu", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054"))
 Maintainer: Meng Xu <mengxu98@qq.com>
-Description: An end-to-end Single-Cell Pipeline designed to facilitate comprehensive analysis and exploration of single-cell data.
+Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: True
@@ -122,4 +122,5 @@ Suggests:
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/mxtemplate
 Config/testthat/edition: 3
-URL: https://github.com/mengxu98/scop
+URL: https://mengxu98.github.io/scop/
+BugReports: https://github.com/mengxu98/scop/issues

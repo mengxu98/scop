@@ -59,23 +59,43 @@ Annotate single cells using SingleR
 \examples{
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
-genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
+genenames <- make.unique(
+  capitalize(
+    rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+panc8_sub <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
+panc8_sub <- check_srtMerge(
+  panc8_sub,
+  batch = "tech"
+)[["srtMerge"]]
 
 # Annotation
 data("pancreas_sub")
 pancreas_sub <- Standard_scop(pancreas_sub)
 pancreas_sub <- RunSingleR(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  query_group = "Standardclusters", ref_group = "celltype",
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  query_group = "Standardclusters",
+  ref_group = "celltype",
 )
-CellDimPlot(pancreas_sub, group.by = "singler_annotation")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "singler_annotation"
+)
 
 pancreas_sub <- RunSingleR(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  query_group = NULL, ref_group = "celltype"
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  query_group = NULL,
+  ref_group = "celltype"
 )
-CellDimPlot(pancreas_sub, group.by = "singler_annotation")
-
+CellDimPlot(
+  pancreas_sub,
+  group.by = "singler_annotation"
+)
 }

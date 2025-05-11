@@ -15,7 +15,8 @@ PrepareEnv <- function(
     miniconda_repo = "https://repo.anaconda.com/miniconda",
     envname = NULL,
     version = "3.8-1",
-    force = FALSE, ...) {
+    force = FALSE,
+    ...) {
   envname <- get_envname(envname)
 
   requirements <- Env_requirements(version = version)
@@ -44,10 +45,6 @@ PrepareEnv <- function(
 
   if (isTRUE(env)) {
     python_path <- conda_python(conda = conda, envname = envname)
-    # installed_python_version <- reticulate:::python_version(python_path)
-    # if (installed_python_version < numeric_version("3.7.0") || installed_python_version >= numeric_version("3.10.0")) {
-    #   stop("The python version in the installed scop environment does not match the requirements. You need to recreate the scop environment.")
-    # }
   } else {
     force <- TRUE
     if (is.null(conda)) {
@@ -66,12 +63,14 @@ PrepareEnv <- function(
       version <- as.character(version)
       name <- if (reticulate:::is_windows()) {
         sprintf(
-          "Miniconda%s-latest-Windows-%s.exe", version,
+          "Miniconda%s-latest-Windows-%s.exe",
+          version,
           arch
         )
       } else if (reticulate:::is_osx()) {
         sprintf(
-          "Miniconda%s-latest-MacOSX-%s.sh", version,
+          "Miniconda%s-latest-MacOSX-%s.sh",
+          version,
           arch
         )
       } else if (reticulate:::is_linux()) {
@@ -82,33 +81,61 @@ PrepareEnv <- function(
       url <- file.path(base, name)
       options(reticulate.miniconda.url = url)
       if (!is.na(Sys.getenv("USER", unset = NA))) {
-        miniconda_path <- gsub(pattern = "\\$USER", replacement = Sys.getenv("USER"), reticulate::miniconda_path())
+        miniconda_path <- gsub(
+          pattern = "\\$USER",
+          replacement = Sys.getenv("USER"),
+          reticulate::miniconda_path()
+        )
       } else {
         miniconda_path <- reticulate::miniconda_path()
       }
       unlink(miniconda_path, recursive = TRUE)
-      reticulate::install_miniconda(path = miniconda_path, force = TRUE, update = FALSE)
+      reticulate::install_miniconda(
+        path = miniconda_path,
+        force = TRUE,
+        update = FALSE
+      )
       conda <- reticulate:::miniconda_conda(miniconda_path)
       envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
     }
-    if (python_version < numeric_version("3.7.0") || python_version >= numeric_version("3.10.0")) {
+    if (
+      python_version < numeric_version("3.7.0") ||
+        python_version >= numeric_version("3.10.0")
+    ) {
       stop("scop currently only support python version 3.7-3.9!")
     }
-    python_path <- reticulate::conda_create(conda = conda, envname = envname, python_version = python_version, packages = "pytables")
+    python_path <- reticulate::conda_create(
+      conda = conda,
+      envname = envname,
+      python_version = python_version,
+      packages = "pytables"
+    )
     env_path <- paste0(envs_dir, "/", envname)
     env <- file.exists(env_path)
     if (isFALSE(env)) {
       print(reticulate:::conda_info(conda = conda))
       print(reticulate::conda_list(conda = conda))
       stop(
-        "Unable to find scop environment under the expected path: ", env_path, "\n",
-        "conda: ", conda, "\n",
-        "scop python: ", python_path, "\n"
+        "Unable to find scop environment under the expected path: ",
+        env_path,
+        "\n",
+        "conda: ",
+        conda,
+        "\n",
+        "scop python: ",
+        python_path,
+        "\n"
       )
     }
   }
 
-  check_Python(packages = packages, envname = envname, conda = conda, force = force, ...)
+  check_Python(
+    packages = packages,
+    envname = envname,
+    conda = conda,
+    force = force,
+    ...
+  )
 
   Sys.unsetenv("RETICULATE_PYTHON")
   python_path <- conda_python(conda = conda, envname = envname)
@@ -128,7 +155,10 @@ PrepareEnv <- function(
   if (!interactive()) {
     invisible(run_Python(command = "matplotlib.use('pdf')", envir = .GlobalEnv))
   }
-  invisible(run_Python(command = "import matplotlib.pyplot as plt", envir = .GlobalEnv))
+  invisible(run_Python(
+    command = "import matplotlib.pyplot as plt",
+    envir = .GlobalEnv
+  ))
   invisible(run_Python(command = "import scanpy", envir = .GlobalEnv))
 }
 
@@ -332,7 +362,10 @@ exist_Python_pkgs <- function(
     }
     if (pkg_name %in% all_installed$package) {
       if (!is.na(pkg_version)) {
-        packages_installed[pkg] <- all_installed$version[all_installed$package == pkg_name] == pkg_version
+        packages_installed[pkg] <- all_installed$version[
+          all_installed$package == pkg_name
+        ] ==
+          pkg_version
       } else {
         packages_installed[pkg] <- TRUE
       }
@@ -396,7 +429,8 @@ find_conda <- function() {
     }
     conda_exist <- reticulate:::miniconda_exists(
       miniconda_path
-    ) && reticulate:::miniconda_test(miniconda_path)
+    ) &&
+      reticulate:::miniconda_test(miniconda_path)
     if (isTRUE(conda_exist)) {
       conda <- reticulate:::miniconda_conda(miniconda_path)
     } else {
@@ -410,14 +444,22 @@ find_conda <- function() {
 #'
 #' @inheritParams reticulate::conda_install
 conda_install <- function(
-    envname = NULL, packages, forge = TRUE, channel = character(),
-    pip = FALSE, pip_options = character(), pip_ignore_installed = FALSE,
-    conda = "auto", python_version = NULL, ...) {
+    envname = NULL,
+    packages,
+    forge = TRUE,
+    channel = character(),
+    pip = FALSE,
+    pip_options = character(),
+    pip_ignore_installed = FALSE,
+    conda = "auto",
+    python_version = NULL,
+    ...) {
   envname <- get_envname(envname)
   reticulate:::check_forbidden_install("Python packages")
   if (missing(packages)) {
     if (!is.null(envname)) {
-      fmt <- paste("argument \"packages\" is missing, with no default",
+      fmt <- paste(
+        "argument \"packages\" is missing, with no default",
         "- did you mean 'conda_install(<envname>, %1$s)'?",
         "- use 'py_install(%1$s)' to install into the active Python environment",
         sep = "\n"
@@ -436,9 +478,18 @@ conda_install <- function(
   } else {
     sprintf("python=%s", python_version)
   }
-  python <- tryCatch(conda_python(envname = envname, conda = conda), error = identity)
+  python <- tryCatch(
+    conda_python(envname = envname, conda = conda),
+    error = identity
+  )
   if (inherits(python, "error") || !file.exists(python)) {
-    reticulate::conda_create(envname = envname, packages = python_package %||% "python", forge = forge, channel = channel, conda = conda)
+    reticulate::conda_create(
+      envname = envname,
+      packages = python_package %||% "python",
+      forge = forge,
+      channel = channel,
+      conda = conda
+    )
     python <- conda_python(envname = envname, conda = conda)
   }
   if (!is.null(python_version)) {
@@ -452,9 +503,12 @@ conda_install <- function(
   }
   if (pip) {
     result <- reticulate:::pip_install(
-      python = python, packages = packages,
-      pip_options = pip_options, ignore_installed = pip_ignore_installed,
-      conda = conda, envname = envname
+      python = python,
+      packages = packages,
+      pip_options = pip_options,
+      ignore_installed = pip_ignore_installed,
+      conda = conda,
+      envname = envname
     )
     return(result)
   }
@@ -493,14 +547,17 @@ conda_python <- function(
     stop(sprintf(fmt, envname))
   }
   conda_envs <- reticulate::conda_list(conda = conda)
-  conda_envs <- conda_envs[grep(
-    normalizePath(
-      reticulate:::conda_info(conda = conda)$envs_dirs[1],
-      mustWork = FALSE
-    ),
-    x = normalizePath(conda_envs$python, mustWork = FALSE),
-    fixed = TRUE
-  ), , drop = FALSE]
+  conda_envs <- conda_envs[
+    grep(
+      normalizePath(
+        reticulate:::conda_info(conda = conda)$envs_dirs[1],
+        mustWork = FALSE
+      ),
+      x = normalizePath(conda_envs$python, mustWork = FALSE),
+      fixed = TRUE
+    ), ,
+    drop = FALSE
+  ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
     stop("conda environment \"", envname, "\" not found")
@@ -510,17 +567,20 @@ conda_python <- function(
 }
 
 run_Python <- function(command, envir = .GlobalEnv) {
-  tryCatch(expr = {
-    eval(
-      {
-        reticulate::py_run_string(command)
-      },
-      envir = envir
-    )
-  }, error = function(error) {
-    message(error)
-    stop("Failed to run \"", command, "\". Please check manually.")
-  })
+  tryCatch(
+    expr = {
+      eval(
+        {
+          reticulate::py_run_string(command)
+        },
+        envir = envir
+      )
+    },
+    error = function(error) {
+      message(error)
+      stop("Failed to run \"", command, "\". Please check manually.")
+    }
+  )
 }
 
 #' Check and install python packages
@@ -536,7 +596,11 @@ run_Python <- function(command, envir = .GlobalEnv) {
 #' @examples
 #' check_Python(packages = c("bbknn", "scanorama"))
 #' \dontrun{
-#' check_Python(packages = "scvi-tools==0.20.0", envname = "scop_env", pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple")
+#' check_Python(
+#'   packages = "scvi-tools==0.20.0",
+#'   envname = "scop_env",
+#'   pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
+#' )
 #' }
 #' @export
 check_Python <- function(
@@ -556,7 +620,11 @@ check_Python <- function(
   }
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
-    warning(envname, " python environment does not exist. Create it with the PrepareEnv function...", immediate. = TRUE)
+    warning(
+      envname,
+      " python environment does not exist. Create it with the PrepareEnv function...",
+      immediate. = TRUE
+    )
     PrepareEnv()
   }
   if (isTRUE(force)) {
@@ -575,16 +643,19 @@ check_Python <- function(
     if (isTRUE(pip)) {
       pkgs_to_install <- c("pip", pkgs_to_install)
     }
-    tryCatch(expr = {
-      conda_install(
-        conda = conda,
-        packages = pkgs_to_install,
-        envname = envname,
-        pip = pip,
-        pip_options = pip_options,
-        ...
-      )
-    }, error = identity)
+    tryCatch(
+      expr = {
+        conda_install(
+          conda = conda,
+          packages = pkgs_to_install,
+          envname = envname,
+          pip = pip,
+          pip_options = pip_options,
+          ...
+        )
+      },
+      error = identity
+    )
   }
 
   pkg_installed <- exist_Python_pkgs(
@@ -593,7 +664,13 @@ check_Python <- function(
     conda = conda
   )
   if (sum(!pkg_installed) > 0) {
-    stop("Failed to install the package(s): ", paste0(names(pkg_installed)[!pkg_installed], collapse = ","), " into the environment \"", envname, "\". Please install manually.")
+    stop(
+      "Failed to install the package(s): ",
+      paste0(names(pkg_installed)[!pkg_installed], collapse = ","),
+      " into the environment \"",
+      envname,
+      "\". Please install manually."
+    )
   } else {
     return(invisible(NULL))
   }
@@ -607,11 +684,14 @@ check_Python <- function(
 #' @param lib  The location of the library directories where to install the packages.
 #' @param force Whether to force the installation of packages. Default is \code{FALSE}.
 #'
-#' @importFrom utils packageVersion
 #' @export
 check_R <- function(
     packages,
-    install_methods = c("BiocManager::install", "install.packages", "devtools::install_github"),
+    install_methods = c(
+      "BiocManager::install",
+      "install.packages",
+      "devtools::install_github"
+    ),
     lib = .libPaths()[1],
     force = FALSE) {
   status_list <- list()
@@ -630,34 +710,66 @@ check_R <- function(
       force_update <- isTRUE(force)
     } else {
       force_update <- isTRUE(
-        packageVersion(pkg_name) < package_version(version)
-      ) || isTRUE(force)
+        utils::packageVersion(pkg_name) < package_version(version)
+      ) ||
+        isTRUE(force)
     }
-    if (!suppressPackageStartupMessages(requireNamespace(pkg_name, quietly = TRUE)) || isTRUE(force_update)) {
+    if (
+      !suppressPackageStartupMessages(requireNamespace(
+        pkg_name,
+        quietly = TRUE
+      )) ||
+        isTRUE(force_update)
+    ) {
       message("Install package: \"", pkg_name, "\" ...")
       status_list[[pkg]] <- FALSE
       i <- 1
       while (isFALSE(status_list[[pkg]])) {
-        tryCatch(expr = {
-          if (grepl("BiocManager", install_methods[i])) {
-            if (!requireNamespace("BiocManager", quietly = TRUE)) {
-              install.packages("BiocManager", lib = lib)
+        tryCatch(
+          expr = {
+            if (grepl("BiocManager", install_methods[i])) {
+              if (!requireNamespace("BiocManager", quietly = TRUE)) {
+                install.packages("BiocManager", lib = lib)
+              }
+              eval(str2lang(paste0(
+                install_methods[i],
+                "(\"",
+                dest,
+                "\", lib=\"",
+                lib,
+                "\", update = FALSE, upgrade = \"never\", ask = FALSE, force = TRUE)"
+              )))
+            } else if (grepl("devtools", install_methods[i])) {
+              if (!requireNamespace("devtools", quietly = TRUE)) {
+                install.packages("devtools", lib = lib)
+              }
+              if (!requireNamespace("withr", quietly = TRUE)) {
+                install.packages("withr", lib = lib)
+              }
+              eval(str2lang(paste0(
+                "withr::with_libpaths(new = \"",
+                lib,
+                "\", ",
+                install_methods[i],
+                "(\"",
+                dest,
+                "\", upgrade = \"never\", force = TRUE))"
+              )))
+            } else {
+              eval(str2lang(paste0(
+                install_methods[i],
+                "(\"",
+                dest,
+                "\", lib=\"",
+                lib,
+                "\", force = TRUE)"
+              )))
             }
-            eval(str2lang(paste0(install_methods[i], "(\"", dest, "\", lib=\"", lib, "\", update = FALSE, upgrade = \"never\", ask = FALSE, force = TRUE)")))
-          } else if (grepl("devtools", install_methods[i])) {
-            if (!requireNamespace("devtools", quietly = TRUE)) {
-              install.packages("devtools", lib = lib)
-            }
-            if (!requireNamespace("withr", quietly = TRUE)) {
-              install.packages("withr", lib = lib)
-            }
-            eval(str2lang(paste0("withr::with_libpaths(new = \"", lib, "\", ", install_methods[i], "(\"", dest, "\", upgrade = \"never\", force = TRUE))")))
-          } else {
-            eval(str2lang(paste0(install_methods[i], "(\"", dest, "\", lib=\"", lib, "\", force = TRUE)")))
+          },
+          error = function(e) {
+            status_list[[pkg]] <- FALSE
           }
-        }, error = function(e) {
-          status_list[[pkg]] <- FALSE
-        })
+        )
         status_list[[pkg]] <- requireNamespace(pkg_name, quietly = TRUE)
         i <- i + 1
         if (i > length(install_methods)) {
@@ -671,7 +783,11 @@ check_R <- function(
   out <- sapply(status_list, isTRUE)
   out <- out[!out]
   if (length(out) > 0) {
-    stop("Failed to install the package(s): ", paste0(names(out), collapse = ","), ". Please install manually.")
+    stop(
+      "Failed to install the package(s): ",
+      paste0(names(out), collapse = ","),
+      ". Please install manually."
+    )
   }
 }
 
@@ -759,24 +875,27 @@ download <- function(
   status <- NULL
   while (is.null(status)) {
     for (method in methods) {
-      status <- tryCatch(expr = {
-        suppressWarnings(
-          download.file(
-            url = url,
-            destfile = destfile,
-            method = method,
-            quiet = quiet,
-            ...
+      status <- tryCatch(
+        expr = {
+          suppressWarnings(
+            download.file(
+              url = url,
+              destfile = destfile,
+              method = method,
+              quiet = quiet,
+              ...
+            )
           )
-        )
-        status <- 1
-      }, error = function(error) {
-        message(error)
-        message("Cannot download from the url: ", url)
-        message("Failed to download using \"", method, "\". Retry...\n")
-        Sys.sleep(1)
-        return(NULL)
-      })
+          status <- 1
+        },
+        error = function(error) {
+          message(error)
+          message("Cannot download from the url: ", url)
+          message("Failed to download using \"", method, "\". Retry...\n")
+          Sys.sleep(1)
+          return(NULL)
+        }
+      )
       if (!is.null(status)) {
         break
       }
@@ -933,11 +1052,19 @@ capitalize <- function(x, force_tolower = FALSE) {
     stop("x must be the type of character.")
   }
   if (isTRUE(force_tolower)) {
-    x <- paste(toupper(substr(x, 1, 1)), tolower(substr(x, 2, nchar(x))), sep = "")
+    x <- paste(
+      toupper(substr(x, 1, 1)),
+      tolower(substr(x, 2, nchar(x))),
+      sep = ""
+    )
   } else {
     first_word <- sapply(strsplit(x, "\\s|-"), function(s) s[1])
     index <- which(first_word == tolower(first_word))
-    x[index] <- paste(toupper(substr(x[index], 1, 1)), substr(x[index], 2, nchar(x[index])), sep = "")
+    x[index] <- paste(
+      toupper(substr(x[index], 1, 1)),
+      substr(x[index], 2, nchar(x[index])),
+      sep = ""
+    )
   }
   return(x)
 }
@@ -951,7 +1078,8 @@ str_wrap <- function(x, width = 80) {
   }
   x_wrap <- unlist(
     lapply(
-      x, function(i) {
+      x,
+      function(i) {
         paste0(strwrap(i, width = width), collapse = "\n")
       }
     )

@@ -14,7 +14,7 @@ RunDM(object, ...)
   dims = 1:30,
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   ndcs = 2,
   sigma = "local",
   k = 30,
@@ -29,7 +29,7 @@ RunDM(object, ...)
 \method{RunDM}{default}(
   object,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   ndcs = 2,
   sigma = "local",
   k = 30,
@@ -53,7 +53,7 @@ RunDM(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{ndcs}{An integer specifying the number of diffusion components (dimensions) to be computed. Default is 2.}
 
@@ -76,7 +76,14 @@ Run DM (diffusion map)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunDM(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "dm")
+pancreas_sub <- RunDM(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "dm"
+)
 
 }

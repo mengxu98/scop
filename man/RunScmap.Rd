@@ -27,11 +27,15 @@ RunScmap(
 
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data. Defaults to the default assay of the `srt_ref` object.}
 
-\item{method}{The method to be used for scmap analysis. Can be any of "scmapCluster" or "scmapCell". The default value is "scmapCluster".}
+\item{method}{The method to be used for scmap analysis.
+Can be any of "scmapCluster" or "scmapCell".
+The default value is "scmapCluster".}
 
-\item{nfeatures}{The number of top features to be selected. The default value is 500.}
+\item{nfeatures}{The number of top features to be selected.
+The default value is 500.}
 
-\item{threshold}{The threshold value on similarity to determine if a cell is assigned to a cluster. This should be a value between 0 and 1. The default value is 0.5.}
+\item{threshold}{The threshold value on similarity to determine if a cell is assigned to a cluster.
+This should be a value between 0 and 1. The default value is 0.5.}
 
 \item{k}{Number of clusters per group for k-means clustering when method is "scmapCell".}
 }
@@ -40,24 +44,42 @@ Annotate single cells using scmap.
 }
 \examples{
 data("panc8_sub")
-# Simply convert genes from human to mouse and preprocess the data
-genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
 
-# Annotation
+genenames <- make.unique(
+  capitalize(rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+panc8_sub <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
+panc8_sub <- check_srtMerge(
+  panc8_sub,
+  batch = "tech"
+)[["srtMerge"]]
+
 data("pancreas_sub")
 pancreas_sub <- Standard_scop(pancreas_sub)
 pancreas_sub <- RunScmap(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  ref_group = "celltype", method = "scmapCluster"
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  ref_group = "celltype",
+  method = "scmapCluster"
 )
-CellDimPlot(pancreas_sub, group.by = "scmap_annotation")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "scmap_annotation"
+)
 
 pancreas_sub <- RunScmap(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  ref_group = "celltype", method = "scmapCell"
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  ref_group = "celltype",
+  method = "scmapCell"
 )
-CellDimPlot(pancreas_sub, group.by = "scmap_annotation")
-
+CellDimPlot(
+  pancreas_sub,
+  group.by = "scmap_annotation"
+)
 }

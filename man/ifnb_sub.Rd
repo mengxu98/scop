@@ -23,9 +23,16 @@ if (interactive()) {
   suppressWarnings(InstallData("ifnb"))
   data("ifnb")
   set.seed(11)
-  cells_sub <- unlist(lapply(split(colnames(ifnb), ifnb$stim), function(x) sample(x, size = 1000)))
+  cells_sub <- unlist(
+    lapply(
+      split(colnames(ifnb), ifnb$stim),
+      function(x) sample(x, size = 1000)
+    )
+  )
   ifnb_sub <- subset(ifnb, cells = cells_sub)
-  ifnb_sub <- ifnb_sub[rowSums(ifnb_sub@assays$RNA@counts) > 0, ]
+  ifnb_sub <- ifnb_sub[rowSums(
+    ifnb_sub@assays$RNA@counts
+  ) > 0, ]
   ifnb_sub <- UpdateSeuratObject(ifnb_sub)
   # usethis::use_data(ifnb_sub, compress = "xz")
 }

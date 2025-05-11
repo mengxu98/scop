@@ -91,57 +91,139 @@ This function performs KNN prediction to annotate cell types based on reference 
 data("pancreas_sub")
 data("ref_scMCA")
 pancreas_sub <- Standard_scop(pancreas_sub)
-pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, bulk_ref = ref_scMCA)
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  bulk_ref = ref_scMCA
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
 
 # Removal of low credible cell types from the predicted results
-pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, bulk_ref = ref_scMCA, filter_lowfreq = 30)
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  bulk_ref = ref_scMCA,
+  filter_lowfreq = 30
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
 
 # Annotate clusters using bulk RNA-seq data
-pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, query_group = "SubCellType", bulk_ref = ref_scMCA)
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  query_group = "SubCellType",
+  bulk_ref = ref_scMCA
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
 
 # Annotate using single cell RNA-seq data
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
-genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
-
-pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, srt_ref = panc8_sub, ref_group = "celltype")
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+genenames <- make.unique(
+  capitalize(
+    rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+panc8_sub <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
+panc8_sub <- check_srtMerge(
+  panc8_sub,
+  batch = "tech"
+)[["srtMerge"]]
 
 pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  ref_group = "celltype", ref_collapsing = FALSE
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  ref_group = "celltype"
 )
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = "KNNPredict_prob")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "KNNPredict_simil"
+)
 
 pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  query_group = "SubCellType", ref_group = "celltype"
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  ref_group = "celltype",
+  ref_collapsing = FALSE
 )
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "KNNPredict_prob"
+)
+
+pancreas_sub <- RunKNNPredict(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  query_group = "SubCellType",
+  ref_group = "celltype"
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "KNNPredict_simil"
+)
 
 # Annotate with DE gene instead of HVF
 pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
   ref_group = "celltype",
-  features_type = "DE", feature_source = "ref"
+  features_type = "DE",
+  feature_source = "ref"
 )
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "KNNPredict_simil"
+)
 
 pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub, srt_ref = panc8_sub,
-  query_group = "SubCellType", ref_group = "celltype",
-  features_type = "DE", feature_source = "both"
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  query_group = "SubCellType",
+  ref_group = "celltype",
+  features_type = "DE",
+  feature_source = "both"
 )
-CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "KNNPredict_classification",
+  label = TRUE
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = "KNNPredict_simil"
+)
 
 }

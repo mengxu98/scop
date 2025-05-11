@@ -72,11 +72,26 @@ Single-cell reference mapping with Seurat method
 data("panc8_sub")
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- Integration_scop(srt_ref, batch = "tech", integration_method = "Seurat")
+srt_ref <- Integration_scop(
+  srt_ref,
+  batch = "tech",
+  integration_method = "Seurat"
+)
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 # Projection
-srt_query <- RunSeuratMap(srt_query = srt_query, srt_ref = srt_ref, ref_pca = "Seuratpca", ref_umap = "SeuratUMAP2D", k.weight = 50)
-ProjectionPlot(srt_query = srt_query, srt_ref = srt_ref, query_group = "celltype", ref_group = "celltype")
+srt_query <- RunSeuratMap(
+  srt_query = srt_query,
+  srt_ref = srt_ref,
+  ref_pca = "Seuratpca",
+  ref_umap = "SeuratUMAP2D",
+  k.weight = 50
+)
+ProjectionPlot(
+  srt_query = srt_query,
+  srt_ref = srt_ref,
+  query_group = "celltype",
+  ref_group = "celltype"
+)
 
 }

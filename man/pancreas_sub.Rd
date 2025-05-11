@@ -22,18 +22,41 @@ if (interactive()) {
   adata <- scv$datasets$pancreas()
   pancreas <- adata_to_srt(adata)
   set.seed(11)
-  pancreas_sub <- subset(pancreas, cells = sample(colnames(pancreas), size = 1000))
-  pancreas_sub <- pancreas_sub[rowSums(pancreas_sub@assays$RNA@counts) > 0, ]
+  pancreas_sub <- subset(
+    pancreas,
+    cells = sample(
+      colnames(pancreas),
+      size = 1000
+    )
+  )
+  pancreas_sub <- pancreas_sub[rowSums(
+    pancreas_sub@assays$RNA@counts
+  ) > 0, ]
   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
   pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
   pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
-  pancreas_sub[["Phase"]] <- ifelse(pancreas_sub$S_score > pancreas_sub$G2M_score, "S", "G2M")
-  pancreas_sub[["Phase"]][apply(pancreas_sub[[]][, c("S_score", "G2M_score")], 1, max) < 0, ] <- "G1"
-  pancreas_sub[["Phase", drop = TRUE]] <- factor(pancreas_sub[["Phase", drop = TRUE]], levels = c("G1", "S", "G2M"))
+  pancreas_sub[["Phase"]] <- ifelse(
+    pancreas_sub$S_score > pancreas_sub$G2M_score,
+    "S",
+    "G2M"
+  )
+  pancreas_sub[["Phase"]][apply(
+    pancreas_sub[[]][, c("S_score", "G2M_score")],
+    1,
+    max
+  ) < 0, ] <- "G1"
+  pancreas_sub[["Phase", drop = TRUE]] <- factor(
+    pancreas_sub[["Phase", drop = TRUE]],
+    levels = c("G1", "S", "G2M")
+  )
   pancreas_sub[["PCA"]] <- pancreas_sub[["X_pca"]]
   pancreas_sub[["UMAP"]] <- pancreas_sub[["X_umap"]]
   pancreas_sub[["X_umap"]] <- pancreas_sub[["X_pca"]] <- NULL
-  VariableFeatures(pancreas_sub) <- rownames(pancreas_sub[["RNA"]])[which(pancreas_sub[["RNA"]]@meta.features$highly_variable_genes == "True")]
+  VariableFeatures(pancreas_sub) <- rownames(
+    pancreas_sub[["RNA"]]
+  )[which(
+    pancreas_sub[["RNA"]]@meta.features$highly_variable_genes == "True"
+  )]
   # usethis::use_data(pancreas_sub, compress = "xz")
 }
 }

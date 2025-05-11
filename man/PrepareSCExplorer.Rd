@@ -10,7 +10,7 @@ PrepareSCExplorer(
   DataFile = "Data.hdf5",
   MetaFile = "Meta.hdf5",
   assays = "RNA",
-  slots = c("counts", "data"),
+  layers = c("counts", "data"),
   ignore_nlevel = 100,
   write_tools = FALSE,
   write_misc = FALSE,
@@ -29,7 +29,7 @@ PrepareSCExplorer(
 
 \item{assays}{Character vector specifying the assays to include in the data file. Default is "RNA".}
 
-\item{slots}{Character vector specifying the slots to include in the data file. Default is "data".}
+\item{layers}{Character vector specifying the layers to include in the data file. Default is "data".}
 
 \item{ignore_nlevel}{The number of levels above which a metadata field will be ignored. Default is 100.}
 

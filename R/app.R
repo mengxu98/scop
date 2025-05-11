@@ -6,7 +6,7 @@
 #' @param DataFile Path to the output data file. If not provided, the file will be named "Data.hdf5" in the current directory.
 #' @param name Name of the dataset. If not provided, the name will default to the Seurat object's project name.
 #' @param assays Character vector specifying the assays to include in the data file. Default is "RNA".
-#' @param slots Character vector specifying the slots to include in the data file. Default is "data".
+#' @param layers Character vector specifying the layers to include in the data file. Default is "data".
 #' @param compression_level Compression level for the HDF5 dataset. Default is 6.
 #' @param overwrite Logical value indicating whether to overwrite existing data in the data file. Default is FALSE.
 #'
@@ -17,7 +17,14 @@
 #' @importFrom rhdf5 h5ls h5createFile h5createGroup h5delete h5write
 #' @importFrom HDF5Array writeTENxMatrix
 #' @export
-CreateDataFile <- function(srt, DataFile, name = NULL, assays = "RNA", slots = "data", compression_level = 6, overwrite = FALSE) {
+CreateDataFile <- function(
+    srt,
+    DataFile,
+    name = NULL,
+    assays = "RNA",
+    layers = "data",
+    compression_level = 6,
+    overwrite = FALSE) {
   if (missing(DataFile) || is.null(DataFile)) {
     DataFile <- "Data.hdf5"
   }
@@ -37,13 +44,13 @@ CreateDataFile <- function(srt, DataFile, name = NULL, assays = "RNA", slots = "
 
   message("Write the expression matrix to hdf5 file: ", DataFile)
   for (assay in assays) {
-    for (slot in slots) {
-      data <- t(GetAssayData(srt, slot = slot, assay = assay))
+    for (layer in layers) {
+      data <- t(GetAssayData(srt, layer = layer, assay = assay))
       if (isTRUE(overwrite)) {
-        try(h5delete(file = DataFile, name = paste0(name, "/", assay, "/", slot)), silent = TRUE)
+        try(h5delete(file = DataFile, name = paste0(name, "/", assay, "/", layer)), silent = TRUE)
       }
-      if (paste0(name, "/", assay, "/", slot) %in% h5ls(DataFile)$group) {
-        message("Group ", paste0(name, "/", assay, "/", slot), " already exists in the ", DataFile)
+      if (paste0(name, "/", assay, "/", layer) %in% h5ls(DataFile)$group) {
+        message("Group ", paste0(name, "/", assay, "/", layer), " already exists in the ", DataFile)
       } else {
         if (!paste0(name, "/", assay) %in% h5ls(DataFile)$group) {
           h5createGroup(file = DataFile, group = paste0(name, "/", assay))
@@ -51,7 +58,7 @@ CreateDataFile <- function(srt, DataFile, name = NULL, assays = "RNA", slots = "
         if (!inherits(data, "dgCMatrix")) {
           data <- as.sparse(data[1:nrow(data), ])
         }
-        writeTENxMatrix(x = data, filepath = DataFile, group = paste0(name, "/", assay, "/", slot), level = compression_level)
+        writeTENxMatrix(x = data, filepath = DataFile, group = paste0(name, "/", assay, "/", layer), level = compression_level)
       }
     }
   }
@@ -249,7 +256,7 @@ CreateMetaFile <- function(srt, MetaFile, name = NULL, write_tools = FALSE, writ
 #' @export
 PrepareSCExplorer <- function(object,
                               base_dir = "SCExplorer", DataFile = "Data.hdf5", MetaFile = "Meta.hdf5",
-                              assays = "RNA", slots = c("counts", "data"),
+                              assays = "RNA", layers = c("counts", "data"),
                               ignore_nlevel = 100, write_tools = FALSE, write_misc = FALSE,
                               compression_level = 6, overwrite = FALSE) {
   base_dir <- normalizePath(base_dir, mustWork = FALSE)
@@ -293,7 +300,7 @@ PrepareSCExplorer <- function(object,
       srt[["orig.ident"]] <- "SeuratObject"
     }
     CreateDataFile(
-      srt = srt, DataFile = DataFile_full, name = nm, assays = assays, slots = slots,
+      srt = srt, DataFile = DataFile_full, name = nm, assays = assays, layers = layers,
       compression_level = compression_level, overwrite = overwrite
     )
     CreateMetaFile(
@@ -313,7 +320,7 @@ PrepareSCExplorer <- function(object,
 #' @param MetaFile The path to the hdf5 file containing the metadata.
 #' @param name The name of the dataset in the hdf5 file. If not specified, the function will attempt to find the shared group name in both files.
 #' @param features The names of the genes or features to fetch. If specified, only these features will be fetched.
-#' @param slot The slot for the counts in the hdf5 file. If not specified, the first slot will be used.
+#' @param layer The layer for the counts in the hdf5 file. If not specified, the first layer will be used.
 #' @param assay The name of the assay to use. If not specified, the default assay in the hdf5 file will be used.
 #' @param metanames The names of the metadata columns to fetch.
 #' @param reduction The name of the reduction to fetch.
@@ -334,8 +341,16 @@ PrepareSCExplorer <- function(object,
 #'   metanames = c("SubCellType", "Phase"),
 #'   reduction = "UMAP"
 #' )
-#' CellDimPlot(srt, group.by = c("SubCellType", "Phase"), reduction = "UMAP")
-#' FeatureDimPlot(srt, features = c("Ins1", "Ghrl"), reduction = "UMAP")
+#' CellDimPlot(
+#'   srt,
+#'   group.by = c("SubCellType", "Phase"),
+#'   reduction = "UMAP"
+#' )
+#' FeatureDimPlot(
+#'   srt,
+#'   features = c("Ins1", "Ghrl"),
+#'   reduction = "UMAP"
+#' )
 #' }
 #' @importFrom Seurat CreateAssayObject CreateDimReducObject
 #' @importFrom Matrix sparseMatrix
@@ -343,7 +358,7 @@ PrepareSCExplorer <- function(object,
 #' @importFrom HDF5Array TENxMatrix
 #' @export
 FetchH5 <- function(DataFile, MetaFile, name = NULL,
-                    features = NULL, slot = NULL, assay = NULL,
+                    features = NULL, layer = NULL, assay = NULL,
                     metanames = NULL,
                     reduction = NULL) {
   if (missing(DataFile) || missing(MetaFile)) {
@@ -393,14 +408,14 @@ FetchH5 <- function(DataFile, MetaFile, name = NULL,
     if (is.null(assay)) {
       assay <- as.character(h5read(DataFile, name = paste0(name, "/Default_assay")))
     }
-    if (is.null(slot)) {
-      slots <- as.character(unique(na.omit(sapply(strsplit(data_group[grep(name, data_group)], "/"), function(x) x[4]))))
-      slot <- ifelse("counts" %in% slots, "counts", slots[1])
+    if (is.null(layer)) {
+      layers <- as.character(unique(na.omit(sapply(strsplit(data_group[grep(name, data_group)], "/"), function(x) x[4]))))
+      layer <- ifelse("counts" %in% layers, "counts", layers[1])
     }
-    if (!paste0(name, "/", assay, "/", slot) %in% h5ls(DataFile)[["group"]]) {
-      stop("There is no ", paste0(name, "/", assay, "/", slot), " in DataFile, please write it first using the PrepareSCExplorer function")
+    if (!paste0(name, "/", assay, "/", layer) %in% h5ls(DataFile)[["group"]]) {
+      stop("There is no ", paste0(name, "/", assay, "/", layer), " in DataFile, please write it first using the PrepareSCExplorer function")
     }
-    data <- TENxMatrix(filepath = DataFile, group = paste0(name, "/", assay, "/", slot))
+    data <- TENxMatrix(filepath = DataFile, group = paste0(name, "/", assay, "/", layer))
     gene_features <- gene_features[gene_features %in% colnames(data)]
   }
 
@@ -515,7 +530,7 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' @param initial_group A string. The initial variable to group cells in the app. Default is NULL.
 #' @param initial_feature A string. The initial feature to be loaded into the app. Default is NULL.
 #' @param initial_assay A string. The initial assay to be loaded into the app. Default is NULL.
-#' @param initial_slot A string. The initial slot to be loaded into the app. Default is NULL.
+#' @param initial_slot A string. The initial layer to be loaded into the app. Default is NULL.
 #' @param initial_label A string. Whether to add labels in the initial plot. Default is FALSE.
 #' @param initial_cell_palette A string. The initial color palette for cells. Default is "Paired".
 #' @param initial_feature_palette A string. The initial color palette for features. Default is "Spectral".
@@ -538,9 +553,20 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' data("pancreas_sub")
 #' pancreas_sub <- Standard_scop(pancreas_sub)
 #' data("panc8_sub")
-#' panc8_sub <- Integration_scop(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
+#' panc8_sub <- Integration_scop(
+#'   srtMerge = panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat"
+#' )
 #'
-#' PrepareSCExplorer(list(mouse_pancreas = pancreas_sub, human_pancreas = panc8_sub), base_dir = "./SCExplorer", overwrite = TRUE)
+#' PrepareSCExplorer(
+#'   list(
+#'     mouse_pancreas = pancreas_sub,
+#'     human_pancreas = panc8_sub
+#'   ),
+#'   base_dir = "./SCExplorer",
+#'   overwrite = TRUE
+#' )
 #'
 #' # Create the app.R script
 #' app <- RunSCExplorer(
@@ -647,17 +673,17 @@ if (!initial_dataset %in% group) {
 }
 
 assays <- unique(na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[3])))
-slots <- unique(na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[4])))
+layers <- unique(na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[4])))
 if (is.null(initial_assay)) {
   initial_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", initial_dataset, "/Default_assay")))
 }
 if (is.null(initial_slot)) {
-  initial_slot <- ifelse("data" %in% slots, "data", slots[1])
+  initial_slot <- ifelse("data" %in% layers, "data", layers[1])
 }
 if (!initial_assay %in% assays) {
   stop("initial_assay is not in the dataset ", initial_dataset, " in the DataFile")
 }
-if (!initial_slot %in% slots) {
+if (!initial_slot %in% layers) {
   stop("initial_slot is not in the dataset ", initial_slot, " in the DataFile")
 }
 all_cells <- rhdf5::h5read(DataFile, name = paste0("/", initial_dataset, "/cells"))
@@ -890,8 +916,8 @@ ui <- fluidPage(
               width = 6,
               selectInput(
                 inputId = "slots2",
-                label = "Select a slot",
-                choices = slots,
+                label = "Select a layer",
+                choices = layers,
                 selected = initial_slot
               )
             ),
@@ -1291,8 +1317,8 @@ ui <- fluidPage(
               width = 6,
               selectInput(
                 inputId = "slots4",
-                label = "Select a slot",
-                choices = slots,
+                label = "Select a layer",
+                choices = layers,
                 selected = initial_slot
               )
             ),
@@ -1561,14 +1587,14 @@ server <- function(input, output, session) {
 
   observe({
     assays <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[3])))
-    slots <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[4])))
+    layers <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[4])))
     default_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", input$dataset2, "/Default_assay")))
-    default_slot <- ifelse("data" %in% slots, "data", slots[1])
+    default_slot <- ifelse("data" %in% layers, "data", layers[1])
     assay <- intersect(c(initial_assay, default_assay), assays)[1]
-    slot <- intersect(c(initial_slot, default_slot), slots)[1]
+    layer <- intersect(c(initial_slot, default_slot), layers)[1]
     updateSelectInput(session, "assays2", choices = assays, selected = assay)
-    updateSelectInput(session, "slots2", choices = slots, selected = slot)
-    data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", input$dataset2, "/", assay, "/", slot))
+    updateSelectInput(session, "slots2", choices = layers, selected = layer)
+    data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", input$dataset2, "/", assay, "/", layer))
     all_features <- colnames(data)
     all_cells <- rhdf5::h5read(DataFile, name = paste0("/", input$dataset2, "/cells"))
     meta_features_name <- rhdf5::h5read(MetaFile, name = paste0("/", input$dataset2, "/metadata.stat/asfeatures"))
@@ -1593,14 +1619,14 @@ server <- function(input, output, session) {
 
   observe({
     assays <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[3])))
-    slots <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[4])))
+    layers <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[4])))
     default_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", input$dataset4, "/Default_assay")))
-    default_slot <- ifelse("data" %in% slots, "data", slots[1])
+    default_slot <- ifelse("data" %in% layers, "data", layers[1])
     assay <- intersect(c(initial_assay, default_assay), assays)[1]
-    slot <- intersect(c(initial_slot, default_slot), slots)[1]
+    layer <- intersect(c(initial_slot, default_slot), layers)[1]
     updateSelectInput(session, "assays4", choices = assays, selected = assay)
-    updateSelectInput(session, "slots4", choices = slots, selected = slot)
-    data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", input$dataset4, "/", assay, "/", slot))
+    updateSelectInput(session, "slots4", choices = layers, selected = layer)
+    data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", input$dataset4, "/", assay, "/", layer))
     all_features <- colnames(data)
     meta_features_name <- rhdf5::h5read(MetaFile, name = paste0("/", input$dataset4, "/metadata.stat/asfeatures"))
     meta_groups_name <- rhdf5::h5read(MetaFile, name = paste0("/", input$dataset4, "/metadata.stat/asgroups"))
@@ -1820,7 +1846,7 @@ server <- function(input, output, session) {
         # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset2,
-          features = features2, slot = slots2, assay = assays2,
+          features = features2, layer = slots2, assay = assays2,
           metanames = split2, reduction = reduction2
         )
         # ))
@@ -1830,7 +1856,7 @@ server <- function(input, output, session) {
         # print(">>> plot:")
         # print(system.time(
         p2_dim <- scop::FeatureDimPlot(
-          srt = srt_tmp, features = features2, split.by = split2, reduction = reduction2, slot = "data", raster = raster2, pt.size = pt_size2,
+          srt = srt_tmp, features = features2, split.by = split2, reduction = reduction2, layer = "data", raster = raster2, pt.size = pt_size2,
           calculate_coexp = coExp2, keep_scale = scale2, palette = palette2, theme_use = theme2,
           ncol = ncol2, byrow = byrow2, force = TRUE
         )
@@ -2139,7 +2165,7 @@ server <- function(input, output, session) {
         # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset4,
-          features = features4, slot = slots4, assay = assays4,
+          features = features4, layer = slots4, assay = assays4,
           metanames = unique(c(group4, split4))
         )
         # ))
@@ -2162,7 +2188,7 @@ server <- function(input, output, session) {
         # print(">>> plot:")
         # print(system.time(
         p4 <- scop::FeatureStatPlot(
-          srt = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, slot = "data", plot_type = plottype4,
+          srt = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, layer = "data", plot_type = plottype4,
           calculate_coexp = coExp4, stack = stack4, flip = flip4,
           add_box = addbox4, add_point = addpoint4, add_trend = addtrend4,
           plot.by = plotby4, fill.by = fillby4, palette = palette4, theme_use = theme4, same.y.lims = sameylims4,

@@ -50,6 +50,10 @@ The functions in the scop package are all developed around the [Seurat
 object](https://github.com/mojaveazure/seurat-object) and are compatible
 with other Seurat functions.
 
+## Credits
+
+The [*`scop`*](https://github.com/mengxu98/scop) package is developed based on the [*`SCP`*](https://github.com/zhanghao-njmu/SCP) package, making it compatible with Seurat V5 and adding support for multiple omics data.
+
 ## R version requirement
 
 - R \>= 4.1.0
@@ -60,10 +64,10 @@ You can install the latest version of scop from
 [GitHub](https://github.com/mengxu98/scop) with:
 
 ``` r
-if (!require("devtools", quietly = TRUE)) {
-  install.packages("devtools")
+if (!require("pak", quietly = TRUE)) {
+  install.packages("pak")
 }
-devtools::install_github("mengxu98/scop")
+pak::pak("mengxu98/scop")
 ```
 
 #### Create a python environment for scop

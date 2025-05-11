@@ -14,7 +14,7 @@ RunLargeVis(object, ...)
   dims = NULL,
   features = NULL,
   assay = NULL,
-  slot = "data",
+  layer = "data",
   perplexity = 50,
   n_neighbors = perplexity * 3,
   n_components = 2,
@@ -96,7 +96,7 @@ RunLargeVis(object, ...)
 
 \item{assay}{A character string specifying the assay to be used. Default is NULL.}
 
-\item{slot}{A character string specifying the slot name to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used. Default is "data".}
 
 \item{perplexity}{Controls the size of the local neighborhood used for
 manifold approximation. This is the analogous to \code{n_neighbors} in
@@ -430,7 +430,14 @@ Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
 }
 \examples{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
-pancreas_sub <- RunLargeVis(object = pancreas_sub, features = Seurat::VariableFeatures(pancreas_sub))
-CellDimPlot(pancreas_sub, group.by = "CellType", reduction = "largevis")
+pancreas_sub <- RunLargeVis(
+  object = pancreas_sub,
+  features = Seurat::VariableFeatures(pancreas_sub)
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  reduction = "largevis"
+)
 
 }

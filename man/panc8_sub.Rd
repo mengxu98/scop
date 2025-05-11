@@ -24,10 +24,21 @@ if (interactive()) {
   suppressWarnings(InstallData("panc8"))
   data("panc8")
   set.seed(11)
-  cells_sub <- unlist(lapply(split(colnames(panc8), panc8$dataset), function(x) sample(x, size = 200)))
+  cells_sub <- unlist(
+    lapply(
+      split(colnames(panc8), panc8$dataset),
+      function(x) sample(x, size = 200)
+    )
+  )
   panc8_sub <- subset(panc8, cells = cells_sub)
-  panc8_sub <- panc8_sub[rowSums(panc8_sub@assays$RNA@counts) > 0, ]
-  panc8_sub <- panc8_sub[toupper(rownames(panc8_sub)) \%in\% toupper(rownames(pancreas_sub)), ]
+  panc8_sub <- panc8_sub[rowSums(
+    panc8_sub@assays$RNA@counts
+  ) > 0, ]
+  panc8_sub <- panc8_sub[toupper(
+    rownames(panc8_sub)
+  ) \%in\% toupper(
+    rownames(pancreas_sub)
+  ), ]
   panc8_sub <- UpdateSeuratObject(panc8_sub)
   # usethis::use_data(panc8_sub, compress = "xz")
 }

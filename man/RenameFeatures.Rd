@@ -20,8 +20,14 @@ Rename features for the Seurat object
 data("panc8_sub")
 head(rownames(panc8_sub))
 # Simply convert genes from human to mouse and preprocess the data
-genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-panc8_rename <- RenameFeatures(panc8_sub, newnames = genenames)
+genenames <- make.unique(
+  capitalize(rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+panc8_rename <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
 head(rownames(panc8_rename))
-
 }

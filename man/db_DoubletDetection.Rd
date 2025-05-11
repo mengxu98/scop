@@ -21,6 +21,13 @@ This function performs doublet-calling using the doubletdetection(python) packag
 \examples{
 data("pancreas_sub")
 pancreas_sub <- db_DoubletDetection(pancreas_sub)
-CellDimPlot(pancreas_sub, reduction = "umap", group.by = "db.DoubletDetection_class")
-FeatureDimPlot(pancreas_sub, reduction = "umap", features = "db.DoubletDetection_score")
+CellDimPlot(
+  srt = pancreas_sub,
+  reduction = "umap",
+  group.by = "db.DoubletDetection_class"
+)
+FeatureDimPlot(
+  srt = pancreas_sub,
+  reduction = "umap", features = "db.DoubletDetection_score"
+)
 }

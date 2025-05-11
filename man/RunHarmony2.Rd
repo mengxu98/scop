@@ -46,8 +46,20 @@ This is a modified version of harmony::RunHarmony specifically designed for comp
 }
 \examples{
 panc8_sub <- Standard_scop(panc8_sub)
-panc8_sub <- RunHarmony2(panc8_sub, group.by.vars = "tech", reduction = "Standardpca")
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"), reduction = "Standardpca")
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"), reduction = "Harmony")
+panc8_sub <- RunHarmony2(
+  panc8_sub,
+  group.by.vars = "tech",
+  reduction = "Standardpca"
+)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype"),
+  reduction = "Standardpca"
+)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype"),
+  reduction = "Harmony"
+)
 
 }

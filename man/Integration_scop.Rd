@@ -170,7 +170,9 @@ for (method in integration_methods) {
   ))
 }
 
-nonlinear_reductions <- c("umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr")
+nonlinear_reductions <- c(
+  "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+)
 panc8_sub <- Integration_scop(
   srtMerge = panc8_sub, batch = "tech",
   integration_method = "Seurat",

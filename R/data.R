@@ -15,18 +15,41 @@
 #'   adata <- scv$datasets$pancreas()
 #'   pancreas <- adata_to_srt(adata)
 #'   set.seed(11)
-#'   pancreas_sub <- subset(pancreas, cells = sample(colnames(pancreas), size = 1000))
-#'   pancreas_sub <- pancreas_sub[rowSums(pancreas_sub@assays$RNA@counts) > 0, ]
+#'   pancreas_sub <- subset(
+#'     pancreas,
+#'     cells = sample(
+#'       colnames(pancreas),
+#'       size = 1000
+#'     )
+#'   )
+#'   pancreas_sub <- pancreas_sub[rowSums(
+#'     pancreas_sub@assays$RNA@counts
+#'   ) > 0, ]
 #'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
 #'   pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
 #'   pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
-#'   pancreas_sub[["Phase"]] <- ifelse(pancreas_sub$S_score > pancreas_sub$G2M_score, "S", "G2M")
-#'   pancreas_sub[["Phase"]][apply(pancreas_sub[[]][, c("S_score", "G2M_score")], 1, max) < 0, ] <- "G1"
-#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(pancreas_sub[["Phase", drop = TRUE]], levels = c("G1", "S", "G2M"))
+#'   pancreas_sub[["Phase"]] <- ifelse(
+#'     pancreas_sub$S_score > pancreas_sub$G2M_score,
+#'     "S",
+#'     "G2M"
+#'   )
+#'   pancreas_sub[["Phase"]][apply(
+#'     pancreas_sub[[]][, c("S_score", "G2M_score")],
+#'     1,
+#'     max
+#'   ) < 0, ] <- "G1"
+#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(
+#'     pancreas_sub[["Phase", drop = TRUE]],
+#'     levels = c("G1", "S", "G2M")
+#'   )
 #'   pancreas_sub[["PCA"]] <- pancreas_sub[["X_pca"]]
 #'   pancreas_sub[["UMAP"]] <- pancreas_sub[["X_umap"]]
 #'   pancreas_sub[["X_umap"]] <- pancreas_sub[["X_pca"]] <- NULL
-#'   VariableFeatures(pancreas_sub) <- rownames(pancreas_sub[["RNA"]])[which(pancreas_sub[["RNA"]]@meta.features$highly_variable_genes == "True")]
+#'   VariableFeatures(pancreas_sub) <- rownames(
+#'     pancreas_sub[["RNA"]]
+#'   )[which(
+#'     pancreas_sub[["RNA"]]@meta.features$highly_variable_genes == "True"
+#'   )]
 #'   # usethis::use_data(pancreas_sub, compress = "xz")
 #' }
 #' }
@@ -52,10 +75,21 @@ NULL
 #'   suppressWarnings(InstallData("panc8"))
 #'   data("panc8")
 #'   set.seed(11)
-#'   cells_sub <- unlist(lapply(split(colnames(panc8), panc8$dataset), function(x) sample(x, size = 200)))
+#'   cells_sub <- unlist(
+#'     lapply(
+#'       split(colnames(panc8), panc8$dataset),
+#'       function(x) sample(x, size = 200)
+#'     )
+#'   )
 #'   panc8_sub <- subset(panc8, cells = cells_sub)
-#'   panc8_sub <- panc8_sub[rowSums(panc8_sub@assays$RNA@counts) > 0, ]
-#'   panc8_sub <- panc8_sub[toupper(rownames(panc8_sub)) %in% toupper(rownames(pancreas_sub)), ]
+#'   panc8_sub <- panc8_sub[rowSums(
+#'     panc8_sub@assays$RNA@counts
+#'   ) > 0, ]
+#'   panc8_sub <- panc8_sub[toupper(
+#'     rownames(panc8_sub)
+#'   ) %in% toupper(
+#'     rownames(pancreas_sub)
+#'   ), ]
 #'   panc8_sub <- UpdateSeuratObject(panc8_sub)
 #'   # usethis::use_data(panc8_sub, compress = "xz")
 #' }
@@ -81,9 +115,16 @@ NULL
 #'   suppressWarnings(InstallData("ifnb"))
 #'   data("ifnb")
 #'   set.seed(11)
-#'   cells_sub <- unlist(lapply(split(colnames(ifnb), ifnb$stim), function(x) sample(x, size = 1000)))
+#'   cells_sub <- unlist(
+#'     lapply(
+#'       split(colnames(ifnb), ifnb$stim),
+#'       function(x) sample(x, size = 1000)
+#'     )
+#'   )
 #'   ifnb_sub <- subset(ifnb, cells = cells_sub)
-#'   ifnb_sub <- ifnb_sub[rowSums(ifnb_sub@assays$RNA@counts) > 0, ]
+#'   ifnb_sub <- ifnb_sub[rowSums(
+#'     ifnb_sub@assays$RNA@counts
+#'   ) > 0, ]
 #'   ifnb_sub <- UpdateSeuratObject(ifnb_sub)
 #'   # usethis::use_data(ifnb_sub, compress = "xz")
 #' }
@@ -99,9 +140,15 @@ NULL
 #' \dontrun{
 #' if (interactive()) {
 #'   words_excluded <- c(
-#'     "the", "is", "and", "or", "a", "in", "on", "under", "between", "of", "through", "via", "along", "that", "for", "with", "within", "without",
-#'     "cell", "cellular", "dna", "rna", "protein", "peptide", "amino", "acid", "development", "involved", "organization", "system",
-#'     "regulation", "regulated", "positive", "negative", "response", "process", "processing", "small", "large", "change"
+#'     "the", "is", "and", "or", "a",
+#'     "in", "on", "under", "between", "of",
+#'     "through", "via", "along", "that",
+#'     "for", "with", "within", "without",
+#'     "cell", "cellular", "dna", "rna",
+#'     "protein", "peptide", "amino", "acid",
+#'     "development", "involved", "organization", "system",
+#'     "regulation", "regulated", "positive", "negative",
+#'     "response", "process", "processing", "small", "large", "change"
 #'   )
 #'   # usethis::use_data(words_excluded)
 #' }
@@ -115,7 +162,13 @@ NULL
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   check_R(c("stringr", "RColorBrewer", "ggsci", "Redmonder", "rcartocolor", "nord", "viridis", "pals", "oompaBase", "dichromat", "jaredhuling/jcolors"))
+#'   check_R(
+#'     c(
+#'       "stringr", "RColorBrewer", "ggsci", "Redmonder",
+#'       "rcartocolor", "nord", "viridis", "pals", "oompaBase",
+#'       "dichromat", "jaredhuling/jcolors"
+#'     )
+#'   )
 #'   library(stringr)
 #'   library(RColorBrewer)
 #'   library(ggsci)
@@ -132,16 +185,38 @@ NULL
 #'   metacartocolors <- rcartocolor::metacartocolors
 #'   rownames(metacartocolors) <- metacartocolors$Name
 #'   nord_palettes <- nord::nord_palettes
-#'   viridis_names <- c("magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", "turbo")
-#'   viridis_palettes <- lapply(setNames(viridis_names, viridis_names), function(x) viridis::viridis(100, option = x))
-#'   ocean_names <- names(pals:::syspals)[grep("ocean", names(pals:::syspals))]
+#'   viridis_names <- c(
+#'     "magma", "inferno", "plasma", "viridis",
+#'     "cividis", "rocket", "mako", "turbo"
+#'   )
+#'   viridis_palettes <- lapply(
+#'     setNames(viridis_names, viridis_names),
+#'     function(x) viridis::viridis(100, option = x)
+#'   )
+#'   ocean_names <- names(
+#'     pals:::syspals
+#'   )[grep(
+#'     "ocean",
+#'     names(pals:::syspals)
+#'   )]
 #'   ocean_palettes <- pals:::syspals[ocean_names]
 #'   dichromat_palettes <- dichromat::colorschemes
-#'   jcolors_names <- paste0("jcolors-", c("default", "pal2", "pal3", "pal4", "pal5", "pal6", "pal7", "pal8", "pal9", "pal10", "pal11", "pal12", "rainbow"))
+#'   jcolors_names <- paste0(
+#'     "jcolors-",
+#'     c(
+#'       "default", "pal2", "pal3", "pal4", "pal5",
+#'       "pal6", "pal7", "pal8", "pal9", "pal10",
+#'       "pal11", "pal12", "rainbow"
+#'     )
+#'   )
 #'   custom_names <- c("jet", "simspec", "GdRd")
 #'   custom_palettes <- list(
 #'     oompaBase::jetColors(N = 100),
-#'     c("#c22b86", "#f769a1", "#fcc5c1", "#253777", "#1d92c0", "#9ec9e1", "#015b33", "#42aa5e", "#d9f0a2", "#E66F00", "#f18c28", "#FFBB61"),
+#'     c(
+#'       "#c22b86", "#f769a1", "#fcc5c1", "#253777",
+#'       "#1d92c0", "#9ec9e1", "#015b33", "#42aa5e",
+#'       "#d9f0a2", "#E66F00", "#f18c28", "#FFBB61"
+#'     ),
 #'     c("gold", "red3")
 #'   )
 #'   names(custom_palettes) <- custom_names

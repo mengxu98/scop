@@ -36,78 +36,176 @@ NULL
 #' data("pancreas_sub")
 #' data("ref_scMCA")
 #' pancreas_sub <- Standard_scop(pancreas_sub)
-#' pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, bulk_ref = ref_scMCA)
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+#' pancreas_sub <- RunKNNPredict(
+#'   srt_query = pancreas_sub,
+#'   bulk_ref = ref_scMCA
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
 #'
 #' # Removal of low credible cell types from the predicted results
-#' pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, bulk_ref = ref_scMCA, filter_lowfreq = 30)
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+#' pancreas_sub <- RunKNNPredict(
+#'   srt_query = pancreas_sub,
+#'   bulk_ref = ref_scMCA,
+#'   filter_lowfreq = 30
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
 #'
 #' # Annotate clusters using bulk RNA-seq data
-#' pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, query_group = "SubCellType", bulk_ref = ref_scMCA)
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
+#' pancreas_sub <- RunKNNPredict(
+#'   srt_query = pancreas_sub,
+#'   query_group = "SubCellType",
+#'   bulk_ref = ref_scMCA
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
 #'
 #' # Annotate using single cell RNA-seq data
 #' data("panc8_sub")
 #' # Simply convert genes from human to mouse and preprocess the data
-#' genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-#' panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-#' panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
-#'
-#' pancreas_sub <- RunKNNPredict(srt_query = pancreas_sub, srt_ref = panc8_sub, ref_group = "celltype")
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-#' FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+#' genenames <- make.unique(
+#'   capitalize(
+#'     rownames(panc8_sub),
+#'     force_tolower = TRUE
+#'   )
+#' )
+#' panc8_sub <- RenameFeatures(
+#'   panc8_sub,
+#'   newnames = genenames
+#' )
+#' panc8_sub <- check_srtMerge(
+#'   panc8_sub,
+#'   batch = "tech"
+#' )[["srtMerge"]]
 #'
 #' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   ref_group = "celltype", ref_collapsing = FALSE
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   ref_group = "celltype"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-#' FeatureDimPlot(pancreas_sub, features = "KNNPredict_prob")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "KNNPredict_simil"
+#' )
 #'
 #' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   query_group = "SubCellType", ref_group = "celltype"
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   ref_group = "celltype",
+#'   ref_collapsing = FALSE
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-#' FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "KNNPredict_prob"
+#' )
+#'
+#' pancreas_sub <- RunKNNPredict(
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   query_group = "SubCellType",
+#'   ref_group = "celltype"
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "KNNPredict_simil"
+#' )
 #'
 #' # Annotate with DE gene instead of HVF
 #' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
 #'   ref_group = "celltype",
-#'   features_type = "DE", feature_source = "ref"
+#'   features_type = "DE",
+#'   feature_source = "ref"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-#' FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "KNNPredict_simil"
+#' )
 #'
 #' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   query_group = "SubCellType", ref_group = "celltype",
-#'   features_type = "DE", feature_source = "both"
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   query_group = "SubCellType",
+#'   ref_group = "celltype",
+#'   features_type = "DE",
+#'   feature_source = "both"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "KNNPredict_classification", label = TRUE)
-#' FeatureDimPlot(pancreas_sub, features = "KNNPredict_simil")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "KNNPredict_classification",
+#'   label = TRUE
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = "KNNPredict_simil"
+#' )
 #'
 #' @importFrom methods as
 #' @importFrom Matrix t colSums rowSums
-#' @importFrom Seurat DefaultAssay GetAssayData FindVariableFeatures VariableFeatures AverageExpression FindNeighbors as.sparse
+#' @importFrom Seurat DefaultAssay FindVariableFeatures VariableFeatures AverageExpression FindNeighbors as.sparse
 #' @importFrom proxyC simil dist
 #' @export
 #'
 RunKNNPredict <- function(
-    srt_query, srt_ref = NULL, bulk_ref = NULL,
-    query_group = NULL, ref_group = NULL,
-    query_assay = NULL, ref_assay = NULL,
-    query_reduction = NULL, ref_reduction = NULL,
-    query_dims = 1:30, ref_dims = 1:30,
-    query_collapsing = !is.null(query_group), ref_collapsing = TRUE,
+    srt_query,
+    srt_ref = NULL,
+    bulk_ref = NULL,
+    query_group = NULL,
+    ref_group = NULL,
+    query_assay = NULL,
+    ref_assay = NULL,
+    query_reduction = NULL,
+    ref_reduction = NULL,
+    query_dims = 1:30,
+    ref_dims = 1:30,
+    query_collapsing = !is.null(query_group),
+    ref_collapsing = TRUE,
     return_full_distance_matrix = FALSE,
-    features = NULL, features_type = c("HVF", "DE"), feature_source = "both", nfeatures = 2000,
-    DEtest_param = list(max.cells.per.ident = 200, test.use = "wilcox"),
+    features = NULL,
+    features_type = c("HVF", "DE"),
+    feature_source = "both",
+    nfeatures = 2000,
+    DEtest_param = list(
+      max.cells.per.ident = 200,
+      test.use = "wilcox"
+    ),
     DE_threshold = "p_val_adj < 0.05",
-    nn_method = NULL, distance_metric = "cosine", k = 30,
-    filter_lowfreq = 0, prefix = "KNNPredict") {
+    nn_method = NULL,
+    distance_metric = "cosine",
+    k = 30,
+    filter_lowfreq = 0,
+    prefix = "KNNPredict") {
   query_assay <- query_assay %||% DefaultAssay(srt_query)
   features_type <- match.arg(features_type, choices = c("HVF", "DE"))
   if (is.null(query_reduction) + is.null(ref_reduction) == 1) {
@@ -122,30 +220,64 @@ RunKNNPredict <- function(
     if (length(features) == 0) {
       if (features_type == "HVF" && feature_source %in% c("both", "query")) {
         if (length(VariableFeatures(srt_query, assay = query_assay)) == 0) {
-          srt_query <- FindVariableFeatures(srt_query, nfeatures = nfeatures, assay = query_assay)
+          srt_query <- FindVariableFeatures(
+            srt_query,
+            nfeatures = nfeatures,
+            assay = query_assay
+          )
         }
         features_query <- VariableFeatures(srt_query, assay = query_assay)
-      } else if (features_type == "DE" && feature_source %in% c("both", "query")) {
+      } else if (
+        features_type == "DE" && feature_source %in% c("both", "query")
+      ) {
         if (is.null(query_group)) {
-          stop("'query_group' must be provided when 'features_type' is 'DE' and 'feature_source' is 'both' or 'query'")
+          stop(
+            "'query_group' must be provided when 'features_type' is 'DE' and 'feature_source' is 'both' or 'query'"
+          )
         } else {
-          slot <- paste0("DEtest_", query_group)
+          layer <- paste0("DEtest_", query_group)
           DEtest_param[["force"]] <- TRUE
-          if (!slot %in% names(srt_query@tools) || length(grep(pattern = "AllMarkers", names(srt_query@tools[[slot]]))) == 0) {
-            srt_query <- do.call(RunDEtest, c(list(srt = srt_query, group_by = query_group), DEtest_param))
+          if (
+            !layer %in% names(srt_query@tools) ||
+              length(grep(
+                pattern = "AllMarkers",
+                names(srt_query@tools[[layer]])
+              )) ==
+                0
+          ) {
+            srt_query <- do.call(
+              RunDEtest,
+              c(
+                list(srt = srt_query, group_by = query_group),
+                DEtest_param
+              )
+            )
           }
           if ("test.use" %in% names(DEtest_param)) {
             test.use <- DEtest_param[["test.use"]]
           } else {
             test.use <- "wilcox"
           }
-          index <- grep(pattern = paste0("AllMarkers_", test.use), names(srt_query@tools[[slot]]))[1]
-          de <- names(srt_query@tools[[slot]])[index]
-          message("Use the DE features from ", de, " to calculate distance metric.")
-          de_df <- srt_query@tools[[slot]][[de]]
-          de_df <- de_df[with(de_df, eval(rlang::parse_expr(DE_threshold))), , drop = FALSE]
+          index <- grep(
+            pattern = paste0("AllMarkers_", test.use),
+            names(srt_query@tools[[layer]])
+          )[1]
+          de <- names(srt_query@tools[[layer]])[index]
+          message(
+            "Use the DE features from ",
+            de,
+            " to calculate distance metric."
+          )
+          de_df <- srt_query@tools[[layer]][[de]]
+          de_df <- de_df[
+            with(de_df, eval(rlang::parse_expr(DE_threshold))), ,
+            drop = FALSE
+          ]
           rownames(de_df) <- seq_len(nrow(de_df))
-          de_df <- de_df[order(de_df[["avg_log2FC"]], decreasing = TRUE), , drop = FALSE]
+          de_df <- de_df[
+            order(de_df[["avg_log2FC"]], decreasing = TRUE), ,
+            drop = FALSE
+          ]
           de_top <- de_df[!duplicated(de_df[["gene"]]), , drop = FALSE]
           stat <- sort(table(de_top$group1))
           stat <- stat[stat > 0]
@@ -156,17 +288,28 @@ RunKNNPredict <- function(
           }
           nfeatures <- sum(cumsum(rowSums(mat)) <= nfeatures)
           if (test.use == "roc") {
-            features_query <- unlist(by(de_top, list(de_top[["group1"]]), function(x) {
-              x <- x[order(x[["power"]], decreasing = TRUE), , drop = FALSE]
-              head(x[["gene"]], nfeatures)
-            }))
+            features_query <- unlist(by(
+              de_top,
+              list(de_top[["group1"]]),
+              function(x) {
+                x <- x[order(x[["power"]], decreasing = TRUE), , drop = FALSE]
+                head(x[["gene"]], nfeatures)
+              }
+            ))
           } else {
-            features_query <- unlist(by(de_top, list(de_top[["group1"]]), function(x) {
-              x <- x[order(x[["p_val"]], decreasing = FALSE), , drop = FALSE]
-              head(x[["gene"]], nfeatures)
-            }))
+            features_query <- unlist(by(
+              de_top,
+              list(de_top[["group1"]]),
+              function(x) {
+                x <- x[order(x[["p_val"]], decreasing = FALSE), , drop = FALSE]
+                head(x[["gene"]], nfeatures)
+              }
+            ))
           }
-          message("DE features number of the query data: ", length(features_query))
+          message(
+            "DE features number of the query data: ",
+            length(features_query)
+          )
         }
       } else {
         features_query <- rownames(srt_query[[query_assay]])
@@ -206,8 +349,15 @@ RunKNNPredict <- function(
     }
     if (isTRUE(use_reduction)) {
       message("Use the reduction to calculate distance metric.")
-      if (!is.null(query_dims) && !is.null(ref_dims) && length(query_dims) == length(ref_dims)) {
-        query <- Embeddings(srt_query, reduction = query_reduction)[, query_dims]
+      if (
+        !is.null(query_dims) &&
+          !is.null(ref_dims) &&
+          length(query_dims) == length(ref_dims)
+      ) {
+        query <- Embeddings(srt_query, reduction = query_reduction)[
+          ,
+          query_dims
+        ]
         ref <- Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims]
       } else {
         stop("query_dims and ref_dims must be provided with the same length.")
@@ -217,27 +367,56 @@ RunKNNPredict <- function(
         if (features_type == "HVF" && feature_source %in% c("both", "ref")) {
           message("Use the HVF to calculate distance metric.")
           if (length(VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
-            srt_ref <- FindVariableFeatures(srt_ref, nfeatures = nfeatures, assay = ref_assay)
+            srt_ref <- FindVariableFeatures(
+              srt_ref,
+              nfeatures = nfeatures,
+              assay = ref_assay
+            )
           }
           features_ref <- VariableFeatures(srt_ref, assay = ref_assay)
-        } else if (features_type == "DE" && feature_source %in% c("both", "ref")) {
-          slot <- paste0("DEtest_", ref_group)
+        } else if (
+          features_type == "DE" && feature_source %in% c("both", "ref")
+        ) {
+          layer <- paste0("DEtest_", ref_group)
           DEtest_param[["force"]] <- TRUE
-          if (!slot %in% names(srt_ref@tools) || length(grep(pattern = "AllMarkers", names(srt_ref@tools[[slot]]))) == 0) {
-            srt_ref <- do.call(RunDEtest, c(list(srt = srt_ref, group_by = ref_group), DEtest_param))
+          if (
+            !layer %in% names(srt_ref@tools) ||
+              length(grep(
+                pattern = "AllMarkers",
+                names(srt_ref@tools[[layer]])
+              )) ==
+                0
+          ) {
+            srt_ref <- do.call(
+              RunDEtest,
+              c(list(srt = srt_ref, group_by = ref_group), DEtest_param)
+            )
           }
           if ("test.use" %in% names(DEtest_param)) {
             test.use <- DEtest_param[["test.use"]]
           } else {
             test.use <- "wilcox"
           }
-          index <- grep(pattern = paste0("AllMarkers_", test.use), names(srt_ref@tools[[slot]]))[1]
-          de <- names(srt_ref@tools[[slot]])[index]
-          message("Use the DE features from ", de, " to calculate distance metric.")
-          de_df <- srt_ref@tools[[slot]][[de]]
-          de_df <- de_df[with(de_df, eval(rlang::parse_expr(DE_threshold))), , drop = FALSE]
+          index <- grep(
+            pattern = paste0("AllMarkers_", test.use),
+            names(srt_ref@tools[[layer]])
+          )[1]
+          de <- names(srt_ref@tools[[layer]])[index]
+          message(
+            "Use the DE features from ",
+            de,
+            " to calculate distance metric."
+          )
+          de_df <- srt_ref@tools[[layer]][[de]]
+          de_df <- de_df[
+            with(de_df, eval(rlang::parse_expr(DE_threshold))), ,
+            drop = FALSE
+          ]
           rownames(de_df) <- seq_len(nrow(de_df))
-          de_df <- de_df[order(de_df[["avg_log2FC"]], decreasing = TRUE), , drop = FALSE]
+          de_df <- de_df[
+            order(de_df[["avg_log2FC"]], decreasing = TRUE), ,
+            drop = FALSE
+          ]
           de_top <- de_df[!duplicated(de_df[["gene"]]), , drop = FALSE]
           stat <- sort(table(de_top$group1))
           stat <- stat[stat > 0]
@@ -248,15 +427,23 @@ RunKNNPredict <- function(
           }
           nfeatures <- sum(cumsum(rowSums(mat)) <= nfeatures)
           if (test.use == "roc") {
-            features_ref <- unlist(by(de_top, list(de_top[["group1"]]), function(x) {
-              x <- x[order(x[["power"]], decreasing = TRUE), , drop = FALSE]
-              head(x[["gene"]], nfeatures)
-            }))
+            features_ref <- unlist(by(
+              de_top,
+              list(de_top[["group1"]]),
+              function(x) {
+                x <- x[order(x[["power"]], decreasing = TRUE), , drop = FALSE]
+                head(x[["gene"]], nfeatures)
+              }
+            ))
           } else {
-            features_ref <- unlist(by(de_top, list(de_top[["group1"]]), function(x) {
-              x <- x[order(x[["p_val"]], decreasing = FALSE), , drop = FALSE]
-              head(x[["gene"]], nfeatures)
-            }))
+            features_ref <- unlist(by(
+              de_top,
+              list(de_top[["group1"]]),
+              function(x) {
+                x <- x[order(x[["p_val"]], decreasing = FALSE), , drop = FALSE]
+                head(x[["gene"]], nfeatures)
+              }
+            ))
           }
           message("DE features number of the ref data: ", length(features_ref))
         } else {
@@ -264,13 +451,37 @@ RunKNNPredict <- function(
         }
         features <- intersect(features_ref, features_query)
       }
-      features_common <- Reduce(intersect, list(features, rownames(srt_query[[query_assay]]), rownames(srt_ref[[ref_assay]])))
-      message("Use ", length(features_common), " features to calculate distance.")
+      features_common <- Reduce(
+        intersect,
+        list(
+          features,
+          rownames(srt_query[[query_assay]]),
+          rownames(srt_ref[[ref_assay]])
+        )
+      )
+      message(
+        "Use ",
+        length(features_common),
+        " features to calculate distance."
+      )
       if (isTRUE(ref_collapsing)) {
-        ref <- AverageExpression(object = srt_ref, features = features_common, slot = "data", assays = ref_assay, group.by = "ref_group", verbose = FALSE)[[1]]
+        ref <- Seurat::AverageExpression(
+          object = srt_ref,
+          features = features_common,
+          layer = "data",
+          assays = ref_assay,
+          group.by = "ref_group",
+          verbose = FALSE
+        )[[1]]
         ref <- t(log1p(ref))
       } else {
-        ref <- t(GetAssayData(srt_ref, slot = "data", assay = ref_assay)[features_common, ])
+        ref <- t(
+          Seurat::GetAssayData(
+            srt_ref,
+            layer = "data",
+            assay = ref_assay
+          )[features_common, ]
+        )
       }
     }
   } else {
@@ -301,10 +512,23 @@ RunKNNPredict <- function(
       if (is.null(query_group)) {
         stop("query_group must be provided when query_collapsing is TRUE.")
       }
-      query <- AverageExpression(object = srt_query, features = colnames(ref), slot = "data", assays = query_assay, group.by = "query_group", verbose = FALSE)[[1]]
+      query <- Seurat::AverageExpression(
+        object = srt_query,
+        features = colnames(ref),
+        layer = "data",
+        assays = query_assay,
+        group.by = "query_group",
+        verbose = FALSE
+      )[[1]]
       query <- t(log1p(query))
     } else {
-      query <- t(GetAssayData(srt_query, slot = "data", assay = query_assay)[colnames(ref), , drop = FALSE])
+      query <- t(
+        Seurat::GetAssayData(
+          srt_query,
+          layer = "data",
+          assay = query_assay
+        )[colnames(ref), , drop = FALSE]
+      )
     }
   }
 
@@ -313,33 +537,18 @@ RunKNNPredict <- function(
     message("Detected query data type: ", status_dat)
     status_ref <- check_DataType(data = ref)
     message("Detected reference data type: ", status_ref)
-    if (status_ref != status_dat || any(status_dat == "unknown", status_ref == "unknown")) {
-      warning("Data type is unknown or different between query and reference.", immediate. = TRUE)
+    if (
+      status_ref != status_dat ||
+        any(status_dat == "unknown", status_ref == "unknown")
+    ) {
+      warning(
+        "Data type is unknown or different between query and reference.",
+        immediate. = TRUE
+      )
     }
   }
 
   message("Calculate similarity...")
-  # tst.expr <- matrix(data = 0, nrow = nrow(ref), ncol = dim(query)[2])
-  # rownames(tst.expr) <- rownames(ref)
-  # colnames(tst.expr) <- colnames(query)
-  # features_common <- intersect(rownames(query), rownames(ref.expr))
-  # tst.expr[features_common, ] <- Matrix::as.matrix(query[features_common, ])
-  #
-  # library(RcppArmadillo)
-  # library(RcppXPtrUtils)
-  # library(parallelDist)
-  #   query <- cbind(ref.expr, tst.expr)
-  #   query <- apply(query, 2, function(x) x - mean(x))
-  #   CosineCPP <- cppXPtr(
-  #     "double customDist(const arma::mat &A, const arma::mat &B) {
-  #   double similarity = arma::as_scalar(arma::dot(A, B))/(arma::as_scalar(arma::norm(A))*arma::as_scalar(arma::norm(B))) ;
-  #   return(similarity);
-  # }",
-  #     depends = c("RcppArmadillo")
-  #   )
-  #   cors <- Matrix::as.matrix(parDist(t(query), method = "custom", func = CosineCPP))
-  #   cors <- cors[colnames(ref.expr), colnames(tst.expr)]
-  #
 
   if (is.null(nn_method)) {
     if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
@@ -352,20 +561,43 @@ RunKNNPredict <- function(
   if (!nn_method %in% c("raw", "annoy", "rann")) {
     stop("nn_method must be one of raw, rann and annoy")
   }
-  if (nn_method == "annoy" && !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")) {
-    stop("distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'")
+  if (
+    nn_method == "annoy" &&
+      !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
+  ) {
+    stop(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'"
+    )
   }
   if (isTRUE(return_full_distance_matrix) && nn_method != "raw") {
-    warning("Distance matrix will not be returned besause nn_method is not 'raw'", immediate. = TRUE)
+    warning(
+      "Distance matrix will not be returned besause nn_method is not 'raw'",
+      immediate. = TRUE
+    )
     return_full_distance_matrix <- FALSE
   }
   simil_method <- c(
-    "cosine", "pearson", "spearman", "correlation", "jaccard", "ejaccard", "dice", "edice",
-    "hamman", "simple matching", "faith"
+    "cosine",
+    "pearson",
+    "spearman",
+    "correlation",
+    "jaccard",
+    "ejaccard",
+    "dice",
+    "edice",
+    "hamman",
+    "simple matching",
+    "faith"
   )
   dist_method <- c(
-    "euclidean", "chisquared", "kullback", "manhattan", "maximum", "canberra",
-    "minkowski", "hamming"
+    "euclidean",
+    "chisquared",
+    "kullback",
+    "manhattan",
+    "maximum",
+    "canberra",
+    "minkowski",
+    "hamming"
   )
   if (!distance_metric %in% c(simil_method, dist_method)) {
     stop(distance_metric, " method is invalid.")
@@ -373,8 +605,11 @@ RunKNNPredict <- function(
 
   if (nn_method %in% c("annoy", "rann")) {
     query.neighbor <- FindNeighbors(
-      query = query, object = ref,
-      k.param = k, nn.method = nn_method, annoy.metric = distance_metric,
+      query = query,
+      object = ref,
+      k.param = k,
+      nn.method = nn_method,
+      annoy.metric = distance_metric,
       return.neighbor = TRUE
     )
     match_k <- query.neighbor@nn.idx
@@ -394,12 +629,13 @@ RunKNNPredict <- function(
         }
         distance_metric <- "correlation"
       }
-      d <- 1 - simil(
-        x = as.sparse(ref),
-        y = as.sparse(query),
-        method = distance_metric,
-        use_nan = TRUE
-      )
+      d <- 1 -
+        simil(
+          x = as.sparse(ref),
+          y = as.sparse(query),
+          method = distance_metric,
+          use_nan = TRUE
+        )
     } else if (distance_metric %in% dist_method) {
       d <- dist(
         x = as.sparse(ref),
@@ -409,11 +645,25 @@ RunKNNPredict <- function(
       )
     }
     if (k == 1) {
-      match_k_cell <- Matrix::as.matrix(apply(d, 2, function(x) names(x)[order(x, decreasing = FALSE)[1]]))
-      match_k_distance <- Matrix::as.matrix(apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1]]))
+      match_k_cell <- Matrix::as.matrix(
+        apply(d, 2, function(x) {
+          names(x)[order(x, decreasing = FALSE)[1]]
+        })
+      )
+      match_k_distance <- Matrix::as.matrix(
+        apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1]])
+      )
     } else {
-      match_k_cell <- t(Matrix::as.matrix(apply(d, 2, function(x) names(x)[order(x, decreasing = FALSE)[1:k]])))
-      match_k_distance <- t(Matrix::as.matrix(apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1:k]])))
+      match_k_cell <- t(
+        Matrix::as.matrix(
+          apply(d, 2, function(x) names(x)[order(x, decreasing = FALSE)[1:k]])
+        )
+      )
+      match_k_distance <- t(
+        Matrix::as.matrix(
+          apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1:k]])
+        )
+      )
     }
   }
 
@@ -426,33 +676,59 @@ RunKNNPredict <- function(
       names(match_best) <- names(match_k_cell[, 1])
     } else {
       rn <- rownames(match_k_cell)
-      match_k_cell <- matrix(srt_ref[["ref_group", drop = TRUE]][match_k_cell],
-        nrow = nrow(match_k_cell), ncol = ncol(match_k_cell)
+      match_k_cell <- matrix(
+        srt_ref[["ref_group", drop = TRUE]][match_k_cell],
+        nrow = nrow(match_k_cell),
+        ncol = ncol(match_k_cell)
       )
       rownames(match_k_cell) <- rn
       match_freq <- apply(match_k_cell, 1, table)
       if (!inherits(match_freq, "list")) {
         match_freq <- as.list(setNames(object = rep(k, nrow(match_k_cell)), rn))
-        match_freq <- lapply(setNames(names(match_freq), names(match_freq)), function(x) setNames(k, match_k_cell[x, 1]))
+        match_freq <- lapply(
+          setNames(
+            names(match_freq),
+            names(match_freq)
+          ),
+          function(x) setNames(k, match_k_cell[x, 1])
+        )
       }
-      match_prob <- do.call(rbind, lapply(match_freq, function(x) {
-        x[level[!level %in% names(x)]] <- 0
-        x <- x / sum(x)
-        return(x)
-      }))
+      match_prob <- do.call(
+        rbind,
+        lapply(match_freq, function(x) {
+          x[level[!level %in% names(x)]] <- 0
+          x <- x / sum(x)
+          return(x)
+        })
+      )
       match_prob <- Matrix::as.matrix(match_prob)
       rownames(match_prob) <- names(match_freq)
-      match_best <- apply(match_prob, 1, function(x) names(x)[order(x, decreasing = TRUE)][1])
+      match_best <- apply(
+        match_prob,
+        1,
+        function(x) names(x)[order(x, decreasing = TRUE)][1]
+      )
     }
   } else {
     match_best <- match_k_cell[, 1]
   }
 
   result <- list(
-    features = features, nn_method = nn_method, distance_metric = distance_metric, k = k,
+    features = features,
+    nn_method = nn_method,
+    distance_metric = distance_metric,
+    k = k,
     other_params = list(
-      query_group = query_group, query_reduction = query_reduction, query_assay = query_assay, query_dims = query_dims, query_collapsing = query_collapsing,
-      ref_group = ref_group, ref_reduction = ref_reduction, ref_assay = ref_assay, ref_dims = ref_dims, ref_collapsing = ref_collapsing
+      query_group = query_group,
+      query_reduction = query_reduction,
+      query_assay = query_assay,
+      query_dims = query_dims,
+      query_collapsing = query_collapsing,
+      ref_group = ref_group,
+      ref_reduction = ref_reduction,
+      ref_assay = ref_assay,
+      ref_dims = ref_dims,
+      ref_collapsing = ref_collapsing
     )
   )
   result[["match_best"]] <- match_best
@@ -469,26 +745,63 @@ RunKNNPredict <- function(
 
   if (isTRUE(query_collapsing)) {
     query_index <- as.character(srt_query[["query_group", drop = TRUE]])
+    cell_type_to_id <- split(colnames(srt_query), query_index)
+    classification <- unlist(lapply(names(match_best), function(ct) {
+      rep(match_best[ct], length(cell_type_to_id[[ct]]))
+    }))
+    names(classification) <- unlist(cell_type_to_id)
   } else {
     query_index <- colnames(srt_query)
+    classification <- match_best[query_index]
+    names(classification) <- query_index
   }
-  srt_query[[paste0(prefix, "_classification")]] <- match_best[query_index]
+
+  srt_query[[paste0(prefix, "_classification")]] <- classification
+
   if (!is.null(match_prob)) {
-    srt_query[[paste0(prefix, "_prob")]] <- apply(match_prob, 1, max)[query_index]
+    if (isTRUE(query_collapsing)) {
+      prob <- unlist(lapply(names(match_best), function(ct) {
+        rep(apply(match_prob, 1, max)[ct], length(cell_type_to_id[[ct]]))
+      }))
+      names(prob) <- unlist(cell_type_to_id)
+    } else {
+      prob <- apply(match_prob, 1, max)[query_index]
+      names(prob) <- query_index
+    }
+    srt_query[[paste0(prefix, "_prob")]] <- prob
   } else {
     distance <- match_k_distance[, 1]
-    # srt_query[[paste0(prefix, "_score")]] <- ((max(distance) - distance) / diff(range(distance)))[query_index]
     if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
-      srt_query[[paste0(prefix, "_simil")]] <- (1 - distance)[query_index]
+      if (isTRUE(query_collapsing)) {
+        simil <- unlist(lapply(names(match_best), function(ct) {
+          rep((1 - distance)[ct], length(cell_type_to_id[[ct]]))
+        }))
+        names(simil) <- unlist(cell_type_to_id)
+      } else {
+        simil <- (1 - distance)[query_index]
+        names(simil) <- query_index
+      }
+      srt_query[[paste0(prefix, "_simil")]] <- simil
     } else {
-      srt_query[[paste0(prefix, "_dist")]] <- distance[query_index]
+      if (isTRUE(query_collapsing)) {
+        dist <- unlist(lapply(names(match_best), function(ct) {
+          rep(distance[ct], length(cell_type_to_id[[ct]]))
+        }))
+        names(dist) <- unlist(cell_type_to_id)
+      } else {
+        dist <- distance[query_index]
+        names(dist) <- query_index
+      }
+      srt_query[[paste0(prefix, "_dist")]] <- dist
     }
   }
 
   if (is.numeric(filter_lowfreq) && filter_lowfreq > 0) {
     drop <- table(srt_query[[paste0(prefix, "_classification"), drop = TRUE]])
     drop <- names(drop)[drop <= filter_lowfreq]
-    srt_query[[paste0(prefix, "_classification"), drop = TRUE]][srt_query[[paste0(prefix, "_classification"), drop = TRUE]] %in% drop] <- "unreliable"
+    srt_query[[paste0(prefix, "_classification"), drop = TRUE]][
+      srt_query[[paste0(prefix, "_classification"), drop = TRUE]] %in% drop
+    ] <- "unreliable"
   }
 
   return(srt_query)
@@ -497,40 +810,67 @@ RunKNNPredict <- function(
 #' Annotate single cells using scmap.
 #'
 #' @inheritParams RunKNNPredict
-#' @param method The method to be used for scmap analysis. Can be any of "scmapCluster" or "scmapCell". The default value is "scmapCluster".
-#' @param nfeatures The number of top features to be selected. The default value is 500.
-#' @param threshold The threshold value on similarity to determine if a cell is assigned to a cluster. This should be a value between 0 and 1. The default value is 0.5.
+#' @param method The method to be used for scmap analysis.
+#' Can be any of "scmapCluster" or "scmapCell".
+#' The default value is "scmapCluster".
+#' @param nfeatures The number of top features to be selected.
+#' The default value is 500.
+#' @param threshold The threshold value on similarity to determine if a cell is assigned to a cluster.
+#' This should be a value between 0 and 1. The default value is 0.5.
 #' @param k Number of clusters per group for k-means clustering when method is "scmapCell".
+#'
+#' @export
 #'
 #' @examples
 #' data("panc8_sub")
-#' # Simply convert genes from human to mouse and preprocess the data
-#' genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-#' panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-#' panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
 #'
-#' # Annotation
+#' genenames <- make.unique(
+#'   capitalize(rownames(panc8_sub),
+#'     force_tolower = TRUE
+#'   )
+#' )
+#' panc8_sub <- RenameFeatures(
+#'   panc8_sub,
+#'   newnames = genenames
+#' )
+#' panc8_sub <- check_srtMerge(
+#'   panc8_sub,
+#'   batch = "tech"
+#' )[["srtMerge"]]
+#'
 #' data("pancreas_sub")
 #' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunScmap(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   ref_group = "celltype", method = "scmapCluster"
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   ref_group = "celltype",
+#'   method = "scmapCluster"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "scmap_annotation")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "scmap_annotation"
+#' )
 #'
 #' pancreas_sub <- RunScmap(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   ref_group = "celltype", method = "scmapCell"
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   ref_group = "celltype",
+#'   method = "scmapCell"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "scmap_annotation")
-#'
-#' @importFrom Seurat GetAssayData
-#' @export
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "scmap_annotation"
+#' )
 RunScmap <- function(
-    srt_query, srt_ref, ref_group = NULL,
-    query_assay = "RNA", ref_assay = "RNA",
-    method = "scmapCluster", nfeatures = 500,
-    threshold = 0.5, k = 10) {
+    srt_query,
+    srt_ref,
+    ref_group = NULL,
+    query_assay = "RNA",
+    ref_assay = "RNA",
+    method = "scmapCluster",
+    nfeatures = 500,
+    threshold = 0.5,
+    k = 10) {
   check_R("scmap")
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
@@ -549,35 +889,93 @@ RunScmap <- function(
     stop("'ref_group' must be provided.")
   }
 
-  status_query <- check_DataType(data = GetAssayData(srt_query, slot = "data", assay = query_assay))
+  status_query <- check_DataType(
+    data = Seurat::GetAssayData(
+      srt_query,
+      layer = "data",
+      assay = query_assay
+    )
+  )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(data = GetAssayData(srt_ref, slot = "data", assay = ref_assay))
+  status_ref <- check_DataType(
+    data = Seurat::GetAssayData(
+      srt_ref,
+      layer = "data",
+      assay = ref_assay
+    )
+  )
   message("Detected srt_ref data type: ", status_ref)
-  if (status_ref != status_query || any(status_query == "unknown", status_ref == "unknown")) {
-    warning("Data type is unknown or different between query and ref.", immediate. = TRUE)
+  if (
+    status_ref != status_query ||
+      any(status_query == "unknown", status_ref == "unknown")
+  ) {
+    warning(
+      "Data type is unknown or different between query and ref.",
+      immediate. = TRUE
+    )
   }
 
   assays_query <- list(
-    counts = GetAssayData(object = srt_query, assay = query_assay, slot = "counts"),
-    logcounts = GetAssayData(object = srt_query, assay = query_assay, slot = "data")
+    counts = Seurat::GetAssayData(
+      object = srt_query,
+      assay = query_assay,
+      layer = "counts"
+    ),
+    logcounts = Seurat::GetAssayData(
+      object = srt_query,
+      assay = query_assay,
+      layer = "data"
+    )
   )
-  sce_query <- as(SummarizedExperiment::SummarizedExperiment(assays = assays_query), Class = "SingleCellExperiment")
-  SummarizedExperiment::rowData(sce_query)[["feature_symbol"]] <- rownames(sce_query)
+  sce_query <- as(
+    SummarizedExperiment::SummarizedExperiment(
+      assays = assays_query
+    ),
+    Class = "SingleCellExperiment"
+  )
+  SummarizedExperiment::rowData(sce_query)[["feature_symbol"]] <- rownames(
+    sce_query
+  )
   metadata_query <- srt_query[[]]
-  SummarizedExperiment::colData(x = sce_query) <- S4Vectors::DataFrame(metadata_query)
+  SummarizedExperiment::colData(x = sce_query) <- S4Vectors::DataFrame(
+    metadata_query
+  )
 
   assays_ref <- list(
-    counts = GetAssayData(object = srt_ref, assay = ref_assay, slot = "counts"),
-    logcounts = GetAssayData(object = srt_ref, assay = ref_assay, slot = "data")
+    counts = Seurat::GetAssayData(
+      object = srt_ref,
+      assay = ref_assay,
+      layer = "counts"
+    ),
+    logcounts = Seurat::GetAssayData(
+      object = srt_ref,
+      assay = ref_assay,
+      layer = "data"
+    )
   )
-  sce_ref <- as(SummarizedExperiment::SummarizedExperiment(assays = assays_ref), Class = "SingleCellExperiment")
-  SummarizedExperiment::rowData(sce_ref)[["feature_symbol"]] <- rownames(sce_ref)
+  sce_ref <- as(
+    SummarizedExperiment::SummarizedExperiment(
+      assays = assays_ref
+    ),
+    Class = "SingleCellExperiment"
+  )
+  SummarizedExperiment::rowData(sce_ref)[["feature_symbol"]] <- rownames(
+    sce_ref
+  )
   metadata_ref <- srt_ref[[]]
-  SummarizedExperiment::colData(x = sce_ref) <- S4Vectors::DataFrame(metadata_ref)
+  SummarizedExperiment::colData(x = sce_ref) <- S4Vectors::DataFrame(
+    metadata_ref
+  )
 
   message("Perform selectFeatures on the data...")
-  sce_ref <- scmap::selectFeatures(sce_ref, n_features = nfeatures, suppress_plot = TRUE)
-  features <- rownames(sce_ref)[SummarizedExperiment::rowData(sce_ref)$scmap_features]
+  sce_ref <- scmap::selectFeatures(
+    sce_ref,
+    n_features = nfeatures,
+    suppress_plot = TRUE
+  )
+  features <- rownames(sce_ref)[
+    SummarizedExperiment::rowData(sce_ref)$scmap_features
+  ]
 
   if (method == "scmapCluster") {
     message("Perform indexCluster on the data...")
@@ -596,7 +994,8 @@ RunScmap <- function(
     srt_query$scmap_score <- scmapCluster_results$scmap_cluster_siml[, 1]
   } else if (method == "scmapCell") {
     message("Perform indexCell on the data...")
-    sce_ref <- scmap::indexCell(sce_ref,
+    sce_ref <- scmap::indexCell(
+      sce_ref,
       M = ifelse(nfeatures <= 1000, nfeatures / 10, 100),
       k = sqrt(ncol(sce_ref))
     )
@@ -615,10 +1014,13 @@ RunScmap <- function(
       scmapCell_results = scmapCell_results,
       cluster_list = list(
         as.character(SummarizedExperiment::colData(sce_ref)[[ref_group]])
-      ), w = k,
+      ),
+      w = k,
       threshold = threshold
     )
-    srt_query@tools[["scmapCell_results"]][["scmapCell2Cluster"]] <- scmapCell_clusters
+    srt_query@tools[["scmapCell_results"]][[
+      "scmapCell2Cluster"
+    ]] <- scmapCell_clusters
     srt_query$scmap_annotation <- scmapCell_clusters$scmap_cluster_labs[, 1]
     srt_query$scmap_score <- scmapCell_clusters$scmap_cluster_siml[, 1]
   }
@@ -633,36 +1035,68 @@ RunScmap <- function(
 #' @param genes "genes" parameter in \code{\link[SingleR]{SingleR}} function.
 #' @param de.method "de.method" parameter in \code{\link[SingleR]{SingleR}} function.
 #'
+#' @export
+#'
 #' @examples
 #' data("panc8_sub")
 #' # Simply convert genes from human to mouse and preprocess the data
-#' genenames <- make.unique(capitalize(rownames(panc8_sub), force_tolower = TRUE))
-#' panc8_sub <- RenameFeatures(panc8_sub, newnames = genenames)
-#' panc8_sub <- check_srtMerge(panc8_sub, batch = "tech")[["srtMerge"]]
+#' genenames <- make.unique(
+#'   capitalize(
+#'     rownames(panc8_sub),
+#'     force_tolower = TRUE
+#'   )
+#' )
+#' panc8_sub <- RenameFeatures(
+#'   panc8_sub,
+#'   newnames = genenames
+#' )
+#' panc8_sub <- check_srtMerge(
+#'   panc8_sub,
+#'   batch = "tech"
+#' )[["srtMerge"]]
 #'
 #' # Annotation
 #' data("pancreas_sub")
 #' pancreas_sub <- Standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSingleR(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   query_group = "Standardclusters", ref_group = "celltype",
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   query_group = "Standardclusters",
+#'   ref_group = "celltype",
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "singler_annotation")
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "singler_annotation"
+#' )
 #'
 #' pancreas_sub <- RunSingleR(
-#'   srt_query = pancreas_sub, srt_ref = panc8_sub,
-#'   query_group = NULL, ref_group = "celltype"
+#'   srt_query = pancreas_sub,
+#'   srt_ref = panc8_sub,
+#'   query_group = NULL,
+#'   ref_group = "celltype"
 #' )
-#' CellDimPlot(pancreas_sub, group.by = "singler_annotation")
-#'
-#' @importFrom Seurat GetAssayData
-#' @export
-RunSingleR <- function(srt_query, srt_ref, query_group = NULL, ref_group = NULL,
-                       query_assay = "RNA", ref_assay = "RNA",
-                       genes = "de", de.method = "wilcox", sd.thresh = 1, de.n = NULL,
-                       aggr.ref = FALSE, aggr.args = list(),
-                       quantile = 0.8, fine.tune = TRUE, tune.thresh = 0.05, prune = TRUE,
-                       BPPARAM = BiocParallel::bpparam()) {
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "singler_annotation"
+#' )
+RunSingleR <- function(
+    srt_query,
+    srt_ref,
+    query_group = NULL,
+    ref_group = NULL,
+    query_assay = "RNA",
+    ref_assay = "RNA",
+    genes = "de",
+    de.method = "wilcox",
+    sd.thresh = 1,
+    de.n = NULL,
+    aggr.ref = FALSE,
+    aggr.args = list(),
+    quantile = 0.8,
+    fine.tune = TRUE,
+    tune.thresh = 0.05,
+    prune = TRUE,
+    BPPARAM = BiocParallel::bpparam()) {
   check_R("SingleR")
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
@@ -698,29 +1132,77 @@ RunSingleR <- function(srt_query, srt_ref, query_group = NULL, ref_group = NULL,
     method <- "SingleRCell"
   }
 
-  status_query <- check_DataType(data = GetAssayData(srt_query, slot = "data", assay = query_assay))
+  status_query <- check_DataType(
+    data = Seurat::GetAssayData(
+      srt_query,
+      layer = "data",
+      assay = query_assay
+    )
+  )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(data = GetAssayData(srt_ref, slot = "data", assay = ref_assay))
+  status_ref <- check_DataType(
+    data = Seurat::GetAssayData(
+      srt_ref,
+      layer = "data",
+      assay = ref_assay
+    )
+  )
   message("Detected srt_ref data type: ", status_ref)
-  if (status_ref != status_query || any(status_query == "unknown", status_ref == "unknown")) {
-    warning("Data type is unknown or different between query and ref.", immediate. = TRUE)
+  if (
+    status_ref != status_query ||
+      any(status_query == "unknown", status_ref == "unknown")
+  ) {
+    warning(
+      "Data type is unknown or different between query and ref.",
+      immediate. = TRUE
+    )
   }
 
   assays_query <- list(
-    counts = GetAssayData(object = srt_query, assay = query_assay, slot = "counts"),
-    logcounts = GetAssayData(object = srt_query, assay = query_assay, slot = "data")
+    counts = Seurat::GetAssayData(
+      object = srt_query,
+      assay = query_assay,
+      layer = "counts"
+    ),
+    logcounts = Seurat::GetAssayData(
+      object = srt_query,
+      assay = query_assay,
+      layer = "data"
+    )
   )
-  sce_query <- as(SummarizedExperiment::SummarizedExperiment(assays = assays_query), Class = "SingleCellExperiment")
+  sce_query <- as(
+    SummarizedExperiment::SummarizedExperiment(
+      assays = assays_query
+    ),
+    Class = "SingleCellExperiment"
+  )
   metadata_query <- srt_query[[]]
-  SummarizedExperiment::colData(x = sce_query) <- S4Vectors::DataFrame(metadata_query)
+  SummarizedExperiment::colData(x = sce_query) <- S4Vectors::DataFrame(
+    metadata_query
+  )
 
   assays_ref <- list(
-    counts = GetAssayData(object = srt_ref, assay = ref_assay, slot = "counts"),
-    logcounts = GetAssayData(object = srt_ref, assay = ref_assay, slot = "data")
+    counts = Seurat::GetAssayData(
+      object = srt_ref,
+      assay = ref_assay,
+      layer = "counts"
+    ),
+    logcounts = Seurat::GetAssayData(
+      object = srt_ref,
+      assay = ref_assay,
+      layer = "data"
+    )
   )
-  sce_ref <- as(SummarizedExperiment::SummarizedExperiment(assays = assays_ref), Class = "SingleCellExperiment")
+  sce_ref <- as(
+    SummarizedExperiment::SummarizedExperiment(
+      assays = assays_ref
+    ),
+    Class = "SingleCellExperiment"
+  )
   metadata_ref <- srt_ref[[]]
-  SummarizedExperiment::colData(x = sce_ref) <- S4Vectors::DataFrame(metadata_ref)
+  SummarizedExperiment::colData(x = sce_ref) <- S4Vectors::DataFrame(
+    metadata_ref
+  )
 
   if (method == "SingleRCluster") {
     message("Perform ", method, " on the data...")
@@ -728,35 +1210,55 @@ RunSingleR <- function(srt_query, srt_ref, query_group = NULL, ref_group = NULL,
       test = sce_query,
       ref = sce_ref,
       labels = factor(SummarizedExperiment::colData(sce_ref)[[ref_group]]),
-      clusters = factor(SummarizedExperiment::colData(sce_query)[[query_group]]),
-      de.method = de.method, genes = genes, sd.thresh = sd.thresh, de.n = de.n,
-      aggr.ref = aggr.ref, aggr.args = aggr.args,
-      quantile = quantile, fine.tune = fine.tune, tune.thresh = tune.thresh, prune = prune,
+      clusters = factor(SummarizedExperiment::colData(sce_query)[[
+        query_group
+      ]]),
+      de.method = de.method,
+      genes = genes,
+      sd.thresh = sd.thresh,
+      de.n = de.n,
+      aggr.ref = aggr.ref,
+      aggr.args = aggr.args,
+      quantile = quantile,
+      fine.tune = fine.tune,
+      tune.thresh = tune.thresh,
+      prune = prune,
       BPPARAM = BPPARAM
     )
-    names(SingleRCluster_results$labels) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
-    rownames(SingleRCluster_results$scores) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
+    names(
+      SingleRCluster_results$labels
+    ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
+    rownames(
+      SingleRCluster_results$scores
+    ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
     if (isTRUE(prune)) {
-      names(SingleRCluster_results$pruned.labels) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
+      names(
+        SingleRCluster_results$pruned.labels
+      ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[
+        query_group
+      ]]))
     }
     srt_query$singler_annotation <- if (isTRUE(prune)) {
       SingleRCluster_results$pruned.labels[as.character(srt_query$query_group)]
     } else {
       SingleRCluster_results$labels[as.character(srt_query$query_group)]
     }
-    srt_query$singler_score <- sapply(as.character(unique(srt_query$query_group)), FUN = function(x) {
-      if (isTRUE(prune)) {
-        y <- SingleRCluster_results$pruned.labels[x]
-      } else {
-        y <- SingleRCluster_results$labels[x]
+    srt_query$singler_score <- sapply(
+      as.character(unique(srt_query$query_group)),
+      FUN = function(x) {
+        if (isTRUE(prune)) {
+          y <- SingleRCluster_results$pruned.labels[x]
+        } else {
+          y <- SingleRCluster_results$labels[x]
+        }
+        if (is.na(y)) {
+          out <- NA
+        } else {
+          out <- SingleRCluster_results$scores[x, y]
+        }
+        return(out)
       }
-      if (is.na(y)) {
-        out <- NA
-      } else {
-        out <- SingleRCluster_results$scores[x, y]
-      }
-      return(out)
-    })[as.character(srt_query$query_group)]
+    )[as.character(srt_query$query_group)]
   } else if (method == "SingleRCell") {
     message("Perform ", method, " on the data...")
     SingleRCell_results <- SingleR::SingleR(
@@ -764,9 +1266,16 @@ RunSingleR <- function(srt_query, srt_ref, query_group = NULL, ref_group = NULL,
       ref = sce_ref,
       labels = factor(SummarizedExperiment::colData(sce_ref)[[ref_group]]),
       clusters = NULL,
-      de.method = de.method, genes = genes, sd.thresh = sd.thresh, de.n = de.n,
-      aggr.ref = aggr.ref, aggr.args = aggr.args,
-      quantile = quantile, fine.tune = fine.tune, tune.thresh = tune.thresh, prune = prune,
+      de.method = de.method,
+      genes = genes,
+      sd.thresh = sd.thresh,
+      de.n = de.n,
+      aggr.ref = aggr.ref,
+      aggr.args = aggr.args,
+      quantile = quantile,
+      fine.tune = fine.tune,
+      tune.thresh = tune.thresh,
+      prune = prune,
       BPPARAM = BPPARAM
     )
     srt_query$singler_annotation <- if (isTRUE(prune)) {
@@ -774,19 +1283,22 @@ RunSingleR <- function(srt_query, srt_ref, query_group = NULL, ref_group = NULL,
     } else {
       SingleRCell_results$labels
     }
-    srt_query$singler_score <- sapply(seq_len(ncol(srt_query)), FUN = function(x) {
-      if (isTRUE(prune)) {
-        y <- SingleRCell_results$pruned.labels[x]
-      } else {
-        y <- SingleRCell_results$labels[x]
+    srt_query$singler_score <- sapply(
+      seq_len(ncol(srt_query)),
+      FUN = function(x) {
+        if (isTRUE(prune)) {
+          y <- SingleRCell_results$pruned.labels[x]
+        } else {
+          y <- SingleRCell_results$labels[x]
+        }
+        if (is.na(y)) {
+          out <- NA
+        } else {
+          out <- SingleRCell_results$scores[x, y]
+        }
+        return(out)
       }
-      if (is.na(y)) {
-        out <- NA
-      } else {
-        out <- SingleRCell_results$scores[x, y]
-      }
-      return(out)
-    })
+    )
   }
   return(srt_query)
 }

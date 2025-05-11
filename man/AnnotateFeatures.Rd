@@ -59,14 +59,26 @@ Annotate features in a Seurat object with additional metadata from databases or 
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- AnnotateFeatures(pancreas_sub,
-  species = "Mus_musculus", IDtype = "symbol",
-  db = c("Chromosome", "GeneType", "Enzyme", "TF", "CSPA", "VerSeDa")
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  IDtype = "symbol",
+  db = c(
+    "Chromosome",
+    "GeneType",
+    "Enzyme",
+    "TF",
+    "CSPA",
+    "VerSeDa"
+  )
 )
 head(pancreas_sub[["RNA"]]@meta.features)
 
 ## Annotate features using a GTF file
-# pancreas_sub <- AnnotateFeatures(pancreas_sub, gtf = "/data/reference/CellRanger/refdata-gex-mm10-2020-A/genes/genes.gtf")
+# pancreas_sub <- AnnotateFeatures(
+#   pancreas_sub,
+#   gtf = "/data/reference/CellRanger/refdata-gex-mm10-2020-A/genes/genes.gtf"
+# )
 # head(pancreas_sub[["RNA"]]@meta.features)
 }
 \seealso{
