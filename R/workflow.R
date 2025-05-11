@@ -2702,7 +2702,7 @@ scVI_integrate <- function(
     srtMerge,
     features = HVF,
     assay_x = DefaultAssay(srtMerge),
-    assay_layers = NULL,
+    assay_y = NULL,
     verbose = FALSE
   )
   adata[["X"]] <- scipy$sparse$csr_matrix(adata[["X"]])
