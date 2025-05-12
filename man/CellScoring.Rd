@@ -94,8 +94,10 @@ FeatureDimPlot(pancreas_sub, "CC_G2M")
 
 \dontrun{
 data("panc8_sub")
-panc8_sub <- Integration_scop(panc8_sub,
-  batch = "tech", integration_method = "Seurat"
+panc8_sub <- Integration_scop( # bug when integration_method = "Seurat"
+  panc8_sub,
+  batch = "tech",
+  integration_method = "Seurat"
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
@@ -117,12 +119,12 @@ pancreas_sub <- CellScoring(
   termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
   method = "Seurat", name = "GO", new_assay = TRUE
 )
-pancreas_sub <- Standard_scop(pancreas_sub, assay = "GO")
+pancreas_sub <- standard_scop(pancreas_sub, assay = "GO")
 CellDimPlot(pancreas_sub, "SubCellType")
 
 pancreas_sub[["tech"]] <- "Mouse"
 panc_merge <- Integration_scop(
-  srtList = list(panc8_sub, pancreas_sub),
+  srt_list = list(panc8_sub, pancreas_sub),
   assay = "GO",
   batch = "tech", integration_method = "Seurat"
 )
@@ -142,7 +144,7 @@ panc8_sub <- RenameFeatures(
 )
 head(rownames(panc8_sub))
 panc_merge <- Integration_scop(
-  srtList = list(panc8_sub, pancreas_sub),
+  srt_list = list(panc8_sub, pancreas_sub),
   assay = "RNA",
   batch = "tech", integration_method = "Seurat"
 )
@@ -151,7 +153,6 @@ CellDimPlot(
   group.by = c("tech", "celltype", "SubCellType", "Phase")
 )
 }
-
 }
 \seealso{
 \code{\link{PrepareDB}} \code{\link{ListDB}}

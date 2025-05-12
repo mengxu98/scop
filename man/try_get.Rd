@@ -36,5 +36,4 @@ f <- function() {
 }
 f_evaluated <- try_get(expr = f())
 print(f_evaluated)
-
 }

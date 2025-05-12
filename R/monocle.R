@@ -60,7 +60,7 @@ RunMonocle2 <- function(
     root_state = NULL,
     seed = 11) {
   set.seed(seed)
-  check_R(c("monocle", "DDRTree", "BiocGenerics", "Biobase", "VGAM"))
+  check_r(c("monocle", "DDRTree", "BiocGenerics", "Biobase", "VGAM"))
 
   if (!"package:DDRTree" %in% search()) {
     attachNamespace("DDRTree")
@@ -530,7 +530,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'   # )
 #'
 #'   # Use Seurat clusters to infer the trajectories
-#'   pancreas_sub <- Standard_scop(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   CellDimPlot(
 #'     pancreas_sub,
 #'     group.by = c("Standardclusters", "CellType"),
@@ -562,7 +562,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'   ) + trajectory
 #'
 #'   # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
-#'   pancreas_sub <- Standard_scop(
+#'   pancreas_sub <- standard_scop(
 #'     pancreas_sub,
 #'     cluster_resolution = 5
 #'   )
@@ -625,7 +625,7 @@ RunMonocle3 <- function(
     !requireNamespace("monocle3", quietly = TRUE) ||
       utils::packageVersion("monocle3") < package_version("1.2.0")
   ) {
-    check_R("cole-trapnell-lab/monocle3", force = TRUE)
+    check_r("cole-trapnell-lab/monocle3", force = TRUE)
   }
   assay <- assay %||% DefaultAssay(srt)
   expr_matrix <- SeuratObject::as.sparse(

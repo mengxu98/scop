@@ -126,6 +126,7 @@ RunSCVELO(
 scVelo is a scalable toolkit for RNA velocity analysis in single cells. This function runs scVelo workflow on a Seurat object.
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
 pancreas_sub <- RunSCVELO(
   srt = pancreas_sub,
@@ -158,7 +159,7 @@ CellDimPlot(
   velocity = "stochastic"
 )
 
-pancreas_sub <- Standard_scop(
+pancreas_sub <- standard_scop(
   pancreas_sub,
   normalization_method = "SCT",
   nonlinear_reduction = "tsne"
@@ -170,7 +171,7 @@ pancreas_sub <- RunSCVELO(
   linear_reduction = "Standardpca",
   nonlinear_reduction = "StandardTSNE2D"
 )
-
+}
 }
 \seealso{
 \code{\link{srt_to_adata}} \code{\link{VelocityPlot}} \code{\link{CellDimPlot}} \code{\link{RunPAGA}}

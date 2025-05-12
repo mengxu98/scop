@@ -839,7 +839,7 @@ grid_draw <- function(groblist, x, y, width, height) {
 #' @importFrom proxyC dist
 #' @importFrom ComplexHeatmap merge_dendrogram
 cluster_within_group2 <- function(mat, factor) {
-  check_R("dendextend")
+  check_r("dendextend")
   if (!is.factor(factor)) {
     factor <- factor(factor, levels = unique(factor))
   }
@@ -1083,7 +1083,7 @@ heatmap_enrichment <- function(
 
           ha_keys <- NULL
           if (isTRUE(anno_keys)) {
-            check_R("jokergoo/simplifyEnrichment")
+            check_r("jokergoo/simplifyEnrichment")
             keys_list <- lapply(subdf_list, function(df) {
               if (all(df$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
                 df0 <- simplifyEnrichment::keyword_enrichment_from_GO(df[[

@@ -60,6 +60,7 @@ Imports:
 Suggests:
     AUCell,
     batchelor,
+    BBmisc,
     Biobase,
     BiocGenerics,
     BiocManager,

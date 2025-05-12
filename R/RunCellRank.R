@@ -36,9 +36,9 @@ RunCellRank <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_Python("cellrank")
+  check_python("cellrank")
   if (isTRUE(magic_impute)) {
-    check_Python("magic-impute")
+    check_python("magic-impute")
   }
   if (all(is.null(srt), is.null(adata))) {
     stop("One of 'srt', 'adata' must be provided.")

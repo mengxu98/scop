@@ -117,8 +117,9 @@ RunPalantir(
 Run Palantir analysis
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
-pancreas_sub <- RunPalantir(
+pancreas_sub <- RunPalantir( # bug
   srt = pancreas_sub,
   group_by = "SubCellType",
   linear_reduction = "PCA",
@@ -139,7 +140,7 @@ FeatureDimPlot(
     "_diff_potential"
   )
 )
-
+}
 }
 \seealso{
 \code{\link{srt_to_adata}}

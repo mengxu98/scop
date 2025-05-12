@@ -978,7 +978,7 @@ panel_fix_overall <- function(x, panel_index = NULL, respect = NULL,
   # print(paste0("height:", height))
 
   if (isTRUE(raster)) {
-    check_R(c("png", "ragg"))
+    check_r(c("png", "ragg"))
     for (i in seq_along(panel_index)) {
       index <- panel_index[i]
       g <- g_new <- gtable$grobs[[index]]

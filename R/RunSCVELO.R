@@ -27,6 +27,7 @@
 #' @seealso \code{\link{srt_to_adata}} \code{\link{VelocityPlot}} \code{\link{CellDimPlot}} \code{\link{RunPAGA}}
 #'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' pancreas_sub <- RunSCVELO(
 #'   srt = pancreas_sub,
@@ -59,7 +60,7 @@
 #'   velocity = "stochastic"
 #' )
 #'
-#' pancreas_sub <- Standard_scop(
+#' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
 #'   normalization_method = "SCT",
 #'   nonlinear_reduction = "tsne"
@@ -71,7 +72,7 @@
 #'   linear_reduction = "Standardpca",
 #'   nonlinear_reduction = "StandardTSNE2D"
 #' )
-#'
+#' }
 #' @export
 RunSCVELO <- function(
     srt = NULL,
@@ -112,9 +113,9 @@ RunSCVELO <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_Python("scvelo")
+  check_python("scvelo")
   if (isTRUE(magic_impute)) {
-    check_Python("magic-impute")
+    check_python("magic-impute")
   }
   if (all(is.null(srt), is.null(adata))) {
     stop("One of 'srt', 'adata' must be provided.")

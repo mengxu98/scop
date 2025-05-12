@@ -41,7 +41,7 @@ This function fetches data from an hdf5 file. It can fetch gene expression data,
 \examples{
 \dontrun{
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 srt <- FetchH5(
   DataFile = "./SCExplorer/Data.hdf5",

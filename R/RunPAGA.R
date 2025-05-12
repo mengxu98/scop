@@ -120,7 +120,7 @@ RunPAGA <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_Python("scanpy")
+  check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     stop("One of 'srt', 'adata' must be provided.")
   }

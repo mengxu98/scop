@@ -37,7 +37,11 @@
 #'   Default is NULL, which means determined automatically based on the number of plots.
 #' @param byrow A logical indicating whether to add plots by row or by column in the combined plot. Default is TRUE.
 #' @param force A logical indicating whether to continue plotting if there are more than 50 features. Default is FALSE.
+#' 
+#' @export
+#' 
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' CellDensityPlot(
 #'   pancreas_sub,
@@ -45,7 +49,7 @@
 #'   group.by = "SubCellType"
 #' )
 #'
-#' pancreas_sub <- RunSlingshot(
+#' pancreas_sub <- RunSlingshot( # bug in methods::validObject(out)
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
@@ -62,44 +66,40 @@
 #'   group.by = "SubCellType",
 #'   flip = TRUE
 #' )
-#'
-#' @importFrom stats median
-#' @importFrom dplyr %>% group_by_at summarise_at arrange_at pull desc
-#' @importFrom ggplot2 ggplot scale_fill_manual labs scale_y_discrete scale_x_continuous facet_grid labs coord_flip element_text element_line
-#' @importFrom patchwork wrap_plots
-#' @export
+#' }
 CellDensityPlot <- function(
-    srt,
-    features,
-    group.by = NULL,
-    split.by = NULL,
-    assay = NULL,
-    layer = "data",
-    flip = FALSE,
-    reverse = FALSE,
-    x_order = c("value", "rank"),
-    decreasing = NULL,
-    palette = "Paired",
-    palcolor = NULL,
-    cells = NULL,
-    keep_empty = FALSE,
-    y.nbreaks = 4,
-    y.min = NULL,
-    y.max = NULL,
-    same.y.lims = FALSE,
-    aspect.ratio = NULL,
-    title = NULL,
-    subtitle = NULL,
-    legend.position = "right",
-    legend.direction = "vertical",
-    theme_use = "theme_scop",
-    theme_args = list(),
-    combine = TRUE,
-    nrow = NULL,
-    ncol = NULL,
-    byrow = TRUE,
-    force = FALSE) {
-  check_R("ggridges")
+  srt,
+  features,
+  group.by = NULL,
+  split.by = NULL,
+  assay = NULL,
+  layer = "data",
+  flip = FALSE,
+  reverse = FALSE,
+  x_order = c("value", "rank"),
+  decreasing = NULL,
+  palette = "Paired",
+  palcolor = NULL,
+  cells = NULL,
+  keep_empty = FALSE,
+  y.nbreaks = 4,
+  y.min = NULL,
+  y.max = NULL,
+  same.y.lims = FALSE,
+  aspect.ratio = NULL,
+  title = NULL,
+  subtitle = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  force = FALSE
+) {
+  check_r("ggridges")
   assay <- assay %||% DefaultAssay(srt)
   x_order <- match.arg(x_order)
   if (is.null(features)) {
@@ -194,8 +194,7 @@ CellDensityPlot <- function(
 
   if (isTRUE(same.y.lims) && is.null(y.max)) {
     y.max <- max(
-      Matrix::as.matrix(dat_exp[
-        ,
+      Matrix::as.matrix(dat_exp[,
         features
       ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
       na.rm = TRUE
@@ -203,8 +202,7 @@ CellDensityPlot <- function(
   }
   if (isTRUE(same.y.lims) && is.null(y.min)) {
     y.min <- min(
-      Matrix::as.matrix(dat_exp[
-        ,
+      Matrix::as.matrix(dat_exp[,
         features
       ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
       na.rm = TRUE
@@ -240,11 +238,7 @@ CellDensityPlot <- function(
         dat[, "features"] <- f
         dat[, "split.by"] <- s
         dat <- dat[!is.na(dat[[f]]), , drop = FALSE]
-        # stat <- table(dat[[g]])
-        # stat_drop <- names(which(stat <= 2))
-        # if (length(stat_drop) > 0) {
-        #   dat <- dat[!dat[[g]] %in% stat_drop, , drop = FALSE]
-        # }
+
         y_max_use <- y.max %||%
           suppressWarnings(max(
             dat[, "value"][is.finite(x = dat[, "value"])],
@@ -257,11 +251,18 @@ CellDensityPlot <- function(
           ))
 
         if (!is.null(decreasing)) {
-          levels <- dat %>%
-            group_by_at(g) %>%
-            summarise_at(.funs = median, .vars = f, na.rm = TRUE) %>%
-            arrange_at(.vars = f, .funs = if (decreasing) desc else list()) %>%
-            pull(g) %>%
+          levels <- dat |>
+            dplyr::group_by_at(g) |>
+            dplyr::summarise_at(
+              .funs = stats::median,
+              .vars = f,
+              na.rm = TRUE
+            ) |>
+            dplyr::arrange_at(
+              .vars = f,
+              .funs = if (decreasing) desc else list()
+            ) |>
+            dplyr::pull(g) |>
             as.character()
           dat[["order"]] <- factor(dat[[g]], levels = levels)
         } else {
@@ -342,7 +343,7 @@ CellDensityPlot <- function(
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,

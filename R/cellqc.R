@@ -23,18 +23,19 @@
 #' @importFrom Seurat as.SingleCellExperiment
 #' @export
 db_scDblFinder <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     stop("Data type is not raw counts!")
   }
-  check_R("scDblFinder")
+  check_r("scDblFinder")
   sce <- as.SingleCellExperiment(srt, assay = assay)
   sce <- scDblFinder::scDblFinder(sce, dbr = db_rate, verbose = FALSE, ...)
   srt[["db.scDblFinder_score"]] <- sce[["scDblFinder.score"]]
@@ -67,19 +68,20 @@ db_scDblFinder <- function(
 #' @importFrom Seurat as.SingleCellExperiment
 #' @export
 db_scds <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    method = c("hybrid", "cxds", "bcds"),
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  method = c("hybrid", "cxds", "bcds"),
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     stop("Data type is not raw counts!")
   }
-  check_R("scds")
+  check_r("scds")
   method <- match.arg(method)
   sce <- as.SingleCellExperiment(srt, assay = assay)
   sce <- scds::cxds_bcds_hybrid(sce, ...)
@@ -105,7 +107,10 @@ db_scds <- function(
 #' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
 #' @param ... Additional arguments to be passed to scrublet.Scrublet function.
 #'
+#' @export
+#'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
@@ -115,30 +120,34 @@ db_scds <- function(
 #' )
 #' FeatureDimPlot(
 #'   srt = pancreas_sub,
-#'   reduction = "umap", features = "db.Scrublet_score"
+#'   reduction = "umap",
+#'   features = "db.Scrublet_score"
 #' )
-#' @importFrom reticulate import
-#' @importFrom Seurat GetAssayData
-#' @export
+#' }
 db_Scrublet <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     stop("Data type is not raw counts!")
   }
-  check_Python("scrublet")
-  scr <- import("scrublet")
-  raw_counts <- t(Matrix::as.matrix(GetAssayData(
-    object = srt,
-    assay = assay,
-    layer = "counts"
-  )))
+  check_python("scrublet")
+  scr <- reticulate::import("scrublet")
+  raw_counts <- t(
+    Matrix::as.matrix(
+      Seurat::GetAssayData(
+        object = srt,
+        assay = assay,
+        layer = "counts"
+      )
+    )
+  )
   scrub <- scr$Scrublet(raw_counts, expected_doublet_rate = db_rate, ...)
   res <- scrub$scrub_doublets()
   doublet_scores <- res[[1]]
@@ -146,10 +155,7 @@ db_Scrublet <- function(
 
   srt[["db.Scrublet_score"]] <- doublet_scores
   srt[["db.Scrublet_class"]] <- sapply(predicted_doublets, function(i) {
-    switch(as.character(i),
-      "FALSE" = "singlet",
-      "TRUE" = "doublet"
-    )
+    switch(as.character(i), "FALSE" = "singlet", "TRUE" = "doublet")
   })
   return(srt)
 }
@@ -159,9 +165,13 @@ db_Scrublet <- function(
 #' This function performs doublet-calling using the doubletdetection(python) package on a Seurat object.
 #'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling. Default is "RNA".
-#' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
+#' @param assay The name of the assay to be used for doublet-calling.
+#' Default is "RNA".
+#' @param db_rate The expected doublet rate.
+#' Default is calculated as ncol(srt) / 1000 * 0.01.
 #' @param ... Additional arguments to be passed to doubletdetection.BoostClassifier function.
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -175,24 +185,26 @@ db_Scrublet <- function(
 #'   srt = pancreas_sub,
 #'   reduction = "umap", features = "db.DoubletDetection_score"
 #' )
-#' @importFrom reticulate import
-#' @importFrom Seurat GetAssayData
-#' @export
 db_DoubletDetection <- function(
-    srt,
-    assay = "RNA",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     stop("Data type is not raw counts!")
   }
-  check_Python("doubletdetection")
-  doubletdetection <- import("doubletdetection")
-  counts <- GetAssayData(object = srt, assay = assay, layer = "counts")
+  check_python("doubletdetection")
+  doubletdetection <- reticulate::import("doubletdetection")
+  counts <- Seurat::GetAssayData(
+    object = srt,
+    assay = assay,
+    layer = "counts"
+  )
   clf <- doubletdetection$BoostClassifier(
     n_iters = as.integer(5),
     standard_scaling = TRUE,
@@ -203,10 +215,7 @@ db_DoubletDetection <- function(
 
   srt[["db.DoubletDetection_score"]] <- scores
   srt[["db.DoubletDetection_class"]] <- sapply(labels, function(i) {
-    switch(as.character(i),
-      "0" = "singlet",
-      "1" = "doublet"
-    )
+    switch(as.character(i), "0" = "singlet", "1" = "doublet")
   })
   return(srt)
 }
@@ -216,12 +225,18 @@ db_DoubletDetection <- function(
 #' Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
 #'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling. Default is "RNA".
-#' @param db_method Doublet-calling methods used. Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}
-#' @param db_rate The expected doublet rate. By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells), which is appropriate for 10x datasets.
+#' @param assay The name of the assay to be used for doublet-calling.
+#' Default is "RNA".
+#' @param db_method Doublet-calling methods used.
+#' Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}
+#' @param db_rate The expected doublet rate.
+#' By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
+#' which is appropriate for 10x datasets.
 #' @param ... Arguments passed to the corresponding doublet-calling method.
 #'
 #' @return Returns Seurat object with the doublet prediction results and prediction scores stored in the meta.data layer.
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -235,20 +250,21 @@ db_DoubletDetection <- function(
 #'   group.by = "db.scDblFinder_class"
 #' )
 #' FeatureDimPlot(
-#'   srt = pancreas_sub, reduction = "umap", features = "db.scDblFinder_score"
+#'   srt = pancreas_sub,
+#'   reduction = "umap",
+#'   features = "db.scDblFinder_score"
 #' )
-#' @export
-#'
 RunDoubletCalling <- function(
-    srt,
-    assay = "RNA",
-    db_method = "scDblFinder",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
+  srt,
+  assay = "RNA",
+  db_method = "scDblFinder",
+  db_rate = ncol(srt) / 1000 * 0.01,
+  ...
+) {
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     stop("Data type is not raw counts!")
   }
@@ -306,8 +322,10 @@ RunDoubletCalling <- function(
 #' @param constant a constant factor to convert the MAD to a standard deviation. The default value is 1.4826, which is consistent with the MAD of a normal distribution.
 #' @param type the type of outliers to detect. Available options are "both" (default), "lower", or "higher". If set to "both", it detects both lower and higher outliers. If set to "lower", it detects only lower outliers. If set to "higher", it detects only higher outliers.
 #'
-#' @importFrom stats mad
 #' @return A numeric vector of indices indicating the positions of outliers in \code{x}.
+#'
+#' @export
+#'
 #' @examples
 #' x <- c(1, 2, 3, 4, 5, 100)
 #' isOutlier(x) # returns 6
@@ -317,14 +335,14 @@ RunDoubletCalling <- function(
 #'
 #' x <- c(10, 20, NA, 15, 35)
 #' isOutlier(x, nmads = 2, type = "higher") # returns 3, 5
-#' @export
 isOutlier <- function(
-    x,
-    nmads = 2.5,
-    constant = 1.4826,
-    type = c("both", "lower", "higher")) {
+  x,
+  nmads = 2.5,
+  constant = 1.4826,
+  type = c("both", "lower", "higher")
+) {
   type <- match.arg(type, c("both", "lower", "higher"))
-  mad <- mad(x, constant = constant, na.rm = TRUE)
+  mad <- stats::mad(x, constant = constant, na.rm = TRUE)
   upper <- median(x, na.rm = TRUE) + nmads * mad
   lower <- median(x, na.rm = TRUE) - nmads * mad
   if (type == "both") {
@@ -404,48 +422,49 @@ isOutlier <- function(
 #' @export
 #'
 RunCellQC <- function(
-    srt,
-    assay = "RNA",
-    split.by = NULL,
-    return_filtered = FALSE,
-    qc_metrics = c(
-      "doublets",
-      "outlier",
-      "umi",
-      "gene",
-      "mito",
-      "ribo",
-      "ribo_mito_ratio",
-      "species"
-    ),
-    db_method = "scDblFinder",
-    db_rate = NULL,
-    db_coefficient = 0.01,
-    outlier_threshold = c(
-      "log10_nCount:lower:2.5",
-      "log10_nCount:higher:5",
-      "log10_nFeature:lower:2.5",
-      "log10_nFeature:higher:5",
-      "featurecount_dist:lower:2.5"
-    ),
-    outlier_n = 1,
-    UMI_threshold = 3000,
-    gene_threshold = 1000,
-    mito_threshold = 20,
-    mito_pattern = c("MT-", "Mt-", "mt-"),
-    mito_gene = NULL,
-    ribo_threshold = 50,
-    ribo_pattern = c(
-      "RP[SL]\\d+\\w{0,1}\\d*$",
-      "Rp[sl]\\d+\\w{0,1}\\d*$",
-      "rp[sl]\\d+\\w{0,1}\\d*$"
-    ),
-    ribo_gene = NULL,
-    ribo_mito_ratio_range = c(1, Inf),
-    species = NULL,
-    species_gene_prefix = NULL,
-    species_percent = 95,
-    seed = 11) {
+  srt,
+  assay = "RNA",
+  split.by = NULL,
+  return_filtered = FALSE,
+  qc_metrics = c(
+    "doublets",
+    "outlier",
+    "umi",
+    "gene",
+    "mito",
+    "ribo",
+    "ribo_mito_ratio",
+    "species"
+  ),
+  db_method = "scDblFinder",
+  db_rate = NULL,
+  db_coefficient = 0.01,
+  outlier_threshold = c(
+    "log10_nCount:lower:2.5",
+    "log10_nCount:higher:5",
+    "log10_nFeature:lower:2.5",
+    "log10_nFeature:higher:5",
+    "featurecount_dist:lower:2.5"
+  ),
+  outlier_n = 1,
+  UMI_threshold = 3000,
+  gene_threshold = 1000,
+  mito_threshold = 20,
+  mito_pattern = c("MT-", "Mt-", "mt-"),
+  mito_gene = NULL,
+  ribo_threshold = 50,
+  ribo_pattern = c(
+    "RP[SL]\\d+\\w{0,1}\\d*$",
+    "Rp[sl]\\d+\\w{0,1}\\d*$",
+    "rp[sl]\\d+\\w{0,1}\\d*$"
+  ),
+  ribo_gene = NULL,
+  ribo_mito_ratio_range = c(1, Inf),
+  species = NULL,
+  species_gene_prefix = NULL,
+  species_percent = 95,
+  seed = 11
+) {
   set.seed(seed)
 
   if (!inherits(srt, "Seurat")) {
@@ -460,7 +479,7 @@ RunCellQC <- function(
   if (length(species) == 0) {
     species <- species_gene_prefix <- NULL
   }
-  status <- check_DataType(srt, layer = "counts", assay = assay)
+  status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     warning("Data type is not raw counts!", immediate. = TRUE)
   }
@@ -474,13 +493,13 @@ RunCellQC <- function(
   }
   srt_raw <- srt
   if (!is.null(split.by)) {
-    srtList <- SplitObject(srt, split.by = split.by)
+    srt_list <- SplitObject(srt, split.by = split.by)
   } else {
-    srtList <- list(srt)
+    srt_list <- list(srt)
   }
 
-  for (i in seq_along(srtList)) {
-    srt <- srtList[[i]]
+  for (i in seq_along(srt_list)) {
+    srt <- srt_list[[i]]
     if (!is.null(split.by)) {
       cat("===", srt@meta.data[[split.by]][1], "===\n")
     }
@@ -756,13 +775,13 @@ RunCellQC <- function(
       srt <- srt[, srt$CellQC == "Pass"]
       srt@meta.data[, intersect(qc_nm, colnames(srt@meta.data))] <- NULL
     }
-    srtList[[i]] <- srt
+    srt_list[[i]] <- srt
   }
-  cells <- unlist(lapply(srtList, colnames))
+  cells <- unlist(lapply(srt_list, colnames))
   srt_raw <- srt_raw[, cells]
   meta.data <- do.call(
     rbind.data.frame,
-    unname(lapply(srtList, function(x) x@meta.data))
+    unname(lapply(srt_list, function(x) x@meta.data))
   )
   srt_raw <- AddMetaData(srt_raw, metadata = meta.data)
   return(srt_raw)

@@ -2021,7 +2021,7 @@ GSEAPlot <- function(
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
       if (enrichmap_mark == "hull") {
-        check_R("concaveman")
+        check_r("concaveman")
       }
       mark_layer <- do.call(
         switch(enrichmap_mark,
@@ -2136,8 +2136,8 @@ GSEAPlot <- function(
     }
   } else if (plot_type == "wordcloud") {
     # wordcloud -------------------------------------------------------------------------------------------------
-    check_R("ggwordcloud")
-    check_R("jokergoo/simplifyEnrichment")
+    check_r("ggwordcloud")
+    check_r("jokergoo/simplifyEnrichment")
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {

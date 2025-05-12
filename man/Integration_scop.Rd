@@ -5,10 +5,10 @@
 \title{Integration_scop}
 \usage{
 Integration_scop(
-  srtMerge = NULL,
+  srt_merge = NULL,
   batch,
   append = TRUE,
-  srtList = NULL,
+  srt_list = NULL,
   assay = NULL,
   integration_method = "Uncorrected",
   do_normalization = NULL,
@@ -41,13 +41,13 @@ Integration_scop(
 )
 }
 \arguments{
-\item{srtMerge}{A merged Seurat object that includes the batch information.}
+\item{srt_merge}{A merged Seurat object that includes the batch information.}
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srtMerge).}
+\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
 
-\item{srtList}{A list of Seurat objects to be checked and preprocessed.}
+\item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 
@@ -118,33 +118,33 @@ Integrate single-cell RNA-seq data using various integration methods.
 \examples{
 data("panc8_sub")
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Uncorrected"
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Uncorrected",
   HVF_min_intersection = 5
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Uncorrected",
   HVF_min_intersection = 5, scale_within_batch = TRUE
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Seurat"
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Seurat",
   FindIntegrationAnchors_params = list(reduction = "rpca")
 )
@@ -157,7 +157,7 @@ integration_methods <- c(
 )
 for (method in integration_methods) {
   panc8_sub <- Integration_scop(
-    srtMerge = panc8_sub, batch = "tech",
+    srt_merge = panc8_sub, batch = "tech",
     integration_method = method,
     linear_reduction_dims_use = 1:50,
     nonlinear_reduction = "umap"
@@ -174,7 +174,7 @@ nonlinear_reductions <- c(
   "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
 )
 panc8_sub <- Integration_scop(
-  srtMerge = panc8_sub, batch = "tech",
+  srt_merge = panc8_sub, batch = "tech",
   integration_method = "Seurat",
   linear_reduction_dims_use = 1:50,
   nonlinear_reduction = nonlinear_reductions
@@ -191,5 +191,5 @@ for (nr in nonlinear_reductions) {
 
 }
 \seealso{
-\code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{Standard_scop}}
+\code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{standard_scop}}
 }

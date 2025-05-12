@@ -159,7 +159,6 @@ This function utilizes the Seurat package to perform a differential expression (
 Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
 }
 \examples{
-library(dplyr)
 data("pancreas_sub")
 pancreas_sub <- RunDEtest(
   srt = pancreas_sub,
@@ -178,11 +177,11 @@ ht1 <- GroupHeatmap(
 )
 ht1$plot
 
-TopMarkers <- AllMarkers \%>\%
-  group_by(gene) \%>\%
-  top_n(1, avg_log2FC) \%>\%
-  group_by(group1) \%>\%
-  top_n(3, avg_log2FC)
+TopMarkers <- AllMarkers |>
+  dplyr::group_by(gene) |>
+  dplyr::top_n(1, avg_log2FC) |>
+  dplyr::group_by(group1) |>
+  dplyr::top_n(3, avg_log2FC)
 ht2 <- GroupHeatmap(
   srt = pancreas_sub,
   features = TopMarkers$gene,
@@ -197,7 +196,7 @@ pancreas_sub <- RunDEtest(
   group_by = "SubCellType",
   markers_type = "paired"
 )
-PairedMarkers <- filter(
+PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
@@ -227,7 +226,8 @@ ConservedMarkers1 <- filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
-ht4 <- GroupHeatmap(panc8_sub,
+ht4 <- GroupHeatmap(
+  panc8_sub,
   layer = "data",
   features = ConservedMarkers1$gene,
   feature_split = ConservedMarkers1$group1,
@@ -243,7 +243,7 @@ panc8_sub <- RunDEtest(
   grouping.var = "celltype",
   markers_type = "conserved"
 )
-ConservedMarkers2 <- filter(
+ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
@@ -264,7 +264,7 @@ panc8_sub <- RunDEtest(
   grouping.var = "tech",
   markers_type = "disturbed"
 )
-DisturbedMarkers <- filter(
+DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 )
@@ -305,7 +305,6 @@ ht7 <- GroupHeatmap(
   numerator = "smartseq2"
 )
 ht7$plot
-
 }
 \seealso{
 \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}

@@ -308,7 +308,7 @@ DynamicHeatmap <- function(
     ht_params = list()) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
-    check_R("magick")
+    check_r("magick")
   }
 
   split_method <- match.arg(split_method)
@@ -1228,7 +1228,7 @@ DynamicHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_R("e1071"), error = identity)
+          status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
             warning(
               "The e1071 package was not found. Switch split_method to 'kmeans'",

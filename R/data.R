@@ -10,7 +10,7 @@
 #' if (interactive()) {
 #'   library(Seurat)
 #'   library(reticulate)
-#'   check_Python("scvelo")
+#'   check_python("scvelo")
 #'   scv <- import("scvelo")
 #'   adata <- scv$datasets$pancreas()
 #'   pancreas <- adata_to_srt(adata)
@@ -162,7 +162,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   check_R(
+#'   check_r(
 #'     c(
 #'       "stringr", "RColorBrewer", "ggsci", "Redmonder",
 #'       "rcartocolor", "nord", "viridis", "pals", "oompaBase",
@@ -336,7 +336,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   check_R(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
+#'   check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
 #'   ref_scHCL <- Seurat::NormalizeData(scHCL::ref.expr)
 #'   ref_scMCA <- Seurat::NormalizeData(scMCA::ref.expr)
 #'   ref_scZCL <- Seurat::NormalizeData(scZCL::ref.expr)

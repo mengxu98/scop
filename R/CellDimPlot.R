@@ -2,6 +2,7 @@
 #'
 #' Plotting cell points on a reduced 2D plane and coloring according to the groups.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
 #' @param reduction Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
@@ -41,12 +42,12 @@
 #' @param density_filled Whether to add filled contour bands instead of contour lines.
 #' @param density_filled_palette Color palette used to fill contour bands.
 #' @param density_filled_palcolor Custom colors used to fill contour bands.
-#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \code{\link[stats]{loess}} method.
+#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
-#' @param lineages_span The parameter α which controls the degree of smoothing in \code{\link[stats]{loess}} method.
+#' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
 #' @param lineages_palette Color palette used for lineages.
 #' @param lineages_palcolor Custom colors used for lineages.
-#' @param lineages_arrow Set arrows of the lineages. See \code{\link[grid]{arrow}}.
+#' @param lineages_arrow Set arrows of the lineages. See [grid::arrow].
 #' @param lineages_linewidth Width of fitted curve lines for lineages.
 #' @param lineages_line_bg Background color of curve lines for lineages.
 #' @param lineages_line_bg_stroke Border width of curve lines background.
@@ -144,7 +145,7 @@
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
-#' ) %>% panel_fix(
+#' ) |> panel_fix(
 #'   height = 2,
 #'   raster = TRUE,
 #'   dpi = 30
@@ -323,7 +324,7 @@
 #' )
 #'
 #' # Show neighbors graphs on the plot
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -338,6 +339,7 @@
 #'   edge_color = "grey80"
 #' )
 #'
+#' \dontrun{
 #' # Show lineages on the plot based on the pseudotime
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -475,17 +477,13 @@
 #'   legend.position = "none",
 #'   theme_use = "theme_blank"
 #' )
-#' @importFrom Seurat Reductions Embeddings Key
-#' @importFrom dplyr group_by "%>%" .data
-#' @importFrom ggplot2 ggplot aes geom_point geom_density_2d stat_density_2d geom_segment labs scale_x_continuous scale_y_continuous scale_size_continuous facet_grid scale_color_manual scale_fill_manual guides guide_legend geom_hex geom_path theme_void annotation_custom scale_linewidth_continuous after_stat
-#' @importFrom ggrepel geom_text_repel
+#' }
+#'
 #' @importFrom ggnewscale new_scale_color new_scale_fill new_scale
 #' @importFrom gtable gtable_add_cols gtable_add_grob
 #' @importFrom ggforce geom_mark_hull geom_mark_ellipse geom_mark_circle geom_mark_rect
 #' @importFrom grid arrow unit
-#' @importFrom patchwork wrap_plots
-#' @importFrom stats median loess aggregate
-#' @importFrom utils askYesNo
+#' @importFrom stats median
 #' @export
 CellDimPlot <- function(
     srt,
@@ -673,7 +671,7 @@ CellDimPlot <- function(
       " have more than 100 levels.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -692,7 +690,7 @@ CellDimPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
-    check_R("exaexa/scattermore")
+    check_r("exaexa/scattermore")
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
@@ -1068,7 +1066,7 @@ CellDimPlot <- function(
           pixels = raster.dpi
         )
     } else if (isTRUE(hex)) {
-      check_R("hexbin")
+      check_r("hexbin")
       if (isTRUE(hex.count)) {
         p <- p +
           geom_hex(
@@ -1181,7 +1179,7 @@ CellDimPlot <- function(
     p_base <- p
 
     if (!is.null(stat.by)) {
-      coor_df <- aggregate(
+      coor_df <- stats::aggregate(
         p$data[, c("x", "y")],
         by = list(p$data[["group.by"]]),
         FUN = median
@@ -1219,7 +1217,6 @@ CellDimPlot <- function(
           ggplot() +
             lineages_layers +
             theme_scop(
-              # legend.position = legend.position,
               legend.direction = legend.direction
             )
         )
@@ -1239,7 +1236,6 @@ CellDimPlot <- function(
             ggplot() +
               paga_layers +
               theme_scop(
-                # legend.position = legend.position,
                 legend.direction = legend.direction
               )
           )
@@ -1264,7 +1260,6 @@ CellDimPlot <- function(
             ggplot() +
               velocity_layers +
               theme_scop(
-                # legend.position = legend.position,
                 legend.direction = legend.direction
               )
           )
@@ -1278,7 +1273,7 @@ CellDimPlot <- function(
       }
     }
     if (isTRUE(label)) {
-      label_df <- aggregate(
+      label_df <- stats::aggregate(
         p$data[, c("x", "y")],
         by = list(p$data[["group.by"]]),
         FUN = median
@@ -1296,7 +1291,7 @@ CellDimPlot <- function(
             color = label_point_color,
             size = label_point_size
           ) +
-          geom_text_repel(
+          ggrepel::geom_text_repel(
             data = label_df,
             aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
             fontface = "bold",
@@ -1313,7 +1308,7 @@ CellDimPlot <- function(
           )
       } else {
         p <- p +
-          geom_text_repel(
+          ggrepel::geom_text_repel(
             data = label_df,
             aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
             fontface = "bold",
@@ -1346,14 +1341,14 @@ CellDimPlot <- function(
       }
       gtable <- as_grob(p + theme(legend.position = "none"))
       gtable <- add_grob(gtable, legend, legend.position)
-      p <- wrap_plots(gtable)
+      p <- patchwork::wrap_plots(gtable)
     }
     return(p)
   })
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,
@@ -1382,16 +1377,19 @@ CellDimPlot <- function(
 #' @param save The name of the file to save the plot to. Must end in ".html".
 #' @seealso \code{\link{CellDimPlot}} \code{\link{FeatureDimPlot3D}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot3D(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D"
 #' )
-#'
-#' pancreas_sub <- RunSlingshot(
+#' 
+#' \dontrun{
+#' #' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D"
@@ -1402,11 +1400,7 @@ CellDimPlot <- function(
 #'   reduction = "StandardpcaUMAP3D",
 #'   lineages = "Lineage1"
 #' )
-#'
-#' @importFrom Seurat Reductions Embeddings Key
-#' @importFrom utils askYesNo
-#' @importFrom plotly plot_ly add_trace layout as_widget
-#' @export
+#' }
 CellDimPlot3D <- function(
     srt,
     group.by,
@@ -1481,7 +1475,7 @@ CellDimPlot3D <- function(
     zlab <- axis_labs[3]
   }
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    check_R("htmlwidgets")
+    check_r("htmlwidgets")
     if (!grepl(".html$", save)) {
       stop("'save' must be a string with .html as a suffix.")
     }
@@ -1502,7 +1496,7 @@ CellDimPlot3D <- function(
       " have more than 100 levels.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -1553,8 +1547,8 @@ CellDimPlot3D <- function(
     dat_use_highlight <- dat_use[cells.highlight_use, , drop = FALSE]
   }
 
-  p <- plot_ly(data = dat_use, width = width, height = height)
-  p <- add_trace(
+  p <- plotly::plot_ly(data = dat_use, width = width, height = height)
+  p <- plotly::add_trace(
     p = p,
     data = dat_use,
     x = dat_use[[paste0(reduction_key, dims[1], "All_cells")]],
@@ -1607,7 +1601,7 @@ CellDimPlot3D <- function(
       dat_sub <- dat_use[!is.na(dat_use[[l]]), , drop = FALSE]
       dat_sub <- dat_sub[order(dat_sub[[l]]), , drop = FALSE]
 
-      xlo <- loess(
+      xlo <- stats::loess(
         formula(paste(
           paste0(reduction_key, dims[1], "All_cells"),
           l,
@@ -1617,7 +1611,7 @@ CellDimPlot3D <- function(
         span = span,
         degree = 2
       )
-      ylo <- loess(
+      ylo <- stats::loess(
         formula(paste(
           paste0(reduction_key, dims[2], "All_cells"),
           l,
@@ -1627,7 +1621,7 @@ CellDimPlot3D <- function(
         span = span,
         degree = 2
       )
-      zlo <- loess(
+      zlo <- stats::loess(
         formula(paste(
           paste0(reduction_key, dims[3], "All_cells"),
           l,
@@ -1701,7 +1695,7 @@ CellDimPlot3D <- function(
     }
   }
 
-  p <- layout(
+  p <- plotly::layout(
     p = p,
     title = list(
       text = paste0("Total", " (nCells:", nrow(dat_use), ")"),
@@ -1746,7 +1740,7 @@ CellDimPlot3D <- function(
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
     htmlwidgets::saveWidget(
-      widget = as_widget(p),
+      widget = plotly::as_widget(p),
       file = save
     )
     unlink(gsub("\\.html", "_files", save), recursive = TRUE)

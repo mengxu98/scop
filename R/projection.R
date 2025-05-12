@@ -168,11 +168,11 @@ RunKNNMap <- function(
     }
   } else {
     message("Use the features to calculate distance metric.")
-    status_query <- check_DataType(
+    status_query <- check_data_type(
       data = GetAssayData(srt_query, layer = "data", assay = query_assay)
     )
     message("Detected srt_query data type: ", status_query)
-    status_ref <- check_DataType(
+    status_ref <- check_data_type(
       data = GetAssayData(srt_ref, layer = "data", assay = ref_assay)
     )
     message("Detected srt_ref data type: ", status_ref)
@@ -520,11 +520,11 @@ RunPCAMap <- function(
   }
 
   pca.out <- srt_ref[[ref_pca]]
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = GetAssayData(srt_query, layer = "data", assay = query_assay)
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = GetAssayData(srt_ref, layer = "data", assay = ref_assay)
   )
   message("Detected srt_ref data type: ", status_ref)
@@ -676,9 +676,9 @@ RunSeuratMap <- function(
       ref_pca <- sort(Reductions(srt_ref)[grep("pca", Reductions(srt_ref))])[1]
     } else {
       cat(
-        "'ref_pca' is NUll and no pca reduction detected. Run Standard_scop first.\n"
+        "'ref_pca' is NUll and no pca reduction detected. Run standard_scop first.\n"
       )
-      srt_ref <- Standard_scop(srt_ref)
+      srt_ref <- standard_scop(srt_ref)
       ref_pca <- "Standardpca"
     }
     cat("Set the ref_pca to '", ref_pca, "'\n", sep = "")
@@ -712,11 +712,11 @@ RunSeuratMap <- function(
     )
   }
 
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = GetAssayData(srt_query, layer = "data", assay = query_assay)
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = GetAssayData(srt_ref, layer = "data", assay = ref_assay)
   )
   message("Detected srt_ref data type: ", status_ref)
@@ -821,7 +821,7 @@ RunCSSMap <- function(
     k = 30,
     distance_metric = "cosine",
     vote_fun = "mean") {
-  check_R("quadbiolab/simspec")
+  check_r("quadbiolab/simspec")
   query_assay <- query_assay %||% DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {
@@ -886,11 +886,11 @@ RunCSSMap <- function(
   }
 
   ref_assay <- srt_ref[[ref_css]]@assay.used
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = GetAssayData(srt_query, layer = "data", assay = query_assay)
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = GetAssayData(srt_ref, layer = "data", assay = ref_assay)
   )
   message("Detected srt_ref data type: ", status_ref)
@@ -985,7 +985,7 @@ RunSymphonyMap <- function(
     k = 30,
     distance_metric = "cosine",
     vote_fun = "mean") {
-  check_R("immunogenomics/symphony")
+  check_r("immunogenomics/symphony")
   query_assay <- query_assay %||% DefaultAssay(srt_query)
   ref_assay <- ref_assay %||% DefaultAssay(srt_ref)
   if (!is.null(ref_group)) {
@@ -1057,11 +1057,11 @@ RunSymphonyMap <- function(
     )
   }
 
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = GetAssayData(srt_query, layer = "data", assay = query_assay)
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = GetAssayData(srt_ref, layer = "data", assay = ref_assay)
   )
   message("Detected srt_ref data type: ", status_ref)

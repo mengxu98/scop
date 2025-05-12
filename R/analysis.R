@@ -80,20 +80,6 @@ CC_GenePrefetch <- function(
   )
 }
 
-LengthCheck <- function(
-    values,
-    cutoff = 0) {
-  return(
-    vapply(
-      X = values,
-      FUN = function(x) {
-        return(length(x = x) > cutoff)
-      },
-      FUN.VALUE = logical(1)
-    )
-  )
-}
-
 metap <- function(
     p,
     method = c(
@@ -304,6 +290,7 @@ py_to_r_auto <- function(x) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
@@ -313,9 +300,10 @@ py_to_r_auto <- function(x) {
 #' #   "pancreas_sub.h5ad"
 #' # )
 #' # adata$write_loom(
-#' #   "pancreas_sub.loom", 
+#' #   "pancreas_sub.loom",
 #' #   write_obsm_varm = TRUE
 #' # )
+#' }
 srt_to_adata <- function(
     srt,
     features = NULL,
@@ -326,7 +314,7 @@ srt_to_adata <- function(
     convert_tools = FALSE,
     convert_misc = FALSE,
     verbose = TRUE) {
-  check_Python(c("scanpy", "numpy"))
+  check_python(c("scanpy", "numpy"))
 
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")

@@ -114,7 +114,7 @@ if (interactive()) {
   # )
 
   # Use Seurat clusters to infer the trajectories
-  pancreas_sub <- Standard_scop(pancreas_sub)
+  pancreas_sub <- standard_scop(pancreas_sub)
   CellDimPlot(
     pancreas_sub,
     group.by = c("Standardclusters", "CellType"),
@@ -146,7 +146,7 @@ if (interactive()) {
   ) + trajectory
 
   # Use custom graphs and cell clusters to infer the partitions and trajectories, respectively
-  pancreas_sub <- Standard_scop(
+  pancreas_sub <- standard_scop(
     pancreas_sub,
     cluster_resolution = 5
   )

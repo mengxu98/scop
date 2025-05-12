@@ -15,11 +15,15 @@ RunDoubletCalling(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The name of the assay to be used for doublet-calling. Default is "RNA".}
+\item{assay}{The name of the assay to be used for doublet-calling.
+Default is "RNA".}
 
-\item{db_method}{Doublet-calling methods used. Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
+\item{db_method}{Doublet-calling methods used.
+Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
 
-\item{db_rate}{The expected doublet rate. By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells), which is appropriate for 10x datasets.}
+\item{db_rate}{The expected doublet rate.
+By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
+which is appropriate for 10x datasets.}
 
 \item{...}{Arguments passed to the corresponding doublet-calling method.}
 }
@@ -41,6 +45,8 @@ CellDimPlot(
   group.by = "db.scDblFinder_class"
 )
 FeatureDimPlot(
-  srt = pancreas_sub, reduction = "umap", features = "db.scDblFinder_score"
+  srt = pancreas_sub,
+  reduction = "umap",
+  features = "db.scDblFinder_score"
 )
 }

@@ -129,7 +129,8 @@
 #' @examples
 #' library(dplyr)
 #' data("pancreas_sub")
-#' ht1 <- GroupHeatmap(pancreas_sub,
+#' ht1 <- GroupHeatmap(
+#'   srt = pancreas_sub,
 #'   features = c(
 #'     "Sox9", "Anxa2", "Bicc1", # Ductal
 #'     "Neurog3", "Hes6", # EPs
@@ -140,7 +141,13 @@
 #'   group.by = c("CellType", "SubCellType")
 #' )
 #' ht1$plot
-#' panel_fix(ht1$plot, height = 4, width = 6, raster = TRUE, dpi = 50)
+#' panel_fix(
+#'   ht1$plot,
+#'   height = 4,
+#'   width = 6,
+#'   raster = TRUE,
+#'   dpi = 50
+#' )
 #'
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
@@ -403,7 +410,7 @@ GroupHeatmap <- function(
   set.seed(seed)
 
   if (isTRUE(raster_by_magick)) {
-    check_R("magick")
+    check_r("magick")
   }
   if (is.null(features)) {
     stop("No feature provided.")
@@ -1371,7 +1378,7 @@ GroupHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_R("e1071"), error = identity)
+          status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
             warning(
               "The e1071 package was not found. Switch split_method to 'kmeans'",
@@ -2455,7 +2462,7 @@ FeatureHeatmap <- function(
     ht_params = list()) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
-    check_R("magick")
+    check_r("magick")
   }
 
   split_method <- match.arg(split_method)
@@ -3194,7 +3201,7 @@ FeatureHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_R("e1071"), error = identity)
+          status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
             warning(
               "The e1071 package was not found. Switch split_method to 'kmeans'",

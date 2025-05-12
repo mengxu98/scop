@@ -1732,7 +1732,7 @@ EnrichmentPlot <- function(
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
       if (enrichmap_mark == "hull") {
-        check_R("concaveman")
+        check_r("concaveman")
       }
       mark_layer <- do.call(
         switch(enrichmap_mark,
@@ -1847,8 +1847,8 @@ EnrichmentPlot <- function(
     }))
   } else if (plot_type == "wordcloud") {
     # wordcloud -------------------------------------------------------------------------------------------------
-    check_R("ggwordcloud")
-    check_R("jokergoo/simplifyEnrichment")
+    check_r("ggwordcloud")
+    check_r("jokergoo/simplifyEnrichment")
     plist <- lapply(df_list, function(df) {
       if (word_type == "term") {
         df_groups <- split(df, list(df$Database, df$Groups))

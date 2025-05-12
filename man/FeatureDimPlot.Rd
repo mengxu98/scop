@@ -286,7 +286,7 @@ FeatureDimPlot(
   dpi = 30
 )
 
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 FeatureDimPlot(
   pancreas_sub,
   features = c("StandardPC_1", "StandardPC_2"),

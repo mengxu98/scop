@@ -133,7 +133,7 @@
 #'   dpi = 30
 #' )
 #'
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("StandardPC_1", "StandardPC_2"),
@@ -522,7 +522,7 @@ FeatureDimPlot <- function(
         immediate. = TRUE
       )
     }
-    status <- check_DataType(srt, layer = layer, assay = assay)
+    status <- check_data_type(srt, layer = layer, assay = assay)
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
@@ -641,7 +641,7 @@ FeatureDimPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
-    check_R("exaexa/scattermore")
+    check_r("exaexa/scattermore")
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
@@ -1461,7 +1461,7 @@ FeatureDimPlot <- function(
             pixels = raster.dpi
           )
       } else if (isTRUE(hex)) {
-        check_R("hexbin")
+        check_r("hexbin")
         dat_na <- dat[is.na(dat[["value"]]), , drop = FALSE]
         dat_hex <- dat[!is.na(dat[["value"]]), , drop = FALSE]
         if (nrow(dat_na) > 0) {
@@ -1717,7 +1717,7 @@ FeatureDimPlot <- function(
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureDimPlot3D(
 #'   pancreas_sub,
 #'   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),
@@ -1815,7 +1815,7 @@ FeatureDimPlot3D <- function(
     zlab <- axis_labs[3]
   }
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    check_R("htmlwidgets")
+    check_r("htmlwidgets")
     if (!grepl(".html$", save)) {
       stop("'save' must be a string with .html as a suffix.")
     }
@@ -1865,7 +1865,7 @@ FeatureDimPlot3D <- function(
         immediate. = TRUE
       )
     }
-    status <- check_DataType(srt, layer = layer, assay = assay)
+    status <- check_data_type(srt, layer = layer, assay = assay)
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(

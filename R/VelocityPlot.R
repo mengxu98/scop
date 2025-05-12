@@ -101,7 +101,7 @@ VelocityPlot <- function(
   set.seed(seed)
 
   plot_type <- match.arg(plot_type)
-  check_R("metR")
+  check_r("metR")
 
   if (!reduction %in% names(srt@reductions)) {
     stop(paste0(reduction, " is not in the srt reduction names."))
@@ -233,7 +233,7 @@ VelocityPlot <- function(
     )
   }
   if (plot_type == "stream") {
-    check_R("metR")
+    check_r("metR")
     res <- compute_velocity_on_grid(
       X_emb,
       V_emb,

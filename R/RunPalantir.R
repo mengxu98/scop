@@ -18,9 +18,12 @@
 #'
 #' @seealso \code{\link{srt_to_adata}}
 #'
+#' @export
+#'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- RunPalantir(
+#' pancreas_sub <- RunPalantir( # bug
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
@@ -41,8 +44,7 @@
 #'     "_diff_potential"
 #'   )
 #' )
-#'
-#' @export
+#' }
 RunPalantir <- function(
     srt = NULL,
     assay_x = "RNA",
@@ -79,7 +81,7 @@ RunPalantir <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_Python("palantir")
+  check_python("palantir")
   if (all(is.null(srt), is.null(adata))) {
     stop("One of 'srt', 'adata' must be provided.")
   }

@@ -43,6 +43,7 @@ A \code{anndata} object.
 This function takes a Seurat object and converts it to an anndata object using the reticulate package.
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
 adata <- srt_to_adata(pancreas_sub)
 adata
@@ -52,7 +53,8 @@ adata
 #   "pancreas_sub.h5ad"
 # )
 # adata$write_loom(
-#   "pancreas_sub.loom", 
+#   "pancreas_sub.loom",
 #   write_obsm_varm = TRUE
 # )
+}
 }

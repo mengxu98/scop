@@ -28,7 +28,7 @@ The default is to try different download methods in turn until the download is s
 \item{quiet}{If \code{TRUE}, suppress status messages (if any), and
     the progress bar.}
 
-\item{...}{Other arguments passed to \code{\link[utils]{download.file}}}
+\item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}}
 
 \item{max_tries}{Number of tries for each download method.}
 }

@@ -5,10 +5,10 @@
 \title{CSS_integrate}
 \usage{
 CSS_integrate(
-  srtMerge = NULL,
+  srt_merge = NULL,
   batch = NULL,
   append = TRUE,
-  srtList = NULL,
+  srt_list = NULL,
   assay = NULL,
   do_normalization = NULL,
   normalization_method = "LogNormalize",
@@ -41,13 +41,13 @@ CSS_integrate(
 )
 }
 \arguments{
-\item{srtMerge}{A merged Seurat object that includes the batch information.}
+\item{srt_merge}{A merged Seurat object that includes the batch information.}
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srtMerge).}
+\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
 
-\item{srtList}{A list of Seurat objects to be checked and preprocessed.}
+\item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 

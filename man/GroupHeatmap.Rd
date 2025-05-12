@@ -374,7 +374,8 @@ GroupHeatmap
 \examples{
 library(dplyr)
 data("pancreas_sub")
-ht1 <- GroupHeatmap(pancreas_sub,
+ht1 <- GroupHeatmap(
+  srt = pancreas_sub,
   features = c(
     "Sox9", "Anxa2", "Bicc1", # Ductal
     "Neurog3", "Hes6", # EPs
@@ -385,7 +386,13 @@ ht1 <- GroupHeatmap(pancreas_sub,
   group.by = c("CellType", "SubCellType")
 )
 ht1$plot
-panel_fix(ht1$plot, height = 4, width = 6, raster = TRUE, dpi = 50)
+panel_fix(
+  ht1$plot,
+  height = 4,
+  width = 6,
+  raster = TRUE,
+  dpi = 50
+)
 
 pancreas_sub <- RunDEtest(
   pancreas_sub,

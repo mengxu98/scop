@@ -329,14 +329,14 @@ CellStatPlot(
 ### Standard pipeline
 
 ``` r
-pancreas_sub <- Standard_scop(srt = pancreas_sub)
+pancreas_sub <- standard_scop(srt = pancreas_sub)
 CellDimPlot(
   srt = pancreas_sub, group.by = c("CellType", "SubCellType"),
   reduction = "StandardUMAP2D", theme_use = "theme_blank"
 )
 ```
 
-<img src="man/figures/Standard_scop-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/standard_scop-1.png" width="100%" style="display: block; margin: auto;" />
 
 ``` r
 CellDimPlot3D(srt = pancreas_sub, group.by = "SubCellType")
@@ -357,7 +357,7 @@ human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
 ``` r
 data("panc8_sub")
-panc8_sub <- Integration_scop(srtMerge = panc8_sub, batch = "tech", integration_method = "Seurat")
+panc8_sub <- Integration_scop(srt_merge = panc8_sub, batch = "tech", integration_method = "Seurat")
 CellDimPlot(
   srt = panc8_sub, group.by = c("celltype", "tech"), reduction = "SeuratUMAP2D",
   title = "Seurat", theme_use = "theme_blank"

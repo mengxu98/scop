@@ -187,7 +187,7 @@ ExpressionStatPlot <- function(
     sort <- FALSE
   }
   if (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) {
-    check_R("ggpubr")
+    check_r("ggpubr")
     ncomp <- sapply(comparisons, length)
     if (any(ncomp > 2)) {
       stop(
@@ -226,7 +226,7 @@ ExpressionStatPlot <- function(
         immediate. = TRUE
       )
     }
-    status <- check_DataType(data = exp.data)
+    status <- check_data_type(data = exp.data)
     message("Data type: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       meta.data[["CoExp"]] <- apply(

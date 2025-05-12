@@ -9,7 +9,8 @@ RenameFeatures(srt, newnames = NULL, assays = NULL)
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{newnames}{A vector with the same length of features in Seurat object, or characters named with old features.}
+\item{newnames}{A vector with the same length of features in Seurat object,
+or characters named with old features.}
 
 \item{assays}{Assays to rename.}
 }

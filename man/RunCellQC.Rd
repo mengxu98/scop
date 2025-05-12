@@ -36,7 +36,8 @@ RunCellQC(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The name of the assay to be used for doublet-calling. Default is "RNA".}
+\item{assay}{The name of the assay to be used for doublet-calling.
+Default is "RNA".}
 
 \item{split.by}{Name of the sample variable to split the Seurat object. Default is NULL.}
 
@@ -45,9 +46,12 @@ RunCellQC(
 \item{qc_metrics}{A character vector specifying the quality control metrics to be applied. Default is
 `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.}
 
-\item{db_method}{Doublet-calling methods used. Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
+\item{db_method}{Doublet-calling methods used.
+Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
 
-\item{db_rate}{The expected doublet rate. By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells), which is appropriate for 10x datasets.}
+\item{db_rate}{The expected doublet rate.
+By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
+which is appropriate for 10x datasets.}
 
 \item{db_coefficient}{The coefficient used to calculate the doublet rate. Default is 0.01. Doublet rate is calculated as`ncol(srt) / 1000 * db_coefficient`}
 

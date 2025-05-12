@@ -42,7 +42,7 @@
 #' )
 #'
 #' # 3D lineage
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -83,7 +83,18 @@ RunSlingshot <- function(
   } else {
     prefix <- paste0(prefix, "_")
   }
+
+  if (min(table(srt[[group.by]])) < 2) {
+    celltypes <- names(which(table(srt[[group.by]]) < 2))
+    message(
+      "Warning: ", paste(celltypes, collapse = ", "), " have less than 2 cells. Removed from the analysis."
+    )
+    celltypes <- setdiff(names(table(srt[[group.by]])), celltypes)
+    srt <- srt[, select_cells(srt, celltypes, group.by)]
+  }
+
   srt_sub <- srt[, !is.na(srt[[group.by, drop = TRUE]])]
+
   if (is.null(dims)) {
     dims <- 1:2
   }

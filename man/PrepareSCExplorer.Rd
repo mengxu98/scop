@@ -47,7 +47,7 @@ This function prepares one or multiple Seurat objects for the SCExplorer app. It
 \examples{
 \dontrun{
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 }
 }

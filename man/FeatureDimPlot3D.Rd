@@ -67,7 +67,7 @@ Plotting cell points on a reduced 3D space and coloring according to the gene ex
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 FeatureDimPlot3D(
   pancreas_sub,
   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),

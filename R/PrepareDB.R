@@ -285,7 +285,7 @@ PrepareDB <- function(
       if (any(orgdb_dependent %in% db)) {
         status <- tryCatch(
           {
-            check_R(c(org_sp, "GO.db", "GOSemSim"))
+            check_r(c(org_sp, "GO.db", "GOSemSim"))
           },
           error = identity
         )
@@ -318,13 +318,13 @@ PrepareDB <- function(
         orgdb <- get(org_sp)
       }
       if ("PFAM" %in% db) {
-        check_R("PFAM.db")
+        check_r("PFAM.db")
       }
       if ("Reactome" %in% db) {
-        check_R("reactome.db")
+        check_r("reactome.db")
       }
       # if ("MeSH" %in% db) {
-      #   check_R(c("AHMeSHDbs", "MeSHDbi", "MeSH.db", "AnnotationHub"))
+      #   check_r(c("AHMeSHDbs", "MeSHDbi", "MeSH.db", "AnnotationHub"))
       # }
 
       if (is.null(custom_TERM2GENE)) {
@@ -418,7 +418,7 @@ PrepareDB <- function(
         ## KEGG ---------------------------------------------------------------------------
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
           message("Preparing database: KEGG")
-          check_R("httr")
+          check_r("httr")
           orgs <- kegg_get("https://rest.kegg.jp/list/organism")
           kegg_sp <- orgs[
             grep(gsub(pattern = "_", replacement = " ", x = sps), orgs[, 3]),
@@ -654,7 +654,7 @@ PrepareDB <- function(
         }
 
         ## Pathwaycommons ---------------------------------------------------------------------------
-        # check_R("paxtoolsr")
+        # check_r("paxtoolsr")
 
         ## Reactome ---------------------------------------------------------------------------
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
@@ -1545,7 +1545,7 @@ PrepareDB <- function(
               stop("Stop the preparation.")
             }
           }
-          check_R("openxlsx")
+          check_r("openxlsx")
           message("Preparing database: CSPA")
           temp <- tempfile(fileext = ".xlsx")
           url <- "https://wlab.ethz.ch/cspa/data/S1_File.xlsx"
@@ -1616,7 +1616,7 @@ PrepareDB <- function(
               stop("Stop the preparation.")
             }
           }
-          check_R("openxlsx")
+          check_r("openxlsx")
           message("Preparing database: Surfaceome")
           temp <- tempfile(fileext = ".xlsx")
           url <- "http://wlab.ethz.ch/surfaceome/table_S3_surfaceome.xlsx"

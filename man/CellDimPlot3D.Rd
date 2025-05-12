@@ -54,7 +54,7 @@ CellDimPlot3D(
 
 \item{sizes.highlight}{Size of highlighted cell points.}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \code{\link[stats]{loess}} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_palette}{Color palette used for lineages.}
 
@@ -73,14 +73,15 @@ Plotting cell points on a reduced 3D space and coloring according to the groups 
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot3D(
   srt = pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
 )
 
-pancreas_sub <- RunSlingshot(
+\dontrun{
+#' pancreas_sub <- RunSlingshot(
   srt = pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
@@ -91,7 +92,7 @@ CellDimPlot3D(
   reduction = "StandardpcaUMAP3D",
   lineages = "Lineage1"
 )
-
+}
 }
 \seealso{
 \code{\link{CellDimPlot}} \code{\link{FeatureDimPlot3D}}

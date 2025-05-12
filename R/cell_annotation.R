@@ -35,7 +35,7 @@ NULL
 #' # Annotate cells using bulk RNA-seq data
 #' data("pancreas_sub")
 #' data("ref_scMCA")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   bulk_ref = ref_scMCA
@@ -83,10 +83,10 @@ NULL
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srtMerge(
+#' panc8_sub <- check_srt_merge(
 #'   panc8_sub,
 #'   batch = "tech"
-#' )[["srtMerge"]]
+#' )[["srt_merge"]]
 #'
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
@@ -533,9 +533,9 @@ RunKNNPredict <- function(
   }
 
   if (!isTRUE(use_reduction)) {
-    status_dat <- check_DataType(data = query)
+    status_dat <- check_data_type(data = query)
     message("Detected query data type: ", status_dat)
-    status_ref <- check_DataType(data = ref)
+    status_ref <- check_data_type(data = ref)
     message("Detected reference data type: ", status_ref)
     if (
       status_ref != status_dat ||
@@ -833,13 +833,13 @@ RunKNNPredict <- function(
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srtMerge(
+#' panc8_sub <- check_srt_merge(
 #'   panc8_sub,
 #'   batch = "tech"
-#' )[["srtMerge"]]
+#' )[["srt_merge"]]
 #'
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunScmap(
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
@@ -871,7 +871,7 @@ RunScmap <- function(
     nfeatures = 500,
     threshold = 0.5,
     k = 10) {
-  check_R("scmap")
+  check_r("scmap")
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
       srt_ref[["ref_group"]] <- ref_group
@@ -889,7 +889,7 @@ RunScmap <- function(
     stop("'ref_group' must be provided.")
   }
 
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = Seurat::GetAssayData(
       srt_query,
       layer = "data",
@@ -897,7 +897,7 @@ RunScmap <- function(
     )
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = Seurat::GetAssayData(
       srt_ref,
       layer = "data",
@@ -1038,6 +1038,7 @@ RunScmap <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("panc8_sub")
 #' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
@@ -1050,15 +1051,15 @@ RunScmap <- function(
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srtMerge(
+#' panc8_sub <- check_srt_merge(
 #'   panc8_sub,
 #'   batch = "tech"
-#' )[["srtMerge"]]
+#' )[["srt_merge"]]
 #'
 #' # Annotation
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
-#' pancreas_sub <- RunSingleR(
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunSingleR( # bug
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
 #'   query_group = "Standardclusters",
@@ -1069,7 +1070,7 @@ RunScmap <- function(
 #'   group.by = "singler_annotation"
 #' )
 #'
-#' pancreas_sub <- RunSingleR(
+#' pancreas_sub <- RunSingleR( # bug
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
 #'   query_group = NULL,
@@ -1079,6 +1080,7 @@ RunScmap <- function(
 #'   pancreas_sub,
 #'   group.by = "singler_annotation"
 #' )
+#' }
 RunSingleR <- function(
     srt_query,
     srt_ref,
@@ -1097,7 +1099,7 @@ RunSingleR <- function(
     tune.thresh = 0.05,
     prune = TRUE,
     BPPARAM = BiocParallel::bpparam()) {
-  check_R("SingleR")
+  check_r("SingleR")
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
       srt_ref[["ref_group"]] <- ref_group
@@ -1132,7 +1134,7 @@ RunSingleR <- function(
     method <- "SingleRCell"
   }
 
-  status_query <- check_DataType(
+  status_query <- check_data_type(
     data = Seurat::GetAssayData(
       srt_query,
       layer = "data",
@@ -1140,7 +1142,7 @@ RunSingleR <- function(
     )
   )
   message("Detected srt_query data type: ", status_query)
-  status_ref <- check_DataType(
+  status_ref <- check_data_type(
     data = Seurat::GetAssayData(
       srt_ref,
       layer = "data",

@@ -76,7 +76,7 @@ RunDynamicFeatures <- function(
   message(paste0("[", time_start, "] ", "Start RunDynamicFeatures"))
   message("Workers: ", bpworkers(BPPARAM))
 
-  check_R("mgcv")
+  check_r("mgcv")
   meta <- c()
   gene <- c()
   if (!is.null(features)) {
@@ -99,7 +99,7 @@ RunDynamicFeatures <- function(
 
   Y <- Seurat::GetAssayData(srt, layer = layer, assay = assay)
   if (is.null(libsize)) {
-    status <- check_DataType(srt, assay = assay, layer = "counts")
+    status <- check_data_type(srt, assay = assay, layer = "counts")
     if (status != "raw_counts") {
       Y_libsize <- setNames(
         rep(1, ncol(srt)),
@@ -171,9 +171,9 @@ RunDynamicFeatures <- function(
   if (layer == "counts") {
     gene_status <- status
   }
-  gene_status <- status <- check_DataType(srt, assay = assay, layer = layer)
+  gene_status <- status <- check_data_type(srt, assay = assay, layer = layer)
   meta_status <- sapply(meta, function(x) {
-    check_DataType(data = srt[[x]])
+    check_data_type(data = srt[[x]])
   })
   if (is.null(family)) {
     family <- rep("gaussian", length(features))

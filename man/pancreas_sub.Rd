@@ -17,7 +17,7 @@ Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev
 if (interactive()) {
   library(Seurat)
   library(reticulate)
-  check_Python("scvelo")
+  check_python("scvelo")
   scv <- import("scvelo")
   adata <- scv$datasets$pancreas()
   pancreas <- adata_to_srt(adata)

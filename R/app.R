@@ -249,7 +249,7 @@ CreateMetaFile <- function(srt, MetaFile, name = NULL, write_tools = FALSE, writ
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' }
 #' @importFrom Seurat Reductions Assays DefaultAssay
@@ -332,7 +332,7 @@ PrepareSCExplorer <- function(object,
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' srt <- FetchH5(
 #'   DataFile = "./SCExplorer/Data.hdf5",
@@ -551,10 +551,10 @@ CreateSeuratObject2 <- function(counts, project = "SeuratProject", assay = "RNA"
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
-#' pancreas_sub <- Standard_scop(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' data("panc8_sub")
 #' panc8_sub <- Integration_scop(
-#'   srtMerge = panc8_sub,
+#'   srt_merge = panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
@@ -629,7 +629,7 @@ RunSCExplorer <- function(
     style_script = require("styler", quietly = TRUE),
     overwrite = FALSE,
     return_app = TRUE) {
-  check_R(
+  check_r(
     c(
       "rhdf5",
       "HDF5Array",
@@ -2294,7 +2294,7 @@ server <- function(input, output, session) {
     paste0("if (utils::packageVersion('scop') < app_scop_version) {
       stop(paste0('SCExplorer requires scop >= ", as.character(packageVersion("scop")), "'))
     }"),
-    "scop::check_R(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
+    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
     "library(shiny)",
     "library(bslib)",
     "library(future)",

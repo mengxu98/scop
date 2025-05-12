@@ -3,7 +3,7 @@
 #' @param miniconda_repo  Repositories for miniconda. Default is \code{https://repo.anaconda.com/miniconda}
 #' @param force Whether to force a new environment to be created. If \code{TRUE}, the existing environment will be recreated. Default is \code{FALSE}
 #' @param version A character vector specifying the version of the environment (default is "3.8-1").
-#' @inheritParams check_Python
+#' @inheritParams check_python
 #' @details This function prepares the scop Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with scop.
 #' In order to create the environment, this function requires the path to the conda binary. If \code{conda} is set to \code{"auto"}, it will attempt to automatically find the conda binary.
 #' If a conda environment with the specified name already exists and \code{force} is set to \code{FALSE}, the function will use the existing environment. If \code{force} set to \code{TRUE}, the existing environment will be recreated. Note that recreating the environment will remove any existing data in the environment.
@@ -76,7 +76,7 @@ PrepareEnv <- function(
       } else if (reticulate:::is_linux()) {
         sprintf("Miniconda%s-latest-Linux-%s.sh", version, arch)
       } else {
-        stopf("unsupported platform %s", shQuote(Sys.info()[["sysname"]]))
+        BBmisc::stopf("unsupported platform %s", shQuote(Sys.info()[["sysname"]]))
       }
       url <- file.path(base, name)
       options(reticulate.miniconda.url = url)
@@ -129,7 +129,7 @@ PrepareEnv <- function(
     }
   }
 
-  check_Python(
+  check_python(
     packages = packages,
     envname = envname,
     conda = conda,
@@ -303,7 +303,7 @@ Env_requirements <- function(version = "3.8-1") {
 
 #' Show all the python packages in the environment
 #'
-#' @inheritParams check_Python
+#' @inheritParams check_python
 #' @export
 installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
   envname <- get_envname(envname)
@@ -327,7 +327,7 @@ installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
 
 #' Check if the python package exists in the environment
 #'
-#' @inheritParams check_Python
+#' @inheritParams check_python
 #' @export
 exist_Python_pkgs <- function(
     packages,
@@ -379,7 +379,7 @@ exist_Python_pkgs <- function(
 #' Check if a conda environment exists
 #'
 #' @param envs_dir Directories in which conda environments are located.
-#' @inheritParams check_Python
+#' @inheritParams check_python
 env_exist <- function(conda = "auto", envname = NULL, envs_dir = NULL) {
   envname <- get_envname(envname)
   if (identical(conda, "auto")) {
@@ -464,7 +464,7 @@ conda_install <- function(
         "- use 'py_install(%1$s)' to install into the active Python environment",
         sep = "\n"
       )
-      stopf(fmt, deparse1(substitute(envname)), call. = FALSE)
+      BBmisc::stopf(fmt, deparse1(substitute(envname)), call. = FALSE)
     } else {
       packages
     }
@@ -523,7 +523,7 @@ conda_install <- function(
   result <- reticulate:::system2t(conda, shQuote(args))
   if (result != 0L) {
     fmt <- "one or more Python packages failed to install [error code %i]"
-    stopf(fmt, result)
+    BBmisc::stopf(fmt, result)
   }
   invisible(packages)
 }
@@ -583,214 +583,6 @@ run_Python <- function(command, envir = .GlobalEnv) {
   )
 }
 
-#' Check and install python packages
-#'
-#' @param packages A character vector, indicating package names which should be installed or removed. Use \code{⁠<package>==<version>}⁠ to request the installation of a specific version of a package.
-#' @param envname The name of a conda environment.
-#' @param conda The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.
-#' @param force Whether to force package installation. Default is \code{FALSE}.
-#' @param pip Whether to use pip for package installation. By default, packages are installed from the active conda channels.
-#' @param pip_options An optional character vector of additional command line arguments to be passed to \code{pip}. Only relevant when \code{pip = TRUE}.
-#' @param ... Other arguments passed to \code{\link[reticulate]{conda_install}}
-#'
-#' @examples
-#' check_Python(packages = c("bbknn", "scanorama"))
-#' \dontrun{
-#' check_Python(
-#'   packages = "scvi-tools==0.20.0",
-#'   envname = "scop_env",
-#'   pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
-#' )
-#' }
-#' @export
-check_Python <- function(
-    packages,
-    envname = NULL,
-    conda = "auto",
-    force = FALSE,
-    pip = TRUE,
-    pip_options = character(),
-    ...) {
-  envname <- get_envname(envname)
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
-  env <- env_exist(conda = conda, envname = envname)
-  if (isFALSE(env)) {
-    warning(
-      envname,
-      " python environment does not exist. Create it with the PrepareEnv function...",
-      immediate. = TRUE
-    )
-    PrepareEnv()
-  }
-  if (isTRUE(force)) {
-    pkg_installed <- setNames(rep(FALSE, length(packages)), packages)
-    pip_options <- c(pip_options, "--force-reinstall")
-  } else {
-    pkg_installed <- exist_Python_pkgs(
-      packages = packages,
-      envname = envname,
-      conda = conda
-    )
-  }
-  if (sum(!pkg_installed) > 0) {
-    pkgs_to_install <- names(pkg_installed)[!pkg_installed]
-    message("Try to install ", paste0(pkgs_to_install, collapse = ","), " ...")
-    if (isTRUE(pip)) {
-      pkgs_to_install <- c("pip", pkgs_to_install)
-    }
-    tryCatch(
-      expr = {
-        conda_install(
-          conda = conda,
-          packages = pkgs_to_install,
-          envname = envname,
-          pip = pip,
-          pip_options = pip_options,
-          ...
-        )
-      },
-      error = identity
-    )
-  }
-
-  pkg_installed <- exist_Python_pkgs(
-    packages = packages,
-    envname = envname,
-    conda = conda
-  )
-  if (sum(!pkg_installed) > 0) {
-    stop(
-      "Failed to install the package(s): ",
-      paste0(names(pkg_installed)[!pkg_installed], collapse = ","),
-      " into the environment \"",
-      envname,
-      "\". Please install manually."
-    )
-  } else {
-    return(invisible(NULL))
-  }
-}
-
-#' Check and install R packages
-#'
-#' @param packages Package to be installed. Package source can be CRAN, Bioconductor or Github, e.g. scmap, quadbiolab/simspec.
-#' By default, the package name is extracted according to the \code{packages} parameter.
-#' @param install_methods Functions used to install R packages.
-#' @param lib  The location of the library directories where to install the packages.
-#' @param force Whether to force the installation of packages. Default is \code{FALSE}.
-#'
-#' @export
-check_R <- function(
-    packages,
-    install_methods = c(
-      "BiocManager::install",
-      "install.packages",
-      "devtools::install_github"
-    ),
-    lib = .libPaths()[1],
-    force = FALSE) {
-  status_list <- list()
-  for (pkg in packages) {
-    version <- NULL
-    if (grepl("/", pkg)) {
-      pkg_name <- strsplit(pkg, split = "/|@|==", perl = TRUE)[[1]][[2]]
-    } else {
-      pkg_name <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]][[1]]
-      if (length(strsplit(pkg, split = "@|==", perl = TRUE)[[1]]) > 1) {
-        version <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]][[2]]
-      }
-    }
-    dest <- gsub("@.*|==.*|>=.*", "", pkg)
-    if (is.null(version)) {
-      force_update <- isTRUE(force)
-    } else {
-      force_update <- isTRUE(
-        utils::packageVersion(pkg_name) < package_version(version)
-      ) ||
-        isTRUE(force)
-    }
-    if (
-      !suppressPackageStartupMessages(requireNamespace(
-        pkg_name,
-        quietly = TRUE
-      )) ||
-        isTRUE(force_update)
-    ) {
-      message("Install package: \"", pkg_name, "\" ...")
-      status_list[[pkg]] <- FALSE
-      i <- 1
-      while (isFALSE(status_list[[pkg]])) {
-        tryCatch(
-          expr = {
-            if (grepl("BiocManager", install_methods[i])) {
-              if (!requireNamespace("BiocManager", quietly = TRUE)) {
-                install.packages("BiocManager", lib = lib)
-              }
-              eval(str2lang(paste0(
-                install_methods[i],
-                "(\"",
-                dest,
-                "\", lib=\"",
-                lib,
-                "\", update = FALSE, upgrade = \"never\", ask = FALSE, force = TRUE)"
-              )))
-            } else if (grepl("devtools", install_methods[i])) {
-              if (!requireNamespace("devtools", quietly = TRUE)) {
-                install.packages("devtools", lib = lib)
-              }
-              if (!requireNamespace("withr", quietly = TRUE)) {
-                install.packages("withr", lib = lib)
-              }
-              eval(str2lang(paste0(
-                "withr::with_libpaths(new = \"",
-                lib,
-                "\", ",
-                install_methods[i],
-                "(\"",
-                dest,
-                "\", upgrade = \"never\", force = TRUE))"
-              )))
-            } else {
-              eval(str2lang(paste0(
-                install_methods[i],
-                "(\"",
-                dest,
-                "\", lib=\"",
-                lib,
-                "\", force = TRUE)"
-              )))
-            }
-          },
-          error = function(e) {
-            status_list[[pkg]] <- FALSE
-          }
-        )
-        status_list[[pkg]] <- requireNamespace(pkg_name, quietly = TRUE)
-        i <- i + 1
-        if (i > length(install_methods)) {
-          break
-        }
-      }
-    } else {
-      status_list[[pkg]] <- TRUE
-    }
-  }
-  out <- sapply(status_list, isTRUE)
-  out <- out[!out]
-  if (length(out) > 0) {
-    stop(
-      "Failed to install the package(s): ",
-      paste0(names(out), collapse = ","),
-      ". Please install manually."
-    )
-  }
-}
-
 #' Try to evaluate an expression a set number of times before failing
 #'
 #' The function is used as a fail-safe if your R code sometimes works and sometimes
@@ -818,7 +610,6 @@ check_R <- function(
 #' }
 #' f_evaluated <- try_get(expr = f())
 #' print(f_evaluated)
-#'
 try_get <- function(
     expr,
     max_tries = 5,
@@ -853,13 +644,13 @@ try_get <- function(
 
 #' Download File from the Internet
 #'
+#' @md
 #' @inheritParams utils::download.file
 #' @param methods Methods to be used for downloading files.
 #' The default is to try different download methods in turn until the download is successfully completed.
 #' @param max_tries Number of tries for each download method.
-#' @param ... Other arguments passed to \code{\link[utils]{download.file}}
+#' @param ... Other arguments passed to [utils::download.file]
 #'
-#' @importFrom utils download.file
 #' @export
 download <- function(
     url,
@@ -878,7 +669,7 @@ download <- function(
       status <- tryCatch(
         expr = {
           suppressWarnings(
-            download.file(
+            utils::download.file(
               url = url,
               destfile = destfile,
               method = method,
@@ -988,7 +779,7 @@ invoke <- function(
     return(.External2(rlang:::ffi_eval, call, .env))
   }
   if (!is_character(.bury, 2L)) {
-    abort("`.bury` must be a character vector of length 2")
+    rlang::abort("`.bury` must be a character vector of length 2")
   }
   arg_prefix <- .bury[[2]]
   fn_nm <- .bury[[1]]
@@ -1008,7 +799,11 @@ invoke <- function(
 #' Implement similar functions to the \code{unnest} function in the tidyr package
 #' @param data A data frame.
 #' @param cols Columns to unnest.
-#' @param keep_empty By default, you get one row of output for each element of the list your unchopping/unnesting. This means that if there's a size-0 element (like \code{NULL} or an empty data frame), that entire row will be dropped from the output. If you want to preserve all rows, use \code{keep_empty = TRUE} to replace size-0 elements with a single row of missing values.
+#' @param keep_empty By default, you get one row of output for each element of the list your unchopping/unnesting.
+#' This means that if there's a size-0 element (like \code{NULL} or an empty data frame),
+#' that entire row will be dropped from the output.
+#' If you want to preserve all rows,
+#' use \code{keep_empty = TRUE} to replace size-0 elements with a single row of missing values.
 #' @export
 unnest <- function(
     data,
@@ -1035,12 +830,17 @@ unnest <- function(
 #' Capitalizes the characters
 #' Making the first letter uppercase
 #'
-#' @examples
-#' x <- c("dna methylation", "rRNA processing", "post-Transcriptional gene silencing")
-#' capitalize(x)
 #' @param x A vector of character strings to be capitalized.
 #' @param force_tolower Whether to force the remaining letters to be lowercase.
 #' @export
+#'
+#' @examples
+#' x <- c(
+#'   "dna methylation",
+#'   "rRNA processing",
+#'   "post-Transcriptional gene silencing"
+#' )
+#' capitalize(x)
 capitalize <- function(x, force_tolower = FALSE) {
   if (is.null(x)) {
     return(NULL)
@@ -1085,4 +885,16 @@ str_wrap <- function(x, width = 80) {
     )
   )
   return(x_wrap)
+}
+
+select_cells <- function(obj, celltypes, group.by) {
+  metadata <- obj@meta.data
+  cells_c <- c()
+  for (celltype in celltypes) {
+    cells_c <- c(
+      cells_c,
+      rownames(metadata[metadata[[group.by]] == celltype, ])
+    )
+  }
+  return(cells_c)
 }

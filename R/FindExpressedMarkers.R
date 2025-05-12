@@ -1,7 +1,7 @@
 #' @title FindExpressedMarkers
 #'
 #' @importFrom Matrix rowSums
-#' @importFrom SeuratObject PackageCheck FetchData WhichCells SetIdent Idents
+#' @importFrom SeuratObject FetchData WhichCells SetIdent Idents
 #' @importFrom Seurat FindMarkers FoldChange Command
 #' @importFrom pbapply pbsapply
 #' @export
@@ -256,7 +256,7 @@ FindExpressedMarkers <- function(
   return(de.results)
 }
 
-#' @importFrom SeuratObject PackageCheck FetchData WhichCells SetIdent Idents
+#' @importFrom SeuratObject FetchData WhichCells SetIdent Idents
 #' @importFrom Seurat FindMarkers FoldChange
 FindConservedMarkers2 <- function(
     object,

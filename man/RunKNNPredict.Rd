@@ -90,7 +90,7 @@ This function performs KNN prediction to annotate cell types based on reference 
 # Annotate cells using bulk RNA-seq data
 data("pancreas_sub")
 data("ref_scMCA")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA
@@ -138,10 +138,10 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- check_srtMerge(
+panc8_sub <- check_srt_merge(
   panc8_sub,
   batch = "tech"
-)[["srtMerge"]]
+)[["srt_merge"]]
 
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,

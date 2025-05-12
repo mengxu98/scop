@@ -20,6 +20,8 @@
 #'
 #' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' ccgenes <- CC_GenePrefetch("Mus_musculus")
@@ -33,8 +35,10 @@
 #'
 #' \dontrun{
 #' data("panc8_sub")
-#' panc8_sub <- Integration_scop(panc8_sub,
-#'   batch = "tech", integration_method = "Seurat"
+#' panc8_sub <- Integration_scop( # bug when integration_method = "Seurat"
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
@@ -56,12 +60,12 @@
 #'   termnames = panc8_sub[["GO"]]@meta.features[, "termnames"],
 #'   method = "Seurat", name = "GO", new_assay = TRUE
 #' )
-#' pancreas_sub <- Standard_scop(pancreas_sub, assay = "GO")
+#' pancreas_sub <- standard_scop(pancreas_sub, assay = "GO")
 #' CellDimPlot(pancreas_sub, "SubCellType")
 #'
 #' pancreas_sub[["tech"]] <- "Mouse"
 #' panc_merge <- Integration_scop(
-#'   srtList = list(panc8_sub, pancreas_sub),
+#'   srt_list = list(panc8_sub, pancreas_sub),
 #'   assay = "GO",
 #'   batch = "tech", integration_method = "Seurat"
 #' )
@@ -81,7 +85,7 @@
 #' )
 #' head(rownames(panc8_sub))
 #' panc_merge <- Integration_scop(
-#'   srtList = list(panc8_sub, pancreas_sub),
+#'   srt_list = list(panc8_sub, pancreas_sub),
 #'   assay = "RNA",
 #'   batch = "tech", integration_method = "Seurat"
 #' )
@@ -90,10 +94,6 @@
 #'   group.by = c("tech", "celltype", "SubCellType", "Phase")
 #' )
 #' }
-#'
-#' @importFrom BiocParallel bpprogressbar<- bpRNGseed<- bpworkers
-#' @importFrom Seurat AddModuleScore AddMetaData
-#' @export
 CellScoring <- function(
     srt,
     features = NULL,
@@ -127,13 +127,13 @@ CellScoring <- function(
   }
   assay <- assay %||% DefaultAssay(srt)
   if (layer == "counts") {
-    status <- check_DataType(srt, layer = "counts", assay = assay)
+    status <- check_data_type(srt, layer = "counts", assay = assay)
     if (status != "raw_counts") {
       warning("Data is not raw counts", immediate. = TRUE)
     }
   }
   if (layer == "data") {
-    status <- check_DataType(srt, layer = "data", assay = assay)
+    status <- check_data_type(srt, layer = "data", assay = assay)
     if (status == "raw_counts") {
       message(
         "Data is raw counts. Perform NormalizeData(LogNormalize) on the data ..."
@@ -189,7 +189,8 @@ CellScoring <- function(
       na <- rowSums(is.na(TERM2GENE_tmp)) > 0
       TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
       TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"], ,
+        TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"],
+        ,
         drop = FALSE
       ]
 
@@ -283,7 +284,7 @@ CellScoring <- function(
       features_nm <- features_raw
       colnames(scores) <- make.names(paste(name, names(features_nm), sep = "_"))
     } else if (method == "UCell") {
-      check_R("UCell")
+      check_r("UCell")
       srt_tmp <- UCell::AddModuleScore_UCell(
         srt_sp,
         features = features,
@@ -308,7 +309,7 @@ CellScoring <- function(
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
       colnames(scores) <- make.names(paste(name, names(features_nm), sep = "_"))
     } else if (method == "AUCell") {
-      check_R("AUCell")
+      check_r("AUCell")
       CellRank <- AUCell::AUCell_buildRankings(
         Matrix::as.matrix(
           Seurat::GetAssayData(
@@ -415,4 +416,178 @@ CellScoring <- function(
   )
 
   return(srt)
+}
+
+AddModuleScore2 <- function(
+    object,
+    layer = "data",
+    features,
+    pool = NULL,
+    nbin = 24,
+    ctrl = 100,
+    k = FALSE,
+    assay = NULL,
+    name = "Cluster",
+    seed = 1,
+    search = FALSE,
+    BPPARAM = BiocParallel::bpparam(),
+    ...) {
+  if (!is.null(x = seed)) {
+    set.seed(seed = seed)
+  }
+  assay.old <- SeuratObject::DefaultAssay(object = object)
+  assay <- assay %||% assay.old
+  SeuratObject::DefaultAssay(object = object) <- assay
+  assay.data <- SeuratObject::GetAssayData(object = object, layer = layer)
+  features.old <- features
+  if (k) {
+    .NotYetUsed(arg = "k")
+    features <- list()
+    for (i in as.numeric(
+      x = names(x = table(object@kmeans.obj[[1]]$cluster))
+    )) {
+      features[[i]] <- names(x = which(x = object@kmeans.obj[[1]]$cluster == i))
+    }
+    cluster.length <- length(x = features)
+  } else {
+    if (is.null(x = features)) {
+      stop("Missing input feature list")
+    }
+    features <- lapply(X = features, FUN = function(x) {
+      missing.features <- setdiff(x = x, y = rownames(x = object))
+      if (length(x = missing.features) > 0) {
+        warning(
+          "The following features are not present in the object: ",
+          paste(missing.features, collapse = ", "),
+          ifelse(
+            test = search,
+            yes = ", attempting to find updated synonyms",
+            no = ", not searching for symbol synonyms"
+          ),
+          call. = FALSE,
+          immediate. = TRUE
+        )
+        if (search) {
+          tryCatch(
+            expr = {
+              updated.features <- Seurat::UpdateSymbolList(
+                symbols = missing.features,
+                ...
+              )
+              names(x = updated.features) <- missing.features
+              for (miss in names(x = updated.features)) {
+                index <- which(x == miss)
+                x[index] <- updated.features[miss]
+              }
+            },
+            error = function(...) {
+              warning(
+                "Could not reach HGNC's gene names database",
+                call. = FALSE,
+                immediate. = TRUE
+              )
+            }
+          )
+          missing.features <- setdiff(x = x, y = rownames(x = object))
+          if (length(x = missing.features) > 0) {
+            warning(
+              "The following features are still not present in the object: ",
+              paste(missing.features, collapse = ", "),
+              call. = FALSE,
+              immediate. = TRUE
+            )
+          }
+        }
+      }
+      return(intersect(x = x, y = rownames(x = object)))
+    })
+    cluster.length <- length(x = features)
+  }
+  if (!all(check_length(values = features))) {
+    warning(paste(
+      "Could not find enough features in the object from the following feature lists:",
+      paste(names(x = which(x = !check_length(values = features)))),
+      "Attempting to match case..."
+    ))
+    features <- lapply(
+      X = features.old,
+      FUN = Seurat::CaseMatch,
+      match = rownames(x = object)
+    )
+  }
+  if (!all(check_length(values = features))) {
+    stop(paste(
+      "The following feature lists do not have enough features present in the object:",
+      paste(names(x = which(x = !check_length(values = features)))),
+      "exiting..."
+    ))
+  }
+  pool <- pool %||% rownames(x = object)
+  data.avg <- Matrix::rowMeans(
+    x = assay.data[pool, , drop = FALSE]
+  )
+  data.avg <- data.avg[order(data.avg)]
+  data.cut <- cut_number(
+    x = data.avg + stats::rnorm(n = length(data.avg)) / 1e+30,
+    n = nbin,
+    labels = FALSE,
+    right = FALSE
+  )
+  names(x = data.cut) <- names(x = data.avg)
+
+  scores <- bplapply(
+    1:cluster.length,
+    function(i) {
+      features.use <- features[[i]]
+      ctrl.use <- unlist(
+        lapply(
+          1:length(features.use),
+          function(j) {
+            data.cut[which(data.cut == data.cut[features.use[j]])]
+          }
+        )
+      )
+      ctrl.use <- names(
+        sample(
+          ctrl.use,
+          size = min(ctrl * length(features.use), length(ctrl.use)),
+          replace = FALSE
+        )
+      )
+      ctrl.scores_i <- Matrix::colMeans(
+        x = assay.data[ctrl.use, , drop = FALSE]
+      )
+      features.scores_i <- Matrix::colMeans(
+        x = assay.data[features.use, , drop = FALSE]
+      )
+      return(list(ctrl.scores_i, features.scores_i))
+    },
+    BPPARAM = BPPARAM
+  )
+  ctrl.scores <- do.call(rbind, lapply(scores, function(x) x[[1]]))
+  features.scores <- do.call(rbind, lapply(scores, function(x) x[[2]]))
+
+  features.scores.use <- features.scores - ctrl.scores
+  rownames(x = features.scores.use) <- paste0(name, 1:cluster.length)
+  features.scores.use <- as.data.frame(x = t(x = features.scores.use))
+  rownames(x = features.scores.use) <- colnames(x = object)
+  object[[colnames(x = features.scores.use)]] <- features.scores.use
+  SeuratObject::CheckGC()
+  SeuratObject::DefaultAssay(object = object) <- assay.old
+
+  return(object)
+}
+
+check_length <- function(
+    values,
+    cutoff = 0) {
+  return(
+    vapply(
+      X = values,
+      FUN = function(x) {
+        return(length(x = x) > cutoff)
+      },
+      FUN.VALUE = logical(1)
+    )
+  )
 }

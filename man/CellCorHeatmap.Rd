@@ -234,7 +234,7 @@ This function generates a heatmap to visualize the similarity between different 
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
@@ -252,10 +252,10 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- check_srtMerge(
+panc8_sub <- check_srt_merge(
   panc8_sub,
   batch = "tech"
-)[["srtMerge"]]
+)[["srt_merge"]]
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,

@@ -11,7 +11,11 @@ unnest(data, cols, keep_empty = FALSE)
 
 \item{cols}{Columns to unnest.}
 
-\item{keep_empty}{By default, you get one row of output for each element of the list your unchopping/unnesting. This means that if there's a size-0 element (like \code{NULL} or an empty data frame), that entire row will be dropped from the output. If you want to preserve all rows, use \code{keep_empty = TRUE} to replace size-0 elements with a single row of missing values.}
+\item{keep_empty}{By default, you get one row of output for each element of the list your unchopping/unnesting.
+This means that if there's a size-0 element (like \code{NULL} or an empty data frame),
+that entire row will be dropped from the output.
+If you want to preserve all rows,
+use \code{keep_empty = TRUE} to replace size-0 elements with a single row of missing values.}
 }
 \description{
 Implement similar functions to the \code{unnest} function in the tidyr package

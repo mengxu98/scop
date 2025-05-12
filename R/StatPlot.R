@@ -864,7 +864,7 @@ StatPlot <- function(
     for (sp in levels(dat_all[[split.by]])) {
       dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]]
       if (plot_type == "venn") {
-        check_R(c("ggVennDiagram", "sf"))
+        check_r(c("ggVennDiagram", "sf"))
         dat_list <- as.list(dat_use[, stat.by])
         dat_list <- lapply(
           setNames(names(dat_list), names(dat_list)),
@@ -961,7 +961,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "upset") {
-        check_R("ggupset")
+        check_r("ggupset")
         for (n in seq_len(nrow(dat_use))) {
           dat_use[["intersection"]][n] <- list(stat.by[unlist(dat_use[
             n,

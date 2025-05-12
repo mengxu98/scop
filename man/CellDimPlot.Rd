@@ -196,17 +196,17 @@ CellDimPlot(
 
 \item{density_filled_palcolor}{Custom colors used to fill contour bands.}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \code{\link[stats]{loess}} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
 
-\item{lineages_span}{The parameter α which controls the degree of smoothing in \code{\link[stats]{loess}} method.}
+\item{lineages_span}{The parameter α which controls the degree of smoothing in \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_palette}{Color palette used for lineages.}
 
 \item{lineages_palcolor}{Custom colors used for lineages.}
 
-\item{lineages_arrow}{Set arrows of the lineages. See \code{\link[grid]{arrow}}.}
+\item{lineages_arrow}{Set arrows of the lineages. See \link[grid:arrow]{grid::arrow}.}
 
 \item{lineages_linewidth}{Width of fitted curve lines for lineages.}
 
@@ -385,7 +385,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
-) \%>\% panel_fix(
+) |> panel_fix(
   height = 2,
   raster = TRUE,
   dpi = 30
@@ -564,7 +564,7 @@ CellDimPlot(
 )
 
 # Show neighbors graphs on the plot
-pancreas_sub <- Standard_scop(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -579,6 +579,7 @@ CellDimPlot(
   edge_color = "grey80"
 )
 
+\dontrun{
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -716,6 +717,8 @@ CellDimPlot(
   legend.position = "none",
   theme_use = "theme_blank"
 )
+}
+
 }
 \seealso{
 \code{\link{FeatureDimPlot}}

@@ -115,7 +115,6 @@ make_long <- function(.df, ..., value = NULL) {
     dplyr::mutate(dplyr::across(c(x, next_x), ~ factor(., levels = levels)))
 }
 
-
 #' @title sankey_themes
 #' @name theme_sankey
 #' @aliases theme_alluvial

@@ -9,7 +9,7 @@ A list of palettes for use in data visualization
 \examples{
 \dontrun{
 if (interactive()) {
-  check_R(
+  check_r(
     c(
       "stringr", "RColorBrewer", "ggsci", "Redmonder",
       "rcartocolor", "nord", "viridis", "pals", "oompaBase",

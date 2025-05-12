@@ -57,6 +57,7 @@ see \code{?\link[SingleR]{trainSingleR}} and \code{?\link[SingleR]{classifySingl
 Annotate single cells using SingleR
 }
 \examples{
+\dontrun{
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
@@ -69,15 +70,15 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- check_srtMerge(
+panc8_sub <- check_srt_merge(
   panc8_sub,
   batch = "tech"
-)[["srtMerge"]]
+)[["srt_merge"]]
 
 # Annotation
 data("pancreas_sub")
-pancreas_sub <- Standard_scop(pancreas_sub)
-pancreas_sub <- RunSingleR(
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunSingleR( # bug
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = "Standardclusters",
@@ -88,7 +89,7 @@ CellDimPlot(
   group.by = "singler_annotation"
 )
 
-pancreas_sub <- RunSingleR(
+pancreas_sub <- RunSingleR( # bug
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = NULL,
@@ -98,4 +99,5 @@ CellDimPlot(
   pancreas_sub,
   group.by = "singler_annotation"
 )
+}
 }

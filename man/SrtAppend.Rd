@@ -20,7 +20,8 @@ SrtAppend(
 
 \item{slots}{slots names.}
 
-\item{pattern}{A character string containing a regular expression. All data with matching names will be considered for appending.}
+\item{pattern}{A character string containing a regular expression.
+All data with matching names will be considered for appending.}
 
 \item{overwrite}{Whether to overwrite.}
 

@@ -152,7 +152,7 @@ WilcoxDETest <- function(
     yes = pbsapply,
     no = future_sapply
   )
-  check_R("limma")
+  check_r("limma")
   p_val <- my.sapply(
     X = 1:nrow(x = data.use),
     FUN = function(x) {
@@ -198,9 +198,11 @@ WilcoxDETest <- function(
 #' @param verbose A logical value indicating whether to display progress messages during the differential test. Default is TRUE.
 #' @param ... Additional arguments to pass to the \code{\link[Seurat]{FindMarkers}} function.
 #'
+#' @importFrom BiocParallel bplapply SerialParam bpprogressbar<- bpRNGseed<- bpworkers
+#' @export
+#'
 #' @seealso \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
 #' @examples
-#' library(dplyr)
 #' data("pancreas_sub")
 #' pancreas_sub <- RunDEtest(
 #'   srt = pancreas_sub,
@@ -219,11 +221,11 @@ WilcoxDETest <- function(
 #' )
 #' ht1$plot
 #'
-#' TopMarkers <- AllMarkers %>%
-#'   group_by(gene) %>%
-#'   top_n(1, avg_log2FC) %>%
-#'   group_by(group1) %>%
-#'   top_n(3, avg_log2FC)
+#' TopMarkers <- AllMarkers |>
+#'   dplyr::group_by(gene) |>
+#'   dplyr::top_n(1, avg_log2FC) |>
+#'   dplyr::group_by(group1) |>
+#'   dplyr::top_n(3, avg_log2FC)
 #' ht2 <- GroupHeatmap(
 #'   srt = pancreas_sub,
 #'   features = TopMarkers$gene,
@@ -238,7 +240,7 @@ WilcoxDETest <- function(
 #'   group_by = "SubCellType",
 #'   markers_type = "paired"
 #' )
-#' PairedMarkers <- filter(
+#' PairedMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -268,7 +270,8 @@ WilcoxDETest <- function(
 #'   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
-#' ht4 <- GroupHeatmap(panc8_sub,
+#' ht4 <- GroupHeatmap(
+#'   panc8_sub,
 #'   layer = "data",
 #'   features = ConservedMarkers1$gene,
 #'   feature_split = ConservedMarkers1$group1,
@@ -284,7 +287,7 @@ WilcoxDETest <- function(
 #'   grouping.var = "celltype",
 #'   markers_type = "conserved"
 #' )
-#' ConservedMarkers2 <- filter(
+#' ConservedMarkers2 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -305,7 +308,7 @@ WilcoxDETest <- function(
 #'   grouping.var = "tech",
 #'   markers_type = "disturbed"
 #' )
-#' DisturbedMarkers <- filter(
+#' DisturbedMarkers <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 #' )
@@ -346,11 +349,6 @@ WilcoxDETest <- function(
 #'   numerator = "smartseq2"
 #' )
 #' ht7$plot
-#'
-#' @importFrom BiocParallel bplapply SerialParam bpprogressbar<- bpRNGseed<- bpworkers
-#' @importFrom Seurat FindMarkers Assays Idents
-#' @export
-#'
 RunDEtest <- function(
     srt,
     group_by = NULL,
@@ -406,7 +404,7 @@ RunDEtest <- function(
   }
   assay <- assay %||% DefaultAssay(srt)
 
-  status <- check_DataType(srt, layer = layer, assay = assay)
+  status <- check_data_type(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
     stop("Data in the 'counts' layer is not raw counts.")
   }
@@ -488,8 +486,8 @@ RunDEtest <- function(
     }
 
     if (markers_type == "all") {
-      markers <- FindMarkers(
-        object = Assays(srt, assay),
+      markers <- Seurat::FindMarkers(
+        object = SeuratObject::Assays(srt, assay),
         layer = layer,
         cells.1 = cells1,
         cells.2 = cells2,
@@ -655,7 +653,7 @@ RunDEtest <- function(
     }
   } else {
     if (is.null(group_by)) {
-      cell_group <- Idents(srt)
+      cell_group <- Seurat::Idents(srt)
       group_by <- "active.ident"
     } else {
       cell_group <- srt[[group_by, drop = TRUE]]
@@ -681,7 +679,7 @@ RunDEtest <- function(
     )
 
     args1 <- list(
-      object = Assays(srt, assay),
+      object = SeuratObject::Assays(srt, assay),
       layer = layer,
       features = features,
       test.use = test.use,

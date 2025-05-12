@@ -34,7 +34,7 @@ RunWOT <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_Python("wot")
+  check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
     stop("One of 'srt', 'adata' must be provided.")
   }

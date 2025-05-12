@@ -5,10 +5,10 @@
 \title{Harmony_integrate}
 \usage{
 Harmony_integrate(
-  srtMerge = NULL,
+  srt_merge = NULL,
   batch = NULL,
   append = TRUE,
-  srtList = NULL,
+  srt_list = NULL,
   assay = NULL,
   do_normalization = NULL,
   normalization_method = "LogNormalize",
@@ -41,13 +41,13 @@ Harmony_integrate(
 )
 }
 \arguments{
-\item{srtMerge}{A merged Seurat object that includes the batch information.}
+\item{srt_merge}{A merged Seurat object that includes the batch information.}
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srtMerge).}
+\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
 
-\item{srtList}{A list of Seurat objects to be checked and preprocessed.}
+\item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 
@@ -85,7 +85,8 @@ Harmony_integrate(
 
 \item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{Harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.}
+\item{Harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
+If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
 

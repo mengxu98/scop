@@ -130,7 +130,7 @@ DynamicPlot <- function(
     seed = 11) {
   set.seed(seed)
 
-  check_R("MatrixGenerics")
+  check_r("MatrixGenerics")
   x_order <- match.arg(x_order)
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
     stop(group.by, " is not in the meta.data of srt object.")
