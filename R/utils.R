@@ -764,7 +764,7 @@ col2hex <- function(cname) {
 #' @param .env Environment in which to evaluate the call. This will be most useful if .fn is a string, or the function has side-effects.
 #' @importFrom rlang caller_env is_null is_scalar_character is_character is_function set_names env env_get env_bind syms call2
 #' @export
-invoke <- function(
+invoke_fun <- function(
     .fn,
     .args = list(),
     ...,

@@ -908,7 +908,7 @@ RunCSSMap <- function(
   CSSmodel <- srt_ref[[ref_css]]@misc$model
   raw_assay <- DefaultAssay(srt_query)
   DefaultAssay(srt_query) <- query_assay
-  srt_query <- invoke(
+  srt_query <- invoke_fun(
     .fn = get("css_project", envir = getNamespace("simspec")),
     .args = list(object = srt_query, model = CSSmodel)
   )

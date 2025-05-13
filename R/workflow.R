@@ -159,12 +159,12 @@ RenameFeatures <- function(
     srt,
     newnames = NULL,
     assays = NULL) {
-  assays <- assays[assays %in% Seurat::Assays(srt)] %||% Seurat::Assays(srt)
+  assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
   if (is.null(names(newnames))) {
     if (!identical(length(newnames), nrow(srt))) {
       stop("'newnames' must be named or the length of features in the srt.")
     }
-    if (length(unique(sapply(pancreas_sub@assays[assays], nrow))) > 1) {
+    if (length(unique(sapply(srt@assays[assays], nrow))) > 1) {
       stop(
         "Assays in the srt object have different number of features. Please use a named vectors."
       )
@@ -186,7 +186,11 @@ RenameFeatures <- function(
       )[index]]
     }
     if (length(methods::slot(assay_obj, "var.features")) > 0) {
-      index <- which(methods::slot(assay_obj, "var.features") %in% names(newnames))
+      index <- which(
+        methods::slot(
+          assay_obj, "var.features"
+        ) %in% names(newnames)
+      )
       methods::slot(assay_obj, "var.features")[index] <- newnames[methods::slot(
         assay_obj,
         "var.features"
@@ -780,7 +784,7 @@ RunDimReduction <- function(
     for (nm in names(linear_reduction_params)) {
       params[[nm]] <- linear_reduction_params[[nm]]
     }
-    srt <- invoke(.fn = fun_use, .args = params)
+    srt <- invoke_fun(.fn = fun_use, .args = params)
 
     if (is.null(rownames(srt[[paste0(prefix, linear_reduction)]]))) {
       rownames(
@@ -960,7 +964,7 @@ RunDimReduction <- function(
     for (nm in names(nonlinear_reduction_params)) {
       params[[nm]] <- nonlinear_reduction_params[[nm]]
     }
-    srt <- invoke(.fn = fun_use, .args = params)
+    srt <- invoke_fun(.fn = fun_use, .args = params)
 
     srt@reductions[[paste0(
       prefix,
@@ -1727,7 +1731,7 @@ Seurat_integrate <- function(
     for (nm in names(FindIntegrationAnchors_params)) {
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
-    srt_anchors <- invoke(.fn = Seurat::FindIntegrationAnchors, .args = params1)
+    srt_anchors <- invoke_fun(.fn = Seurat::FindIntegrationAnchors, .args = params1)
 
     cat(paste0(
       "[",
@@ -1745,7 +1749,7 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateData_params)) {
       params2[[nm]] <- IntegrateData_params[[nm]]
     }
-    srtIntegrated <- invoke(.fn = Seurat::IntegrateData, .args = params2)
+    srtIntegrated <- invoke_fun(.fn = Seurat::IntegrateData, .args = params2)
 
     SeuratObject::DefaultAssay(srtIntegrated) <- "Seuratcorrected"
     SeuratObject::VariableFeatures(srtIntegrated[["Seuratcorrected"]]) <- HVF
@@ -1820,7 +1824,7 @@ Seurat_integrate <- function(
     for (nm in names(FindIntegrationAnchors_params)) {
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
-    srt_anchors <- invoke(.fn = Seurat::FindIntegrationAnchors, .args = params1)
+    srt_anchors <- invoke_fun(.fn = Seurat::FindIntegrationAnchors, .args = params1)
 
     cat(paste0(
       "[",
@@ -1837,7 +1841,7 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateEmbeddings_params)) {
       params2[[nm]] <- IntegrateEmbeddings_params[[nm]]
     }
-    srtIntegrated <- invoke(.fn = IntegrateEmbeddings, .args = params2)
+    srtIntegrated <- invoke_fun(.fn = IntegrateEmbeddings, .args = params2)
 
     if (is.null(linear_reduction_dims_use)) {
       linear_reduction_dims_use <- 2:max(srtIntegrated@reductions[[paste0(
@@ -2121,7 +2125,7 @@ scVI_integrate <- function(
     for (nm in names(SCVI_params)) {
       params[[nm]] <- SCVI_params[[nm]]
     }
-    model <- invoke(.fn = scvi$model$SCVI, .args = params)
+    model <- invoke_fun(.fn = scvi$model$SCVI, .args = params)
     model$train()
     srtIntegrated <- srt_merge
     srt_merge <- NULL
@@ -2144,7 +2148,7 @@ scVI_integrate <- function(
     for (nm in names(PEAKVI_params)) {
       params[[nm]] <- PEAKVI_params[[nm]]
     }
-    model <- invoke(.fn = scvi$model$PEAKVI, .args = params)
+    model <- invoke_fun(.fn = scvi$model$PEAKVI, .args = params)
     model$train()
     srtIntegrated <- srt_merge
     srt_merge <- NULL
@@ -2464,7 +2468,7 @@ MNN_integrate <- function(
   for (nm in names(mnnCorrect_params)) {
     params[[nm]] <- mnnCorrect_params[[nm]]
   }
-  out <- invoke(.fn = batchelor::mnnCorrect, .args = params)
+  out <- invoke_fun(.fn = batchelor::mnnCorrect, .args = params)
 
   srtIntegrated <- srt_merge
   srt_merge <- NULL
@@ -2790,7 +2794,7 @@ fastMNN_integrate <- function(
   for (nm in names(fastMNN_params)) {
     params[[nm]] <- fastMNN_params[[nm]]
   }
-  out <- invoke(.fn = batchelor::fastMNN, .args = params)
+  out <- invoke_fun(.fn = batchelor::fastMNN, .args = params)
 
   srtIntegrated <- srt_merge
   srt_merge <- NULL
@@ -3180,7 +3184,7 @@ Harmony_integrate <- function(
   for (nm in names(RunHarmony_params)) {
     params[[nm]] <- RunHarmony_params[[nm]]
   }
-  srtIntegrated <- invoke(.fn = RunHarmony2, .args = params)
+  srtIntegrated <- invoke_fun(.fn = RunHarmony2, .args = params)
 
   if (is.null(Harmony_dims_use)) {
     Harmony_dims_use <- 1:ncol(srtIntegrated[["Harmony"]]@cell.embeddings)
@@ -3454,7 +3458,7 @@ Scanorama_integrate <- function(
     for (nm in names(Scanorama_params)) {
       params[[nm]] <- Scanorama_params[[nm]]
     }
-    corrected <- invoke(.fn = scanorama$correct, .args = params)
+    corrected <- invoke_fun(.fn = scanorama$correct, .args = params)
 
     cor_value <- Matrix::t(do.call(rbind, corrected[[2]]))
     rownames(cor_value) <- corrected[[3]]
@@ -3477,7 +3481,7 @@ Scanorama_integrate <- function(
     for (nm in names(Scanorama_params)) {
       params[[nm]] <- Scanorama_params[[nm]]
     }
-    integrated <- invoke(.fn = scanorama$integrate, .args = params)
+    integrated <- invoke_fun(.fn = scanorama$integrate, .args = params)
 
     dim_reduction <- do.call(rbind, integrated[[1]])
     rownames(dim_reduction) <- unlist(sapply(assaylist, rownames))
@@ -3832,7 +3836,7 @@ BBKNN_integrate <- function(
   for (nm in names(bbknn_params)) {
     params[[nm]] <- bbknn_params[[nm]]
   }
-  bem <- invoke(.fn = bbknn$matrix$bbknn, .args = params)
+  bem <- invoke_fun(.fn = bbknn$matrix$bbknn, .args = params)
   n.neighbors <- bem[[3]]$n_neighbors
   srtIntegrated <- srt_merge
 
@@ -4235,8 +4239,10 @@ CSS_integrate <- function(
   for (nm in names(CSS_params)) {
     params[[nm]] <- CSS_params[[nm]]
   }
-  srtIntegrated <- invoke(
-    .fn = get("cluster_sim_spectrum", envir = getNamespace("simspec")),
+  srtIntegrated <- invoke_fun(
+    .fn = get("cluster_sim_spectrum",
+      envir = getNamespace("simspec")
+    ),
     .args = params
   )
 
@@ -4552,7 +4558,7 @@ LIGER_integrate <- function(
   for (nm in names(optimizeALS_params)) {
     params1[[nm]] <- optimizeALS_params[[nm]]
   }
-  out1 <- invoke(.fn = rliger::optimizeALS, .args = params1)
+  out1 <- invoke_fun(.fn = rliger::optimizeALS, .args = params1)
   cat("\n")
   colnames(x = out1$W) <- colnames(scale.data[[1]])
   reduction1 <- do.call(what = "rbind", args = out1$H)
@@ -4588,7 +4594,7 @@ LIGER_integrate <- function(
   for (nm in names(quantilenorm_params)) {
     params2[[nm]] <- quantilenorm_params[[nm]]
   }
-  out2 <- invoke(.fn = rliger::quantile_norm, .args = params2)
+  out2 <- invoke_fun(.fn = rliger::quantile_norm, .args = params2)
   srt_merge[["LIGER"]] <- CreateDimReducObject(
     embeddings = out2$H.norm,
     assay = SeuratObject::DefaultAssay(srt_merge),
@@ -4964,7 +4970,7 @@ Conos_integrate <- function(
   for (nm in names(buildGraph_params)) {
     params[[nm]] <- buildGraph_params[[nm]]
   }
-  invoke(.fn = srt_list_con[["buildGraph"]], .args = params)
+  invoke_fun(.fn = srt_list_con[["buildGraph"]], .args = params)
   conos_graph <- as_adjacency_matrix(
     srt_list_con$graph,
     type = "both",
@@ -5259,7 +5265,12 @@ ComBat_integrate <- function(
   for (nm in names(ComBat_params)) {
     params[[nm]] <- ComBat_params[[nm]]
   }
-  corrected <- suppressMessages(invoke(.fn = sva::ComBat, .args = params))
+  corrected <- suppressMessages(
+    invoke_fun(
+      .fn = sva::ComBat,
+      .args = params
+    )
+  )
 
   srtIntegrated <- srt_merge
   srt_merge <- NULL
@@ -5606,7 +5617,7 @@ Integration_scop <- function(
       paste0("Start ", integration_method, "_integrate"),
       "\n"
     ))
-    srtIntegrated <- invoke(
+    srtIntegrated <- invoke_fun(
       .fn = paste0(integration_method, "_integrate"),
       .args = args[
         names(args) %in% formalArgs(paste0(integration_method, "_integrate"))
