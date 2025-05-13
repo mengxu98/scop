@@ -430,6 +430,7 @@ GroupHeatmap <- function(
     exp_method <- match.arg(exp_method)
     exp_name <- paste0(exp_method, "(", data_nm, ")")
   }
+
   if (!is.null(grouping.var) && exp_method != "log2fc") {
     warning(
       "When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'",
@@ -472,12 +473,14 @@ GroupHeatmap <- function(
     srt@meta.data[["All.groups"]] <- factor("")
     group.by <- "All.groups"
   }
+
   if (any(!group.by %in% colnames(srt@meta.data))) {
     stop(
       group.by[!group.by %in% colnames(srt@meta.data)],
       " is not in the meta data of the Seurat object."
     )
   }
+
   if (!is.null(group.by)) {
     for (g in group.by) {
       if (!is.factor(srt@meta.data[[g]])) {
@@ -488,6 +491,7 @@ GroupHeatmap <- function(
       }
     }
   }
+
   if (length(split.by) > 1) {
     stop("'split.by' only support one variable.")
   }
@@ -509,6 +513,7 @@ GroupHeatmap <- function(
     srt@meta.data[, group.by, drop = FALSE],
     function(x) length(unique(x))
   ))
+
   if (any(group_elements == 1) && exp_method == "zscore") {
     stop(
       "'zscore' cannot be applied to the group(s) consisting of one element: ",
@@ -521,7 +526,7 @@ GroupHeatmap <- function(
   if (length(group_palette) != length(group.by)) {
     stop("'group_palette' must be the same length as 'group.by'")
   }
-  group_palette <- setNames(group_palette, nm = group.by)
+  group_palette <- stats::setNames(group_palette, nm = group.by)
   raw.group.by <- group.by
   raw.group_palette <- group_palette
   if (isTRUE(within_groups)) {
@@ -930,7 +935,12 @@ GroupHeatmap <- function(
         c(group.by, intersect(cell_annotation, colnames(srt@meta.data))),
         drop = FALSE
       ],
-      t(srt@assays[[assay]]@data[
+      Matrix::t(
+        Seurat::GetAssayData(
+          srt,
+          assay = assay,
+          layer = "data"
+        )[
         intersect(cell_annotation, rownames(srt@assays[[assay]])) %||%
           integer(),
         cells,
@@ -944,11 +954,11 @@ GroupHeatmap <- function(
       features = features,
       features_uique = features_unique
     ),
-    srt@assays[[assay]]@meta.features[
+    srt@assays[[assay]]@features[
       features,
       intersect(
         feature_annotation,
-        colnames(srt@assays[[assay]]@meta.features)
+        colnames(srt@assays[[assay]]@features)
       ),
       drop = FALSE
     ]
@@ -964,7 +974,8 @@ GroupHeatmap <- function(
       title = "Percent",
       type = "points",
       pch = 21,
-      size = dot_size * seq(0.2, 1, length.out = 5), # unit(pi * grid_size^2 * seq(0.2, 1, length.out = 5), "cm"),
+      size = dot_size * seq(0.2, 1, length.out = 5), 
+      # unit(pi * grid_size^2 * seq(0.2, 1, length.out = 5), "cm"),
       grid_height = dot_size * seq(0.2, 1, length.out = 5) * 0.8,
       grid_width = dot_size,
       legend_gp = gpar(fill = "grey30"),
@@ -1059,10 +1070,6 @@ GroupHeatmap <- function(
         )
       )
       ha_top_list[[cell_group]] <- ha_cell_group
-      #   lgd[[cell_group]] <- Legend(
-      #     title = cell_group, labels = levels(srt@meta.data[[cell_group]]),
-      #     legend_gp = gpar(fill = palette_scop(levels(srt@meta.data[[cell_group]]), palette = group_palette[i], palcolor = group_palcolor[[i]])), border = TRUE
-      #   )
     }
 
     if (!is.null(split.by)) {
@@ -1332,7 +1339,7 @@ GroupHeatmap <- function(
             }
           )
           ha_cell <- list()
-          ha_cell[[cellan]] <- anno_customize(
+          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
             x = x_nm,
             graphics = graphics,
             which = ifelse(flip, "row", "column"),
@@ -1359,10 +1366,6 @@ GroupHeatmap <- function(
             ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
           }
         }
-        # lgd[[cellan]] <- Legend(
-        #   title = cellan, labels = levels(cell_anno),
-        #   legend_gp = gpar(fill = palette_scop(cell_anno, palette = palette, palcolor = palcolor)), border = TRUE
-        # )
       }
     }
   }
@@ -1414,7 +1417,6 @@ GroupHeatmap <- function(
                 "). Please set a larger fuzzification parameter manually."
               )
             }
-            # mfuzz.plot(eset, cl,new.window = FALSE)
             row_split <- feature_split <- cl$cluster
           }
         }
@@ -1525,7 +1527,7 @@ GroupHeatmap <- function(
       ),
       envir = environment()
     )
-    ha_clusters <- HeatmapAnnotation(
+    ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = anno_block(
         align_to = split(seq_along(row_split_raw), row_split_raw),
         panel_fun = getFunction("panel_fun", where = environment()),
@@ -1832,20 +1834,6 @@ GroupHeatmap <- function(
         combine = FALSE
       )
       lgd[["ht"]] <- NULL
-      # legend <- get_legend(vlnplots[[1]])
-      # funbody <- paste0(
-      #   "
-      #         g <- as_grob(subplots_list[['", cellan, ":", cell_group, "']]", "[['", nm, "']] + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-      #         grid.draw(g)
-      #         "
-      # )
-      # funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-      # eval(parse(text = paste("graphics[[nm]] <- function(x, y, w, h) {", funbody, "}", sep = "")), envir = environment())
-      # graphics = list(
-      #   " " = function(x, y, w, h) {
-      #     grid_draw(legend,x = x,y = y,width = w,height = h)
-      # })
-      # lgd[["ht"]] <- Legend(title = " ", at = names(graphics), graphics = graphics, border = TRUE)
 
       for (nm in names(vlnplots)) {
         gtable <- as_grob(
@@ -1871,17 +1859,6 @@ GroupHeatmap <- function(
         }
       )
       y_nm_list[[paste0("heatmap_group:", cell_group)]] <- y_nm
-
-      # popViewport()
-      # grid.draw(roundrectGrob())
-      # groblist <- extractgrobs(vlnplots = vlnplots_list[[paste0('heatmap_group:' ,cell_group)]],
-      #                          x_nm =  x_nm_list[[paste0('heatmap_group:', cell_group)]],
-      #                          y_nm= y_nm_list[[paste0('heatmap_group:',cell_group)]],
-      #                          x = 1:4,y = 1:4);
-      # grid_draw(groblist,
-      #   x = unit(c(0.33, 0.67, 0.33, 0.67), "npc"), y = unit(c(0.33, 0.33, 0.67, 0.67), "npc"),
-      #   width = rep(unit(1, "in"), 4), height = rep(unit(1, "in"), 4)
-      # )
     }
 
     funbody <- paste0(
@@ -1972,21 +1949,7 @@ GroupHeatmap <- function(
         }
       }
     )
-    # groblist <- extractgrobs(vlnplots = vlnplots_list[[paste0("heatmap_group:", cell_group)]],
-    #                          x_nm =  x_nm_list[[paste0("heatmap_group:", cell_group)]],
-    #                          y_nm= y_nm_list[[paste0("heatmap_group:", cell_group)]],
-    #                          x = 1:3,y = 1:3)
-    #
-    #
-    #
-    # gtable <- groblist[[paste0(
-    #   x_nm_list[[paste0("heatmap_group:", cell_group)]][1],
-    #   ":",
-    #   y_nm_list[[paste0("heatmap_group:", cell_group)]][1]
-    # )]]
-    # ind_mat = restore_matrix(j, i, x, y);
-    # ind = unique(ind_mat);
-    # grid_draw(groblist,x=x[ind],y= y[ind]);
+
     funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
     eval(
       parse(
@@ -2120,10 +2083,6 @@ GroupHeatmap <- function(
   )
   width_sum <- rendersize[["width_sum"]]
   height_sum <- rendersize[["height_sum"]]
-  # cat("width:", width, "\n")
-  # cat("height:", height, "\n")
-  # cat("width_sum:", width_sum, "\n")
-  # cat("height_sum:", height_sum, "\n")
 
   if (isTRUE(fix)) {
     fixsize <- heatmap_fixsize(
@@ -2137,8 +2096,6 @@ GroupHeatmap <- function(
     )
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
-    # cat("ht_width:", ht_width, "\n")
-    # cat("ht_height:", ht_height, "\n")
 
     gTree <- grid.grabExpr(
       {
@@ -3766,10 +3723,6 @@ FeatureHeatmap <- function(
   )
   width_sum <- rendersize[["width_sum"]]
   height_sum <- rendersize[["height_sum"]]
-  # cat("width:", width, "\n")
-  # cat("height:", height, "\n")
-  # cat("width_sum:", width_sum, "\n")
-  # cat("height_sum:", height_sum, "\n")
 
   if (isTRUE(fix)) {
     fixsize <- heatmap_fixsize(
@@ -3786,7 +3739,7 @@ FeatureHeatmap <- function(
     # cat("ht_width:", ht_width, "\n")
     # cat("ht_height:", ht_height, "\n")
 
-    gTree <- grid.grabExpr(
+    gTree <- grid::grid.grabExpr(
       {
         draw(ht_list, annotation_legend_list = lgd)
         for (enrich in db) {

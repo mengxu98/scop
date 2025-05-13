@@ -455,13 +455,13 @@ DynamicHeatmap <- function(
       )
     }
     if (
-      any(!feature_annotation %in% colnames(srt@assays[[assay]]@meta.features))
+      any(!feature_annotation %in% colnames(srt@assays[[assay]]@features))
     ) {
       stop(
         "feature_annotation: ",
         paste0(
           feature_annotation[
-            !feature_annotation %in% colnames(srt@assays[[assay]]@meta.features)
+            !feature_annotation %in% colnames(srt@assays[[assay]]@features)
           ],
           collapse = ","
         ),
@@ -756,7 +756,7 @@ DynamicHeatmap <- function(
   if (!is.null(feature_annotation)) {
     feature_metadata <- cbind.data.frame(
       feature_metadata,
-      srt@assays[[assay]]@meta.features[
+      srt@assays[[assay]]@features[
         rownames(feature_metadata),
         feature_annotation,
         drop = FALSE

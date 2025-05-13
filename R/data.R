@@ -48,7 +48,7 @@
 #'   VariableFeatures(pancreas_sub) <- rownames(
 #'     pancreas_sub[["RNA"]]
 #'   )[which(
-#'     pancreas_sub[["RNA"]]@meta.features$highly_variable_genes == "True"
+#'     pancreas_sub[["RNA"]]@features$highly_variable_genes == "True"
 #'   )]
 #'   # usethis::use_data(pancreas_sub, compress = "xz")
 #' }
