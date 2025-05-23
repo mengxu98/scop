@@ -1,0 +1,127 @@
+Package: scop
+Type: Package
+Title: Single Cell Omics analysis Pipeline
+Version: 0.0.1
+Authors@R: 
+    person("Zhang", "Hao", email = "aozhang@njmu.edu.cn@qq.com", role = c("aut", "cre"))
+    person("Meng", "Xu", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054"))
+Maintainer: Meng Xu <mengxu98@qq.com>
+Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: True
+LazyDataCompression: xz
+Depends:
+    R (>= 4.1.0)
+biocViews: SingleCell, GeneExpression, SingleCellWorkflow, Visualization, ShinyApps
+Imports:
+    AnnotationDbi,
+    biomaRt,
+    BiocParallel,
+    circlize,
+    clusterProfiler,
+    ComplexHeatmap (>= 2.13.0),
+    data.table,
+    dplyr (>= 1.1.0),
+    future,
+    future.apply,
+    ggnewscale,
+    ggplot2 (>= 3.4.0),
+    ggrepel,
+    ggforce,
+    GO.db,
+    GOSemSim,
+    grDevices,
+    grid,
+    gtable,
+    HDF5Array,
+    igraph,
+    intrinsicDimension,
+    methods,
+    mgcv,
+    Matrix,
+    patchwork,
+    pbapply,
+    png,
+    plotly,
+    proxyC,
+    R.cache,
+    R.utils,
+    reshape2,
+    reticulate,
+    rlang,
+    rhdf5,
+    scales,
+    simplifyEnrichment (>= 1.5.2),
+    slingshot,
+    Signac,
+    Seurat (>= 4.2.0),
+    SeuratObject,
+    uwot
+Suggests:
+    AUCell,
+    batchelor,
+    BBmisc,
+    Biobase,
+    BiocGenerics,
+    BiocManager,
+    concaveman,
+    conos,
+    covr,
+    cowplot,
+    dendextend,
+    destiny,
+    devtools,
+    DDRTree,
+    e1071,
+    ggpubr,
+    ggridges,
+    ggsignif,
+    ggupset,
+    ggVennDiagram,
+    ggwordcloud,
+    glmGamPoi,
+    glmpca,
+    harmony,
+    hexbin,
+    htmlwidgets,
+    httr,
+    metR,
+    monocle,
+    MatrixGenerics,
+    MASS,
+    NMF,
+    openxlsx,
+    org.Hs.eg.db,
+    org.Mm.eg.db,
+    promises,
+    purrr,
+    PFAM.db,
+    ragg,
+    reactome.db,
+    renv,
+    RcppParallel,
+    RcppML,
+    scattermore,
+    scds,
+    scDblFinder,
+    scmap,
+    shiny (>= 1.6.0),
+    styler,
+    stringr,
+    sva,
+    symphony,
+    S4Vectors,
+    SingleR,
+    SingleCellExperiment,
+    SummarizedExperiment,
+    testthat (>= 3.0.0),
+    tidyr,
+    umap,
+    UCell,
+    withr
+RoxygenNote: 7.3.2
+Config/Needs/website: mengxu98/mxtemplate
+Config/testthat/edition: 3
+URL: https://mengxu98.github.io/scop/
+BugReports: https://github.com/mengxu98/scop/issues

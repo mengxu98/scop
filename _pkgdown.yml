@@ -1,0 +1,44 @@
+url: https://mengxu98.github.io/scop/
+
+template:
+  bootstrap: 5
+  light-switch: true
+  package: mxtemplate
+
+code:
+  width: 120
+
+navbar:
+  title: "scop"
+  structure:
+    left:  [articles, reference, tutorials, news]
+    right: [github, mengxu, lightswitch]
+
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/mengxu98/scop
+      title: GitHub
+      aria-label: GitHub repository
+
+    mengxu:
+      icon: fas fa-home fa-lg
+      href: https://github.com/mengxu98
+      title: MengXu
+      aria-label: MengXu's GitHub profile
+
+    reference:
+      text: Reference
+      href: reference/index.html
+
+  figures:
+    dev: ragg::agg_png
+    dpi: 96
+    dev.args: []
+    fig.ext: png
+    fig.width: 10
+    fig.height: ~
+    fig.retina: 2
+    fig.asp: 1.618
+    bg: NA
+    other.parameters: []
