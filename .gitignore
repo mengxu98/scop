@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rprofile
+SCExplorer
+docs
+renv
+renv.lock
+tmaps
+src/*.so
+src/*.o
+test.R
+.DS_Store
