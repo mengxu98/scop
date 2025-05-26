@@ -1,14 +1,15 @@
+# macos
+.DS_Store
+
+# R
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 .Rprofile
+
+# directories and files
 SCExplorer
 docs
-renv
-renv.lock
 tmaps
-src/*.so
-src/*.o
-test.R
-.DS_Store
+test
