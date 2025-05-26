@@ -67,19 +67,31 @@ trap cleanup EXIT
 if [[ "$RE_RUN_PKGDOWN" == true ]]; then
     echo "Building pkgdown site..."
     Rscript -e 'pkgdown::build_site()'
-else
-    echo "Skipping pkgdown site build (use --re-run-pkgdown to force rebuild)"
+fi
+
+# Ensure docs directory exists
+if [[ ! -d "docs" ]]; then
+    echo "Error: docs/ directory not found after build process"
+    exit 1
 fi
 
 # Create and switch to a new temporary branch
 echo "Creating temporary branch..."
 git checkout --orphan temp_gh_pages
 
-# Remove everything except docs/
+# Save docs directory
+echo "Saving docs directory..."
+cp -r docs/ /tmp/pkgdown_docs
+
+# Remove all files
+echo "Cleaning working directory..."
 git rm -rf .
-git clean -fxd
-mv docs/* .
-rm -rf docs/
+rm -rf .* 2>/dev/null || true
+
+# Copy back the docs contents
+echo "Restoring docs contents..."
+cp -r /tmp/pkgdown_docs/* .
+rm -rf /tmp/pkgdown_docs
 
 # Add all files
 echo "Adding built files..."
