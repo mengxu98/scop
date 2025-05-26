@@ -81,42 +81,99 @@ This function can set the panel width/height of plot to a fixed value and raster
 }
 \examples{
 library(ggplot2)
-p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
+p <- ggplot(
+  data = mtcars, aes(x = mpg, y = wt, colour = cyl)
+) +
   geom_point() +
   facet_wrap(~gear, nrow = 2)
 # fix the size of panel
-panel_fix(p, width = 5, height = 3, units = "cm")
+panel_fix(
+  p,
+  width = 5,
+  height = 3,
+  units = "cm"
+)
 # rasterize the panel
-panel_fix(p, width = 5, height = 3, units = "cm", raster = TRUE, dpi = 30)
+panel_fix(
+  p,
+  width = 5,
+  height = 3,
+  units = "cm",
+  raster = TRUE,
+  dpi = 90
+)
 
 # panel_fix will build and render the plot when the input is a ggplot object.
 # so after panel_fix, the size of the object will be changed.
 object.size(p)
-object.size(panel_fix(p, width = 5, height = 3, units = "cm"))
+object.size(
+  panel_fix(
+    p,
+    width = 5,
+    height = 3,
+    units = "cm"
+  )
+)
 
 ## save the plot with appropriate size
-# p_fix <- panel_fix(p, width = 5, height = 3, units = "cm")
+# p_fix <- panel_fix(
+#   p,
+#   width = 5,
+#   height = 3,
+#   units = "cm"
+# )
 # plot_size <- attr(p_fix, "size")
 # ggsave(
-#   filename = "p_fix.png", plot = p_fix,
-#   units = plot_size$units, width = plot_size$width, height = plot_size$height
+#   filename = "p_fix.png",
+#   plot = p_fix,
+#   units = plot_size$units,
+#   width = plot_size$width,
+#   height = plot_size$height
 # )
 ## or save the plot directly
-# p_fix <- panel_fix(p, width = 5, height = 3, units = "cm", save = "p_fix.png")
+# p_fix <- panel_fix(
+#   p,
+#   width = 5,
+#   height = 3,
+#   units = "cm",
+#   save = "p_fix.png"
+# )
 
 # fix the panel of the plot combined by patchwork
 data("pancreas_sub")
-p1 <- CellDimPlot(pancreas_sub, "Phase", aspect.ratio = 1) # ggplot object
-p2 <- FeatureDimPlot(pancreas_sub, "Ins1", aspect.ratio = 0.5) # ggplot object
-p <- p1 / p2 # plot is combined by patchwork
-# fix the panel size for each plot, the width will be calculated automatically based on aspect.ratio
+p1 <- CellDimPlot(
+  pancreas_sub,
+  "Phase",
+  aspect.ratio = 1
+)
+p2 <- FeatureDimPlot(
+  pancreas_sub,
+  "Ins1",
+  aspect.ratio = 0.5
+)
+p <- p1 / p2
+# fix the panel size for each plot,
+# the width will be calculated automatically based on aspect.ratio
 panel_fix(p, height = 1)
 
 # fix the panel of the plot combined by plot_grid
 if (requireNamespace("cowplot", quietly = TRUE)) {
-  p1 <- CellDimPlot(pancreas_sub, c("Phase", "SubCellType"), label = TRUE) # plot is combined by patchwork
-  p2 <- FeatureDimPlot(pancreas_sub, c("Ins1", "Gcg"), label = TRUE) # plot is combined by patchwork
-  p <- cowplot::plot_grid(p1, p2, nrow = 2) # plot is combined by plot_grid
+  p1 <- CellDimPlot(
+    pancreas_sub,
+    c("Phase", "SubCellType"),
+    label = TRUE
+  )
+  p2 <- FeatureDimPlot(
+    pancreas_sub,
+    c("Ins1", "Gcg"),
+    label = TRUE
+  )
+  p <- cowplot::plot_grid(
+    p1,
+    p2,
+    nrow = 2
+  )
+  # plot is combined by plot_grid
   # fix the size of panel for each plot
   panel_fix(p, height = 1)
   # rasterize the panel while keeping all labels and text in vector format
@@ -130,7 +187,8 @@ ht1 <- GroupHeatmap(pancreas_sub,
     "Neurog3", "Hes6", # EPs
     "Fev", "Neurod1", # Pre-endocrine
     "Rbp4", "Pyy", # Endocrine
-    "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+    "Ins1", "Gcg", "Sst", "Ghrl"
+    # Beta, Alpha, Delta, Epsilon
   ),
   group.by = c("CellType", "SubCellType"),
   show_row_names = TRUE
@@ -153,11 +211,11 @@ ht2 <- GroupHeatmap(pancreas_sub,
 )
 # the size of the heatmap is already fixed
 ht2$plot
-# when no height/width is specified, panel_fix does not change the size of the heatmap.
+# when no height/width is specified,
+# panel_fix does not change the size of the heatmap.
 panel_fix(ht2$plot)
 # rasterize the heatmap body
 panel_fix(ht2$plot, raster = TRUE, dpi = 30)
 # however, gene labels on the left and enrichment annotations on the right cannot be adjusted
 panel_fix(ht2$plot, height = 5, width = 10)
-
 }

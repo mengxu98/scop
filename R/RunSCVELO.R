@@ -189,8 +189,8 @@ RunSCVELO <- function(
     if (is.null(srt)) {
       return(srt_out)
     } else {
-      srt_out1 <- SrtAppend(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- SrtAppend(
+      srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
+      srt_out2 <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = paste0(

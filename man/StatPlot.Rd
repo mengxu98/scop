@@ -71,11 +71,14 @@ StatPlot(
 
 \item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.}
 
-\item{plot_type}{The type of plot to create. Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".}
+\item{plot_type}{The type of plot to create.
+Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".}
 
-\item{stat_type}{The type of statistic to compute for the plot. Can be one of "percent" or "count".}
+\item{stat_type}{The type of statistic to compute for the plot.
+Can be one of "percent" or "count".}
 
-\item{position}{The position adjustment for the plot. Can be one of "stack" or "dodge".}
+\item{position}{The position adjustment for the plot.
+Can be one of "stack" or "dodge".}
 
 \item{palette}{The name of the color palette to use for the plot.}
 
@@ -109,7 +112,8 @@ StatPlot(
 
 \item{ylab}{The y-axis label of the plot.}
 
-\item{legend.position}{The position of the legend in the plot. Can be one of "right", "left", "bottom", "top", or "none".}
+\item{legend.position}{The position of the legend in the plot.
+Can be one of "right", "left", "bottom", "top", or "none".}
 
 \item{legend.direction}{The direction of the legend in the plot. Can be one of "vertical" or "horizontal".}
 
@@ -130,23 +134,46 @@ StatPlot(
 \item{seed}{The random seed to use for reproducible results.}
 }
 \description{
-Visualizes data using various plot types such as bar plots, rose plots, ring plots, pie charts, trend plots, area plots, dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
+Visualizes data using various plot types such as bar plots,
+rose plots, ring plots, pie charts, trend plots, area plots,
+dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 }
 \examples{
 data("pancreas_sub")
 head(pancreas_sub@meta.data)
-StatPlot(pancreas_sub@meta.data, stat.by = "Phase", group.by = "CellType", plot_type = "bar", label = TRUE)
-
-head(pancreas_sub[["RNA"]]@meta.features)
-StatPlot(pancreas_sub[["RNA"]]@meta.features, stat.by = "highly_variable_genes", plot_type = "ring", label = TRUE)
-
-pancreas_sub <- AnnotateFeatures(pancreas_sub, species = "Mus_musculus", IDtype = "symbol", db = "GeneType")
-head(pancreas_sub[["RNA"]]@meta.features)
-StatPlot(pancreas_sub[["RNA"]]@meta.features,
-  stat.by = "highly_variable_genes", group.by = "GeneType",
-  stat_type = "count", plot_type = "bar", position = "dodge", label = TRUE, NA_stat = FALSE
+StatPlot(
+  pancreas_sub@meta.data,
+  stat.by = "Phase",
+  group.by = "CellType",
+  plot_type = "bar",
+  label = TRUE
 )
 
+head(pancreas_sub[["RNA"]]@meta.features)
+StatPlot(
+  pancreas_sub[["RNA"]]@meta.features,
+  stat.by = "highly_variable_genes",
+  plot_type = "ring",
+  label = TRUE
+)
+
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  IDtype = "symbol",
+  db = "GeneType"
+)
+head(pancreas_sub[["RNA"]]@meta.features)
+StatPlot(
+  pancreas_sub[["RNA"]]@meta.features,
+  stat.by = "highly_variable_genes",
+  group.by = "GeneType",
+  stat_type = "count",
+  plot_type = "bar",
+  position = "dodge",
+  label = TRUE,
+  NA_stat = FALSE
+)
 }
 \seealso{
 \code{\link{CellStatPlot}}

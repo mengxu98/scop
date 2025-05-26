@@ -42,6 +42,11 @@
 #' @param density_filled Whether to add filled contour bands instead of contour lines.
 #' @param density_filled_palette Color palette used to fill contour bands.
 #' @param density_filled_palcolor Custom colors used to fill contour bands.
+#' @param add_mark Whether to add marks around cell groups. Default is \code{FALSE}.
+#' @param mark_type Type of mark to add around cell groups. One of "hull", "ellipse", "rect", or "circle". Default is "hull".
+#' @param mark_expand Expansion of the mark around the cell group. Default is \code{grid::unit(3, "mm")}.
+#' @param mark_alpha Transparency of the mark. Default is 0.1.
+#' @param mark_linetype Line type of the mark border. Default is 1 (solid line).
 #' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
 #' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
@@ -120,6 +125,8 @@
 #' @param seed Random seed set for reproducibility
 #'
 #' @seealso \code{\link{FeatureDimPlot}}
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -215,7 +222,7 @@
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
 #'   add_mark = TRUE,
-#'   mark_expand = unit(1, "mm")
+#'   mark_expand = grid::unit(1, "mm")
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -298,7 +305,9 @@
 #'   group.by = "CellType",
 #'   reduction = "UMAP",
 #'   stat.by = "Phase",
-#'   stat_plot_type = "bar", stat_type = "count", stat_plot_position = "dodge"
+#'   stat_plot_type = "bar", 
+#' stat_type = "count", 
+#' stat_plot_position = "dodge"
 #' )
 #'
 #' # Chane the plot type from point to the hexagonal bin
@@ -339,7 +348,6 @@
 #'   edge_color = "grey80"
 #' )
 #'
-#' \dontrun{
 #' # Show lineages on the plot based on the pseudotime
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -373,6 +381,7 @@
 #'   lineages_span = 0.1
 #' )
 #'
+#' \dontrun{
 #' # Show PAGA results on the plot
 #' pancreas_sub <- RunPAGA(
 #'   srt = pancreas_sub,
@@ -441,7 +450,8 @@
 #'   reduction = "UMAP",
 #'   pt.size = 5,
 #'   pt.alpha = 0.2,
-#'   velocity = "stochastic", velocity_plot_type = "grid"
+#'   velocity = "stochastic",
+#'  velocity_plot_type = "grid"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -449,7 +459,9 @@
 #'   reduction = "UMAP",
 #'   pt.size = 5,
 #'   pt.alpha = 0.2,
-#'   velocity = "stochastic", velocity_plot_type = "grid", velocity_scale = 1.5
+#'   velocity = "stochastic",
+#'  velocity_plot_type = "grid", 
+#' velocity_scale = 1.5
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -457,7 +469,8 @@
 #'   reduction = "UMAP",
 #'   pt.size = 5,
 #'   pt.alpha = 0.2,
-#'   velocity = "stochastic", velocity_plot_type = "stream"
+#'   velocity = "stochastic", 
+#' velocity_plot_type = "stream"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -478,13 +491,6 @@
 #'   theme_use = "theme_blank"
 #' )
 #' }
-#'
-#' @importFrom ggnewscale new_scale_color new_scale_fill new_scale
-#' @importFrom gtable gtable_add_cols gtable_add_grob
-#' @importFrom ggforce geom_mark_hull geom_mark_ellipse geom_mark_circle geom_mark_rect
-#' @importFrom grid arrow unit
-#' @importFrom stats median
-#' @export
 CellDimPlot <- function(
     srt,
     group.by,
@@ -522,7 +528,7 @@ CellDimPlot <- function(
     density_filled_palcolor = NULL,
     add_mark = FALSE,
     mark_type = c("hull", "ellipse", "rect", "circle"),
-    mark_expand = unit(3, "mm"),
+    mark_expand = grid::unit(3, "mm"),
     mark_alpha = 0.1,
     mark_linetype = 1,
     lineages = NULL,
@@ -530,7 +536,7 @@ CellDimPlot <- function(
     lineages_span = 0.75,
     lineages_palette = "Dark2",
     lineages_palcolor = NULL,
-    lineages_arrow = arrow(length = unit(0.1, "inches")),
+    lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
     lineages_linewidth = 1,
     lineages_line_bg = "white",
     lineages_line_bg_stroke = 0.5,
@@ -950,8 +956,8 @@ CellDimPlot <- function(
         ),
         scale_fill_manual(values = colors[names(labels_tb)]),
         scale_color_manual(values = colors[names(labels_tb)]),
-        new_scale_fill(),
-        new_scale_color()
+        ggnewscale::new_scale_fill(),
+        ggnewscale::new_scale_color()
       )
     } else {
       mark <- NULL
@@ -1004,7 +1010,7 @@ CellDimPlot <- function(
             show.legend = FALSE
           ),
           scale_fill_gradientn(name = "Density", colours = filled_color),
-          new_scale_fill()
+          ggnewscale::new_scale_fill()
         )
       } else {
         density <- geom_density_2d(
@@ -1183,7 +1189,7 @@ CellDimPlot <- function(
       coor_df <- stats::aggregate(
         p$data[, c("x", "y")],
         by = list(p$data[["group.by"]]),
-        FUN = median
+        FUN = stats::median
       )
       colnames(coor_df)[1] <- "group"
       x_range <- diff(layer_scales(p)$x$range$range)
@@ -1212,7 +1218,7 @@ CellDimPlot <- function(
       )
     }
     if (!is.null(lineages)) {
-      lineages_layers <- c(list(new_scale_color()), lineages_layers)
+      lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
       suppressMessages({
         legend_list[["lineages"]] <- get_legend(
           ggplot() +
@@ -1230,7 +1236,7 @@ CellDimPlot <- function(
       }
     }
     if (!is.null(paga)) {
-      paga_layers <- c(list(new_scale_color()), paga_layers)
+      paga_layers <- c(list(ggnewscale::new_scale_color()), paga_layers)
       if (g != paga$groups) {
         suppressMessages({
           legend_list[["paga"]] <- get_legend(
@@ -1251,8 +1257,8 @@ CellDimPlot <- function(
     }
     if (!is.null(velocity)) {
       velocity_layers <- c(
-        list(new_scale_color()),
-        list(new_scale("size")),
+        list(ggnewscale::new_scale_color()),
+        list(ggnewscale::new_scale("size")),
         velocity_layers
       )
       if (velocity_plot_type != "raw") {
@@ -1277,7 +1283,7 @@ CellDimPlot <- function(
       label_df <- stats::aggregate(
         p$data[, c("x", "y")],
         by = list(p$data[["group.by"]]),
-        FUN = median
+        FUN = stats::median
       )
       colnames(label_df)[1] <- "label"
       label_df <- label_df[!is.na(label_df[, "label"]), , drop = FALSE]
@@ -1572,7 +1578,7 @@ CellDimPlot3D <- function(
     visible = TRUE
   )
   if (!is.null(cells.highlight_use)) {
-    p <- add_trace(
+    p <- plotly::add_trace(
       p = p,
       x = dat_use_highlight[[paste0(reduction_key, dims[1], "All_cells")]],
       y = dat_use_highlight[[paste0(reduction_key, dims[2], "All_cells")]],
@@ -1603,7 +1609,8 @@ CellDimPlot3D <- function(
       dat_sub <- dat_sub[order(dat_sub[[l]]), , drop = FALSE]
 
       xlo <- stats::loess(
-        formula(paste(
+        stats::formula(
+          paste(
           paste0(reduction_key, dims[1], "All_cells"),
           l,
           sep = "~"
@@ -1613,7 +1620,8 @@ CellDimPlot3D <- function(
         degree = 2
       )
       ylo <- stats::loess(
-        formula(paste(
+        stats::formula(
+          paste(
           paste0(reduction_key, dims[2], "All_cells"),
           l,
           sep = "~"
@@ -1623,7 +1631,8 @@ CellDimPlot3D <- function(
         degree = 2
       )
       zlo <- stats::loess(
-        formula(paste(
+        stats::formula(
+          paste(
           paste0(reduction_key, dims[3], "All_cells"),
           l,
           sep = "~"
@@ -1672,8 +1681,8 @@ CellDimPlot3D <- function(
             ), ,
         drop = FALSE
       ]
-      dat_smooth <- unique(na.omit(dat_smooth))
-      p <- add_trace(
+      dat_smooth <- unique(stats::na.omit(dat_smooth))
+      p <- plotly::add_trace(
         p = p,
         x = dat_smooth[, "x"],
         y = dat_smooth[, "y"],

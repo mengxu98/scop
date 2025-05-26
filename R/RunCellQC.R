@@ -20,7 +20,6 @@
 #'   reduction = "umap",
 #'   features = "db.scDblFinder_score"
 #' )
-#' @importFrom Seurat as.SingleCellExperiment
 #' @export
 db_scDblFinder <- function(
     srt,
@@ -35,7 +34,7 @@ db_scDblFinder <- function(
     stop("Data type is not raw counts!")
   }
   check_r("scDblFinder")
-  sce <- as.SingleCellExperiment(srt, assay = assay)
+  sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   sce <- scDblFinder::scDblFinder(sce, dbr = db_rate, verbose = FALSE, ...)
   srt[["db.scDblFinder_score"]] <- sce[["scDblFinder.score"]]
   srt[["db.scDblFinder_class"]] <- sce[["scDblFinder.class"]]
@@ -64,7 +63,6 @@ db_scDblFinder <- function(
 #'   srt = pancreas_sub,
 #'   reduction = "umap", features = "db.scds_hybrid_score"
 #' )
-#' @importFrom Seurat as.SingleCellExperiment
 #' @export
 db_scds <- function(
     srt,
@@ -81,7 +79,7 @@ db_scds <- function(
   }
   check_r("scds")
   method <- match.arg(method)
-  sce <- as.SingleCellExperiment(srt, assay = assay)
+  sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   sce <- scds::cxds_bcds_hybrid(sce, ...)
   srt[["db.scds_cxds_score"]] <- sce[["cxds_score"]]
   srt[["db.scds_bcds_score"]] <- sce[["bcds_score"]]
@@ -136,9 +134,9 @@ db_Scrublet <- function(
   }
   check_python("scrublet")
   scr <- reticulate::import("scrublet")
-  raw_counts <- t(
+  raw_counts <- Matrix::t(
     Matrix::as.matrix(
-      Seurat::GetAssayData(
+      SeuratObject::GetAssayData(
         object = srt,
         assay = assay,
         layer = "counts"
@@ -174,6 +172,7 @@ db_Scrublet <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
@@ -185,6 +184,7 @@ db_Scrublet <- function(
 #'   srt = pancreas_sub,
 #'   reduction = "umap", features = "db.DoubletDetection_score"
 #' )
+#' }
 db_DoubletDetection <- function(
     srt,
     assay = "RNA",
@@ -199,7 +199,7 @@ db_DoubletDetection <- function(
   }
   check_python("doubletdetection")
   doubletdetection <- reticulate::import("doubletdetection")
-  counts <- Seurat::GetAssayData(
+  counts <- SeuratObject::GetAssayData(
     object = srt,
     assay = assay,
     layer = "counts"
@@ -316,12 +316,17 @@ RunDoubletCalling <- function(
 
 #' Detect outliers using MAD(Median Absolute Deviation) method
 #'
-#' This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method. It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
+#' This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
+#' It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
 #'
 #' @param x a numeric vector.
-#' @param nmads the number of median absolute deviations (MADs) from the median to define the boundaries for outliers. The default value is 2.5.
-#' @param constant a constant factor to convert the MAD to a standard deviation. The default value is 1.4826, which is consistent with the MAD of a normal distribution.
-#' @param type the type of outliers to detect. Available options are "both" (default), "lower", or "higher". If set to "both", it detects both lower and higher outliers. If set to "lower", it detects only lower outliers. If set to "higher", it detects only higher outliers.
+#' @param nmads the number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
+#' The default value is 2.5.
+#' @param constant a constant factor to convert the MAD to a standard deviation.
+#' The default value is 1.4826, which is consistent with the MAD of a normal distribution.
+#' @param type the type of outliers to detect. Available options are "both" (default), "lower", or "higher".
+#' If set to "both", it detects both lower and higher outliers. If set to "lower", it detects only lower outliers.
+#' If set to "higher", it detects only higher outliers.
 #'
 #' @return A numeric vector of indices indicating the positions of outliers in \code{x}.
 #'
@@ -343,8 +348,8 @@ isOutlier <- function(
     type = c("both", "lower", "higher")) {
   type <- match.arg(type, c("both", "lower", "higher"))
   mad <- stats::mad(x, constant = constant, na.rm = TRUE)
-  upper <- median(x, na.rm = TRUE) + nmads * mad
-  lower <- median(x, na.rm = TRUE) - nmads * mad
+  upper <- stats::median(x, na.rm = TRUE) + nmads * mad
+  lower <- stats::median(x, na.rm = TRUE) - nmads * mad
   if (type == "both") {
     out <- which(x > upper | x < lower)
   }
@@ -362,6 +367,7 @@ isOutlier <- function(
 #'
 #' This function handles multiple quality control methods for single-cell RNA-seq data.
 #'
+#' @md
 #' @inheritParams RunDoubletCalling
 #' @param split.by Name of the sample variable to split the Seurat object. Default is NULL.
 #' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object. Default is FALSE.
@@ -386,6 +392,8 @@ isOutlier <- function(
 #' @param seed Set a random seed. Default is 11.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -416,11 +424,6 @@ isOutlier <- function(
 #'   plot_type = "upset", stat_level = "Fail"
 #' )
 #' table(ifnb_sub$CellQC)
-#' @importFrom Seurat Assays as.SingleCellExperiment PercentageFeatureSet WhichCells SplitObject AddMetaData
-#' @importFrom stats loess predict aggregate
-#' @importFrom Matrix colSums t
-#' @export
-#'
 RunCellQC <- function(
     srt,
     assay = "RNA",
@@ -483,7 +486,7 @@ RunCellQC <- function(
     warning("Data type is not raw counts!", immediate. = TRUE)
   }
   if (!paste0("nCount_", assay) %in% colnames(srt@meta.data)) {
-    srt@meta.data[[paste0("nCount_", assay)]] <- colSums(
+    srt@meta.data[[paste0("nCount_", assay)]] <- Matrix::colSums(
       SeuratObject::GetAssayData(
         srt,
         assay = assay,
@@ -492,7 +495,7 @@ RunCellQC <- function(
     )
   }
   if (!paste0("nFeature_", assay) %in% colnames(srt@meta.data)) {
-    srt@meta.data[[paste0("nFeature_", assay)]] <- colSums(
+    srt@meta.data[[paste0("nFeature_", assay)]] <- Matrix::colSums(
       SeuratObject::GetAssayData(
         srt,
         assay = assay,
@@ -502,7 +505,7 @@ RunCellQC <- function(
   }
   srt_raw <- srt
   if (!is.null(split.by)) {
-    srt_list <- SplitObject(srt, split.by = split.by)
+    srt_list <- Seurat::SplitObject(srt, split.by = split.by)
   } else {
     srt_list <- list(srt)
   }
@@ -563,7 +566,7 @@ RunCellQC <- function(
       nCount <- srt[[paste0(
         c(paste0("nCount_", assay), sp),
         collapse = "."
-      )]] <- colSums(
+      )]] <- Matrix::colSums(
         SeuratObject::GetAssayData(
           srt,
           assay = assay,
@@ -573,7 +576,7 @@ RunCellQC <- function(
       nFeature <- srt[[paste0(
         c(paste0("nFeature_", assay), sp),
         collapse = "."
-      )]] <- colSums(
+      )]] <- Matrix::colSums(
         SeuratObject::GetAssayData(
           srt,
           assay = assay,
@@ -583,7 +586,7 @@ RunCellQC <- function(
       percent.mito <- srt[[paste0(
         c("percent.mito", sp),
         collapse = "."
-      )]] <- PercentageFeatureSet(
+      )]] <- Seurat::PercentageFeatureSet(
         object = srt,
         assay = assay,
         pattern = paste0(
@@ -597,7 +600,7 @@ RunCellQC <- function(
       percent.ribo <- srt[[paste0(
         c("percent.ribo", sp),
         collapse = "."
-      )]] <- PercentageFeatureSet(
+      )]] <- Seurat::PercentageFeatureSet(
         object = srt,
         assay = assay,
         pattern = paste0(
@@ -611,7 +614,7 @@ RunCellQC <- function(
       percent.genome <- srt[[paste0(
         c("percent.genome", sp),
         collapse = "."
-      )]] <- PercentageFeatureSet(
+      )]] <- Seurat::PercentageFeatureSet(
         object = srt,
         assay = assay,
         pattern = paste0("^", prefix)
@@ -636,8 +639,8 @@ RunCellQC <- function(
           )]] <- log10(nCount)
           log10_nCount[is.infinite(log10_nCount)] <- NA
           log10_nFeature[is.infinite(log10_nFeature)] <- NA
-          mod <- loess(log10_nFeature ~ log10_nCount)
-          pred <- predict(
+          mod <- stats::loess(log10_nFeature ~ log10_nCount)
+          pred <- stats::predict(
             mod,
             newdata = data.frame(log10_nCount = log10_nCount)
           )
@@ -645,18 +648,6 @@ RunCellQC <- function(
             c("featurecount_dist", sp),
             collapse = "."
           )]] <- log10_nFeature - pred
-
-          # df <- data.frame(cell = colnames(srt), ribo = srt$percent.ribo.Homo_sapiens, y = log10_nFeature, x = log10_nCount, pred = pred, featurecount_dist = featurecount_dist)
-          # lower_df <- subset(df, featurecount_dist < median(df$featurecount_dist) - 2.5 * mad(df$featurecount_dist))
-          # higher_df <- subset(df, featurecount_dist > median(df$featurecount_dist) + 2.5 * mad(df$featurecount_dist))
-          # ggplot(df) +
-          #   geom_point(aes(x = x, y = y, color = featurecount_dist)) +
-          #   scale_color_gradientn(colors = c("green", "white", "orange"), values = scales::rescale(c(min(df$featurecount_dist), 0, max(df$featurecount_dist)))) +
-          #   geom_point(data = lower_df, aes(x = x, y = y), shape = 21, fill = "transparent", color = "blue") +
-          #   geom_point(data = higher_df, aes(x = x, y = y), shape = 21, fill = "transparent", color = "red") +
-          #   geom_line(aes(x = x, y = pred), color = "black")+
-          #   theme(panel.background = element_rect(fill = "grey"))
-          # nrow(lower_df)
 
           var <- sapply(strsplit(outlier_threshold, ":"), function(x) x[[1]])
           var_valid <- var %in%
@@ -669,15 +660,16 @@ RunCellQC <- function(
               " is not found in the srt object."
             )
           }
-          outlier <- lapply(strsplit(outlier_threshold, ":"), function(m) {
-            colnames(srt)[isOutlier(
-              get(m[1]),
-              nmads = as.numeric(m[3]),
-              type = m[2]
-            )]
-          })
+          outlier <- lapply(
+            strsplit(outlier_threshold, ":"), function(m) {
+              colnames(srt)[isOutlier(
+                get(m[1]),
+                nmads = as.numeric(m[3]),
+                type = m[2]
+              )]
+            }
+          )
           names(outlier) <- outlier_threshold
-          # print(unlist(lapply(outlier, length)))
           outlier_tb <- table(unlist(outlier))
           outlier_qc <- c(
             outlier_qc,
@@ -806,6 +798,6 @@ RunCellQC <- function(
     rbind.data.frame,
     unname(lapply(srt_list, function(x) x@meta.data))
   )
-  srt_raw <- AddMetaData(srt_raw, metadata = meta.data)
+  srt_raw <- Seurat::AddMetaData(srt_raw, metadata = meta.data)
   return(srt_raw)
 }

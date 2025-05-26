@@ -4,7 +4,7 @@
 \alias{invoke_fun}
 \title{Invoke a function with a list of arguments}
 \usage{
-invoke_fun(.fn, .args = list(), ..., .env = caller_env())
+invoke_fun(.fn, .args = list(), ..., .env = rlang::caller_env())
 }
 \arguments{
 \item{.fn}{A function, or function name as a string.}

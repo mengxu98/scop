@@ -30,7 +30,7 @@ if (interactive()) {
     )
   )
   ifnb_sub <- subset(ifnb, cells = cells_sub)
-  ifnb_sub <- ifnb_sub[rowSums(
+  ifnb_sub <- ifnb_sub[Matrix::rowSums(
     ifnb_sub@assays$RNA@counts
   ) > 0, ]
   ifnb_sub <- UpdateSeuratObject(ifnb_sub)

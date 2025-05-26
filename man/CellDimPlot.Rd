@@ -41,7 +41,7 @@ CellDimPlot(
   density_filled_palcolor = NULL,
   add_mark = FALSE,
   mark_type = c("hull", "ellipse", "rect", "circle"),
-  mark_expand = unit(3, "mm"),
+  mark_expand = grid::unit(3, "mm"),
   mark_alpha = 0.1,
   mark_linetype = 1,
   lineages = NULL,
@@ -49,7 +49,7 @@ CellDimPlot(
   lineages_span = 0.75,
   lineages_palette = "Dark2",
   lineages_palcolor = NULL,
-  lineages_arrow = arrow(length = unit(0.1, "inches")),
+  lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
   lineages_linewidth = 1,
   lineages_line_bg = "white",
   lineages_line_bg_stroke = 0.5,
@@ -195,6 +195,16 @@ CellDimPlot(
 \item{density_filled_palette}{Color palette used to fill contour bands.}
 
 \item{density_filled_palcolor}{Custom colors used to fill contour bands.}
+
+\item{add_mark}{Whether to add marks around cell groups. Default is \code{FALSE}.}
+
+\item{mark_type}{Type of mark to add around cell groups. One of "hull", "ellipse", "rect", or "circle". Default is "hull".}
+
+\item{mark_expand}{Expansion of the mark around the cell group. Default is \code{grid::unit(3, "mm")}.}
+
+\item{mark_alpha}{Transparency of the mark. Default is 0.1.}
+
+\item{mark_linetype}{Line type of the mark border. Default is 1 (solid line).}
 
 \item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
@@ -455,7 +465,7 @@ CellDimPlot(
   group.by = "SubCellType",
   reduction = "UMAP",
   add_mark = TRUE,
-  mark_expand = unit(1, "mm")
+  mark_expand = grid::unit(1, "mm")
 )
 CellDimPlot(
   pancreas_sub,
@@ -538,7 +548,9 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "UMAP",
   stat.by = "Phase",
-  stat_plot_type = "bar", stat_type = "count", stat_plot_position = "dodge"
+  stat_plot_type = "bar", 
+stat_type = "count", 
+stat_plot_position = "dodge"
 )
 
 # Chane the plot type from point to the hexagonal bin
@@ -579,7 +591,6 @@ CellDimPlot(
   edge_color = "grey80"
 )
 
-\dontrun{
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -613,6 +624,7 @@ CellDimPlot(
   lineages_span = 0.1
 )
 
+\dontrun{
 # Show PAGA results on the plot
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
@@ -681,7 +693,8 @@ CellDimPlot(
   reduction = "UMAP",
   pt.size = 5,
   pt.alpha = 0.2,
-  velocity = "stochastic", velocity_plot_type = "grid"
+  velocity = "stochastic",
+ velocity_plot_type = "grid"
 )
 CellDimPlot(
   pancreas_sub,
@@ -689,7 +702,9 @@ CellDimPlot(
   reduction = "UMAP",
   pt.size = 5,
   pt.alpha = 0.2,
-  velocity = "stochastic", velocity_plot_type = "grid", velocity_scale = 1.5
+  velocity = "stochastic",
+ velocity_plot_type = "grid", 
+velocity_scale = 1.5
 )
 CellDimPlot(
   pancreas_sub,
@@ -697,7 +712,8 @@ CellDimPlot(
   reduction = "UMAP",
   pt.size = 5,
   pt.alpha = 0.2,
-  velocity = "stochastic", velocity_plot_type = "stream"
+  velocity = "stochastic", 
+velocity_plot_type = "stream"
 )
 CellDimPlot(
   pancreas_sub,
@@ -718,7 +734,6 @@ CellDimPlot(
   theme_use = "theme_blank"
 )
 }
-
 }
 \seealso{
 \code{\link{FeatureDimPlot}}

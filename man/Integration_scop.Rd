@@ -118,33 +118,48 @@ Integrate single-cell RNA-seq data using various integration methods.
 \examples{
 data("panc8_sub")
 panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
+  panc8_sub,
+  batch = "tech",
   integration_method = "Uncorrected"
 )
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
+)
 
 panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
+  panc8_sub,
+  batch = "tech",
   integration_method = "Uncorrected",
   HVF_min_intersection = 5
 )
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-
-panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
-  integration_method = "Uncorrected",
-  HVF_min_intersection = 5, scale_within_batch = TRUE
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
 )
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
+  panc8_sub,
+  batch = "tech",
+  integration_method = "Uncorrected",
+  HVF_min_intersection = 5,
+  scale_within_batch = TRUE
+)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
+)
+
+panc8_sub <- Integration_scop(
+  panc8_sub,
+  batch = "tech",
   integration_method = "Seurat"
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
+  panc8_sub,
+  batch = "tech",
   integration_method = "Seurat",
   FindIntegrationAnchors_params = list(reduction = "rpca")
 )
@@ -157,7 +172,8 @@ integration_methods <- c(
 )
 for (method in integration_methods) {
   panc8_sub <- Integration_scop(
-    srt_merge = panc8_sub, batch = "tech",
+    panc8_sub,
+    batch = "tech",
     integration_method = method,
     linear_reduction_dims_use = 1:50,
     nonlinear_reduction = "umap"
@@ -171,21 +187,26 @@ for (method in integration_methods) {
 }
 
 nonlinear_reductions <- c(
-  "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+  "umap", "tsne", "dm", "phate",
+  "pacmap", "trimap", "largevis", "fr"
 )
 panc8_sub <- Integration_scop(
-  srt_merge = panc8_sub, batch = "tech",
+  panc8_sub,
+  batch = "tech",
   integration_method = "Seurat",
   linear_reduction_dims_use = 1:50,
   nonlinear_reduction = nonlinear_reductions
 )
 for (nr in nonlinear_reductions) {
-  print(CellDimPlot(panc8_sub,
-    group.by = c("tech", "celltype"),
-    reduction = paste0("Seurat", nr, "2D"),
-    xlab = "", ylab = "", title = nr,
-    legend.position = "none", theme_use = "theme_blank"
-  ))
+  print(
+    CellDimPlot(
+      panc8_sub,
+      group.by = c("tech", "celltype"),
+      reduction = paste0("Seurat", nr, "2D"),
+      xlab = "", ylab = "", title = nr,
+      legend.position = "none", theme_use = "theme_blank"
+    )
+  )
 }
 }
 

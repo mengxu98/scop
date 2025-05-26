@@ -25,10 +25,20 @@ srt_reorder(
 
 \item{assay}{Specific assay to get data from.}
 
-\item{log}{Whether log1p transformation needs to be applied. Default is \code{TRUE}.}
+\item{log}{Whether log1p transformation needs to be applied.
+Default is \code{TRUE}.}
 
-\item{distance_metric}{Metric to compute distance. Default is "euclidean".}
+\item{distance_metric}{Metric to compute distance.
+Default is "euclidean".}
 }
 \description{
 Reorder idents by the gene expression
+}
+\examples{
+data("pancreas_sub")
+pancreas_sub <- srt_reorder(
+  srt = pancreas_sub,
+  reorder_by = "SubCellType",
+  layer = "data"
+)
 }

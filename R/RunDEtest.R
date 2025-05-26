@@ -11,7 +11,7 @@ FoldChange.default <- function(
   # Calculate percent expressed
   thresh.min <- 0
   pct.1 <- round(
-    x = rowSums(
+    x = Matrix::rowSums(
       x = object[features, cells.1, drop = FALSE] > thresh.min,
       na.rm = TRUE
     ) /
@@ -19,7 +19,7 @@ FoldChange.default <- function(
     digits = 3
   )
   pct.2 <- round(
-    x = rowSums(
+    x = Matrix::rowSums(
       x = object[features, cells.2, drop = FALSE] > thresh.min,
       na.rm = TRUE
     ) /
@@ -136,9 +136,6 @@ PerformDE <- function(
   return(de.results)
 }
 
-#' @importFrom future nbrOfWorkers
-#' @importFrom future.apply future_sapply
-#' @importFrom pbapply pbsapply
 WilcoxDETest <- function(
     data.use,
     cells.1,
@@ -148,9 +145,9 @@ WilcoxDETest <- function(
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
   j <- seq_len(length.out = length(x = cells.1))
   my.sapply <- ifelse(
-    test = verbose && nbrOfWorkers() == 1,
-    yes = pbsapply,
-    no = future_sapply
+    test = verbose && future::nbrOfWorkers() == 1,
+    yes = pbapply::pbsapply,
+    no = future.apply::future_sapply
   )
   check_r("limma")
   p_val <- my.sapply(
@@ -199,7 +196,6 @@ WilcoxDETest <- function(
 #' @param verbose A logical value indicating whether to display progress messages during the differential test. Default is TRUE.
 #' @param ... Additional arguments to pass to the \code{\link[Seurat]{FindMarkers}} function.
 #'
-#' @importFrom BiocParallel bplapply SerialParam bpprogressbar<- bpRNGseed<- bpworkers
 #' @export
 #'
 #' @seealso \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
@@ -209,7 +205,7 @@ WilcoxDETest <- function(
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType"
 #' )
-#' AllMarkers <- filter(
+#' AllMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -254,12 +250,15 @@ WilcoxDETest <- function(
 #' ht3$plot
 #'
 #' data("panc8_sub")
-#' panc8_sub <- Integration_scope(
-#'   srt = panc8_sub,
+#' panc8_sub <- Integration_scop(
+#'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
-#' CellDimPlot(panc8_sub, group.by = c("celltype", "tech"))
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("celltype", "tech")
+#' )
 #'
 #' panc8_sub <- RunDEtest(
 #'   srt = panc8_sub,
@@ -267,7 +266,7 @@ WilcoxDETest <- function(
 #'   grouping.var = "tech",
 #'   markers_type = "conserved"
 #' )
-#' ConservedMarkers1 <- filter(
+#' ConservedMarkers1 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -965,7 +964,7 @@ RunDEtest <- function(
             cells.1
           )] <- NA
           if (
-            length(na.omit(unique(srt_tmp[[grouping.var, drop = TRUE]]))) < 2
+            length(stats::na.omit(unique(srt_tmp[[grouping.var, drop = TRUE]]))) < 2
           ) {
             return(NULL)
           } else {

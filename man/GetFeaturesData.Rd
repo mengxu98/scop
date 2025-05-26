@@ -9,11 +9,11 @@
 \usage{
 GetFeaturesData(object, ...)
 
-\method{GetFeaturesData}{Seurat}(object, assay = NULL)
+\method{GetFeaturesData}{Seurat}(object, assay = NULL, ...)
 
-\method{GetFeaturesData}{Assay}(object)
+\method{GetFeaturesData}{Assay}(object, ...)
 
-\method{GetFeaturesData}{Assay5}(object)
+\method{GetFeaturesData}{Assay5}(object, ...)
 }
 \arguments{
 \item{object}{A object}

@@ -44,7 +44,6 @@ RunGLMPCA <- function(object, ...) {
 
 #' @rdname RunGLMPCA
 #' @method RunGLMPCA Seurat
-#' @importFrom Seurat DefaultAssay GetAssayData Embeddings
 #' @export
 RunGLMPCA.Seurat <- function(
   object,
@@ -62,8 +61,8 @@ RunGLMPCA.Seurat <- function(
   seed.use = 11,
   ...
 ) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  assay <- assay %||% Seurat::DefaultAssay(object = object)
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay.data <- Seurat::GetAssay(object = object, assay = assay)
   reduction.data <- RunGLMPCA(
     object = assay.data,
@@ -101,8 +100,8 @@ RunGLMPCA.Assay <- function(
   seed.use = 11,
   ...
 ) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  data.use <- Seurat::GetAssayData(object = object, layer = layer)
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  data.use <- SeuratObject::GetAssayData(object = object, layer = layer)
   features.var <- apply(
     X = data.use[features, ],
     MARGIN = 1,
@@ -155,7 +154,7 @@ RunGLMPCA.default <- function(
   loadings <- Matrix::as.matrix(glmpca_results$loadings)
   colnames(x = factors) <- glmpca_dimnames
   colnames(x = loadings) <- glmpca_dimnames
-  factors_l2_norm <- sqrt(colSums(factors^2))
+  factors_l2_norm <- sqrt(Matrix::colSums(factors^2))
   class(glmpca_results) <- NULL
   glmpca_results$factors <- glmpca_results$loadings <- NULL
   reduction.data <- Seurat::CreateDimReducObject(

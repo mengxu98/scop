@@ -73,11 +73,11 @@ RecoverCounts <- function(
     }
   }
   if (is.null(sf)) {
-    sf <- unique(round(colSums(counts)))
+    sf <- unique(round(Matrix::colSums(counts)))
     if (isTRUE(verbose)) {
       message(
         "The presumed scale factor: ",
-        paste0(head(sf, 10), collapse = ", ")
+        paste0(utils::head(sf, 10), collapse = ", ")
       )
     }
   }
@@ -101,7 +101,7 @@ RecoverCounts <- function(
       warning(
         "The presumed nCount of some cells is not valid: ",
         paste0(
-          head(colnames(counts)[diff_value < tolerance], 10),
+          utils::head(colnames(counts)[diff_value < tolerance], 10),
           collapse = ","
         ),
         ", ...",
@@ -132,181 +132,6 @@ RecoverCounts <- function(
   return(srt)
 }
 
-#' Rename features for the Seurat object
-#'
-#' @param srt A Seurat object.
-#' @param newnames A vector with the same length of features in Seurat object,
-#' or characters named with old features.
-#' @param assays Assays to rename.
-#'
-#' @export
-#'
-#' @examples
-#' data("panc8_sub")
-#' head(rownames(panc8_sub))
-#' # Simply convert genes from human to mouse and preprocess the data
-#' genenames <- make.unique(
-#'   capitalize(rownames(panc8_sub),
-#'     force_tolower = TRUE
-#'   )
-#' )
-#' panc8_rename <- RenameFeatures(
-#'   panc8_sub,
-#'   newnames = genenames
-#' )
-#' head(rownames(panc8_rename))
-RenameFeatures <- function(
-    srt,
-    newnames = NULL,
-    assays = NULL) {
-  assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
-  if (is.null(names(newnames))) {
-    if (!identical(length(newnames), nrow(srt))) {
-      stop("'newnames' must be named or the length of features in the srt.")
-    }
-    if (length(unique(sapply(srt@assays[assays], nrow))) > 1) {
-      stop(
-        "Assays in the srt object have different number of features. Please use a named vectors."
-      )
-    }
-    names(newnames) <- rownames(srt[[assays[1]]])
-  }
-  for (assay in assays) {
-    message("Rename features for the assay: ", assay)
-    assay_obj <- Seurat::GetAssay(srt, assay)
-    for (d in c("meta.features", "scale.data", "counts", "data")) {
-      index <- which(
-        rownames(methods::slot(assay_obj, d)) %in% names(newnames)
-      )
-      rownames(methods::slot(assay_obj, d))[index] <- newnames[rownames(
-        methods::slot(
-          assay_obj,
-          d
-        )
-      )[index]]
-    }
-    if (length(methods::slot(assay_obj, "var.features")) > 0) {
-      index <- which(
-        methods::slot(
-          assay_obj, "var.features"
-        ) %in% names(newnames)
-      )
-      methods::slot(assay_obj, "var.features")[index] <- newnames[methods::slot(
-        assay_obj,
-        "var.features"
-      )[index]]
-    }
-    srt[[assay]] <- assay_obj
-  }
-  return(srt)
-}
-
-#' Rename clusters for the Seurat object
-#'
-#' @param srt A Seurat object.
-#' @param group.by The old group used to rename cells.
-#' @param nameslist A named list of new cluster value.
-#' @param name The name of the new cluster stored in the Seurat object.
-#' @param keep_levels If the old group is a factor, keep the order of the levels.
-#'
-#' @export
-#'
-#' @examples
-#' data("pancreas_sub")
-#' levels(pancreas_sub@meta.data[["SubCellType"]])
-#'
-#' # Rename all clusters
-#' pancreas_sub <- RenameClusters(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   nameslist = letters[1:8]
-#' )
-#' CellDimPlot(pancreas_sub, "newclusters")
-#'
-#' # Rename specified clusters
-#' pancreas_sub <- RenameClusters(pancreas_sub,
-#'   group.by = "SubCellType",
-#'   nameslist = list("a" = "Alpha", "b" = "Beta")
-#' )
-#' CellDimPlot(pancreas_sub, "newclusters")
-#'
-#' # Merge and rename clusters
-#' pancreas_sub <- RenameClusters(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   nameslist = list(
-#'     "EndocrineClusters" = c("Alpha", "Beta", "Epsilon", "Delta")
-#'   ),
-#'   name = "Merged",
-#'   keep_levels = TRUE
-#' )
-#' CellDimPlot(pancreas_sub, "Merged")
-RenameClusters <- function(
-    srt,
-    group.by,
-    nameslist = list(),
-    name = "newclusters",
-    keep_levels = FALSE) {
-  if (missing(group.by)) {
-    stop("group.by must be provided")
-  }
-  if (!group.by %in% colnames(srt@meta.data)) {
-    stop(paste0(group.by, " is not in the meta.data of srt object."))
-  }
-  if (length(nameslist) > 0 && is.null(names(nameslist))) {
-    names(nameslist) <- levels(srt@meta.data[[group.by]])
-  }
-  if (is.list(nameslist) && length(nameslist) > 0) {
-    names_assign <- stats::setNames(
-      rep(names(nameslist), sapply(nameslist, length)),
-      nm = unlist(nameslist)
-    )
-  } else {
-    if (is.null(names(nameslist))) {
-      if (!is.factor(srt@meta.data[[group.by]])) {
-        stop(
-          "'nameslist' must be named when srt@meta.data[[group.by]] is not a factor"
-        )
-      }
-      if (
-        !identical(length(nameslist), length(unique(srt@meta.data[[group.by]])))
-      ) {
-        stop(
-          "'nameslist' must be named or the length of ",
-          length(unique(srt@meta.data[[group.by]]))
-        )
-      }
-      names(nameslist) <- levels(srt@meta.data[[group.by]])
-    }
-    names_assign <- nameslist
-  }
-  if (all(!names(names_assign) %in% srt@meta.data[[group.by]])) {
-    stop("No group name mapped.")
-  }
-  if (is.factor(srt@meta.data[[group.by]])) {
-    levels <- levels(srt@meta.data[[group.by]])
-  } else {
-    levels <- NULL
-  }
-  index <- which(
-    as.character(srt@meta.data[[group.by]]) %in% names(names_assign)
-  )
-  srt@meta.data[[name]] <- as.character(srt@meta.data[[group.by]])
-  srt@meta.data[[name]][index] <- names_assign[srt@meta.data[[name]][index]]
-  if (!is.null(levels)) {
-    levels[levels %in% names(names_assign)] <- names_assign[levels[
-      levels %in% names(names_assign)
-    ]]
-    if (isFALSE(keep_levels)) {
-      levels <- unique(c(names_assign, levels))
-    } else {
-      levels <- unique(levels)
-    }
-    srt@meta.data[[name]] <- factor(srt@meta.data[[name]], levels = levels)
-  }
-  return(srt)
-}
-
 #' Reorder idents by the gene expression
 #'
 #' @param srt A Seurat object.
@@ -314,11 +139,20 @@ RenameClusters <- function(
 #' @param reorder_by Reorder groups instead of idents.
 #' @param layer Specific layer to get data from.
 #' @param assay Specific assay to get data from.
-#' @param log Whether log1p transformation needs to be applied. Default is \code{TRUE}.
-#' @param distance_metric Metric to compute distance. Default is "euclidean".
+#' @param log Whether log1p transformation needs to be applied.
+#' Default is \code{TRUE}.
+#' @param distance_metric Metric to compute distance.
+#' Default is "euclidean".
 #'
-#' @importFrom proxyC simil dist
 #' @export
+#'
+#' @examples
+#' data("pancreas_sub")
+#' pancreas_sub <- srt_reorder(
+#'   srt = pancreas_sub,
+#'   reorder_by = "SubCellType",
+#'   layer = "data"
+#' )
 srt_reorder <- function(
     srt,
     features = NULL,
@@ -329,11 +163,16 @@ srt_reorder <- function(
     distance_metric = "euclidean") {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (is.null(features)) {
-    features <- SeuratObject::DefaultAssay(srt, assay = assay)
+    srt <- Seurat::FindVariableFeatures(
+      srt,
+      assay = SeuratObject::DefaultAssay(srt),
+      verbose = FALSE
+    )
+    features <- SeuratObject::VariableFeatures(srt, assay = assay)
   }
   features <- intersect(x = features, y = rownames(x = srt))
   if (is.null(reorder_by)) {
-    srt$ident <- Idents(srt)
+    srt$ident <- SeuratObject::Idents(srt)
   } else {
     srt$ident <- srt[[reorder_by, drop = TRUE]]
   }
@@ -368,18 +207,37 @@ srt_reorder <- function(
     stop(distance_metric, " method is invalid.")
   }
 
-  data.avg <- Seurat::AverageExpression(
-    object = srt,
-    features = features,
-    layer = layer,
-    assays = assay,
-    group.by = "ident",
-    verbose = FALSE
-  )[[1]][features, , drop = FALSE]
-  if (isTRUE(log)) {
-    data.avg <- log1p(data.avg)
+  assay_obj <- Seurat::GetAssay(
+    srt,
+    assay = assay
+  )
+  if (inherits(assay_obj, "Assay")) {
+    message("Using 'Seurat::AverageExpression()' to calculate pseudo-bulk data for 'Assay'.")
+    data_avg <- Seurat::AverageExpression(
+      object = srt,
+      features = features,
+      layer = layer,
+      assays = assay,
+      group.by = "ident",
+      verbose = FALSE
+    )[[1]][features, , drop = FALSE]
+  } else if (inherits(assay_obj, "Assay5")) {
+    message("Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.")
+    data_avg <- Seurat::AggregateExpression(
+      object = srt,
+      features = features,
+      assays = assay,
+      group.by = "ident",
+      verbose = FALSE
+    )[[1]][features, , drop = FALSE]
+  } else {
+    stop("Input data in not a Seurat object.")
   }
-  mat <- Matrix::t(x = data.avg[features, , drop = FALSE])
+
+  if (isTRUE(log)) {
+    data_avg <- log1p(data_avg)
+  }
+  mat <- Matrix::t(x = data_avg[features, , drop = FALSE])
   if (!inherits(mat, "dgCMatrix")) {
     mat <- SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE])
   }
@@ -391,13 +249,12 @@ srt_reorder <- function(
       }
       distance_metric <- "correlation"
     }
-    d <- 1 -
-      simil(
-        SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE]),
-        method = distance_metric
-      )
+    d <- 1 - proxyC::simil(
+      SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE]),
+      method = distance_metric
+    )
   } else if (distance_metric %in% dist_method) {
-    d <- dist(
+    d <- proxyC::dist(
       SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE]),
       method = distance_metric
     )
@@ -407,7 +264,7 @@ srt_reorder <- function(
   dd <- stats::as.dendrogram(hc)
   dd_ordered <- stats::reorder(
     dd,
-    wts = Matrix::colMeans(data.avg[features, , drop = FALSE]),
+    wts = Matrix::colMeans(data_avg[features, , drop = FALSE]),
     agglo.FUN = mean
   )
   ident_new <- unname(stats::setNames(
@@ -430,10 +287,10 @@ srt_reorder <- function(
 #' @param verbose Show messages.
 #'
 #' @export
-SrtAppend <- function(
+srt_append <- function(
     srt_raw,
     srt_append,
-    slots = slotNames(srt_append),
+    slots = methods::slotNames(srt_append),
     pattern = NULL,
     overwrite = FALSE,
     verbose = TRUE) {
@@ -442,7 +299,7 @@ SrtAppend <- function(
   }
 
   pattern <- pattern %||% ""
-  for (slot_nm in slotNames(srt_append)) {
+  for (slot_nm in methods::slotNames(srt_append)) {
     if (!slot_nm %in% slots) {
       if (isTRUE(verbose)) {
         message("Slot ", slot_nm, " is not appended.")
@@ -459,7 +316,10 @@ SrtAppend <- function(
     for (info in names(methods::slot(srt_append, name = slot_nm))) {
       if (is.null(info)) {
         if (length(methods::slot(srt_append, name = slot_nm)) > 0 && isTRUE(overwrite)) {
-          methods::slot(srt_raw, name = slot_nm) <- methods::slot(srt_append, name = slot_nm)
+          methods::slot(srt_raw, name = slot_nm) <- methods::slot(
+            srt_append,
+            name = slot_nm
+          )
         }
         next
       }
@@ -522,470 +382,6 @@ SrtAppend <- function(
     }
   }
   return(srt_raw)
-}
-
-#' Run dimensionality reduction
-#'
-#' @param srt A Seurat object.
-#' @param prefix The prefix used to name the result.
-#' @param features Use features expression data to run linear or nonlinear dimensionality reduction.
-#' @param assay Specific assay to get data from.
-#' @param layer Specific layer to get data from.
-#' @param linear_reduction Method of linear dimensionality reduction. Options are "pca", "ica", "nmf", "mds", "glmpca".
-#' @param linear_reduction_dims Total number of dimensions to compute and store for \code{linear_reduction}.
-#' @param linear_reduction_params Other parameters passed to the \code{linear_reduction} method.
-#' @param force_linear_reduction Whether force to do linear dimensionality reduction.
-#' @param nonlinear_reduction Method of nonlinear dimensionality reduction. Options are "umap", "umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis"
-#' @param nonlinear_reduction_dims Total number of dimensions to compute and store for \code{nonlinear_reduction}.
-#' @param reduction_use Which dimensional reduction to use as input for \code{nonlinear_reduction}.
-#' @param reduction_dims Which dimensions to use as input for \code{nonlinear_reduction}, used only if \code{features} is \code{NULL}.
-#' @param neighbor_use Name of neighbor to use for the \code{nonlinear_reduction}.
-#' @param graph_use Name of graph to use for the \code{nonlinear_reduction}.
-#' @param nonlinear_reduction_params  Other parameters passed to the \code{nonlinear_reduction} method.
-#' @param force_nonlinear_reduction Whether force to do nonlinear dimensionality reduction.
-#' @param verbose Show messages.
-#' @param seed Set a seed.
-#'
-#' @importFrom Signac RunSVD
-#' @export
-RunDimReduction <- function(
-    srt,
-    prefix = "",
-    features = NULL,
-    assay = NULL,
-    layer = "data",
-    linear_reduction = NULL,
-    linear_reduction_dims = 50,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = NULL,
-    nonlinear_reduction_dims = 2,
-    reduction_use = NULL,
-    reduction_dims = NULL,
-    graph_use = NULL,
-    neighbor_use = NULL,
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    verbose = TRUE,
-    seed = 11) {
-  set.seed(seed)
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  if (inherits(srt[[assay]], "ChromatinAssay")) {
-    type <- "Chromatin"
-  } else {
-    type <- "RNA"
-  }
-  linear_reduction_dims <- min(
-    linear_reduction_dims,
-    nrow(srt[[assay]]) - 1,
-    ncol(srt[[assay]]) - 1,
-    na.rm = TRUE
-  )
-  nonlinear_reduction_dims <- min(
-    nonlinear_reduction_dims,
-    nrow(srt[[assay]]) - 1,
-    ncol(srt[[assay]]) - 1,
-    na.rm = TRUE
-  )
-  if (!is.null(linear_reduction)) {
-    if (
-      any(
-        !linear_reduction %in%
-          c("pca", "svd", "ica", "nmf", "mds", "glmpca", Reductions(srt))
-      ) ||
-        length(linear_reduction) > 1
-    ) {
-      stop(
-        "'linear_reduction' must be one of 'pca','svd', 'ica', 'nmf', 'mds', 'glmpca'."
-      )
-    }
-  }
-  if (!is.null(nonlinear_reduction)) {
-    if (
-      any(
-        !nonlinear_reduction %in%
-          c(
-            "umap",
-            "umap-naive",
-            "tsne",
-            "dm",
-            "phate",
-            "pacmap",
-            "trimap",
-            "largevis",
-            "fr",
-            Reductions(srt)
-          )
-      ) ||
-        length(nonlinear_reduction) > 1
-    ) {
-      stop(
-        "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'."
-      )
-    }
-    if (
-      is.null(features) &&
-        is.null(reduction_use) &&
-        is.null(neighbor_use) &&
-        is.null(graph_use)
-    ) {
-      stop(
-        "'features', 'reduction_use', 'neighbor_use', or 'graph_use' must be provided when running non-linear dimensionality reduction."
-      )
-    }
-    if (nonlinear_reduction %in% c("fr")) {
-      if (!is.null(graph_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Graphs(",
-          graph_use,
-          ") as input"
-        )
-      } else if (!is.null(neighbor_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Neighbors(",
-          neighbor_use,
-          ") as input"
-        )
-      } else if (!is.null(features)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Features(length:",
-          length(features),
-          ") as input"
-        )
-      } else if (!is.null(reduction_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Reduction(",
-          reduction_use,
-          ", dims:",
-          min(reduction_dims),
-          "-",
-          max(reduction_dims),
-          ") as input"
-        )
-      }
-    } else {
-      if (!is.null(features)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Features(length:",
-          length(features),
-          ") as input"
-        )
-      } else if (!is.null(reduction_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Reduction(",
-          reduction_use,
-          ", dims:",
-          min(reduction_dims),
-          "-",
-          max(reduction_dims),
-          ") as input"
-        )
-      } else if (!is.null(neighbor_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Neighbors(",
-          neighbor_use,
-          ") as input"
-        )
-      } else if (!is.null(graph_use)) {
-        message(
-          "Non-linear dimensionality reduction(",
-          nonlinear_reduction,
-          ") using Graphs(",
-          graph_use,
-          ") as input"
-        )
-      }
-    }
-  }
-  if (!is.null(linear_reduction)) {
-    if (!isTRUE(force_linear_reduction)) {
-      if (linear_reduction %in% Reductions(srt)) {
-        if (srt[[linear_reduction]]@assay.used == assay) {
-          message(
-            "linear_reduction(",
-            linear_reduction,
-            ") is already existed. Skip calculation."
-          )
-          reduc <- srt[[linear_reduction]]
-          SeuratObject::Key(reduc) <- paste0(prefix, linear_reduction, "_")
-          srt[[paste0(prefix, linear_reduction)]] <- reduc
-          srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
-          return(srt)
-        } else {
-          message(
-            "assay.used is ",
-            srt[[linear_reduction]]@assay.used,
-            ", which is not the same as the ",
-            assay,
-            " specified. Recalculate the linear reduction(pca)"
-          )
-          linear_reduction <- "pca"
-        }
-      }
-    }
-    if (is.null(features) || length(features) == 0) {
-      message("No features provided. Use variable features.")
-      if (length(SeuratObject::DefaultAssay(srt, assay = assay)) == 0) {
-        srt <- FindVariableFeatures(srt, assay = assay, verbose = FALSE)
-      }
-      features <- SeuratObject::DefaultAssay(srt, assay = assay)
-    }
-    fun_use <- switch(linear_reduction,
-      "pca" = "RunPCA",
-      "svd" = "RunSVD",
-      "ica" = "RunICA",
-      "nmf" = "RunNMF",
-      "mds" = "RunMDS",
-      "glmpca" = "RunGLMPCA"
-    )
-    key_use <- switch(linear_reduction,
-      "pca" = "PC_",
-      "svd" = "LSI_",
-      "ica" = "IC_",
-      "nmf" = "BE_",
-      "mds" = "MDS_",
-      "glmpca" = "GLMPC_"
-    )
-    components_nm <- switch(linear_reduction,
-      "pca" = "npcs",
-      "svd" = "n",
-      "ica" = "nics",
-      "nmf" = "nbes",
-      "mds" = "nmds",
-      "glmpca" = "L"
-    )
-    params <- list(
-      object = srt,
-      assay = assay,
-      layer = layer,
-      features = features,
-      components_nm = linear_reduction_dims,
-      reduction.name = paste0(prefix, linear_reduction),
-      reduction.key = paste0(prefix, key_use),
-      verbose = verbose,
-      seed.use = seed
-    )
-    if (fun_use %in% c("RunSVD", "RunICA")) {
-      params <- params[!names(params) %in% "layer"]
-    }
-    if (fun_use == "RunGLMPCA") {
-      params[["layer"]] <- "counts"
-    }
-    names(params)[names(params) == "components_nm"] <- components_nm
-    for (nm in names(linear_reduction_params)) {
-      params[[nm]] <- linear_reduction_params[[nm]]
-    }
-    srt <- invoke_fun(.fn = fun_use, .args = params)
-
-    if (is.null(rownames(srt[[paste0(prefix, linear_reduction)]]))) {
-      rownames(
-        srt[[paste0(prefix, linear_reduction)]]@cell.embeddings
-      ) <- colnames(srt)
-    }
-    if (linear_reduction == "pca") {
-      pca.out <- srt[[paste0(prefix, linear_reduction)]]
-      center <- rowMeans(
-        Seurat::GetAssayData(
-          object = srt,
-          layer = "scale.data",
-          assay = assay
-        )[features, , drop = FALSE]
-      )
-      model <- list(
-        sdev = pca.out@stdev,
-        rotation = pca.out@feature.loadings,
-        center = center,
-        scale = FALSE,
-        x = pca.out@cell.embeddings
-      )
-      class(model) <- "prcomp"
-      srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
-        "model"
-      ]] <- model
-    }
-    if (linear_reduction %in% c("glmpca", "nmf")) {
-      dims_estimate <- 1:linear_reduction_dims
-    } else {
-      dim_est <- tryCatch(
-        expr = {
-          min(
-            intrinsicDimension::maxLikGlobalDimEst(
-              data = Embeddings(
-                srt,
-                reduction = paste0(prefix, linear_reduction)
-              ),
-              k = 20
-            )[["dim.est"]],
-            ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction)))
-          )
-        },
-        error = function(e) {
-          message(
-            "Can not estimate intrinsic dimensions with maxLikGlobalDimEst."
-          )
-          return(NA)
-        }
-      )
-      if (!is.na(dim_est)) {
-        dims_estimate <- seq_len(max(
-          min(
-            ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction))),
-            10
-          ),
-          ceiling(dim_est)
-        ))
-      } else {
-        dims_estimate <- seq_len(min(
-          ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction))),
-          30
-        ))
-      }
-    }
-    srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
-      "dims_estimate"
-    ]] <- dims_estimate
-    srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
-  } else if (!is.null(nonlinear_reduction)) {
-    if (!isTRUE(force_nonlinear_reduction)) {
-      if (nonlinear_reduction %in% Reductions(srt)) {
-        if (srt[[nonlinear_reduction]]@assay.used == assay) {
-          message(
-            "nonlinear_reduction(",
-            nonlinear_reduction,
-            ") is already existed. Skip calculation."
-          )
-          reduc <- srt[[nonlinear_reduction]]
-          SeuratObject::Key(reduc) <- paste0(prefix, nonlinear_reduction, "_")
-          srt[[paste0(prefix, nonlinear_reduction)]] <- reduc
-          srt@misc[["Default_reduction"]] <- paste0(prefix, nonlinear_reduction)
-          return(srt)
-        } else {
-          message(
-            "assay.used is ",
-            srt[[nonlinear_reduction]]@assay.used,
-            ", which is not the same as the ",
-            assay,
-            " specified. Recalculate the nonlinear reduction(umap)"
-          )
-          nonlinear_reduction <- "umap"
-        }
-      }
-    }
-    # if (!is.null(neighbor_use) && !nonlinear_reduction %in% c("umap", "umap-naive", "fr")) {
-    #   stop("'neighbor_use' only support 'umap', 'umap-naive' or 'fr' method")
-    # }
-    # if (!is.null(graph_use) && !nonlinear_reduction %in% c("umap", "umap-naive", "fr")) {
-    #   stop("'graph_use' only support 'umap', 'umap-naive' or 'fr' method")
-    # }
-    fun_use <- switch(nonlinear_reduction,
-      "umap" = "RunUMAP2",
-      "umap-naive" = "RunUMAP2",
-      "tsne" = "RunTSNE",
-      "dm" = "RunDM",
-      "phate" = "RunPHATE",
-      "pacmap" = "RunPaCMAP",
-      "trimap" = "RunTriMap",
-      "largevis" = "RunLargeVis",
-      "fr" = "RunFR"
-    )
-    components_nm <- switch(nonlinear_reduction,
-      "umap" = "n.components",
-      "umap-naive" = "n.components",
-      "tsne" = "dim.embed",
-      "dm" = "ndcs",
-      "phate" = "n_components",
-      "pacmap" = "n_components",
-      "trimap" = "n_components",
-      "largevis" = "n_components",
-      "fr" = "ndim"
-    )
-    other_params <- switch(nonlinear_reduction,
-      "umap" = list(umap.method = "uwot", return.model = TRUE),
-      "umap-naive" = list(umap.method = "naive", return.model = TRUE),
-      "tsne" = list(
-        tsne.method = "Rtsne",
-        num_threads = 0,
-        check_duplicates = FALSE
-      ),
-      "dm" = list(),
-      "phate" = list(),
-      "pacmap" = list(),
-      "trimap" = list(),
-      "largevis" = list(),
-      "fr" = list()
-    )
-    nonlinear_reduction_sim <- toupper(gsub(
-      pattern = "-.*",
-      replacement = "",
-      x = nonlinear_reduction
-    ))
-    params <- list(
-      object = srt,
-      assay = assay,
-      layer = layer,
-      components_nm = nonlinear_reduction_dims,
-      features = features,
-      reduction = reduction_use,
-      dims = reduction_dims,
-      reduction.name = paste0(
-        prefix,
-        nonlinear_reduction_sim,
-        nonlinear_reduction_dims,
-        "D"
-      ),
-      reduction.key = paste0(
-        prefix,
-        nonlinear_reduction_sim,
-        nonlinear_reduction_dims,
-        "D_"
-      ),
-      verbose = verbose,
-      seed.use = seed
-    )
-    if (!is.null(neighbor_use)) {
-      params[["neighbor"]] <- neighbor_use
-    }
-    if (!is.null(graph_use)) {
-      params[["graph"]] <- graph_use
-    }
-    names(params)[names(params) == "components_nm"] <- components_nm
-    for (nm in names(other_params)) {
-      params[[nm]] <- other_params[[nm]]
-    }
-    for (nm in names(nonlinear_reduction_params)) {
-      params[[nm]] <- nonlinear_reduction_params[[nm]]
-    }
-    srt <- invoke_fun(.fn = fun_use, .args = params)
-
-    srt@reductions[[paste0(
-      prefix,
-      nonlinear_reduction_sim,
-      nonlinear_reduction_dims,
-      "D"
-    )]]@misc[["reduction_dims"]] <- reduction_dims
-    srt@reductions[[paste0(
-      prefix,
-      nonlinear_reduction_sim,
-      nonlinear_reduction_dims,
-      "D"
-    )]]@misc[["reduction_use"]] <- reduction_use
-    srt@misc[["Default_reduction"]] <- paste0(prefix, nonlinear_reduction_sim)
-  }
-  return(srt)
 }
 
 #' Find the default reduction name in a Seurat object.
@@ -1137,7 +533,7 @@ Uncorrected_integrate <- function(
   }
   reduc_test <- c("pca", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -1267,7 +663,7 @@ Uncorrected_integrate <- function(
       (is.null(do_scaling) &&
         any(
           !HVF %in%
-            rownames(Seurat::GetAssayData(
+            rownames(SeuratObject::GetAssayData(
               srt_merge,
               layer = "scale.data",
               assay = SeuratObject::DefaultAssay(srt_merge)
@@ -1409,7 +805,7 @@ Uncorrected_integrate <- function(
   SeuratObject::VariableFeatures(srt_merge) <- srt_merge@misc[["Uncorrected_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srt_merge,
       pattern = paste0(assay, "|Uncorrected|Default_reduction"),
@@ -1429,7 +825,6 @@ Uncorrected_integrate <- function(
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function, default is an empty list.
 #' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function, default is an empty list.
 #'
-#' @importFrom Signac RunTFIDF
 #' @export
 Seurat_integrate <- function(
     srt_merge = NULL,
@@ -1475,7 +870,7 @@ Seurat_integrate <- function(
   }
   reduc_test <- c("pca", "ica", "svd", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -1590,7 +985,7 @@ Seurat_integrate <- function(
       "The cell count in some batches is lower than 50, which may not be suitable for the current integration method.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(srt_merge)
     }
@@ -1612,7 +1007,7 @@ Seurat_integrate <- function(
         30
       )
     }
-    srt_merge <- RunTFIDF(
+    srt_merge <- Signac::RunTFIDF(
       object = srt_merge,
       assay = SeuratObject::DefaultAssay(srt_merge),
       verbose = FALSE
@@ -1667,7 +1062,7 @@ Seurat_integrate <- function(
             any(
               !HVF %in%
                 rownames(
-                  Seurat::GetAssayData(
+                  SeuratObject::GetAssayData(
                     srt,
                     layer = "scale.data",
                     assay = SeuratObject::DefaultAssay(srt)
@@ -1765,7 +1160,7 @@ Seurat_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                Seurat::GetAssayData(
+                SeuratObject::GetAssayData(
                   srtIntegrated,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -1947,7 +1342,7 @@ Seurat_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Seurat_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|Seurat|Default_reduction"),
@@ -2260,7 +1655,7 @@ scVI_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["scVI_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|scVI|Default_reduction"),
@@ -2321,7 +1716,7 @@ MNN_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -2442,7 +1837,7 @@ MNN_integrate <- function(
 
   sceList <- lapply(srt_list, function(srt) {
     sce <- as.SingleCellExperiment(CreateSeuratObject(
-      counts = Seurat::GetAssayData(
+      counts = SeuratObject::GetAssayData(
         srt,
         layer = "data",
         assay = SeuratObject::DefaultAssay(srt)
@@ -2489,7 +1884,7 @@ MNN_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              Seurat::GetAssayData(
+              SeuratObject::GetAssayData(
                 srtIntegrated,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -2629,7 +2024,7 @@ MNN_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["MNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|MNN|Default_reduction"),
@@ -2771,7 +2166,7 @@ fastMNN_integrate <- function(
   sceList <- lapply(srt_list, function(srt) {
     sce <- Seurat::as.SingleCellExperiment(
       Seurat::CreateSeuratObject(
-        counts = Seurat::GetAssayData(
+        counts = SeuratObject::GetAssayData(
           srt,
           layer = "data",
           assay = SeuratObject::DefaultAssay(srt)
@@ -2909,7 +2304,7 @@ fastMNN_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["fastMNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|fastMNN|Default_reduction"),
@@ -2973,7 +2368,7 @@ Harmony_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -3099,7 +2494,7 @@ Harmony_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              Seurat::GetAssayData(
+              SeuratObject::GetAssayData(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -3176,7 +2571,7 @@ Harmony_integrate <- function(
   )
   if (
     nrow(
-      Seurat::GetAssayData(
+      SeuratObject::GetAssayData(
         srt_merge,
         layer = "scale.data",
         assay = SeuratObject::DefaultAssay(srt_merge)
@@ -3284,7 +2679,7 @@ Harmony_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Harmony_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|Harmony|Default_reduction"),
@@ -3304,7 +2699,6 @@ Harmony_integrate <- function(
 #' @param return_corrected Logical indicating whether to return the corrected data. Default is FALSE.
 #' @param Scanorama_params A list of parameters for the scanorama.correct function, default is an empty list.
 #'
-#' @importFrom stats sd
 #' @export
 Scanorama_integrate <- function(
     srt_merge = NULL,
@@ -3443,7 +2837,7 @@ Scanorama_integrate <- function(
   for (i in seq_along(srt_list)) {
     assaylist[[i]] <- Matrix::t(
       Matrix::as.matrix(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = srt_list[[i]],
           layer = "data",
           assay = SeuratObject::DefaultAssay(srt_list[[i]])
@@ -3596,7 +2990,7 @@ Scanorama_integrate <- function(
   ]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|Scanorama|Default_reduction"),
@@ -3655,7 +3049,7 @@ BBKNN_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -3765,7 +3159,7 @@ BBKNN_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              Seurat::GetAssayData(
+              SeuratObject::GetAssayData(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -3865,7 +3259,7 @@ BBKNN_integrate <- function(
   pos <- split(bbknn_dist@i + 1, rep(1:ncol(bbknn_dist), diff(bbknn_dist@p)))
   idx <- Matrix::t(mapply(
     function(x, y) {
-      out <- y[head(order(x, decreasing = F), n.neighbors - 1)]
+      out <- y[utils::head(order(x, decreasing = F), n.neighbors - 1)]
       length(out) <- n.neighbors - 1
       return(out)
     },
@@ -3880,7 +3274,7 @@ BBKNN_integrate <- function(
   idx <- cbind(seq_len(nrow(idx)), idx)
   dist <- Matrix::t(mapply(
     function(x, y) {
-      out <- y[head(order(x, decreasing = F), n.neighbors - 1)]
+      out <- y[utils::head(order(x, decreasing = F), n.neighbors - 1)]
       length(out) <- n.neighbors - 1
       out[is.na(out)] <- 0
       return(out)
@@ -3889,7 +3283,7 @@ BBKNN_integrate <- function(
     y = val
   ))
   dist <- cbind(0, dist)
-  srtIntegrated[["BBKNN_neighbors"]] <- new(
+  srtIntegrated[["BBKNN_neighbors"]] <- methods::new(
     Class = "Neighbor",
     nn.idx = idx,
     nn.dist = dist,
@@ -3978,7 +3372,7 @@ BBKNN_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["BBKNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|BBKNN|Default_reduction"),
@@ -4040,7 +3434,7 @@ CSS_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -4166,7 +3560,7 @@ CSS_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              Seurat::GetAssayData(
+              SeuratObject::GetAssayData(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -4347,7 +3741,7 @@ CSS_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["CSS_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|CSS|Default_reduction"),
@@ -4362,10 +3756,11 @@ CSS_integrate <- function(
 
 #' LIGER_integrate
 #'
+#' @md
 #' @inheritParams Integration_scop
 #' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
-#' @param optimizeALS_params A list of parameters for the rliger::optimizeALS function, default is an empty list.
-#' @param quantilenorm_params A list of parameters for the rliger::quantile_norm function, default is an empty list.
+#' @param optimizeALS_params A list of parameters for the [rliger::optimizeALS] function, default is an empty list.
+#' @param quantilenorm_params A list of parameters for the [rliger::quantile_norm] function, default is an empty list.
 #'
 #' @export
 LIGER_integrate <- function(
@@ -4499,7 +3894,7 @@ LIGER_integrate <- function(
       "The cell count in some batches is lower than 30, which may not be suitable for the current integration method.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(srt_merge)
     }
@@ -4514,7 +3909,7 @@ LIGER_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                Seurat::GetAssayData(
+                SeuratObject::GetAssayData(
                   srt,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srt)
@@ -4541,7 +3936,7 @@ LIGER_integrate <- function(
       )
     }
     scale.data[[i]] <- Matrix::t(
-      x = Seurat::GetAssayData(
+      x = SeuratObject::GetAssayData(
         object = srt,
         layer = "scale.data",
         assay = SeuratObject::DefaultAssay(srt)
@@ -4700,7 +4095,7 @@ LIGER_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["LIGER_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|LIGER|Default_reduction"),
@@ -4719,7 +4114,6 @@ LIGER_integrate <- function(
 #' @param buildGraph_params A list of parameters for the buildGraph function, default is an empty list.
 #' @param num_threads  An integer setting the number of threads for Conos, default is 2.
 #'
-#' @importFrom igraph as_adjacency_matrix
 #' @export
 Conos_integrate <- function(
     srt_merge = NULL,
@@ -4761,7 +4155,7 @@ Conos_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -4859,7 +4253,7 @@ Conos_integrate <- function(
       "The cell count in some batches is lower than 30, which may not be suitable for the current integration method.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(srt_merge)
     }
@@ -4887,7 +4281,7 @@ Conos_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                Seurat::GetAssayData(
+                SeuratObject::GetAssayData(
                   srt,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srt)
@@ -4976,14 +4370,14 @@ Conos_integrate <- function(
     params[[nm]] <- buildGraph_params[[nm]]
   }
   invoke_fun(.fn = srt_list_con[["buildGraph"]], .args = params)
-  conos_graph <- as_adjacency_matrix(
+  conos_graph <- igraph::as_adjacency_matrix(
     srt_list_con$graph,
     type = "both",
     attr = "weight",
     names = TRUE,
     sparse = TRUE
   )
-  conos_graph <- as.Graph(conos_graph)
+  conos_graph <- SeuratObject::as.Graph(conos_graph)
   conos_graph@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
   srtIntegrated@graphs[["Conos"]] <- conos_graph
   nonlinear_reduction_params[["n.neighbors"]] <- params[["k"]]
@@ -5067,7 +4461,7 @@ Conos_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Conos_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|Conos|Default_reduction"),
@@ -5128,7 +4522,7 @@ ComBat_integrate <- function(
   }
   reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
   if (!is.null(srt_merge)) {
-    reduc_test <- c(reduc_test, Reductions(srt_merge))
+    reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
   if (any(!linear_reduction %in% reduc_test)) {
     stop(
@@ -5254,7 +4648,7 @@ ComBat_integrate <- function(
     "]",
     " Perform integration(Combat) on the data...\n"
   ))
-  dat <- Seurat::GetAssayData(
+  dat <- SeuratObject::GetAssayData(
     srt_merge,
     layer = "data",
     assay = SeuratObject::DefaultAssay(srt_merge)
@@ -5289,7 +4683,7 @@ ComBat_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              Seurat::GetAssayData(
+              SeuratObject::GetAssayData(
                 srtIntegrated,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -5428,7 +4822,7 @@ ComBat_integrate <- function(
   SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["ComBat_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
-    srt_merge_raw <- SrtAppend(
+    srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
       srt_append = srtIntegrated,
       pattern = paste0(assay, "|ComBat|Default_reduction"),
@@ -5462,33 +4856,48 @@ ComBat_integrate <- function(
 #' @examples
 #' data("panc8_sub")
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
+#'   panc8_sub,
+#'   batch = "tech",
 #'   integration_method = "Uncorrected"
 #' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
 #'
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
+#'   panc8_sub,
+#'   batch = "tech",
 #'   integration_method = "Uncorrected",
 #'   HVF_min_intersection = 5
 #' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-#'
-#' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   HVF_min_intersection = 5, scale_within_batch = TRUE
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
 #' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected",
+#'   HVF_min_intersection = 5,
+#'   scale_within_batch = TRUE
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- Integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
+#'   panc8_sub,
+#'   batch = "tech",
 #'   integration_method = "Seurat",
 #'   FindIntegrationAnchors_params = list(reduction = "rpca")
 #' )
@@ -5501,7 +4910,8 @@ ComBat_integrate <- function(
 #' )
 #' for (method in integration_methods) {
 #'   panc8_sub <- Integration_scop(
-#'     srt_merge = panc8_sub, batch = "tech",
+#'     panc8_sub,
+#'     batch = "tech",
 #'     integration_method = method,
 #'     linear_reduction_dims_use = 1:50,
 #'     nonlinear_reduction = "umap"
@@ -5515,21 +4925,26 @@ ComBat_integrate <- function(
 #' }
 #'
 #' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
 #' )
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub, batch = "tech",
+#'   panc8_sub,
+#'   batch = "tech",
 #'   integration_method = "Seurat",
 #'   linear_reduction_dims_use = 1:50,
 #'   nonlinear_reduction = nonlinear_reductions
 #' )
 #' for (nr in nonlinear_reductions) {
-#'   print(CellDimPlot(panc8_sub,
-#'     group.by = c("tech", "celltype"),
-#'     reduction = paste0("Seurat", nr, "2D"),
-#'     xlab = "", ylab = "", title = nr,
-#'     legend.position = "none", theme_use = "theme_blank"
-#'   ))
+#'   print(
+#'     CellDimPlot(
+#'       panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0("Seurat", nr, "2D"),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
 #' }
 #' }
 #'
@@ -5612,7 +5027,7 @@ Integration_scop <- function(
     # print(formals)
 
     # Merge the formal arguments with the actual arguments, so that all arguments are included
-    args <- modifyList(formals, args)
+    args <- utils::modifyList(formals, args)
 
     time_start <- Sys.time()
     cat(paste0(
@@ -5625,7 +5040,7 @@ Integration_scop <- function(
     srtIntegrated <- invoke_fun(
       .fn = paste0(integration_method, "_integrate"),
       .args = args[
-        names(args) %in% formalArgs(paste0(integration_method, "_integrate"))
+        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
       ]
     )
     time_end <- Sys.time()

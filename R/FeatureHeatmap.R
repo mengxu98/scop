@@ -6,17 +6,15 @@
 #'
 #' @seealso \code{\link{RunDEtest}}
 #'
-#' @importFrom ComplexHeatmap %v%
 #' @export
 #'
 #' @examples
-#' library(dplyr)
 #' data("pancreas_sub")
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "CellType"
 #' )
-#' de_filter <- filter(
+#' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -101,7 +99,7 @@
 #'
 #' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
 #' ht6 <- FeatureHeatmap(
@@ -448,7 +446,7 @@ FeatureHeatmap <- function(
   cells <- intersect(cells, colnames(srt@assays[[1]]))
 
   if (is.null(features)) {
-    features <- VariableFeatures(srt, assay = assay)
+    features <- SeuratObject::VariableFeatures(srt, assay = assay)
   }
   index <- features %in%
     c(rownames(Seurat::GetAssay(
@@ -576,7 +574,7 @@ FeatureHeatmap <- function(
     if (!is.null(libsize)) {
       libsize_use <- libsize
     } else {
-      libsize_use <- colSums(
+      libsize_use <- Matrix::colSums(
         SeuratObject::GetAssayData(
           srt,
           assay = assay,
@@ -595,7 +593,7 @@ FeatureHeatmap <- function(
     mat_raw[gene_unique, ] <- Matrix::t(
       Matrix::t(mat_raw[gene_unique, , drop = FALSE]) /
         libsize_use *
-        median(libsize_use)
+        stats::median(libsize_use)
     )
   }
 
@@ -613,23 +611,18 @@ FeatureHeatmap <- function(
     mat_list[[cell_group]] <- mat_tmp
   }
 
-  # data used to do clustering
-  # if (length(feature_split_by) == 1) {
-  #   mat_split <- mat_list[[feature_split_by]]
-  # } else {
-  #   # mat_split <- mat_list[, unlist(lapply(cell_groups[feature_split_by], names))]
-  #   # mat_split <- matrix_process(mat_split, method = exp_method)
-  #   mat_split <- do.call(cbind, mat_list[feature_split_by])
-  #   mat_split[is.infinite(mat_split)] <- max(abs(mat_split[!is.infinite(mat_split)])) * ifelse(mat_split[is.infinite(mat_split)] > 0, 1, -1)
-  #   mat_split[is.na(mat_split)] <- mean(mat_split, na.rm = TRUE)
-  # }
   mat_split <- do.call(cbind, mat_list[feature_split_by])
 
   if (is.null(limits)) {
     if (!is.function(exp_method) && exp_method %in% c("zscore", "log2fc")) {
       b <- ceiling(
         min(
-          abs(quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)),
+          abs(
+            stats::quantile(
+              do.call(cbind, mat_list), c(0.01, 0.99),
+              na.rm = TRUE
+            )
+          ),
           na.rm = TRUE
         ) *
           2
@@ -637,28 +630,46 @@ FeatureHeatmap <- function(
         2
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
-        palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
+        palette_scop(
+          palette = heatmap_palette,
+          palcolor = heatmap_palcolor
+        )
       )
     } else {
-      b <- quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
+      b <- stats::quantile(
+        do.call(cbind, mat_list), c(0.01, 0.99),
+        na.rm = TRUE
+      )
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
-        palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
+        palette_scop(
+          palette = heatmap_palette,
+          palcolor = heatmap_palcolor
+        )
       )
     }
   } else {
     colors <- circlize::colorRamp2(
       seq(limits[1], limits[2], length = 100),
-      palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
+      palette_scop(
+        palette = heatmap_palette,
+        palcolor = heatmap_palcolor
+      )
     )
   }
 
   cell_metadata <- cbind.data.frame(
-    data.frame(row.names = colnames(mat_raw), cells = colnames(mat_raw)),
+    data.frame(
+      row.names = colnames(mat_raw),
+      cells = colnames(mat_raw)
+    ),
     cbind.data.frame(
       srt@meta.data[
         colnames(mat_raw),
-        c(group.by, intersect(cell_annotation, colnames(srt@meta.data))),
+        c(
+          group.by,
+          intersect(cell_annotation, colnames(srt@meta.data))
+        ),
         drop = FALSE
       ],
       Matrix::t(
@@ -749,7 +760,7 @@ FeatureHeatmap <- function(
       )
 
       anno <- list()
-      anno[[cell_group]] <- anno_block(
+      anno[[cell_group]] <- ComplexHeatmap::anno_block(
         align_to = split(
           seq_along(cell_groups[[cell_group]]),
           gsub(
@@ -758,7 +769,7 @@ FeatureHeatmap <- function(
             x = cell_groups[[cell_group]]
           )
         ),
-        panel_fun = getFunction("panel_fun", where = environment()),
+        panel_fun = methods::getFunction("panel_fun", where = environment()),
         which = ifelse(flip, "row", "column"),
         show_name = FALSE
       )
@@ -805,7 +816,7 @@ FeatureHeatmap <- function(
       )
 
       anno <- list()
-      anno[[split.by]] <- anno_block(
+      anno[[split.by]] <- ComplexHeatmap::anno_block(
         align_to = split(
           seq_along(cell_groups[[cell_group]]),
           gsub(
@@ -814,7 +825,7 @@ FeatureHeatmap <- function(
             x = cell_groups[[cell_group]]
           )
         ),
-        panel_fun = getFunction("panel_fun", where = environment()),
+        panel_fun = methods::getFunction("panel_fun", where = environment()),
         which = ifelse(flip, "row", "column"),
         show_name = i == 1
       )
@@ -1024,7 +1035,7 @@ FeatureHeatmap <- function(
           }
         }
         if (split_method == "kmeans") {
-          km <- kmeans(
+          km <- stats::kmeans(
             mat_split,
             centers = n_split,
             iter.max = 1e4,
@@ -1038,10 +1049,10 @@ FeatureHeatmap <- function(
               proxyC::dist(mat_split)
             )
           )
-          row_split <- feature_split <- cutree(hc, k = n_split)
+          row_split <- feature_split <- stats::cutree(hc, k = n_split)
         }
       }
-      groupmean <- aggregate(
+      groupmean <- stats::aggregate(
         Matrix::t(mat_split),
         by = list(unlist(cell_groups[feature_split_by])),
         mean
@@ -1052,7 +1063,7 @@ FeatureHeatmap <- function(
         which.max
       )]
       df <- data.frame(row_split = row_split, order_by = maxgroup)
-      df_order <- aggregate(
+      df_order <- stats::aggregate(
         df[["order_by"]],
         by = list(df[, "row_split"]),
         FUN = function(x) names(sort(table(x), decreasing = TRUE))[1]
@@ -1131,9 +1142,9 @@ FeatureHeatmap <- function(
       envir = environment()
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
-      features_split = anno_block(
+      features_split = ComplexHeatmap::anno_block(
         align_to = split(seq_along(row_split_raw), row_split_raw),
-        panel_fun = getFunction("panel_fun", where = environment()),
+        panel_fun = methods::getFunction("panel_fun", where = environment()),
         width = grid::unit(0.1, "in"),
         height = grid::unit(0.1, "in"),
         show_name = FALSE,
@@ -1791,8 +1802,8 @@ heatmap_fixsize <- function(
     )
     ht_height <- grid::unit(ht_height, units)
   }
-  ht_width <- convertUnit(ht_width, unitTo = units)
-  ht_height <- convertUnit(ht_height, unitTo = units)
+  ht_width <- grid::convertUnit(ht_width, unitTo = units)
+  ht_height <- grid::convertUnit(ht_height, unitTo = units)
 
   return(list(ht_width = ht_width, ht_height = ht_height))
 }

@@ -45,6 +45,8 @@
 #' @param force A logical value indicating whether to force the creation of the plot, even if it contains more than 50 subplots. Defaults to FALSE.
 #' @param seed A numeric value specifying the random seed for reproducibility. Defaults to 11.
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
@@ -75,17 +77,6 @@
 #'   group.by = "SubCellType",
 #'   add_equation = TRUE
 #' )
-#' @importFrom Seurat Reductions Embeddings Key
-#' @importFrom SeuratObject as.sparse
-#' @importFrom dplyr group_by "%>%" .data
-#' @importFrom stats quantile
-#' @importFrom ggplot2 ggplot aes geom_point geom_smooth geom_density_2d stat_density_2d labs scale_x_continuous scale_y_continuous facet_grid scale_color_gradientn scale_fill_gradientn scale_colour_gradient scale_fill_gradient guide_colorbar scale_color_identity scale_fill_identity guide_colorbar geom_hex stat_summary_hex
-#' @importFrom ggnewscale new_scale_color new_scale_fill
-#' @importFrom ggrepel geom_text_repel GeomTextRepel
-#' @importFrom gtable gtable_add_cols
-#' @importFrom patchwork wrap_plots
-#' @importFrom Matrix t
-#' @export
 FeatureCorPlot <- function(
     srt,
     features,
@@ -205,7 +196,7 @@ FeatureCorPlot <- function(
     }
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           srt,
           assay = assay,
           layer = layer
@@ -216,7 +207,7 @@ FeatureCorPlot <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          Seurat::GetAssayData(
+          SeuratObject::GetAssayData(
             srt,
             assay = assay,
             layer = layer
@@ -232,8 +223,8 @@ FeatureCorPlot <- function(
     features_meta <- c(features_meta, "CoExp")
   }
   if (length(features_gene) > 0) {
-    dat_gene <- t(
-      Seurat::GetAssayData(
+    dat_gene <- Matrix::t(
+      SeuratObject::GetAssayData(
         srt,
         assay = assay,
         layer = layer
@@ -257,14 +248,16 @@ FeatureCorPlot <- function(
     stop("'features' must be type of numeric variable.")
   }
   if (!inherits(dat_exp, "dgCMatrix")) {
-    dat_exp <- as.sparse(Matrix::as.matrix(dat_exp))
+    dat_exp <- SeuratObject::as.sparse(
+      Matrix::as.matrix(dat_exp)
+    )
   }
   if (length(features) > 10 && !isTRUE(force)) {
     warning(
       "More than 10 features to be paired compared which will generate more than 50 plots.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -305,7 +298,7 @@ FeatureCorPlot <- function(
   rownames(df_bound) <- cor_colors
   df_bound[1, 1] <- df_bound[1, 1] - 0.01
 
-  pair <- as.data.frame(t(combn(features, m = 2)))
+  pair <- as.data.frame(Matrix::t(combn(features, m = 2)))
   colnames(pair) <- c("feature1", "feature2")
   pair_expand <- expand.grid(features, features, stringsAsFactors = TRUE)
   colnames(pair_expand) <- c("feature1", "feature2")
@@ -316,10 +309,10 @@ FeatureCorPlot <- function(
 
   for (s in levels(dat_use[[split.by]])) {
     dat <- dat_use[dat_use[[split.by]] == s, , drop = FALSE]
-    feature_mat <- t(dat_exp[rownames(dat), features])
+    feature_mat <- Matrix::t(dat_exp[rownames(dat), features])
     if (cor_method %in% c("pearson", "spearman")) {
       if (cor_method == "spearman") {
-        feature_mat <- t(apply(feature_mat, 1, rank))
+        feature_mat <- Matrix::t(apply(feature_mat, 1, rank))
       }
       cor_method <- "correlation"
     }
@@ -421,21 +414,21 @@ FeatureCorPlot <- function(
               )
           }
           if (any(isTRUE(add_equation), isTRUE(add_r2), isTRUE(add_pvalue))) {
-            m <- lm(dat[[f2]] ~ dat[[f1]])
-            if (coef(m)[2] >= 0) {
+            m <- stats::lm(dat[[f2]] ~ dat[[f1]])
+            if (stats::coef(m)[2] >= 0) {
               eq1 <- substitute(
                 italic(y) == a + b %.% italic(x),
                 list(
-                  a = format(as.numeric(coef(m)[1]), digits = 2),
-                  b = format(as.numeric(coef(m)[2]), digits = 2)
+                  a = format(as.numeric(stats::coef(m)[1]), digits = 2),
+                  b = format(as.numeric(stats::coef(m)[2]), digits = 2)
                 )
               )
             } else {
               eq1 <- substitute(
                 italic(y) == a - b %.% italic(x),
                 list(
-                  a = format(as.numeric(coef(m)[1]), digits = 2),
-                  b = format(-as.numeric(coef(m)[2]), digits = 2)
+                  a = format(as.numeric(stats::coef(m)[1]), digits = 2),
+                  b = format(-as.numeric(stats::coef(m)[2]), digits = 2)
                 )
               )
             }
@@ -658,32 +651,32 @@ FeatureCorPlot <- function(
       gtable <- add_grob(gtable, legend, legend.position)
     }
     if (nlevels(dat_use[[split.by]]) > 1) {
-      split_grob <- textGrob(
+      split_grob <- grid::textGrob(
         s,
         just = "center",
-        gp = gpar(fontface = "bold", fontsize = 13)
+        gp = grid::gpar(fontface = "bold", fontsize = 13)
       )
       gtable <- add_grob(gtable, split_grob, "top")
     }
     if (!is.null(subtitle)) {
-      subtitle_grob <- textGrob(
+      subtitle_grob <- grid::textGrob(
         subtitle,
         x = 0,
         hjust = 0,
-        gp = gpar(fontface = "italic", fontsize = 13)
+        gp = grid::gpar(fontface = "italic", fontsize = 13)
       )
       gtable <- add_grob(gtable, subtitle_grob, "top")
     }
     if (!is.null(title)) {
-      title_grob <- textGrob(title, x = 0, hjust = 0, gp = gpar(fontsize = 14))
-      gtable <- add_grob(gtable, title_grob, "top", 2 * grobHeight(title_grob))
+      title_grob <- grid::textGrob(title, x = 0, hjust = 0, gp = grid::gpar(fontsize = 14))
+      gtable <- add_grob(gtable, title_grob, "top", 2 * grid::grobHeight(title_grob))
     }
-    p <- wrap_plots(gtable)
+    p <- patchwork::wrap_plots(gtable)
     plist[[paste0(s)]] <- p
   }
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,

@@ -12,9 +12,9 @@
 #' @param pt.alpha Point transparency.
 #' @param keep_scale How to handle the color scale across multiple plots. Options are:
 #' \itemize{
-#'   \item{NULL (no scaling):}{ Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.}
-#'   \item{"feature" (default; by row/feature scaling):}{ The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.}
-#'   \item{"all" (universal scaling):}{ The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.}
+#'   \item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
+#'   \item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
+#'   \item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 #' }
 #' @param cells.highlight A vector of cell names to highlight.
 #' @param cols.highlight Color used to highlight the cells.
@@ -89,18 +89,6 @@
 #'
 #' @seealso \code{\link{CellDimPlot}}
 #'
-#'
-#' @importFrom Seurat Reductions Embeddings Key
-#' @importFrom dplyr group_by "%>%" .data
-#' @importFrom stats quantile
-#' @importFrom ggplot2 ggplot aes geom_point geom_density_2d stat_density_2d geom_segment labs scale_x_continuous scale_y_continuous scale_size_continuous facet_grid scale_color_gradientn scale_fill_gradientn scale_colour_gradient scale_fill_gradient guide_colorbar scale_color_identity scale_fill_identity guide_colorbar geom_hex stat_summary_hex geom_path scale_linewidth_continuous after_stat
-#' @importFrom ggnewscale new_scale_color new_scale_fill
-#' @importFrom gtable gtable_add_cols
-#' @importFrom ggrepel geom_text_repel GeomTextRepel
-#' @importFrom grid arrow unit
-#' @importFrom patchwork wrap_plots
-#' @importFrom Matrix t
-#' @importFrom reshape2 melt
 #' @export
 #'
 #' @examples
@@ -249,7 +237,9 @@
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
-#'   reduction = "UMAP", lower_quantile = 0, upper_quantile = 0.8
+#'   reduction = "UMAP",
+#'   lower_quantile = 0,
+#'   upper_quantile = 0.8
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
@@ -376,7 +366,7 @@ FeatureDimPlot <- function(
     lineages_span = 0.75,
     lineages_palette = "Dark2",
     lineages_palcolor = NULL,
-    lineages_arrow = arrow(length = unit(0.1, "inches")),
+    lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
     lineages_linewidth = 1,
     lineages_line_bg = "white",
     lineages_line_bg_stroke = 0.5,
@@ -526,7 +516,7 @@ FeatureDimPlot <- function(
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           srt,
           assay = assay,
           layer = layer
@@ -537,7 +527,7 @@ FeatureDimPlot <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          Seurat::GetAssayData(
+          SeuratObject::GetAssayData(
             srt,
             assay = assay,
             layer = layer
@@ -555,21 +545,25 @@ FeatureDimPlot <- function(
 
   if (length(features_gene) > 0) {
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
-      dat_gene <- t(Matrix::as.matrix(
-        Seurat::GetAssayData(
-          srt,
-          assay = assay,
-          layer = layer
+      dat_gene <- Matrix::t(
+        Matrix::as.matrix(
+          SeuratObject::GetAssayData(
+            srt,
+            assay = assay,
+            layer = layer
+          )
         )
-      ))
+      )
     } else {
-      dat_gene <- t(Matrix::as.matrix(
-        Seurat::GetAssayData(
-          srt,
-          assay = assay,
-          layer = layer
-        )[features_gene, , drop = FALSE]
-      ))
+      dat_gene <- Matrix::t(
+        Matrix::as.matrix(
+          SeuratObject::GetAssayData(
+            srt,
+            assay = assay,
+            layer = layer
+          )[features_gene, , drop = FALSE]
+        )
+      )
     }
   } else {
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
@@ -580,10 +574,12 @@ FeatureDimPlot <- function(
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_embedding) > 0) {
-    dat_embedding <- Matrix::as.matrix(FetchData(
-      srt,
-      vars = features_embedding
-    ))
+    dat_embedding <- Matrix::as.matrix(
+      SeuratObject::FetchData(
+        srt,
+        vars = features_embedding
+      )
+    )
   } else {
     dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
@@ -602,7 +598,7 @@ FeatureDimPlot <- function(
 
   if (length(features) > 50 && !isTRUE(force)) {
     warning("More than 50 features to be plotted", immediate. = TRUE)
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -815,9 +811,9 @@ FeatureDimPlot <- function(
           mode = color_blend_mode
         )
       }
-      dat["color_value"] <- colSums(col2rgb(dat[, "color_blend"]))
+      dat["color_value"] <- Matrix::colSums(grDevices::col2rgb(dat[, "color_blend"]))
       dat[
-        rowSums(is.na(dat[, names(colors)])) == length(colors),
+        Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
         "color_value"
       ] <- NA
       dat <- dat[
@@ -825,7 +821,7 @@ FeatureDimPlot <- function(
         drop = FALSE
       ]
       dat[
-        rowSums(is.na(dat[, names(colors)])) == length(colors),
+        Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
         "color_blend"
       ] <- bg_color
       cells.highlight_use <- cells.highlight
@@ -836,7 +832,7 @@ FeatureDimPlot <- function(
         net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
         net_mat[net_mat == 0] <- NA
         net_mat[upper.tri(net_mat)] <- NA
-        net_df <- melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+        net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
         net_df[, "value"] <- as.numeric(net_df[, "value"])
         net_df[, "Var1"] <- as.character(net_df[, "Var1"])
         net_df[, "Var2"] <- as.character(net_df[, "Var2"])
@@ -882,7 +878,7 @@ FeatureDimPlot <- function(
               show.legend = FALSE
             ),
             scale_fill_gradientn(name = "Density", colours = filled_color),
-            new_scale_fill()
+            ggnewscale::new_scale_fill()
           )
         } else {
           density <- geom_density_2d(
@@ -947,7 +943,7 @@ FeatureDimPlot <- function(
             pixels = raster.dpi
           ) +
           scale_color_identity() +
-          new_scale_color()
+          ggnewscale::new_scale_color()
       } else {
         p <- p +
           geom_point(
@@ -960,7 +956,7 @@ FeatureDimPlot <- function(
             alpha = pt.alpha
           ) +
           scale_color_identity() +
-          new_scale_color()
+          ggnewscale::new_scale_color()
       }
 
       if (!is.null(cells.highlight_use)) {
@@ -988,7 +984,7 @@ FeatureDimPlot <- function(
                 pixels = raster.dpi
               ) +
               scale_color_identity() +
-              new_scale_color()
+              ggnewscale::new_scale_color()
           } else {
             p <- p +
               geom_point(
@@ -1009,21 +1005,24 @@ FeatureDimPlot <- function(
                 alpha = alpha.highlight
               ) +
               scale_color_identity() +
-              new_scale_color()
+              ggnewscale::new_scale_color()
           }
         }
       }
 
       legend2 <- NULL
       if (isTRUE(label)) {
-        label_df <- melt(p$data, measure.vars = features)
+        label_df <- reshape2::melt(p$data, measure.vars = features)
         label_df <- label_df %>%
-          group_by(variable) %>%
-          filter(
-            value >= quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
-              value <= quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
+          dplyr::group_by(variable) %>%
+          dplyr::filter(
+            value >= stats::quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
+              value <= stats::quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
           ) %>%
-          reframe(x = median(.data[["x"]]), y = median(.data[["y"]])) %>%
+          dplyr::reframe(
+            x = stats::median(.data[["x"]]),
+            y = stats::median(.data[["y"]])
+          ) %>%
           as.data.frame()
         colnames(label_df)[1] <- "label"
         label_df <- label_df[!is.na(label_df[, "label"]), , drop = FALSE]
@@ -1037,7 +1036,7 @@ FeatureDimPlot <- function(
                 color = label_point_color,
                 size = label_point_size
               ) +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 data = label_df,
                 aes(
                   x = .data[["x"]],
@@ -1060,7 +1059,7 @@ FeatureDimPlot <- function(
               )
           } else {
             p <- p +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 data = label_df,
                 aes(
                   x = .data[["x"]],
@@ -1098,7 +1097,7 @@ FeatureDimPlot <- function(
                 color = "black",
                 size = pt.size + 1
               ) +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 data = label_df,
                 aes(
                   x = .data[["x"]],
@@ -1120,7 +1119,7 @@ FeatureDimPlot <- function(
               )
           } else {
             p <- p +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 data = label_df,
                 aes(
                   x = .data[["x"]],
@@ -1196,7 +1195,7 @@ FeatureDimPlot <- function(
       }
       legend <- do.call(rbind, leg_list)
       if (!is.null(lineages)) {
-        lineages_layers <- c(list(new_scale_color()), lineages_layers)
+        lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
         suppressMessages({
           legend_curve <- get_legend(
             ggplot() +
@@ -1215,7 +1214,7 @@ FeatureDimPlot <- function(
       if (!is.null(legend2)) {
         gtable <- add_grob(gtable, legend2, legend.position)
       }
-      p <- wrap_plots(gtable)
+      p <- patchwork::wrap_plots(gtable)
       return(p)
     })
     names(plist) <- paste0(
@@ -1294,13 +1293,13 @@ FeatureDimPlot <- function(
         if (is.null(keep_scale)) {
           colors_value <- seq(
             lower_cutoff %||%
-              quantile(
+              stats::quantile(
                 dat[is.finite(dat[, "value"]), "value"],
                 lower_quantile,
                 na.rm = TRUE
               ),
             upper_cutoff %||%
-              quantile(
+              stats::quantile(
                 dat[is.finite(dat[, "value"]), "value"],
                 upper_quantile,
                 na.rm = TRUE
@@ -1312,13 +1311,13 @@ FeatureDimPlot <- function(
           if (keep_scale == "feature") {
             colors_value <- seq(
               lower_cutoff %||%
-                quantile(
+                stats::quantile(
                   dat_exp[is.finite(dat_exp[, f]), f],
                   lower_quantile,
                   na.rm = TRUE
                 ),
               upper_cutoff %||%
-                quantile(
+                stats::quantile(
                   dat_exp[is.finite(dat_exp[, f]), f],
                   upper_quantile,
                   na.rm = TRUE
@@ -1331,13 +1330,13 @@ FeatureDimPlot <- function(
             all_values <- Matrix::as.matrix(dat_exp[, features])
             colors_value <- seq(
               lower_cutoff %||%
-                quantile(
+                stats::quantile(
                   all_values[is.finite(all_values)],
                   lower_quantile,
                   na.rm = TRUE
                 ),
               upper_cutoff %||%
-                quantile(all_values, upper_quantile, na.rm = TRUE) +
+                stats::quantile(all_values, upper_quantile, na.rm = TRUE) +
                 0.001,
               length.out = 100
             )
@@ -1356,7 +1355,7 @@ FeatureDimPlot <- function(
         net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
         net_mat[net_mat == 0] <- NA
         net_mat[upper.tri(net_mat)] <- NA
-        net_df <- melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+        net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
         net_df[, "value"] <- as.numeric(net_df[, "value"])
         net_df[, "Var1"] <- as.character(net_df[, "Var1"])
         net_df[, "Var2"] <- as.character(net_df[, "Var2"])
@@ -1402,7 +1401,7 @@ FeatureDimPlot <- function(
               show.legend = FALSE
             ),
             scale_fill_gradientn(name = "Density", colours = filled_color),
-            new_scale_fill()
+            ggnewscale::new_scale_fill()
           )
         } else {
           density <- geom_density_2d(
@@ -1506,7 +1505,7 @@ FeatureDimPlot <- function(
                 na.value = bg_color
               )
           }
-          p <- p + new_scale_fill()
+          p <- p + ggnewscale::new_scale_fill()
         }
       } else {
         p <- p +
@@ -1570,7 +1569,7 @@ FeatureDimPlot <- function(
         if (split.by == "All.groups") {
           p <- p + facet_grid(. ~ features)
         } else {
-          p <- p + facet_grid(formula(paste0(split.by, "~features")))
+          p <- p + facet_grid(stats::formula(paste0(split.by, "~features")))
         }
       }
       if (all(is.na(dat[["value"]]))) {
@@ -1603,7 +1602,7 @@ FeatureDimPlot <- function(
       p_base <- p
 
       if (!is.null(lineages)) {
-        lineages_layers <- c(list(new_scale_color()), lineages_layers)
+        lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
         suppressMessages({
           legend_list[["lineages"]] <- get_legend(
             ggplot() +
@@ -1623,11 +1622,14 @@ FeatureDimPlot <- function(
       }
       if (isTRUE(label)) {
         label_df <- p$data %>%
-          filter(
-            value >= quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
-              value <= quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
+          dplyr::filter(
+            value >= stats::quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
+              value <= stats::quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
           ) %>%
-          reframe(x = median(.data[["x"]]), y = median(.data[["y"]])) %>%
+          dplyr::reframe(
+            x = stats::median(.data[["x"]]),
+            y = stats::median(.data[["y"]])
+          ) %>%
           as.data.frame()
         label_df[, "label"] <- f
         label_df[, "rank"] <- seq_len(nrow(label_df))
@@ -1684,7 +1686,7 @@ FeatureDimPlot <- function(
         }
         gtable <- as_grob(p + theme(legend.position = "none"))
         gtable <- add_grob(gtable, legend, legend.position)
-        p <- wrap_plots(gtable)
+        p <- patchwork::wrap_plots(gtable)
       }
       return(p)
     })
@@ -1692,7 +1694,7 @@ FeatureDimPlot <- function(
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,
@@ -1715,6 +1717,8 @@ FeatureDimPlot <- function(
 #'
 #' @seealso \code{\link{FeatureDimPlot}} \code{\link{CellDimPlot3D}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -1728,12 +1732,6 @@ FeatureDimPlot <- function(
 #'   features = c("StandardPC_1", "StandardPC_2"),
 #'   reduction = "StandardpcaUMAP3D"
 #' )
-#'
-#' @importFrom Seurat Reductions Embeddings Key FetchData
-#' @importFrom Matrix t
-#' @importFrom utils askYesNo
-#' @importFrom plotly plot_ly add_trace layout as_widget
-#' @export
 FeatureDimPlot3D <- function(
     srt,
     features,
@@ -1869,7 +1867,7 @@ FeatureDimPlot3D <- function(
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           srt,
           assay = assay,
           layer = layer
@@ -1880,7 +1878,7 @@ FeatureDimPlot3D <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          Seurat::GetAssayData(
+          SeuratObject::GetAssayData(
             srt,
             assay = assay,
             layer = layer
@@ -1898,21 +1896,25 @@ FeatureDimPlot3D <- function(
 
   if (length(features_gene) > 0) {
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
-      dat_gene <- t(Matrix::as.matrix(
-        Seurat::GetAssayData(
-          srt,
-          assay = assay,
-          layer = layer
+      dat_gene <- Matrix::t(
+        Matrix::as.matrix(
+          SeuratObject::GetAssayData(
+            srt,
+            assay = assay,
+            layer = layer
+          )
         )
-      ))
+      )
     } else {
-      dat_gene <- t(Matrix::as.matrix(
-        Seurat::GetAssayData(
-          srt,
-          assay = assay,
-          layer = layer
-        )[features_gene, , drop = FALSE]
-      ))
+      dat_gene <- Matrix::t(
+        Matrix::as.matrix(
+          SeuratObject::GetAssayData(
+            srt,
+            assay = assay,
+            layer = layer
+          )[features_gene, , drop = FALSE]
+        )
+      )
     }
   } else {
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
@@ -1923,10 +1925,12 @@ FeatureDimPlot3D <- function(
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_embedding) > 0) {
-    dat_embedding <- Matrix::as.matrix(FetchData(
-      srt,
-      vars = features_embedding
-    ))
+    dat_embedding <- Matrix::as.matrix(
+      SeuratObject::FetchData(
+        srt,
+        vars = features_embedding
+      )
+    )
   } else {
     dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
@@ -1943,7 +1947,7 @@ FeatureDimPlot3D <- function(
   }
   if (length(features) > 50 && !isTRUE(force)) {
     warning("More than 50 features to be plotted", immediate. = TRUE)
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -2010,8 +2014,8 @@ FeatureDimPlot3D <- function(
     }
   }
 
-  p <- plot_ly(data = dat_use, width = width, height = height)
-  p <- add_trace(
+  p <- plotly::plot_ly(data = dat_use, width = width, height = height)
+  p <- plotly::add_trace(
     p = p,
     data = dat_use,
     x = dat_use[[paste0(reduction_key, dims[1], "All_cells")]],
@@ -2043,7 +2047,7 @@ FeatureDimPlot3D <- function(
   )
 
   if (!is.null(cells.highlight)) {
-    p <- add_trace(
+    p <- plotly::add_trace(
       p = p,
       x = dat_use_highlight[[paste0(reduction_key, dims[1], "All_cells")]],
       y = dat_use_highlight[[paste0(reduction_key, dims[2], "All_cells")]],
@@ -2145,7 +2149,7 @@ FeatureDimPlot3D <- function(
     )
   }
 
-  p <- layout(
+  p <- plotly::layout(
     p = p,
     title = list(
       text = paste0("All_cells", " (nCells:", nrow(dat_use), ")"),
@@ -2198,7 +2202,7 @@ FeatureDimPlot3D <- function(
 
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
     htmlwidgets::saveWidget(
-      widget = as_widget(p),
+      widget = plotly::as_widget(p),
       file = save
     )
     unlink(gsub("\\.html", "_files", save), recursive = TRUE)

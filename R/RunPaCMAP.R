@@ -21,12 +21,15 @@
 #' @param seed.use An integer specifying the random seed to be used. Default is 11.
 #' @param ... Additional arguments to be passed to the pacmap.PaCMAP function.
 #'
+#' @rdname RunPaCMAP
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPaCMAP(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -34,8 +37,6 @@
 #'   reduction = "pacmap"
 #' )
 #' }
-#' @rdname RunPaCMAP
-#' @export
 RunPaCMAP <- function(object, ...) {
   UseMethod(generic = "RunPaCMAP", object = object)
 }
@@ -44,27 +45,26 @@ RunPaCMAP <- function(object, ...) {
 #' @method RunPaCMAP Seurat
 #' @export
 RunPaCMAP.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  n_components = 2,
-  n.neighbors = NULL,
-  MN_ratio = 0.5,
-  FP_ratio = 2,
-  distance_method = "euclidean",
-  lr = 1,
-  num_iters = 450L,
-  apply_pca = TRUE,
-  init = "random",
-  reduction.name = "pacmap",
-  reduction.key = "PaCMAP_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    n_components = 2,
+    n.neighbors = NULL,
+    MN_ratio = 0.5,
+    FP_ratio = 2,
+    distance_method = "euclidean",
+    lr = 1,
+    num_iters = 450L,
+    apply_pca = TRUE,
+    init = "random",
+    reduction.name = "pacmap",
+    reduction.key = "PaCMAP_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) < 1) {
     stop(
       "Please specify only one of the following arguments: dims, features, or graph"
@@ -74,7 +74,7 @@ RunPaCMAP.Seurat <- function(
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay
@@ -129,32 +129,29 @@ RunPaCMAP.Seurat <- function(
 
 #' @rdname RunPaCMAP
 #' @method RunPaCMAP default
-#' @importFrom Seurat CreateDimReducObject
-#' @importFrom reticulate import
 #' @export
 RunPaCMAP.default <- function(
-  object,
-  assay = NULL,
-  n_components = 2,
-  n.neighbors = NULL,
-  MN_ratio = 0.5,
-  FP_ratio = 2,
-  distance_method = "euclidean",
-  lr = 1,
-  num_iters = 450L,
-  apply_pca = TRUE,
-  init = "random",
-  reduction.key = "PaCMAP_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    assay = NULL,
+    n_components = 2,
+    n.neighbors = NULL,
+    MN_ratio = 0.5,
+    FP_ratio = 2,
+    distance_method = "euclidean",
+    lr = 1,
+    num_iters = 450L,
+    apply_pca = TRUE,
+    init = "random",
+    reduction.key = "PaCMAP_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }
 
   check_python("pacmap")
-  pacmap <- import("pacmap")
+  pacmap <- reticulate::import("pacmap")
 
   operator <- pacmap$PaCMAP(
     n_components = as.integer(n_components),
@@ -173,7 +170,7 @@ RunPaCMAP.default <- function(
   colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(x = embedding)))
   rownames(x = embedding) <- rownames(object)
 
-  reduction <- CreateDimReducObject(
+  reduction <- SeuratObject::CreateDimReducObject(
     embeddings = embedding,
     key = reduction.key,
     assay = assay,

@@ -222,11 +222,11 @@ CellCorHeatmap(
 \value{
 A list with the following elements:
   \itemize{
-    \item{\code{plot}}{The heatmap plot as a ggplot object.}
-    \item{\code{features}}{The features used in the heatmap.}
-    \item{\code{simil_matrix}}{The similarity matrix used to generate the heatmap.}
-    \item{\code{simil_name}}{The name of the similarity metric used to generate the heatmap.}
-    \item{\code{cell_metadata}}{The cell metadata used to generate the heatmap.}
+    \item \code{plot:} The heatmap plot as a ggplot object.
+    \item \code{features:} The features used in the heatmap.
+    \item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
+    \item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
+    \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
   }
 }
 \description{
@@ -292,8 +292,8 @@ ht4 <- CellCorHeatmap(
   show_column_names = TRUE,
   query_group = "SubCellType",
   ref_group = "celltype",
-  query_cell_annotation = c("Sox9", "Rbp4", "Gcg"),
-  ref_cell_annotation = c("Sox9", "Rbp4", "Gcg")
+  query_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"),
+  ref_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist")
 )
 ht4$plot
 }

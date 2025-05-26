@@ -38,6 +38,12 @@
 #' @param add_stat A string specifying which statistical summary to add to the plot. Possible values are "none", "mean", or "median". Default is "none".
 #' @param stat_color A string specifying the color of the statistical summary. Default is "black".
 #' @param stat_size A numeric value specifying the size of the statistical summary. Default is 1.
+#' @param stat_stroke A numeric value specifying the stroke width of the statistical summary. Default is 1.
+#' @param stat_shape A numeric value specifying the shape of the statistical summary. Default is 25.
+#' @param add_line A numeric value specifying the y-intercept for adding a horizontal line. Default is NULL.
+#' @param line_color A string specifying the color of the horizontal line. Default is "red".
+#' @param line_size A numeric value specifying the width of the horizontal line. Default is 1.
+#' @param line_type A numeric value specifying the type of the horizontal line. Default is 1.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.
 #' @param cols.highlight A string specifying the color of the highlighted cells. Default is "red".
 #' @param sizes.highlight A numeric value specifying the size of the highlighted cells. Default is 1.
@@ -73,6 +79,8 @@
 #' @param byrow A logical specifying whether to fill the combined plot by row or by column. Default is TRUE.
 #' @param force A logical indicating whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.
 #' @param seed An integer specifying the random seed to use for generating jitter. Default is 11.
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -220,11 +228,15 @@
 #'     "Rbp4", "Pyy", # Endocrine
 #'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
 #'   ),
-#'   fill.by = "feature", plot_type = "box",
-#'   group.by = "SubCellType", bg.by = "CellType", stack = TRUE, flip = TRUE
+#'   fill.by = "feature",
+#'   plot_type = "box",
+#'   group.by = "SubCellType",
+#'   bg.by = "CellType", stack = TRUE, flip = TRUE
 #' ) %>% panel_fix_overall(
 #'   width = 8, height = 5
-#' ) # As the plot is created by combining, we can adjust the overall height and width directly.
+#' )
+#' # As the plot is created by combining,
+#' # we can adjust the overall height and width directly.
 #'
 #' FeatureStatPlot(
 #'   pancreas_sub,
@@ -279,13 +291,6 @@
 #'   same.y.lims = TRUE,
 #'   y.max = 4
 #' )
-#'
-#' @importFrom Seurat FetchData
-#' @importFrom reshape2 melt
-#' @importFrom gtable gtable_add_cols gtable_add_rows gtable_add_grob gtable_add_padding
-#' @importFrom grid grobHeight grobWidth
-#' @importFrom patchwork wrap_plots
-#' @export
 FeatureStatPlot <- function(
     srt,
     stat.by,
@@ -373,7 +378,7 @@ FeatureStatPlot <- function(
   meta.data <- srt@meta.data
   meta.data[["cells"]] <- rownames(meta.data)
   assay <- assay %||% DefaultAssay(srt)
-  exp.data <- Seurat::GetAssayData(srt, assay = assay, layer = layer)
+  exp.data <- SeuratObject::GetAssayData(srt, assay = assay, layer = layer)
   plot.by <- match.arg(plot.by)
 
   if (plot.by == "feature") {
@@ -387,14 +392,14 @@ FeatureStatPlot <- function(
     }
     message("Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'")
     srt@assays[setdiff(names(srt@assays), assay)] <- NULL
-    meta.reshape <- FetchData(
+    meta.reshape <- SeuratObject::FetchData(
       srt,
       vars = c(stat.by, group.by, split.by),
       cells = cells %||% rownames(meta.data),
       layer = layer
     )
     meta.reshape[["cells"]] <- rownames(meta.reshape)
-    meta.reshape <- melt(
+    meta.reshape <- reshape2::melt(
       meta.reshape,
       measure.vars = stat.by,
       variable.name = "Features",
@@ -580,7 +585,7 @@ FeatureStatPlot <- function(
       ]
       legend <- get_legend(plist_g[[1]])
       if (isTRUE(flip)) {
-        lab <- textGrob(
+        lab <- grid::textGrob(
           label = ifelse(is.null(ylab), "Expression level", ylab),
           hjust = 0.5
         )
@@ -597,8 +602,8 @@ FeatureStatPlot <- function(
                   axis.title = element_blank(),
                   axis.text.y = element_blank(),
                   axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = unit(0, "pt"),
-                  plot.margin = unit(c(0, -0.5, 0, 0), "mm")
+                  axis.ticks.length.y = grid::unit(0, "pt"),
+                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
                 )
             )
           } else {
@@ -609,8 +614,8 @@ FeatureStatPlot <- function(
                   panel.grid = element_blank(),
                   axis.title.x = element_blank(),
                   axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = unit(0, "pt"),
-                  plot.margin = unit(c(0, -0.5, 0, 0), "mm")
+                  axis.ticks.length.y = grid::unit(0, "pt"),
+                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
                 )
             )
           }
@@ -620,7 +625,7 @@ FeatureStatPlot <- function(
         gtable <- add_grob(gtable, lab, "bottom", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
       } else {
-        lab <- textGrob(
+        lab <- grid::textGrob(
           label = ifelse(is.null(ylab), "Expression level", ylab),
           rot = 90,
           hjust = 0.5
@@ -636,8 +641,8 @@ FeatureStatPlot <- function(
                   axis.title = element_blank(),
                   axis.text.x = element_blank(),
                   axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = unit(0, "pt"),
-                  plot.margin = unit(c(-0.5, 0, 0, 0), "mm")
+                  axis.ticks.length.x = grid::unit(0, "pt"),
+                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
                 )
             )
             if (i == 1) {
@@ -655,8 +660,8 @@ FeatureStatPlot <- function(
                   panel.grid = element_blank(),
                   axis.title.y = element_blank(),
                   axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = unit(0, "pt"),
-                  plot.margin = unit(c(-0.5, 0, 0, 0), "mm")
+                  axis.ticks.length.x = grid::unit(0, "pt"),
+                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
                 )
             )
           }
@@ -666,8 +671,11 @@ FeatureStatPlot <- function(
         gtable <- add_grob(gtable, lab, "left", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
       }
-      gtable <- gtable_add_padding(gtable, unit(c(1, 1, 1, 1), units = "cm"))
-      plot <- wrap_plots(gtable)
+      gtable <- gtable::gtable_add_padding(
+        gtable,
+        grid::unit(c(1, 1, 1, 1), units = "cm")
+      )
+      plot <- patchwork::wrap_plots(gtable)
       plist_stack[[g]] <- plot
     }
   }
@@ -677,7 +685,7 @@ FeatureStatPlot <- function(
   }
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,

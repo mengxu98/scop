@@ -52,8 +52,8 @@ RunNMF.Seurat <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  assay <- assay %||% Seurat::DefaultAssay(object = object)
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay.data <- Seurat::GetAssay(object = object, assay = assay)
   reduction.data <- RunNMF(
     object = assay.data,
@@ -79,7 +79,6 @@ RunNMF.Seurat <- function(
 
 #' @rdname RunNMF
 #' @method RunNMF Assay
-#' @importFrom stats var
 #' @export
 RunNMF.Assay <- function(
     object,
@@ -97,12 +96,12 @@ RunNMF.Assay <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  data.use <- Seurat::GetAssayData(object = object, layer = layer)
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  data.use <- SeuratObject::GetAssayData(object = object, layer = layer)
   features.var <- apply(
     X = data.use[features, ],
     MARGIN = 1,
-    FUN = var
+    FUN = stats::var
   )
   features.keep <- features[features.var > 0]
   data.use <- data.use[features.keep, ]
@@ -158,7 +157,7 @@ RunNMF.default <- function(
       attachNamespace("Matrix")
     }
     nmf.results <- RcppML::nmf(
-      t(object),
+      Matrix::t(object),
       k = nbes,
       tol = tol,
       maxit = maxit,
@@ -176,7 +175,7 @@ RunNMF.default <- function(
       rank = nbes
     )
     cell.embeddings <- nmf.results@fit@W
-    feature.loadings <- t(nmf.results@fit@H)
+    feature.loadings <- Matrix::t(nmf.results@fit@H)
   }
 
   rownames(x = feature.loadings) <- rownames(x = object)

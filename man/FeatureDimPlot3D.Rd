@@ -78,7 +78,6 @@ FeatureDimPlot3D(
   features = c("StandardPC_1", "StandardPC_2"),
   reduction = "StandardpcaUMAP3D"
 )
-
 }
 \seealso{
 \code{\link{FeatureDimPlot}} \code{\link{CellDimPlot3D}}

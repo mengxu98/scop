@@ -31,25 +31,23 @@ RunMDS <- function(object, ...) {
 
 #' @rdname RunMDS
 #' @method RunMDS Seurat
-#' @importFrom Seurat DefaultAssay GetAssay
 #' @export
 RunMDS.Seurat <- function(
-  object,
-  assay = NULL,
-  layer = "data",
-  features = NULL,
-  nmds = 50,
-  dist.method = "euclidean",
-  mds.method = "cmdscale",
-  rev.mds = FALSE,
-  reduction.name = "mds",
-  reduction.key = "MDS_",
-  verbose = TRUE,
-  seed.use = 11,
-  ...
-) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  assay <- assay %||% Seurat::DefaultAssay(object = object)
+    object,
+    assay = NULL,
+    layer = "data",
+    features = NULL,
+    nmds = 50,
+    dist.method = "euclidean",
+    mds.method = "cmdscale",
+    rev.mds = FALSE,
+    reduction.name = "mds",
+    reduction.key = "MDS_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay.data <- Seurat::GetAssay(object = object, assay = assay)
   reduction.data <- RunMDS(
     object = assay.data,
@@ -72,29 +70,26 @@ RunMDS.Seurat <- function(
 
 #' @rdname RunMDS
 #' @method RunMDS Assay
-#' @importFrom stats var
-#' @importFrom Seurat GetAssayData
 #' @export
 RunMDS.Assay <- function(
-  object,
-  assay = NULL,
-  layer = "data",
-  features = NULL,
-  nmds = 50,
-  dist.method = "euclidean",
-  mds.method = "cmdscale",
-  rev.mds = FALSE,
-  reduction.key = "MDS_",
-  verbose = TRUE,
-  seed.use = 11,
-  ...
-) {
-  features <- features %||% Seurat::VariableFeatures(object = object)
-  data.use <- Seurat::GetAssayData(object = object, layer = layer)
+    object,
+    assay = NULL,
+    layer = "data",
+    features = NULL,
+    nmds = 50,
+    dist.method = "euclidean",
+    mds.method = "cmdscale",
+    rev.mds = FALSE,
+    reduction.key = "MDS_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  data.use <- SeuratObject::GetAssayData(object = object, layer = layer)
   features.var <- apply(
     X = data.use[features, ],
     MARGIN = 1,
-    FUN = var
+    FUN = stats::var
   )
   features.keep <- features[features.var > 0]
   data.use <- data.use[features.keep, ]
@@ -116,35 +111,39 @@ RunMDS.Assay <- function(
 
 #' @rdname RunMDS
 #' @method RunMDS default
-#' @importFrom proxyC dist
-#' @importFrom Matrix t
-#' @importFrom stats cmdscale as.dist
-#' @importFrom Seurat CreateDimReducObject
 #' @export
 RunMDS.default <- function(
-  object,
-  assay = NULL,
-  layer = "data",
-  nmds = 50,
-  dist.method = "euclidean",
-  mds.method = "cmdscale",
-  rev.mds = FALSE,
-  reduction.key = "MDS_",
-  verbose = TRUE,
-  seed.use = 11,
-  ...
-) {
+    object,
+    assay = NULL,
+    layer = "data",
+    nmds = 50,
+    dist.method = "euclidean",
+    mds.method = "cmdscale",
+    rev.mds = FALSE,
+    reduction.key = "MDS_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }
   if (rev.mds) {
-    object <- t(object)
+    object <- Matrix::t(object)
   }
   nmds <- min(nmds, nrow(x = object) - 1)
-  x <- t(Matrix::as.matrix(object))
-  cell.dist <- as.dist(dist(x = x, method = dist.method))
+  x <- Matrix::t(
+    Matrix::as.matrix(object)
+  )
+  cell.dist <- stats::as.dist(
+    proxyC::dist(x = x, method = dist.method)
+  )
   if (mds.method == "cmdscale") {
-    mds.results <- cmdscale(cell.dist, k = nmds, eig = TRUE, ...)
+    mds.results <- stats::cmdscale(
+      cell.dist,
+      k = nmds,
+      eig = TRUE,
+      ...
+    )
   }
   if (mds.method == "isoMDS") {
     check_r("MASS")
@@ -158,7 +157,7 @@ RunMDS.default <- function(
 
   rownames(x = cell.embeddings) <- colnames(x = object)
   colnames(x = cell.embeddings) <- paste0(reduction.key, 1:nmds)
-  reduction.data <- CreateDimReducObject(
+  reduction.data <- SeuratObject::CreateDimReducObject(
     embeddings = cell.embeddings,
     assay = assay,
     key = reduction.key,

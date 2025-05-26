@@ -14,7 +14,7 @@ LineagePlot(
   span = 0.75,
   palette = "Dark2",
   palcolor = NULL,
-  lineages_arrow = arrow(length = unit(0.1, "inches")),
+  lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
   linewidth = 1,
   line_bg = "white",
   line_bg_stroke = 0.5,

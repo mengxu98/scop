@@ -1,6 +1,3 @@
-#' @importFrom Seurat DefaultAssay GetAssayData
-#' @importFrom ggplot2 geom_blank geom_violin geom_rect geom_boxplot geom_count geom_col geom_vline geom_hline layer_data layer_scales position_jitterdodge position_dodge stat_summary scale_x_discrete element_line element_text element_blank annotate mean_sdl after_stat scale_shape_identity
-#' @importFrom Matrix rowSums
 ExpressionStatPlot <- function(
     exp.data,
     meta.data,
@@ -150,7 +147,7 @@ ExpressionStatPlot <- function(
   if (!is.null(bg.by)) {
     for (g in group.by) {
       df_table <- table(meta.data[[g]], meta.data[[bg.by]])
-      if (max(rowSums(df_table > 0), na.rm = TRUE) > 1) {
+      if (max(Matrix::rowSums(df_table > 0), na.rm = TRUE) > 1) {
         stop("'group.by' must be a part of 'bg.by'")
       } else {
         bg_map[[g]] <- stats::setNames(
@@ -248,9 +245,9 @@ ExpressionStatPlot <- function(
   }
   if (length(features_gene) > 0) {
     if (all(allfeatures %in% features_gene)) {
-      dat_gene <- t(exp.data)
+      dat_gene <- Matrix::t(exp.data)
     } else {
-      dat_gene <- t(exp.data[features_gene, , drop = FALSE])
+      dat_gene <- Matrix::t(exp.data[features_gene, , drop = FALSE])
     }
   } else {
     dat_gene <- matrix(nrow = length(allcells), ncol = 0)
@@ -294,7 +291,7 @@ ExpressionStatPlot <- function(
       " have more than 100 levels.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -309,13 +306,13 @@ ExpressionStatPlot <- function(
       y.max <- max(valus, na.rm = TRUE)
     } else if (is.character(y.max)) {
       q.max <- as.numeric(sub("(^q)(\\d+)", "\\2", y.max)) / 100
-      y.max <- quantile(values, q.max, na.rm = TRUE)
+      y.max <- stats::quantile(values, q.max, na.rm = TRUE)
     }
     if (is.null(y.min)) {
       y.min <- min(valus, na.rm = TRUE)
     } else if (is.character(y.min)) {
       q.min <- as.numeric(sub("(^q)(\\d+)", "\\2", y.min)) / 100
-      y.min <- quantile(values, q.min, na.rm = TRUE)
+      y.min <- stats::quantile(values, q.min, na.rm = TRUE)
     }
   }
 
@@ -397,10 +394,10 @@ ExpressionStatPlot <- function(
       }
     }
     if (fill.by == "expression") {
-      median_values <- aggregate(
+      median_values <- stats::aggregate(
         dat_use[, stat.by, drop = FALSE],
         by = list(dat_use[[g]], dat_use[[split.by]]),
-        FUN = median
+        FUN = stats::median
       )
       rownames(median_values) <- paste0(
         median_values[, 1],
@@ -446,23 +443,15 @@ ExpressionStatPlot <- function(
     if (split.by == g) {
       dat[["split.by"]] <- dat[["group.by"]]
     }
-    # stat <- table(dat[, "group.by"], dat[, "split.by"])
-    # stat_drop <- which(stat == 1, arr.ind = TRUE)
-    # if (nrow(stat_drop) > 0) {
-    #   for (j in 1:nrow(stat_drop)) {
-    #     dat <- dat[!(dat[, "group.by"] == rownames(stat)[stat_drop[j, 1]] & dat[, "split.by"] == colnames(stat)[stat_drop[j, 2]]), , drop = FALSE]
-    #     rownames(stat)[stat_drop[j, 1]]
-    #   }
-    # }
 
     dat[, "features"] <- rep(f, nrow(dat))
     if (
       nrow(dat) > 0 && ((is.character(x = sort) && nchar(x = sort) > 0) || sort)
     ) {
-      df_sort <- aggregate(
+      df_sort <- stats::aggregate(
         dat[, "value", drop = FALSE],
         by = list(dat[["group.by"]]),
-        median
+        FUN = stats::median
       )
       if (is.character(sort) && sort == "increasing") {
         decreasing <- FALSE
@@ -507,7 +496,7 @@ ExpressionStatPlot <- function(
       x = levels(dat[["split.by"]]),
       y = levels(dat[["group.by"]])
     )
-    dat[["group.unique"]] <- head(
+    dat[["group.unique"]] <- utils::head(
       factor(
         paste("sp", dat[["split.by"]], "gp", dat[["group.by"]], sep = "-"),
         levels = paste("sp", group_comb[[1]], "gp", group_comb[[2]], sep = "-")
@@ -521,7 +510,7 @@ ExpressionStatPlot <- function(
       y_max_use <- max(values, na.rm = TRUE)
     } else if (is.character(y.max)) {
       q.max <- as.numeric(sub("(^q)(\\d+)", "\\2", y.max)) / 100
-      y_max_use <- quantile(values, q.max, na.rm = TRUE)
+      y_max_use <- stats::quantile(values, q.max, na.rm = TRUE)
     } else {
       y_max_use <- y.max
     }
@@ -529,7 +518,7 @@ ExpressionStatPlot <- function(
       y_min_use <- min(values, na.rm = TRUE)
     } else if (is.character(y.min)) {
       q.min <- as.numeric(sub("(^q)(\\d+)", "\\2", y.min)) / 100
-      y_min_use <- quantile(values, q.min, na.rm = TRUE)
+      y_min_use <- stats::quantile(values, q.min, na.rm = TRUE)
     } else {
       y_min_use <- y.min
     }
@@ -573,7 +562,7 @@ ExpressionStatPlot <- function(
     if (isFALSE(individual)) {
       if (plot_type == "col") {
         x_index <- split(dat[["cell"]], dat[["group.by"]])
-        bg_data <- as.data.frame(t(sapply(x_index, range)))
+        bg_data <- as.data.frame(Matrix::t(sapply(x_index, range)))
         colnames(bg_data) <- c("xmin", "xmax")
         bg_data[["group.by"]] <- names(x_index)
         bg_data[["xmin"]] <- ifelse(
@@ -646,7 +635,7 @@ ExpressionStatPlot <- function(
           outlier.shape = NA
         ) +
         stat_summary(
-          fun = median,
+          fun = stats::median,
           geom = "point",
           mapping = aes(group = .data[["split.by"]]),
           position = position_dodge(width = 0.9),
@@ -686,7 +675,10 @@ ExpressionStatPlot <- function(
       bins_median <- sapply(
         strsplit(levels(bins), ","),
         function(x) {
-          median(as.numeric(gsub("\\(|\\)|\\[|\\]", "", x)), na.rm = TRUE)
+          stats::median(
+            as.numeric(gsub("\\(|\\)|\\[|\\]", "", x)),
+            na.rm = TRUE
+          )
         }
       )
       names(bins_median) <- levels(bins)
@@ -733,10 +725,10 @@ ExpressionStatPlot <- function(
     if (length(comparisons) > 0) {
       if (isTRUE(comparisons)) {
         group_use <- names(which(
-          rowSums(table(dat[["group.by"]], dat[["split.by"]]) >= 2) >= 2
+          Matrix::rowSums(table(dat[["group.by"]], dat[["split.by"]]) >= 2) >= 2
         ))
         if (
-          any(rowSums(table(dat[["group.by"]], dat[["split.by"]]) >= 2) >= 3)
+          any(Matrix::rowSums(table(dat[["group.by"]], dat[["split.by"]]) >= 2) >= 3)
         ) {
           message(
             "Detected more than 2 groups. Use multiple_method for comparison"
@@ -869,7 +861,7 @@ ExpressionStatPlot <- function(
           outlier.shape = NA
         ) +
         stat_summary(
-          fun = median,
+          fun = stats::median,
           geom = "point",
           mapping = aes(group = .data[["split.by"]]),
           position = position_dodge(width = 0.9),
@@ -883,7 +875,7 @@ ExpressionStatPlot <- function(
       if (plot_type %in% c("violin", "box")) {
         if (nlevels(dat[["split.by"]]) > 1) {
           point_layer <- stat_summary(
-            fun = median,
+            fun = stats::median,
             geom = "point",
             mapping = aes(
               group = .data[["split.by"]],
@@ -904,7 +896,7 @@ ExpressionStatPlot <- function(
               inherit.aes = FALSE
             ) +
             stat_summary(
-              fun = median,
+              fun = stats::median,
               geom = "point",
               mapping = aes(group = .data[["split.by"]]),
               position = position_dodge(width = 0.9),
@@ -916,7 +908,7 @@ ExpressionStatPlot <- function(
         } else {
           p <- p +
             stat_summary(
-              fun = median,
+              fun = stats::median,
               geom = "line",
               mapping = aes(group = .data[["split.by"]]),
               position = position_dodge(width = 0.9),
@@ -924,7 +916,7 @@ ExpressionStatPlot <- function(
               linewidth = trend_linewidth
             ) +
             stat_summary(
-              fun = median,
+              fun = stats::median,
               geom = "point",
               mapping = aes(group = .data[["split.by"]]),
               position = position_dodge(width = 0.9),

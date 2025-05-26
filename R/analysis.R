@@ -33,12 +33,13 @@ searchDatasets <- function(datasets, pattern) {
 #'
 #' \code{\link{GeneConvert}}
 #'
+#' @export
+#'
 #' @examples
 #' ccgenes <- CC_GenePrefetch("Homo_sapiens")
 #' str(ccgenes)
 #' ccgenes <- CC_GenePrefetch("Mus_musculus")
 #' str(ccgenes)
-#' @export
 CC_GenePrefetch <- function(
     species = "Homo_sapiens",
     Ensembl_version = 103,
@@ -96,7 +97,6 @@ metap <- function(
   return(res)
 }
 
-#' @importFrom stats pbeta
 wilkinsonp <- function(p, r = 1, alpha = 0.05, log.p = FALSE) {
   alpha <- ifelse(alpha > 1, alpha / 100, alpha)
   stopifnot(alpha > 0, alpha < 1)
@@ -126,10 +126,10 @@ wilkinsonp <- function(p, r = 1, alpha = 0.05, log.p = FALSE) {
     pi <- sort(pi)
     pr <- pi[r]
     res <- list(
-      p = pbeta(pr, r, k + 1 - r, log.p = log.p),
+      p = stats::pbeta(pr, r, k + 1 - r, log.p = log.p),
       pr = pr,
       r = r,
-      critp = qbeta(alpha, r, k + 1 - r),
+      critp = stats::qbeta(alpha, r, k + 1 - r),
       alpha = alpha,
       validp = pi
     )
@@ -150,7 +150,6 @@ minimump <- function(p, alpha = 0.05, log.p = FALSE) {
   res
 }
 
-#' @importFrom stats pnorm
 meanp <- function(p) {
   keep <- (p >= 0) & (p <= 1)
   invalid <- sum(1L * keep) < 4
@@ -166,14 +165,13 @@ meanp <- function(p) {
     }
     res <- list(
       z = z,
-      p = pnorm(z, lower.tail = FALSE),
+      p = stats::pnorm(z, lower.tail = FALSE),
       validp = p[keep]
     )
   }
   res
 }
 
-#' @importFrom stats pnorm
 sump <- function(p) {
   keep <- (p >= 0) & (p <= 1)
   invalid <- sum(1L * keep) < 2
@@ -215,7 +213,6 @@ sump <- function(p) {
   res
 }
 
-#' @importFrom stats binom.test
 votep <- function(p, alpha = 0.5) {
   alpha <- ifelse(alpha > 1, alpha / 100, alpha)
   stopifnot(alpha > 0, alpha < 1)
@@ -250,7 +247,10 @@ votep <- function(p, alpha = 0.5) {
       warning("All p values are within specified limits of alpha")
       p <- 1
     } else {
-      p <- binom.test(pos, pos + neg, 0.5, alternative = "greater")$p.value
+      p <- stats::binom.test(
+        pos, pos + neg, 0.5,
+        alternative = "greater"
+      )$p.value
     }
     res <- list(
       p = p,
@@ -358,16 +358,16 @@ srt_to_adata <- function(
       }
     }
   }
-  if (length(VariableFeatures(srt, assay = assay_x) > 0)) {
+  if (length(SeuratObject::VariableFeatures(srt, assay = assay_x) > 0)) {
     if ("highly_variable" %in% colnames(var)) {
       var <- var[, colnames(var) != "highly_variable"]
     }
     var[["highly_variable"]] <- features %in%
-      VariableFeatures(srt, assay = assay_x)
+      SeuratObject::VariableFeatures(srt, assay = assay_x)
   }
 
   X <- Matrix::t(
-    Seurat::GetAssayData(
+    SeuratObject::GetAssayData(
       srt,
       assay = assay_x,
       layer = layer_x
@@ -387,7 +387,7 @@ srt_to_adata <- function(
   for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
     if (assay %in% assay_y) {
       layer <- Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           srt,
           assay = assay,
           layer = layer_y[assay]
@@ -404,7 +404,7 @@ srt_to_adata <- function(
             assay,
             "' assay:\n  ",
             paste0(
-              head(colnames(X)[!colnames(X) %in% colnames(layer)], 10),
+              utils::head(colnames(X)[!colnames(X) %in% colnames(layer)], 10),
               collapse = ","
             ),
             "..."

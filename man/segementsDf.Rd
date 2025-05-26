@@ -7,9 +7,8 @@
 segementsDf(data, shorten_start, shorten_end, offset)
 }
 \arguments{
-\item{data}{A data frame containing the segments. It should have columns
-'x', 'y', 'xend', and 'yend' representing the start and end points
-of each segment.}
+\item{data}{A data frame containing the segments.
+It should have columns 'x', 'y', 'xend', and 'yend' representing the start and end points of each segment.}
 
 \item{shorten_start}{The amount to shorten the start of each segment by.}
 
@@ -36,6 +35,7 @@ data <- data.frame(
   "xend" = c(40, 10),
   "yend" = c(30, 10)
 )
+
 ggplot(tempNodes, aes(x = x, y = y)) +
   geom_point(size = 12) +
   xlim(0, 50) +

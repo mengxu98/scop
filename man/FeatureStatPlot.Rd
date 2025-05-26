@@ -157,6 +157,18 @@ FeatureStatPlot(
 
 \item{stat_size}{A numeric value specifying the size of the statistical summary. Default is 1.}
 
+\item{stat_stroke}{A numeric value specifying the stroke width of the statistical summary. Default is 1.}
+
+\item{stat_shape}{A numeric value specifying the shape of the statistical summary. Default is 25.}
+
+\item{add_line}{A numeric value specifying the y-intercept for adding a horizontal line. Default is NULL.}
+
+\item{line_color}{A string specifying the color of the horizontal line. Default is "red".}
+
+\item{line_size}{A numeric value specifying the width of the horizontal line. Default is 1.}
+
+\item{line_type}{A numeric value specifying the type of the horizontal line. Default is 1.}
+
 \item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.}
 
 \item{cols.highlight}{A string specifying the color of the highlighted cells. Default is "red".}
@@ -376,11 +388,15 @@ FeatureStatPlot(
     "Rbp4", "Pyy", # Endocrine
     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
   ),
-  fill.by = "feature", plot_type = "box",
-  group.by = "SubCellType", bg.by = "CellType", stack = TRUE, flip = TRUE
+  fill.by = "feature",
+  plot_type = "box",
+  group.by = "SubCellType",
+  bg.by = "CellType", stack = TRUE, flip = TRUE
 ) \%>\% panel_fix_overall(
   width = 8, height = 5
-) # As the plot is created by combining, we can adjust the overall height and width directly.
+)
+# As the plot is created by combining,
+# we can adjust the overall height and width directly.
 
 FeatureStatPlot(
   pancreas_sub,
@@ -435,5 +451,4 @@ FeatureStatPlot(
   same.y.lims = TRUE,
   y.max = 4
 )
-
 }

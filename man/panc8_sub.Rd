@@ -31,7 +31,7 @@ if (interactive()) {
     )
   )
   panc8_sub <- subset(panc8, cells = cells_sub)
-  panc8_sub <- panc8_sub[rowSums(
+  panc8_sub <- panc8_sub[Matrix::rowSums(
     panc8_sub@assays$RNA@counts
   ) > 0, ]
   panc8_sub <- panc8_sub[toupper(

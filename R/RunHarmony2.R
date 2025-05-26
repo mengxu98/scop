@@ -40,7 +40,6 @@ RunHarmony2 <- function(object, ...) {
 
 #' @rdname RunHarmony2
 #' @method RunHarmony2 Seurat
-#' @importFrom stats sd
 #' @export
 RunHarmony2.Seurat <- function(
   object,
@@ -67,7 +66,7 @@ RunHarmony2.Seurat <- function(
     stop("trying to use more dimensions than computed")
   }
 
-  assay <- Seurat::DefaultAssay(object = object[[reduction]])
+  assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
   metavars_df <- Seurat::FetchData(
     object,
     group.by.vars,
@@ -83,7 +82,7 @@ RunHarmony2.Seurat <- function(
     ...
   )
 
-  harmonyEmbed <- t(Matrix::as.matrix(harmonyObject$Z_corr))
+  harmonyEmbed <- Matrix::t(Matrix::as.matrix(harmonyObject$Z_corr))
   rownames(harmonyEmbed) <- row.names(data.use)
   colnames(harmonyEmbed) <- paste0(
     reduction.name,
@@ -91,13 +90,13 @@ RunHarmony2.Seurat <- function(
     seq_len(ncol(harmonyEmbed))
   )
 
-  harmonyClusters <- t(harmonyObject$R)
+  harmonyClusters <- Matrix::t(harmonyObject$R)
   rownames(harmonyClusters) <- row.names(data.use)
   colnames(harmonyClusters) <- paste0("R", seq_len(ncol(harmonyClusters)))
 
   object[[reduction.name]] <- Seurat::CreateDimReducObject(
     embeddings = harmonyEmbed,
-    stdev = as.numeric(apply(harmonyEmbed, 2, sd)),
+    stdev = as.numeric(apply(harmonyEmbed, 2, stats::sd)),
     assay = assay,
     key = reduction.key,
     misc = list(

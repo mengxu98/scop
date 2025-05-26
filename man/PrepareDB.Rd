@@ -46,7 +46,8 @@ Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
 
-\item{biomart}{The name of the BioMart database that you want to connect to. Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
+\item{biomart}{The name of the BioMart database that you want to connect to.
+Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
@@ -63,9 +64,9 @@ Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 \value{
 A list containing the prepared gene annotation databases:
   \itemize{
-    \item{\code{TERM2GENE:}}{ mapping of gene identifiers to terms}
-    \item{\code{TERM2NAME:}}{ mapping of terms to their names}
-    \item{\code{semData:}}{ semantic similarity data for gene sets (only for Gene Ontology terms)}
+    \item \code{TERM2GENE:} mapping of gene identifiers to terms.
+    \item \code{TERM2NAME:} mapping of terms to their names.
+    \item \code{semData:} semantic similarity data for gene sets (only for Gene Ontology terms).
     }
 }
 \description{
@@ -79,61 +80,102 @@ It retrieves the necessary information from various annotation packages or exter
 The function also supports creating custom databases based on user-provided gene sets.
 }
 \examples{
-if (interactive()) {
-  db_list <- PrepareDB(species = "Homo_sapiens", db = "GO_BP")
-  ListDB(species = "Homo_sapiens", db = "GO_BP")
-  head(db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]])
+\dontrun{
+db_list <- PrepareDB(
+  species = "Homo_sapiens",
+  db = "GO_BP"
+)
+ListDB(
+  species = "Homo_sapiens", db = "GO_BP"
+)
+head(
+  db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
+)
 
-  # Based on homologous gene conversion,
-  # prepare a gene annotation database that originally does not exist in the species.
-  db_list <- PrepareDB(species = "Homo_sapiens", db = "MP")
-  ListDB(species = "Homo_sapiens", db = "MP")
-  head(db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]])
+# Based on homologous gene conversion,
+# prepare a gene annotation database that originally does not exist in the species.
+db_list <- PrepareDB(
+  species = "Homo_sapiens",
+  db = "MP"
+)
+ListDB(
+  species = "Homo_sapiens",
+  db = "MP"
+)
+head(
+  db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
+)
 
-  # Prepare databases for other species
-  db_list <- PrepareDB(species = "Macaca_fascicularis", db = "GO_BP")
-  ListDB(species = "Macaca_fascicularis", db = "GO_BP")
-  head(db_list[["Macaca_fascicularis"]][["GO_BP"]][["TERM2GENE"]])
+# Prepare databases for other species
+db_list <- PrepareDB(
+  species = "Macaca_fascicularis",
+  db = "GO_BP"
+)
+ListDB(
+  species = "Macaca_fascicularis",
+  db = "GO_BP"
+)
+head(
+  db_list[["Macaca_fascicularis"]][["GO_BP"]][["TERM2GENE"]]
+)
 
-  db_list <- PrepareDB(species = "Saccharomyces_cerevisiae", db = "GO_BP")
-  ListDB(species = "Saccharomyces_cerevisiae", db = "GO_BP")
-  head(db_list[["Saccharomyces_cerevisiae"]][["GO_BP"]][["TERM2GENE"]])
+db_list <- PrepareDB(
+  species = "Saccharomyces_cerevisiae",
+  db = "GO_BP"
+)
+ListDB(
+  species = "Saccharomyces_cerevisiae",
+  db = "GO_BP"
+)
+head(
+  db_list[["Saccharomyces_cerevisiae"]][["GO_BP"]][["TERM2GENE"]]
+)
 
-  # Prepare databases for Arabidopsis (plant)
-  db_list <- PrepareDB(
-    species = "Arabidopsis_thaliana",
-    db = c(
-      "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway",
-      "ENZYME", "Chromosome"
-    ),
-    biomart = "plants_mart"
+# Prepare databases for Arabidopsis (plant)
+db_list <- PrepareDB(
+  species = "Arabidopsis_thaliana",
+  db = c(
+    "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway",
+    "ENZYME", "Chromosome"
+  ),
+  biomart = "plants_mart"
+)
+head(
+  db_list[["Arabidopsis_thaliana"]][["KEGG"]][["TERM2GENE"]]
+)
+
+# You can also build a custom database based on the gene sets you have
+ccgenes <- CC_GenePrefetch("Homo_sapiens")
+custom_TERM2GENE <- rbind(
+  data.frame(
+    term = "S_genes",
+    gene = ccgenes[["cc_S_genes"]]
+  ),
+  data.frame(
+    term = "G2M_genes",
+    gene = ccgenes[["cc_G2M_genes"]]
   )
-  head(db_list[["Arabidopsis_thaliana"]][["KEGG"]][["TERM2GENE"]])
+)
+str(custom_TERM2GENE)
 
-  # You can also build a custom database based on the gene sets you have
-  ccgenes <- CC_GenePrefetch("Homo_sapiens")
-  custom_TERM2GENE <- rbind(
-    data.frame(term = "S_genes", gene = ccgenes[["cc_S_genes"]]),
-    data.frame(term = "G2M_genes", gene = ccgenes[["cc_G2M_genes"]])
-  )
-  str(custom_TERM2GENE)
+# Set convert_species = TRUE to build a custom database for both species,
+# with the name "CellCycle"
+db_list <- PrepareDB(
+  species = c("Homo_sapiens", "Mus_musculus"),
+  db = "CellCycle",
+  convert_species = TRUE,
+  custom_TERM2GENE = custom_TERM2GENE,
+  custom_species = "Homo_sapiens",
+  custom_IDtype = "symbol",
+  custom_version = "Seurat_v4"
+)
+ListDB(db = "CellCycle")
 
-  # Set convert_species = TRUE to build a custom database for both species, with the name "CellCycle"
-  db_list <- PrepareDB(
-    species = c("Homo_sapiens", "Mus_musculus"),
-    db = "CellCycle",
-    convert_species = TRUE,
-    custom_TERM2GENE = custom_TERM2GENE,
-    custom_species = "Homo_sapiens",
-    custom_IDtype = "symbol",
-    custom_version = "Seurat_v4"
-  )
-  ListDB(db = "CellCycle")
-
-  db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-  head(db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]])
+db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
+head(
+  db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
+)
 }
-
 }
 \seealso{
 \code{\link{ListDB}}

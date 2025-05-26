@@ -54,7 +54,7 @@ FeatureDimPlot(
   lineages_span = 0.75,
   lineages_palette = "Dark2",
   lineages_palcolor = NULL,
-  lineages_arrow = arrow(length = unit(0.1, "inches")),
+  lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
   lineages_linewidth = 1,
   lineages_line_bg = "white",
   lineages_line_bg_stroke = 0.5,
@@ -122,9 +122,9 @@ FeatureDimPlot(
 
 \item{keep_scale}{How to handle the color scale across multiple plots. Options are:
 \itemize{
-  \item{NULL (no scaling):}{ Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.}
-  \item{"feature" (default; by row/feature scaling):}{ The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.}
-  \item{"all" (universal scaling):}{ The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.}
+  \item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
+  \item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
+  \item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 }}
 
 \item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Vector of minimum and maximum cutoff values or quantile values for each feature.}
@@ -402,7 +402,9 @@ FeatureDimPlot(
 FeatureDimPlot(
   pancreas_sub,
   endocrine_markers,
-  reduction = "UMAP", lower_quantile = 0, upper_quantile = 0.8
+  reduction = "UMAP",
+  lower_quantile = 0,
+  upper_quantile = 0.8
 )
 FeatureDimPlot(
   pancreas_sub,

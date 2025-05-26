@@ -147,7 +147,7 @@ check_r <- function(
           expr = {
             if (grepl("BiocManager", install_methods[i])) {
               if (!requireNamespace("BiocManager", quietly = TRUE)) {
-                install.packages("BiocManager", lib = lib)
+                utils::install.packages("BiocManager", lib = lib)
               }
               eval(
                 str2lang(
@@ -163,10 +163,10 @@ check_r <- function(
               )
             } else if (grepl("devtools", install_methods[i])) {
               if (!requireNamespace("devtools", quietly = TRUE)) {
-                install.packages("devtools", lib = lib)
+                utils::install.packages("devtools", lib = lib)
               }
               if (!requireNamespace("withr", quietly = TRUE)) {
-                install.packages("withr", lib = lib)
+                utils::install.packages("withr", lib = lib)
               }
               eval(
                 str2lang(

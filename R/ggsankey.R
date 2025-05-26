@@ -1,17 +1,5 @@
 # A modied version of ggsankey(https://github.com/davidsjoberg/ggsankey)
 
-utils::globalVariables(c(
-  ".",
-  ".data",
-  "x",
-  "node",
-  "next_node",
-  "next_x",
-  "..r"
-))
-# importFrom(ggplot2, "%+replace%")
-#' @importFrom ggplot2 %+replace%
-
 # ** Support functions ----------
 prepare_params <- function(...) {
   # Prepare aesthics for flow lines
@@ -164,11 +152,10 @@ theme_sankey <- function(
 #' @rdname theme_sankey
 #' @export
 theme_alluvial <-
-  function(
-      base_size = 11,
-      base_family = "",
-      base_line_size = base_size / 22,
-      base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
+  function(base_size = 11,
+           base_family = "",
+           base_line_size = base_size / 22,
+           base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
     base_size = base_size,
     base_family = base_family,
     base_line_size = base_line_size,
@@ -194,11 +181,10 @@ theme_alluvial <-
 #' @rdname theme_sankey
 #' @export
 theme_sankey_bump <-
-  function(
-      base_size = 11,
-      base_family = "",
-      base_line_size = base_size / 22,
-      base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
+  function(base_size = 11,
+           base_family = "",
+           base_line_size = base_size / 22,
+           base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
     base_size = base_size,
     base_family = base_family,
     base_line_size = base_line_size,
