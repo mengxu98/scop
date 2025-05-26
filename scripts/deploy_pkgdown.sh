@@ -3,6 +3,24 @@
 # Exit on error
 set -e
 
+# Default value for re_run_pkgdown
+RE_RUN_PKGDOWN=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --re-run-pkgdown)
+            RE_RUN_PKGDOWN=true
+            shift
+            ;;
+        *)
+            echo "Unknown parameter: $1"
+            echo "Usage: $0 [--re-run-pkgdown]"
+            exit 1
+            ;;
+    esac
+done
+
 echo "Starting pkgdown site deployment to gh-pages..."
 
 # Function to check if working tree is clean
@@ -13,6 +31,12 @@ check_git_clean() {
         return 0
     fi
 }
+
+# Check if docs directory exists
+if [[ ! -d "docs" ]]; then
+    echo "docs/ directory not found. Will run pkgdown::build_site()..."
+    RE_RUN_PKGDOWN=true
+fi
 
 # Save current branch name
 CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
@@ -39,9 +63,13 @@ cleanup() {
 # Set trap to ensure cleanup runs on script exit
 trap cleanup EXIT
 
-# Build the site using pkgdown
-echo "Building pkgdown site..."
-Rscript -e 'pkgdown::build_site()'
+# Build the site using pkgdown if requested or if docs doesn't exist
+if [[ "$RE_RUN_PKGDOWN" == true ]]; then
+    echo "Building pkgdown site..."
+    Rscript -e 'pkgdown::build_site()'
+else
+    echo "Skipping pkgdown site build (use --re-run-pkgdown to force rebuild)"
+fi
 
 # Create and switch to a new temporary branch
 echo "Creating temporary branch..."
