@@ -15,11 +15,6 @@
 #' @param pt.size The size of the points in the plot.
 #' @param stroke.highlight The size of the stroke highlight for cells.
 #'
-#' @importFrom ggplot2 scale_x_continuous scale_y_continuous ggplot_build theme geom_point aes scale_fill_identity facet_null
-#' @importFrom ggnewscale new_scale_fill new_scale_color
-#' @importFrom gtable gtable_add_cols gtable_add_grob
-#' @importFrom rlang  %||%
-#' @importFrom patchwork wrap_plots
 #' @export
 #'
 #' @examples
@@ -119,7 +114,7 @@ ProjectionPlot <- function(
           size = 4,
           shape = 21,
           color = "black",
-          fill = na.omit(color[levels(p2$data$group.by)])
+          fill = stats::na.omit(color[levels(p2$data$group.by)])
         )
       )
     )
@@ -133,8 +128,8 @@ ProjectionPlot <- function(
   }
 
   p3 <- p1 +
-    new_scale_fill() +
-    new_scale_color() +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale_color() +
     geom_point(
       data = p2data,
       aes(x = x, y = y),
@@ -154,7 +149,7 @@ ProjectionPlot <- function(
   } else {
     gtable <- as_grob(p3)
     gtable <- add_grob(gtable, legend, "right")
-    p <- wrap_plots(gtable)
+    p <- patchwork::wrap_plots(gtable)
     return(p)
   }
 }

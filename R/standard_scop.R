@@ -37,49 +37,64 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' CellDimPlot(pancreas_sub, group.by = "SubCellType")
+#' pancreas_sub <- standard_scop(
+#'   srt = pancreas_sub
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType"
+#' )
 #'
-#' \dontrun{
-#' # Use a combination of different linear or non-linear dimension reduction methods
+#' # Use a combination of different linear
+#' # or non-linear dimension reduction methods
 #' linear_reductions <- c(
-#'   "pca", "ica", "nmf", "mds", "glmpca"
+#'   "pca", "nmf", "mds", "glmpca"
 #' )
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
 #'   linear_reduction = linear_reductions,
 #'   nonlinear_reduction = "umap"
 #' )
-#' plist1 <- lapply(linear_reductions, function(lr) {
-#'   CellDimPlot(pancreas_sub,
-#'     group.by = "SubCellType",
-#'     reduction = paste0("Standard", lr, "UMAP2D"),
-#'     xlab = "", ylab = "", title = lr,
-#'     legend.position = "none",
-#'     theme_use = "theme_blank"
-#'   )
-#' })
+#' plist1 <- lapply(
+#'   linear_reductions, function(lr) {
+#'     CellDimPlot(
+#'       pancreas_sub,
+#'       group.by = "SubCellType",
+#'       reduction = paste0(
+#'         "Standard", lr, "UMAP2D"
+#'       ),
+#'       xlab = "", ylab = "", title = lr,
+#'       legend.position = "none",
+#'       theme_use = "theme_blank"
+#'     )
+#'   }
+#' )
 #' patchwork::wrap_plots(plotlist = plist1)
 #'
 #' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
 #' )
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = nonlinear_reductions
 #' )
-#' plist2 <- lapply(nonlinear_reductions, function(nr) {
-#'   CellDimPlot(pancreas_sub,
-#'     group.by = "SubCellType",
-#'     reduction = paste0("Standardpca", toupper(nr), "2D"),
-#'     xlab = "", ylab = "", title = nr,
-#'     legend.position = "none",
-#'     theme_use = "theme_blank"
-#'   )
-#' })
+#' plist2 <- lapply(
+#'   nonlinear_reductions, function(nr) {
+#'     CellDimPlot(
+#'       pancreas_sub,
+#'       group.by = "SubCellType",
+#'       reduction = paste0(
+#'         "Standardpca", toupper(nr), "2D"
+#'       ),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none",
+#'       theme_use = "theme_blank"
+#'     )
+#'   }
+#' )
 #' patchwork::wrap_plots(plotlist = plist2)
-#' }
 standard_scop <- function(
     srt,
     prefix = "Standard",
@@ -110,40 +125,28 @@ standard_scop <- function(
   if (!inherits(srt, "Seurat")) {
     stop("'srt' is not a Seurat object.")
   }
-  if (
-    any(
-      !linear_reduction %in%
-        c("pca", "svd", "ica", "nmf", "mds", "glmpca", Reductions(srt))
-    )
-  ) {
+
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  linear_reductions <- c(
+    "pca", "svd", "ica",
+    "nmf", "mds", "glmpca"
+  )
+  if (any(!linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt)))) {
     stop(
-      "'linear_reduction' must be one of 'pca', 'svd', 'ica', 'nmf', 'mds', 'glmpca'."
+      "'linear_reduction' must be one of: ", paste(linear_reductions, "")
     )
   }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
+  if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap", "umap-naive", "tsne",
+    "dm", "phate", "pacmap",
+    "trimap", "largevis", "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     stop(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'."
+      "'nonlinear_reduction' must be one of: ", paste(nonlinear_reductions, "")
     )
   }
   if (!cluster_algorithm %in% c("louvain", "slm", "leiden")) {
@@ -152,7 +155,8 @@ standard_scop <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -162,7 +166,7 @@ standard_scop <- function(
   time_start <- Sys.time()
   set.seed(seed)
 
-  cat(paste0("[", time_start, "] ", "Start standard_scop\n"))
+  message(paste0("[", time_start, "] ", "Start standard_scop"))
 
   checked <- check_srt_list(
     srt_list = list(srt),
@@ -182,13 +186,14 @@ standard_scop <- function(
   HVF <- checked[["HVF"]]
   assay <- checked[["assay"]]
   type <- checked[["type"]]
+  rm(checked)
 
   if (normalization_method == "TFIDF") {
-    cat(paste0(
+    message(paste0(
       "[",
       Sys.time(),
       "]",
-      " normalization_method is 'TFIDF'. Use 'lsi' workflow...\n"
+      " normalization_method is 'TFIDF'. Use 'lsi' workflow..."
     ))
     do_scaling <- FALSE
     linear_reduction <- "svd"
@@ -199,18 +204,18 @@ standard_scop <- function(
       (is.null(do_scaling) &&
         any(
           !HVF %in%
-            rownames(Seurat::GetAssayData(
+            rownames(SeuratObject::GetAssayData(
               srt,
               layer = "scale.data",
-              assay = SeuratObject::DefaultAssay(srt)
+              assay = assay
             ))
         ))
   ) {
     if (normalization_method != "SCT") {
-      cat(paste0("[", Sys.time(), "]", " Perform ScaleData on the data...\n"))
+      message(paste0("[", Sys.time(), "]", " Perform ScaleData on the data..."))
       srt <- Seurat::ScaleData(
         object = srt,
-        assay = SeuratObject::DefaultAssay(srt),
+        assay = assay,
         features = HVF,
         vars.to.regress = vars_to_regress,
         model.use = regression_model,
@@ -220,19 +225,21 @@ standard_scop <- function(
   }
 
   for (lr in linear_reduction) {
-    cat(paste0(
-      "[",
-      Sys.time(),
-      "]",
-      " Perform linear dimension reduction (",
-      lr,
-      ") on the data...\n"
-    ))
+    message(
+      paste0(
+        "[",
+        Sys.time(),
+        "]",
+        " Perform linear dimension reduction (",
+        lr,
+        ") on the data..."
+      )
+    )
     srt <- RunDimReduction(
       srt,
       prefix = prefix,
       features = HVF,
-      assay = SeuratObject::DefaultAssay(srt),
+      assay = assay,
       linear_reduction = lr,
       linear_reduction_dims = linear_reduction_dims,
       linear_reduction_params = linear_reduction_params,
@@ -240,11 +247,18 @@ standard_scop <- function(
       verbose = FALSE,
       seed = seed
     )
+
     if (is.null(linear_reduction_dims_use)) {
-      linear_reduction_dims_use_current <- srt@reductions[[paste0(
-        prefix,
-        lr
-      )]]@misc[["dims_estimate"]]
+      # linear_reduction_dims_use_current <- srt@reductions[[paste0(
+      #   prefix,
+      #   lr
+      # )]]@misc[["dims_estimate"]]
+      linear_reduction_dims_use_current <- 1:ncol(
+        srt@reductions[[paste0(
+          prefix,
+          lr
+        )]]@cell.embeddings
+      )
       if (normalization_method == "TFIDF") {
         linear_reduction_dims_use_current <- 2:max(
           linear_reduction_dims_use_current
@@ -267,13 +281,13 @@ standard_scop <- function(
           verbose = FALSE
         )
 
-        cat(paste0(
+        message(paste0(
           "[",
           Sys.time(),
           "]",
           " Perform FindClusters (",
           cluster_algorithm,
-          ") on the data...\n"
+          ") on the data..."
         ))
         srt <- Seurat::FindClusters(
           object = srt,
@@ -282,7 +296,7 @@ standard_scop <- function(
           graph.name = paste0(prefix, lr, "_SNN"),
           verbose = FALSE
         )
-        cat(paste0("[", Sys.time(), "]", " Reorder clusters...\n"))
+        message(paste0("[", Sys.time(), "]", " Reorder clusters..."))
         srt <- srt_reorder(
           srt,
           features = HVF,
@@ -303,13 +317,13 @@ standard_scop <- function(
     srt <- tryCatch(
       {
         for (nr in nonlinear_reduction) {
-          cat(paste0(
+          message(paste0(
             "[",
             Sys.time(),
             "]",
             " Perform nonlinear dimension reduction (",
             nr,
-            ") on the data...\n"
+            ") on the data..."
           ))
           for (n in nonlinear_reduction_dims) {
             srt <- RunDimReduction(
@@ -371,14 +385,13 @@ standard_scop <- function(
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   time_end <- Sys.time()
-  cat(paste0("[", time_end, "] ", "standard_scop done\n"))
-  cat(
+  message(paste0("[", time_end, "] ", "standard_scop done"))
+  message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),
       format = "%Y-%m-%d %H:%M:%S"
-    ),
-    "\n"
+    )
   )
 
   return(srt)

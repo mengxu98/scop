@@ -17,6 +17,9 @@
 #' @param overwrite Logical value indicating whether to overwrite existing metadata. Default is FALSE.
 #'
 #' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
+#'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- AnnotateFeatures(
@@ -37,11 +40,9 @@
 #' ## Annotate features using a GTF file
 #' # pancreas_sub <- AnnotateFeatures(
 #' #   pancreas_sub,
-#' #   gtf = "/data/reference/CellRanger/refdata-gex-mm10-2020-A/genes/genes.gtf"
+#' #   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
 #' # )
 #' # head(pancreas_sub[["RNA"]]@meta.features)
-#' @importFrom data.table fread rbindlist
-#' @export
 AnnotateFeatures <- function(
     srt,
     species = "Homo_sapiens",
@@ -93,7 +94,7 @@ AnnotateFeatures <- function(
       TERM2NAME <- unique(db_list[[species]][[single_db]][["TERM2NAME"]])
       rownames(TERM2NAME) <- TERM2NAME[, 1]
       TERM2GENE[, single_db] <- TERM2NAME[TERM2GENE[, 1], 2]
-      db_df <- aggregate(
+      db_df <- stats::aggregate(
         x = TERM2GENE[,
           !colnames(TERM2GENE) %in%
             c("Term", "entrez_id", "symbol", "ensembl_id"),
@@ -123,7 +124,7 @@ AnnotateFeatures <- function(
         if (nrow(db_sub) == 0) {
           stop(paste0(
             "No data to append was found in the Seurat object. Please check if the species name is correct. The expected feature names are ",
-            paste(head(rownames(db_df), 10), collapse = ","),
+            paste(utils::head(rownames(db_df), 10), collapse = ","),
             "."
           ))
         }
@@ -146,7 +147,9 @@ AnnotateFeatures <- function(
   }
 
   if (!is.null(gtf)) {
-    gtf_all <- suppressWarnings(fread(gtf, sep = "\t"))
+    gtf_all <- suppressWarnings(
+      data.table::fread(gtf, sep = "\t")
+    )
     gtf_all <- gtf_all[, 1:9]
     colnames(gtf_all) <- c(
       "seqname",
@@ -165,7 +168,6 @@ AnnotateFeatures <- function(
         break
       }
     }
-    columns1 <- intersect(colnames(gtf_all), columns)
 
     gtf_attribute <- gtf_all[["attribute"]]
     gtf_attribute <- gsub(pattern = "\"", replacement = "", x = gtf_attribute)
@@ -177,13 +179,13 @@ AnnotateFeatures <- function(
       out <- out[intersect(columns, names(out))]
       return(out)
     })
-    gene_attr_df <- rbindlist(gene_attr, fill = TRUE)
+    gene_attr_df <- data.table::rbindlist(gene_attr, fill = TRUE)
     gtf_columns <- cbind(
       gtf_all[, intersect(colnames(gtf_all), columns), with = FALSE],
       gene_attr_df
     )
     colnames(gtf_columns) <- make.unique(colnames(gtf_columns))
-    gtf_columns_collapse <- aggregate(
+    gtf_columns_collapse <- stats::aggregate(
       gtf_columns,
       by = list(rowid = gtf_columns[[merge_gtf_by]]),
       FUN = function(x) {

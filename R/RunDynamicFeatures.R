@@ -15,9 +15,6 @@
 #' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for computing dynamic features. Defaults to BiocParallel::bpparam().
 #' @param seed An integer specifying the seed for random number generation. Defaults to 11.
 #'
-#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures AddMetaData
-#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
 #'
 #' @seealso \code{\link{DynamicHeatmap}} \code{\link{DynamicPlot}} \code{\link{RunDynamicEnrichment}}
@@ -97,7 +94,7 @@ RunDynamicFeatures <- function(
     }
   }
 
-  Y <- Seurat::GetAssayData(srt, layer = layer, assay = assay)
+  Y <- SeuratObject::GetAssayData(srt, layer = layer, assay = assay)
   if (is.null(libsize)) {
     status <- check_data_type(srt, assay = assay, layer = "counts")
     if (status != "raw_counts") {
@@ -106,8 +103,8 @@ RunDynamicFeatures <- function(
         colnames(srt)
       )
     } else {
-      Y_libsize <- colSums(
-        Seurat::GetAssayData(
+      Y_libsize <- Matrix::colSums(
+        SeuratObject::GetAssayData(
           srt,
           assay = assay,
           layer = "counts"
@@ -128,7 +125,7 @@ RunDynamicFeatures <- function(
   }
 
   if (length(meta) > 0) {
-    Y <- rbind(Y, t(srt@meta.data[, meta, drop = FALSE]))
+    Y <- rbind(Y, Matrix::t(srt@meta.data[, meta, drop = FALSE]))
   }
 
   features_list <- c()
@@ -143,7 +140,7 @@ RunDynamicFeatures <- function(
         stop("'features' or 'n_candidates' must provided at least one.")
       }
       HVF <- SeuratObject::VariableFeatures(
-        FindVariableFeatures(
+        Seurat::FindVariableFeatures(
           srt_sub,
           nfeatures = n_candidates,
           assay = assay
@@ -208,7 +205,7 @@ RunDynamicFeatures <- function(
     l_libsize <- Y_libsize[names(t_ordered)]
     raw_matrix <- Matrix::as.matrix(cbind(
       data.frame(pseudotime = t_ordered),
-      t(Y_ordered)
+      Matrix::t(Y_ordered)
     ))
 
     # df <- data.frame(x = rowMeans(Y_ordered), y = MatrixGenerics::rowVars(Y_ordered))
@@ -246,9 +243,9 @@ RunDynamicFeatures <- function(
           ) {
             l_libsize <- l_libsize
           } else {
-            l_libsize <- rep(median(Y_libsize), ncol(Y_ordered))
+            l_libsize <- rep(stats::median(Y_libsize), ncol(Y_ordered))
           }
-          sizefactror <- median(Y_libsize) / l_libsize
+          sizefactror <- stats::median(Y_libsize) / l_libsize
           mod <- mgcv::gam(
             y ~ s(x, bs = "cs") + offset(log(l_libsize)),
             family = family_use,
@@ -258,7 +255,7 @@ RunDynamicFeatures <- function(
               l_libsize = l_libsize
             )
           )
-          pre <- predict(mod, type = "link", se.fit = TRUE)
+          pre <- stats::predict(mod, type = "link", se.fit = TRUE)
           upr <- pre$fit + (2 * pre$se.fit)
           lwr <- pre$fit - (2 * pre$se.fit)
           upr <- mod$family$linkinv(upr)
@@ -275,35 +272,16 @@ RunDynamicFeatures <- function(
             Y_ordered[feature_nm, ] > min(Y_ordered[feature_nm, ]),
             na.rm = TRUE
           )
-          peaktime <- median(
+          peaktime <- stats::median(
             t_ordered[
-              fitted.values > quantile(fitted.values, 0.99, na.rm = TRUE)
+              fitted.values > stats::quantile(fitted.values, 0.99, na.rm = TRUE)
             ]
           )
-          valleytime <- median(
+          valleytime <- stats::median(
             t_ordered[
-              fitted.values < quantile(fitted.values, 0.01, na.rm = TRUE)
+              fitted.values < stats::quantile(fitted.values, 0.01, na.rm = TRUE)
             ]
           )
-
-          # ggplot(data = data.frame(
-          #   x = t_ordered,
-          #   raw = FetchData(srt_sub, vars = feature_nm, layer = "counts")[names(t_ordered), feature_nm, drop = TRUE],
-          #   fitted = fitted.values,
-          #   upr.values = upr.values,
-          #   lwr.values = lwr.values,
-          #   l_libsize = l_libsize
-          # )) +
-          #   geom_point(aes(x = x, y = raw), color = "black", size = 0.5) +
-          #   geom_point(aes(x = x, y = fitted), color = "red", size = 0.5) +
-          #   geom_path(aes(x = x, y = upr.values), color = "blue") +
-          #   geom_path(aes(x = x, y = lwr.values), color = "green")
-
-          # a <- data.frame(x = t_ordered, y = Y_ordered[feature_nm, ])
-          # qplot(a$x, a$y)
-          # length(unique(a$y) > 5)
-          # a <- a[a$y > 0, ]
-          # qplot(a$x, a$y)
 
           return(
             list(
@@ -334,11 +312,17 @@ RunDynamicFeatures <- function(
     colnames(fitted_matrix) <- rownames(Y_ordered)
     fitted_matrix <- cbind(pseudotime = t_ordered, fitted_matrix)
 
-    upr_matrix <- do.call(cbind, lapply(gam_out, function(x) x[["upr.values"]]))
+    upr_matrix <- do.call(
+      cbind,
+      lapply(gam_out, function(x) x[["upr.values"]])
+    )
     colnames(upr_matrix) <- rownames(Y_ordered)
     upr_matrix <- cbind(pseudotime = t_ordered, upr_matrix)
 
-    lwr_matrix <- do.call(cbind, lapply(gam_out, function(x) x[["lwr.values"]]))
+    lwr_matrix <- do.call(
+      cbind,
+      lapply(gam_out, function(x) x[["lwr.values"]])
+    )
     colnames(lwr_matrix) <- rownames(Y_ordered)
     lwr_matrix <- cbind(pseudotime = t_ordered, lwr_matrix)
 
@@ -366,10 +350,9 @@ RunDynamicFeatures <- function(
       as.numeric
     )
     rownames(DynamicFeatures) <- DynamicFeatures[["features"]]
-    DynamicFeatures[, "padjust"] <- p.adjust(DynamicFeatures[,
-      "pvalue",
-      drop = TRUE
-    ])
+    DynamicFeatures[, "padjust"] <- stats::p.adjust(
+      DynamicFeatures[, "pvalue", drop = TRUE]
+    )
 
     res <- list(
       DynamicFeatures = DynamicFeatures,

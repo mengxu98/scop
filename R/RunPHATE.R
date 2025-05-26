@@ -27,12 +27,15 @@
 #' @param seed.use An integer specifying the random seed to be used. Default is 11.
 #' @param ... Additional arguments to be passed to the phate.PHATE function.
 #'
+#' @rdname RunPHATE
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPHATE(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -40,8 +43,6 @@
 #'   reduction = "phate"
 #' )
 #' }
-#' @rdname RunPHATE
-#' @export
 RunPHATE <- function(object, ...) {
   UseMethod(generic = "RunPHATE", object = object)
 }
@@ -82,7 +83,7 @@ RunPHATE.Seurat <- function(
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay

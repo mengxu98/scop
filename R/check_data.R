@@ -7,7 +7,8 @@
 #' @param layer The layer in the 'srt' object from which to extract the data. Default is "data".
 #' @param assay The assay to extract the data from. If not provided, the default assay will be used.
 #'
-#' @return A string indicating the type of data. Possible values are: "raw_counts", "log_normalized_counts", "raw_normalized_counts", or "unknown".
+#' @return A string indicating the type of data.
+#' Possible values are: "raw_counts", "log_normalized_counts", "raw_normalized_counts", or "unknown".
 #'
 #' @export
 check_data_type <- function(
@@ -17,7 +18,7 @@ check_data_type <- function(
     assay = NULL) {
   if (is.null(data)) {
     assay <- assay %||% SeuratObject::DefaultAssay(srt)
-    data <- Seurat::GetAssayData(
+    data <- SeuratObject::GetAssayData(
       srt,
       layer = layer,
       assay = assay
@@ -76,7 +77,6 @@ check_data_type <- function(
 #'
 #' @return A list containing the preprocessed seurat objects, the highly variable features, the assay name, and the type of assay (e.g., "RNA" or "Chromatin").
 #'
-#' @importFrom Signac RunTFIDF
 #' @export
 #'
 check_srt_list <- function(
@@ -93,7 +93,7 @@ check_srt_list <- function(
     HVF = NULL,
     vars_to_regress = NULL,
     seed = 11) {
-  cat(paste0("[", Sys.time(), "]", " Checking srt_list... ...\n"))
+  message(paste0("[", Sys.time(), "]", " Checking srt_list..."))
   set.seed(seed)
 
   if (
@@ -266,12 +266,12 @@ check_srt_list <- function(
     SeuratObject::DefaultAssay(srt_list[[i]]) <- assay
     if (isTRUE(do_normalization)) {
       if (normalization_method == "LogNormalize") {
-        cat(
+        message(
           "Perform NormalizeData(LogNormalize) on the data ",
           i,
           "/",
           length(srt_list),
-          " of the srt_list...\n",
+          " of the srt_list...",
           sep = ""
         )
         srt_list[[i]] <- NormalizeData(
@@ -282,42 +282,46 @@ check_srt_list <- function(
         )
       }
       if (normalization_method == "TFIDF") {
-        cat(
+        message(
           "Perform RunTFIDF on the data ",
           i,
           "/",
           length(srt_list),
-          " of the srt_list...\n",
+          " of the srt_list...",
           sep = ""
         )
-        srt_list[[i]] <- RunTFIDF(
+        srt_list[[i]] <- Signac::RunTFIDF(
           object = srt_list[[i]],
           assay = assay,
           verbose = FALSE
         )
       }
     } else if (is.null(do_normalization)) {
-      status <- check_data_type(srt_list[[i]], layer = "data", assay = assay)
+      status <- check_data_type(
+        srt_list[[i]],
+        layer = "data",
+        assay = assay
+      )
       if (status == "log_normalized_counts") {
-        cat(
+        message(
           "Data ",
           i,
           "/",
           length(srt_list),
-          " of the srt_list has been log-normalized.\n",
+          " of the srt_list has been log-normalized.",
           sep = ""
         )
       }
       if (status %in% c("raw_counts", "raw_normalized_counts")) {
         if (normalization_method == "LogNormalize") {
-          cat(
+          message(
             "Data ",
             i,
             "/",
             length(srt_list),
             " of the srt_list is ",
             status,
-            ". Perform NormalizeData(LogNormalize) on the data ...\n",
+            ". Perform NormalizeData(LogNormalize) on the data ...",
             sep = ""
           )
           srt_list[[i]] <- Seurat::NormalizeData(
@@ -328,17 +332,17 @@ check_srt_list <- function(
           )
         }
         if (normalization_method == "TFIDF") {
-          cat(
+          message(
             "Data ",
             i,
             "/",
             length(srt_list),
             " of the srt_list is ",
             status,
-            ". Perform RunTFIDF on the data ...\n",
+            ". Perform RunTFIDF on the data ...",
             sep = ""
           )
-          srt_list[[i]] <- RunTFIDF(
+          srt_list[[i]] <- Signac::RunTFIDF(
             object = srt_list[[i]],
             assay = assay,
             verbose = FALSE
@@ -358,15 +362,15 @@ check_srt_list <- function(
       if (
         isTRUE(do_HVF_finding) ||
           is.null(do_HVF_finding) ||
-          length(VariableFeatures(srt_list[[i]], assay = assay)) == 0
+          length(SeuratObject::VariableFeatures(srt_list[[i]], assay = assay)) == 0
       ) {
         # if (type == "RNA") {
-        cat(
+        message(
           "Perform FindVariableFeatures on the data ",
           i,
           "/",
           length(srt_list),
-          " of the srt_list...\n",
+          " of the srt_list...",
           sep = ""
         )
         srt_list[[i]] <- Seurat::FindVariableFeatures(
@@ -378,7 +382,7 @@ check_srt_list <- function(
         )
         # }
         # if (type == "Chromatin") {
-        #   cat("Perform FindTopFeatures on the data ", i, "/", length(srt_list), " of the srt_list...\n", sep = "")
+        #   message("Perform FindTopFeatures on the data ", i, "/", length(srt_list), " of the srt_list...", sep = "")
         #   srt_list[[i]] <- FindTopFeatures(srt_list[[i]], assay = assay, min.cutoff = HVF_min_cutoff, verbose = FALSE)
         # }
       }
@@ -390,7 +394,7 @@ check_srt_list <- function(
           isTRUE(do_HVF_finding) ||
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
-        cat("Perform SCTransform on the data", i, "of the srt_list...\n")
+        message("Perform SCTransform on the data", i, "of the srt_list...")
         srt_list[[i]] <- Seurat::SCTransform(
           object = srt_list[[i]],
           variable.features.n = nHVF,
@@ -426,11 +430,11 @@ check_srt_list <- function(
         feature.attr <- GetFeaturesData(srt_list[[i]], assay = "SCT")
       }
       nfeatures <- min(nHVF, nrow(x = feature.attr))
-      top.features <- rownames(x = feature.attr)[head(
+      top.features <- rownames(x = feature.attr)[utils::head(
         order(feature.attr$residual_variance, decreasing = TRUE),
         n = nfeatures
       )]
-      VariableFeatures(
+      SeuratObject::VariableFeatures(
         srt_list[[i]],
         assay = SeuratObject::DefaultAssay(srt_list[[i]])
       ) <- top.features
@@ -445,7 +449,7 @@ check_srt_list <- function(
 
   if (is.null(HVF)) {
     if (HVF_source == "global") {
-      cat("Use the global HVF from merged dataset...\n")
+      message("Use the global HVF from merged dataset...")
       srt_merge <- Reduce(merge, srt_list)
       # if (type == "RNA") {
       srt_merge <- Seurat::FindVariableFeatures(
@@ -462,7 +466,7 @@ check_srt_list <- function(
       HVF <- SeuratObject::VariableFeatures(srt_merge)
     }
     if (HVF_source == "separate") {
-      cat("Use the separate HVF from srt_list...\n")
+      message("Use the separate HVF from srt_list...")
       # if (type == "RNA") {
       HVF <- Seurat::SelectIntegrationFeatures(
         object.list = srt_list,
@@ -477,10 +481,10 @@ check_srt_list <- function(
       HVF <- intersect(HVF, names(HVF_filter))
       # }
       # if (type == "Chromatin") {
-      #   nHVF <- min(sapply(srt_list, function(srt) length(VariableFeatures(srt))))
+      #   nHVF <- min(sapply(srt_list, function(srt) length(SeuratObject::VariableFeatures(srt))))
       #   HVF_sort <- sort(table(unlist(lapply(srt_list, VariableFeatures))), decreasing = TRUE)
       #   HVF_filter <- HVF_sort[HVF_sort >= HVF_min_intersection]
-      #   HVF <- names(head(HVF_filter, nHVF))
+      #   HVF <- names(utils::head(HVF_filter, nHVF))
       # }
       if (length(HVF) == 0) {
         stop("No HVF available.")
@@ -491,7 +495,7 @@ check_srt_list <- function(
       intersect,
       lapply(srt_list, function(srt) {
         rownames(
-          Seurat::GetAssayData(
+          SeuratObject::GetAssayData(
             srt,
             layer = "counts",
             assay = SeuratObject::DefaultAssay(srt)
@@ -504,8 +508,8 @@ check_srt_list <- function(
   message("Number of available HVF: ", length(HVF))
 
   hvf_sum <- lapply(srt_list, function(srt) {
-    colSums(
-      Seurat::GetAssayData(
+    Matrix::colSums(
+      SeuratObject::GetAssayData(
         srt,
         layer = "counts",
         assay = SeuratObject::DefaultAssay(srt)
@@ -533,7 +537,7 @@ check_srt_list <- function(
       verbose = FALSE
     )
   }
-  cat(paste0("[", Sys.time(), "]", " Finished checking.\n"))
+  message(paste0("[", Sys.time(), "]", " Finished checking."))
 
   return(
     list(
@@ -590,13 +594,13 @@ check_srt_merge <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt_merge)
   srt_merge_raw <- srt_merge
 
-  cat(paste0(
+  message(paste0(
     "[",
     Sys.time(),
     "]",
     " Spliting srt_merge into srt_list by column ",
     batch,
-    "... ...\n"
+    "..."
   ))
   srt_list <- Seurat::SplitObject(
     object = srt_merge_raw,
@@ -624,7 +628,7 @@ check_srt_merge <- function(
   type <- checked[["type"]]
   srt_merge <- Reduce(merge, srt_list)
 
-  srt_merge <- SrtAppend(
+  srt_merge <- srt_append(
     srt_raw = srt_merge,
     srt_append = srt_merge_raw,
     pattern = "",

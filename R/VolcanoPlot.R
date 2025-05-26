@@ -33,18 +33,29 @@
 #'
 #' @seealso \code{\link{RunDEtest}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(pancreas_sub, group_by = "CellType", only.pos = FALSE)
-#' VolcanoPlot(pancreas_sub, group_by = "CellType")
-#' VolcanoPlot(pancreas_sub, group_by = "CellType", DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05")
-#' VolcanoPlot(pancreas_sub, group_by = "CellType", x_metric = "avg_log2FC")
-#'
-#' @importFrom stats quantile
-#' @importFrom ggplot2 ggplot aes geom_point geom_vline geom_hline labs scale_color_gradientn guide_colorbar facet_wrap position_jitter
-#' @importFrom ggrepel geom_text_repel
-#' @importFrom patchwork wrap_plots
-#' @export
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType",
+#'   only.pos = FALSE
+#' )
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group_by = "CellType",
+#'   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05"
+#' )
+#' VolcanoPlot(
+#'   pancreas_sub,
+#'   group_by = "CellType",
+#'   x_metric = "avg_log2FC"
+#' )
 VolcanoPlot <- function(
     srt,
     group_by = NULL,
@@ -102,11 +113,11 @@ VolcanoPlot <- function(
   de_df[, "DE"] <- FALSE
   de_df[with(de_df, eval(rlang::parse_expr(DE_threshold))), "DE"] <- TRUE
 
-  x_upper <- quantile(
+  x_upper <- stats::quantile(
     de_df[["avg_log2FC"]][is.finite(de_df[["avg_log2FC"]])],
     c(0.99, 1)
   )
-  x_lower <- quantile(
+  x_lower <- stats::quantile(
     de_df[["avg_log2FC"]][is.finite(de_df[["avg_log2FC"]])],
     c(0.01, 0)
   )
@@ -155,11 +166,11 @@ VolcanoPlot <- function(
     df[, "label"] <- FALSE
     if (is.null(features_label)) {
       df[df[["y"]] >= 0, ][
-        head(order(df[df[["y"]] >= 0, "distance"], decreasing = TRUE), nlabel),
+        utils::head(order(df[df[["y"]] >= 0, "distance"], decreasing = TRUE), nlabel),
         "label"
       ] <- TRUE
       df[df[["y"]] < 0, ][
-        head(order(df[df[["y"]] < 0, "distance"], decreasing = TRUE), nlabel),
+        utils::head(order(df[df[["y"]] < 0, "distance"], decreasing = TRUE), nlabel),
         "label"
       ] <- TRUE
     } else {
@@ -211,7 +222,7 @@ VolcanoPlot <- function(
       ) +
       geom_hline(yintercept = 0, color = "black", linetype = 1) +
       geom_vline(xintercept = 0, color = "grey", linetype = 2) +
-      geom_text_repel(
+      ggrepel::geom_text_repel(
         data = df[df[["label"]], , drop = FALSE],
         aes(x = x, y = y, label = gene),
         min.segment.length = 0,
@@ -248,7 +259,7 @@ VolcanoPlot <- function(
   }
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,

@@ -30,13 +30,9 @@
 #' @param return_layer A logical value indicating whether to return the plot as a layer.
 #' @param seed An optional integer specifying the random seed for reproducibility.
 #'
-#' @importFrom Seurat Key Embeddings
-#' @importFrom ggplot2 aes geom_path geom_segment labs
-#' @importFrom grid arrow unit
-#' @importFrom stats loess quantile
-#' @export
-#'
 #' @seealso \code{\link{RunSlingshot}} \code{\link{CellDimPlot}}
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -65,7 +61,7 @@ LineagePlot <- function(
     span = 0.75,
     palette = "Dark2",
     palcolor = NULL,
-    lineages_arrow = arrow(length = unit(0.1, "inches")),
+    lineages_arrow = grid::arrow(length = grid::unit(0.1, "inches")),
     linewidth = 1,
     line_bg = "white",
     line_bg_stroke = 0.5,
@@ -115,20 +111,17 @@ LineagePlot <- function(
   colors <- palette_scop(lineages, palette = palette, palcolor = palcolor)
   axes <- paste0(reduction_key, dims)
   fitted_list <- lapply(lineages, function(l) {
-    trim_pass <- dat[[l]] > quantile(dat[[l]], trim[1], na.rm = TRUE) &
-      dat[[l]] < quantile(dat[[l]], trim[2], na.rm = TRUE)
+    trim_pass <- dat[[l]] > stats::quantile(dat[[l]], trim[1], na.rm = TRUE) &
+      dat[[l]] < stats::quantile(dat[[l]], trim[2], na.rm = TRUE)
     na_pass <- !is.na(dat[[l]])
     index <- which(trim_pass & na_pass)
     index <- index[order(dat[index, l])]
     dat_sub <- dat[index, , drop = FALSE]
-    # if (is.null(weights)) {
     weights_used <- rep(1, nrow(dat_sub))
-    # } else {
-    # weights_used <- dat_sub[[weights]]
-    # }
+
     fitted <- lapply(axes, function(x) {
-      loess(
-        formula(paste(x, l, sep = "~")),
+      stats::loess(
+        stats::formula(paste(x, l, sep = "~")),
         weights = weights_used,
         data = dat_sub,
         span = span,
@@ -148,7 +141,7 @@ LineagePlot <- function(
       "index"
     )
     dat_smooth[, "Lineages"] <- factor(l, levels = lineages)
-    dat_smooth <- unique(na.omit(dat_smooth))
+    dat_smooth <- unique(stats::na.omit(dat_smooth))
     curve <- list()
     if (isTRUE(whiskers)) {
       dat_smooth[, "raw_Axis_1"] <- dat[dat_smooth[, "index"], axes[1]]

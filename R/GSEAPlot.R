@@ -1,493 +1,3 @@
-#' Perform the enrichment analysis (GSEA) on the genes
-#'
-#' @inheritParams RunEnrichment
-#' @param geneScore A numeric vector that specifies the gene scores, for example, the log2(fold change) values of gene expression.
-#' @param scoreType This parameter defines the GSEA score type. Possible options are "std", "pos", "neg". By default ("std") the enrichment score is computed as in the original GSEA. The "pos" and "neg" score types are intended to be used for one-tailed tests (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
-#' @returns
-#' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
-#'
-#' If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
-#'
-#' Enrichment result is a list with the following component:
-#' \itemize{
-#'  \item{\code{enrichment}:}{ A data.frame containing all enrichment results.}
-#'  \item{\code{results}:}{ A list of \code{gseaResult} objects from the DOSE package.}
-#'  \item{\code{geneMap}:}{ A data.frame containing the ID mapping table for input gene IDs.}
-#'  \item{\code{input}:}{ A data.frame containing the input gene IDs and gene ID groups.}
-#'  \item{\code{DE_threshold}:}{ A specific threshold for differential expression analysis (only returned if input is a Seurat object).}
-#' }
-#'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}} \code{\link{GSEAPlot}} \code{\link{RunEnrichment}} \code{\link{EnrichmentPlot}}
-#'
-#' @examples
-#' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group_by = "CellType",
-#'   only.pos = FALSE,
-#'   fc.threshold = 1
-#' )
-#' pancreas_sub <- RunGSEA(
-#'   pancreas_sub,
-#'   group_by = "CellType",
-#'   DE_threshold = "p_val_adj < 0.05",
-#'   scoreType = "std",
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group_by = "CellType",
-#'   group_use = "Ductal",
-#'   id_use = "GO:0006412"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group_by = "CellType",
-#'   group_use = "Endocrine",
-#'   id_use = c("GO:0046903", "GO:0015031", "GO:0007600")
-#' )
-#'
-#' # Remove redundant GO terms
-#' pancreas_sub <- RunGSEA(
-#'   srt = pancreas_sub,
-#'   group_by = "CellType",
-#'   db = "GO_BP",
-#'   GO_simplify = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP_sim",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Use a combined database
-#' pancreas_sub <- RunGSEA(
-#'   srt = pancreas_sub, group_by = "CellType",
-#'   db = c("KEGG", "WikiPathway", "Reactome", "PFAM", "MP"),
-#'   db_combine = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   pancreas_sub,
-#'   db = "Combined",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Or use "geneID", "geneScore" and "geneID_groups" as input to run GSEA
-#' de_df <- dplyr::filter(
-#'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
-#'   p_val_adj < 0.05
-#' )
-#' gsea_out <- RunGSEA(
-#'   geneID = de_df[["gene"]],
-#'   geneScore = de_df[["avg_log2FC"]],
-#'   geneID_groups = de_df[["group1"]],
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
-#' )
-#' GSEAPlot(
-#'   res = gsea_out,
-#'   db = "GO_BP",
-#'   plot_type = "comparison"
-#' )
-#'
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers ipcid ipclock ipcunlock
-#' @importFrom clusterProfiler GSEA simplify
-#' @export
-RunGSEA <- function(
-    srt = NULL,
-    group_by = NULL,
-    test.use = "wilcox",
-    DE_threshold = "p_val_adj < 0.05",
-    scoreType = "std",
-    geneID = NULL,
-    geneScore = NULL,
-    geneID_groups = NULL,
-    geneID_exclude = NULL,
-    IDtype = "symbol",
-    result_IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    db_update = FALSE,
-    db_version = "latest",
-    db_combine = FALSE,
-    convert_species = TRUE,
-    Ensembl_version = 103,
-    mirror = NULL,
-    TERM2GENE = NULL,
-    TERM2NAME = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
-    GO_simplify = FALSE,
-    GO_simplify_cutoff = "p.adjust < 0.05",
-    simplify_method = "Wang",
-    simplify_similarityCutoff = 0.7,
-    BPPARAM = BiocParallel::bpparam(),
-    seed = 11) {
-  bpprogressbar(BPPARAM) <- TRUE
-  bpRNGseed(BPPARAM) <- seed
-  time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start GSEA"))
-  message("Workers: ", bpworkers(BPPARAM))
-
-  use_srt <- FALSE
-  if (is.null(geneID)) {
-    if (is.null(group_by)) {
-      group_by <- "custom"
-    }
-    layer <- paste0("DEtest_", group_by)
-    if (
-      !layer %in% names(srt@tools) ||
-        length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
-    ) {
-      stop(
-        "Cannot find the DEtest result for the group '",
-        group_by,
-        "'. You may perform RunDEtest first."
-      )
-    }
-    index <- grep(
-      pattern = paste0("AllMarkers_", test.use),
-      names(srt@tools[[layer]])
-    )[1]
-    if (is.na(index)) {
-      stop("Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.")
-    }
-    de <- names(srt@tools[[layer]])[index]
-    de_df <- srt@tools[[layer]][[de]]
-    de_df <- de_df[
-      with(de_df, eval(rlang::parse_expr(DE_threshold))), ,
-      drop = FALSE
-    ]
-    rownames(de_df) <- seq_len(nrow(de_df))
-
-    geneID <- de_df[["gene"]]
-    geneScore <- de_df[["avg_log2FC"]]
-    geneID_groups <- de_df[["group1"]]
-    use_srt <- TRUE
-  }
-
-  if (is.null(geneID_groups)) {
-    geneID_groups <- rep(" ", length(geneID))
-  }
-  if (!is.factor(geneID_groups)) {
-    geneID_groups <- factor(geneID_groups, levels = unique(geneID_groups))
-  }
-  geneID_groups <- factor(
-    geneID_groups,
-    levels = levels(geneID_groups)[levels(geneID_groups) %in% geneID_groups]
-  )
-  if (length(geneID_groups) != length(geneID)) {
-    stop("length(geneID_groups)!=length(geneID)")
-  }
-  if (length(geneScore) != length(geneID)) {
-    stop("geneScore must be the same length with geneID")
-  }
-  if (all(geneScore > 0) && scoreType != "pos") {
-    scoreType <- "pos"
-    warning(
-      "All values in the geneScore are greater than zero. Set scoreType = 'pos'.",
-      immediate. = TRUE
-    )
-  }
-  if (all(geneScore < 0) && scoreType != "neg") {
-    scoreType <- "neg"
-    warning(
-      "All values in the geneScore are less than zero. Set scoreType = 'neg'.",
-      immediate. = TRUE
-    )
-  }
-
-  input <- data.frame(
-    geneID = geneID,
-    geneScore = geneScore,
-    geneID_groups = geneID_groups
-  )
-  input <- input[!geneID %in% geneID_exclude, , drop = FALSE]
-
-  na_index <- which(is.na(geneScore))
-  if (length(na_index) > 0) {
-    message("Ignore ", length(na_index), " NA geneScore")
-    input <- input[-na_index, , drop = FALSE]
-  }
-  input[
-    is.infinite(input$geneScore) & input$geneScore < 0,
-    "geneScore"
-  ] <- min(input[!is.infinite(input$geneScore), "geneScore"])
-  input[
-    is.infinite(input$geneScore) & input$geneScore > 0,
-    "geneScore"
-  ] <- max(input[!is.infinite(input$geneScore), "geneScore"])
-
-  geneID <- input$geneID
-  geneScore <- input$geneScore
-  geneID_groups <- input$geneID_groups
-  names(geneID_groups) <- geneID
-  names(geneScore) <- paste(geneID, geneID_groups, sep = ".")
-
-  if (is.null(TERM2GENE)) {
-    db_list <- PrepareDB(
-      species = species,
-      db = db,
-      db_update = db_update,
-      db_version = db_version,
-      db_IDtypes = IDtype,
-      convert_species = convert_species,
-      Ensembl_version = Ensembl_version,
-      mirror = mirror
-    )
-  } else {
-    colnames(TERM2GENE) <- c("Term", IDtype)
-    db <- "custom"
-    db_list <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    if (is.null(TERM2NAME)) {
-      TERM2NAME <- unique(TERM2GENE)[, c(1, 1)]
-      colnames(TERM2NAME) <- c("Term", "Name")
-    }
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- "custom"
-  }
-  if (isTRUE(db_combine)) {
-    message("Create 'Combined' database ...")
-    TERM2GENE <- do.call(
-      rbind,
-      lapply(
-        db_list[[species]],
-        function(x) x[["TERM2GENE"]][, c("Term", IDtype)]
-      )
-    )
-    TERM2NAME <- do.call(
-      rbind,
-      lapply(names(db_list[[species]]), function(x) {
-        db_list[[species]][[x]][["TERM2NAME"]][["Name"]] <- paste0(
-          db_list[[species]][[x]][["TERM2NAME"]][["Name"]],
-          " [",
-          x,
-          "]"
-        )
-        db_list[[species]][[x]][["TERM2NAME"]][, c("Term", "Name")]
-      })
-    )
-    version <- unlist(lapply(
-      db_list[[species]],
-      function(x) as.character(x[["version"]])
-    ))
-    version <- paste0(names(version), ":", version, collapse = ";")
-    db <- "Combined"
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- unique(version)
-  }
-
-  if (length(unique(c(IDtype, result_IDtype))) != 1) {
-    res <- GeneConvert(
-      geneID = unique(geneID),
-      geneID_from_IDtype = IDtype,
-      geneID_to_IDtype = result_IDtype,
-      species_from = species,
-      species_to = species,
-      Ensembl_version = Ensembl_version,
-      mirror = mirror
-    )
-    geneMap <- res$geneID_collapse
-    colnames(geneMap)[colnames(geneMap) == "from_geneID"] <- IDtype
-  } else {
-    geneMap <- data.frame(
-      from_geneID = unique(geneID),
-      row.names = unique(geneID)
-    )
-    colnames(geneMap)[1] <- IDtype
-  }
-
-  input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
-  input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
-  input <- unnest(input, cols = c(IDtype, result_IDtype))
-  input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
-
-  message("Permform GSEA...")
-  comb <- expand.grid(
-    group = levels(geneID_groups),
-    term = db,
-    stringsAsFactors = FALSE
-  )
-
-  res_list <- bplapply(
-    seq_len(nrow(comb)),
-    function(i, id) {
-      group <- comb[i, "group"]
-      term <- comb[i, "term"]
-      geneList <- input[input$geneID_groups == group, "geneScore"]
-      names(geneList) <- input[input$geneID_groups == group, IDtype]
-      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
-      ord <- order(geneList, decreasing = TRUE)
-      geneList <- geneList[ord]
-      gene_mapid <- gene_mapid[ord]
-      TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
-        "Term",
-        IDtype
-      )]
-      TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-      dup <- duplicated(TERM2GENE_tmp)
-      na <- rowSums(is.na(TERM2GENE_tmp)) > 0
-      TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
-      TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
-        drop = FALSE
-      ]
-      enrich_res <- GSEA(
-        geneList = geneList,
-        minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
-        maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        nPermSimple = 1e5, # nPermSimple:fgseaMultilevel; nperm:fgseaSimple
-        eps = 0,
-        scoreType = scoreType,
-        pAdjustMethod = "BH",
-        pvalueCutoff = Inf,
-        TERM2GENE = TERM2GENE_tmp,
-        TERM2NAME = TERM2NAME_tmp,
-        by = "fgsea",
-        verbose = FALSE
-      )
-
-      if (!is.null(enrich_res) && nrow(enrich_res@result) > 0) {
-        result <- enrich_res@result
-        result[["Groups"]] <- group
-        result[["Database"]] <- term
-        result[["Version"]] <- as.character(db_list[[species]][[term]][[
-          "version"
-        ]])
-        IDlist <- strsplit(result$core_enrichment, "/")
-        result$core_enrichment <- unlist(lapply(IDlist, function(x) {
-          x_result <- NULL
-          for (i in x) {
-            if (i %in% input[[IDtype]]) {
-              x_result <- c(
-                x_result,
-                unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-              )
-            } else {
-              x_result <- c(x_result, i)
-            }
-          }
-          return(paste0(x_result, collapse = "/"))
-        }))
-        enrich_res@result <- result
-        enrich_res@gene2Symbol <- as.character(gene_mapid)
-
-        if (
-          isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
-        ) {
-          sim_res <- enrich_res
-          if (term == "GO") {
-            sim_res@result[["ONTOLOGY"]] <- stats::setNames(
-              TERM2NAME_tmp[["ONTOLOGY"]],
-              TERM2NAME_tmp[["Term"]]
-            )[enrich_res@result[["ID"]]]
-            sim_res@setType <- "GOALL"
-          } else {
-            sim_res@setType <- gsub(pattern = "GO_", replacement = "", x = term)
-          }
-          nterm_simplify <- sum(with(
-            sim_res@result,
-            eval(rlang::parse_expr(GO_simplify_cutoff))
-          ))
-          if (nterm_simplify <= 1) {
-            warning(
-              group,
-              "|",
-              term,
-              " has no term to simplify.",
-              immediate. = TRUE
-            )
-          } else {
-            sim_res@result <- sim_res@result[
-              with(sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))), ,
-              drop = FALSE
-            ]
-            semData <- db_list[[species]][[term]][["semData"]]
-            ipclock(id)
-            sim_res <- simplify(
-              sim_res,
-              measure = simplify_method,
-              cutoff = simplify_similarityCutoff,
-              semData = semData
-            )
-            ipcunlock(id)
-            result_sim <- sim_res@result
-            result_sim[["Groups"]] <- group
-            result_sim[["Database"]] <- paste0(term, "_sim")
-            result_sim[["Version"]] <- as.character(db_list[[species]][[term]][[
-              "version"
-            ]])
-            result_sim[["ONTOLOGY"]] <- NULL
-            sim_res@result <- result_sim
-            enrich_res <- list(enrich_res, sim_res)
-            names(enrich_res) <- paste(
-              group,
-              c(term, paste0(term, "_sim")),
-              sep = "-"
-            )
-          }
-        }
-      } else {
-        enrich_res <- NULL
-      }
-      return(enrich_res)
-    },
-    BPPARAM = BPPARAM,
-    id = ipcid()
-  )
-
-  nm <- paste(comb$group, comb$term, sep = "-")
-  sim_index <- sapply(res_list, function(x) length(x) == 2)
-  sim_list <- unlist(res_list[sim_index], recursive = FALSE)
-  raw_list <- res_list[!sim_index]
-  names(raw_list) <- nm[!sim_index]
-  results <- c(raw_list, sim_list)
-  results <- results[!sapply(results, is.null)]
-  results <- results[intersect(c(nm, paste0(nm, "_sim")), names(results))]
-  enrichment <- do.call(rbind, lapply(results, function(x) x@result))
-  rownames(enrichment) <- NULL
-
-  time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "GSEA done"))
-  message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    )
-  )
-
-  res <- list(
-    enrichment = enrichment,
-    results = results,
-    geneMap = geneMap,
-    input = input
-  )
-  if (isTRUE(use_srt)) {
-    res[["DE_threshold"]] <- DE_threshold
-    srt@tools[[paste("GSEA", group_by, test.use, sep = "_")]] <- res
-    return(srt)
-  } else {
-    return(res)
-  }
-}
-
 #' GSEA Plot
 #'
 #' This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
@@ -496,9 +6,12 @@ RunGSEA <- function(
 #' @param srt A Seurat object containing the results of RunDEtest and RunGSEA.
 #' If specified, GSEA results will be extracted from the Seurat object automatically.
 #' If not specified, the \code{res} arguments must be provided.
-#' @param res Enrichment results generated by RunGSEA function. If provided, 'srt', 'test.use' and 'group_by' are ignored.
-#' @param plot_type The type of plot to generate. Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is "line".
-#' @param direction The direction of enrichment to include in the plot. Must be one of "pos", "neg", or "both". The default value is "both".
+#' @param res Enrichment results generated by RunGSEA function.
+#' If provided, 'srt', 'test.use' and 'group_by' are ignored.
+#' @param plot_type The type of plot to generate.
+#' Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is "line".
+#' @param direction The direction of enrichment to include in the plot.
+#' Must be one of "pos", "neg", or "both". The default value is "both".
 #' @param line_width The linewidth for the line plot.
 #' @param line_alpha The alpha value for the line plot.
 #' @param line_color The color for the line plot.
@@ -511,6 +24,8 @@ RunGSEA <- function(
 #' @param label.size The size of the labels.
 #'
 #' @seealso \code{\link{RunGSEA}}
+#'
+#' @export
 #'
 #' @examples
 #' data("pancreas_sub")
@@ -543,7 +58,7 @@ RunGSEA <- function(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   id_use = c("GO:0046903", "GO:0015031", "GO:0007600")
 #' ) %>%
 #'   panel_fix_overall(height = 6)
@@ -601,41 +116,31 @@ RunGSEA <- function(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   plot_type = "network"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   plot_type = "enrichmap"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   plot_type = "wordcloud"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   plot_type = "wordcloud",
 #'   word_type = "feature"
 #' )
-#'
-#' @importFrom ggplot2 ggplot aes theme theme_classic alpha element_blank element_rect margin geom_line geom_point geom_rect geom_linerange geom_hline geom_vline geom_segment annotate ggtitle labs xlab ylab scale_x_continuous scale_y_continuous scale_color_manual scale_alpha_manual guides guide_legend guide_none
-#' @importFrom ggrepel geom_text_repel
-#' @importFrom grDevices colorRamp
-#' @importFrom patchwork wrap_plots
-#' @importFrom dplyr case_when filter pull %>%
-#' @importFrom stats quantile
-#' @importFrom gtable gtable_add_rows gtable_add_grob
-#' @importFrom grid textGrob
-#' @export
 GSEAPlot <- function(
     srt,
     db = "GO_BP",
@@ -817,18 +322,18 @@ GSEAPlot <- function(
         df <- df[df[[metric]] < metric_value, , drop = FALSE]
         df <- df[order(df[[metric]]), , drop = FALSE]
         df_up <- df[df[["NES"]] > 0, , drop = FALSE]
-        ID_up <- df_up[head(order(df_up[[metric]]), topTerm), "ID"]
+        ID_up <- df_up[utils::head(order(df_up[[metric]]), topTerm), "ID"]
         df_down <- df[df[["NES"]] < 0, , drop = FALSE]
-        ID_down <- df_down[head(order(df_down[[metric]]), topTerm), "ID"]
+        ID_down <- df_down[utils::head(order(df_down[[metric]]), topTerm), "ID"]
         ids <- switch(direction,
-          "pos" = unique(c(ids, head(ID_up, topTerm))),
-          "neg" = unique(c(ids, head(ID_down, topTerm))),
+          "pos" = unique(c(ids, utils::head(ID_up, topTerm))),
+          "neg" = unique(c(ids, utils::head(ID_down, topTerm))),
           "both" = unique(c(
             ids,
-            head(
+            utils::head(
               c(
-                head(ID_up, ceiling(topTerm / 2)),
-                head(ID_down, ceiling(topTerm / 2))
+                utils::head(ID_up, ceiling(topTerm / 2)),
+                utils::head(ID_down, ceiling(topTerm / 2))
               ),
               topTerm
             )
@@ -961,7 +466,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_up <- geneSetID_up[
-          head(order(geneSetID_up[[metric]]), topTerm),
+          utils::head(order(geneSetID_up[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_down <- geneSetID_filter[
@@ -969,16 +474,16 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_down <- geneSetID_down[
-          head(order(geneSetID_down[[metric]]), topTerm),
+          utils::head(order(geneSetID_down[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_use <- switch(direction,
-          "pos" = unique(head(geneSetID_up, topTerm)),
-          "neg" = unique(head(geneSetID_down, topTerm)),
-          "both" = unique(head(
+          "pos" = unique(utils::head(geneSetID_up, topTerm)),
+          "neg" = unique(utils::head(geneSetID_down, topTerm)),
+          "both" = unique(utils::head(
             c(
-              head(geneSetID_up, ceiling(topTerm / 2)),
-              head(geneSetID_down, ceiling(topTerm / 2))
+              utils::head(geneSetID_up, ceiling(topTerm / 2)),
+              utils::head(geneSetID_down, ceiling(topTerm / 2))
             ),
             topTerm
           ))
@@ -1007,7 +512,7 @@ GSEAPlot <- function(
       }
       stat <- res_enrich[geneSetID_use, c("Description", "NES", metric)]
       rownames(stat) <- stat[, "Description"]
-      stat$p.sig <- case_when(
+      stat$p.sig <- dplyr::case_when(
         stat[[metric]] > 0.05 ~ "ns  ",
         stat[[metric]] <= 0.05 & stat[[metric]] > 0.01 ~ "*   ",
         stat[[metric]] <= 0.01 & stat[[metric]] > 0.001 ~ "**  ",
@@ -1204,7 +709,7 @@ GSEAPlot <- function(
               mapping = aes(y = runningScore),
               color = "black"
             ) +
-            geom_text_repel(
+            ggrepel::geom_text_repel(
               data = df_gene,
               mapping = aes(y = runningScore, label = GeneName),
               min.segment.length = 0,
@@ -1221,8 +726,8 @@ GSEAPlot <- function(
 
         x <- p$data$x
         y <- y_raw <- p$data$geneList
-        y[y > quantile(y_raw, 0.98)] <- quantile(y_raw, 0.98)
-        y[y < quantile(y_raw, 0.02)] <- quantile(y_raw, 0.02)
+        y[y > stats::quantile(y_raw, 0.98)] <- stats::quantile(y_raw, 0.98)
+        y[y < stats::quantile(y_raw, 0.02)] <- stats::quantile(y_raw, 0.02)
         col <- rep("white", length(y))
         y_pos <- which(y > 0)
         if (length(y_pos) > 0) {
@@ -1235,7 +740,9 @@ GSEAPlot <- function(
             ),
             include.lowest = TRUE
           )
-          col[y_pos] <- colorRampPalette(c("#F5DCDC", "#C40003"))(100)[y_pos_i]
+          col[y_pos] <- grDevices::colorRampPalette(
+            c("#F5DCDC", "#C40003")
+          )(100)[y_pos_i]
         }
 
         y_neg <- which(y < 0)
@@ -1249,7 +756,9 @@ GSEAPlot <- function(
             ),
             include.lowest = TRUE
           )
-          col[y_neg] <- colorRampPalette(c("#1D008F", "#DDDCF5"))(100)[y_neg_i]
+          col[y_neg] <- grDevices::colorRampPalette(
+            c("#1D008F", "#DDDCF5")
+          )(100)[y_neg_i]
         }
 
         ymin <- min(p2$data$ymin, na.rm = TRUE)
@@ -1280,7 +789,7 @@ GSEAPlot <- function(
       df2 <- p$data
       df2$y <- p$data$geneList[df2$x]
       min_y <- df2$y[which.min(abs(df2$y))]
-      corss_x <- median(df2$x[df2$y == min_y])
+      corss_x <- stats::median(df2$x[df2$y == min_y])
       p3 <- p +
         geom_segment(
           data = df2,
@@ -1417,9 +926,9 @@ GSEAPlot <- function(
         if (length(geneSetID_use) > 1) {
           p_out <- add_grob(p_out, legend, legend.position)
         }
-        lab <- textGrob(label = nm, rot = -90, hjust = 0.5)
+        lab <- grid::textGrob(label = nm, rot = -90, hjust = 0.5)
         p_out <- add_grob(p_out, lab, "right", clip = "off")
-        p_out <- wrap_plots(p_out)
+        p_out <- patchwork::wrap_plots(p_out)
         plist[[nm]] <- p_out
       }
     }
@@ -1441,7 +950,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_up <- geneSetID_up[
-          head(order(geneSetID_up[[metric]]), topTerm),
+          utils::head(order(geneSetID_up[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_down <- geneSetID_filter[
@@ -1449,16 +958,16 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_down <- geneSetID_down[
-          head(order(geneSetID_down[[metric]]), topTerm),
+          utils::head(order(geneSetID_down[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_use <- switch(direction,
-          "pos" = unique(head(geneSetID_up, topTerm)),
-          "neg" = unique(head(geneSetID_down, topTerm)),
-          "both" = unique(head(
+          "pos" = unique(utils::head(geneSetID_up, topTerm)),
+          "neg" = unique(utils::head(geneSetID_down, topTerm)),
+          "both" = unique(utils::head(
             c(
-              head(geneSetID_up, ceiling(topTerm / 2)),
-              head(geneSetID_down, ceiling(topTerm / 2))
+              utils::head(geneSetID_up, ceiling(topTerm / 2)),
+              utils::head(geneSetID_down, ceiling(topTerm / 2))
             ),
             topTerm
           ))
@@ -1566,7 +1075,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_up <- geneSetID_up[
-          head(order(geneSetID_up[[metric]]), topTerm),
+          utils::head(order(geneSetID_up[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_down <- geneSetID_filter[
@@ -1574,16 +1083,16 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_down <- geneSetID_down[
-          head(order(geneSetID_down[[metric]]), topTerm),
+          utils::head(order(geneSetID_down[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_use <- switch(direction,
-          "pos" = unique(head(geneSetID_up, topTerm)),
-          "neg" = unique(head(geneSetID_down, topTerm)),
-          "both" = unique(head(
+          "pos" = unique(utils::head(geneSetID_up, topTerm)),
+          "neg" = unique(utils::head(geneSetID_down, topTerm)),
+          "both" = unique(utils::head(
             c(
-              head(geneSetID_up, ceiling(topTerm / 2)),
-              head(geneSetID_down, ceiling(topTerm / 2))
+              utils::head(geneSetID_up, ceiling(topTerm / 2)),
+              utils::head(geneSetID_down, ceiling(topTerm / 2))
             ),
             topTerm
           ))
@@ -1603,7 +1112,7 @@ GSEAPlot <- function(
         next
       }
       df <- res_enrich[geneSetID_use, , drop = FALSE]
-      df$p.sig <- case_when(
+      df$p.sig <- dplyr::case_when(
         df[[metric]] > 0.05 ~ "ns  ",
         df[[metric]] <= 0.05 & df[[metric]] > 0.01 ~ "*   ",
         df[[metric]] <= 0.01 & df[[metric]] > 0.001 ~ "**  ",
@@ -1648,21 +1157,21 @@ GSEAPlot <- function(
       edges <- as.data.frame(df_unnest[, c("Description", "geneID")])
       colnames(edges) <- c("from", "to")
       edges[["weight"]] <- 1
-      graph <- graph_from_data_frame(
+      graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,
         directed = FALSE
       )
       if (network_layout %in% c("circle", "tree", "grid")) {
         layout <- switch(network_layout,
-          "circle" = layout_in_circle(graph),
-          "tree" = layout_as_tree(graph),
-          "grid" = layout_on_grid(graph)
+          "circle" = igraph::layout_in_circle(graph),
+          "tree" = igraph::layout_as_tree(graph),
+          "grid" = igraph::layout_on_grid(graph)
         )
       } else {
         layout <- do.call(paste0("layout_with_", network_layout), list(graph))
       }
-      df_graph <- as_data_frame(graph, what = "both")
+      df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices
       if (isTRUE(network_layoutadjust)) {
@@ -1692,7 +1201,7 @@ GSEAPlot <- function(
         palcolor = palcolor
       )
       df_edges[["color"]] <- colors[df_edges$from]
-      node_colors <- aggregate(
+      node_colors <- stats::aggregate(
         df_unnest$Description,
         by = list(df_unnest$geneID),
         FUN = function(x) {
@@ -1701,7 +1210,7 @@ GSEAPlot <- function(
       )
       colors <- c(colors, stats::setNames(node_colors[, 2], node_colors[, 1]))
       label_colors <- ifelse(
-        colSums(col2rgb(colors)) > 255 * 2,
+        Matrix::colSums(grDevices::col2rgb(colors)) > 255 * 2,
         "black",
         "white"
       )
@@ -1721,13 +1230,13 @@ GSEAPlot <- function(
         data_text$colour <- "black"
         data_text$alpha <- 1
         data_text$size <- 11 / .pt
-        grobTree(
+        grid::grobTree(
           draw_key_point(data, list(color = "white", shape = 21)),
           ggrepel:::shadowtextGrob(
             label = data_text$label,
             bg.colour = "black",
             bg.r = 0.1,
-            gp = gpar(col = "white", fontface = "bold")
+            gp = grid::gpar(col = "white", fontface = "bold")
           )
         )
       }
@@ -1777,7 +1286,7 @@ GSEAPlot <- function(
           shape = 21,
           key_glyph = draw_key_cust
         ) +
-        geom_text_repel(
+        ggrepel::geom_text_repel(
           data = df_nodes[df_nodes$class == "term", ],
           aes(x = dim1, y = dim2, label = label),
           fontface = "bold",
@@ -1827,7 +1336,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_up <- geneSetID_up[
-          head(order(geneSetID_up[[metric]]), topTerm),
+          utils::head(order(geneSetID_up[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_down <- geneSetID_filter[
@@ -1835,16 +1344,16 @@ GSEAPlot <- function(
           drop = FALSE
         ]
         geneSetID_down <- geneSetID_down[
-          head(order(geneSetID_down[[metric]]), topTerm),
+          utils::head(order(geneSetID_down[[metric]]), topTerm),
           "ID"
         ]
         geneSetID_use <- switch(direction,
-          "pos" = unique(head(geneSetID_up, topTerm)),
-          "neg" = unique(head(geneSetID_down, topTerm)),
-          "both" = unique(head(
+          "pos" = unique(utils::head(geneSetID_up, topTerm)),
+          "neg" = unique(utils::head(geneSetID_down, topTerm)),
+          "both" = unique(utils::head(
             c(
-              head(geneSetID_up, ceiling(topTerm / 2)),
-              head(geneSetID_down, ceiling(topTerm / 2))
+              utils::head(geneSetID_up, ceiling(topTerm / 2)),
+              utils::head(geneSetID_down, ceiling(topTerm / 2))
             ),
             topTerm
           ))
@@ -1889,22 +1398,22 @@ GSEAPlot <- function(
         edges$to
       )
       edges <- edges[edges[["weight"]] > 0, , drop = FALSE]
-      graph <- graph_from_data_frame(
+      graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,
         directed = FALSE
       )
       if (enrichmap_layout %in% c("circle", "tree", "grid")) {
         layout <- switch(enrichmap_layout,
-          "circle" = layout_in_circle(graph),
-          "tree" = layout_as_tree(graph),
-          "grid" = layout_on_grid(graph)
+          "circle" = igraph::layout_in_circle(graph),
+          "tree" = igraph::layout_as_tree(graph),
+          "grid" = igraph::layout_on_grid(graph)
         )
       } else {
         layout <- do.call(paste0("layout_with_", enrichmap_layout), list(graph))
       }
       clusters <- do.call(paste0("cluster_", enrichmap_cluster), list(graph))
-      df_graph <- as_data_frame(graph, what = "both")
+      df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices
       df_nodes[["dim1"]] <- layout[, 1]
@@ -1916,7 +1425,7 @@ GSEAPlot <- function(
 
       if (isTRUE(enrichmap_show_keyword)) {
         df_keyword1 <- df_nodes %>%
-          mutate(
+          dplyr::mutate(
             keyword = strsplit(
               tolower(as.character(.data[["Description"]])),
               "\\s|\\n",
@@ -1924,23 +1433,23 @@ GSEAPlot <- function(
             )
           ) %>%
           unnest(cols = "keyword") %>%
-          group_by(.data[["keyword"]], Database, Groups, clusters) %>%
-          reframe(
+          dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) %>%
+          dplyr::reframe(
             keyword = capitalize(.data[["keyword"]]),
             score = sum(-(log10(.data[[metric]]))),
-            count = n(),
+            count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
             .groups = "keep"
           ) %>%
-          filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-          filter(nchar(.data[["keyword"]]) >= 1) %>%
-          filter(!tolower(.data[["keyword"]]) %in% tolower(words_excluded)) %>%
-          distinct() %>%
-          group_by(Database, Groups, clusters) %>%
-          arrange(desc(score)) %>%
-          slice_head(n = enrlichmap_nlabel) %>%
-          reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
+          dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
+          dplyr::filter(nchar(.data[["keyword"]]) >= 1) %>%
+          dplyr::filter(!tolower(.data[["keyword"]]) %in% tolower(words_excluded)) %>%
+          dplyr::distinct() %>%
+          dplyr::group_by(Database, Groups, clusters) %>%
+          dplyr::arrange(dplyr::desc(score)) %>%
+          dplyr::slice_head(n = enrlichmap_nlabel) %>%
+          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
         df_keyword1[["keyword"]] <- str_wrap(
@@ -1960,13 +1469,13 @@ GSEAPlot <- function(
           )
         }
         df_keyword1 <- df_nodes %>%
-          group_by(Database, Groups, clusters) %>%
-          arrange(desc(metric)) %>%
-          reframe(keyword = Description) %>%
-          distinct() %>%
-          group_by(Database, Groups, clusters) %>%
-          slice_head(n = enrlichmap_nlabel) %>%
-          reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) %>%
+          dplyr::group_by(Database, Groups, clusters) %>%
+          dplyr::arrange(dplyr::desc(metric)) %>%
+          dplyr::reframe(keyword = Description) %>%
+          dplyr::distinct() %>%
+          dplyr::group_by(Database, Groups, clusters) %>%
+          dplyr::slice_head(n = enrlichmap_nlabel) %>%
+          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
         df_keyword1[["label"]] <- paste0(
@@ -1977,22 +1486,22 @@ GSEAPlot <- function(
       }
 
       df_keyword2 <- df_nodes %>%
-        mutate(keyword = .data[["geneID"]]) %>%
+        dplyr::mutate(keyword = .data[["geneID"]]) %>%
         unnest(cols = "keyword") %>%
-        group_by(.data[["keyword"]], Database, Groups, clusters) %>%
-        reframe(
+        dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) %>%
+        dplyr::reframe(
           keyword = .data[["keyword"]],
           score = sum(-(log10(.data[[metric]]))),
-          count = n(),
+          count = dplyr::n(),
           Database = .data[["Database"]],
           Groups = .data[["Groups"]],
           .groups = "keep"
         ) %>%
-        distinct() %>%
-        group_by(Database, Groups, clusters) %>%
-        arrange(desc(score)) %>%
-        slice_head(n = enrlichmap_nlabel) %>%
-        reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
+        dplyr::distinct() %>%
+        dplyr::group_by(Database, Groups, clusters) %>%
+        dplyr::arrange(dplyr::desc(score)) %>%
+        dplyr::slice_head(n = enrlichmap_nlabel) %>%
+        dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
       df_keyword2[["keyword"]] <- str_wrap(
@@ -2038,13 +1547,13 @@ GSEAPlot <- function(
             label = clusters,
             description = if (enrichmap_label == "term") keyword1 else keyword2
           ),
-          expand = unit(3, "mm"),
+          expand = grid::unit(3, "mm"),
           alpha = 0.1,
           label.margin = margin(1, 1, 1, 1, "mm"),
           label.fontsize = enrichmap_labelsize * 2,
           label.fill = "grey95",
-          label.minwidth = unit(character_width, "in"),
-          label.buffer = unit(0, "mm"),
+          label.minwidth = grid::unit(character_width, "in"),
+          label.buffer = grid::unit(0, "mm"),
           con.size = 1,
           con.cap = 0
         )
@@ -2137,7 +1646,7 @@ GSEAPlot <- function(
   } else if (plot_type == "wordcloud") {
     # wordcloud -------------------------------------------------------------------------------------------------
     check_r("ggwordcloud")
-    check_r("jokergoo/simplifyEnrichment")
+    check_r("simplifyEnrichment")
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -2183,26 +1692,28 @@ GSEAPlot <- function(
             ]])
             if (nrow(df0 > 0)) {
               df_sub <- df0 %>%
-                reframe(
+                dplyr::reframe(
                   keyword = .data[["keyword"]],
                   score = -(log10(.data[["padj"]])),
                   count = .data[["n_term"]],
                   Database = df_sub[["Database"]][1],
                   Groups = df_sub[["Groups"]][1]
                 ) %>%
-                filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-                filter(nchar(.data[["keyword"]]) >= 1) %>%
-                filter(
+                dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
+                dplyr::filter(nchar(.data[["keyword"]]) >= 1) %>%
+                dplyr::filter(
                   !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
                 ) %>%
-                distinct() %>%
-                mutate(
+                dplyr::distinct() %>%
+                dplyr::mutate(
                   angle = 90 *
-                    sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
+                    sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
                 ) %>%
                 as.data.frame()
               df_sub <- df_sub[
-                head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
+                utils::head(
+                  order(df_sub[["score"]], decreasing = TRUE), topWord
+                ), ,
                 drop = FALSE
               ]
             } else {
@@ -2210,35 +1721,37 @@ GSEAPlot <- function(
             }
           } else {
             df_sub <- df_sub %>%
-              mutate(
+              dplyr::mutate(
                 keyword = strsplit(
                   tolower(as.character(.data[["Description"]])),
                   " "
                 )
               ) %>%
               unnest(cols = "keyword") %>%
-              group_by(.data[["keyword"]], Database, Groups) %>%
-              reframe(
+              dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
+              dplyr::reframe(
                 keyword = .data[["keyword"]],
                 score = sum(-(log10(.data[[metric]]))),
-                count = n(),
+                count = dplyr::n(),
                 Database = .data[["Database"]],
                 Groups = .data[["Groups"]],
                 .groups = "keep"
               ) %>%
-              filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-              filter(nchar(.data[["keyword"]]) >= 1) %>%
-              filter(
+              dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
+              dplyr::filter(nchar(.data[["keyword"]]) >= 1) %>%
+              dplyr::filter(
                 !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
               ) %>%
-              distinct() %>%
-              mutate(
+              dplyr::distinct() %>%
+              dplyr::mutate(
                 angle = 90 *
-                  sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
+                  sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
               ) %>%
               as.data.frame()
             df_sub <- df_sub[
-              head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
+              utils::head(
+                order(df_sub[["score"]], decreasing = TRUE), topWord
+              ), ,
               drop = FALSE
             ]
           }
@@ -2247,26 +1760,26 @@ GSEAPlot <- function(
         df <- do.call(rbind, df_groups)
       } else {
         df <- df %>%
-          mutate(
+          dplyr::mutate(
             keyword = strsplit(as.character(.data[["core_enrichment"]]), "/")
           ) %>%
           unnest(cols = "keyword") %>%
-          group_by(.data[["keyword"]], Database, Groups) %>%
-          reframe(
+          dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
+          dplyr::reframe(
             keyword = .data[["keyword"]],
             score = sum(-(log10(.data[[metric]]))),
-            count = n(),
+            count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
             .groups = "keep"
           ) %>%
-          distinct() %>%
-          mutate(
-            angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
+          dplyr::distinct() %>%
+          dplyr::mutate(
+            angle = 90 * sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
           ) %>%
           as.data.frame()
         df <- df[
-          head(order(df[["score"]], decreasing = TRUE), topWord), ,
+          utils::head(order(df[["score"]], decreasing = TRUE), topWord), ,
           drop = FALSE
         ]
       }
@@ -2279,7 +1792,7 @@ GSEAPlot <- function(
       )
       colors_value <- seq(
         min(df[["score"]], na.rm = TRUE),
-        quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001,
+        stats::quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001,
         length.out = 100
       )
       p <- ggplot(
@@ -2337,7 +1850,7 @@ GSEAPlot <- function(
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(plotlist = plist, nrow = nrow, ncol = ncol)
+      plot <- patchwork::wrap_plots(plotlist = plist, nrow = nrow, ncol = ncol)
     } else {
       plot <- plist[[1]]
     }

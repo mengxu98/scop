@@ -24,7 +24,7 @@
 #'       size = 1000
 #'     )
 #'   )
-#'   pancreas_sub <- pancreas_sub[rowSums(
+#'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
 #'     pancreas_sub@assays$RNA@counts
 #'   ) > 0, ]
 #'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
@@ -47,7 +47,7 @@
 #'   pancreas_sub[["PCA"]] <- pancreas_sub[["X_pca"]]
 #'   pancreas_sub[["UMAP"]] <- pancreas_sub[["X_umap"]]
 #'   pancreas_sub[["X_umap"]] <- pancreas_sub[["X_pca"]] <- NULL
-#'   VariableFeatures(pancreas_sub) <- rownames(
+#'   SeuratObject::VariableFeatures(pancreas_sub) <- rownames(
 #'     pancreas_sub[["RNA"]]
 #'   )[which(
 #'     pancreas_sub[["RNA"]]@features$highly_variable_genes == "True"
@@ -84,7 +84,7 @@ NULL
 #'     )
 #'   )
 #'   panc8_sub <- subset(panc8, cells = cells_sub)
-#'   panc8_sub <- panc8_sub[rowSums(
+#'   panc8_sub <- panc8_sub[Matrix::rowSums(
 #'     panc8_sub@assays$RNA@counts
 #'   ) > 0, ]
 #'   panc8_sub <- panc8_sub[toupper(
@@ -124,7 +124,7 @@ NULL
 #'     )
 #'   )
 #'   ifnb_sub <- subset(ifnb, cells = cells_sub)
-#'   ifnb_sub <- ifnb_sub[rowSums(
+#'   ifnb_sub <- ifnb_sub[Matrix::rowSums(
 #'     ifnb_sub@assays$RNA@counts
 #'   ) > 0, ]
 #'   ifnb_sub <- UpdateSeuratObject(ifnb_sub)

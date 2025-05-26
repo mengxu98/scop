@@ -186,7 +186,7 @@ CellScoring <- function(
       )]
       TERM2NAME_tmp <- db_list[[species]][[single_db]][["TERM2NAME"]]
       dup <- duplicated(TERM2GENE_tmp)
-      na <- rowSums(is.na(TERM2GENE_tmp)) > 0
+      na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
       TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
       TERM2NAME_tmp <- TERM2NAME_tmp[
         TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"],
@@ -223,8 +223,8 @@ CellScoring <- function(
   }
   expressed <- names(
     which(
-      rowSums(
-        Seurat::GetAssayData(
+      Matrix::rowSums(
+        SeuratObject::GetAssayData(
           srt,
           layer = layer,
           assay = assay
@@ -312,7 +312,7 @@ CellScoring <- function(
       check_r("AUCell")
       CellRank <- AUCell::AUCell_buildRankings(
         Matrix::as.matrix(
-          Seurat::GetAssayData(
+          SeuratObject::GetAssayData(
             srt_sp,
             layer = layer,
             assay = assay
@@ -523,17 +523,17 @@ AddModuleScore2 <- function(
     ))
   }
   pool <- pool %||% rownames(x = object)
-  data.avg <- Matrix::rowMeans(
+  data_avg <- Matrix::rowMeans(
     x = assay.data[pool, , drop = FALSE]
   )
-  data.avg <- data.avg[order(data.avg)]
+  data_avg <- data_avg[order(data_avg)]
   data.cut <- cut_number(
-    x = data.avg + stats::rnorm(n = length(data.avg)) / 1e+30,
+    x = data_avg + stats::rnorm(n = length(data_avg)) / 1e+30,
     n = nbin,
     labels = FALSE,
     right = FALSE
   )
-  names(x = data.cut) <- names(x = data.avg)
+  names(x = data.cut) <- names(x = data_avg)
 
   scores <- bplapply(
     1:cluster.length,

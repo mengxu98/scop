@@ -8,23 +8,23 @@
 #' @param species_from Latin names for animals of the input geneID. e.g. "Homo_sapiens","Mus_musculus"
 #' @param species_to Latin names for animals of the output geneID. e.g. "Homo_sapiens","Mus_musculus"
 #' @param Ensembl_version Ensembl database version. If NULL, use the current release version.
-#' @param biomart The name of the BioMart database that you want to connect to. Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".
+#' @param biomart The name of the BioMart database that you want to connect to.
+#' Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".
 #' @param max_tries The maximum number of attempts to connect with the BioMart service.
 #' @param mirror Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.
 #'
-#' @importFrom reshape2 dcast melt
-#' @importFrom biomaRt listEnsemblArchives useMart listDatasets useDataset getBM listAttributes useEnsembl
-#'
 #' @return A list with the following elements:
 #'   \itemize{
-#'     \item{\code{geneID_res:}}{ A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'}
-#'     \item{\code{geneID_collapse:}}{ The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.}
-#'     \item{\code{geneID_expand:}}{ The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.}
-#'     \item{\code{Ensembl_version:}}{ Ensembl database version.}
-#'     \item{\code{Datasets:}}{ Datasets available in the selected BioMart database.}
-#'     \item{\code{Attributes:}}{ Attributes available in the selected BioMart database.}
-#'     \item{\code{geneID_unmapped:}}{ A character vector of gene IDs that are unmapped in the database.}
+#'     \item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'.
+#'     \item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.
+#'     \item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
+#'     \item \code{Ensembl_version:} Ensembl database version.
+#'     \item \code{Datasets:} Datasets available in the selected BioMart database.
+#'     \item \code{Attributes:} Attributes available in the selected BioMart database.
+#'     \item \code{geneID_unmapped:} A character vector of gene IDs that are unmapped in the database.
 #'   }
+#'
+#' @export
 #'
 #' @examples
 #' res <- GeneConvert(
@@ -37,7 +37,8 @@
 #' )
 #' str(res)
 #'
-#' # Convert the human genes to mouse homologs and replace the raw counts in a Seurat object.
+#' # Convert the human genes to mouse homologs,
+#' # and replace the raw counts in a Seurat object.
 #' data("pancreas_sub")
 #' counts <- pancreas_sub@assays$RNA@counts
 #' res <- GeneConvert(
@@ -55,21 +56,22 @@
 #' converted_genes_output <- length(unique(res$geneID_expand$symbol))
 #' cat("Number of input gene IDs:", input_genes, "\n")
 #' cat("Number of gene IDs mapped in the database:", db_genes, "\n")
-#' cat("Number of input gene IDs that were successfully converted:", converted_genes_input, "\n")
+#' cat(
+#'   "Number of input gene IDs that were successfully converted:",
+#'   converted_genes_input, "\n"
+#' )
 #' cat("Number of converted gene IDs:", converted_genes_output, "\n")
 #'
-#' homologs_counts <- aggregate(
+#' homologs_counts <- stats::aggregate(
 #'   x = counts[res$geneID_expand[, "from_geneID"], ],
 #'   by = list(res$geneID_expand[, "symbol"]), FUN = sum
 #' )
 #' rownames(homologs_counts) <- homologs_counts[, 1]
-#' homologs_counts <- as(
+#' homologs_counts <- methods::as(
 #'   Matrix::as.matrix(homologs_counts[, -1]),
 #'   "dgCMatrix"
 #' )
 #' homologs_counts
-#'
-#' @export
 GeneConvert <- function(
     geneID,
     geneID_from_IDtype = "symbol",
@@ -170,7 +172,7 @@ GeneConvert <- function(
     message("Connect to the Ensembl archives...")
     archives <- try_get(
       expr = {
-        listEnsemblArchives()
+        biomaRt::listEnsemblArchives()
       },
       max_tries = max_tries,
       error_message = "Get errors when connecting with EnsemblArchives..."
@@ -208,9 +210,9 @@ GeneConvert <- function(
     mart <- try_get(
       expr = {
         if (!is.null(mirror)) {
-          useEnsembl(biomart = "ensembl", mirror = mirror)
+          biomaRt::useEnsembl(biomart = "ensembl", mirror = mirror)
         } else {
-          useMart(biomart = "ensembl", host = url)
+          biomaRt::useMart(biomart = "ensembl", host = url)
         }
       },
       max_tries = max_tries,
@@ -241,7 +243,7 @@ GeneConvert <- function(
     if (length(biomart) == 1) {
       mart <- try_get(
         expr = {
-          useMart(biomart = biomart, host = url[biomart])
+          biomaRt::useMart(biomart = biomart, host = url[biomart])
         },
         max_tries = max_tries,
         error_message = paste0(
@@ -255,7 +257,10 @@ GeneConvert <- function(
       stop("Supports conversion within one mart only.")
       mart_from <- try_get(
         expr = {
-          useMart(biomart = biomart[1], host = url[biomart[1]])
+          biomaRt::useMart(
+            biomart = biomart[1],
+            host = url[biomart[1]]
+          )
         },
         max_tries = max_tries,
         error_message = paste0(
@@ -266,7 +271,10 @@ GeneConvert <- function(
       )
       mart_to <- try_get(
         expr = {
-          useMart(biomart = biomart[2], host = url[biomart[2]])
+          biomaRt::useMart(
+            biomart = biomart[2],
+            host = url[biomart[2]]
+          )
         },
         max_tries = max_tries,
         error_message = paste0(
@@ -281,7 +289,7 @@ GeneConvert <- function(
   message("Searching the dataset ", species_from_simp, " ...")
   Datasets <- try_get(
     expr = {
-      listDatasets(mart_from)
+      biomaRt::listDatasets(mart_from)
     },
     max_tries = max_tries,
     error_message = paste0(
@@ -290,7 +298,10 @@ GeneConvert <- function(
       ")"
     )
   )
-  dataset <- searchDatasets(Datasets, pattern = species_from_simp)[["dataset"]][
+  dataset <- searchDatasets(
+    Datasets,
+    pattern = species_from_simp
+  )[["dataset"]][
     1
   ]
   if (is.null(dataset)) {
@@ -317,7 +328,10 @@ GeneConvert <- function(
   message("Connecting to the dataset ", dataset, " ...")
   mart1 <- try_get(
     expr = {
-      useDataset(dataset = dataset, mart = mart_from)
+      biomaRt::useDataset(
+        dataset = dataset,
+        mart = mart_from
+      )
     },
     max_tries = max_tries,
     error_message = paste0(
@@ -334,7 +348,7 @@ GeneConvert <- function(
     message("Searching the dataset ", species_to_simp, " ...")
     Datasets2 <- try_get(
       expr = {
-        listDatasets(mart_to)
+        biomaRt::listDatasets(mart_to)
       },
       max_tries = max_tries,
       error_message = paste0(
@@ -343,7 +357,10 @@ GeneConvert <- function(
         ")"
       )
     )
-    dataset2 <- searchDatasets(Datasets2, pattern = species_to_simp)[[
+    dataset2 <- searchDatasets(
+      Datasets2,
+      pattern = species_to_simp
+    )[[
       "dataset"
     ]][1]
     if (is.null(dataset2)) {
@@ -357,20 +374,25 @@ GeneConvert <- function(
         ),
         immediate. = TRUE
       )
-      return(list(
-        geneID_res = NULL,
-        geneID_collapse = NULL,
-        geneID_expand = NULL,
-        Ensembl_version = version,
-        Datasets = list(Datasets, Datasets2),
-        Attributes = NULL
-      ))
+      return(
+        list(
+          geneID_res = NULL,
+          geneID_collapse = NULL,
+          geneID_expand = NULL,
+          Ensembl_version = version,
+          Datasets = list(Datasets, Datasets2),
+          Attributes = NULL
+        )
+      )
     }
 
     message("Connecting to the dataset ", dataset2, " ...")
     mart2 <- try_get(
       expr = {
-        useDataset(dataset = dataset2, mart = mart_to)
+        biomaRt::useDataset(
+          dataset = dataset2,
+          mart = mart_to
+        )
       },
       max_tries = max_tries,
       error_message = paste0(
@@ -381,7 +403,7 @@ GeneConvert <- function(
     )
   }
 
-  Attributes <- listAttributes(mart1)
+  Attributes <- biomaRt::listAttributes(mart1)
   from_IDtype <- from_IDtype[from_IDtype %in% Attributes[, "name"]]
   geneID_res_list <- list()
   total <- length(geneID)
@@ -405,14 +427,16 @@ GeneConvert <- function(
         ". Please check the 'Attributes' in the result.",
         immediate. = TRUE
       )
-      return(list(
-        geneID_res = NULL,
-        geneID_collapse = NULL,
-        geneID_expand = NULL,
-        Ensembl_version = version,
-        Datasets = Datasets,
-        Attributes = Attributes
-      ))
+      return(
+        list(
+          geneID_res = NULL,
+          geneID_collapse = NULL,
+          geneID_expand = NULL,
+          Ensembl_version = version,
+          Datasets = Datasets,
+          Attributes = Attributes
+        )
+      )
     }
   }
 
@@ -422,7 +446,7 @@ GeneConvert <- function(
       if (length(geneID) > 0) {
         geneID_res1 <- try_get(
           expr = {
-            getBM(
+            biomaRt::getBM(
               mart = mart1,
               attributes = c(from_attr, "ensembl_gene_id"),
               filters = from_attr,
@@ -451,7 +475,7 @@ GeneConvert <- function(
         if (all(geneID_to_IDtype %in% c("symbol", "ensembl_id"))) {
           geneID_res2 <- try_get(
             expr = {
-              getBM(
+              biomaRt::getBM(
                 mart = mart1,
                 attributes = unique(c("ensembl_gene_id", to_attr)),
                 filters = "ensembl_gene_id",
@@ -475,13 +499,18 @@ GeneConvert <- function(
             "ensembl_gene_id"
           ]
           geneID_res2 <- geneID_res2[, c("ensembl_gene_id_tmp", to_attr)]
-          geneID_res2 <- unique(melt(
-            geneID_res2,
-            id.vars = "ensembl_gene_id_tmp",
-            variable.name = "to_IDtype",
-            value.name = "to_geneID"
-          ))
-          geneID_res2$to_IDtype <- stats::setNames(names(to_attr), nm = to_attr)[
+          geneID_res2 <- unique(
+            reshape2::melt(
+              geneID_res2,
+              id.vars = "ensembl_gene_id_tmp",
+              variable.name = "to_IDtype",
+              value.name = "to_geneID"
+            )
+          )
+          geneID_res2$to_IDtype <- stats::setNames(
+            names(to_attr),
+            nm = to_attr
+          )[
             geneID_res2$to_IDtype
           ]
           geneID_res_merge <- merge(
@@ -497,7 +526,7 @@ GeneConvert <- function(
           )
           geneID_res2 <- try_get(
             expr = {
-              getBM(
+              biomaRt::getBM(
                 mart = mart1,
                 attributes = c("ensembl_gene_id", homolog_ensembl_gene),
                 filters = "ensembl_gene_id",
@@ -526,7 +555,7 @@ GeneConvert <- function(
 
           geneID_res3 <- try_get(
             expr = {
-              getBM(
+              biomaRt::getBM(
                 mart = mart2,
                 attributes = unique(c("ensembl_gene_id", to_attr)),
                 filters = "ensembl_gene_id",
@@ -553,14 +582,19 @@ GeneConvert <- function(
             "ensembl_gene_id"
           ]
           geneID_res3 <- geneID_res3[, c("ensembl_gene_id_tmp2", to_attr)]
-          geneID_res3 <- unique(melt(
-            geneID_res3,
-            id.vars = "ensembl_gene_id_tmp2",
-            variable.name = "to_IDtype",
-            value.name = "to_geneID"
-          ))
+          geneID_res3 <- unique(
+            reshape2::melt(
+              geneID_res3,
+              id.vars = "ensembl_gene_id_tmp2",
+              variable.name = "to_IDtype",
+              value.name = "to_geneID"
+            )
+          )
           colnames(geneID_res3)[1] <- homolog_ensembl_gene
-          geneID_res3$to_IDtype <- stats::setNames(names(to_attr), nm = to_attr)[
+          geneID_res3$to_IDtype <- stats::setNames(
+            names(to_attr),
+            nm = to_attr
+          )[
             geneID_res3$to_IDtype
           ]
           geneID_res_merge <- Reduce(
@@ -585,9 +619,11 @@ GeneConvert <- function(
       if (length(geneID) > 0) {
         geneID_res1 <- try_get(
           expr = {
-            getBM(
+            biomaRt::getBM(
               mart = mart1,
-              attributes = unique(c("ensembl_gene_id", from_attr, to_attr)),
+              attributes = unique(
+                c("ensembl_gene_id", from_attr, to_attr)
+              ),
               filters = from_attr,
               values = list(geneID)
             )
@@ -619,13 +655,18 @@ GeneConvert <- function(
           "ensembl_gene_id_tmp",
           to_attr
         )])
-        geneID_res1_to <- unique(melt(
-          geneID_res1_to,
-          id.vars = "ensembl_gene_id_tmp",
-          variable.name = "to_IDtype",
-          value.name = "to_geneID"
-        ))
-        geneID_res1_to$to_IDtype <- stats::setNames(names(to_attr), nm = to_attr)[
+        geneID_res1_to <- unique(
+          reshape2::melt(
+            geneID_res1_to,
+            id.vars = "ensembl_gene_id_tmp",
+            variable.name = "to_IDtype",
+            value.name = "to_geneID"
+          )
+        )
+        geneID_res1_to$to_IDtype <- stats::setNames(
+          names(to_attr),
+          nm = to_attr
+        )[
           geneID_res1_to$to_IDtype
         ]
 
@@ -702,7 +743,7 @@ GeneConvert <- function(
     sapply(geneID_collapse$to_geneID, length) > 0, ,
     drop = FALSE
   ]
-  geneID_collapse <- dcast(
+  geneID_collapse <- reshape2::dcast(
     geneID_collapse,
     formula = from_geneID ~ to_IDtype,
     value.var = "to_geneID"
@@ -716,13 +757,15 @@ GeneConvert <- function(
     keep_empty = FALSE
   )
 
-  return(list(
-    geneID_res = geneID_res,
-    geneID_collapse = geneID_collapse,
-    geneID_expand = geneID_expand,
-    Ensembl_version = version,
-    Datasets = Datasets,
-    Attributes = Attributes,
-    geneID_unmapped = geneID
-  ))
+  return(
+    list(
+      geneID_res = geneID_res,
+      geneID_collapse = geneID_collapse,
+      geneID_expand = geneID_expand,
+      Ensembl_version = version,
+      Datasets = Datasets,
+      Attributes = Attributes,
+      geneID_unmapped = geneID
+    )
+  )
 }

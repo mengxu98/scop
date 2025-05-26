@@ -97,11 +97,25 @@ Generate a volcano plot based on differential expression analysis results.
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- RunDEtest(pancreas_sub, group_by = "CellType", only.pos = FALSE)
-VolcanoPlot(pancreas_sub, group_by = "CellType")
-VolcanoPlot(pancreas_sub, group_by = "CellType", DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05")
-VolcanoPlot(pancreas_sub, group_by = "CellType", x_metric = "avg_log2FC")
-
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType",
+  only.pos = FALSE
+)
+VolcanoPlot(
+  pancreas_sub,
+  group_by = "CellType"
+)
+VolcanoPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05"
+)
+VolcanoPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  x_metric = "avg_log2FC"
+)
 }
 \seealso{
 \code{\link{RunDEtest}}

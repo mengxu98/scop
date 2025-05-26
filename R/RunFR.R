@@ -23,16 +23,18 @@
 #' @rdname RunFR
 #'
 #' @examples
+#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunFR(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   reduction = "fr"
 #' )
+#' }
 RunFR <- function(object, ...) {
   UseMethod(generic = "RunFR", object = object)
 }
@@ -41,23 +43,22 @@ RunFR <- function(object, ...) {
 #' @method RunFR Seurat
 #' @export
 RunFR.Seurat <- function(
-  object,
-  reduction = NULL,
-  dims = NULL,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  graph = NULL,
-  neighbor = NULL,
-  k.param = 20,
-  ndim = 2,
-  niter = 500,
-  reduction.name = "FR",
-  reduction.key = "FR_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = NULL,
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    graph = NULL,
+    neighbor = NULL,
+    k.param = 20,
+    ndim = 2,
+    niter = 500,
+    reduction.name = "FR",
+    reduction.key = "FR_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (
     sum(c(
       is.null(x = dims),
@@ -96,7 +97,7 @@ RunFR.Seurat <- function(
   } else if (!is.null(x = features)) {
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::t(
-      Seurat::GetAssayData(
+      SeuratObject::GetAssayData(
         object = object,
         layer = layer,
         assay = assay
@@ -138,14 +139,13 @@ RunFR.Seurat <- function(
 #' @method RunFR default
 #' @export
 RunFR.default <- function(
-  object,
-  ndim = 2,
-  niter = 500,
-  reduction.key = "FR_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    ndim = 2,
+    niter = 500,
+    reduction.key = "FR_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }

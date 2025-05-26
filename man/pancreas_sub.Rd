@@ -30,7 +30,7 @@ if (interactive()) {
       size = 1000
     )
   )
-  pancreas_sub <- pancreas_sub[rowSums(
+  pancreas_sub <- pancreas_sub[Matrix::rowSums(
     pancreas_sub@assays$RNA@counts
   ) > 0, ]
   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
@@ -53,7 +53,7 @@ if (interactive()) {
   pancreas_sub[["PCA"]] <- pancreas_sub[["X_pca"]]
   pancreas_sub[["UMAP"]] <- pancreas_sub[["X_umap"]]
   pancreas_sub[["X_umap"]] <- pancreas_sub[["X_pca"]] <- NULL
-  VariableFeatures(pancreas_sub) <- rownames(
+  SeuratObject::VariableFeatures(pancreas_sub) <- rownames(
     pancreas_sub[["RNA"]]
   )[which(
     pancreas_sub[["RNA"]]@features$highly_variable_genes == "True"

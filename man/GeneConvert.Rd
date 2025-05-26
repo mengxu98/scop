@@ -29,7 +29,8 @@ GeneConvert(
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{biomart}{The name of the BioMart database that you want to connect to. Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
+\item{biomart}{The name of the BioMart database that you want to connect to.
+Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
 
@@ -38,13 +39,13 @@ GeneConvert(
 \value{
 A list with the following elements:
   \itemize{
-    \item{\code{geneID_res:}}{ A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'}
-    \item{\code{geneID_collapse:}}{ The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.}
-    \item{\code{geneID_expand:}}{ The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.}
-    \item{\code{Ensembl_version:}}{ Ensembl database version.}
-    \item{\code{Datasets:}}{ Datasets available in the selected BioMart database.}
-    \item{\code{Attributes:}}{ Attributes available in the selected BioMart database.}
-    \item{\code{geneID_unmapped:}}{ A character vector of gene IDs that are unmapped in the database.}
+    \item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'.
+    \item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.
+    \item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
+    \item \code{Ensembl_version:} Ensembl database version.
+    \item \code{Datasets:} Datasets available in the selected BioMart database.
+    \item \code{Attributes:} Attributes available in the selected BioMart database.
+    \item \code{geneID_unmapped:} A character vector of gene IDs that are unmapped in the database.
   }
 }
 \description{
@@ -61,7 +62,8 @@ res <- GeneConvert(
 )
 str(res)
 
-# Convert the human genes to mouse homologs and replace the raw counts in a Seurat object.
+# Convert the human genes to mouse homologs,
+# and replace the raw counts in a Seurat object.
 data("pancreas_sub")
 counts <- pancreas_sub@assays$RNA@counts
 res <- GeneConvert(
@@ -79,18 +81,20 @@ converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
 converted_genes_output <- length(unique(res$geneID_expand$symbol))
 cat("Number of input gene IDs:", input_genes, "\n")
 cat("Number of gene IDs mapped in the database:", db_genes, "\n")
-cat("Number of input gene IDs that were successfully converted:", converted_genes_input, "\n")
+cat(
+  "Number of input gene IDs that were successfully converted:",
+  converted_genes_input, "\n"
+)
 cat("Number of converted gene IDs:", converted_genes_output, "\n")
 
-homologs_counts <- aggregate(
+homologs_counts <- stats::aggregate(
   x = counts[res$geneID_expand[, "from_geneID"], ],
   by = list(res$geneID_expand[, "symbol"]), FUN = sum
 )
 rownames(homologs_counts) <- homologs_counts[, 1]
-homologs_counts <- as(
+homologs_counts <- methods::as(
   Matrix::as.matrix(homologs_counts[, -1]),
   "dgCMatrix"
 )
 homologs_counts
-
 }

@@ -39,9 +39,11 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{score_method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".}
 
-\item{layer}{A character vector specifying the layer in the Seurat object to use. Default is "counts".}
+\item{layer}{A character vector specifying the layer in the Seurat object to use.
+Default is "counts".}
 
-\item{assay}{A character vector specifying the assay in the Seurat object to use. Default is NULL.}
+\item{assay}{A character vector specifying the assay in the Seurat object to use.
+Default is NULL.}
 
 \item{min_expcells}{A numeric value specifying the minimum number of expected cells. Default is 20.}
 
@@ -106,7 +108,7 @@ ht1$plot
 pancreas_sub <- RunDynamicEnrichment(
   srt = pancreas_sub,
   lineages = "Lineage1",
-  score_method = "AUCell",
+  score_method = "UCell",
   db = "GO_BP",
   species = "Mus_musculus"
 )

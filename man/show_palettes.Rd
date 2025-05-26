@@ -30,15 +30,30 @@ show_palettes(
 This function displays color palettes using ggplot2.
 }
 \examples{
-show_palettes(palettes = list(c("red", "blue", "green"), c("yellow", "purple", "orange")))
+show_palettes(
+  palettes = list(
+    c("red", "blue", "green"),
+    c("yellow", "purple", "orange")
+  )
+)
 all_palettes <- show_palettes(return_palettes = TRUE)
 names(all_palettes)
 all_palettes[["simspec"]]
 show_palettes(index = 1:10)
-show_palettes(type = "discrete", index = 1:10)
-show_palettes(type = "continuous", index = 1:10)
-show_palettes(palette_names = c("Paired", "nejm", "simspec", "Spectral", "jet"), return_palettes = TRUE)
-
+show_palettes(
+  type = "discrete",
+  index = 1:10
+)
+show_palettes(
+  type = "continuous",
+  index = 1:10
+)
+show_palettes(
+  palette_names = c(
+    "Paired", "nejm", "simspec", "Spectral", "jet"
+  ),
+  return_palettes = TRUE
+)
 }
 \seealso{
 \code{\link{palette_scop}} \code{\link{palette_list}}

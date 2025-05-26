@@ -26,7 +26,7 @@
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunTriMap(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -72,7 +72,7 @@ RunTriMap.Seurat <- function(
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay
@@ -127,7 +127,6 @@ RunTriMap.Seurat <- function(
 
 #' @rdname RunTriMap
 #' @method RunTriMap default
-#' @importFrom reticulate import
 #' @export
 RunTriMap.default <- function(
   object,

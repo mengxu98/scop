@@ -762,37 +762,37 @@ col2hex <- function(cname) {
 #' @param .args A list of arguments.
 #' @param ... Other arguments passed to the function.
 #' @param .env Environment in which to evaluate the call. This will be most useful if .fn is a string, or the function has side-effects.
-#' @importFrom rlang caller_env is_null is_scalar_character is_character is_function set_names env env_get env_bind syms call2
+#'
 #' @export
 invoke_fun <- function(
     .fn,
     .args = list(),
     ...,
-    .env = caller_env()) {
+    .env = rlang::caller_env()) {
   args <- c(.args, list(...))
   .bury <- c(".fn", "")
-  if (is_null(.bury) || !length(args)) {
-    if (is_scalar_character(.fn)) {
-      .fn <- env_get(.env, .fn, inherit = TRUE)
+  if (rlang::is_null(.bury) || !length(args)) {
+    if (rlang::is_scalar_character(.fn)) {
+      .fn <- rlang::env_get(.env, .fn, inherit = TRUE)
     }
-    call <- call2(.fn, !!!args)
+    call <- rlang::call2(.fn, !!!args)
     return(.External2(rlang:::ffi_eval, call, .env))
   }
-  if (!is_character(.bury, 2L)) {
+  if (!rlang::is_character(.bury, 2L)) {
     rlang::abort("`.bury` must be a character vector of length 2")
   }
   arg_prefix <- .bury[[2]]
   fn_nm <- .bury[[1]]
   buried_nms <- paste0(arg_prefix, seq_along(args))
-  buried_args <- set_names(args, buried_nms)
-  .env <- env(.env, !!!buried_args)
-  args <- set_names(buried_nms, names(args))
-  args <- syms(args)
-  if (is_function(.fn)) {
-    env_bind(.env, `:=`(!!fn_nm, .fn))
+  buried_args <- rlang::set_names(args, buried_nms)
+  .env <- rlang::env(.env, !!!buried_args)
+  args <- rlang::set_names(buried_nms, names(args))
+  args <- rlang::syms(args)
+  if (rlang::is_function(.fn)) {
+    rlang::env_bind(.env, `:=`(!!fn_nm, .fn))
     .fn <- fn_nm
   }
-  call <- call2(.fn, !!!args)
+  call <- rlang::call2(.fn, !!!args)
   .External2(rlang:::ffi_eval, call, .env)
 }
 

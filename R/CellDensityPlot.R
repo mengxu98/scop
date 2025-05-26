@@ -156,7 +156,7 @@ CellDensityPlot <- function(
 
   if (length(features_gene) > 0) {
     dat_gene <- Matrix::t(
-      Seurat::GetAssayData(
+      SeuratObject::GetAssayData(
         srt,
         assay = assay,
         layer = layer
@@ -178,7 +178,7 @@ CellDensityPlot <- function(
   }
   if (length(features) > 50 && !isTRUE(force)) {
     warning("More than 50 features to be plotted", immediate. = TRUE)
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -260,7 +260,7 @@ CellDensityPlot <- function(
             ) |>
             dplyr::arrange_at(
               .vars = f,
-              .funs = if (decreasing) desc else list()
+              .funs = if (decreasing) dplyr::desc else list()
             ) |>
             dplyr::pull(g) |>
             as.character()

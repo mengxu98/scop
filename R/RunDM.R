@@ -16,28 +16,26 @@
 #' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
 #' @param ... Additional arguments to be passed to the \link[destiny]{DiffusionMap} function.
 #'
+#' @rdname RunDM
+#' @export
+#'
 #' @examples
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunDM(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   reduction = "dm"
 #' )
-#'
-#' @rdname RunDM
-#' @export
-#'
 RunDM <- function(object, ...) {
   UseMethod(generic = "RunDM", object = object)
 }
 
 #' @rdname RunDM
 #' @method RunDM Seurat
-#' @importFrom Seurat DefaultAssay GetAssayData Embeddings
 #' @export
 RunDM.Seurat <- function(
   object,
@@ -57,10 +55,10 @@ RunDM.Seurat <- function(
   ...
 ) {
   if (!is.null(x = features)) {
-    assay <- assay %||% DefaultAssay(object = object)
+    assay <- assay %||% SeuratObject::DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay
@@ -78,8 +76,8 @@ RunDM.Seurat <- function(
       )
     }
   } else if (!is.null(x = dims)) {
-    data.use <- Embeddings(object[[reduction]])[, dims]
-    assay <- DefaultAssay(object = object[[reduction]])
+    data.use <- SeuratObject::Embeddings(object[[reduction]])[, dims]
+    assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
     if (length(x = dims) < ndcs) {
       stop(
         "Please provide as many or more dims than ndcs: ",
@@ -113,7 +111,6 @@ RunDM.Seurat <- function(
 
 #' @rdname RunDM
 #' @method RunDM default
-#' @importFrom Seurat CreateDimReducObject
 #' @export
 RunDM.default <- function(
   object,
@@ -146,7 +143,7 @@ RunDM.default <- function(
   cell.embeddings <- dm.results@eigenvectors
   rownames(x = cell.embeddings) <- rownames(object)
   colnames(x = cell.embeddings) <- paste0(reduction.key, 1:ndcs)
-  reduction <- CreateDimReducObject(
+  reduction <- SeuratObject::CreateDimReducObject(
     embeddings = cell.embeddings,
     assay = assay,
     key = reduction.key,

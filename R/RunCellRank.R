@@ -113,7 +113,7 @@ RunCellRank <- function(
     if (is.null(srt)) {
       return(srt_out)
     } else {
-      return(SrtAppend(srt_raw = srt, srt_append = srt_out))
+      return(srt_append(srt_raw = srt, srt_append = srt_out))
     }
   } else {
     return(adata)

@@ -17,7 +17,8 @@ GetFeaturesData <- function(object, ...) {
 #' features <- GetFeaturesData(pancreas_sub)
 GetFeaturesData.Seurat <- function(
     object,
-    assay = NULL) {
+    assay = NULL,
+    ...) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- Seurat::GetAssay(
     object,
@@ -34,7 +35,8 @@ GetFeaturesData.Seurat <- function(
 #' assay_obj <- Seurat::GetAssay(pancreas_sub, "RNA")
 #' features <- GetFeaturesData(assay_obj)
 GetFeaturesData.Assay <- function(
-    object) {
+    object,
+    ...) {
   return(object@meta.features)
 }
 
@@ -46,7 +48,8 @@ GetFeaturesData.Assay <- function(
 #' assay_obj <- Seurat::GetAssay(pancreas_sub, "RNA")
 #' features <- GetFeaturesData(assay_obj)
 GetFeaturesData.Assay5 <- function(
-    object) {
+    object,
+    ...) {
   return(object@features@.Data)
 }
 

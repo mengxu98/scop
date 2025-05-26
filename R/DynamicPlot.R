@@ -41,6 +41,8 @@
 #'
 #' @seealso \code{\link{RunDynamicFeatures}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- RunSlingshot(
@@ -78,14 +80,6 @@
 #'   compare_lineages = FALSE,
 #'   compare_features = FALSE
 #' )
-#' @importFrom ggplot2 geom_line geom_point geom_ribbon geom_rug stat_density2d facet_grid expansion
-#' @importFrom reshape2 melt
-#' @importFrom patchwork wrap_plots
-#' @importFrom ggnewscale new_scale_fill new_scale_color
-#' @importFrom grDevices colorRampPalette
-#' @importFrom stats runif
-#' @importFrom reshape2 melt
-#' @export
 DynamicPlot <- function(
     srt,
     lineages,
@@ -114,6 +108,7 @@ DynamicPlot <- function(
     add_point = TRUE,
     pt.size = 1,
     point_palette = "Paired",
+    point_palcolor = NULL,
     add_rug = TRUE,
     flip = FALSE,
     reverse = FALSE,
@@ -150,7 +145,7 @@ DynamicPlot <- function(
     exp_name <- paste0(exp_method, "(", data_nm, ")")
   }
 
-  assay <- assay %||% DefaultAssay(srt)
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
   gene <- features[features %in% rownames(srt@assays[[assay]])]
   meta <- features[features %in% colnames(srt@meta.data)]
   features <- c(gene, meta)
@@ -260,7 +255,7 @@ DynamicPlot <- function(
 
   cell_order_list <- list()
   for (l in lineages) {
-    cell_metadata_sub <- na.omit(
+    cell_metadata_sub <- stats::na.omit(
       cell_metadata[, l, drop = FALSE]
     )
     cell_metadata_sub <- cell_metadata_sub[
@@ -274,8 +269,8 @@ DynamicPlot <- function(
   }
 
   df_list <- list()
-  Y_libsize <- colSums(
-    Seurat::GetAssayData(
+  Y_libsize <- Matrix::colSums(
+    SeuratObject::GetAssayData(
       srt,
       assay = assay,
       layer = "counts"
@@ -302,7 +297,7 @@ DynamicPlot <- function(
       }
       raw_matrix[, gene] <- raw_matrix[, gene, drop = FALSE] /
         libsize_use *
-        median(Y_libsize)
+        stats::median(Y_libsize)
     }
 
     if (is.function(exp_method)) {
@@ -367,7 +362,7 @@ DynamicPlot <- function(
     colnames(raw)[1] <- "Pseudotime"
     raw[["Cell"]] <- rownames(raw)
     raw[["Value"]] <- "raw"
-    raw <- melt(
+    raw <- reshape2::melt(
       raw,
       id.vars = c("Cell", "Pseudotime", "x_assign", "Value"),
       value.name = "exp",
@@ -381,21 +376,23 @@ DynamicPlot <- function(
     colnames(fitted)[1] <- "Pseudotime"
     fitted[["Cell"]] <- rownames(fitted)
     fitted[["Value"]] <- "fitted"
-    fitted <- melt(
+    fitted <- reshape2::melt(
       fitted,
       id.vars = c("Cell", "Pseudotime", "x_assign", "Value"),
       value.name = "exp",
       variable.name = "Features"
     )
 
-    upr <- as.data.frame(cbind(
-      cell_metadata[rownames(upr_matrix), c(l, "x_assign")],
-      upr_matrix
-    ))
+    upr <- as.data.frame(
+      cbind(
+        cell_metadata[rownames(upr_matrix), c(l, "x_assign")],
+        upr_matrix
+      )
+    )
     colnames(upr)[1] <- "Pseudotime"
     upr[["Cell"]] <- rownames(upr)
     upr[["Value"]] <- "upr"
-    upr <- melt(
+    upr <- reshape2::melt(
       upr,
       id.vars = c("Cell", "Pseudotime", "x_assign", "Value"),
       value.name = "exp",
@@ -409,7 +406,7 @@ DynamicPlot <- function(
     colnames(lwr)[1] <- "Pseudotime"
     lwr[["Cell"]] <- rownames(lwr)
     lwr[["Value"]] <- "lwr"
-    lwr <- melt(
+    lwr <- reshape2::melt(
       lwr,
       id.vars = c("Cell", "Pseudotime", "x_assign", "Value"),
       value.name = "exp",
@@ -536,8 +533,8 @@ DynamicPlot <- function(
                   order = 1
                 )
               ),
-              new_scale_color(),
-              new_scale_fill()
+              ggnewscale::new_scale_color(),
+              ggnewscale::new_scale_fill()
             )
           }
         } else {
@@ -550,16 +547,19 @@ DynamicPlot <- function(
             data = df_point,
             mapping = aes(x = .data[["x_assign"]]),
             alpha = 1,
-            length = unit(0.05, "npc"),
+            length = grid::unit(0.05, "npc"),
             show.legend = FALSE
           ))
         } else {
           rug <- list(
             geom_rug(
               data = df_point,
-              mapping = aes(x = .data[["x_assign"]], color = .data[[group.by]]),
+              mapping = aes(
+                x = .data[["x_assign"]],
+                color = .data[[group.by]]
+              ),
               alpha = 1,
-              length = unit(0.05, "npc"),
+              length = grid::unit(0.05, "npc"),
               show.legend = isTRUE(compare_features)
             ),
             scale_color_manual(
@@ -569,7 +569,7 @@ DynamicPlot <- function(
                 palcolor = point_palcolor
               )
             ),
-            new_scale_color()
+            ggnewscale::new_scale_color()
           )
         }
       } else {
@@ -605,7 +605,7 @@ DynamicPlot <- function(
               guide_legend()
             }
           ),
-          new_scale_fill()
+          ggnewscale::new_scale_fill()
         )
       } else {
         interval <- NULL
@@ -638,7 +638,7 @@ DynamicPlot <- function(
               "none"
             }
           ),
-          new_scale_color()
+          ggnewscale::new_scale_color()
         )
       } else {
         if (isTRUE(add_line)) {
@@ -669,7 +669,7 @@ DynamicPlot <- function(
                 "none"
               }
             ),
-            new_scale_color()
+            ggnewscale::new_scale_color()
           )
         } else {
           line <- NULL
@@ -693,7 +693,10 @@ DynamicPlot <- function(
           x = ifelse(x_order == "rank", "Pseudotime(rank)", "Pseudotime"),
           y = exp_name
         ) +
-        facet_grid(formula(formula), scales = "free") +
+        facet_grid(
+          stats::formula(formula),
+          scales = "free"
+        ) +
         do.call(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
@@ -717,7 +720,7 @@ DynamicPlot <- function(
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,
@@ -729,7 +732,7 @@ DynamicPlot <- function(
     if (legend.position != "none") {
       gtable <- as_grob(plot)
       gtable <- add_grob(gtable, legend, legend.position)
-      plot <- wrap_plots(gtable)
+      plot <- patchwork::wrap_plots(gtable)
     }
     return(plot)
   } else {

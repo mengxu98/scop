@@ -9,6 +9,7 @@
 #' @param assay A character string specifying the assay to be used. Default is NULL.
 #' @param layer A character string specifying the layer to be used. Default is "data".
 #' @param umap.method A character string specifying the UMAP method to be used. Options are "naive" and uwot". Default is "uwot".
+#' @param n_threads Num of threads used.
 #' @param reduction.model A DimReduc object containing a pre-trained UMAP model. Default is NULL.
 #' @param return.model A logical value indicating whether to return the UMAP model. Default is FALSE.
 #' @param n.neighbors An integer specifying the number of nearest neighbors to be used. Default is 30.
@@ -34,7 +35,7 @@
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunUMAP2(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -52,37 +53,36 @@ RunUMAP2 <- function(object, ...) {
 #' @method RunUMAP2 Seurat
 #' @export
 RunUMAP2.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  features = NULL,
-  neighbor = NULL,
-  graph = NULL,
-  assay = NULL,
-  layer = "data",
-  umap.method = "uwot",
-  reduction.model = NULL,
-  n_threads = NULL,
-  return.model = FALSE,
-  n.neighbors = 30L,
-  n.components = 2L,
-  metric = "cosine",
-  n.epochs = 200L,
-  spread = 1,
-  min.dist = 0.3,
-  set.op.mix.ratio = 1,
-  local.connectivity = 1L,
-  negative.sample.rate = 5L,
-  a = NULL,
-  b = NULL,
-  learning.rate = 1,
-  repulsion.strength = 1,
-  reduction.name = "umap",
-  reduction.key = "UMAP_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    neighbor = NULL,
+    graph = NULL,
+    assay = NULL,
+    layer = "data",
+    umap.method = "uwot",
+    reduction.model = NULL,
+    n_threads = NULL,
+    return.model = FALSE,
+    n.neighbors = 30L,
+    n.components = 2L,
+    metric = "cosine",
+    n.epochs = 200L,
+    spread = 1,
+    min.dist = 0.3,
+    set.op.mix.ratio = 1,
+    local.connectivity = 1L,
+    negative.sample.rate = 5L,
+    a = NULL,
+    b = NULL,
+    learning.rate = 1,
+    repulsion.strength = 1,
+    reduction.name = "umap",
+    reduction.key = "UMAP_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (
     sum(c(
       is.null(x = dims),
@@ -100,7 +100,7 @@ RunUMAP2.Seurat <- function(
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay
@@ -184,34 +184,31 @@ RunUMAP2.Seurat <- function(
 
 #' @rdname RunUMAP2
 #' @method RunUMAP2 default
-#' @importFrom SeuratObject Indices Distances as.sparse CreateDimReducObject Misc<-
-#' @importFrom Matrix sparseMatrix
 #' @export
 RunUMAP2.default <- function(
-  object,
-  assay = NULL,
-  umap.method = "uwot",
-  reduction.model = NULL,
-  n_threads = NULL,
-  return.model = FALSE,
-  n.neighbors = 30L,
-  n.components = 2L,
-  metric = "cosine",
-  n.epochs = 200L,
-  spread = 1,
-  min.dist = 0.3,
-  set.op.mix.ratio = 1,
-  local.connectivity = 1L,
-  negative.sample.rate = 5L,
-  a = NULL,
-  b = NULL,
-  learning.rate = 1,
-  repulsion.strength = 1,
-  reduction.key = "UMAP_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    assay = NULL,
+    umap.method = "uwot",
+    reduction.model = NULL,
+    n_threads = NULL,
+    return.model = FALSE,
+    n.neighbors = 30L,
+    n.components = 2L,
+    metric = "cosine",
+    n.epochs = 200L,
+    spread = 1,
+    min.dist = 0.3,
+    set.op.mix.ratio = 1,
+    local.connectivity = 1L,
+    negative.sample.rate = 5L,
+    a = NULL,
+    b = NULL,
+    learning.rate = 1,
+    repulsion.strength = 1,
+    reduction.key = "UMAP_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }
@@ -233,7 +230,7 @@ RunUMAP2.default <- function(
         call. = FALSE
       )
     }
-    model <- Seurat::Misc(object = reduction.model, slot = "model")
+    model <- SeuratObject::Misc(object = reduction.model, slot = "model")
     if (length(x = model) == 0) {
       stop(
         "The provided reduction.model does not have a model stored.",
@@ -253,7 +250,10 @@ RunUMAP2.default <- function(
   negative.sample.rate <- as.integer(negative.sample.rate)
 
   if (inherits(x = object, what = "Neighbor")) {
-    object <- list(idx = Indices(object), dist = Distances(object))
+    object <- list(
+      idx = SeuratObject::Indices(object),
+      dist = SeuratObject::Distances(object)
+    )
   }
 
   if (umap.method == "naive") {
@@ -292,14 +292,14 @@ RunUMAP2.default <- function(
       embeddings <- out$layout
       rownames(x = embeddings) <- attr(object, "Labels")
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
         global = TRUE
       )
       if (return.model) {
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
@@ -316,20 +316,20 @@ RunUMAP2.default <- function(
       embeddings <- out$layout
       rownames(x = embeddings) <- rownames(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
         global = TRUE
       )
       if (return.model) {
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
       if (!inherits(object, "dgCMatrix")) {
-        object <- as.sparse(object[1:nrow(object), ])
+        object <- SeuratObject::as.sparse(object[1:nrow(object), ])
       }
       diag(object) <- 0
       if (ncol(object) > 10000) {
@@ -368,7 +368,7 @@ RunUMAP2.default <- function(
       embeddings <- umap:::center.embedding(embeddings)
       rownames(x = embeddings) <- rownames(x = object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -390,14 +390,14 @@ RunUMAP2.default <- function(
       embeddings <- out$layout
       rownames(x = embeddings) <- rownames(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
         global = TRUE
       )
       if (return.model) {
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
@@ -426,7 +426,7 @@ RunUMAP2.default <- function(
       )
       rownames(x = embeddings) <- attr(object, "Labels")
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -467,7 +467,7 @@ RunUMAP2.default <- function(
       }
       rownames(x = embeddings) <- row.names(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -475,13 +475,13 @@ RunUMAP2.default <- function(
       )
       if (return.model) {
         out$nn_index <- NULL
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
       if (!inherits(object, "dgCMatrix")) {
-        object <- as.sparse(object[1:nrow(object), ])
+        object <- SeuratObject::as.sparse(object[1:nrow(object), ])
       }
       diag(object) <- 0
       if (ncol(object) > 10000) {
@@ -494,18 +494,18 @@ RunUMAP2.default <- function(
       }
       val <- split(object@x, rep(1:ncol(object), diff(object@p)))
       pos <- split(object@i + 1, rep(1:ncol(object), diff(object@p)))
-      idx <- t(mapply(
+      idx <- Matrix::t(mapply(
         function(x, y) {
-          out <- y[head(order(x, decreasing = TRUE), n.neighbors)]
+          out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
           length(out) <- n.neighbors
           return(out)
         },
         x = val,
         y = pos
       ))
-      connectivity <- t(mapply(
+      connectivity <- Matrix::t(mapply(
         function(x, y) {
-          out <- y[head(order(x, decreasing = TRUE), n.neighbors)]
+          out <- y[utils::head(order(x, decreasing = TRUE), n.neighbors)]
           length(out) <- n.neighbors
           out[is.na(out)] <- 0
           return(out)
@@ -551,7 +551,7 @@ RunUMAP2.default <- function(
 
       rownames(x = embeddings) <- row.names(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -559,7 +559,7 @@ RunUMAP2.default <- function(
       )
       if (return.model) {
         out$nn_index <- NULL
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
@@ -593,7 +593,7 @@ RunUMAP2.default <- function(
       }
       rownames(x = embeddings) <- row.names(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -601,7 +601,7 @@ RunUMAP2.default <- function(
       )
       if (return.model) {
         out$nn_index <- NULL
-        Seurat::Misc(reduction, slot = "model") <- out
+        SeuratObject::Misc(reduction, slot = "model") <- out
       }
       return(reduction)
     }
@@ -616,14 +616,14 @@ RunUMAP2.default <- function(
       if (any(!colnames(model$data) %in% colnames(object))) {
         stop(
           "query data must contain the same features with the model:\n",
-          paste(head(colnames(model$data), 10), collapse = ","),
+          paste(utils::head(colnames(model$data), 10), collapse = ","),
           " ......"
         )
       }
-      embeddings <- predict(model, object[, colnames(model$data)])
+      embeddings <- stats::predict(model, object[, colnames(model$data)])
       rownames(x = embeddings) <- row.names(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -658,7 +658,7 @@ RunUMAP2.default <- function(
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -667,12 +667,12 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      match_k <- t(Matrix::as.matrix(apply(
+      match_k <- Matrix::t(Matrix::as.matrix(apply(
         object,
         2,
         function(x) order(x, decreasing = TRUE)[1:n.neighbors]
       )))
-      match_k_connectivity <- t(Matrix::as.matrix(apply(
+      match_k_connectivity <- Matrix::t(Matrix::as.matrix(apply(
         object,
         2,
         function(x) x[order(x, decreasing = TRUE)[1:n.neighbors]]
@@ -696,7 +696,7 @@ RunUMAP2.default <- function(
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,
@@ -717,7 +717,7 @@ RunUMAP2.default <- function(
       )
       rownames(x = embeddings) <- row.names(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
-      reduction <- CreateDimReducObject(
+      reduction <- SeuratObject::CreateDimReducObject(
         embeddings = embeddings,
         key = reduction.key,
         assay = assay,

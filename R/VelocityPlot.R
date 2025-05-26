@@ -44,20 +44,51 @@
 #'
 #' @seealso \code{\link{RunSCVELO}} \code{\link{CellDimPlot}}
 #'
-#' @examples
-#' data("pancreas_sub")
-#' pancreas_sub <- RunSCVELO(srt = pancreas_sub, group_by = "SubCellType", linear_reduction = "PCA", nonlinear_reduction = "UMAP", return_seurat = TRUE)
-#' VelocityPlot(pancreas_sub, reduction = "UMAP")
-#' VelocityPlot(pancreas_sub, reduction = "UMAP", group_by = "SubCellType")
-#' VelocityPlot(pancreas_sub, reduction = "UMAP", plot_type = "grid")
-#' VelocityPlot(pancreas_sub, reduction = "UMAP", plot_type = "stream")
-#' VelocityPlot(pancreas_sub, reduction = "UMAP", plot_type = "stream", streamline_color = "black")
-#' VelocityPlot(pancreas_sub, reduction = "UMAP", plot_type = "stream", streamline_color = "black", arrow_color = "red")
-#' @importFrom Seurat Reductions Embeddings Key
-#' @importFrom ggplot2 ggplot aes geom_segment scale_size scale_alpha scale_color_gradientn scale_color_manual guide_legend
-#' @importFrom grid arrow unit
-#' @importFrom reshape2 melt
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' data("pancreas_sub")
+#' pancreas_sub <- RunSCVELO(
+#'   srt = pancreas_sub,
+#'   group_by = "SubCellType",
+#'   linear_reduction = "PCA",
+#'   nonlinear_reduction = "UMAP",
+#'   return_seurat = TRUE
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP"
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   group_by = "SubCellType"
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   plot_type = "grid"
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   plot_type = "stream"
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   plot_type = "stream",
+#'   streamline_color = "black"
+#' )
+#' VelocityPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
+#'   plot_type = "stream",
+#'   streamline_color = "black",
+#'   arrow_color = "red"
+#' )
+#' }
 VelocityPlot <- function(
     srt,
     reduction,
@@ -154,8 +185,8 @@ VelocityPlot <- function(
         geom_segment(
           data = df_field,
           aes(x = x, y = y, xend = x + u, yend = y + v, color = group_by),
-          arrow = arrow(
-            length = unit(df_field[["length_perc"]], "npc"),
+          arrow = grid::arrow(
+            length = grid::unit(df_field[["length_perc"]], "npc"),
             type = "closed",
             angle = arrow_angle
           ),
@@ -183,8 +214,8 @@ VelocityPlot <- function(
           data = df_field,
           aes(x = x, y = y, xend = x + u, yend = y + v),
           color = arrow_color,
-          arrow = arrow(
-            length = unit(df_field[["length_perc"]], "npc"),
+          arrow = grid::arrow(
+            length = grid::unit(df_field[["length_perc"]], "npc"),
             type = "closed",
             angle = arrow_angle
           ),
@@ -221,8 +252,8 @@ VelocityPlot <- function(
         data = df_field,
         aes(x = x, y = y, xend = x + u, yend = y + v),
         color = arrow_color,
-        arrow = arrow(
-          length = unit(df_field[["length_perc"]], "npc"),
+        arrow = grid::arrow(
+          length = grid::unit(df_field[["length_perc"]], "npc"),
           type = "closed",
           angle = arrow_angle
         ),
@@ -248,17 +279,10 @@ VelocityPlot <- function(
     X_grid <- res$X_grid
     V_grid <- res$V_grid
 
-    # if (!is.null(density) && (density > 0 & density < 1)) {
-    #   s <- ceiling(density * ncol(X_grid))
-    #   ix_choice <- sample(1:ncol(X_grid), size = s, replace = FALSE)
-    #   X_grid <- X_grid[, ix_choice]
-    #   V_grid <- V_grid[, ix_choice, ix_choice]
-    # }
-
     df_field <- expand.grid(X_grid[1, ], X_grid[2, ])
     colnames(df_field) <- c("x", "y")
-    u <- melt(t(V_grid[1, , ]))
-    v <- melt(t(V_grid[2, , ]))
+    u <- reshape2::melt(Matrix::t(V_grid[1, , ]))
+    v <- reshape2::melt(Matrix::t(V_grid[2, , ]))
     df_field[, "u"] <- u$value
     df_field[, "v"] <- v$value
     df_field[is.na(df_field)] <- 0
@@ -429,8 +453,6 @@ VelocityPlot <- function(
 #' @param adjust_for_stream A logical value indicating whether to adjust the velocity vectors for streamlines. Default is FALSE.
 #' @param cutoff_perc An optional numeric value specifying the percentile cutoff for removing low-density grid points. Default is 5.
 #'
-#' @importFrom SeuratObject as.sparse
-#' @importFrom proxyC dist
 #' @export
 compute_velocity_on_grid <- function(
     X_emb,
@@ -462,37 +484,29 @@ compute_velocity_on_grid <- function(
   }
   X_grid <- Matrix::as.matrix(expand.grid(grs))
 
-  d <- dist(
-    x = as.sparse(X_emb),
-    y = as.sparse(X_grid),
+  d <- proxyC::dist(
+    x = SeuratObject::as.sparse(X_emb),
+    y = SeuratObject::as.sparse(X_grid),
     method = "euclidean",
     use_nan = TRUE
   )
-  neighbors <- t(Matrix::as.matrix(apply(
+  neighbors <- Matrix::t(Matrix::as.matrix(apply(
     d,
     2,
     function(x) order(x, decreasing = FALSE)[1:n_neighbors]
   )))
-  dists <- t(Matrix::as.matrix(apply(
+  dists <- Matrix::t(Matrix::as.matrix(apply(
     d,
     2,
     function(x) x[order(x, decreasing = FALSE)[1:n_neighbors]]
   )))
 
-  # ggplot() +
-  #   annotate(geom = "point", x = X_grid[, 1], y = X_grid[, 2]) +
-  #   annotate(geom = "point", x = X_grid[1, 1], y = X_grid[1, 2], color = "blue") +
-  #   annotate(geom = "point", x = X_grid[neighbors[1, ], 1], y = X_grid[neighbors[1, ], 2], color = "red")
-
-  weight <- dnorm(
+  weight <- stats::dnorm(
     dists,
     sd = mean(sapply(grs, function(g) g[2] - g[1])) * smooth
   )
-  p_mass <- p_mass_V <- rowSums(weight)
+  p_mass <- p_mass_V <- Matrix::rowSums(weight)
   p_mass_V[p_mass_V < 1] <- 1
-
-  # qplot(dists[,1],weight[,1])
-  # qplot(py$dists[,1],py$weight[,1])
 
   neighbors_emb <- array(
     V_emb[neighbors, seq_len(ncol(V_emb))],
@@ -501,9 +515,6 @@ compute_velocity_on_grid <- function(
   V_grid <- apply((neighbors_emb * c(weight)), c(1, 3), sum)
   V_grid <- V_grid / p_mass_V
 
-  # qplot(V_grid[,1],V_grid[,2])
-  # qplot(py$V_grid[,1],py$V_grid[,2])
-
   if (isTRUE(adjust_for_stream)) {
     X_grid <- matrix(
       c(unique(X_grid[, 1]), unique(X_grid[, 2])),
@@ -511,7 +522,7 @@ compute_velocity_on_grid <- function(
       byrow = TRUE
     )
     ns <- floor(sqrt(length(V_grid[, 1])))
-    V_grid <- reticulate::array_reshape(t(V_grid), c(2, ns, ns))
+    V_grid <- reticulate::array_reshape(Matrix::t(V_grid), c(2, ns, ns))
 
     mass <- sqrt(apply(V_grid**2, c(2, 3), sum))
     min_mass <- 10**(min_mass - 6) # default min_mass = 1e-5
@@ -522,12 +533,12 @@ compute_velocity_on_grid <- function(
       0.9
     cutoff <- reticulate::array_reshape(mass, dim = c(ns, ns)) < min_mass
 
-    length <- t(apply(apply(abs(neighbors_emb), c(1, 3), mean), 1, sum))
+    length <- Matrix::t(apply(apply(abs(neighbors_emb), c(1, 3), mean), 1, sum))
     length <- reticulate::array_reshape(length, dim = c(ns, ns))
-    cutoff <- cutoff | length < quantile(length, cutoff_perc / 100)
+    cutoff <- cutoff | length < stats::quantile(length, cutoff_perc / 100)
     V_grid[1, , ][cutoff] <- NA
   } else {
-    min_mass <- min_mass * quantile(p_mass, 0.99) / 100
+    min_mass <- min_mass * stats::quantile(p_mass, 0.99) / 100
     X_grid <- X_grid[p_mass > min_mass, ]
     V_grid <- V_grid[p_mass > min_mass, ]
     if (!is.null(scale)) {

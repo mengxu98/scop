@@ -1,473 +1,3 @@
-#' Perform the enrichment analysis (over-representation) on the genes
-#'
-#' @inheritParams GeneConvert
-#' @param srt A Seurat object containing the results of differential expression analysis (RunDEtest).
-#' If specified, the genes and groups will be extracted from the Seurat object automatically.
-#' If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.
-#' @param group_by A character vector specifying the grouping variable in the Seurat object. This argument is only used if \code{srt} is specified.
-#' @param test.use A character vector specifying the test to be used in differential expression analysis. This argument is only used if \code{srt} is specified.
-#' @param DE_threshold A character vector specifying the filter condition for differential expression analysis. This argument is only used if \code{srt} is specified.
-#' @param geneID A character vector specifying the gene IDs.
-#' @param geneID_groups A factor vector specifying the group labels for each gene.
-#' @param geneID_exclude A character vector specifying the gene IDs to be excluded from the analysis.
-#' @param IDtype A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument. This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.
-#' @param result_IDtype A character vector specifying the desired type of gene ID to be used in the output. This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.
-#' @param species A character vector specifying the species for which the analysis is performed.
-#' @param db A character vector specifying the name of the database to be used for enrichment analysis.
-#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.
-#' @param db_version A character vector specifying the version of the database to be used. This argument is ignored if \code{db_update} is \code{TRUE}. Default is "latest".
-#' @param db_combine A logical value indicating whether to combine multiple databases into one. If TRUE, all database specified by \code{db} will be combined as one named "Combined".
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.
-#' @param TERM2GENE A data frame specifying the gene-term mapping for a custom database. The first column should contain the term IDs, and the second column should contain the gene IDs.
-#' @param TERM2NAME A data frame specifying the term-name mapping for a custom database. The first column should contain the term IDs, and the second column should contain the corresponding term names.
-#' @param minGSSize A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.
-#' @param maxGSSize A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.
-#' @param unlimited_db A character vector specifying the names of databases that do not have size restrictions.
-#' @param GO_simplify A logical value indicating whether to simplify the GO terms. If \code{TRUE}, additional results with simplified GO terms will be returned.
-#' @param GO_simplify_cutoff A character vector specifying the filter condition for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param simplify_method A character vector specifying the method to be used for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param BPPARAM A BiocParallelParam object specifying the parallel back-end to be used for parallel computation. Defaults to BiocParallel::bpparam().
-#' @param seed The random seed for reproducibility. Defaults to 11.
-#'
-#' @returns
-#' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
-#'
-#' If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
-#'
-#' Enrichment result is a list with the following component:
-#' \itemize{
-#'  \item{\code{enrichment}:}{ A data.frame containing all enrichment results.}
-#'  \item{\code{results}:}{ A list of \code{enrichResult} objects from the DOSE package.}
-#'  \item{\code{geneMap}:}{ A data.frame containing the ID mapping table for input gene IDs.}
-#'  \item{\code{input}:}{ A data.frame containing the input gene IDs and gene ID groups.}
-#'  \item{\code{DE_threshold}:}{ A specific threshold for differential expression analysis (only returned if input is a Seurat object).}
-#' }
-#'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}} \code{\link{EnrichmentPlot}} \code{\link{RunGSEA}} \code{\link{GSEAPlot}}
-#'
-#' @examples
-#' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group_by = "CellType"
-#' )
-#' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
-#'   group_by = "CellType",
-#'   DE_threshold = "p_val_adj < 0.05",
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
-#'   group_by = "CellType",
-#'   DE_threshold = "p_val_adj < 0.05",
-#'   db = c("MSigDB", "MSigDB_MH"),
-#'   species = "Mus_musculus"
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "MSigDB",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "MSigDB_MH",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Remove redundant GO terms
-#' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
-#'   group_by = "CellType",
-#'   db = "GO_BP",
-#'   GO_simplify = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP_sim",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Use a combined database
-#' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
-#'   group_by = "CellType",
-#'   db = c("KEGG", "WikiPathway", "Reactome", "PFAM", "MP"),
-#'   db_combine = TRUE,
-#'   species = "Mus_musculus"
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "Combined",
-#'   group_by = "CellType",
-#'   plot_type = "comparison"
-#' )
-#'
-#' # Or use "geneID" and "geneID_groups" as input to run enrichment
-#' de_df <- dplyr::filter(
-#'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
-#'   p_val_adj < 0.05
-#' )
-#' enrich_out <- RunEnrichment(
-#'   geneID = de_df[["gene"]],
-#'   geneID_groups = de_df[["group1"]],
-#'   db = "GO_BP",
-#'   species = "Mus_musculus"
-#' )
-#' EnrichmentPlot(
-#'   res = enrich_out,
-#'   db = "GO_BP",
-#'   plot_type = "comparison"
-#' )
-#'
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers ipcid ipclock ipcunlock
-#' @importFrom clusterProfiler enricher simplify
-#' @export
-RunEnrichment <- function(
-    srt = NULL,
-    group_by = NULL,
-    test.use = "wilcox",
-    DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    geneID = NULL,
-    geneID_groups = NULL,
-    geneID_exclude = NULL,
-    IDtype = "symbol",
-    result_IDtype = "symbol",
-    species = "Homo_sapiens",
-    db = "GO_BP",
-    db_update = FALSE,
-    db_version = "latest",
-    db_combine = FALSE,
-    convert_species = TRUE,
-    Ensembl_version = 103,
-    mirror = NULL,
-    TERM2GENE = NULL,
-    TERM2NAME = NULL,
-    minGSSize = 10,
-    maxGSSize = 500,
-    unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
-    GO_simplify = FALSE,
-    GO_simplify_cutoff = "p.adjust < 0.05",
-    simplify_method = "Wang",
-    simplify_similarityCutoff = 0.7,
-    BPPARAM = BiocParallel::bpparam(),
-    seed = 11) {
-  bpprogressbar(BPPARAM) <- TRUE
-  bpRNGseed(BPPARAM) <- seed
-  time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start Enrichment"))
-  message("Workers: ", bpworkers(BPPARAM))
-
-  use_srt <- FALSE
-  if (is.null(geneID)) {
-    if (is.null(group_by)) {
-      group_by <- "custom"
-    }
-    layer <- paste0("DEtest_", group_by)
-    if (
-      !layer %in% names(srt@tools) ||
-        length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
-    ) {
-      stop(
-        "Cannot find the DEtest result for the group '",
-        group_by,
-        "'. You may perform RunDEtest first."
-      )
-    }
-    index <- grep(
-      pattern = paste0("AllMarkers_", test.use),
-      names(srt@tools[[layer]])
-    )[1]
-    if (is.na(index)) {
-      stop("Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.")
-    }
-    de <- names(srt@tools[[layer]])[index]
-    de_df <- srt@tools[[layer]][[de]]
-    de_df <- de_df[
-      with(de_df, eval(rlang::parse_expr(DE_threshold))), ,
-      drop = FALSE
-    ]
-    rownames(de_df) <- seq_len(nrow(de_df))
-
-    geneID <- de_df[["gene"]]
-    geneID_groups <- de_df[["group1"]]
-    use_srt <- TRUE
-  }
-
-  if (is.null(geneID_groups)) {
-    geneID_groups <- rep(" ", length(geneID))
-  }
-  if (!is.factor(geneID_groups)) {
-    geneID_groups <- factor(geneID_groups, levels = unique(geneID_groups))
-  }
-  geneID_groups <- factor(
-    geneID_groups,
-    levels = levels(geneID_groups)[levels(geneID_groups) %in% geneID_groups]
-  )
-  if (length(geneID_groups) != length(geneID)) {
-    stop("length(geneID_groups)!=length(geneID)")
-  }
-  names(geneID_groups) <- geneID
-  input <- data.frame(geneID = geneID, geneID_groups = geneID_groups)
-  input <- input[!geneID %in% geneID_exclude, , drop = FALSE]
-
-  if (is.null(TERM2GENE)) {
-    db_list <- PrepareDB(
-      species = species,
-      db = db,
-      db_update = db_update,
-      db_version = db_version,
-      db_IDtypes = IDtype,
-      convert_species = convert_species,
-      Ensembl_version = Ensembl_version,
-      mirror = mirror
-    )
-  } else {
-    colnames(TERM2GENE) <- c("Term", IDtype)
-    db <- "custom"
-    db_list <- list()
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    if (is.null(TERM2NAME)) {
-      TERM2NAME <- unique(TERM2GENE)[, c(1, 1)]
-      colnames(TERM2NAME) <- c("Term", "Name")
-    }
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- "custom"
-  }
-  if (isTRUE(db_combine)) {
-    message("Create 'Combined' database ...")
-    TERM2GENE <- do.call(
-      rbind,
-      lapply(
-        db_list[[species]],
-        function(x) x[["TERM2GENE"]][, c("Term", IDtype)]
-      )
-    )
-    TERM2NAME <- do.call(
-      rbind,
-      lapply(names(db_list[[species]]), function(x) {
-        db_list[[species]][[x]][["TERM2NAME"]][["Name"]] <- paste0(
-          db_list[[species]][[x]][["TERM2NAME"]][["Name"]],
-          " [",
-          x,
-          "]"
-        )
-        db_list[[species]][[x]][["TERM2NAME"]][, c("Term", "Name")]
-      })
-    )
-    version <- unlist(lapply(
-      db_list[[species]],
-      function(x) as.character(x[["version"]])
-    ))
-    version <- paste0(names(version), ":", version, collapse = ";")
-    db <- "Combined"
-    db_list[[species]][[db]][["TERM2GENE"]] <- unique(TERM2GENE)
-    db_list[[species]][[db]][["TERM2NAME"]] <- unique(TERM2NAME)
-    db_list[[species]][[db]][["version"]] <- unique(version)
-  }
-
-  if (length(unique(c(IDtype, result_IDtype))) != 1) {
-    res <- GeneConvert(
-      geneID = unique(geneID),
-      geneID_from_IDtype = IDtype,
-      geneID_to_IDtype = result_IDtype,
-      species_from = species,
-      species_to = species,
-      Ensembl_version = Ensembl_version,
-      mirror = mirror
-    )
-    geneMap <- res$geneID_collapse
-    colnames(geneMap)[colnames(geneMap) == "from_geneID"] <- IDtype
-  } else {
-    geneMap <- data.frame(IDtype = unique(geneID), row.names = unique(geneID))
-    colnames(geneMap)[1] <- IDtype
-  }
-
-  input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
-  input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
-  input <- unnest(input, cols = c(IDtype, result_IDtype))
-  input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
-
-  message("Permform enrichment...")
-  comb <- expand.grid(
-    group = levels(geneID_groups),
-    term = db,
-    stringsAsFactors = FALSE
-  )
-
-  res_list <- bplapply(
-    seq_len(nrow(comb)),
-    function(i, id) {
-      group <- comb[i, "group"]
-      term <- comb[i, "term"]
-      gene <- input[input$geneID_groups == group, IDtype]
-      gene_mapid <- input[input$geneID_groups == group, result_IDtype]
-      TERM2GENE_tmp <- db_list[[species]][[term]][["TERM2GENE"]][, c(
-        "Term",
-        IDtype
-      )]
-      TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
-      dup <- duplicated(TERM2GENE_tmp)
-      na <- rowSums(is.na(TERM2GENE_tmp)) > 0
-      TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
-      TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
-        drop = FALSE
-      ]
-      enrich_res <- enricher(
-        gene = gene,
-        minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
-        maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        pAdjustMethod = "BH",
-        pvalueCutoff = Inf,
-        qvalueCutoff = Inf,
-        universe = NULL,
-        TERM2GENE = TERM2GENE_tmp,
-        TERM2NAME = TERM2NAME_tmp
-      )
-
-      if (!is.null(enrich_res) && nrow(enrich_res@result) > 0) {
-        result <- enrich_res@result
-        result[["Groups"]] <- group
-        result[["Database"]] <- term
-        result[["Version"]] <- as.character(db_list[[species]][[term]][[
-          "version"
-        ]])
-        IDlist <- strsplit(result$geneID, split = "/")
-        result$geneID <- unlist(lapply(IDlist, function(x) {
-          x_result <- NULL
-          for (i in x) {
-            if (i %in% geneMap[[IDtype]]) {
-              x_result <- c(
-                x_result,
-                unique(geneMap[geneMap[[IDtype]] == i, result_IDtype])
-              )
-            } else {
-              x_result <- c(x_result, i)
-            }
-          }
-          return(paste0(x_result, collapse = "/"))
-        }))
-        enrich_res@result <- result
-        enrich_res@gene2Symbol <- as.character(gene_mapid)
-
-        if (
-          isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
-        ) {
-          sim_res <- enrich_res
-          if (term == "GO") {
-            sim_res@result[["ONTOLOGY"]] <- stats::setNames(
-              TERM2NAME_tmp[["ONTOLOGY"]],
-              TERM2NAME_tmp[["Term"]]
-            )[sim_res@result[["ID"]]]
-            sim_res@ontology <- "GOALL"
-          } else {
-            sim_res@ontology <- gsub(
-              pattern = "GO_",
-              replacement = "",
-              x = term
-            )
-          }
-          nterm_simplify <- sum(with(
-            sim_res@result,
-            eval(rlang::parse_expr(GO_simplify_cutoff))
-          ))
-          if (nterm_simplify <= 1) {
-            warning(
-              group,
-              "|",
-              term,
-              " has no term to simplify.",
-              immediate. = TRUE
-            )
-          } else {
-            sim_res@result <- sim_res@result[
-              with(sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))), ,
-              drop = FALSE
-            ]
-            semData <- db_list[[species]][[term]][["semData"]]
-            ipclock(id)
-            sim_res <- simplify(
-              sim_res,
-              measure = simplify_method,
-              cutoff = simplify_similarityCutoff,
-              semData = semData
-            )
-            ipcunlock(id)
-            result_sim <- sim_res@result
-            result_sim[["Groups"]] <- group
-            result_sim[["Database"]] <- paste0(term, "_sim")
-            result_sim[["Version"]] <- as.character(db_list[[species]][[term]][[
-              "version"
-            ]])
-            result_sim[["ONTOLOGY"]] <- NULL
-            sim_res@result <- result_sim
-            enrich_res <- list(enrich_res, sim_res)
-            names(enrich_res) <- paste(
-              group,
-              c(term, paste0(term, "_sim")),
-              sep = "-"
-            )
-          }
-        }
-      } else {
-        enrich_res <- NULL
-      }
-      return(enrich_res)
-    },
-    BPPARAM = BPPARAM,
-    id = ipcid()
-  )
-
-  nm <- paste(comb$group, comb$term, sep = "-")
-  sim_index <- sapply(res_list, function(x) length(x) == 2)
-  sim_list <- unlist(res_list[sim_index], recursive = FALSE)
-  raw_list <- res_list[!sim_index]
-  names(raw_list) <- nm[!sim_index]
-  results <- c(raw_list, sim_list)
-  results <- results[!sapply(results, is.null)]
-  results <- results[intersect(c(nm, paste0(nm, "_sim")), names(results))]
-  enrichment <- do.call(rbind, lapply(results, function(x) x@result))
-  rownames(enrichment) <- NULL
-
-  time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "Enrichment done"))
-  message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    )
-  )
-
-  res <- list(
-    enrichment = enrichment,
-    results = results,
-    geneMap = geneMap,
-    input = input
-  )
-  if (isTRUE(use_srt)) {
-    res[["DE_threshold"]] <- DE_threshold
-    srt@tools[[paste("Enrichment", group_by, test.use, sep = "_")]] <- res
-    return(srt)
-  } else {
-    return(res)
-  }
-}
-
 #' EnrichmentPlot
 #'
 #' This function generates various types of plots for enrichment (over-representation) analysis.
@@ -523,6 +53,8 @@ RunEnrichment <- function(
 #'
 #' @seealso \code{\link{RunEnrichment}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' pancreas_sub <- RunDEtest(
@@ -546,16 +78,6 @@ RunEnrichment <- function(
 #'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
-#'   plot_type = "bar",
-#'   character_width = 30,
-#'   theme_use = ggplot2::theme_classic,
-#'   theme_args = list(base_size = 10)
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = "GO_BP",
-#'   group_by = "CellType",
 #'   plot_type = "bar",
 #'   color_by = "Groups",
 #'   ncol = 2
@@ -566,11 +88,22 @@ RunEnrichment <- function(
 #'   group_by = "CellType",
 #'   plot_type = "bar",
 #'   id_use = list(
-#'     "Ductal" = c("GO:0002181", "GO:0045787", "GO:0006260", "GO:0050679"),
-#'     "Ngn3 low EP" = c("GO:0050678", "GO:0051101", "GO:0072091", "GO:0006631"),
-#'     "Ngn3 high EP" = c("GO:0035270", "GO:0030325", "GO:0008637", "GO:0030856"),
-#'     "Pre-endocrine" = c("GO:0090276", "GO:0031018", "GO:0030073", "GO:1903532"),
-#'     "Endocrine" = c("GO:0009914", "GO:0030073", "GO:0009743", "GO:0042593")
+#'     "Ductal" = c(
+#'       "GO:0002181", "GO:0045787",
+#'       "GO:0006260", "GO:0050679"
+#'     ),
+#'     "Ngn3 low EP" = c(
+#'       "GO:0050678", "GO:0051101",
+#'       "GO:0072091", "GO:0006631"
+#'     ),
+#'     "Ngn3 high EP" = c(
+#'       "GO:0035270", "GO:0030325",
+#'       "GO:0008637", "GO:0030856"
+#'     ),
+#'     "Pre-endocrine" = c(
+#'       "GO:0090276", "GO:0031018",
+#'       "GO:0030073", "GO:1903532"
+#'     )
 #'   )
 #' )
 #'
@@ -709,7 +242,7 @@ RunEnrichment <- function(
 #'   network_blendmode = "average",
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) %>% panel_fix(height = 5)
+#' ) |> panel_fix(height = 5)
 #'
 #' EnrichmentPlot(
 #'   pancreas_sub,
@@ -735,7 +268,8 @@ RunEnrichment <- function(
 #'   enrichmap_show_keyword = TRUE,
 #'   character_width = 10
 #' )
-#' EnrichmentPlot(pancreas_sub,
+#' EnrichmentPlot(
+#'   pancreas_sub,
 #'   db = "GO_BP",
 #'   group_by = "CellType",
 #'   group_use = "Ductal",
@@ -747,7 +281,7 @@ RunEnrichment <- function(
 #'   character_width = 10,
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) %>% panel_fix(height = 4)
+#' ) |> panel_fix(height = 4)
 #'
 #' pancreas_sub <- RunEnrichment(
 #'   srt = pancreas_sub,
@@ -760,19 +294,9 @@ RunEnrichment <- function(
 #'   pancreas_sub,
 #'   db = c("MP", "DO"),
 #'   group_by = "CellType",
-#'   group_use = "Endocrine",
+#'   group_use = "Ductal",
 #'   ncol = 1
 #' )
-#'
-#' @importFrom ggplot2 ggplot geom_bar geom_text geom_label labs scale_fill_manual scale_y_continuous scale_linewidth facet_grid coord_flip scale_color_gradientn scale_fill_gradientn scale_size guides geom_segment expansion guide_colorbar scale_color_manual guide_none draw_key_point  scale_color_identity scale_fill_identity .pt
-#' @importFrom dplyr %>% group_by filter arrange desc across mutate slice_head reframe distinct n .data
-#' @importFrom stats formula
-#' @importFrom patchwork wrap_plots
-#' @importFrom ggforce geom_mark_ellipse geom_mark_hull
-#' @importFrom ggrepel geom_text_repel
-#' @importFrom grid grobTree convertUnit unit
-#' @importFrom igraph as_data_frame graph_from_data_frame V layout_with_dh layout_with_drl layout_with_fr layout_with_gem layout_with_graphopt layout_with_kk layout_with_lgl layout_with_mds layout_in_circle layout_as_tree layout_on_grid cluster_fast_greedy cluster_infomap cluster_leiden cluster_louvain cluster_spinglass cluster_walktrap cluster_fluid_communities
-#' @export
 EnrichmentPlot <- function(
     srt,
     db = "GO_BP",
@@ -952,14 +476,16 @@ EnrichmentPlot <- function(
   }
   df_list <- split(
     enrichment_sig,
-    formula(paste0("~", split_by, collapse = "+"))
+    stats::formula(paste0("~", split_by, collapse = "+"))
   )
   df_list <- df_list[lapply(df_list, nrow) > 0]
 
   facet <- switch(paste0(split_by, collapse = "~"),
-    "Groups" = formula(paste0("Database ~ Groups")),
-    "Database" = formula(paste0("Groups ~ Database")),
-    formula(paste0(split_by, collapse = "~"))
+    "Groups" = stats::formula(paste0("Database ~ Groups")),
+    "Database" = stats::formula(
+      paste0("Groups ~ Database")
+    ),
+    stats::formula(paste0(split_by, collapse = "~"))
   )
 
   if (plot_type == "comparison") {
@@ -970,7 +496,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1077,7 +603,9 @@ EnrichmentPlot <- function(
         legend.position = legend.position,
         legend.direction = legend.direction,
         panel.grid.major = element_line(colour = "grey80", linetype = 2),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+        axis.text.x = element_text(
+          angle = 45, hjust = 1, vjust = 1
+        ),
         axis.text.y = element_text(
           lineheight = lineheight,
           hjust = 1,
@@ -1095,7 +623,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1170,7 +698,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1259,7 +787,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1373,7 +901,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1403,24 +931,28 @@ EnrichmentPlot <- function(
       )
       nodes$Database <- df$Database[1]
       nodes$Groups <- df$Groups[1]
-      edges <- as.data.frame(df_unnest[, c("Description", "geneID")])
+      edges <- as.data.frame(
+        df_unnest[, c("Description", "geneID")]
+      )
       colnames(edges) <- c("from", "to")
       edges[["weight"]] <- 1
-      graph <- graph_from_data_frame(
+      graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,
         directed = FALSE
       )
       if (network_layout %in% c("circle", "tree", "grid")) {
         layout <- switch(network_layout,
-          "circle" = layout_in_circle(graph),
-          "tree" = layout_as_tree(graph),
-          "grid" = layout_on_grid(graph)
+          "circle" = igraph::layout_in_circle(graph),
+          "tree" = igraph::layout_as_tree(graph),
+          "grid" = igraph::layout_on_grid(graph)
         )
       } else {
-        layout <- do.call(paste0("layout_with_", network_layout), list(graph))
+        layout <- do.call(
+          paste0("layout_with_", network_layout), list(graph)
+        )
       }
-      df_graph <- as_data_frame(graph, what = "both")
+      df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices
       if (isTRUE(network_layoutadjust)) {
@@ -1450,7 +982,7 @@ EnrichmentPlot <- function(
         palcolor = palcolor
       )
       df_edges[["color"]] <- colors[df_edges$from]
-      node_colors <- aggregate(
+      node_colors <- stats::aggregate(
         df_unnest$Description,
         by = list(df_unnest$geneID),
         FUN = function(x) {
@@ -1459,16 +991,20 @@ EnrichmentPlot <- function(
       )
       colors <- c(colors, stats::setNames(node_colors[, 2], node_colors[, 1]))
       label_colors <- ifelse(
-        colSums(col2rgb(colors)) > 255 * 2,
+        Matrix::colSums(grDevices::col2rgb(colors)) > 255 * 2,
         "black",
         "white"
       )
       df_nodes[["color"]] <- colors[df_nodes$name]
       df_nodes[["label_color"]] <- label_colors[df_nodes$name]
       df_nodes[["label"]] <- NA
-      df_nodes[levels(df[["Description"]]), "label"] <- seq_len(nlevels(df[[
-        "Description"
-      ]]))
+      df_nodes[levels(df[["Description"]]), "label"] <- seq_len(
+        nlevels(
+          df[[
+            "Description"
+          ]]
+        )
+      )
 
       draw_key_cust <- function(data, params, size) {
         data_text <- data
@@ -1479,13 +1015,13 @@ EnrichmentPlot <- function(
         data_text$colour <- "black"
         data_text$alpha <- 1
         data_text$size <- 11 / .pt
-        grobTree(
+        grid::grobTree(
           draw_key_point(data, list(color = "white", shape = 21)),
           ggrepel:::shadowtextGrob(
             label = data_text$label,
             bg.colour = "black",
             bg.r = 0.1,
-            gp = gpar(col = "white", fontface = "bold")
+            gp = grid::gpar(col = "white", fontface = "bold")
           )
         )
       }
@@ -1535,7 +1071,7 @@ EnrichmentPlot <- function(
           shape = 21,
           key_glyph = draw_key_cust
         ) +
-        geom_text_repel(
+        ggrepel::geom_text_repel(
           data = df_nodes[df_nodes$class == "term", ],
           aes(x = dim1, y = dim2, label = label),
           fontface = "bold",
@@ -1575,7 +1111,7 @@ EnrichmentPlot <- function(
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(df_groups, function(group) {
         filtered_group <- group[
-          head(seq_len(nrow(group)), topTerm), ,
+          utils::head(seq_len(nrow(group)), topTerm), ,
           drop = FALSE
         ]
         return(filtered_group)
@@ -1592,7 +1128,7 @@ EnrichmentPlot <- function(
       rownames(df) <- df[["ID"]]
 
       nodes <- df
-      edges <- as.data.frame(t(combn(nodes$ID, 2)))
+      edges <- as.data.frame(Matrix::t(combn(nodes$ID, 2)))
       colnames(edges) <- c("from", "to")
       edges[["weight"]] <- mapply(
         function(x, y) length(intersect(df[[x, "geneID"]], df[[y, "geneID"]])),
@@ -1600,22 +1136,22 @@ EnrichmentPlot <- function(
         edges$to
       )
       edges <- edges[edges[["weight"]] > 0, , drop = FALSE]
-      graph <- graph_from_data_frame(
+      graph <- igraph::graph_from_data_frame(
         d = edges,
         vertices = nodes,
         directed = FALSE
       )
       if (enrichmap_layout %in% c("circle", "tree", "grid")) {
         layout <- switch(enrichmap_layout,
-          "circle" = layout_in_circle(graph),
-          "tree" = layout_as_tree(graph),
-          "grid" = layout_on_grid(graph)
+          "circle" = igraph::layout_in_circle(graph),
+          "tree" = igraph::layout_as_tree(graph),
+          "grid" = igraph::layout_on_grid(graph)
         )
       } else {
         layout <- do.call(paste0("layout_with_", enrichmap_layout), list(graph))
       }
       clusters <- do.call(paste0("cluster_", enrichmap_cluster), list(graph))
-      df_graph <- as_data_frame(graph, what = "both")
+      df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices
       df_nodes[["dim1"]] <- layout[, 1]
@@ -1626,32 +1162,32 @@ EnrichmentPlot <- function(
       )
 
       if (isTRUE(enrichmap_show_keyword)) {
-        df_keyword1 <- df_nodes %>%
-          mutate(
+        df_keyword1 <- df_nodes |>
+          dplyr::mutate(
             keyword = strsplit(
               tolower(as.character(.data[["Description"]])),
               "\\s|\\n",
               perl = TRUE
             )
-          ) %>%
-          unnest(cols = "keyword") %>%
-          group_by(.data[["keyword"]], Database, Groups, clusters) %>%
-          reframe(
+          ) |>
+          unnest(cols = "keyword") |>
+          dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
+          dplyr::reframe(
             keyword = capitalize(.data[["keyword"]]),
             score = sum(-(log10(.data[[metric]]))),
-            count = n(),
+            count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
             .groups = "keep"
-          ) %>%
-          filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-          filter(nchar(.data[["keyword"]]) >= 1) %>%
-          filter(!tolower(.data[["keyword"]]) %in% tolower(words_excluded)) %>%
-          distinct() %>%
-          group_by(Database, Groups, clusters) %>%
-          arrange(desc(score)) %>%
-          slice_head(n = enrlichmap_nlabel) %>%
-          reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
+          ) |>
+          dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
+          dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
+          dplyr::filter(!tolower(.data[["keyword"]]) %in% tolower(words_excluded)) |>
+          dplyr::distinct() |>
+          dplyr::group_by(Database, Groups, clusters) |>
+          dplyr::arrange(dplyr::desc(score)) |>
+          dplyr::slice_head(n = enrlichmap_nlabel) |>
+          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
         df_keyword1[["keyword"]] <- str_wrap(
@@ -1670,14 +1206,14 @@ EnrichmentPlot <- function(
             width = character_width
           )
         }
-        df_keyword1 <- df_nodes %>%
-          group_by(Database, Groups, clusters) %>%
-          arrange(desc(metric)) %>%
-          reframe(keyword = Description) %>%
-          distinct() %>%
-          group_by(Database, Groups, clusters) %>%
-          slice_head(n = enrlichmap_nlabel) %>%
-          reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) %>%
+        df_keyword1 <- df_nodes |>
+          dplyr::group_by(Database, Groups, clusters) |>
+          dplyr::arrange(dplyr::desc(metric)) |>
+          dplyr::reframe(keyword = Description) |>
+          dplyr::distinct() |>
+          dplyr::group_by(Database, Groups, clusters) |>
+          dplyr::slice_head(n = enrlichmap_nlabel) |>
+          dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) |>
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
         df_keyword1[["label"]] <- paste0(
@@ -1687,23 +1223,23 @@ EnrichmentPlot <- function(
         )
       }
 
-      df_keyword2 <- df_nodes %>%
-        mutate(keyword = .data[["geneID"]]) %>%
-        unnest(cols = "keyword") %>%
-        group_by(.data[["keyword"]], Database, Groups, clusters) %>%
-        reframe(
+      df_keyword2 <- df_nodes |>
+        dplyr::mutate(keyword = .data[["geneID"]]) |>
+        unnest(cols = "keyword") |>
+        dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
+        dplyr::reframe(
           keyword = .data[["keyword"]],
           score = sum(-(log10(.data[[metric]]))),
-          count = n(),
+          count = dplyr::n(),
           Database = .data[["Database"]],
           Groups = .data[["Groups"]],
           .groups = "keep"
-        ) %>%
-        distinct() %>%
-        group_by(Database, Groups, clusters) %>%
-        arrange(desc(score)) %>%
-        slice_head(n = enrlichmap_nlabel) %>%
-        reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
+        ) |>
+        dplyr::distinct() |>
+        dplyr::group_by(Database, Groups, clusters) |>
+        dplyr::arrange(dplyr::desc(score)) |>
+        dplyr::slice_head(n = enrlichmap_nlabel) |>
+        dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
       df_keyword2[["keyword"]] <- str_wrap(
@@ -1749,13 +1285,13 @@ EnrichmentPlot <- function(
             label = clusters,
             description = if (enrichmap_label == "term") keyword1 else keyword2
           ),
-          expand = unit(3, "mm"),
+          expand = grid::unit(3, "mm"),
           alpha = 0.1,
           label.margin = margin(1, 1, 1, 1, "mm"),
           label.fontsize = enrichmap_labelsize * 2,
           label.fill = "grey95",
-          label.minwidth = unit(character_width, "in"),
-          label.buffer = unit(0, "mm"),
+          label.minwidth = grid::unit(character_width, "in"),
+          label.buffer = grid::unit(0, "mm"),
           con.size = 1,
           con.cap = 0
         )
@@ -1848,7 +1384,7 @@ EnrichmentPlot <- function(
   } else if (plot_type == "wordcloud") {
     # wordcloud -------------------------------------------------------------------------------------------------
     check_r("ggwordcloud")
-    check_r("jokergoo/simplifyEnrichment")
+    check_r("simplifyEnrichment")
     plist <- lapply(df_list, function(df) {
       if (word_type == "term") {
         df_groups <- split(df, list(df$Database, df$Groups))
@@ -1860,63 +1396,65 @@ EnrichmentPlot <- function(
               "ID"
             ]])
             if (nrow(df0 > 0)) {
-              df_sub <- df0 %>%
-                reframe(
+              df_sub <- df0 |>
+                dplyr::reframe(
                   keyword = .data[["keyword"]],
                   score = -(log10(.data[["padj"]])),
                   count = .data[["n_term"]],
                   Database = df_sub[["Database"]][1],
                   Groups = df_sub[["Groups"]][1]
-                ) %>%
-                filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-                filter(nchar(.data[["keyword"]]) >= 1) %>%
-                filter(
+                ) |>
+                dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
+                dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
+                dplyr::filter(
                   !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
-                ) %>%
-                distinct() %>%
-                mutate(
+                ) |>
+                dplyr::distinct() |>
+                dplyr::mutate(
                   angle = 90 *
-                    sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
-                ) %>%
+                    sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
+                ) |>
                 as.data.frame()
               df_sub <- df_sub[
-                head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
+                utils::head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
                 drop = FALSE
               ]
             } else {
               df_sub <- NULL
             }
           } else {
-            df_sub <- df_sub %>%
-              mutate(
+            df_sub <- df_sub |>
+              dplyr::mutate(
                 keyword = strsplit(
                   tolower(as.character(.data[["Description"]])),
                   " "
                 )
-              ) %>%
-              unnest(cols = "keyword") %>%
-              group_by(.data[["keyword"]], Database, Groups) %>%
-              reframe(
+              ) |>
+              unnest(cols = "keyword") |>
+              dplyr::group_by(.data[["keyword"]], Database, Groups) |>
+              dplyr::reframe(
                 keyword = .data[["keyword"]],
                 score = sum(-(log10(.data[[metric]]))),
-                count = n(),
+                count = dplyr::n(),
                 Database = .data[["Database"]],
                 Groups = .data[["Groups"]],
                 .groups = "keep"
-              ) %>%
-              filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) %>%
-              filter(nchar(.data[["keyword"]]) >= 1) %>%
-              filter(
+              ) |>
+              dplyr::filter(!grepl(pattern = "\\[.*\\]", x = .data[["keyword"]])) |>
+              dplyr::filter(nchar(.data[["keyword"]]) >= 1) |>
+              dplyr::filter(
                 !tolower(.data[["keyword"]]) %in% tolower(words_excluded)
-              ) %>%
-              distinct() %>%
-              mutate(
+              ) |>
+              dplyr::distinct() |>
+              dplyr::mutate(
                 angle = 90 *
-                  sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
-              ) %>%
+                  sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
+              ) |>
               as.data.frame()
             df_sub <- df_sub[
-              head(order(df_sub[["score"]], decreasing = TRUE), topWord), ,
+              utils::head(
+                order(df_sub[["score"]], decreasing = TRUE), topWord
+              ), ,
               drop = FALSE
             ]
           }
@@ -1924,25 +1462,25 @@ EnrichmentPlot <- function(
         }
         df <- do.call(rbind, df_groups)
       } else {
-        df <- df %>%
-          mutate(keyword = strsplit(as.character(.data[["geneID"]]), "/")) %>%
-          unnest(cols = "keyword") %>%
-          group_by(.data[["keyword"]], Database, Groups) %>%
-          reframe(
+        df <- df |>
+          dplyr::mutate(keyword = strsplit(as.character(.data[["geneID"]]), "/")) |>
+          unnest(cols = "keyword") |>
+          dplyr::group_by(.data[["keyword"]], Database, Groups) |>
+          dplyr::reframe(
             keyword = .data[["keyword"]],
             score = sum(-(log10(.data[[metric]]))),
-            count = n(),
+            count = dplyr::n(),
             Database = .data[["Database"]],
             Groups = .data[["Groups"]],
             .groups = "keep"
-          ) %>%
-          distinct() %>%
-          mutate(
-            angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))
-          ) %>%
+          ) |>
+          dplyr::distinct() |>
+          dplyr::mutate(
+            angle = 90 * sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
+          ) |>
           as.data.frame()
         df <- df[
-          head(order(df[["score"]], decreasing = TRUE), topWord), ,
+          utils::head(order(df[["score"]], decreasing = TRUE), topWord), ,
           drop = FALSE
         ]
       }
@@ -1955,7 +1493,7 @@ EnrichmentPlot <- function(
       )
       colors_value <- seq(
         min(df[["score"]], na.rm = TRUE),
-        quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001,
+        stats::quantile(df[["score"]], 0.99, na.rm = TRUE) + 0.001,
         length.out = 100
       )
       p <- ggplot(
@@ -2013,7 +1551,7 @@ EnrichmentPlot <- function(
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,

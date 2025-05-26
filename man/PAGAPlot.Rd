@@ -49,7 +49,7 @@ PAGAPlot(
   transition_alpha = 1,
   transition_arrow_type = "closed",
   transition_arrow_angle = 20,
-  transition_arrow_length = unit(0.02, "npc"),
+  transition_arrow_length = grid::unit(0.02, "npc"),
   transition_shorten = 0.05,
   transition_offset = 0,
   transition_highlight = NULL,
@@ -189,25 +189,85 @@ PAGAPlot(
 This function generates a PAGA plot based on the given Seurat object and PAGA result.
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
-pancreas_sub <- RunPAGA(srt = pancreas_sub, group_by = "SubCellType", linear_reduction = "PCA", nonlinear_reduction = "UMAP", return_seurat = TRUE)
+pancreas_sub <- RunPAGA(
+  srt = pancreas_sub,
+  group_by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
+  return_seurat = TRUE
+)
 PAGAPlot(pancreas_sub)
-PAGAPlot(pancreas_sub, type = "connectivities_tree")
-PAGAPlot(pancreas_sub, reduction = "PCA")
-PAGAPlot(pancreas_sub, reduction = "PAGAUMAP2D")
-PAGAPlot(pancreas_sub, edge_shorten = 0.05)
-PAGAPlot(pancreas_sub, label = TRUE)
-PAGAPlot(pancreas_sub, label = TRUE, label_insitu = TRUE)
-PAGAPlot(pancreas_sub, label = TRUE, label_insitu = TRUE, label_repel = TRUE)
-PAGAPlot(pancreas_sub, edge_line = "curved")
-PAGAPlot(pancreas_sub, node_size = "GroupSize")
-PAGAPlot(pancreas_sub, node_highlight = "Ductal")
-PAGAPlot(pancreas_sub, edge_highlight = paste("Pre-endocrine", levels(pancreas_sub$SubCellType), sep = "-"))
+PAGAPlot(
+  pancreas_sub,
+  type = "connectivities_tree"
+)
+PAGAPlot(
+  pancreas_sub,
+  reduction = "PCA"
+)
+PAGAPlot(
+  pancreas_sub,
+  reduction = "PAGAUMAP2D"
+)
+PAGAPlot(
+  pancreas_sub,
+  edge_shorten = 0.05
+)
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE
+)
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE,
+  label_insitu = TRUE
+)
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE,
+  label_insitu = TRUE,
+  label_repel = TRUE
+)
+PAGAPlot(
+  pancreas_sub,
+  edge_line = "curved"
+)
+PAGAPlot(
+  pancreas_sub,
+  node_size = "GroupSize"
+)
+PAGAPlot(
+  pancreas_sub,
+  node_highlight = "Ductal"
+)
+PAGAPlot(
+  pancreas_sub,
+  edge_highlight = paste(
+    "Pre-endocrine",
+    levels(pancreas_sub$SubCellType),
+    sep = "-"
+  )
+)
 
-pancreas_sub <- RunSCVELO(srt = pancreas_sub, group_by = "SubCellType", linear_reduction = "PCA", nonlinear_reduction = "UMAP", return_seurat = TRUE)
-PAGAPlot(pancreas_sub, show_transition = TRUE)
-PAGAPlot(pancreas_sub, show_transition = TRUE, transition_offset = 0.02)
-
+pancreas_sub <- RunSCVELO(
+  srt = pancreas_sub,
+  group_by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
+  return_seurat = TRUE
+)
+PAGAPlot(
+  pancreas_sub,
+  show_transition = TRUE
+)
+PAGAPlot(
+  pancreas_sub,
+  show_transition = TRUE,
+  transition_offset = 0.02
+)
+}
 }
 \seealso{
 \code{\link{RunPAGA}} \code{\link{CellDimPlot}}

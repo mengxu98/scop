@@ -28,74 +28,112 @@
 #'
 #' @return A list containing the prepared gene annotation databases:
 #'   \itemize{
-#'     \item{\code{TERM2GENE:}}{ mapping of gene identifiers to terms}
-#'     \item{\code{TERM2NAME:}}{ mapping of terms to their names}
-#'     \item{\code{semData:}}{ semantic similarity data for gene sets (only for Gene Ontology terms)}
+#'     \item \code{TERM2GENE:} mapping of gene identifiers to terms.
+#'     \item \code{TERM2NAME:} mapping of terms to their names.
+#'     \item \code{semData:} semantic similarity data for gene sets (only for Gene Ontology terms).
 #'     }
 #'
 #' @seealso \code{\link{ListDB}}
 #'
-#' @examples
-#' if (interactive()) {
-#'   db_list <- PrepareDB(species = "Homo_sapiens", db = "GO_BP")
-#'   ListDB(species = "Homo_sapiens", db = "GO_BP")
-#'   head(db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]])
-#'
-#'   # Based on homologous gene conversion,
-#'   # prepare a gene annotation database that originally does not exist in the species.
-#'   db_list <- PrepareDB(species = "Homo_sapiens", db = "MP")
-#'   ListDB(species = "Homo_sapiens", db = "MP")
-#'   head(db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]])
-#'
-#'   # Prepare databases for other species
-#'   db_list <- PrepareDB(species = "Macaca_fascicularis", db = "GO_BP")
-#'   ListDB(species = "Macaca_fascicularis", db = "GO_BP")
-#'   head(db_list[["Macaca_fascicularis"]][["GO_BP"]][["TERM2GENE"]])
-#'
-#'   db_list <- PrepareDB(species = "Saccharomyces_cerevisiae", db = "GO_BP")
-#'   ListDB(species = "Saccharomyces_cerevisiae", db = "GO_BP")
-#'   head(db_list[["Saccharomyces_cerevisiae"]][["GO_BP"]][["TERM2GENE"]])
-#'
-#'   # Prepare databases for Arabidopsis (plant)
-#'   db_list <- PrepareDB(
-#'     species = "Arabidopsis_thaliana",
-#'     db = c(
-#'       "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway",
-#'       "ENZYME", "Chromosome"
-#'     ),
-#'     biomart = "plants_mart"
-#'   )
-#'   head(db_list[["Arabidopsis_thaliana"]][["KEGG"]][["TERM2GENE"]])
-#'
-#'   # You can also build a custom database based on the gene sets you have
-#'   ccgenes <- CC_GenePrefetch("Homo_sapiens")
-#'   custom_TERM2GENE <- rbind(
-#'     data.frame(term = "S_genes", gene = ccgenes[["cc_S_genes"]]),
-#'     data.frame(term = "G2M_genes", gene = ccgenes[["cc_G2M_genes"]])
-#'   )
-#'   str(custom_TERM2GENE)
-#'
-#'   # Set convert_species = TRUE to build a custom database for both species, with the name "CellCycle"
-#'   db_list <- PrepareDB(
-#'     species = c("Homo_sapiens", "Mus_musculus"),
-#'     db = "CellCycle",
-#'     convert_species = TRUE,
-#'     custom_TERM2GENE = custom_TERM2GENE,
-#'     custom_species = "Homo_sapiens",
-#'     custom_IDtype = "symbol",
-#'     custom_version = "Seurat_v4"
-#'   )
-#'   ListDB(db = "CellCycle")
-#'
-#'   db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#'   head(db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]])
-#' }
-#'
-#' @importFrom utils read.table
-#' @importFrom stats na.omit
-#' @importFrom AnnotationDbi select keys columns mappedkeys
-#' @importFrom clusterProfiler read.gmt
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' db_list <- PrepareDB(
+#'   species = "Homo_sapiens",
+#'   db = "GO_BP"
+#' )
+#' ListDB(
+#'   species = "Homo_sapiens", db = "GO_BP"
+#' )
+#' head(
+#'   db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
+#' )
+#'
+#' # Based on homologous gene conversion,
+#' # prepare a gene annotation database that originally does not exist in the species.
+#' db_list <- PrepareDB(
+#'   species = "Homo_sapiens",
+#'   db = "MP"
+#' )
+#' ListDB(
+#'   species = "Homo_sapiens",
+#'   db = "MP"
+#' )
+#' head(
+#'   db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
+#' )
+#'
+#' # Prepare databases for other species
+#' db_list <- PrepareDB(
+#'   species = "Macaca_fascicularis",
+#'   db = "GO_BP"
+#' )
+#' ListDB(
+#'   species = "Macaca_fascicularis",
+#'   db = "GO_BP"
+#' )
+#' head(
+#'   db_list[["Macaca_fascicularis"]][["GO_BP"]][["TERM2GENE"]]
+#' )
+#'
+#' db_list <- PrepareDB(
+#'   species = "Saccharomyces_cerevisiae",
+#'   db = "GO_BP"
+#' )
+#' ListDB(
+#'   species = "Saccharomyces_cerevisiae",
+#'   db = "GO_BP"
+#' )
+#' head(
+#'   db_list[["Saccharomyces_cerevisiae"]][["GO_BP"]][["TERM2GENE"]]
+#' )
+#'
+#' # Prepare databases for Arabidopsis (plant)
+#' db_list <- PrepareDB(
+#'   species = "Arabidopsis_thaliana",
+#'   db = c(
+#'     "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway",
+#'     "ENZYME", "Chromosome"
+#'   ),
+#'   biomart = "plants_mart"
+#' )
+#' head(
+#'   db_list[["Arabidopsis_thaliana"]][["KEGG"]][["TERM2GENE"]]
+#' )
+#'
+#' # You can also build a custom database based on the gene sets you have
+#' ccgenes <- CC_GenePrefetch("Homo_sapiens")
+#' custom_TERM2GENE <- rbind(
+#'   data.frame(
+#'     term = "S_genes",
+#'     gene = ccgenes[["cc_S_genes"]]
+#'   ),
+#'   data.frame(
+#'     term = "G2M_genes",
+#'     gene = ccgenes[["cc_G2M_genes"]]
+#'   )
+#' )
+#' str(custom_TERM2GENE)
+#'
+#' # Set convert_species = TRUE to build a custom database for both species,
+#' # with the name "CellCycle"
+#' db_list <- PrepareDB(
+#'   species = c("Homo_sapiens", "Mus_musculus"),
+#'   db = "CellCycle",
+#'   convert_species = TRUE,
+#'   custom_TERM2GENE = custom_TERM2GENE,
+#'   custom_species = "Homo_sapiens",
+#'   custom_IDtype = "symbol",
+#'   custom_version = "Seurat_v4"
+#' )
+#' ListDB(db = "CellCycle")
+#'
+#' db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
+#' head(
+#'   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
+#' )
+#' }
 PrepareDB <- function(
     species = c("Homo_sapiens", "Mus_musculus"),
     db = c(
@@ -337,21 +375,25 @@ PrepareDB <- function(
             )
         ) {
           terms <- db[db %in% c("GO", "GO_BP", "GO_CC", "GO_MF")]
-          bg <- suppressMessages(select(
-            orgdb,
-            keys = keys(orgdb),
-            columns = c("GOALL", org_key)
-          ))
+          bg <- suppressMessages(
+            AnnotationDbi::select(
+              orgdb,
+              keys = AnnotationDbi::keys(orgdb),
+              columns = c("GOALL", org_key)
+            )
+          )
           bg <- unique(bg[
             !is.na(bg[["GOALL"]]),
             c("GOALL", "ONTOLOGYALL", org_key),
             drop = FALSE
           ])
-          bg2 <- suppressMessages(select(
-            GO.db::GO.db,
-            keys = keys(GO.db::GO.db),
-            columns = c("GOID", "TERM")
-          ))
+          bg2 <- suppressMessages(
+            AnnotationDbi::select(
+              GO.db::GO.db,
+              keys = AnnotationDbi::keys(GO.db::GO.db),
+              columns = c("GOID", "TERM")
+            )
+          )
           bg <- merge(
             x = bg,
             by.x = "GOALL",
@@ -381,13 +423,15 @@ PrepareDB <- function(
               colnames(TERM2GENE) <- c("Term", default_IDtypes[[subterm]])
               colnames(TERM2NAME) <- c("Term", "Name")
               TERM2NAME[["ONTOLOGY"]] <- simpleterm
-              semData <- suppressMessages(GOSemSim::godata(
-                orgdb,
-                ont = simpleterm
-              ))
+              semData <- suppressMessages(
+                GOSemSim::godata(
+                  annoDb = orgdb,
+                  ont = simpleterm
+                )
+              )
             }
-            TERM2GENE <- na.omit(unique(TERM2GENE))
-            TERM2NAME <- na.omit(unique(TERM2NAME))
+            TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+            TERM2NAME <- stats::na.omit(unique(TERM2NAME))
             version <- utils::packageVersion(org_sp)
             db_list[[db_species[subterm]]][[subterm]][[
               "TERM2GENE"
@@ -513,8 +557,8 @@ PrepareDB <- function(
 
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["KEGG"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           # kegg_info <- readLines("https://rest.kegg.jp/info/hsa")
           kegg_info <- strsplit(
             httr::content(httr::GET(paste0(
@@ -604,7 +648,7 @@ PrepareDB <- function(
             ),
             destfile = temp
           )
-          wiki_gmt <- read.gmt(temp)
+          wiki_gmt <- clusterProfiler::read.gmt(temp)
           unlink(temp)
           wiki_gmt <- apply(wiki_gmt, 1, function(x) {
             wikiid <- strsplit(x[["term"]], split = "%")[[1]][3]
@@ -622,8 +666,8 @@ PrepareDB <- function(
           TERM2NAME <- bg[, c(1, 3)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["WikiPathway"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["WikiPathway"]]][["WikiPathway"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -660,11 +704,13 @@ PrepareDB <- function(
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
           message("Preparing database: Reactome")
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
-          df_all <- suppressMessages(select(
-            reactome.db::reactome.db,
-            keys = keys(reactome.db::reactome.db),
-            columns = c("PATHID", "PATHNAME")
-          ))
+          df_all <- suppressMessages(
+            AnnotationDbi::select(
+              reactome.db::reactome.db,
+              keys = AnnotationDbi::keys(reactome.db::reactome.db),
+              columns = c("PATHID", "PATHNAME")
+            )
+          )
           df <- df_all[
             grepl(
               pattern = paste0("^", reactome_sp, ": "),
@@ -699,7 +745,7 @@ PrepareDB <- function(
               stop("Stop the preparation.")
             }
           }
-          df <- na.omit(df)
+          df <- stats::na.omit(df)
           df$PATHNAME <- gsub(
             x = df$PATHNAME,
             pattern = paste0("^", reactome_sp, ": "),
@@ -710,8 +756,8 @@ PrepareDB <- function(
           TERM2NAME <- df[, c(2, 3)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["Reactome"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- utils::packageVersion("reactome.db")
           db_list[[db_species["Reactome"]]][["Reactome"]][[
             "TERM2GENE"
@@ -765,13 +811,13 @@ PrepareDB <- function(
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
           R.utils::gunzip(temp)
-          TERM2GENE <- read.gmt(gsub(".gz", "", temp))
+          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["CORUM"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["CORUM"]]][["CORUM"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["CORUM"]]][["CORUM"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["CORUM"]]][["CORUM"]][["version"]] <- version
@@ -810,7 +856,7 @@ PrepareDB <- function(
         #   lines <- gsub("(<td><a href=\\\")|(\\\">interactions.tsv</a></td>)", "", lines)
         #   version <- strsplit(lines[1], split = "/")[[1]][3]
         #   download(url = paste0("https://www.dgidb.org/", lines[1]), destfile = temp)
-        #   dgi <- read.table(temp, header = TRUE, sep = "\t", fill = TRUE, quote = "")
+        #   dgi <- utils::read.table(temp, header = TRUE, sep = "\t", fill = TRUE, quote = "")
         #   unlink(temp)
         #   dgi <- dgi[!is.na(dgi[["entrez_id"]]), , drop = FALSE]
         #   dgi <- dgi[, c("entrez_id", "drug_claim_name")]
@@ -819,8 +865,8 @@ PrepareDB <- function(
         #   TERM2NAME <- dgi[, c("drug_claim_name", "drug_claim_name")]
         #   colnames(TERM2GENE) <- c("Term", default_IDtypes["DGI"])
         #   colnames(TERM2NAME) <- c("Term", "Name")
-        #   TERM2GENE <- na.omit(unique(TERM2GENE))
-        #   TERM2NAME <- na.omit(unique(TERM2NAME))
+        #   TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+        #   TERM2NAME <- stats::na.omit(unique(TERM2NAME))
         #   db_list[[db_species["DGI"]]][["DGI"]][["TERM2GENE"]] <- TERM2GENE
         #   db_list[[db_species["DGI"]]][["DGI"]][["TERM2NAME"]] <- TERM2NAME
         #   db_list[[db_species["DGI"]]][["DGI"]][["version"]] <- version
@@ -865,7 +911,7 @@ PrepareDB <- function(
             url = "http://www.informatics.jax.org/downloads/reports/VOC_MammalianPhenotype.rpt",
             destfile = temp
           )
-          mp_name <- read.table(
+          mp_name <- utils::read.table(
             temp,
             header = FALSE,
             sep = "\t",
@@ -877,7 +923,7 @@ PrepareDB <- function(
             url = "http://www.informatics.jax.org/downloads/reports/MGI_Gene_Model_Coord.rpt",
             destfile = temp
           )
-          gene_id <- read.table(
+          gene_id <- utils::read.table(
             temp,
             header = FALSE,
             row.names = NULL,
@@ -893,18 +939,11 @@ PrepareDB <- function(
           ]
           rownames(gene_id) <- gene_id[, 1]
 
-          # download(url = "http://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt", destfile = temp) # 43.0 MB
-          # mp_gene <- read.table(temp, header = FALSE, sep = "\t", fill = TRUE, quote = "")
-          # mp_gene[["symbol"]]<- gene_id[mp_gene[["V6"]], "3. marker symbol"]
-          # mp_gene[["MP"]] <- mp_name[mp_gene[, "V4"], 2]
-          # TERM2GENE <- mp_gene[, c("V4", "symbol")]
-          # TERM2NAME <- mp_gene[, c("V4", "MP")]
-
           download(
             url = "http://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
             destfile = temp
           ) # 32.4 MB
-          mp_gene <- read.table(
+          mp_gene <- utils::read.table(
             temp,
             header = FALSE,
             sep = "\t",
@@ -918,8 +957,8 @@ PrepareDB <- function(
 
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["MP"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["MP"]]][["MP"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["MP"]]][["MP"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["MP"]]][["MP"]][["version"]] <- version
@@ -948,7 +987,7 @@ PrepareDB <- function(
             destfile = temp
           )
           R.utils::gunzip(temp)
-          do_all <- read.table(
+          do_all <- utils::read.table(
             gsub(".gz", "", temp),
             header = TRUE,
             sep = "\t",
@@ -998,8 +1037,8 @@ PrepareDB <- function(
           TERM2NAME <- do_df[, c("DOID", "DOtermName")]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["DO"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["DO"]]][["DO"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["DO"]]][["DO"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["DO"]]][["DO"]][["version"]] <- version
@@ -1057,7 +1096,7 @@ PrepareDB <- function(
             url = "http://purl.obolibrary.org/obo/hp/hpoa/phenotype_to_genes.txt",
             destfile = temp
           )
-          hpo <- read.table(
+          hpo <- utils::read.table(
             temp,
             header = TRUE,
             sep = "\t",
@@ -1070,8 +1109,8 @@ PrepareDB <- function(
           TERM2NAME <- hpo[, c("hpo_id", "hpo_name")]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["HPO"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["HPO"]]][["HPO"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["HPO"]]][["HPO"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["HPO"]]][["HPO"]][["version"]] <- version
@@ -1094,7 +1133,7 @@ PrepareDB <- function(
         ## PFAM ---------------------------------------------------------------------------
         if (any(db == "PFAM") && (!"PFAM" %in% names(db_list[[sps]]))) {
           message("Preparing database: PFAM")
-          if (!"PFAM" %in% columns(orgdb)) {
+          if (!"PFAM" %in% AnnotationDbi::columns(orgdb)) {
             warning(
               "PFAM is not in the orgdb: ",
               orgdb,
@@ -1102,15 +1141,17 @@ PrepareDB <- function(
               immediate. = TRUE
             )
           } else {
-            bg <- suppressMessages(select(
-              orgdb,
-              keys = keys(orgdb),
-              columns = c("PFAM", org_key)
-            ))
+            bg <- suppressMessages(
+              AnnotationDbi::select(
+                orgdb,
+                keys = AnnotationDbi::keys(orgdb),
+                columns = c("PFAM", org_key)
+              )
+            )
             bg <- unique(bg[!is.na(bg$PFAM), c("PFAM", org_key), drop = FALSE])
-            bg2 <- as.data.frame(PFAM.db::PFAMDE2AC[mappedkeys(
-              PFAM.db::PFAMDE2AC
-            )])
+            bg2 <- as.data.frame(
+              PFAM.db::PFAMDE2AC[AnnotationDbi::mappedkeys(PFAM.db::PFAMDE2AC)]
+            )
             rownames(bg2) <- bg2[["ac"]]
             bg[["PFAM_name"]] <- bg2[bg$PFAM, "de"]
             bg[is.na(bg[["PFAM_name"]]), "PFAM_name"] <- bg[
@@ -1121,8 +1162,8 @@ PrepareDB <- function(
             TERM2NAME <- bg[, c("PFAM", "PFAM_name")]
             colnames(TERM2GENE) <- c("Term", default_IDtypes[["PFAM"]])
             colnames(TERM2NAME) <- c("Term", "Name")
-            TERM2GENE <- na.omit(unique(TERM2GENE))
-            TERM2NAME <- na.omit(unique(TERM2NAME))
+            TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+            TERM2NAME <- stats::na.omit(unique(TERM2NAME))
             version <- utils::packageVersion(org_sp)
             db_list[[db_species["PFAM"]]][["PFAM"]][["TERM2GENE"]] <- TERM2GENE
             db_list[[db_species["PFAM"]]][["PFAM"]][["TERM2NAME"]] <- TERM2NAME
@@ -1149,15 +1190,19 @@ PrepareDB <- function(
           any(db == "Chromosome") && (!"Chromosome" %in% names(db_list[[sps]]))
         ) {
           message("Preparing database: Chromosome")
-          orgdbCHR <- get(paste0(gsub(pattern = ".db", "", org_sp), "CHR"))
-          chr <- as.data.frame(orgdbCHR[mappedkeys(orgdbCHR)])
+          orgdbCHR <- get(
+            paste0(gsub(pattern = ".db", "", org_sp), "CHR")
+          )
+          chr <- as.data.frame(
+            orgdbCHR[AnnotationDbi::mappedkeys(orgdbCHR)]
+          )
           chr[, 2] <- paste0("chr", chr[, 2])
           TERM2GENE <- chr[, c(2, 1)]
           TERM2NAME <- chr[, c(2, 2)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["Chromosome"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- utils::packageVersion(org_sp)
           db_list[[db_species["Chromosome"]]][["Chromosome"]][[
             "TERM2GENE"
@@ -1191,7 +1236,7 @@ PrepareDB <- function(
         ## GeneType ---------------------------------------------------------------------------
         if (any(db == "GeneType") && (!"GeneType" %in% names(db_list[[sps]]))) {
           message("Preparing database: GeneType")
-          if (!"GENETYPE" %in% columns(orgdb)) {
+          if (!"GENETYPE" %in% AnnotationDbi::columns(orgdb)) {
             warning(
               "GENETYPE is not in the orgdb: ",
               org_sp,
@@ -1199,17 +1244,19 @@ PrepareDB <- function(
               immediate. = TRUE
             )
           } else {
-            bg <- suppressMessages(select(
-              orgdb,
-              keys = keys(orgdb),
-              columns = c("GENETYPE", org_key)
-            ))
+            bg <- suppressMessages(
+              AnnotationDbi::select(
+                orgdb,
+                keys = AnnotationDbi::keys(orgdb),
+                columns = c("GENETYPE", org_key)
+              )
+            )
             TERM2GENE <- bg[, c("GENETYPE", org_key)]
             TERM2NAME <- bg[, c("GENETYPE", "GENETYPE")]
             colnames(TERM2GENE) <- c("Term", default_IDtypes[["GeneType"]])
             colnames(TERM2NAME) <- c("Term", "Name")
-            TERM2GENE <- na.omit(unique(TERM2GENE))
-            TERM2NAME <- na.omit(unique(TERM2NAME))
+            TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+            TERM2NAME <- stats::na.omit(unique(TERM2NAME))
             version <- utils::packageVersion(org_sp)
             db_list[[db_species["GeneType"]]][["GeneType"]][[
               "TERM2GENE"
@@ -1244,7 +1291,7 @@ PrepareDB <- function(
         ## Enzyme ---------------------------------------------------------------------------
         if (any(db == "Enzyme") && (!"Enzyme" %in% names(db_list[[sps]]))) {
           message("Preparing database: Enzyme")
-          if (!"ENZYME" %in% columns(orgdb)) {
+          if (!"ENZYME" %in% AnnotationDbi::columns(orgdb)) {
             warning(
               "ENZYME is not in the orgdb: ",
               orgdb,
@@ -1252,19 +1299,21 @@ PrepareDB <- function(
               immediate. = TRUE
             )
           } else {
-            bg <- suppressMessages(select(
-              orgdb,
-              keys = keys(orgdb),
-              columns = c("ENZYME", org_key)
-            ))
-            bg1 <- bg2 <- na.omit(bg)
+            bg <- suppressMessages(
+              AnnotationDbi::select(
+                orgdb,
+                keys = AnnotationDbi::keys(orgdb),
+                columns = c("ENZYME", org_key)
+              )
+            )
+            bg1 <- bg2 <- stats::na.omit(bg)
             bg1[, "ENZYME"] <- sapply(
               strsplit(bg1[, "ENZYME"], "\\."),
-              function(x) paste0(head(x, 1), collapse = ".")
+              function(x) paste0(utils::head(x, 1), collapse = ".")
             )
             bg2[, "ENZYME"] <- sapply(
               strsplit(bg2[, "ENZYME"], "\\."),
-              function(x) paste0(head(x, 2), collapse = ".")
+              function(x) paste0(utils::head(x, 2), collapse = ".")
             )
             bg <- unique(rbind(bg1, bg2))
             bg[, "ENZYME"] <- gsub(pattern = "\\.-$", "", x = bg[, 2])
@@ -1274,7 +1323,7 @@ PrepareDB <- function(
               url = "https://ftp.expasy.org/databases/enzyme/enzclass.txt",
               destfile = temp
             )
-            enzyme <- read.table(
+            enzyme <- utils::read.table(
               temp,
               header = FALSE,
               sep = "\t",
@@ -1312,8 +1361,8 @@ PrepareDB <- function(
             TERM2NAME <- bg[, c("ENZYME", "Name")]
             colnames(TERM2GENE) <- c("Term", default_IDtypes[["Enzyme"]])
             colnames(TERM2NAME) <- c("Term", "Name")
-            TERM2GENE <- na.omit(unique(TERM2GENE))
-            TERM2NAME <- na.omit(unique(TERM2NAME))
+            TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+            TERM2NAME <- stats::na.omit(unique(TERM2NAME))
             version <- utils::packageVersion(org_sp)
             db_list[[db_species["Enzyme"]]][["Enzyme"]][[
               "TERM2GENE"
@@ -1357,7 +1406,7 @@ PrepareDB <- function(
                 "_TF"
               )
               download(url = url, destfile = temp)
-              tf <- read.table(
+              tf <- utils::read.table(
                 temp,
                 header = TRUE,
                 sep = "\t",
@@ -1371,7 +1420,7 @@ PrepareDB <- function(
                 "_Cof"
               )
               download(url = url, destfile = temp)
-              tfco <- read.table(
+              tfco <- utils::read.table(
                 temp,
                 header = TRUE,
                 sep = "\t",
@@ -1393,7 +1442,7 @@ PrepareDB <- function(
                     "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF"
                   )
                   download(url = url, destfile = temp)
-                  tf <- read.table(
+                  tf <- utils::read.table(
                     temp,
                     header = TRUE,
                     sep = "\t",
@@ -1405,7 +1454,7 @@ PrepareDB <- function(
                     "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof"
                   )
                   download(url = url, destfile = temp)
-                  tfco <- read.table(
+                  tfco <- utils::read.table(
                     temp,
                     header = TRUE,
                     sep = "\t",
@@ -1432,7 +1481,7 @@ PrepareDB <- function(
               "_TF"
             )
             download(url = url, destfile = temp)
-            tf <- read.table(
+            tf <- utils::read.table(
               temp,
               header = TRUE,
               sep = "\t",
@@ -1446,7 +1495,7 @@ PrepareDB <- function(
               "_TF_cofactors"
             )
             download(url = url, destfile = temp)
-            tfco <- read.table(
+            tfco <- utils::read.table(
               temp,
               header = TRUE,
               sep = "\t",
@@ -1468,7 +1517,7 @@ PrepareDB <- function(
                   "https://raw.githubusercontent.com/GuoBioinfoLab/AnimalTFDB3/master/AnimalTFDB3/static/AnimalTFDB3/download/Homo_sapiens_TF"
                 )
                 download(url = url, destfile = temp)
-                tf <- read.table(
+                tf <- utils::read.table(
                   temp,
                   header = TRUE,
                   sep = "\t",
@@ -1480,7 +1529,7 @@ PrepareDB <- function(
                   "https://raw.githubusercontent.com/GuoBioinfoLab/AnimalTFDB3/master/AnimalTFDB3/static/AnimalTFDB3/download/Homo_sapiens_TF_cofactors"
                 )
                 download(url = url, destfile = temp)
-                tfco <- read.table(
+                tfco <- utils::read.table(
                   temp,
                   header = TRUE,
                   sep = "\t",
@@ -1506,8 +1555,8 @@ PrepareDB <- function(
           )
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["TF"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["TF"]]][["TF"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["TF"]]][["TF"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["TF"]]][["TF"]][["version"]] <- version
@@ -1574,8 +1623,8 @@ PrepareDB <- function(
           )
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["CSPA"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- "CSPA"
           db_list[[db_species["CSPA"]]][["CSPA"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["CSPA"]]][["CSPA"]][["TERM2NAME"]] <- TERM2NAME
@@ -1642,8 +1691,8 @@ PrepareDB <- function(
           )
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["Surfaceome"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- "Surfaceome"
           db_list[[db_species["Surfaceome"]]][["Surfaceome"]][[
             "TERM2GENE"
@@ -1696,7 +1745,7 @@ PrepareDB <- function(
           temp <- tempfile()
           url <- "http://119.3.41.228/SPRomeDB/files/download/secreted_proteins_SPRomeDB.csv"
           download(url = url, destfile = temp)
-          spromedb <- read.csv(temp, header = TRUE)
+          spromedb <- utils::read.csv(temp, header = TRUE)
           unlink(temp)
           TERM2GENE <- data.frame(
             "Term" = "SecretoryProtein",
@@ -1708,8 +1757,8 @@ PrepareDB <- function(
           )
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["SPRomeDB"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- "SPRomeDB"
           db_list[[db_species["SPRomeDB"]]][["SPRomeDB"]][[
             "TERM2GENE"
@@ -1823,8 +1872,8 @@ PrepareDB <- function(
           )
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["VerSeDa"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           version <- "VerSeDa"
           db_list[[db_species["VerSeDa"]]][["VerSeDa"]][[
             "TERM2GENE"
@@ -1890,13 +1939,13 @@ PrepareDB <- function(
           )
           temp <- tempfile()
           download(url = url, destfile = temp)
-          TERM2GENE <- read.gmt(temp)
+          TERM2GENE <- clusterProfiler::read.gmt(temp)
           version <- "v1.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["TFLink"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["TFLink"]]][["TFLink"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -1946,13 +1995,13 @@ PrepareDB <- function(
           )
           temp <- tempfile()
           download(url = url, destfile = temp)
-          TERM2GENE <- read.table(temp, header = TRUE, fill = T, sep = "\t")
+          TERM2GENE <- utils::read.table(temp, header = TRUE, fill = T, sep = "\t")
           version <- "v1.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["hTFtarget"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["hTFtarget"]]][["hTFtarget"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2009,7 +2058,7 @@ PrepareDB <- function(
             temp <- tempfile(fileext = ".gz")
             download(url = url, destfile = temp)
             R.utils::gunzip(temp)
-            TERM2GENE <- read.table(
+            TERM2GENE <- utils::read.table(
               gsub(".gz$", "", temp),
               header = FALSE,
               fill = T,
@@ -2018,7 +2067,7 @@ PrepareDB <- function(
           } else {
             temp <- tempfile()
             download(url = url, destfile = temp)
-            TERM2GENE <- read.table(
+            TERM2GENE <- utils::read.table(
               temp,
               header = FALSE,
               fill = T,
@@ -2029,8 +2078,8 @@ PrepareDB <- function(
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["TRRUST"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["TRRUST"]]][["TRRUST"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2077,13 +2126,13 @@ PrepareDB <- function(
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
           R.utils::gunzip(temp)
-          TERM2GENE <- read.gmt(gsub(".gz", "", temp))
+          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["JASPAR"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["JASPAR"]]][["JASPAR"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2130,13 +2179,13 @@ PrepareDB <- function(
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
           R.utils::gunzip(temp)
-          TERM2GENE <- read.gmt(gsub(".gz", "", temp))
+          TERM2GENE <- clusterProfiler::read.gmt(gsub(".gz", "", temp))
           version <- "Harmonizome 3.0"
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["ENCODE"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["ENCODE"]]][["ENCODE"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2262,8 +2311,8 @@ PrepareDB <- function(
             "Term",
             paste0(default_IDtypes[["MSigDB"]], collapse = ".")
           )
-          TERM2NAME <- na.omit(unique(TERM2NAME))
-          TERM2GENE <- na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
 
           db_list[[db_species["MSigDB"]]][["MSigDB"]][[
             "TERM2GENE"
@@ -2385,8 +2434,8 @@ PrepareDB <- function(
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["CellTalk"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["CellTalk"]]][["CellTalk"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2512,8 +2561,8 @@ PrepareDB <- function(
           TERM2NAME <- TERM2GENE[, c(1, 1)]
           colnames(TERM2GENE) <- c("Term", default_IDtypes[["CellChat"]])
           colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- na.omit(unique(TERM2GENE))
-          TERM2NAME <- na.omit(unique(TERM2NAME))
+          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
           db_list[[db_species["CellChat"]]][["CellChat"]][[
             "TERM2GENE"
           ]] <- TERM2GENE
@@ -2576,8 +2625,8 @@ PrepareDB <- function(
         }
         colnames(TERM2NAME) <- c("Term", "Name")
 
-        TERM2GENE <- na.omit(unique(TERM2GENE))
-        TERM2NAME <- na.omit(unique(TERM2NAME))
+        TERM2GENE <- stats::na.omit(unique(TERM2GENE))
+        TERM2NAME <- stats::na.omit(unique(TERM2NAME))
         db_list[[db_species[db]]][[db]][["TERM2GENE"]] <- TERM2GENE
         db_list[[db_species[db]]][[db]][["TERM2NAME"]] <- TERM2NAME
         db_list[[db_species[db]]][[db]][["version"]] <- custom_version
@@ -2621,7 +2670,7 @@ PrepareDB <- function(
       # library("meshr")
       # library("MeSHDbi")
       # MeSH.db <- MeSHDbi::MeSHDb(db)
-      # geneid <- keys(MeSH.db, keytype = "GENEID")
+      # geneid <- AnnotationDbi::keys(MeSH.db, keytype = "GENEID")
       #
       # RSQLite::dbConnect(db)
       # library("MeSHDbi")
@@ -2630,12 +2679,12 @@ PrepareDB <- function(
       # MeSHDbi::dbschema(meshdb)
       # MeSHDbi::dbconn(meshdb)
       #
-      #   select(file, keys = keys(file), columns = columns(file))
+      #   AnnotationDbi::select(file, keys = AnnotationDbi::keys(file), columns = AnnotationDbi::columns(file))
       #
       #
-      #   bg <- AnnotationDbi::select(meshdb, keys = keys(meshdb, keytype = "GENEID"), keytype = "GENEID", columns = c("GENEID", "MESHID", "MESHCATEGORY"))
-      #   # bg <-  bg[which(bg$GENEID %in% keys(orgdb)),]
-      #   # bg_all <- AnnotationDbi::select(MeSH.db, keys=keys(MeSH.db,keytype = "MESHID"),columns = c("MESHID","MESHTERM"),keytype = "MESHID")
+      #   bg <- AnnotationDbi::select(meshdb, keys = AnnotationDbi::keys(meshdb, keytype = "GENEID"), keytype = "GENEID", columns = c("GENEID", "MESHID", "MESHCATEGORY"))
+      #   # bg <-  bg[which(bg$GENEID %in% AnnotationDbi::keys(orgdb)),]
+      #   # bg_all <- AnnotationDbi::select(MeSH.db, keys=AnnotationDbi::keys(MeSH.db,keytype = "MESHID"),columns = c("MESHID","MESHTERM"),keytype = "MESHID")
       #   # saveRDS(bg_all,"./MeSHID2Term.rds")
       #   bg_all <- readRDS("./MeSHID2Term.rds")
       #   bg <- merge(x = bg, by.x = "MESHID", y = bg_all, by.y = "MESHID", all.x = TRUE)
@@ -2766,7 +2815,7 @@ PrepareDB <- function(
         }
         if (grepl("MSigDB_", term)) {
           map <- db_list[[sps]][["MSigDB"]][["TERM2GENE"]][, -1, drop = FALSE]
-          map <- aggregate(
+          map <- stats::aggregate(
             map,
             by = list(map[[1]]),
             FUN = function(x) list(unique(x))

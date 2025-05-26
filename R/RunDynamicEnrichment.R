@@ -8,11 +8,6 @@
 #' @inheritParams CellScoring
 #' @param score_method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".
 #'
-#' @importFrom Seurat NormalizeData VariableFeatures FindVariableFeatures AddMetaData
-#' @importFrom stats p.adjust
-#' @importFrom BiocParallel bplapply bpprogressbar<- bpRNGseed<- bpworkers
-#' @importFrom ggplot2 ggplot aes geom_point geom_abline labs
-#'
 #' @seealso \code{\link{RunDynamicFeatures}} \code{\link{DynamicHeatmap}}
 #'
 #' @export
@@ -39,7 +34,7 @@
 #' pancreas_sub <- RunDynamicEnrichment(
 #'   srt = pancreas_sub,
 #'   lineages = "Lineage1",
-#'   score_method = "AUCell",
+#'   score_method = "UCell",
 #'   db = "GO_BP",
 #'   species = "Mus_musculus"
 #' )
@@ -145,7 +140,7 @@ RunDynamicEnrichment <- function(
     )]
     TERM2NAME_tmp <- db_list[[species]][[term]][["TERM2NAME"]]
     dup <- duplicated(TERM2GENE_tmp)
-    na <- rowSums(is.na(TERM2GENE_tmp)) > 0
+    na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
     TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
     TERM2NAME_tmp <- TERM2NAME_tmp[
       TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"], ,

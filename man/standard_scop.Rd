@@ -94,49 +94,64 @@ This function performs a standard single-cell analysis workflow.
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- standard_scop(pancreas_sub)
-CellDimPlot(pancreas_sub, group.by = "SubCellType")
+pancreas_sub <- standard_scop(
+  srt = pancreas_sub
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType"
+)
 
-\dontrun{
-# Use a combination of different linear or non-linear dimension reduction methods
+# Use a combination of different linear
+# or non-linear dimension reduction methods
 linear_reductions <- c(
-  "pca", "ica", "nmf", "mds", "glmpca"
+  "pca", "nmf", "mds", "glmpca"
 )
 pancreas_sub <- standard_scop(
   pancreas_sub,
   linear_reduction = linear_reductions,
   nonlinear_reduction = "umap"
 )
-plist1 <- lapply(linear_reductions, function(lr) {
-  CellDimPlot(pancreas_sub,
-    group.by = "SubCellType",
-    reduction = paste0("Standard", lr, "UMAP2D"),
-    xlab = "", ylab = "", title = lr,
-    legend.position = "none",
-    theme_use = "theme_blank"
-  )
-})
+plist1 <- lapply(
+  linear_reductions, function(lr) {
+    CellDimPlot(
+      pancreas_sub,
+      group.by = "SubCellType",
+      reduction = paste0(
+        "Standard", lr, "UMAP2D"
+      ),
+      xlab = "", ylab = "", title = lr,
+      legend.position = "none",
+      theme_use = "theme_blank"
+    )
+  }
+)
 patchwork::wrap_plots(plotlist = plist1)
 
 nonlinear_reductions <- c(
-  "umap", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+  "umap", "tsne", "dm", "phate",
+  "pacmap", "trimap", "largevis", "fr"
 )
 pancreas_sub <- standard_scop(
   pancreas_sub,
   linear_reduction = "pca",
   nonlinear_reduction = nonlinear_reductions
 )
-plist2 <- lapply(nonlinear_reductions, function(nr) {
-  CellDimPlot(pancreas_sub,
-    group.by = "SubCellType",
-    reduction = paste0("Standardpca", toupper(nr), "2D"),
-    xlab = "", ylab = "", title = nr,
-    legend.position = "none",
-    theme_use = "theme_blank"
-  )
-})
+plist2 <- lapply(
+  nonlinear_reductions, function(nr) {
+    CellDimPlot(
+      pancreas_sub,
+      group.by = "SubCellType",
+      reduction = paste0(
+        "Standardpca", toupper(nr), "2D"
+      ),
+      xlab = "", ylab = "", title = nr,
+      legend.position = "none",
+      theme_use = "theme_blank"
+    )
+  }
+)
 patchwork::wrap_plots(plotlist = plist2)
-}
 }
 \seealso{
 \code{\link{Integration_scop}}

@@ -20,7 +20,7 @@
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunLargeVis(
 #'   object = pancreas_sub,
-#'   features = Seurat::VariableFeatures(pancreas_sub)
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -39,52 +39,51 @@ RunLargeVis <- function(object, ...) {
 #' @method RunLargeVis Seurat
 #' @export
 RunLargeVis.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  perplexity = 50,
-  n_neighbors = perplexity * 3,
-  n_components = 2,
-  metric = "euclidean",
-  n_epochs = -1,
-  learning_rate = 1,
-  scale = "maxabs",
-  init = "lvrandom",
-  init_sdev = NULL,
-  repulsion_strength = 7,
-  negative_sample_rate = 5,
-  nn_method = NULL,
-  n_trees = 50,
-  search_k = 2 * n_neighbors * n_trees,
-  n_threads = NULL,
-  n_sgd_threads = 0,
-  grain_size = 1,
-  kernel = "gauss",
-  pca = NULL,
-  pca_center = TRUE,
-  pcg_rand = TRUE,
-  fast_sgd = FALSE,
-  batch = FALSE,
-  opt_args = NULL,
-  epoch_callback = NULL,
-  pca_method = NULL,
-  reduction.name = "largevis",
-  reduction.key = "LargeVis_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    perplexity = 50,
+    n_neighbors = perplexity * 3,
+    n_components = 2,
+    metric = "euclidean",
+    n_epochs = -1,
+    learning_rate = 1,
+    scale = "maxabs",
+    init = "lvrandom",
+    init_sdev = NULL,
+    repulsion_strength = 7,
+    negative_sample_rate = 5,
+    nn_method = NULL,
+    n_trees = 50,
+    search_k = 2 * n_neighbors * n_trees,
+    n_threads = NULL,
+    n_sgd_threads = 0,
+    grain_size = 1,
+    kernel = "gauss",
+    pca = NULL,
+    pca_center = TRUE,
+    pcg_rand = TRUE,
+    fast_sgd = FALSE,
+    batch = FALSE,
+    opt_args = NULL,
+    epoch_callback = NULL,
+    pca_method = NULL,
+    reduction.name = "largevis",
+    reduction.key = "LargeVis_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) == 3) {
     stop("Please specify only one of the following arguments: dims, features")
   }
   if (!is.null(x = features)) {
-    assay <- assay %||% Seurat::DefaultAssay(object = object)
+    assay <- assay %||% SeuratObject::DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        Seurat::GetAssayData(
+        SeuratObject::GetAssayData(
           object = object,
           layer = layer,
           assay = assay
@@ -102,8 +101,12 @@ RunLargeVis.Seurat <- function(
       )
     }
   } else if (!is.null(x = dims)) {
-    data.use <- Seurat::Embeddings(object[[reduction]])[, dims]
-    assay <- Seurat::DefaultAssay(object = object[[reduction]])
+    data.use <- Seurat::Embeddings(
+      object[[reduction]]
+    )[, dims]
+    assay <- SeuratObject::DefaultAssay(
+      object = object[[reduction]]
+    )
     if (length(x = dims) < n_components) {
       stop(
         "Please provide as many or more dims than n_components: ",
@@ -158,39 +161,38 @@ RunLargeVis.Seurat <- function(
 #' @method RunLargeVis default
 #' @export
 RunLargeVis.default <- function(
-  object,
-  assay = NULL,
-  perplexity = 50,
-  n_neighbors = perplexity * 3,
-  n_components = 2,
-  metric = "euclidean",
-  n_epochs = -1,
-  learning_rate = 1,
-  scale = "maxabs",
-  init = "lvrandom",
-  init_sdev = NULL,
-  repulsion_strength = 7,
-  negative_sample_rate = 5,
-  nn_method = NULL,
-  n_trees = 50,
-  search_k = 2 * n_neighbors * n_trees,
-  n_threads = NULL,
-  n_sgd_threads = 0,
-  grain_size = 1,
-  kernel = "gauss",
-  pca = NULL,
-  pca_center = TRUE,
-  pcg_rand = TRUE,
-  fast_sgd = FALSE,
-  batch = FALSE,
-  opt_args = NULL,
-  epoch_callback = NULL,
-  pca_method = NULL,
-  reduction.key = "LargeVis_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    assay = NULL,
+    perplexity = 50,
+    n_neighbors = perplexity * 3,
+    n_components = 2,
+    metric = "euclidean",
+    n_epochs = -1,
+    learning_rate = 1,
+    scale = "maxabs",
+    init = "lvrandom",
+    init_sdev = NULL,
+    repulsion_strength = 7,
+    negative_sample_rate = 5,
+    nn_method = NULL,
+    n_trees = 50,
+    search_k = 2 * n_neighbors * n_trees,
+    n_threads = NULL,
+    n_sgd_threads = 0,
+    grain_size = 1,
+    kernel = "gauss",
+    pca = NULL,
+    pca_center = TRUE,
+    pcg_rand = TRUE,
+    fast_sgd = FALSE,
+    batch = FALSE,
+    opt_args = NULL,
+    epoch_callback = NULL,
+    pca_method = NULL,
+    reduction.key = "LargeVis_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }

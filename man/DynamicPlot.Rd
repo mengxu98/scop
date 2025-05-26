@@ -26,6 +26,7 @@ DynamicPlot(
   add_point = TRUE,
   pt.size = 1,
   point_palette = "Paired",
+  point_palcolor = NULL,
   add_rug = TRUE,
   flip = FALSE,
   reverse = FALSE,
@@ -85,6 +86,8 @@ DynamicPlot(
 
 \item{point_palette}{A character string specifying the name of the palette to use for the point colors. Default is "Paired".}
 
+\item{point_palcolor}{A vector specifying the colors to use for the point palette. Default is NULL.}
+
 \item{add_rug}{A boolean specifying whether to add rugs to the plot. Default is TRUE.}
 
 \item{flip}{A boolean specifying whether to flip the x-axis. Default is FALSE.}
@@ -112,8 +115,6 @@ DynamicPlot(
 \item{byrow}{A boolean specifying whether to fill plots by row in the combined plot. Default is TRUE.}
 
 \item{seed}{A numeric specifying the random seed. Default is 11.}
-
-\item{point_palcolor}{A vector specifying the colors to use for the point palette. Default is NULL.}
 }
 \description{
 Plot dynamic features across pseudotime.

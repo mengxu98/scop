@@ -6,13 +6,13 @@
 #' @param base_size Base font size
 #' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
 #'
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
 #' p <- ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +
 #'   geom_point()
 #' p + theme_scop()
-#' @importFrom ggplot2 theme element_blank element_text element_rect margin
-#' @export
 theme_scop <- function(
     aspect.ratio = NULL,
     base_size = 12,
@@ -55,8 +55,8 @@ theme_scop <- function(
     strip.background = element_rect(
       fill = "transparent", linetype = 0
     ),
-    strip.switch.pad.grid = unit(-1, "pt"),
-    strip.switch.pad.wrap = unit(-1, "pt"),
+    strip.switch.pad.grid = grid::unit(-1, "pt"),
+    strip.switch.pad.wrap = grid::unit(-1, "pt"),
     strip.placement = "outside",
     legend.title = element_text(
       size = 12 * text_size_scale,
@@ -71,7 +71,7 @@ theme_scop <- function(
       fill = "transparent",
       color = "transparent"
     ),
-    legend.key.size = unit(10, "pt"),
+    legend.key.size = grid::unit(10, "pt"),
     legend.background = element_blank(),
     panel.background = element_rect(
       fill = "white",
@@ -97,7 +97,7 @@ theme_scop <- function(
   for (n in names(args2)) {
     args1[[n]] <- args2[[n]]
   }
-  args <- args1[names(args1) %in% formalArgs(theme)]
+  args <- args1[names(args1) %in% methods::formalArgs(theme)]
   out <- do.call(
     what = theme,
     args = args
@@ -118,14 +118,14 @@ theme_scop <- function(
 #' @param lab_size Label size.
 #' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
 #'
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
 #' p <- ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +
 #'   geom_point()
 #' p + theme_blank()
 #' p + theme_blank(xlab = "x-axis", ylab = "y-axis", lab_size = 16)
-#' @importFrom ggplot2 theme element_blank margin annotation_custom coord_cartesian
-#' @export
 theme_blank <- function(
     add_coord = TRUE,
     xlen_npc = 0.15,
@@ -143,7 +143,7 @@ theme_blank <- function(
     legend.background = element_blank(),
     legend.box.margin = margin(0, 0, 0, 0),
     legend.margin = margin(0, 0, 0, 0),
-    legend.key.size = unit(10, "pt"),
+    legend.key.size = grid::unit(10, "pt"),
     plot.margin = margin(
       lab_size + 2,
       lab_size + 2,
@@ -166,7 +166,7 @@ theme_blank <- function(
   for (n in names(args2)) {
     args1[[n]] <- args2[[n]]
   }
-  args <- args1[names(args1) %in% formalArgs(theme)]
+  args <- args1[names(args1) %in% methods::formalArgs(theme)]
   out <- do.call(
     what = theme,
     args = args
@@ -175,30 +175,30 @@ theme_blank <- function(
     g <- grid::grobTree(
       grid::gList(
         grid::linesGrob(
-          x = unit(c(0, xlen_npc), "npc"),
-          y = unit(c(0, 0), "npc"),
+          x = grid::unit(c(0, xlen_npc), "npc"),
+          y = grid::unit(c(0, 0), "npc"),
           arrow = grid::arrow(
-            length = unit(0.02, "npc")
+            length = grid::unit(0.02, "npc")
           ),
           gp = grid::gpar(lwd = 2)
         ),
         grid::textGrob(
           label = xlab,
-          x = unit(0, "npc"),
-          y = unit(0, "npc"),
+          x = grid::unit(0, "npc"),
+          y = grid::unit(0, "npc"),
           vjust = 4 / 3,
           hjust = 0,
           gp = grid::gpar(fontsize = lab_size)
         ),
         grid::linesGrob(
-          x = unit(c(0, 0), "npc"),
-          y = unit(c(0, ylen_npc), "npc"),
-          arrow = grid::arrow(length = unit(0.02, "npc")),
+          x = grid::unit(c(0, 0), "npc"),
+          y = grid::unit(c(0, ylen_npc), "npc"),
+          arrow = grid::arrow(length = grid::unit(0.02, "npc")),
           gp = grid::gpar(lwd = 2)
         ),
         grid::textGrob(
-          label = ylab, x = unit(0, "npc"),
-          y = unit(0, "npc"),
+          label = ylab, x = grid::unit(0, "npc"),
+          y = grid::unit(0, "npc"),
           vjust = -2 / 3,
           hjust = 0,
           rot = 90,
@@ -347,8 +347,8 @@ palette_scop <- function(
     }
     if (all(is.na(x))) {
       values <- as.factor(rep(0, n))
-    } else if (length(unique(na.omit(as.numeric(x)))) == 1) {
-      values <- as.factor(rep(unique(na.omit(as.numeric(x))), n))
+    } else if (length(unique(stats::na.omit(as.numeric(x)))) == 1) {
+      values <- as.factor(rep(unique(stats::na.omit(as.numeric(x))), n))
     } else {
       if (isTRUE(matched)) {
         values <- cut(
@@ -415,19 +415,40 @@ palette_scop <- function(
 #'
 #' @seealso \code{\link{palette_scop}} \code{\link{palette_list}}
 #'
+#' @export
+#'
 #' @examples
-#' show_palettes(palettes = list(c("red", "blue", "green"), c("yellow", "purple", "orange")))
+#' show_palettes(
+#'   palettes = list(
+#'     c("red", "blue", "green"),
+#'     c("yellow", "purple", "orange")
+#'   )
+#' )
 #' all_palettes <- show_palettes(return_palettes = TRUE)
 #' names(all_palettes)
 #' all_palettes[["simspec"]]
 #' show_palettes(index = 1:10)
-#' show_palettes(type = "discrete", index = 1:10)
-#' show_palettes(type = "continuous", index = 1:10)
-#' show_palettes(palette_names = c("Paired", "nejm", "simspec", "Spectral", "jet"), return_palettes = TRUE)
-#'
-#' @importFrom ggplot2 ggplot geom_col scale_fill_manual scale_x_continuous element_blank
-#' @export
-show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), index = NULL, palette_names = NULL, return_names = TRUE, return_palettes = FALSE) {
+#' show_palettes(
+#'   type = "discrete",
+#'   index = 1:10
+#' )
+#' show_palettes(
+#'   type = "continuous",
+#'   index = 1:10
+#' )
+#' show_palettes(
+#'   palette_names = c(
+#'     "Paired", "nejm", "simspec", "Spectral", "jet"
+#'   ),
+#'   return_palettes = TRUE
+#' )
+show_palettes <- function(
+    palettes = NULL,
+    type = c("discrete", "continuous"),
+    index = NULL,
+    palette_names = NULL,
+    return_names = TRUE,
+    return_palettes = FALSE) {
   palette_list <- scop::palette_list
   if (!is.null(palettes)) {
     palette_list <- palettes
@@ -449,12 +470,18 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
   }
   palette_list <- palette_list[palette_names]
 
-  df <- data.frame(palette = rep(names(palette_list), sapply(palette_list, length)), color = unlist(palette_list))
+  df <- data.frame(
+    palette = rep(
+      names(palette_list), sapply(palette_list, length)
+    ), color = unlist(palette_list)
+  )
   df[["palette"]] <- factor(df[["palette"]], levels = rev(unique(df[["palette"]])))
   df[["color_order"]] <- factor(seq_len(nrow(df)), levels = seq_len(nrow(df)))
   df[["proportion"]] <- as.numeric(1 / table(df$palette)[df$palette])
 
-  p <- ggplot(data = df, aes(y = .data[["palette"]], x = .data[["proportion"]], fill = .data[["color_order"]])) +
+  p <- ggplot(
+    data = df, aes(y = .data[["palette"]], x = .data[["proportion"]], fill = .data[["color_order"]])
+  ) +
     geom_col(show.legend = FALSE) +
     scale_fill_manual(values = df[["color"]]) +
     scale_x_continuous(expand = c(0, 0), trans = "reverse") +
@@ -497,44 +524,103 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
 #' @param verbose Whether to print messages.
 #' @param ... Unused.
 #'
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
-#' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
+#' p <- ggplot(
+#'   data = mtcars, aes(x = mpg, y = wt, colour = cyl)
+#' ) +
 #'   geom_point() +
 #'   facet_wrap(~gear, nrow = 2)
 #' # fix the size of panel
-#' panel_fix(p, width = 5, height = 3, units = "cm")
+#' panel_fix(
+#'   p,
+#'   width = 5,
+#'   height = 3,
+#'   units = "cm"
+#' )
 #' # rasterize the panel
-#' panel_fix(p, width = 5, height = 3, units = "cm", raster = TRUE, dpi = 30)
+#' panel_fix(
+#'   p,
+#'   width = 5,
+#'   height = 3,
+#'   units = "cm",
+#'   raster = TRUE,
+#'   dpi = 90
+#' )
 #'
 #' # panel_fix will build and render the plot when the input is a ggplot object.
 #' # so after panel_fix, the size of the object will be changed.
 #' object.size(p)
-#' object.size(panel_fix(p, width = 5, height = 3, units = "cm"))
+#' object.size(
+#'   panel_fix(
+#'     p,
+#'     width = 5,
+#'     height = 3,
+#'     units = "cm"
+#'   )
+#' )
 #'
 #' ## save the plot with appropriate size
-#' # p_fix <- panel_fix(p, width = 5, height = 3, units = "cm")
+#' # p_fix <- panel_fix(
+#' #   p,
+#' #   width = 5,
+#' #   height = 3,
+#' #   units = "cm"
+#' # )
 #' # plot_size <- attr(p_fix, "size")
 #' # ggsave(
-#' #   filename = "p_fix.png", plot = p_fix,
-#' #   units = plot_size$units, width = plot_size$width, height = plot_size$height
+#' #   filename = "p_fix.png",
+#' #   plot = p_fix,
+#' #   units = plot_size$units,
+#' #   width = plot_size$width,
+#' #   height = plot_size$height
 #' # )
 #' ## or save the plot directly
-#' # p_fix <- panel_fix(p, width = 5, height = 3, units = "cm", save = "p_fix.png")
+#' # p_fix <- panel_fix(
+#' #   p,
+#' #   width = 5,
+#' #   height = 3,
+#' #   units = "cm",
+#' #   save = "p_fix.png"
+#' # )
 #'
 #' # fix the panel of the plot combined by patchwork
 #' data("pancreas_sub")
-#' p1 <- CellDimPlot(pancreas_sub, "Phase", aspect.ratio = 1) # ggplot object
-#' p2 <- FeatureDimPlot(pancreas_sub, "Ins1", aspect.ratio = 0.5) # ggplot object
-#' p <- p1 / p2 # plot is combined by patchwork
-#' # fix the panel size for each plot, the width will be calculated automatically based on aspect.ratio
+#' p1 <- CellDimPlot(
+#'   pancreas_sub,
+#'   "Phase",
+#'   aspect.ratio = 1
+#' )
+#' p2 <- FeatureDimPlot(
+#'   pancreas_sub,
+#'   "Ins1",
+#'   aspect.ratio = 0.5
+#' )
+#' p <- p1 / p2
+#' # fix the panel size for each plot,
+#' # the width will be calculated automatically based on aspect.ratio
 #' panel_fix(p, height = 1)
 #'
 #' # fix the panel of the plot combined by plot_grid
 #' if (requireNamespace("cowplot", quietly = TRUE)) {
-#'   p1 <- CellDimPlot(pancreas_sub, c("Phase", "SubCellType"), label = TRUE) # plot is combined by patchwork
-#'   p2 <- FeatureDimPlot(pancreas_sub, c("Ins1", "Gcg"), label = TRUE) # plot is combined by patchwork
-#'   p <- cowplot::plot_grid(p1, p2, nrow = 2) # plot is combined by plot_grid
+#'   p1 <- CellDimPlot(
+#'     pancreas_sub,
+#'     c("Phase", "SubCellType"),
+#'     label = TRUE
+#'   )
+#'   p2 <- FeatureDimPlot(
+#'     pancreas_sub,
+#'     c("Ins1", "Gcg"),
+#'     label = TRUE
+#'   )
+#'   p <- cowplot::plot_grid(
+#'     p1,
+#'     p2,
+#'     nrow = 2
+#'   )
+#'   # plot is combined by plot_grid
 #'   # fix the size of panel for each plot
 #'   panel_fix(p, height = 1)
 #'   # rasterize the panel while keeping all labels and text in vector format
@@ -548,7 +634,8 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
 #'     "Neurog3", "Hes6", # EPs
 #'     "Fev", "Neurod1", # Pre-endocrine
 #'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
+#'     # Beta, Alpha, Delta, Epsilon
 #'   ),
 #'   group.by = c("CellType", "SubCellType"),
 #'   show_row_names = TRUE
@@ -571,16 +658,13 @@ show_palettes <- function(palettes = NULL, type = c("discrete", "continuous"), i
 #' )
 #' # the size of the heatmap is already fixed
 #' ht2$plot
-#' # when no height/width is specified, panel_fix does not change the size of the heatmap.
+#' # when no height/width is specified,
+#' # panel_fix does not change the size of the heatmap.
 #' panel_fix(ht2$plot)
 #' # rasterize the heatmap body
 #' panel_fix(ht2$plot, raster = TRUE, dpi = 30)
 #' # however, gene labels on the left and enrichment annotations on the right cannot be adjusted
 #' panel_fix(ht2$plot, height = 5, width = 10)
-#'
-#' @importFrom grid grob unit convertUnit is.unit
-#' @export
-#'
 panel_fix <- function(
     x = NULL,
     panel_index = NULL,
@@ -746,24 +830,24 @@ panel_fix <- function(
           break
         }
       }
-      gtable <- gtable_add_rows(
+      gtable <- gtable::gtable_add_rows(
         gtable,
-        heights = unit(padding, units),
+        heights = grid::unit(padding, units),
         pos = layout$t[p_background_index] - 1
       )
-      gtable <- gtable_add_rows(
+      gtable <- gtable::gtable_add_rows(
         gtable,
-        heights = unit(padding, units),
+        heights = grid::unit(padding, units),
         pos = layout$b[p_background_index]
       )
-      gtable <- gtable_add_cols(
+      gtable <- gtable::gtable_add_cols(
         gtable,
-        widths = unit(padding, units),
+        widths = grid::unit(padding, units),
         pos = layout$l[p_background_index] - 1
       )
-      gtable <- gtable_add_cols(
+      gtable <- gtable::gtable_add_cols(
         gtable,
-        widths = unit(padding, units),
+        widths = grid::unit(padding, units),
         pos = layout$r[p_background_index]
       )
       sum_width <- grid::convertWidth(
@@ -863,8 +947,6 @@ panel_fix <- function(
 }
 
 #' @rdname panel_fix
-#' @importFrom gtable gtable_add_padding
-#' @importFrom grid grob unit convertUnit viewport grid.draw rasterGrob
 #' @export
 panel_fix_overall <- function(
     x,
@@ -917,8 +999,8 @@ panel_fix_overall <- function(
   if (inherits(x, "gList")) {
     panel_index <- 1
     panel_index_h <- panel_index_w <- list(1)
-    w_comp <- h_comp <- list(unit(1, "null"))
-    w <- h <- list(unit(1, "null"))
+    w_comp <- h_comp <- list(grid::unit(1, "null"))
+    w <- h <- list(grid::unit(1, "null"))
   } else if (length(panel_index) > 0) {
     panel_index_w <- panel_index_h <- list()
     w_comp <- h_comp <- list()
@@ -943,14 +1025,14 @@ panel_fix_overall <- function(
       if (length(w_comp[[i]]) == 1) {
         w[[i]] <- w_comp[[i]]
       } else if (length(w_comp[[i]]) > 1 && any(grid::unitType(w_comp[[i]]) == "null")) {
-        w[[i]] <- unit(1, units = "null")
+        w[[i]] <- grid::unit(1, units = "null")
       } else {
         w[[i]] <- sum(w_comp[[i]])
       }
       if (length(h_comp[[i]]) == 1) {
         h[[i]] <- h_comp[[i]]
       } else if (length(h_comp[[i]]) > 1 && any(grid::unitType(h_comp[[i]]) == "null")) {
-        h[[i]] <- unit(1, units = "null")
+        h[[i]] <- grid::unit(1, units = "null")
       } else {
         h[[i]] <- sum(h_comp[[i]])
       }
@@ -971,12 +1053,12 @@ panel_fix_overall <- function(
       }
     )
     for (i in seq_along(w)) {
-      if (grid::unitType(w[[i]]) == "null" || convertUnit(w[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
+      if (grid::unitType(w[[i]]) == "null" || grid::convertUnit(w[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
         raw_w[i] <- 0
       }
     }
     for (i in seq_along(h)) {
-      if (grid::unitType(h[[i]]) == "null" || convertUnit(h[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
+      if (grid::unitType(h[[i]]) == "null" || grid::convertUnit(h[[i]], unitTo = "cm", valueOnly = TRUE) < 1e-10) {
         raw_h[i] <- 0
       }
     }
@@ -987,9 +1069,9 @@ panel_fix_overall <- function(
         raw_aspect <- raw_h / raw_w
       } else {
         raw_aspect <- grid::convertHeight(
-          unit(1, "npc"), "cm",
+          grid::unit(1, "npc"), "cm",
           valueOnly = TRUE
-        ) / grid::convertWidth(unit(1, "npc"), "cm", valueOnly = TRUE)
+        ) / grid::convertWidth(grid::unit(1, "npc"), "cm", valueOnly = TRUE)
       }
     }
 
@@ -997,8 +1079,8 @@ panel_fix_overall <- function(
       width <- raw_w
       height <- raw_h
       if (all(width == 0) && all(height == 0)) {
-        width <- grid::convertWidth(unit(1, "npc"), units, valueOnly = TRUE)
-        height <- grid::convertHeight(unit(1, "npc"), units, valueOnly = TRUE)
+        width <- grid::convertWidth(grid::unit(1, "npc"), units, valueOnly = TRUE)
+        height <- grid::convertHeight(grid::unit(1, "npc"), units, valueOnly = TRUE)
         if (isTRUE(gtable$respect)) {
           if (raw_aspect <= 1) {
             height <- width * raw_aspect
@@ -1049,16 +1131,16 @@ panel_fix_overall <- function(
   for (i in seq_along(panel_index)) {
     if (!is.null(width)) {
       width_unit <- width[i] / length(w_comp[[i]])
-      gtable[["widths"]][seq(min(panel_index_w[[i]]), max(panel_index_w[[i]]))] <- rep(unit(width_unit, units = units), length(w_comp[[i]]))
+      gtable[["widths"]][seq(min(panel_index_w[[i]]), max(panel_index_w[[i]]))] <- rep(grid::unit(width_unit, units = units), length(w_comp[[i]]))
     }
     if (!is.null(height)) {
       height_unit <- height[i] / length(h_comp[[i]])
-      gtable[["heights"]][seq(min(panel_index_h[[i]]), max(panel_index_h[[i]]))] <- rep(unit(height_unit, units = units), length(h_comp[[i]]))
+      gtable[["heights"]][seq(min(panel_index_h[[i]]), max(panel_index_h[[i]]))] <- rep(grid::unit(height_unit, units = units), length(h_comp[[i]]))
     }
   }
-  gtable <- gtable_add_padding(
+  gtable <- gtable::gtable_add_padding(
     gtable,
-    padding = unit(margin, units = units)
+    padding = grid::unit(margin, units = units)
   )
 
   if (isTRUE(raster)) {
@@ -1069,7 +1151,7 @@ panel_fix_overall <- function(
       vp <- g$vp
       childrenOrder <- g$childrenOrder
       if (is.null(g$vp)) {
-        g$vp <- viewport()
+        g$vp <- grid::viewport()
       }
 
       for (j in seq_along(g[["children"]])) {
@@ -1096,7 +1178,7 @@ panel_fix_overall <- function(
       )
       grid::grid.draw(g)
       grDevices::dev.off()
-      g_ras <- rasterGrob(png::readPNG(temp, native = TRUE))
+      g_ras <- grid::rasterGrob(png::readPNG(temp, native = TRUE))
       unlink(temp)
       g <- grid::addGrob(g_new, g_ras)
       g$vp <- vp
@@ -1357,10 +1439,12 @@ get_vars <- function(p, reverse, verbose = FALSE) {
 #'   )
 #' )
 adjcolors <- function(colors, alpha) {
-  color_df <- as.data.frame(col2rgb(colors) / 255)
+  color_df <- as.data.frame(
+    grDevices::col2rgb(colors) / 255
+  )
   colors_out <- sapply(color_df, function(color) {
     color_rgb <- RGBA2RGB(list(color, alpha))
-    return(rgb(color_rgb[1], color_rgb[2], color_rgb[3]))
+    return(grDevices::rgb(color_rgb[1], color_rgb[2], color_rgb[3]))
   })
   return(colors_out)
 }
@@ -1423,12 +1507,16 @@ blendcolors <- function(
   if (length(colors) == 1) {
     return(colors)
   }
-  rgb <- as.list(as.data.frame(col2rgb(colors) / 255))
+  rgb <- as.list(
+    as.data.frame(
+      grDevices::col2rgb(colors) / 255
+    )
+  )
   Clist <- lapply(rgb, function(x) {
     list(x, 1)
   })
   blend_color <- BlendRGBList(Clist, mode = mode)
-  blend_color <- rgb(blend_color[1], blend_color[2], blend_color[3])
+  blend_color <- grDevices::rgb(blend_color[1], blend_color[2], blend_color[3])
   return(blend_color)
 }
 
@@ -1559,8 +1647,8 @@ build_patchwork <- function(
   PANEL_COL <- patchwork:::PANEL_COL
 
   gt_new <- gtable::gtable(
-    unit(rep(0, TABLE_COLS * dims[2]), "null"),
-    unit(rep(0, TABLE_ROWS * dims[1]), "null")
+    grid::unit(rep(0, TABLE_COLS * dims[2]), "null"),
+    grid::unit(rep(0, TABLE_ROWS * dims[1]), "null")
   )
   design <- as.data.frame(unclass(x$layout$design))
   if (nrow(design) < length(gt)) {

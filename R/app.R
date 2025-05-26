@@ -545,7 +545,7 @@ FetchH5 <- function(
     if (is.null(layer)) {
       layers <- as.character(
         unique(
-          na.omit(
+          stats::na.omit(
             sapply(
               strsplit(data_group[grep(name, data_group)], "/"), function(x) x[4]
             )
@@ -566,7 +566,7 @@ FetchH5 <- function(
 
   if (length(gene_features) > 0) {
     counts <- t(
-      as(
+      methods::as(
         data[, gene_features, drop = FALSE],
         "dgCMatrix"
       )
@@ -743,7 +743,7 @@ CreateSeuratObject2 <- function(
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' data("panc8_sub")
 #' panc8_sub <- Integration_scop(
-#'   srt_merge = panc8_sub,
+#'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
@@ -766,26 +766,35 @@ CreateSeuratObject2 <- function(
 #'   session_workers = 2,
 #'   overwrite = TRUE
 #' )
-#' list.files("./SCExplorer") # This directory can be used as site directory for Shiny Server.
+#' # This directory can be used as site directory for Shiny Server.
+#' list.files("./SCExplorer")
 #'
 #' # Run shiny app
 #' if (interactive()) {
 #'   shiny::runApp(app)
 #' }
-#' # Note: If scop installed in the isolated environment using renv, you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
+#' # Note: If scop installed in the isolated environment using renv, 
+#' # you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 #'
-#' ####################################################################################################################
-#' # You can deploy the app on the self-hosted shiny server(https://www.rstudio.com/products/shiny/shiny-server/).
-#' # Or deploy the app on the website(https://www.shinyapps.io) for free:
+#' ###########################
+#' # You can deploy the app on the self-hosted shiny server
+#' # (https://www.rstudio.com/products/shiny/shiny-server/).
+#' # Or deploy the app on the website
+#' # (https://www.shinyapps.io) for free:
 #'
-#' ### step1: set the repository URL for Bioconductor packages and update them to the latest version
+#' # step1: set the repository URL for Bioconductor packages 
+#' # and update them to the latest version
 #' # options(repos = BiocManager::repositories())
 #' # BiocManager::install(ask = FALSE)
 #'
-#' ### step2: install "rsconnect" package and authorize your account
+#' # step2: install "rsconnect" package and authorize your account
 #' # install.packages("rsconnect")
 #' # library(rsconnect)
-#' # setAccountInfo(name = "<NAME>", token = "<TOKEN>", secret = "<SECRET>")
+#' # setAccountInfo(
+#' # name = "<NAME>",
+#' # token = "<TOKEN>",
+#' # secret = "<SECRET>"
+#' # )
 #'
 #' ### step3: deploy the app
 #' # deployApp("./SCExplorer")
@@ -812,7 +821,7 @@ RunSCExplorer <- function(
     session_workers = 2,
     plotting_workers = 8,
     create_script = TRUE,
-    style_script = require("styler", quietly = TRUE),
+    style_script = requireNamespace("styler", quietly = TRUE),
     overwrite = FALSE,
     return_app = TRUE) {
   check_r(
@@ -858,8 +867,8 @@ if (!initial_dataset %in% group) {
   stop("Dataset ", group, " is not in the DataFile and the MetaFile")
 }
 
-assays <- unique(na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[3])))
-layers <- unique(na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[4])))
+assays <- unique(stats::na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[3])))
+layers <- unique(stats::na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[4])))
 if (is.null(initial_assay)) {
   initial_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", initial_dataset, "/Default_assay")))
 }
@@ -1772,8 +1781,8 @@ server <- function(input, output, session) {
   }) %>% bindEvent(input$dataset1, ignoreNULL = TRUE, ignoreInit = FALSE)
 
   observe({
-    assays <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[3])))
-    layers <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[4])))
+    assays <- unique(stats::na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[3])))
+    layers <- unique(stats::na.omit(sapply(strsplit(data_group[grep(input$dataset2, data_group)], "/"), function(x) x[4])))
     default_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", input$dataset2, "/Default_assay")))
     default_slot <- ifelse("data" %in% layers, "data", layers[1])
     assay <- intersect(c(initial_assay, default_assay), assays)[1]
@@ -1804,8 +1813,8 @@ server <- function(input, output, session) {
   }) %>% bindEvent(input$dataset3, ignoreNULL = TRUE, ignoreInit = FALSE)
 
   observe({
-    assays <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[3])))
-    layers <- unique(na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[4])))
+    assays <- unique(stats::na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[3])))
+    layers <- unique(stats::na.omit(sapply(strsplit(data_group[grep(input$dataset4, data_group)], "/"), function(x) x[4])))
     default_assay <- as.character(rhdf5::h5read(DataFile, name = paste0("/", input$dataset4, "/Default_assay")))
     default_slot <- ifelse("data" %in% layers, "data", layers[1])
     assay <- intersect(c(initial_assay, default_assay), assays)[1]

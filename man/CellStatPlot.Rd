@@ -74,11 +74,14 @@ CellStatPlot(
 
 \item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.}
 
-\item{plot_type}{The type of plot to create. Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".}
+\item{plot_type}{The type of plot to create.
+Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".}
 
-\item{stat_type}{The type of statistic to compute for the plot. Can be one of "percent" or "count".}
+\item{stat_type}{The type of statistic to compute for the plot.
+Can be one of "percent" or "count".}
 
-\item{position}{The position adjustment for the plot. Can be one of "stack" or "dodge".}
+\item{position}{The position adjustment for the plot.
+Can be one of "stack" or "dodge".}
 
 \item{palette}{The name of the color palette to use for the plot.}
 
@@ -112,7 +115,8 @@ CellStatPlot(
 
 \item{ylab}{The y-axis label of the plot.}
 
-\item{legend.position}{The position of the legend in the plot. Can be one of "right", "left", "bottom", "top", or "none".}
+\item{legend.position}{The position of the legend in the plot.
+Can be one of "right", "left", "bottom", "top", or "none".}
 
 \item{legend.direction}{The direction of the legend in the plot. Can be one of "vertical" or "horizontal".}
 

@@ -1,15 +1,18 @@
 #' @title FindExpressedMarkers
 #'
-#' @importFrom Matrix rowSums
-#' @importFrom SeuratObject FetchData WhichCells SetIdent Idents
-#' @importFrom Seurat FindMarkers FoldChange Command
-#' @importFrom pbapply pbsapply
+#' @param layer The layer used.
+#' @param min.expression The min.expression used.
+#' @param seed The seed used.
+#' @inheritParams Seurat::FindMarkers
 #' @export
 #'
 #' @examples
 #' markers <- FindExpressedMarkers(
 #'   pancreas_sub,
-#'   cells.1 = WhichCells(pancreas_sub, expression = Phase == "G2M")
+#'   cells.1 = SeuratObject::WhichCells(
+#'     pancreas_sub,
+#'     expression = Phase == "G2M"
+#'   )
 #' )
 #' head(markers)
 #' FeatureStatPlot(
@@ -42,6 +45,7 @@ FindExpressedMarkers <- function(
     min.cells.group = 3,
     min.cells.feature = 3,
     norm.method = "LogNormalize",
+    seed = 11,
     verbose = TRUE,
     ...) {
   ########## FindMarkers.Seurat ##########
@@ -54,13 +58,18 @@ FindExpressedMarkers <- function(
       cells.2 <- setdiff(colnames(object), cells.1)
     }
   } else {
-    cells.1 <- WhichCells(object = object, idents = ident.1)
-    cells.2 <- WhichCells(object = object, idents = ident.2)
+    cells.1 <- SeuratObject::WhichCells(
+      object = object,
+      idents = ident.1
+    )
+    cells.2 <- SeuratObject::WhichCells(
+      object = object,
+      idents = ident.2
+    )
   }
 
-  # fetch latent.vars
   if (!is.null(x = latent.vars)) {
-    latent.vars <- FetchData(
+    latent.vars <- SeuratObject::FetchData(
       object = object,
       vars = latent.vars,
       cells = c(cells.1, cells.2)
@@ -77,13 +86,18 @@ FindExpressedMarkers <- function(
     yes = "counts",
     no = layer
   )
-  data.use <- GetAssayData(object = object, layer = data_layer)
-  data.use <- data.use[rowSums(data.use) > 0, ]
+  data.use <- SeuratObject::GetAssayData(
+    object = object,
+    layer = data_layer
+  )
+  data.use <- data.use[Matrix::rowSums(data.use) > 0, ]
   data.use <- Matrix::as.matrix(data.use)
   data.use[data.use <= min.expression] <- NA
   counts <- switch(
     EXPR = data_layer,
-    "scale.data" = GetAssayData(object = object, layer = "counts"),
+    "scale.data" = SeuratObject::GetAssayData(
+      object = object, layer = "counts"
+    ),
     numeric()
   )
 
@@ -212,7 +226,7 @@ FindExpressedMarkers <- function(
   }
   # subsample cell groups if they are too large
   if (max.cells.per.ident < Inf) {
-    set.seed(seed = random.seed)
+    set.seed(seed)
     if (length(x = cells.1) > max.cells.per.ident) {
       cells.1 <- sample(x = cells.1, size = max.cells.per.ident)
     }
@@ -246,7 +260,7 @@ FindExpressedMarkers <- function(
     de.results <- de.results[order(-de.results$power, -de.results[, 1]), ]
   } else {
     de.results <- de.results[order(de.results$p_val, -de.results[, 1]), ]
-    de.results$p_val_adj <- p.adjust(
+    de.results$p_val_adj <- stats::p.adjust(
       p = de.results$p_val,
       method = "bonferroni",
       n = nrow(x = object)
@@ -256,8 +270,6 @@ FindExpressedMarkers <- function(
   return(de.results)
 }
 
-#' @importFrom SeuratObject FetchData WhichCells SetIdent Idents
-#' @importFrom Seurat FindMarkers FoldChange
 FindConservedMarkers2 <- function(
     object,
     grouping.var,
@@ -292,7 +304,7 @@ FindConservedMarkers2 <- function(
     verbose = TRUE,
     ...) {
   meta.method <- match.arg(meta.method)
-  object.var <- FetchData(object = object, vars = grouping.var)
+  object.var <- SeuratObject::FetchData(object = object, vars = grouping.var)
   levels.split <- names(x = sort(x = table(object.var[, 1])))
   num.groups <- length(levels.split)
   assay <- assay %||% DefaultAssay(object)
@@ -305,22 +317,22 @@ FindConservedMarkers2 <- function(
   }
   marker.test <- list()
   if (is.null(cells.1)) {
-    cells.1 <- WhichCells(object = object, idents = ident.1)
+    cells.1 <- SeuratObject::WhichCells(object = object, idents = ident.1)
     if (!is.null(ident.2)) {
-      cells.2 <- cells.2 %||% WhichCells(object = object, idents = ident.2)
+      cells.2 <- cells.2 %||% SeuratObject::WhichCells(object = object, idents = ident.2)
     } else {
       cells.2 <- setdiff(colnames(object), cells.1)
     }
-    object <- SetIdent(
+    object <- SeuratObject::SetIdent(
       object = object,
       cells = colnames(x = object),
-      value = paste(Idents(object = object), object.var[, 1], sep = "_")
+      value = paste(SeuratObject::Idents(object = object), object.var[, 1], sep = "_")
     )
     ident.2.save <- ident.2
     for (i in 1:num.groups) {
       level.use <- levels.split[i]
       ident.use.1 <- paste(ident.1, level.use, sep = "_")
-      ident.use.1.exists <- ident.use.1 %in% Idents(object = object)
+      ident.use.1.exists <- ident.use.1 %in% SeuratObject::Idents(object = object)
       if (!all(ident.use.1.exists)) {
         bad.ids <- ident.1[!ident.use.1.exists]
         warning(
@@ -336,7 +348,7 @@ FindConservedMarkers2 <- function(
         next
       }
       ident.2 <- ident.2.save
-      cells.1.use <- WhichCells(object = object, idents = ident.use.1)
+      cells.1.use <- SeuratObject::WhichCells(object = object, idents = ident.use.1)
       if (length(cells.1.use) < min.cells.group) {
         warning(
           level.use,
@@ -358,7 +370,7 @@ FindConservedMarkers2 <- function(
         )
         ident.use.2 <- names(
           x = which(
-            x = table(Idents(object = object)[cells.2.use]) > 0
+            x = table(SeuratObject::Idents(object = object)[cells.2.use]) > 0
           )
         )
         ident.2 <- gsub(
@@ -371,7 +383,7 @@ FindConservedMarkers2 <- function(
         }
       } else {
         ident.use.2 <- paste(ident.2, level.use, sep = "_")
-        cells.2.use <- WhichCells(
+        cells.2.use <- SeuratObject::WhichCells(
           object = object,
           idents = ident.use.2
         )
@@ -399,7 +411,7 @@ FindConservedMarkers2 <- function(
           ")"
         )
       }
-      ident.use.2.exists <- ident.use.2 %in% Idents(object = object)
+      ident.use.2.exists <- ident.use.2 %in% SeuratObject::Idents(object = object)
       if (!all(ident.use.2.exists)) {
         bad.ids <- ident.2[!ident.use.2.exists]
         warning(
@@ -414,7 +426,7 @@ FindConservedMarkers2 <- function(
         )
         next
       }
-      marker.test[[level.use]] <- FindMarkers(
+      marker.test[[level.use]] <- Seurat::FindMarkers(
         object = SeuratObject::Assays(object, assay),
         layer = layer,
         cells.1 = cells.1.use,
@@ -481,7 +493,7 @@ FindConservedMarkers2 <- function(
           ")"
         )
       }
-      marker.test[[level.use]] <- FindMarkers(
+      marker.test[[level.use]] <- Seurat::FindMarkers(
         object = SeuratObject::Assays(object, assay),
         layer = layer,
         cells.1 = cells.1.use,
@@ -531,7 +543,7 @@ FindConservedMarkers2 <- function(
     )
   }
   markers.combined <- Reduce(cbind, markers.conserved)
-  fc <- FoldChange(
+  fc <- Seurat::FoldChange(
     SeuratObject::Assays(object, assay),
     layer = layer,
     cells.1 = cells.1,

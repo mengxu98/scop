@@ -334,7 +334,9 @@ CellStatPlot <- function(
 
 #' StatPlot
 #'
-#' Visualizes data using various plot types such as bar plots, rose plots, ring plots, pie charts, trend plots, area plots, dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
+#' Visualizes data using various plot types such as bar plots,
+#' rose plots, ring plots, pie charts, trend plots, area plots,
+#' dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 #'
 #' @param meta.data The data frame containing the data to be plotted.
 #' @param stat.by The column name(s) in \code{meta.data} specifying the variable(s) to be plotted.
@@ -347,9 +349,12 @@ CellStatPlot <- function(
 #' @param keep_empty Logical indicating whether to keep empty groups in the plot.
 #' @param individual Logical indicating whether to plot individual groups separately.
 #' @param stat_level The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
-#' @param plot_type The type of plot to create. Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".
-#' @param stat_type The type of statistic to compute for the plot. Can be one of "percent" or "count".
-#' @param position The position adjustment for the plot. Can be one of "stack" or "dodge".
+#' @param plot_type The type of plot to create.
+#' Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".
+#' @param stat_type The type of statistic to compute for the plot.
+#' Can be one of "percent" or "count".
+#' @param position The position adjustment for the plot.
+#' Can be one of "stack" or "dodge".
 #' @param palette The name of the color palette to use for the plot.
 #' @param palcolor The color to use in the color palette.
 #' @param alpha The transparency level for the plot.
@@ -366,7 +371,8 @@ CellStatPlot <- function(
 #' @param subtitle The subtitle of the plot.
 #' @param xlab The x-axis label of the plot.
 #' @param ylab The y-axis label of the plot.
-#' @param legend.position The position of the legend in the plot. Can be one of "right", "left", "bottom", "top", or "none".
+#' @param legend.position The position of the legend in the plot.
+#' Can be one of "right", "left", "bottom", "top", or "none".
 #' @param legend.direction The direction of the legend in the plot. Can be one of "vertical" or "horizontal".
 #' @param theme_use The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.
 #' @param theme_args A list of arguments to be passed to the theme function.
@@ -379,31 +385,44 @@ CellStatPlot <- function(
 #'
 #' @seealso \code{\link{CellStatPlot}}
 #'
+#' @export
+#'
 #' @examples
 #' data("pancreas_sub")
 #' head(pancreas_sub@meta.data)
-#' StatPlot(pancreas_sub@meta.data, stat.by = "Phase", group.by = "CellType", plot_type = "bar", label = TRUE)
-#'
-#' head(pancreas_sub[["RNA"]]@meta.features)
-#' StatPlot(pancreas_sub[["RNA"]]@meta.features, stat.by = "highly_variable_genes", plot_type = "ring", label = TRUE)
-#'
-#' pancreas_sub <- AnnotateFeatures(pancreas_sub, species = "Mus_musculus", IDtype = "symbol", db = "GeneType")
-#' head(pancreas_sub[["RNA"]]@meta.features)
-#' StatPlot(pancreas_sub[["RNA"]]@meta.features,
-#'   stat.by = "highly_variable_genes", group.by = "GeneType",
-#'   stat_type = "count", plot_type = "bar", position = "dodge", label = TRUE, NA_stat = FALSE
+#' StatPlot(
+#'   pancreas_sub@meta.data,
+#'   stat.by = "Phase",
+#'   group.by = "CellType",
+#'   plot_type = "bar",
+#'   label = TRUE
 #' )
 #'
-#' @importFrom dplyr group_by across all_of mutate "%>%" .data summarise
-#' @importFrom stats quantile xtabs
-#' @importFrom ggplot2 ggplot aes labs position_identity position_stack position_dodge2 scale_x_continuous scale_y_continuous geom_col geom_area geom_vline scale_fill_manual scale_fill_identity scale_color_identity scale_fill_gradientn guides guide_legend element_line coord_polar annotate geom_sf theme_void after_stat scale_size_area
-#' @importFrom ggnewscale new_scale_color new_scale_fill
-#' @importFrom ggrepel geom_text_repel
-#' @importFrom circlize chordDiagram circos.clear
-#' @importFrom patchwork wrap_plots
-#' @importFrom gtable gtable_add_rows gtable_add_cols gtable_add_grob
-#' @importFrom grDevices png dev.control recordPlot dev.off
-#' @export
+#' head(pancreas_sub[["RNA"]]@meta.features)
+#' StatPlot(
+#'   pancreas_sub[["RNA"]]@meta.features,
+#'   stat.by = "highly_variable_genes",
+#'   plot_type = "ring",
+#'   label = TRUE
+#' )
+#'
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   IDtype = "symbol",
+#'   db = "GeneType"
+#' )
+#' head(pancreas_sub[["RNA"]]@meta.features)
+#' StatPlot(
+#'   pancreas_sub[["RNA"]]@meta.features,
+#'   stat.by = "highly_variable_genes",
+#'   group.by = "GeneType",
+#'   stat_type = "count",
+#'   plot_type = "bar",
+#'   position = "dodge",
+#'   label = TRUE,
+#'   NA_stat = FALSE
+#' )
 StatPlot <- function(
     meta.data,
     stat.by,
@@ -612,7 +631,7 @@ StatPlot <- function(
       " have more than 100 levels.",
       immediate. = TRUE
     )
-    answer <- askYesNo("Are you sure to continue?", default = FALSE)
+    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
     }
@@ -700,18 +719,36 @@ StatPlot <- function(
         }
         if (stat_type == "percent") {
           dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] %>%
-            xtabs(formula = paste0("~", stat.by, "+", g), addNA = NA_stat) %>%
+            stats::xtabs(
+              formula = paste0("~", stat.by, "+", g),
+              addNA = NA_stat
+            ) %>%
             as.data.frame() %>%
-            group_by(across(all_of(g)), .drop = FALSE) %>%
-            mutate(groupn = sum(Freq)) %>%
-            group_by(across(all_of(c(stat.by, g))), .drop = FALSE) %>%
-            mutate(value = Freq / groupn) %>%
+            dplyr::group_by(
+              dplyr::across(
+                dplyr::all_of(g)
+              ),
+              .drop = FALSE
+            ) %>%
+            dplyr::mutate(groupn = sum(Freq)) %>%
+            dplyr::group_by(
+              dplyr::across(
+                dplyr::all_of(
+                  c(stat.by, g)
+                )
+              ),
+              .drop = FALSE
+            ) %>%
+            dplyr::mutate(value = Freq / groupn) %>%
             as.data.frame()
         } else {
           dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] %>%
-            xtabs(formula = paste0("~", stat.by, "+", g), addNA = NA_stat) %>%
+            stats::xtabs(
+              formula = paste0("~", stat.by, "+", g),
+              addNA = NA_stat
+            ) %>%
             as.data.frame() %>%
-            mutate(value = Freq)
+            dplyr::mutate(value = Freq)
         }
         dat <- dat_use[dat_use[[g]] %in% single_group, , drop = FALSE]
         dat[[g]] <- factor(
@@ -783,7 +820,7 @@ StatPlot <- function(
         if (position == "stack") {
           bg_layer <- NULL
         } else {
-          bg_data <- na.omit(unique(dat[, g, drop = FALSE]))
+          bg_data <- stats::na.omit(unique(dat[, g, drop = FALSE]))
           bg_data[["x"]] <- as.numeric(bg_data[[g]])
           bg_data[["xmin"]] <- ifelse(
             bg_data[["x"]] == min(bg_data[["x"]]),
@@ -927,7 +964,7 @@ StatPlot <- function(
         if (isTRUE(label)) {
           if (plot_type == "dot") {
             p <- p +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 aes(
                   x = .data[[g]],
                   y = .data[[stat.by]],
@@ -949,7 +986,7 @@ StatPlot <- function(
               )
           } else {
             p <- p +
-              geom_text_repel(
+              ggrepel::geom_text_repel(
                 aes(
                   label = if (stat_type == "count") {
                     value
@@ -1019,8 +1056,8 @@ StatPlot <- function(
     colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
     if (plot_type == "chord" && isTRUE(combine)) {
       temp <- tempfile(fileext = "png")
-      png(temp)
-      dev.control("enable")
+      grDevices::png(temp)
+      grDevices::dev.control("enable")
       nlev <- nlevels(dat_all[[split.by]])
       if (is.null(nrow) && is.null(ncol)) {
         nrow <- ceiling(sqrt(nlev))
@@ -1032,7 +1069,7 @@ StatPlot <- function(
       if (is.null(ncol)) {
         ncol <- ceiling(sqrt(nrow))
       }
-      par(mfrow = c(nrow, ncol))
+      graphics::par(mfrow = c(nrow, ncol))
     }
 
     for (sp in levels(dat_all[[split.by]])) {
@@ -1092,7 +1129,7 @@ StatPlot <- function(
             linewidth = 1,
             show.legend = FALSE
           ) +
-          geom_text_repel(
+          ggrepel::geom_text_repel(
             data = ggVennDiagram::venn_setlabel(data),
             aes(X, Y, label = paste0(
               name, "\n(", count, ")"
@@ -1108,7 +1145,7 @@ StatPlot <- function(
             min.segment.length = 0,
             segment.colour = "black"
           ) +
-          geom_text_repel(
+          ggrepel::geom_text_repel(
             data = ggVennDiagram::venn_regionlabel(data),
             aes(X, Y, label = count),
             colour = label.fg,
@@ -1153,7 +1190,7 @@ StatPlot <- function(
             width = 0.5,
             show.legend = FALSE
           ) +
-          geom_text_repel(
+          ggrepel::geom_text_repel(
             aes(label = after_stat(count)),
             stat = "count",
             colour = label.fg,
@@ -1250,7 +1287,12 @@ StatPlot <- function(
           legend <- do.call(rbind, legend_list)
         }
 
-        dat <- suppressWarnings(make_long(dat_use, all_of(stat.by)))
+        dat <- suppressWarnings(
+          make_long(
+            dat_use,
+            dplyr::all_of(stat.by)
+          )
+        )
         dat$node <- factor(dat$node, levels = rev(names(colors)))
         p0 <- ggplot(
           dat,
@@ -1278,7 +1320,7 @@ StatPlot <- function(
           grob = legend,
           position = legend.position
         )
-        p <- wrap_plots(gtable)
+        p <- patchwork::wrap_plots(gtable)
       }
 
       if (plot_type == "chord") {
@@ -1306,7 +1348,7 @@ StatPlot <- function(
         )
         m <- matrix(M, ncol = ncol(M), dimnames = dimnames(M))
         colnames(m)[is.na(colnames(m))] <- "NA"
-        chordDiagram(
+        circlize::chordDiagram(
           m,
           grid.col = colors,
           transparency = 0.2,
@@ -1314,22 +1356,22 @@ StatPlot <- function(
           link.lty = 1,
           link.border = 1
         )
-        circos.clear()
-        p <- recordPlot()
+        circlize::circos.clear()
+        p <- grDevices::recordPlot()
       }
 
       plist[[sp]] <- p
     }
   }
   if (isTRUE(combine) && plot_type == "chord") {
-    plot <- recordPlot()
-    dev.off()
+    plot <- grDevices::recordPlot()
+    grDevices::dev.off()
     unlink(temp)
     return(plot)
   }
   if (isTRUE(combine) && plot_type != "chord") {
     if (length(plist) > 1) {
-      plot <- wrap_plots(
+      plot <- patchwork::wrap_plots(
         plotlist = plist,
         nrow = nrow,
         ncol = ncol,
