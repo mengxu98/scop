@@ -31,14 +31,183 @@ navbar:
       text: Reference
       href: reference/index.html
 
-  figures:
-    dev: ragg::agg_png
-    dpi: 96
-    dev.args: []
-    fig.ext: png
-    fig.width: 10
-    fig.height: ~
-    fig.retina: 2
-    fig.asp: 1.618
-    bg: NA
-    other.parameters: []
+reference:
+- subtitle: "Single-Cell Omics analysis Pipeline"
+- contents:
+  - scop-package
+  - scop_logo
+  - print.logo
+
+- subtitle: "Basic Functions and Package Setup"
+- contents:
+  - standard_scop
+  - PrepareEnv
+  - Env_requirements
+  - check_python
+  - check_r
+  - exist_Python_pkgs
+  - installed_Python_pkgs
+  - CC_GenePrefetch
+  - conda_install
+  - conda_python
+  - env_exist
+  - find_conda
+  - invoke_fun
+  - isOutlier
+  - panel_fix
+
+- subtitle: "Data Processing and Quality Control"
+- contents:
+  - RunCellQC
+  - RunDoubletCalling
+  - db_DoubletDetection
+  - db_Scrublet
+  - db_scDblFinder
+  - db_scds
+  - check_data_type
+  - check_srt_list
+  - check_srt_merge
+  - AddFeaturesData
+  - GetFeaturesData
+  - RecoverCounts
+  - CellScoring
+
+- subtitle: "Data Integration and Batch Effect Removal"
+- contents:
+  - BBKNN_integrate
+  - CSS_integrate
+  - ComBat_integrate
+  - Conos_integrate
+  - Harmony_integrate
+  - LIGER_integrate
+  - MNN_integrate
+  - Scanorama_integrate
+  - Seurat_integrate
+  - scVI_integrate
+  - Integration_scop
+  - Uncorrected_integrate
+  - RunCSSMap
+  - RunHarmony2
+  - RunKNNMap
+  - RunPCAMap
+  - RunScmap
+  - RunSeuratMap
+  - DefaultReduction
+  - RunSingleR
+  - RunSymphonyMap
+  - fastMNN_integrate
+
+- subtitle: "Dimensionality Reduction and Clustering"
+- contents:
+  - RunDimReduction
+  - RunGLMPCA
+  - RunMDS
+  - RunNMF
+  - RunUMAP2
+  - RunPaCMAP
+  - RunTriMap
+  - RunPHATE
+  - RunPAGA
+  - RunDM
+  - RunFR
+  - RunLargeVis
+  - RunKNNPredict
+
+- subtitle: "Trajectory Analysis and Dynamic Processes"
+- contents:
+  - RunMonocle2
+  - RunMonocle3
+  - RunPalantir
+  - RunSlingshot
+  - RunSCVELO
+  - RunWOT
+  - VelocityPlot
+  - compute_velocity_on_grid
+  - PAGAPlot
+  - RunDynamicFeatures
+
+- subtitle: "Differential Analysis and Enrichment"
+- contents:
+  - RunDEtest
+  - RunGSEA
+  - RunEnrichment
+  - RunDynamicEnrichment
+  - FindExpressedMarkers
+
+- subtitle: "Visualization Functions"
+- contents:
+  - CellDimPlot
+  - CellDimPlot3D
+  - CellDensityPlot
+  - CellCorHeatmap
+  - CellStatPlot
+  - FeatureDimPlot
+  - FeatureDimPlot3D
+  - FeatureHeatmap
+  - FeatureCorPlot
+  - FeatureStatPlot
+  - DynamicPlot
+  - DynamicHeatmap
+  - EnrichmentPlot
+  - GSEAPlot
+  - GroupHeatmap
+  - LineagePlot
+  - VolcanoPlot
+  - ProjectionPlot
+  - GraphPlot
+  - StatPlot
+  - geom_alluvial
+  - geom_alluvial_label
+  - geom_sankey
+  - geom_sankey_bump
+  - geom_sankey_label
+  - theme_sankey
+  - make_long
+  - segementsDf
+
+- subtitle: "Web SCExplorer"
+- contents:
+  - PrepareSCExplorer
+  - RunSCExplorer
+
+- subtitle: "Utility Functions"
+- contents:
+  - adata_to_srt
+  - srt_to_adata
+  - srt_append
+  - srt_reorder
+  - AnnotateFeatures
+  - RenameClusters
+  - RenameFeatures
+  - GeneConvert
+  - theme_scop
+  - theme_blank
+  - palette_scop
+  - palette_list
+  - show_palettes
+  - adjcolors
+  - blendcolors
+  - unnest
+  - words_excluded
+  - capitalize
+  - download
+  - drop_data
+  - get_vars
+  - try_get
+  - slim_data
+
+- subtitle: "Example Data"
+- contents:
+  - ifnb_sub
+  - panc8_sub
+  - pancreas_sub
+  - lifemap_cell
+  - ref_scHCL
+
+- subtitle: "Database Operations"
+- contents:
+  - PrepareDB
+  - CreateDataFile
+  - CreateMetaFile
+  - ListDB
+  - FetchH5
