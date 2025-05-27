@@ -1,0 +1,8 @@
+pandoc: 3.6.4
+pkgdown: 2.1.2
+pkgdown_sha: ~
+articles: {}
+last_built: 2025-05-26T14:32Z
+urls:
+  reference: https://mengxu98.github.io/scop/reference
+  article: https://mengxu98.github.io/scop/articles
