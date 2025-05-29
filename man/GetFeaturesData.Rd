@@ -31,10 +31,5 @@ Get the data from the Seurat object
 \examples{
 data("pancreas_sub")
 features <- GetFeaturesData(pancreas_sub)
-data("pancreas_sub")
-assay_obj <- Seurat::GetAssay(pancreas_sub, "RNA")
-features <- GetFeaturesData(assay_obj)
-data("pancreas_sub")
-assay_obj <- Seurat::GetAssay(pancreas_sub, "RNA")
-features <- GetFeaturesData(assay_obj)
+head(features)
 }
