@@ -33,8 +33,10 @@ check_python(
 Check and install python packages
 }
 \examples{
-check_python(packages = c("bbknn", "scanorama"))
 \dontrun{
+check_python(
+  packages = c("bbknn", "scanorama")
+)
 check_python(
   packages = "scvi-tools==0.20.0",
   envname = "scop_env",
