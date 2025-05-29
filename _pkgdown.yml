@@ -1,12 +1,14 @@
+destination: docs
+
+toc:
+  depth: 3
+
 url: https://mengxu98.github.io/scop/
 
 template:
   bootstrap: 5
   light-switch: true
   package: mxtemplate
-
-code:
-  width: 120
 
 navbar:
   title: "scop"
@@ -38,26 +40,22 @@ reference:
   - scop_logo
   - print.logo
 
-- subtitle: "Basic Functions and Package Setup"
+- subtitle: "Package Setup"
 - contents:
-  - standard_scop
   - PrepareEnv
   - Env_requirements
   - check_python
   - check_r
   - exist_Python_pkgs
   - installed_Python_pkgs
-  - CC_GenePrefetch
   - conda_install
   - conda_python
   - env_exist
   - find_conda
-  - invoke_fun
-  - isOutlier
-  - panel_fix
 
 - subtitle: "Data Processing and Quality Control"
 - contents:
+  - standard_scop
   - RunCellQC
   - RunDoubletCalling
   - db_DoubletDetection
@@ -71,9 +69,21 @@ reference:
   - GetFeaturesData
   - RecoverCounts
   - CellScoring
+  - CC_GenePrefetch
+  - isOutlier
+  - DefaultReduction
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
+  - Integration_scop
+  - RunCSSMap
+  - RunHarmony2
+  - RunKNNMap
+  - RunPCAMap
+  - RunScmap
+  - RunSeuratMap
+  - RunSingleR
+  - RunSymphonyMap
   - BBKNN_integrate
   - CSS_integrate
   - ComBat_integrate
@@ -84,17 +94,7 @@ reference:
   - Scanorama_integrate
   - Seurat_integrate
   - scVI_integrate
-  - Integration_scop
   - Uncorrected_integrate
-  - RunCSSMap
-  - RunHarmony2
-  - RunKNNMap
-  - RunPCAMap
-  - RunScmap
-  - RunSeuratMap
-  - DefaultReduction
-  - RunSingleR
-  - RunSymphonyMap
   - fastMNN_integrate
 
 - subtitle: "Dimensionality Reduction and Clustering"
@@ -153,6 +153,7 @@ reference:
   - GroupHeatmap
   - LineagePlot
   - VolcanoPlot
+  - panel_fix
   - ProjectionPlot
   - GraphPlot
   - StatPlot
@@ -195,14 +196,7 @@ reference:
   - get_vars
   - try_get
   - slim_data
-
-- subtitle: "Example Data"
-- contents:
-  - ifnb_sub
-  - panc8_sub
-  - pancreas_sub
-  - lifemap_cell
-  - ref_scHCL
+  - invoke_fun
 
 - subtitle: "Database Operations"
 - contents:
@@ -211,3 +205,11 @@ reference:
   - CreateMetaFile
   - ListDB
   - FetchH5
+
+- subtitle: "Example Data"
+- contents:
+  - ifnb_sub
+  - panc8_sub
+  - pancreas_sub
+  - lifemap_cell
+  - ref_scHCL
