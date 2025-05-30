@@ -424,11 +424,13 @@ VelocityPlot <- function(
   )
 
   if (isTRUE(return_layer)) {
-    return(list(
-      velocity_layer = velocity_layer,
-      lab_layer = lab_layer,
-      theme_layer = theme_layer
-    ))
+    return(
+      list(
+        velocity_layer = velocity_layer,
+        lab_layer = lab_layer,
+        theme_layer = theme_layer
+      )
+    )
   } else {
     return(
       ggplot() +
@@ -441,7 +443,6 @@ VelocityPlot <- function(
 }
 
 #' Compute velocity on grid
-#' The original python code is on https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py
 #'
 #' @param X_emb A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.
 #' @param V_emb A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.
@@ -452,6 +453,9 @@ VelocityPlot <- function(
 #' @param scale An optional numeric value specifying the scaling factor for the velocity vectors. Default is 1.
 #' @param adjust_for_stream A logical value indicating whether to adjust the velocity vectors for streamlines. Default is FALSE.
 #' @param cutoff_perc An optional numeric value specifying the percentile cutoff for removing low-density grid points. Default is 5.
+#'
+#' @references
+#' \url{https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py}
 #'
 #' @export
 compute_velocity_on_grid <- function(

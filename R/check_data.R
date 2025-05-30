@@ -554,7 +554,7 @@ check_srt_list <- function(
 #' This function checks and preprocesses a merged seurat object.
 #'
 #' @inheritParams check_srt_list
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param srt_merge A merged Seurat object that includes the batch information.
 #'
 #' @seealso \link{check_srt_list}

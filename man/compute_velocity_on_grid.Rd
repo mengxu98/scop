@@ -2,8 +2,7 @@
 % Please edit documentation in R/VelocityPlot.R
 \name{compute_velocity_on_grid}
 \alias{compute_velocity_on_grid}
-\title{Compute velocity on grid
-The original python code is on https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py}
+\title{Compute velocity on grid}
 \usage{
 compute_velocity_on_grid(
   X_emb,
@@ -38,5 +37,7 @@ compute_velocity_on_grid(
 }
 \description{
 Compute velocity on grid
-The original python code is on https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py
+}
+\references{
+\url{https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py}
 }

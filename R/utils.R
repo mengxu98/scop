@@ -19,7 +19,7 @@ PrepareEnv <- function(
     ...) {
   envname <- get_envname(envname)
 
-  requirements <- Env_requirements(version = version)
+  requirements <- env_requirements(version = version)
   python_version <- requirements[["python"]]
   packages <- requirements[["packages"]]
 
@@ -36,7 +36,11 @@ PrepareEnv <- function(
     env <- FALSE
   } else {
     envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
-    env <- env_exist(conda = conda, envname = envname, envs_dir = envs_dir)
+    env <- env_exist(
+      conda = conda,
+      envname = envname,
+      envs_dir = envs_dir
+    )
     if (isTRUE(force) && isTRUE(env)) {
       unlink(paste0(envs_dir, "/", envname), recursive = TRUE)
       env <- FALSE
@@ -76,7 +80,10 @@ PrepareEnv <- function(
       } else if (reticulate:::is_linux()) {
         sprintf("Miniconda%s-latest-Linux-%s.sh", version, arch)
       } else {
-        BBmisc::stopf("unsupported platform %s", shQuote(Sys.info()[["sysname"]]))
+        BBmisc::stopf(
+          "unsupported platform %s",
+          shQuote(Sys.info()[["sysname"]])
+        )
       }
       url <- file.path(base, name)
       options(reticulate.miniconda.url = url)
@@ -150,19 +157,37 @@ PrepareEnv <- function(
     pyinfo,
     "==================================================================="
   )
-  invisible(lapply(pyinfo_mesg, packageStartupMessage))
-  invisible(run_Python(command = "import matplotlib", envir = .GlobalEnv))
+  invisible(
+    lapply(pyinfo_mesg, packageStartupMessage)
+  )
+  invisible(
+    run_python(
+      command = "import matplotlib",
+      envir = .GlobalEnv
+    )
+  )
   if (!interactive()) {
-    invisible(run_Python(command = "matplotlib.use('pdf')", envir = .GlobalEnv))
+    invisible(
+      run_python(
+        command = "matplotlib.use('pdf')",
+        envir = .GlobalEnv
+      )
+    )
   }
-  invisible(run_Python(
-    command = "import matplotlib.pyplot as plt",
-    envir = .GlobalEnv
-  ))
-  invisible(run_Python(command = "import scanpy", envir = .GlobalEnv))
+  invisible(
+    run_python(
+      command = "import matplotlib.pyplot as plt",
+      envir = .GlobalEnv
+    )
+  )
+  invisible(
+    run_python(
+      command = "import scanpy", envir = .GlobalEnv
+    )
+  )
 }
 
-#' Env_requirements function
+#' env_requirements function
 #'
 #' This function provides the scop python environment requirements for a specific version.
 #'
@@ -172,10 +197,10 @@ PrepareEnv <- function(
 #'          and a list of packages with their corresponding versions.
 #' @examples
 #' # Get requirements for version "3.8-1"
-#' Env_requirements("3.8-1")
+#' env_requirements("3.8-1")
 #'
 #' @export
-Env_requirements <- function(version = "3.8-1") {
+env_requirements <- function(version = "3.8-1") {
   version <- match.arg(
     version,
     choices = c("3.8-1", "3.8-2", "3.9-1", "3.10-1", "3.11-1")
@@ -305,7 +330,9 @@ Env_requirements <- function(version = "3.8-1") {
 #'
 #' @inheritParams check_python
 #' @export
-installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
+installed_python_pkgs <- function(
+    envname = NULL,
+    conda = "auto") {
   envname <- get_envname(envname)
   if (identical(conda, "auto")) {
     conda <- find_conda()
@@ -329,7 +356,7 @@ installed_Python_pkgs <- function(envname = NULL, conda = "auto") {
 #'
 #' @inheritParams check_python
 #' @export
-exist_Python_pkgs <- function(
+exist_python_pkgs <- function(
     packages,
     envname = NULL,
     conda = "auto") {
@@ -344,7 +371,7 @@ exist_Python_pkgs <- function(
   if (isFALSE(env)) {
     stop("Can not find the conda environment: ", envname)
   }
-  all_installed <- installed_Python_pkgs(envname = envname, conda = conda)
+  all_installed <- installed_python_pkgs(envname = envname, conda = conda)
   packages_installed <- NULL
   for (i in seq_along(packages)) {
     pkg <- packages[i]
@@ -566,7 +593,9 @@ conda_python <- function(
   return(normalizePath(as.character(python), mustWork = FALSE))
 }
 
-run_Python <- function(command, envir = .GlobalEnv) {
+run_python <- function(
+    command,
+    envir = .GlobalEnv) {
   tryCatch(
     expr = {
       eval(
@@ -595,7 +624,8 @@ run_Python <- function(command, envir = .GlobalEnv) {
 #' @param error_message a string, additional custom error message you would like to be displayed when an error occurs.
 #' @param retry_message a string, a message displayed when a new try to evaluate the expression would be attempted.
 #'
-#' @return This function returns the evaluated expression if successful, otherwise it throws an error if all attempts are unsuccessful.
+#' @return This function returns the evaluated expression if successful,
+#' otherwise it throws an error if all attempts are unsuccessful.
 #' @export
 #'
 #' @examples

@@ -72,6 +72,7 @@ CellDimPlot3D(
 Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
 pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot3D(
@@ -80,7 +81,6 @@ CellDimPlot3D(
   reduction = "StandardpcaUMAP3D"
 )
 
-\dontrun{
 #' pancreas_sub <- RunSlingshot(
   srt = pancreas_sub,
   group.by = "SubCellType",

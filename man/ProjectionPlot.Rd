@@ -51,7 +51,7 @@ This function generates a projection plot, which can be used to compare two grou
 data("panc8_sub")
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- Integration_scop(
+srt_ref <- integration_scop(
   srt_ref,
   batch = "tech",
   integration_method = "Seurat"
