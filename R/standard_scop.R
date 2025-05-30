@@ -31,7 +31,7 @@
 #'
 #' @return A \code{Seurat} object.
 #'
-#' @seealso \code{\link{Integration_scop}}
+#' @seealso \code{\link{integration_scop}}
 #'
 #' @export
 #'

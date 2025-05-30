@@ -44,17 +44,20 @@
 #' )
 #' VolcanoPlot(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group_by = "CellType",
+#'   ncol = 2
 #' )
 #' VolcanoPlot(
 #'   pancreas_sub,
 #'   group_by = "CellType",
-#'   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05"
+#'   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
+#'   ncol = 2
 #' )
 #' VolcanoPlot(
 #'   pancreas_sub,
 #'   group_by = "CellType",
-#'   x_metric = "avg_log2FC"
+#'   x_metric = "avg_log2FC",
+#'   ncol = 2
 #' )
 VolcanoPlot <- function(
     srt,

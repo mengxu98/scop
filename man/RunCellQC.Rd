@@ -56,7 +56,7 @@ which is appropriate for 10x datasets.}
 \item{db_coefficient}{The coefficient used to calculate the doublet rate. Default is 0.01. Doublet rate is calculated as\code{ncol(srt) / 1000 * db_coefficient}}
 
 \item{outlier_threshold}{A character vector specifying the outlier threshold. Default is
-\code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}. See \link[scuttle]{isOutlier}.}
+\code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}. See \link[scuttle]{is_outlier}.}
 
 \item{outlier_n}{Minimum number of outlier metrics that meet the conditions for determining outlier cells. Default is 1.}
 

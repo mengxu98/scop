@@ -16,7 +16,8 @@ try_get(expr, max_tries = 5, error_message = "", retry_message = "Retrying...")
 \item{retry_message}{a string, a message displayed when a new try to evaluate the expression would be attempted.}
 }
 \value{
-This function returns the evaluated expression if successful, otherwise it throws an error if all attempts are unsuccessful.
+This function returns the evaluated expression if successful,
+otherwise it throws an error if all attempts are unsuccessful.
 }
 \description{
 The function is used as a fail-safe if your R code sometimes works and sometimes

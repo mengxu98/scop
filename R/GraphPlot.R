@@ -260,7 +260,7 @@ GraphPlot <- function(
       "-",
       edge_df[, "to"]
     )
-    edge_df <- segementsDf(
+    edge_df <- segements_df(
       edge_df,
       global_size * edge_shorten,
       global_size * edge_shorten,
@@ -417,7 +417,7 @@ GraphPlot <- function(
         "-",
         trans_df[, "to"]
       )
-      trans_df <- segementsDf(
+      trans_df <- segements_df(
         trans_df,
         global_size * transition_shorten,
         global_size * transition_shorten,

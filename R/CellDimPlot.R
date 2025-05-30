@@ -1387,6 +1387,7 @@ CellDimPlot <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot3D(
@@ -1394,8 +1395,7 @@ CellDimPlot <- function(
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D"
 #' )
-#' 
-#' \dontrun{
+#'
 #' #' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",
