@@ -49,7 +49,7 @@ check_python <- function(
     pkg_installed <- stats::setNames(rep(FALSE, length(packages)), packages)
     pip_options <- c(pip_options, "--force-reinstall")
   } else {
-    pkg_installed <- exist_Python_pkgs(
+    pkg_installed <- exist_python_pkgs(
       packages = packages,
       envname = envname,
       conda = conda
@@ -76,7 +76,7 @@ check_python <- function(
     )
   }
 
-  pkg_installed <- exist_Python_pkgs(
+  pkg_installed <- exist_python_pkgs(
     packages = packages,
     envname = envname,
     conda = conda

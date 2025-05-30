@@ -507,6 +507,7 @@ show_palettes <- function(
 #' The latter is obviously more important to control the final result of a plot.
 #' This function can set the panel width/height of plot to a fixed value and rasterize it.
 #'
+#' @md
 #' @param x A ggplot object, a grob object, or a combined plot made by patchwork or cowplot package.
 #' @param panel_index Specify the panel to be fixed. If NULL, will fix all panels.
 #' @param respect If a logical, this indicates whether row heights and column widths should respect each other.
@@ -514,10 +515,10 @@ show_palettes <- function(
 #' @param height The desired height of the fixed panels.
 #' @param margin The margin to add around each panel, in inches. The default is 1 inch.
 #' @param padding The padding to add around each panel, in inches. The default is 0 inches.
-#' @param units The units in which \code{height}, \code{width} and \code{margin} are given. Can be \code{mm}, \code{cm}, \code{in}, etc. See \code{\link[grid]{unit}}.
+#' @param units The units in which \code{height}, \code{width} and \code{margin} are given. Can be \code{mm}, \code{cm}, \code{in}, etc. See [grid::unit].
 #' @param raster Whether to rasterize the panel.
 #' @param dpi Plot resolution.
-#' @param BPPARAM An \code{\link[BiocParallel]{BiocParallelParam}} instance determining the parallel back-end to be used during building the object made by patchwork package.
+#' @param BPPARAM An [BiocParallel::BiocParallelParam] instance determining the parallel back-end to be used during building the object made by patchwork package.
 #' @param return_grob If \code{TRUE} then return a grob object instead of a wrapped \code{patchwork} object.
 #' @param save NULL or the file name used to save the plot.
 #' @param bg_color Plot background color.
@@ -550,8 +551,8 @@ show_palettes <- function(
 #'   dpi = 90
 #' )
 #'
-#' # panel_fix will build and render the plot when the input is a ggplot object.
-#' # so after panel_fix, the size of the object will be changed.
+#' # `panel_fix` will build and render the plot when the input is a ggplot object.
+#' # so after `panel_fix`, the size of the object will be changed.
 #' object.size(p)
 #' object.size(
 #'   panel_fix(
@@ -586,7 +587,7 @@ show_palettes <- function(
 #' #   save = "p_fix.png"
 #' # )
 #'
-#' # fix the panel of the plot combined by patchwork
+#' # fix the panel of the plot combined by `patchwork`
 #' data("pancreas_sub")
 #' p1 <- CellDimPlot(
 #'   pancreas_sub,
@@ -600,7 +601,7 @@ show_palettes <- function(
 #' )
 #' p <- p1 / p2
 #' # fix the panel size for each plot,
-#' # the width will be calculated automatically based on aspect.ratio
+#' # the width will be calculated automatically based on `aspect.ratio`
 #' panel_fix(p, height = 1)
 #'
 #' # fix the panel of the plot combined by plot_grid
@@ -628,7 +629,7 @@ show_palettes <- function(
 #' }
 #'
 #' # fix the panel of the heatmap
-#' ht1 <- GroupHeatmap(pancreas_sub,
+#' ht <- GroupHeatmap(pancreas_sub,
 #'   features = c(
 #'     "Sox9", "Anxa2", "Bicc1", # Ductal
 #'     "Neurog3", "Hes6", # EPs
@@ -640,31 +641,14 @@ show_palettes <- function(
 #'   group.by = c("CellType", "SubCellType"),
 #'   show_row_names = TRUE
 #' )
-#' # the size of the heatmap is not fixed and can be resized by zooming the viewport.
-#' ht1$plot
+#' # the size of the heatmap is not fixed and can be resized by zooming the viewport
+#' ht$plot
 #' # fix the size of the heatmap according the current viewport
-#' panel_fix(ht1$plot)
+#' panel_fix(ht$plot)
 #' # rasterize the heatmap body
-#' panel_fix(ht1$plot, raster = TRUE, dpi = 30)
+#' panel_fix(ht$plot, raster = TRUE, dpi = 30)
 #' # fix the size of overall heatmap including annotation and legend
-#' panel_fix(ht1$plot, height = 4, width = 6)
-#'
-#' ht2 <- GroupHeatmap(pancreas_sub,
-#'   features = pancreas_sub[["RNA"]]@var.features,
-#'   group.by = "SubCellType",
-#'   n_split = 5, nlabel = 20,
-#'   db = "GO_BP", species = "Mus_musculus", anno_terms = TRUE,
-#'   height = 4, width = 1 # Heatmap body size for two groups
-#' )
-#' # the size of the heatmap is already fixed
-#' ht2$plot
-#' # when no height/width is specified,
-#' # panel_fix does not change the size of the heatmap.
-#' panel_fix(ht2$plot)
-#' # rasterize the heatmap body
-#' panel_fix(ht2$plot, raster = TRUE, dpi = 30)
-#' # however, gene labels on the left and enrichment annotations on the right cannot be adjusted
-#' panel_fix(ht2$plot, height = 5, width = 10)
+#' panel_fix(ht$plot, height = 4, width = 6)
 panel_fix <- function(
     x = NULL,
     panel_index = NULL,

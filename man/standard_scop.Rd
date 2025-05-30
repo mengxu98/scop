@@ -154,5 +154,5 @@ plist2 <- lapply(
 patchwork::wrap_plots(plotlist = plist2)
 }
 \seealso{
-\code{\link{Integration_scop}}
+\code{\link{integration_scop}}
 }

@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' library(ggplot2)
-#' tempNodes <- data.frame(
+#' temp_nodes <- data.frame(
 #'   "x" = c(10, 40),
 #'   "y" = c(10, 30)
 #' )
@@ -26,7 +26,7 @@
 #'   "yend" = c(30, 10)
 #' )
 #'
-#' ggplot(tempNodes, aes(x = x, y = y)) +
+#' ggplot(temp_nodes, aes(x = x, y = y)) +
 #'   geom_point(size = 12) +
 #'   xlim(0, 50) +
 #'   ylim(0, 50) +
@@ -35,12 +35,12 @@
 #'     aes(x = x, xend = xend, y = y, yend = yend)
 #'   )
 #'
-#' ggplot(tempNodes, aes(x = x, y = y)) +
+#' ggplot(temp_nodes, aes(x = x, y = y)) +
 #'   geom_point(size = 12) +
 #'   xlim(0, 50) +
 #'   ylim(0, 50) +
 #'   geom_segment(
-#'     data = segementsDf(
+#'     data = segements_df(
 #'       data,
 #'       shorten_start = 2,
 #'       shorten_end = 3,
@@ -48,7 +48,7 @@
 #'     ),
 #'     aes(x = x, xend = xend, y = y, yend = yend)
 #'   )
-segementsDf <- function(
+segements_df <- function(
     data,
     shorten_start,
     shorten_end, offset) {

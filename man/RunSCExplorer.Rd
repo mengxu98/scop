@@ -88,7 +88,7 @@ RunSCExplorer
 data("pancreas_sub")
 pancreas_sub <- standard_scop(pancreas_sub)
 data("panc8_sub")
-panc8_sub <- Integration_scop(
+panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
   integration_method = "Seurat"

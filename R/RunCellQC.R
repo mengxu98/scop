@@ -334,14 +334,14 @@ RunDoubletCalling <- function(
 #'
 #' @examples
 #' x <- c(1, 2, 3, 4, 5, 100)
-#' isOutlier(x) # returns 6
+#' is_outlier(x) # returns 6
 #'
 #' x <- c(3, 4, 5, NA, 6, 7)
-#' isOutlier(x, nmads = 1.5, type = "lower") # returns 4
+#' is_outlier(x, nmads = 1.5, type = "lower") # returns 4
 #'
 #' x <- c(10, 20, NA, 15, 35)
-#' isOutlier(x, nmads = 2, type = "higher") # returns 3, 5
-isOutlier <- function(
+#' is_outlier(x, nmads = 2, type = "higher") # returns 3, 5
+is_outlier <- function(
     x,
     nmads = 2.5,
     constant = 1.4826,
@@ -374,7 +374,7 @@ isOutlier <- function(
 #' @param qc_metrics A character vector specifying the quality control metrics to be applied. Default is
 #'   `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
 #' @param outlier_threshold A character vector specifying the outlier threshold. Default is
-#'   `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`. See \link[scuttle]{isOutlier}.
+#'   `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`. See \link[scuttle]{is_outlier}.
 #' @param db_coefficient The coefficient used to calculate the doublet rate. Default is 0.01. Doublet rate is calculated as`ncol(srt) / 1000 * db_coefficient`
 #' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells. Default is 1.
 #' @param UMI_threshold UMI number threshold. Cells that exceed this threshold will be considered as kept. Default is 3000.
@@ -662,7 +662,7 @@ RunCellQC <- function(
           }
           outlier <- lapply(
             strsplit(outlier_threshold, ":"), function(m) {
-              colnames(srt)[isOutlier(
+              colnames(srt)[is_outlier(
                 get(m[1]),
                 nmads = as.numeric(m[3]),
                 type = m[2]

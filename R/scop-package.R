@@ -121,12 +121,12 @@ print.logo <- function(x, ...) {
   #           "==================================================================="
   #         )
   #         invisible(lapply(pyinfo_mesg, packageStartupMessage))
-  #         invisible(run_Python(command = "import matplotlib", envir = .GlobalEnv))
+  #         invisible(run_python(command = "import matplotlib", envir = .GlobalEnv))
   #         if (!interactive()) {
-  #           invisible(run_Python(command = "matplotlib.use('pdf')", envir = .GlobalEnv))
+  #           invisible(run_python(command = "matplotlib.use('pdf')", envir = .GlobalEnv))
   #         }
-  #         invisible(run_Python(command = "import matplotlib.pyplot as plt", envir = .GlobalEnv))
-  #         invisible(run_Python(command = "import scanpy", envir = .GlobalEnv))
+  #         invisible(run_python(command = "import matplotlib.pyplot as plt", envir = .GlobalEnv))
+  #         invisible(run_python(command = "import scanpy", envir = .GlobalEnv))
   #         packageStartupMessage("Conda path can be specified with the command `options(reticulate.conda_binary = \"/path/to/conda\")` before loading the package")
   #         packageStartupMessage("scop python environment can be disabled with the command `options(scop_env_init = FALSE)` before loading the package")
   #       },

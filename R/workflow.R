@@ -489,7 +489,7 @@ DefaultReduction <- function(
 
 #' Uncorrected_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #'
 #' @export
 Uncorrected_integrate <- function(
@@ -820,7 +820,7 @@ Uncorrected_integrate <- function(
 
 #' Seurat_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function, default is an empty list.
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function, default is an empty list.
 #' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function, default is an empty list.
@@ -1357,7 +1357,7 @@ Seurat_integrate <- function(
 
 #' scVI_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used.
@@ -1434,7 +1434,7 @@ scVI_integrate <- function(
 
   if (
     .Platform$OS.type == "windows" &&
-      !exist_Python_pkgs(packages = "scvi-tools")
+      !exist_python_pkgs(packages = "scvi-tools")
   ) {
     suppressWarnings(system2(
       command = conda_python(),
@@ -1670,7 +1670,7 @@ scVI_integrate <- function(
 
 #' MNN_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function, default is an empty list.
 #'
 #' @export
@@ -2039,7 +2039,7 @@ MNN_integrate <- function(
 
 #' fastMNN_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param fastMNN_dims_use A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param fastMNN_params A list of parameters for the batchelor::fastMNN function, default is an empty list.
@@ -2319,7 +2319,7 @@ fastMNN_integrate <- function(
 
 #' Harmony_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param Harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param RunHarmony_params A list of parameters for the harmony::RunHarmony function, default is an empty list.
@@ -2694,7 +2694,7 @@ Harmony_integrate <- function(
 
 #' Scanorama_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param return_corrected Logical indicating whether to return the corrected data. Default is FALSE.
 #' @param Scanorama_params A list of parameters for the scanorama.correct function, default is an empty list.
@@ -3005,7 +3005,7 @@ Scanorama_integrate <- function(
 
 #' BBKNN_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
 #'
 #' @export
@@ -3387,7 +3387,7 @@ BBKNN_integrate <- function(
 
 #' CSS_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function, default is an empty list.
 #' @export
@@ -3757,7 +3757,7 @@ CSS_integrate <- function(
 #' LIGER_integrate
 #'
 #' @md
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
 #' @param optimizeALS_params A list of parameters for the [rliger::optimizeALS] function, default is an empty list.
 #' @param quantilenorm_params A list of parameters for the [rliger::quantile_norm] function, default is an empty list.
@@ -4110,7 +4110,7 @@ LIGER_integrate <- function(
 
 #' Conos_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param buildGraph_params A list of parameters for the buildGraph function, default is an empty list.
 #' @param num_threads  An integer setting the number of threads for Conos, default is 2.
 #'
@@ -4476,7 +4476,7 @@ Conos_integrate <- function(
 
 #' Combat_integrate
 #'
-#' @inheritParams Integration_scop
+#' @inheritParams integration_scop
 #' @param ComBat_params A list of parameters for the sva::ComBat function, default is an empty list.
 #'
 #' @export
@@ -4835,7 +4835,7 @@ ComBat_integrate <- function(
   }
 }
 
-#' Integration_scop
+#' integration_scop
 #'
 #' Integrate single-cell RNA-seq data using various integration methods.
 #'
@@ -4855,7 +4855,7 @@ ComBat_integrate <- function(
 #'
 #' @examples
 #' data("panc8_sub")
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Uncorrected"
@@ -4865,7 +4865,7 @@ ComBat_integrate <- function(
 #'   group.by = c("tech", "celltype")
 #' )
 #'
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Uncorrected",
@@ -4876,7 +4876,7 @@ ComBat_integrate <- function(
 #'   group.by = c("tech", "celltype")
 #' )
 #'
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Uncorrected",
@@ -4888,14 +4888,14 @@ ComBat_integrate <- function(
 #'   group.by = c("tech", "celltype")
 #' )
 #'
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat",
@@ -4909,7 +4909,7 @@ ComBat_integrate <- function(
 #'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
 #' )
 #' for (method in integration_methods) {
-#'   panc8_sub <- Integration_scop(
+#'   panc8_sub <- integration_scop(
 #'     panc8_sub,
 #'     batch = "tech",
 #'     integration_method = method,
@@ -4928,7 +4928,7 @@ ComBat_integrate <- function(
 #'   "umap", "tsne", "dm", "phate",
 #'   "pacmap", "trimap", "largevis", "fr"
 #' )
-#' panc8_sub <- Integration_scop(
+#' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   integration_method = "Seurat",
@@ -4949,7 +4949,7 @@ ComBat_integrate <- function(
 #' }
 #'
 #' @export
-Integration_scop <- function(
+integration_scop <- function(
     srt_merge = NULL,
     batch,
     append = TRUE,
