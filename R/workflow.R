@@ -4916,12 +4916,14 @@ ComBat_integrate <- function(
 #'     linear_reduction_dims_use = 1:50,
 #'     nonlinear_reduction = "umap"
 #'   )
-#'   print(CellDimPlot(panc8_sub,
-#'     group.by = c("tech", "celltype"),
-#'     reduction = paste0(method, "UMAP2D"),
-#'     xlab = "", ylab = "", title = method,
-#'     legend.position = "none", theme_use = "theme_blank"
-#'   ))
+#'   print(
+#'     CellDimPlot(panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0(method, "UMAP2D"),
+#'       xlab = "", ylab = "", title = method,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
 #' }
 #'
 #' nonlinear_reductions <- c(
