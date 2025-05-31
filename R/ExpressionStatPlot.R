@@ -1130,7 +1130,6 @@ ExpressionStatPlot <- function(
           )
         )
     }
-    # plist[[paste0(f, ":", g, ":", paste0(single_group, collapse = ","), ":", paste0(sp, collapse = ","))]] <- p
   })
 
   return(plist)
