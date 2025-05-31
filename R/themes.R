@@ -84,12 +84,12 @@ theme_scop <- function(
     )
   )
   args2 <- as.list(match.call())[-1]
-  call.envir <- parent.frame(1)
+  call_envir <- parent.frame(1)
   args2 <- lapply(args2, function(arg) {
     if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else {
       arg
     }
@@ -153,12 +153,12 @@ theme_blank <- function(
     )
   )
   args2 <- as.list(match.call())[-1]
-  call.envir <- parent.frame(1)
+  call_envir <- parent.frame(1)
   args2 <- lapply(args2, function(arg) {
     if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else {
       arg
     }
@@ -1753,7 +1753,9 @@ as_grob <- function(plot, ...) {
   } else if (inherits(plot, "ggplot")) {
     ggplot2::ggplotGrob(plot)
   } else {
-    warning("Cannot convert object of class ", paste0(class(plot), collapse = ","), " into a grob.")
+    warning(
+      "Cannot convert object of class ", paste0(class(plot), collapse = ","), " into a grob."
+    )
   }
 }
 
@@ -1780,7 +1782,12 @@ get_legend <- function(plot) {
   plot <- as_gtable(plot)
   grob_names <- plot$layout$name
   grobs <- plot$grobs
-  grob_index <- which(grepl("guide-box", grob_names))
+  grob_index <- which(
+    grepl(
+      "guide-box-bottom", # guide-box
+      grob_names
+    )
+  )
   grob_index <- grob_index[1]
   matched_grobs <- grobs[[grob_index]]
 

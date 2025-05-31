@@ -1224,6 +1224,7 @@ CellDimPlot <- function(
           ggplot() +
             lineages_layers +
             theme_scop(
+              legend.position = "bottom",
               legend.direction = legend.direction
             )
         )
@@ -1243,6 +1244,7 @@ CellDimPlot <- function(
             ggplot() +
               paga_layers +
               theme_scop(
+                legend.position = "bottom",
                 legend.direction = legend.direction
               )
           )
@@ -1267,6 +1269,7 @@ CellDimPlot <- function(
             ggplot() +
               velocity_layers +
               theme_scop(
+                legend.position = "bottom",
                 legend.direction = legend.direction
               )
           )
@@ -1317,7 +1320,11 @@ CellDimPlot <- function(
         p <- p +
           ggrepel::geom_text_repel(
             data = label_df,
-            aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
+            aes(
+              x = .data[["x"]],
+              y = .data[["y"]],
+              label = .data[["label"]]
+            ),
             fontface = "bold",
             min.segment.length = 0,
             segment.color = label_segment_color,
@@ -1337,7 +1344,7 @@ CellDimPlot <- function(
       legend_base <- get_legend(
         p_base +
           theme_scop(
-            # legend.position = legend.position,
+            legend.position = "bottom",
             legend.direction = legend.direction
           )
       )
