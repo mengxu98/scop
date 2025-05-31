@@ -1602,13 +1602,18 @@ FeatureDimPlot <- function(
       p_base <- p
 
       if (!is.null(lineages)) {
-        lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
+        lineages_layers <- c(
+          list(
+            ggnewscale::new_scale_color()
+          ),
+          lineages_layers
+        )
         suppressMessages({
           legend_list[["lineages"]] <- get_legend(
             ggplot() +
               lineages_layers +
               theme_scop(
-                # legend.position = legend.position,
+                legend.position = "bottom",
                 legend.direction = legend.direction
               )
           )
@@ -1623,8 +1628,14 @@ FeatureDimPlot <- function(
       if (isTRUE(label)) {
         label_df <- p$data %>%
           dplyr::filter(
-            value >= stats::quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
-              value <= stats::quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
+            value >= stats::quantile(
+              value[is.finite(value)], 0.95,
+              na.rm = TRUE
+            ) &
+              value <= stats::quantile(
+                value[is.finite(value)], 0.99,
+                na.rm = TRUE
+              )
           ) %>%
           dplyr::reframe(
             x = stats::median(.data[["x"]]),

@@ -1268,7 +1268,7 @@ StatPlot <- function(
                 )
               ) +
               theme_scop(
-                # legend.position = legend.position,
+                legend.position = "bottom",
                 legend.direction = legend.direction
               )
           )
