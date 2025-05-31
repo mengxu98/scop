@@ -11,7 +11,6 @@ template:
   package: mxtemplate
 
 navbar:
-  title: "scop"
   structure:
     left:  [articles, reference, tutorials, news]
     right: [github, mengxu, lightswitch]
@@ -43,15 +42,15 @@ reference:
 - subtitle: "Package Setup"
 - contents:
   - PrepareEnv
-  - Env_requirements
-  - check_python
-  - check_r
-  - exist_Python_pkgs
-  - installed_Python_pkgs
   - conda_install
   - conda_python
-  - env_exist
   - find_conda
+  - env_requirements
+  - check_python
+  - check_r
+  - env_exist
+  - exist_python_pkgs
+  - installed_python_pkgs
 
 - subtitle: "Data Processing and Quality Control"
 - contents:
@@ -70,12 +69,12 @@ reference:
   - RecoverCounts
   - CellScoring
   - CC_GenePrefetch
-  - isOutlier
+  - is_outlier
   - DefaultReduction
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
-  - Integration_scop
+  - integration_scop
   - RunCSSMap
   - RunHarmony2
   - RunKNNMap
@@ -107,32 +106,29 @@ reference:
   - RunPaCMAP
   - RunTriMap
   - RunPHATE
-  - RunPAGA
   - RunDM
   - RunFR
   - RunLargeVis
   - RunKNNPredict
 
-- subtitle: "Trajectory Analysis and Dynamic Processes"
-- contents:
-  - RunMonocle2
-  - RunMonocle3
-  - RunPalantir
-  - RunSlingshot
-  - RunSCVELO
-  - RunWOT
-  - VelocityPlot
-  - compute_velocity_on_grid
-  - PAGAPlot
-  - RunDynamicFeatures
-
 - subtitle: "Differential Analysis and Enrichment"
 - contents:
+  - FindExpressedMarkers
   - RunDEtest
   - RunGSEA
   - RunEnrichment
   - RunDynamicEnrichment
-  - FindExpressedMarkers
+
+- subtitle: "Trajectory Analysis and Dynamic Processes"
+- contents:
+  - RunMonocle2
+  - RunMonocle3
+  - RunPAGA
+  - RunPalantir
+  - RunSlingshot
+  - RunSCVELO
+  - RunWOT
+  - RunDynamicFeatures
 
 - subtitle: "Visualization Functions"
 - contents:
@@ -141,30 +137,39 @@ reference:
   - CellDensityPlot
   - CellCorHeatmap
   - CellStatPlot
+  - DynamicPlot
+  - DynamicHeatmap
+  - EnrichmentPlot
   - FeatureDimPlot
   - FeatureDimPlot3D
   - FeatureHeatmap
   - FeatureCorPlot
   - FeatureStatPlot
-  - DynamicPlot
-  - DynamicHeatmap
-  - EnrichmentPlot
-  - GSEAPlot
-  - GroupHeatmap
   - LineagePlot
-  - VolcanoPlot
+  - GraphPlot
+  - GroupHeatmap
+  - GSEAPlot
+  - PAGAPlot
   - panel_fix
   - ProjectionPlot
-  - GraphPlot
   - StatPlot
+  - VelocityPlot
+  - VolcanoPlot
+
+- subtitle: "Themes"
+- contents:
+  - adjcolors
+  - blendcolors
   - geom_alluvial
   - geom_alluvial_label
   - geom_sankey
   - geom_sankey_bump
   - geom_sankey_label
+  - palette_scop
+  - show_palettes
+  - theme_blank
+  - theme_scop
   - theme_sankey
-  - make_long
-  - segementsDf
 
 - subtitle: "Web SCExplorer"
 - contents:
@@ -174,42 +179,43 @@ reference:
 - subtitle: "Utility Functions"
 - contents:
   - adata_to_srt
+  - AnnotateFeatures
+  - capitalize
+  - compute_velocity_on_grid
+  - download
+  - drop_data
   - srt_to_adata
   - srt_append
   - srt_reorder
-  - AnnotateFeatures
   - RenameClusters
   - RenameFeatures
   - GeneConvert
-  - theme_scop
-  - theme_blank
-  - palette_scop
-  - palette_list
-  - show_palettes
-  - adjcolors
-  - blendcolors
   - unnest
-  - words_excluded
-  - capitalize
-  - download
-  - drop_data
   - get_vars
   - try_get
   - slim_data
   - invoke_fun
+  - make_long
+  - segements_df
 
 - subtitle: "Database Operations"
 - contents:
-  - PrepareDB
   - CreateDataFile
   - CreateMetaFile
-  - ListDB
   - FetchH5
+  - ListDB
+  - PrepareDB
 
 - subtitle: "Example Data"
 - contents:
   - ifnb_sub
+  - lifemap_cell
+  - lifemap_compartment
+  - lifemap_organ
+  - palette_list
   - panc8_sub
   - pancreas_sub
-  - lifemap_cell
   - ref_scHCL
+  - ref_scMCA
+  - ref_scZCL
+  - words_excluded
