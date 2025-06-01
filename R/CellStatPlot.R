@@ -1008,13 +1008,13 @@ StatPlot <- function(
           }
         }
         if (plot_type %in% c("rose")) {
-          # angle <- 360 / (2 * pi) * rev(seq(pi / nlevels(dat[[g]]), 2 * pi - pi / nlevels(dat[[g]]), len = nlevels(dat[[g]])))
-          # axis.text.x <- element_text(angle = angle)
-          axis.text.x <- element_text()
+          axis_text_x <- element_text()
         } else if (plot_type %in% c("ring", "pie")) {
-          axis.text.x <- element_text()
+          axis_text_x <- element_text()
         } else {
-          axis.text.x <- element_text(angle = 45, hjust = 1, vjust = 1)
+          axis_text_x <- element_text(
+            angle = 45, hjust = 1, vjust = 1
+          )
         }
         title <- title %||% sp
         p <- p +
@@ -1025,12 +1025,12 @@ StatPlot <- function(
             na.value = colors_use["NA"],
             drop = FALSE,
             limits = names(colors_use),
-            na.translate = T
+            na.translate = TRUE
           ) +
           do.call(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
-            axis.text.x = axis.text.x,
+            axis.text.x = axis_text_x,
             legend.position = legend.position,
             legend.direction = legend.direction,
             panel.grid.major = if (plot_type == "trend" & stat_type == "percent") {
@@ -1078,7 +1078,9 @@ StatPlot <- function(
         check_r("ggVennDiagram")
         dat_list <- as.list(dat_use[, stat.by])
         dat_list <- lapply(
-          stats::setNames(names(dat_list), names(dat_list)),
+          stats::setNames(
+            names(dat_list), names(dat_list)
+          ),
           function(x) {
             lg <- dat_list[[x]]
             names(lg) <- rownames(dat_use)
@@ -1111,10 +1113,14 @@ StatPlot <- function(
           "%"
         )
         dat_venn_setedge <- ggVennDiagram::venn_setedge(data)
-        dat_venn_setedge[["colors"]] <- colors[stat.by[as.numeric(dat_venn_setedge[["id"]])]]
+        dat_venn_setedge[["colors"]] <- colors[stat.by[as.numeric(
+          dat_venn_setedge[["id"]]
+        )]]
 
         venn_regionedge_data <- ggVennDiagram::venn_regionedge(data)
-        venn_regionedge_data[["colors"]] <- dat_venn_region[["colors"]][match(venn_regionedge_data[["id"]], dat_venn_region[["id"]])]
+        venn_regionedge_data[["colors"]] <- dat_venn_region[["colors"]][match(
+          venn_regionedge_data[["id"]], dat_venn_region[["id"]]
+        )]
 
         p <- ggplot() +
           geom_polygon(
