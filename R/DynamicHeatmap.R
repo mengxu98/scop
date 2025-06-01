@@ -786,7 +786,7 @@ DynamicHeatmap <- function(
     mat_raw <- do.call(cbind, mat_list)
   } else {
     mat_list <- list()
-    Y_libsize <- Matrix::colSums(
+    y_libsize <- Matrix::colSums(
       SeuratObject::GetAssayData(
         srt,
         assay = assay,
@@ -812,7 +812,7 @@ DynamicHeatmap <- function(
         if (!is.null(libsize)) {
           libsize_use <- libsize
         } else {
-          libsize_use <- Y_libsize[colnames(mat_tmp)]
+          libsize_use <- y_libsize[colnames(mat_tmp)]
           isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
           if (isTRUE(isfloat)) {
             libsize_use <- rep(1, length(libsize_use))
@@ -827,7 +827,7 @@ DynamicHeatmap <- function(
             mat_tmp[gene, , drop = FALSE]
           ) /
             libsize_use *
-            stats::median(Y_libsize)
+            stats::median(y_libsize)
         )
       }
       colnames(mat_tmp) <- paste0(colnames(mat_tmp), l)

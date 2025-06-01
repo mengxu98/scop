@@ -269,7 +269,7 @@ DynamicPlot <- function(
   }
 
   df_list <- list()
-  Y_libsize <- Matrix::colSums(
+  y_libsize <- Matrix::colSums(
     SeuratObject::GetAssayData(
       srt,
       assay = assay,
@@ -285,7 +285,7 @@ DynamicPlot <- function(
       if (!is.null(libsize)) {
         libsize_use <- libsize
       } else {
-        libsize_use <- Y_libsize[rownames(raw_matrix)]
+        libsize_use <- y_libsize[rownames(raw_matrix)]
         isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
         if (isTRUE(isfloat)) {
           libsize_use <- rep(1, length(libsize_use))
@@ -297,7 +297,7 @@ DynamicPlot <- function(
       }
       raw_matrix[, gene] <- raw_matrix[, gene, drop = FALSE] /
         libsize_use *
-        stats::median(Y_libsize)
+        stats::median(y_libsize)
     }
 
     if (is.function(exp_method)) {
