@@ -1,7 +1,7 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.0.2
+Version: 0.0.3
 Authors@R:
     c(
     person(given = "Hao", family = "Zhang", email = "aozhang@njmu.edu.cn", role = c("aut")),
@@ -25,6 +25,7 @@ Imports:
     ggforce,
     gtable,
     igraph,
+    inferCSN,
     reticulate,
     rlang,
     ggplot2 (>= 3.4.0),
