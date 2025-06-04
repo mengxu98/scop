@@ -726,6 +726,7 @@ CellDimPlot <- function(
       combine = FALSE
     )
   }
+
   if (!is.null(lineages)) {
     lineages_layers <- LineagePlot(
       srt,
@@ -759,6 +760,7 @@ CellDimPlot <- function(
       !names(lineages_layers) %in% c("lab_layer", "theme_layer")
     ]
   }
+  
   if (!is.null(paga)) {
     if (split.by != "All.groups") {
       stop("paga can only plot on the non-split data")
@@ -797,6 +799,7 @@ CellDimPlot <- function(
       !names(paga_layers) %in% c("lab_layer", "theme_layer")
     ]
   }
+  
   if (!is.null(velocity)) {
     if (split.by != "All.groups") {
       stop("velocity can only plot on the non-split data")
@@ -845,6 +848,7 @@ CellDimPlot <- function(
       !names(velocity_layers) %in% c("lab_layer", "theme_layer")
     ]
   }
+  
   plist <- list()
   xlab <- xlab %||% paste0(reduction_key, dims[1])
   ylab <- ylab %||% paste0(reduction_key, dims[2])
@@ -860,8 +864,7 @@ CellDimPlot <- function(
   )
   rownames(comb) <- paste0(comb[["split"]], ":", comb[["group"]])
   plist <- lapply(
-    stats::setNames(
-      rownames(comb), rownames(comb)), function(i) {
+    stats::setNames(rownames(comb), rownames(comb)), function(i) {
     g <- comb[i, "group"]
     s <- comb[i, "split"]
     colors <- palette_scop(
@@ -870,6 +873,7 @@ CellDimPlot <- function(
       palcolor = palcolor,
       NA_keep = TRUE
     )
+    
     dat <- dat_use
     cells_mask <- dat[[split.by]] != s
     dat[[g]][cells_mask] <- NA
@@ -880,6 +884,7 @@ CellDimPlot <- function(
     if (isTRUE(cells.highlight_use)) {
       cells.highlight_use <- rownames(dat)[!is.na(dat[[g]])]
     }
+    
     if (isTRUE(label_insitu)) {
       if (isTRUE(show_stat)) {
         label_use <- paste0(names(labels_tb), "(", labels_tb, ")")
@@ -908,6 +913,7 @@ CellDimPlot <- function(
         }
       }
     }
+
     dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
     dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
     dat[["group.by"]] <- dat[[g]]
@@ -1047,6 +1053,7 @@ CellDimPlot <- function(
         legend.position = legend.position,
         legend.direction = legend.direction
       )
+    
     if (split.by != "All.groups") {
       p <- p + facet_grid(. ~ split.by)
     }
@@ -1199,7 +1206,7 @@ CellDimPlot <- function(
 
       stat_plot_list <- list()
       for (i in seq_len(nrow(coor_df))) {
-        stat_plot_list[[i]] <- annotation_custom(
+        stat_plot_list[[i]] <- ggplot2::annotation_custom(
           as_grob(
             stat_plot[[coor_df[i, "group"]]] +
               theme_void() +
@@ -1214,9 +1221,10 @@ CellDimPlot <- function(
       p <- p + stat_plot_list
       legend_list[["stat.by"]] <- get_legend(
         stat_plot[[coor_df[i, "group"]]] +
-          theme(legend.position = legend.position)
+          theme(legend.position = "bottom")
       )
     }
+    
     if (!is.null(lineages)) {
       lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
       suppressMessages({
@@ -1236,6 +1244,7 @@ CellDimPlot <- function(
         legend_list["lineages"] <- list(NULL)
       }
     }
+    
     if (!is.null(paga)) {
       paga_layers <- c(list(ggnewscale::new_scale_color()), paga_layers)
       if (g != paga$groups) {
@@ -1257,6 +1266,7 @@ CellDimPlot <- function(
         legend_list["paga"] <- list(NULL)
       }
     }
+    
     if (!is.null(velocity)) {
       velocity_layers <- c(
         list(ggnewscale::new_scale_color()),
@@ -1282,6 +1292,7 @@ CellDimPlot <- function(
         legend_list["velocity"] <- list(NULL)
       }
     }
+    
     if (isTRUE(label)) {
       label_df <- stats::aggregate(
         p$data[, c("x", "y")],
@@ -1339,6 +1350,7 @@ CellDimPlot <- function(
           )
       }
     }
+
     if (length(legend_list) > 0) {
       legend_list <- legend_list[!sapply(legend_list, is.null)]
       legend_base <- get_legend(
@@ -1357,8 +1369,10 @@ CellDimPlot <- function(
       gtable <- add_grob(gtable, legend, legend.position)
       p <- patchwork::wrap_plots(gtable)
     }
+    
     return(p)
-  })
+  }
+  )
 
   if (isTRUE(combine)) {
     if (length(plist) > 1) {
