@@ -1773,7 +1773,7 @@ as_gtable <- function(plot, ...) {
     if (inherits(grob, "gtable")) {
       return(grob)
     } else {
-      return(as_gtable(grob, ...))
+      return(cowplot::as_gtable(grob, ...))
     }
   }
 }

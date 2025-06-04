@@ -424,14 +424,14 @@ RunGSEA <- function(
               drop = FALSE
             ]
             semData <- db_list[[species]][[term]][["semData"]]
-            ipclock(id)
+            BiocParallel::ipclock(id)
             sim_res <- clusterProfiler::simplify(
               sim_res,
               measure = simplify_method,
               cutoff = simplify_similarityCutoff,
               semData = semData
             )
-            ipcunlock(id)
+            BiocParallel::ipcunlock(id)
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
@@ -454,7 +454,7 @@ RunGSEA <- function(
       return(enrich_res)
     },
     BPPARAM = BPPARAM,
-    id = ipcid()
+    id = BiocParallel::ipcid()
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")

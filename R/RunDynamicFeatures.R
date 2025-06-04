@@ -2,6 +2,7 @@
 #'
 #' Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param lineages A character vector specifying the lineage names for which dynamic features should be calculated.
 #' @param features A character vector specifying the features (genes or metadata variables) for which dynamic features should be calculated.
@@ -26,7 +27,7 @@
 #' Otherwise, libsize must have the same length as the number of cells in srt.
 #' Defaults to NULL.
 #' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for computing dynamic features.
-#' Defaults to BiocParallel::bpparam().
+#' Defaults to [BiocParallel::bpparam].
 #' @param seed An integer specifying the seed for random number generation. Defaults to 11.
 #'
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
