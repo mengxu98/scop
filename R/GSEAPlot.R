@@ -883,7 +883,7 @@ GSEAPlot <- function(
           guides(color = guide_legend(title = "Term:", byrow = TRUE)) +
           do.call(theme_use, theme_args) +
           theme(
-            legend.position = legend.position,
+            legend.position = "bottom",
             legend.direction = legend.direction
           )
       )
