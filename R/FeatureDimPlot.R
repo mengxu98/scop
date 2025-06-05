@@ -690,533 +690,540 @@ FeatureDimPlot <- function(
       dat_exp[row.names(dat_use), features, drop = FALSE]
     )
     dat_split <- split.data.frame(dat_all, dat_all[[split.by]])
-    plist <- lapply(levels(dat_sp[[split.by]]), function(s) {
-      dat <- dat_split[[ifelse(split.by == "All.groups", 1, s)]][, ,
-        drop = FALSE
-      ]
-      for (f in features) {
-        if (any(is.infinite(dat[, f]))) {
-          dat[, f][which(dat[, f] == max(dat[, f], na.rm = TRUE))] <- max(
-            dat[, f][is.finite(dat[, f])],
-            na.rm = TRUE
-          )
-          dat[, f][which(dat[, f] == min(dat[, f], na.rm = TRUE))] <- min(
-            dat[, f][is.finite(dat[, f])],
-            na.rm = TRUE
-          )
+    plist <- lapply(
+      levels(dat_sp[[split.by]]), function(s) {
+        dat <- dat_split[[ifelse(split.by == "All.groups", 1, s)]][, ,
+          drop = FALSE
+        ]
+        for (f in features) {
+          if (any(is.infinite(dat[, f]))) {
+            dat[, f][which(dat[, f] == max(dat[, f], na.rm = TRUE))] <- max(
+              dat[, f][is.finite(dat[, f])],
+              na.rm = TRUE
+            )
+            dat[, f][which(dat[, f] == min(dat[, f], na.rm = TRUE))] <- min(
+              dat[, f][is.finite(dat[, f])],
+              na.rm = TRUE
+            )
+          }
         }
-      }
-      dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
-      dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
-      dat[, "split.by"] <- s
-      dat[, "features"] <- paste(features, collapse = "|")
-      subtitle_use <- paste0(subtitle, collapse = "|") %||% s
-      colors <- palette_scop(
-        features,
-        type = "discrete",
-        palette = palette,
-        palcolor = palcolor
-      )
-      colors_list <- list()
-      value_list <- list()
-      pal_list <- list()
-      temp_geom <- list()
-      legend_list <- list()
-      for (i in seq_along(colors)) {
-        colors_list[[i]] <- palette_scop(
-          dat[, names(colors)[i]],
-          type = "continuous",
-          NA_color = NA,
-          NA_keep = TRUE,
-          matched = TRUE,
-          palcolor = c(adjcolors(colors[i], 0.1), colors[i])
+        dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
+        dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
+        dat[, "split.by"] <- s
+        dat[, "features"] <- paste(features, collapse = "|")
+        subtitle_use <- paste0(subtitle, collapse = "|") %||% s
+        colors <- palette_scop(
+          features,
+          type = "discrete",
+          palette = palette,
+          palcolor = palcolor
         )
-        pal_list[[i]] <- palette_scop(
-          dat[, names(colors)[i]],
-          type = "continuous",
-          NA_color = NA,
-          NA_keep = FALSE,
-          matched = FALSE,
-          palcolor = c(adjcolors(colors[i], 0.1), colors[i])
-        )
-        value_list[[i]] <- seq(
-          min(dat[, names(colors)[i]], na.rm = TRUE),
-          max(dat[, names(colors)[i]], na.rm = TRUE),
-          length.out = 100
-        )
-        temp_geom[[i]] <- list(
-          geom_point(
-            data = dat,
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[[names(colors)[i]]]
-            )
+        colors_list <- list()
+        value_list <- list()
+        pal_list <- list()
+        temp_geom <- list()
+        legend_list <- list()
+        for (i in seq_along(colors)) {
+          colors_list[[i]] <- palette_scop(
+            dat[, names(colors)[i]],
+            type = "continuous",
+            NA_color = NA,
+            NA_keep = TRUE,
+            matched = TRUE,
+            palcolor = c(adjcolors(colors[i], 0.1), colors[i])
           )
-        )
-        if (all(is.na(colors_list[[i]]))) {
-          temp_geom[[i]] <- append(
-            temp_geom[[i]],
-            scale_colour_gradient(
-              na.value = bg_color,
-              guide = guide_colorbar(
-                frame.colour = "black",
-                ticks.colour = "black",
-                title.hjust = 0
-              )
-            )
+          pal_list[[i]] <- palette_scop(
+            dat[, names(colors)[i]],
+            type = "continuous",
+            NA_color = NA,
+            NA_keep = FALSE,
+            matched = FALSE,
+            palcolor = c(adjcolors(colors[i], 0.1), colors[i])
           )
-        } else if (length(colors_list[[i]]) == 1) {
-          temp_geom[[i]] <- append(
-            temp_geom[[i]],
-            scale_colour_gradient(
-              low = colors_list[[i]],
-              na.value = bg_color,
-              guide = guide_colorbar(
-                frame.colour = "black",
-                ticks.colour = "black",
-                title.hjust = 0
-              )
-            )
+          value_list[[i]] <- seq(
+            min(dat[, names(colors)[i]], na.rm = TRUE),
+            max(dat[, names(colors)[i]], na.rm = TRUE),
+            length.out = 100
           )
-        } else {
-          temp_geom[[i]] <- append(
-            temp_geom[[i]],
-            scale_color_gradientn(
-              colours = pal_list[[i]],
-              values = rescale(value_list[[i]]),
-              na.value = bg_color,
-              guide = guide_colorbar(
-                frame.colour = "black",
-                ticks.colour = "black",
-                title.hjust = 0
-              )
-            )
-          )
-        }
-        legend_list[[i]] <- get_legend(
-          ggplot(dat, aes(x = .data[["x"]], y = .data[["y"]])) +
-            temp_geom[[i]] +
-            do.call(theme_use, theme_args) +
-            theme(
-              aspect.ratio = aspect.ratio,
-              legend.position = legend.position,
-              legend.direction = legend.direction
-            )
-        )
-      }
-      for (j in seq_len(nrow(dat))) {
-        dat[j, "color_blend"] <- blendcolors(
-          sapply(colors_list, function(x) x[j]),
-          mode = color_blend_mode
-        )
-      }
-      dat["color_value"] <- Matrix::colSums(grDevices::col2rgb(dat[, "color_blend"]))
-      dat[
-        Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
-        "color_value"
-      ] <- NA
-      dat <- dat[
-        order(dat[, "color_value"], decreasing = TRUE, na.last = FALSE), ,
-        drop = FALSE
-      ]
-      dat[
-        Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
-        "color_blend"
-      ] <- bg_color
-      cells.highlight_use <- cells.highlight
-      if (isTRUE(cells.highlight_use)) {
-        cells.highlight_use <- rownames(dat)[dat[["color_blend"]] != bg_color]
-      }
-      if (!is.null(graph)) {
-        net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
-        net_mat[net_mat == 0] <- NA
-        net_mat[upper.tri(net_mat)] <- NA
-        net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-        net_df[, "value"] <- as.numeric(net_df[, "value"])
-        net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-        net_df[, "Var2"] <- as.character(net_df[, "Var2"])
-        net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
-        net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
-        net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
-        net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
-        net <- list(
-          geom_segment(
-            data = net_df,
-            mapping = aes(
-              x = x,
-              y = y,
-              xend = xend,
-              yend = yend,
-              linewidth = value
-            ),
-            color = edge_color,
-            alpha = edge_alpha,
-            show.legend = FALSE
-          ),
-          scale_linewidth_continuous(range = edge_size)
-        )
-      } else {
-        net <- NULL
-      }
-      if (isTRUE(add_density)) {
-        if (isTRUE(density_filled)) {
-          filled_color <- palette_scop(
-            palette = density_filled_palette,
-            palcolor = density_filled_palcolor
-          )
-          density <- list(
-            stat_density_2d(
-              geom = "raster",
-              aes(
+          temp_geom[[i]] <- list(
+            geom_point(
+              data = dat,
+              mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
-                fill = after_stat(density)
-              ),
-              contour = FALSE,
-              inherit.aes = FALSE,
-              show.legend = FALSE
-            ),
-            scale_fill_gradientn(name = "Density", colours = filled_color),
-            ggnewscale::new_scale_fill()
-          )
-        } else {
-          density <- geom_density_2d(
-            aes(x = .data[["x"]], y = .data[["y"]]),
-            color = density_color,
-            inherit.aes = FALSE
-          )
-        }
-      } else {
-        density <- NULL
-      }
-      p <- ggplot(dat) +
-        net +
-        density +
-        labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
-        scale_x_continuous(
-          limits = c(
-            min(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE),
-            max(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
-          )
-        ) +
-        scale_y_continuous(
-          limits = c(
-            min(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE),
-            max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
-          )
-        )
-      if (split.by == "All.groups") {
-        p <- p + facet_grid(. ~ features)
-      } else {
-        p <- p + facet_grid(split.by ~ features)
-      }
-      p <- p +
-        do.call(theme_use, theme_args) +
-        theme(
-          aspect.ratio = aspect.ratio,
-          legend.position = "none",
-          legend.direction = legend.direction
-        )
-      if (isTRUE(raster)) {
-        p <- p +
-          scattermore::geom_scattermore(
-            data = dat[dat[, "color_blend"] == bg_color, , drop = FALSE],
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["color_blend"]]
-            ),
-            pointsize = ceiling(pt.size),
-            alpha = pt.alpha,
-            pixels = raster.dpi
-          ) +
-          scattermore::geom_scattermore(
-            data = dat[dat[, "color_blend"] != bg_color, , drop = FALSE],
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["color_blend"]]
-            ),
-            pointsize = ceiling(pt.size),
-            alpha = pt.alpha,
-            pixels = raster.dpi
-          ) +
-          scale_color_identity() +
-          ggnewscale::new_scale_color()
-      } else {
-        p <- p +
-          geom_point(
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["color_blend"]]
-            ),
-            size = pt.size,
-            alpha = pt.alpha
-          ) +
-          scale_color_identity() +
-          ggnewscale::new_scale_color()
-      }
-
-      if (!is.null(cells.highlight_use)) {
-        cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
-        if (nrow(cell_df) > 0) {
-          if (isTRUE(raster)) {
-            p <- p +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                color = cols.highlight,
-                pointsize = floor(sizes.highlight) + stroke.highlight,
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              ) +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["color_blend"]]
-                ),
-                pointsize = floor(sizes.highlight),
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              ) +
-              scale_color_identity() +
-              ggnewscale::new_scale_color()
-          } else {
-            p <- p +
-              geom_point(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                color = cols.highlight,
-                size = sizes.highlight + stroke.highlight,
-                alpha = alpha.highlight
-              ) +
-              geom_point(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["color_blend"]]
-                ),
-                size = sizes.highlight,
-                alpha = alpha.highlight
-              ) +
-              scale_color_identity() +
-              ggnewscale::new_scale_color()
-          }
-        }
-      }
-
-      legend2 <- NULL
-      if (isTRUE(label)) {
-        label_df <- reshape2::melt(p$data, measure.vars = features)
-        label_df <- label_df %>%
-          dplyr::group_by(variable) %>%
-          dplyr::filter(
-            value >= stats::quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
-              value <= stats::quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
-          ) %>%
-          dplyr::reframe(
-            x = stats::median(.data[["x"]]),
-            y = stats::median(.data[["y"]])
-          ) %>%
-          as.data.frame()
-        colnames(label_df)[1] <- "label"
-        label_df <- label_df[!is.na(label_df[, "label"]), , drop = FALSE]
-        label_df[, "rank"] <- seq_len(nrow(label_df))
-        if (isTRUE(label_insitu)) {
-          if (isTRUE(label_repel)) {
-            p <- p +
-              geom_point(
-                data = label_df,
-                mapping = aes(x = .data[["x"]], y = .data[["y"]]),
-                color = label_point_color,
-                size = label_point_size
-              ) +
-              ggrepel::geom_text_repel(
-                data = label_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  label = .data[["label"]],
-                  color = .data[["label"]]
-                ),
-                fontface = "bold",
-                min.segment.length = 0,
-                segment.color = label_segment_color,
-                point.size = label_point_size,
-                max.overlaps = 100,
-                force = label_repulsion,
-                color = label.fg,
-                bg.color = label.bg,
-                bg.r = label.bg.r,
-                size = label.size,
-                inherit.aes = FALSE,
-                show.legend = FALSE
+                color = .data[[names(colors)[i]]]
               )
-          } else {
-            p <- p +
-              ggrepel::geom_text_repel(
-                data = label_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  label = .data[["label"]],
-                  color = .data[["label"]]
-                ),
-                fontface = "bold",
-                min.segment.length = 0,
-                segment.color = label_segment_color,
-                point.size = NA,
-                max.overlaps = 100,
-                force = 0,
-                color = label.fg,
-                bg.color = label.bg,
-                bg.r = label.bg.r,
-                size = label.size,
-                inherit.aes = FALSE,
-                show.legend = FALSE
-              )
-          }
-          p <- p +
-            scale_color_manual(
-              name = "Label:",
-              values = adjcolors(colors[label_df$label], 0.5),
-              labels = label_df$label,
-              na.value = bg_color
             )
-        } else {
-          if (isTRUE(label_repel)) {
-            p <- p +
-              geom_point(
-                data = label_df,
-                mapping = aes(x = .data[["x"]], y = .data[["y"]]),
-                color = "black",
-                size = pt.size + 1
-              ) +
-              ggrepel::geom_text_repel(
-                data = label_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  label = .data[["rank"]],
-                  color = .data[["label"]]
-                ),
-                fontface = "bold",
-                min.segment.length = 0,
-                segment.color = label_segment_color,
-                point.size = pt.size + 1,
-                max.overlaps = 100,
-                force = label_repulsion,
-                bg.color = label.bg,
-                bg.r = label.bg.r,
-                size = label.size,
-                inherit.aes = FALSE,
-                key_glyph = "point"
+          )
+          if (all(is.na(colors_list[[i]]))) {
+            temp_geom[[i]] <- append(
+              temp_geom[[i]],
+              scale_colour_gradient(
+                na.value = bg_color,
+                guide = guide_colorbar(
+                  frame.colour = "black",
+                  ticks.colour = "black",
+                  title.hjust = 0
+                )
               )
+            )
+          } else if (length(colors_list[[i]]) == 1) {
+            temp_geom[[i]] <- append(
+              temp_geom[[i]],
+              scale_colour_gradient(
+                low = colors_list[[i]],
+                na.value = bg_color,
+                guide = guide_colorbar(
+                  frame.colour = "black",
+                  ticks.colour = "black",
+                  title.hjust = 0
+                )
+              )
+            )
           } else {
-            p <- p +
-              ggrepel::geom_text_repel(
-                data = label_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  label = .data[["rank"]],
-                  color = .data[["label"]]
-                ),
-                fontface = "bold",
-                min.segment.length = 0,
-                segment.colour = label_segment_color,
-                point.size = NA,
-                max.overlaps = 100,
-                force = 0,
-                bg.color = label.bg,
-                bg.r = label.bg.r,
-                size = label.size,
-                inherit.aes = FALSE,
-                key_glyph = "point"
+            temp_geom[[i]] <- append(
+              temp_geom[[i]],
+              scale_color_gradientn(
+                colours = pal_list[[i]],
+                values = rescale(value_list[[i]]),
+                na.value = bg_color,
+                guide = guide_colorbar(
+                  frame.colour = "black",
+                  ticks.colour = "black",
+                  title.hjust = 0
+                )
               )
+            )
           }
-          p <- p +
-            scale_color_manual(
-              name = "Label:",
-              values = adjcolors(colors[label_df$label], 0.5),
-              labels = paste(label_df$rank, label_df$label, sep = ": "),
-              na.value = bg_color
-            ) +
-            guides(
-              colour = guide_legend(
-                override.aes = list(color = colors[label_df$label]),
-                order = 1
-              )
-            ) +
-            theme(legend.position = "none")
-          legend2 <- get_legend(
-            p +
+          legend_list[[i]] <- get_legend(
+            ggplot(dat, aes(x = .data[["x"]], y = .data[["y"]])) +
+              temp_geom[[i]] +
               do.call(theme_use, theme_args) +
               theme(
                 aspect.ratio = aspect.ratio,
-                legend.position = legend.position,
+                legend.position = "bottom",
                 legend.direction = legend.direction
               )
           )
         }
-      }
-
-      legend_nrow <- min(ceiling(sqrt(length(legend_list))), 3)
-      total <- length(legend_list)
-      leg_list <- list()
-      n <- 1
-      for (i in 1:total) {
-        if (i == 1 || is.null(leg)) {
-          leg <- legend_list[[i]]
+        for (j in seq_len(nrow(dat))) {
+          dat[j, "color_blend"] <- blendcolors(
+            sapply(colors_list, function(x) x[j]),
+            mode = color_blend_mode
+          )
+        }
+        dat["color_value"] <- Matrix::colSums(grDevices::col2rgb(dat[, "color_blend"]))
+        dat[
+          Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
+          "color_value"
+        ] <- NA
+        dat <- dat[
+          order(dat[, "color_value"], decreasing = TRUE, na.last = FALSE), ,
+          drop = FALSE
+        ]
+        dat[
+          Matrix::rowSums(is.na(dat[, names(colors)])) == length(colors),
+          "color_blend"
+        ] <- bg_color
+        cells.highlight_use <- cells.highlight
+        if (isTRUE(cells.highlight_use)) {
+          cells.highlight_use <- rownames(dat)[dat[["color_blend"]] != bg_color]
+        }
+        if (!is.null(graph)) {
+          net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
+          net_mat[net_mat == 0] <- NA
+          net_mat[upper.tri(net_mat)] <- NA
+          net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+          net_df[, "value"] <- as.numeric(net_df[, "value"])
+          net_df[, "Var1"] <- as.character(net_df[, "Var1"])
+          net_df[, "Var2"] <- as.character(net_df[, "Var2"])
+          net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
+          net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
+          net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
+          net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
+          net <- list(
+            geom_segment(
+              data = net_df,
+              mapping = aes(
+                x = x,
+                y = y,
+                xend = xend,
+                yend = yend,
+                linewidth = value
+              ),
+              color = edge_color,
+              alpha = edge_alpha,
+              show.legend = FALSE
+            ),
+            scale_linewidth_continuous(range = edge_size)
+          )
         } else {
-          leg <- cbind(leg, legend_list[[i]])
+          net <- NULL
         }
-        if (i %% legend_nrow == 0) {
-          leg_list[[n]] <- leg
-          leg <- NULL
-          n <- n + 1
-        }
-        if (i %% legend_nrow != 0 && i == total) {
-          ncol_insert <- dim(leg_list[[n - 1]])[2] - dim(leg)[2]
-          for (col_insert in 1:ncol_insert) {
-            leg <- gtable::gtable_add_cols(
-              leg,
-              sum(leg_list[[n - 1]]$widths) / ncol_insert,
-              -1
+
+        if (isTRUE(add_density)) {
+          if (isTRUE(density_filled)) {
+            filled_color <- palette_scop(
+              palette = density_filled_palette,
+              palcolor = density_filled_palcolor
+            )
+            density <- list(
+              stat_density_2d(
+                geom = "raster",
+                aes(
+                  x = .data[["x"]],
+                  y = .data[["y"]],
+                  fill = after_stat(density)
+                ),
+                contour = FALSE,
+                inherit.aes = FALSE,
+                show.legend = FALSE
+              ),
+              scale_fill_gradientn(name = "Density", colours = filled_color),
+              ggnewscale::new_scale_fill()
+            )
+          } else {
+            density <- geom_density_2d(
+              aes(x = .data[["x"]], y = .data[["y"]]),
+              color = density_color,
+              inherit.aes = FALSE
             )
           }
-          leg_list[[n]] <- leg
+        } else {
+          density <- NULL
         }
-      }
-      legend <- do.call(rbind, leg_list)
-      if (!is.null(lineages)) {
-        lineages_layers <- c(list(ggnewscale::new_scale_color()), lineages_layers)
-        suppressMessages({
-          legend_curve <- get_legend(
-            ggplot() +
-              lineages_layers +
-              theme_scop()
-          )
-        })
-        legend <- add_grob(legend, legend_curve, "top")
-        p <- suppressMessages({
-          p + lineages_layers + theme(legend.position = "none")
-        })
-      }
 
-      gtable <- as_grob(p)
-      gtable <- add_grob(gtable, legend, legend.position)
-      if (!is.null(legend2)) {
-        gtable <- add_grob(gtable, legend2, legend.position)
+        p <- ggplot(dat) +
+          net +
+          density +
+          labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
+          scale_x_continuous(
+            limits = c(
+              min(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE),
+              max(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
+            )
+          ) +
+          scale_y_continuous(
+            limits = c(
+              min(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE),
+              max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
+            )
+          )
+        if (split.by == "All.groups") {
+          p <- p + facet_grid(. ~ features)
+        } else {
+          p <- p + facet_grid(split.by ~ features)
+        }
+        p <- p +
+          do.call(theme_use, theme_args) +
+          theme(
+            aspect.ratio = aspect.ratio,
+            legend.position = "none",
+            legend.direction = legend.direction
+          )
+
+        if (isTRUE(raster)) {
+          p <- p +
+            scattermore::geom_scattermore(
+              data = dat[dat[, "color_blend"] == bg_color, , drop = FALSE],
+              mapping = aes(
+                x = .data[["x"]],
+                y = .data[["y"]],
+                color = .data[["color_blend"]]
+              ),
+              pointsize = ceiling(pt.size),
+              alpha = pt.alpha,
+              pixels = raster.dpi
+            ) +
+            scattermore::geom_scattermore(
+              data = dat[dat[, "color_blend"] != bg_color, , drop = FALSE],
+              mapping = aes(
+                x = .data[["x"]],
+                y = .data[["y"]],
+                color = .data[["color_blend"]]
+              ),
+              pointsize = ceiling(pt.size),
+              alpha = pt.alpha,
+              pixels = raster.dpi
+            ) +
+            scale_color_identity() +
+            ggnewscale::new_scale_color()
+        } else {
+          p <- p +
+            geom_point(
+              mapping = aes(
+                x = .data[["x"]],
+                y = .data[["y"]],
+                color = .data[["color_blend"]]
+              ),
+              size = pt.size,
+              alpha = pt.alpha
+            ) +
+            scale_color_identity() +
+            ggnewscale::new_scale_color()
+        }
+
+        if (!is.null(cells.highlight_use)) {
+          cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
+          if (nrow(cell_df) > 0) {
+            if (isTRUE(raster)) {
+              p <- p +
+                scattermore::geom_scattermore(
+                  data = cell_df,
+                  aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = cols.highlight,
+                  pointsize = floor(sizes.highlight) + stroke.highlight,
+                  alpha = alpha.highlight,
+                  pixels = raster.dpi
+                ) +
+                scattermore::geom_scattermore(
+                  data = cell_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    color = .data[["color_blend"]]
+                  ),
+                  pointsize = floor(sizes.highlight),
+                  alpha = alpha.highlight,
+                  pixels = raster.dpi
+                ) +
+                scale_color_identity() +
+                ggnewscale::new_scale_color()
+            } else {
+              p <- p +
+                geom_point(
+                  data = cell_df,
+                  aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = cols.highlight,
+                  size = sizes.highlight + stroke.highlight,
+                  alpha = alpha.highlight
+                ) +
+                geom_point(
+                  data = cell_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    color = .data[["color_blend"]]
+                  ),
+                  size = sizes.highlight,
+                  alpha = alpha.highlight
+                ) +
+                scale_color_identity() +
+                ggnewscale::new_scale_color()
+            }
+          }
+        }
+
+        legend2 <- NULL
+        if (isTRUE(label)) {
+          label_df <- reshape2::melt(p$data, measure.vars = features)
+          label_df <- label_df %>%
+            dplyr::group_by(variable) %>%
+            dplyr::filter(
+              value >= stats::quantile(value[is.finite(value)], 0.95, na.rm = TRUE) &
+                value <= stats::quantile(value[is.finite(value)], 0.99, na.rm = TRUE)
+            ) %>%
+            dplyr::reframe(
+              x = stats::median(.data[["x"]]),
+              y = stats::median(.data[["y"]])
+            ) %>%
+            as.data.frame()
+          colnames(label_df)[1] <- "label"
+          label_df <- label_df[!is.na(label_df[, "label"]), , drop = FALSE]
+          label_df[, "rank"] <- seq_len(nrow(label_df))
+          if (isTRUE(label_insitu)) {
+            if (isTRUE(label_repel)) {
+              p <- p +
+                geom_point(
+                  data = label_df,
+                  mapping = aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = label_point_color,
+                  size = label_point_size
+                ) +
+                ggrepel::geom_text_repel(
+                  data = label_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    label = .data[["label"]],
+                    color = .data[["label"]]
+                  ),
+                  fontface = "bold",
+                  min.segment.length = 0,
+                  segment.color = label_segment_color,
+                  point.size = label_point_size,
+                  max.overlaps = 100,
+                  force = label_repulsion,
+                  color = label.fg,
+                  bg.color = label.bg,
+                  bg.r = label.bg.r,
+                  size = label.size,
+                  inherit.aes = FALSE,
+                  show.legend = FALSE
+                )
+            } else {
+              p <- p +
+                ggrepel::geom_text_repel(
+                  data = label_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    label = .data[["label"]],
+                    color = .data[["label"]]
+                  ),
+                  fontface = "bold",
+                  min.segment.length = 0,
+                  segment.color = label_segment_color,
+                  point.size = NA,
+                  max.overlaps = 100,
+                  force = 0,
+                  color = label.fg,
+                  bg.color = label.bg,
+                  bg.r = label.bg.r,
+                  size = label.size,
+                  inherit.aes = FALSE,
+                  show.legend = FALSE
+                )
+            }
+            p <- p +
+              scale_color_manual(
+                name = "Label:",
+                values = adjcolors(colors[label_df$label], 0.5),
+                labels = label_df$label,
+                na.value = bg_color
+              )
+          } else {
+            if (isTRUE(label_repel)) {
+              p <- p +
+                geom_point(
+                  data = label_df,
+                  mapping = aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = "black",
+                  size = pt.size + 1
+                ) +
+                ggrepel::geom_text_repel(
+                  data = label_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    label = .data[["rank"]],
+                    color = .data[["label"]]
+                  ),
+                  fontface = "bold",
+                  min.segment.length = 0,
+                  segment.color = label_segment_color,
+                  point.size = pt.size + 1,
+                  max.overlaps = 100,
+                  force = label_repulsion,
+                  bg.color = label.bg,
+                  bg.r = label.bg.r,
+                  size = label.size,
+                  inherit.aes = FALSE,
+                  key_glyph = "point"
+                )
+            } else {
+              p <- p +
+                ggrepel::geom_text_repel(
+                  data = label_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    label = .data[["rank"]],
+                    color = .data[["label"]]
+                  ),
+                  fontface = "bold",
+                  min.segment.length = 0,
+                  segment.colour = label_segment_color,
+                  point.size = NA,
+                  max.overlaps = 100,
+                  force = 0,
+                  bg.color = label.bg,
+                  bg.r = label.bg.r,
+                  size = label.size,
+                  inherit.aes = FALSE,
+                  key_glyph = "point"
+                )
+            }
+            p <- p +
+              scale_color_manual(
+                name = "Label:",
+                values = adjcolors(colors[label_df$label], 0.5),
+                labels = paste(label_df$rank, label_df$label, sep = ": "),
+                na.value = bg_color
+              ) +
+              guides(
+                colour = guide_legend(
+                  override.aes = list(color = colors[label_df$label]),
+                  order = 1
+                )
+              ) +
+              theme(legend.position = "none")
+            legend2 <- get_legend(
+              p +
+                do.call(theme_use, theme_args) +
+                theme(
+                  aspect.ratio = aspect.ratio,
+                  legend.position = "bottom",
+                  legend.direction = legend.direction
+                )
+            )
+          }
+        }
+
+        legend_nrow <- min(ceiling(sqrt(length(legend_list))), 3)
+        total <- length(legend_list)
+        leg_list <- list()
+        n <- 1
+        for (i in 1:total) {
+          if (i == 1 || is.null(leg)) {
+            leg <- legend_list[[i]]
+          } else {
+            leg <- cbind(leg, legend_list[[i]])
+          }
+          if (i %% legend_nrow == 0) {
+            leg_list[[n]] <- leg
+            leg <- NULL
+            n <- n + 1
+          }
+          if (i %% legend_nrow != 0 && i == total) {
+            ncol_insert <- dim(leg_list[[n - 1]])[2] - dim(leg)[2]
+            for (col_insert in 1:ncol_insert) {
+              leg <- gtable::gtable_add_cols(
+                leg,
+                sum(leg_list[[n - 1]]$widths) / ncol_insert,
+                -1
+              )
+            }
+            leg_list[[n]] <- leg
+          }
+        }
+        legend <- do.call(rbind, leg_list)
+        if (!is.null(lineages)) {
+          lineages_layers <- c(
+            list(ggnewscale::new_scale_color()), lineages_layers
+          )
+          suppressMessages({
+            legend_curve <- get_legend(
+              ggplot() +
+                lineages_layers +
+                theme_scop()
+            )
+          })
+          legend <- add_grob(legend, legend_curve, "top")
+          p <- suppressMessages({
+            p + lineages_layers + theme(legend.position = "none")
+          })
+        }
+
+        gtable <- as_grob(p)
+        gtable <- add_grob(gtable, legend, legend.position)
+        if (!is.null(legend2)) {
+          gtable <- add_grob(gtable, legend2, legend.position)
+        }
+        p <- patchwork::wrap_plots(gtable)
+        return(p)
       }
-      p <- patchwork::wrap_plots(gtable)
-      return(p)
-    })
+    )
     names(plist) <- paste0(
       levels(dat_sp[[split.by]]),
       ":",
@@ -1239,376 +1246,376 @@ FeatureDimPlot <- function(
       palette = palette,
       palcolor = palcolor
     )
-    plist <- lapply(stats::setNames(rownames(comb), rownames(comb)), function(i) {
-      f <- comb[i, "feature"]
-      s <- comb[i, "split"]
-      dat <- dat_split[[ifelse(split.by == "All.groups", 1, s)]][,
-        c(colnames(dat_use), f),
-        drop = FALSE
-      ]
-      if (any(is.infinite(dat[, f]))) {
-        dat[, f][dat[, f] == max(dat[, f], na.rm = TRUE)] <- max(
-          dat[, f][is.finite(dat[, f])],
-          na.rm = TRUE
-        )
-        dat[, f][dat[, f] == min(dat[, f], na.rm = TRUE)] <- min(
-          dat[, f][is.finite(dat[, f])],
-          na.rm = TRUE
-        )
-      }
-      dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
-      dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
-      dat[["value"]] <- dat[[f]]
-      dat <- dat[
-        order(
-          dat[, "value"],
-          method = "radix",
-          decreasing = FALSE,
-          na.last = FALSE
-        ), ,
-        drop = FALSE
-      ]
-      dat[, "features"] <- f
-      cells.highlight_use <- cells.highlight
-      if (isTRUE(cells.highlight_use)) {
-        cells.highlight_use <- rownames(dat)[!is.na(dat[["value"]])]
-      }
-      legend_list <- list()
-      if (isTRUE(show_stat)) {
-        subtitle_use <- subtitle[f] %||%
-          paste0(
-            s,
-            " nPos:",
-            sum(dat[["value"]] > 0, na.rm = TRUE),
-            ", ",
-            round(sum(dat[["value"]] > 0, na.rm = TRUE) / nrow(dat) * 100, 2),
-            "%"
+    plist <- lapply(
+      stats::setNames(rownames(comb), rownames(comb)), function(i) {
+        f <- comb[i, "feature"]
+        s <- comb[i, "split"]
+        dat <- dat_split[[ifelse(split.by == "All.groups", 1, s)]][,
+          c(colnames(dat_use), f),
+          drop = FALSE
+        ]
+        if (any(is.infinite(dat[, f]))) {
+          dat[, f][dat[, f] == max(dat[, f], na.rm = TRUE)] <- max(
+            dat[, f][is.finite(dat[, f])],
+            na.rm = TRUE
           )
-      } else {
-        subtitle_use <- subtitle[f]
-      }
-      if (all(is.na(dat[["value"]]))) {
-        colors_value <- rep(0, 100)
-      } else {
-        if (is.null(keep_scale)) {
-          colors_value <- seq(
-            lower_cutoff %||%
-              stats::quantile(
-                dat[is.finite(dat[, "value"]), "value"],
-                lower_quantile,
-                na.rm = TRUE
-              ),
-            upper_cutoff %||%
-              stats::quantile(
-                dat[is.finite(dat[, "value"]), "value"],
-                upper_quantile,
-                na.rm = TRUE
-              ) +
-              0.001,
-            length.out = 100
+          dat[, f][dat[, f] == min(dat[, f], na.rm = TRUE)] <- min(
+            dat[, f][is.finite(dat[, f])],
+            na.rm = TRUE
           )
+        }
+        dat[["x"]] <- dat[[paste0(reduction_key, dims[1])]]
+        dat[["y"]] <- dat[[paste0(reduction_key, dims[2])]]
+        dat[["value"]] <- dat[[f]]
+        dat <- dat[
+          order(
+            dat[, "value"],
+            method = "radix",
+            decreasing = FALSE,
+            na.last = FALSE
+          ), ,
+          drop = FALSE
+        ]
+        dat[, "features"] <- f
+        cells.highlight_use <- cells.highlight
+        if (isTRUE(cells.highlight_use)) {
+          cells.highlight_use <- rownames(dat)[!is.na(dat[["value"]])]
+        }
+        legend_list <- list()
+        if (isTRUE(show_stat)) {
+          subtitle_use <- subtitle[f] %||%
+            paste0(
+              s,
+              " nPos:",
+              sum(dat[["value"]] > 0, na.rm = TRUE),
+              ", ",
+              round(sum(dat[["value"]] > 0, na.rm = TRUE) / nrow(dat) * 100, 2),
+              "%"
+            )
         } else {
-          if (keep_scale == "feature") {
+          subtitle_use <- subtitle[f]
+        }
+        if (all(is.na(dat[["value"]]))) {
+          colors_value <- rep(0, 100)
+        } else {
+          if (is.null(keep_scale)) {
             colors_value <- seq(
               lower_cutoff %||%
                 stats::quantile(
-                  dat_exp[is.finite(dat_exp[, f]), f],
+                  dat[is.finite(dat[, "value"]), "value"],
                   lower_quantile,
                   na.rm = TRUE
                 ),
               upper_cutoff %||%
                 stats::quantile(
-                  dat_exp[is.finite(dat_exp[, f]), f],
+                  dat[is.finite(dat[, "value"]), "value"],
                   upper_quantile,
                   na.rm = TRUE
                 ) +
                 0.001,
               length.out = 100
             )
-          }
-          if (keep_scale == "all") {
-            all_values <- Matrix::as.matrix(dat_exp[, features])
-            colors_value <- seq(
-              lower_cutoff %||%
-                stats::quantile(
-                  all_values[is.finite(all_values)],
-                  lower_quantile,
-                  na.rm = TRUE
-                ),
-              upper_cutoff %||%
-                stats::quantile(all_values, upper_quantile, na.rm = TRUE) +
-                0.001,
-              length.out = 100
-            )
+          } else {
+            if (keep_scale == "feature") {
+              colors_value <- seq(
+                lower_cutoff %||%
+                  stats::quantile(
+                    dat_exp[is.finite(dat_exp[, f]), f],
+                    lower_quantile,
+                    na.rm = TRUE
+                  ),
+                upper_cutoff %||%
+                  stats::quantile(
+                    dat_exp[is.finite(dat_exp[, f]), f],
+                    upper_quantile,
+                    na.rm = TRUE
+                  ) +
+                  0.001,
+                length.out = 100
+              )
+            }
+            if (keep_scale == "all") {
+              all_values <- Matrix::as.matrix(dat_exp[, features])
+              colors_value <- seq(
+                lower_cutoff %||%
+                  stats::quantile(
+                    all_values[is.finite(all_values)],
+                    lower_quantile,
+                    na.rm = TRUE
+                  ),
+                upper_cutoff %||%
+                  stats::quantile(all_values, upper_quantile, na.rm = TRUE) +
+                  0.001,
+                length.out = 100
+              )
+            }
           }
         }
-      }
-      dat[
-        which(dat[, "value"] > max(colors_value, na.rm = TRUE)),
-        "value"
-      ] <- max(colors_value, na.rm = TRUE)
-      dat[
-        which(dat[, "value"] < min(colors_value, na.rm = TRUE)),
-        "value"
-      ] <- min(colors_value, na.rm = TRUE)
-      if (!is.null(graph)) {
-        net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
-        net_mat[net_mat == 0] <- NA
-        net_mat[upper.tri(net_mat)] <- NA
-        net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-        net_df[, "value"] <- as.numeric(net_df[, "value"])
-        net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-        net_df[, "Var2"] <- as.character(net_df[, "Var2"])
-        net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
-        net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
-        net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
-        net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
-        net <- list(
-          geom_segment(
-            data = net_df,
-            mapping = aes(
-              x = x,
-              y = y,
-              xend = xend,
-              yend = yend,
-              linewidth = value
-            ),
-            color = edge_color,
-            alpha = edge_alpha,
-            show.legend = FALSE
-          ),
-          scale_linewidth_continuous(range = edge_size)
-        )
-      } else {
-        net <- NULL
-      }
-      if (isTRUE(add_density)) {
-        if (isTRUE(density_filled)) {
-          filled_color <- palette_scop(
-            palette = density_filled_palette,
-            palcolor = density_filled_palcolor
-          )
-          density <- list(
-            stat_density_2d(
-              geom = "raster",
-              aes(
-                x = .data[["x"]],
-                y = .data[["y"]],
-                fill = after_stat(density)
+        dat[
+          which(dat[, "value"] > max(colors_value, na.rm = TRUE)),
+          "value"
+        ] <- max(colors_value, na.rm = TRUE)
+        dat[
+          which(dat[, "value"] < min(colors_value, na.rm = TRUE)),
+          "value"
+        ] <- min(colors_value, na.rm = TRUE)
+        if (!is.null(graph)) {
+          net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
+          net_mat[net_mat == 0] <- NA
+          net_mat[upper.tri(net_mat)] <- NA
+          net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+          net_df[, "value"] <- as.numeric(net_df[, "value"])
+          net_df[, "Var1"] <- as.character(net_df[, "Var1"])
+          net_df[, "Var2"] <- as.character(net_df[, "Var2"])
+          net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
+          net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
+          net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]
+          net_df[, "yend"] <- dat[net_df[, "Var2"], "y"]
+          net <- list(
+            geom_segment(
+              data = net_df,
+              mapping = aes(
+                x = x,
+                y = y,
+                xend = xend,
+                yend = yend,
+                linewidth = value
               ),
-              contour = FALSE,
-              inherit.aes = FALSE,
+              color = edge_color,
+              alpha = edge_alpha,
               show.legend = FALSE
             ),
-            scale_fill_gradientn(name = "Density", colours = filled_color),
-            ggnewscale::new_scale_fill()
+            scale_linewidth_continuous(range = edge_size)
           )
         } else {
-          density <- geom_density_2d(
-            aes(x = .data[["x"]], y = .data[["y"]]),
-            color = density_color,
-            inherit.aes = FALSE
-          )
+          net <- NULL
         }
-      } else {
-        density <- NULL
-      }
-      p <- ggplot(dat) +
-        net +
-        density +
-        labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
-        scale_x_continuous(
-          limits = c(
-            min(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE),
-            max(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
-          )
-        ) +
-        scale_y_continuous(
-          limits = c(
-            min(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE),
-            max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
-          )
-        ) +
-        do.call(theme_use, theme_args) +
-        theme(
-          aspect.ratio = aspect.ratio,
-          legend.position = legend.position,
-          legend.direction = legend.direction
-        )
-      if (isTRUE(raster)) {
-        p <- p +
-          scattermore::geom_scattermore(
-            data = dat[is.na(dat[, "value"]), , drop = FALSE],
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["value"]]
-            ),
-            pointsize = ceiling(pt.size),
-            alpha = pt.alpha,
-            pixels = raster.dpi
-          ) +
-          scattermore::geom_scattermore(
-            data = dat[!is.na(dat[, "value"]), , drop = FALSE],
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["value"]]
-            ),
-            pointsize = ceiling(pt.size),
-            alpha = pt.alpha,
-            pixels = raster.dpi
-          )
-      } else if (isTRUE(hex)) {
-        check_r("hexbin")
-        dat_na <- dat[is.na(dat[["value"]]), , drop = FALSE]
-        dat_hex <- dat[!is.na(dat[["value"]]), , drop = FALSE]
-        if (nrow(dat_na) > 0) {
-          p <- p +
-            geom_hex(
-              data = dat[is.na(dat[["value"]]), , drop = FALSE],
-              mapping = aes(x = .data[["x"]], y = .data[["y"]]),
-              fill = bg_color,
-              color = hex.color,
-              linewidth = hex.linewidth,
-              bins = hex.bins,
-              binwidth = hex.binwidth
+        if (isTRUE(add_density)) {
+          if (isTRUE(density_filled)) {
+            filled_color <- palette_scop(
+              palette = density_filled_palette,
+              palcolor = density_filled_palcolor
             )
+            density <- list(
+              stat_density_2d(
+                geom = "raster",
+                aes(
+                  x = .data[["x"]],
+                  y = .data[["y"]],
+                  fill = after_stat(density)
+                ),
+                contour = FALSE,
+                inherit.aes = FALSE,
+                show.legend = FALSE
+              ),
+              scale_fill_gradientn(name = "Density", colours = filled_color),
+              ggnewscale::new_scale_fill()
+            )
+          } else {
+            density <- geom_density_2d(
+              aes(x = .data[["x"]], y = .data[["y"]]),
+              color = density_color,
+              inherit.aes = FALSE
+            )
+          }
+        } else {
+          density <- NULL
         }
-        if (nrow(dat_hex) > 0) {
+        p <- ggplot(dat) +
+          net +
+          density +
+          labs(title = title, subtitle = subtitle_use, x = xlab, y = ylab) +
+          scale_x_continuous(
+            limits = c(
+              min(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE),
+              max(dat_use[, paste0(reduction_key, dims[1])], na.rm = TRUE)
+            )
+          ) +
+          scale_y_continuous(
+            limits = c(
+              min(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE),
+              max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
+            )
+          ) +
+          do.call(theme_use, theme_args) +
+          theme(
+            aspect.ratio = aspect.ratio,
+            legend.position = legend.position,
+            legend.direction = legend.direction
+          )
+        if (isTRUE(raster)) {
           p <- p +
-            stat_summary_hex(
-              data = dat_hex,
+            scattermore::geom_scattermore(
+              data = dat[is.na(dat[, "value"]), , drop = FALSE],
               mapping = aes(
                 x = .data[["x"]],
                 y = .data[["y"]],
-                z = .data[["value"]]
+                color = .data[["value"]]
               ),
-              color = hex.color,
-              linewidth = hex.linewidth,
-              bins = hex.bins,
-              binwidth = hex.binwidth
+              pointsize = ceiling(pt.size),
+              alpha = pt.alpha,
+              pixels = raster.dpi
+            ) +
+            scattermore::geom_scattermore(
+              data = dat[!is.na(dat[, "value"]), , drop = FALSE],
+              mapping = aes(
+                x = .data[["x"]],
+                y = .data[["y"]],
+                color = .data[["value"]]
+              ),
+              pointsize = ceiling(pt.size),
+              alpha = pt.alpha,
+              pixels = raster.dpi
             )
-          if (all(is.na(dat[["value"]]))) {
+        } else if (isTRUE(hex)) {
+          check_r("hexbin")
+          dat_na <- dat[is.na(dat[["value"]]), , drop = FALSE]
+          dat_hex <- dat[!is.na(dat[["value"]]), , drop = FALSE]
+          if (nrow(dat_na) > 0) {
             p <- p +
-              scale_fill_gradient(
-                name = "",
-                na.value = bg_color
-              )
-          } else {
-            p <- p +
-              scale_fill_gradientn(
-                name = "",
-                colours = colors,
-                values = rescale(colors_value),
-                limits = range(colors_value),
-                na.value = bg_color
-              )
-          }
-          p <- p + ggnewscale::new_scale_fill()
-        }
-      } else {
-        p <- p +
-          geom_point(
-            mapping = aes(
-              x = .data[["x"]],
-              y = .data[["y"]],
-              color = .data[["value"]]
-            ),
-            size = pt.size,
-            alpha = pt.alpha
-          )
-      }
-      if (!is.null(cells.highlight_use) && !isTRUE(hex)) {
-        cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
-        if (nrow(cell_df) > 0) {
-          if (isTRUE(raster)) {
-            p <- p +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                color = cols.highlight,
-                pointsize = floor(sizes.highlight) + stroke.highlight,
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              ) +
-              scattermore::geom_scattermore(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["value"]]
-                ),
-                pointsize = floor(sizes.highlight),
-                alpha = alpha.highlight,
-                pixels = raster.dpi
-              )
-          } else {
-            p <- p +
-              geom_point(
-                data = cell_df,
-                aes(x = .data[["x"]], y = .data[["y"]]),
-                color = cols.highlight,
-                size = sizes.highlight + stroke.highlight,
-                alpha = alpha.highlight
-              ) +
-              geom_point(
-                data = cell_df,
-                aes(
-                  x = .data[["x"]],
-                  y = .data[["y"]],
-                  color = .data[["value"]]
-                ),
-                size = sizes.highlight,
-                alpha = alpha.highlight
+              geom_hex(
+                data = dat[is.na(dat[["value"]]), , drop = FALSE],
+                mapping = aes(x = .data[["x"]], y = .data[["y"]]),
+                fill = bg_color,
+                color = hex.color,
+                linewidth = hex.linewidth,
+                bins = hex.bins,
+                binwidth = hex.binwidth
               )
           }
-        }
-      }
-      if (nrow(dat) > 0) {
-        if (split.by == "All.groups") {
-          p <- p + facet_grid(. ~ features)
+          if (nrow(dat_hex) > 0) {
+            p <- p +
+              stat_summary_hex(
+                data = dat_hex,
+                mapping = aes(
+                  x = .data[["x"]],
+                  y = .data[["y"]],
+                  z = .data[["value"]]
+                ),
+                color = hex.color,
+                linewidth = hex.linewidth,
+                bins = hex.bins,
+                binwidth = hex.binwidth
+              )
+            if (all(is.na(dat[["value"]]))) {
+              p <- p +
+                scale_fill_gradient(
+                  name = "",
+                  na.value = bg_color
+                )
+            } else {
+              p <- p +
+                scale_fill_gradientn(
+                  name = "",
+                  colours = colors,
+                  values = rescale(colors_value),
+                  limits = range(colors_value),
+                  na.value = bg_color
+                )
+            }
+            p <- p + ggnewscale::new_scale_fill()
+          }
         } else {
-          p <- p + facet_grid(stats::formula(paste0(split.by, "~features")))
+          p <- p +
+            geom_point(
+              mapping = aes(
+                x = .data[["x"]],
+                y = .data[["y"]],
+                color = .data[["value"]]
+              ),
+              size = pt.size,
+              alpha = pt.alpha
+            )
         }
-      }
-      if (all(is.na(dat[["value"]]))) {
+        if (!is.null(cells.highlight_use) && !isTRUE(hex)) {
+          cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
+          if (nrow(cell_df) > 0) {
+            if (isTRUE(raster)) {
+              p <- p +
+                scattermore::geom_scattermore(
+                  data = cell_df,
+                  aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = cols.highlight,
+                  pointsize = floor(sizes.highlight) + stroke.highlight,
+                  alpha = alpha.highlight,
+                  pixels = raster.dpi
+                ) +
+                scattermore::geom_scattermore(
+                  data = cell_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    color = .data[["value"]]
+                  ),
+                  pointsize = floor(sizes.highlight),
+                  alpha = alpha.highlight,
+                  pixels = raster.dpi
+                )
+            } else {
+              p <- p +
+                geom_point(
+                  data = cell_df,
+                  aes(x = .data[["x"]], y = .data[["y"]]),
+                  color = cols.highlight,
+                  size = sizes.highlight + stroke.highlight,
+                  alpha = alpha.highlight
+                ) +
+                geom_point(
+                  data = cell_df,
+                  aes(
+                    x = .data[["x"]],
+                    y = .data[["y"]],
+                    color = .data[["value"]]
+                  ),
+                  size = sizes.highlight,
+                  alpha = alpha.highlight
+                )
+            }
+          }
+        }
+        if (nrow(dat) > 0) {
+          if (split.by == "All.groups") {
+            p <- p + facet_grid(. ~ features)
+          } else {
+            p <- p + facet_grid(stats::formula(paste0(split.by, "~features")))
+          }
+        }
+        if (all(is.na(dat[["value"]]))) {
+          p <- p +
+            scale_colour_gradient(
+              name = "",
+              na.value = bg_color,
+              aesthetics = c("color")
+            )
+        } else {
+          p <- p +
+            scale_color_gradientn(
+              name = "",
+              colours = colors,
+              values = rescale(colors_value),
+              limits = range(colors_value),
+              na.value = bg_color,
+              aesthetics = c("color")
+            )
+        }
         p <- p +
-          scale_colour_gradient(
-            name = "",
-            na.value = bg_color,
-            aesthetics = c("color")
+          guides(
+            color = guide_colorbar(
+              frame.colour = "black",
+              ticks.colour = "black",
+              title.hjust = 0,
+              order = 1
+            )
           )
-      } else {
-        p <- p +
-          scale_color_gradientn(
-            name = "",
-            colours = colors,
-            values = rescale(colors_value),
-            limits = range(colors_value),
-            na.value = bg_color,
-            aesthetics = c("color")
-          )
-      }
-      p <- p +
-        guides(
-          color = guide_colorbar(
-            frame.colour = "black",
-            ticks.colour = "black",
-            title.hjust = 0,
-            order = 1
-          )
-        )
-      p_base <- p
+        p_base <- p
 
-      if (!is.null(lineages)) {
-        lineages_layers <- c(
-          list(
-            ggnewscale::new_scale_color()
-          ),
-          lineages_layers
-        )
-        suppressMessages({
+        if (!is.null(lineages)) {
+          lineages_layers <- c(
+            list(
+              ggnewscale::new_scale_color()
+            ),
+            lineages_layers
+          )
           legend_list[["lineages"]] <- get_legend(
             ggplot() +
               lineages_layers +
@@ -1617,90 +1624,96 @@ FeatureDimPlot <- function(
                 legend.direction = legend.direction
               )
           )
-        })
-        p <- suppressWarnings({
-          p + lineages_layers + theme(legend.position = "none")
-        })
-        if (is.null(legend_list[["lineages"]])) {
-          legend_list["lineages"] <- list(NULL)
+          p <- suppressWarnings({
+            p + lineages_layers + theme(legend.position = "none")
+          })
+          if (is.null(legend_list[["lineages"]])) {
+            legend_list["lineages"] <- list(NULL)
+          }
         }
-      }
-      if (isTRUE(label)) {
-        label_df <- p$data %>%
-          dplyr::filter(
-            value >= stats::quantile(
-              value[is.finite(value)], 0.95,
-              na.rm = TRUE
-            ) &
-              value <= stats::quantile(
-                value[is.finite(value)], 0.99,
+
+        if (isTRUE(label)) {
+          label_df <- p$data %>%
+            dplyr::filter(
+              value >= stats::quantile(
+                value[is.finite(value)], 0.95,
                 na.rm = TRUE
+              ) &
+                value <= stats::quantile(
+                  value[is.finite(value)], 0.99,
+                  na.rm = TRUE
+                )
+            ) %>%
+            dplyr::reframe(
+              x = stats::median(.data[["x"]]),
+              y = stats::median(.data[["y"]])
+            ) %>%
+            as.data.frame()
+          label_df[, "label"] <- f
+          label_df[, "rank"] <- seq_len(nrow(label_df))
+          if (isTRUE(label_repel)) {
+            p <- p +
+              annotate(
+                geom = "point",
+                x = label_df[["x"]],
+                y = label_df[["y"]],
+                color = "black",
+                size = pt.size + 1
+              ) +
+              annotate(
+                geom = GeomTextRepel,
+                x = label_df[["x"]],
+                y = label_df[["y"]],
+                label = label_df[["label"]],
+                fontface = "bold",
+                min.segment.length = 0,
+                segment.color = label_segment_color,
+                point.size = pt.size + 1,
+                max.overlaps = 100,
+                force = label_repulsion,
+                color = label.fg,
+                bg.color = label.bg,
+                bg.r = label.bg.r,
+                size = label.size
               )
-          ) %>%
-          dplyr::reframe(
-            x = stats::median(.data[["x"]]),
-            y = stats::median(.data[["y"]])
-          ) %>%
-          as.data.frame()
-        label_df[, "label"] <- f
-        label_df[, "rank"] <- seq_len(nrow(label_df))
-        if (isTRUE(label_repel)) {
-          p <- p +
-            annotate(
-              geom = "point",
-              x = label_df[["x"]],
-              y = label_df[["y"]],
-              color = "black",
-              size = pt.size + 1
-            ) +
-            annotate(
-              geom = GeomTextRepel,
-              x = label_df[["x"]],
-              y = label_df[["y"]],
-              label = label_df[["label"]],
-              fontface = "bold",
-              min.segment.length = 0,
-              segment.color = label_segment_color,
-              point.size = pt.size + 1,
-              max.overlaps = 100,
-              force = label_repulsion,
-              color = label.fg,
-              bg.color = label.bg,
-              bg.r = label.bg.r,
-              size = label.size
-            )
-        } else {
-          p <- p +
-            annotate(
-              geom = GeomTextRepel,
-              x = label_df[["x"]],
-              y = label_df[["y"]],
-              label = label_df[["label"]],
-              fontface = "bold",
-              point.size = NA,
-              max.overlaps = 100,
-              force = 0,
-              color = label.fg,
-              bg.color = label.bg,
-              bg.r = label.bg.r,
-              size = label.size
-            )
+          } else {
+            p <- p +
+              annotate(
+                geom = GeomTextRepel,
+                x = label_df[["x"]],
+                y = label_df[["y"]],
+                label = label_df[["label"]],
+                fontface = "bold",
+                point.size = NA,
+                max.overlaps = 100,
+                force = 0,
+                color = label.fg,
+                bg.color = label.bg,
+                bg.r = label.bg.r,
+                size = label.size
+              )
+          }
         }
-      }
-      if (length(legend_list) > 0) {
-        legend_list <- legend_list[!sapply(legend_list, is.null)]
-        legend_base <- get_legend(p_base)
-        if (legend.direction == "vertical") {
-          legend <- do.call(cbind, c(list(base = legend_base), legend_list))
-        } else {
-          legend <- do.call(rbind, c(list(base = legend_base), legend_list))
+
+        if (length(legend_list) > 0) {
+          legend_list <- legend_list[!sapply(legend_list, is.null)]
+          legend_base <- get_legend(
+            p_base +
+              theme(legend.position = "bottom")
+          )
+          if (legend.direction == "vertical") {
+            legend <- do.call(cbind, c(list(base = legend_base), legend_list))
+          } else {
+            legend <- do.call(rbind, c(list(base = legend_base), legend_list))
+          }
+          gtable <- as_grob(p + theme(legend.position = "none"))
+          gtable <- add_grob(gtable, legend, legend.position)
+          p <- patchwork::wrap_plots(gtable)
         }
-        gtable <- as_grob(p + theme(legend.position = "none"))
-        gtable <- add_grob(gtable, legend, legend.position)
-        p <- patchwork::wrap_plots(gtable)
+
+        return(p)
       }
-      return(p)
-    })
+    )
   }
 
   if (isTRUE(combine)) {

@@ -608,28 +608,30 @@ FeatureCorPlot <- function(
           do.call(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
-            legend.position = legend.position,
+            legend.position = "bottom",
             legend.direction = legend.direction
           )
       )
     }
     if (nlevels(dat[[group.by]]) > 1) {
-      legend_list[["group.by"]] <- suppressWarnings(get_legend(
-        plotlist[[1]] +
-          guides(
-            fill = guide_legend(
-              title.hjust = 0,
-              order = 1,
-              override.aes = list(size = 4, color = "black", alpha = 1)
+      legend_list[["group.by"]] <- suppressWarnings(
+        get_legend(
+          plotlist[[1]] +
+            guides(
+              fill = guide_legend(
+                title.hjust = 0,
+                order = 1,
+                override.aes = list(size = 4, color = "black", alpha = 1)
+              )
+            ) +
+            do.call(theme_use, theme_args) +
+            theme(
+              aspect.ratio = aspect.ratio,
+              legend.position = "bottom",
+              legend.direction = legend.direction
             )
-          ) +
-          do.call(theme_use, theme_args) +
-          theme(
-            aspect.ratio = aspect.ratio,
-            legend.position = legend.position,
-            legend.direction = legend.direction
-          )
-      ))
+        )
+      )
     }
 
     grob_row <- list()
