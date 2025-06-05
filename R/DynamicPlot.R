@@ -708,7 +708,10 @@ DynamicPlot <- function(
         p <- p + coord_flip()
       }
       if (is.null(legend)) {
-        legend <- get_legend(p + theme(legend.position = "bottom"))
+        legend <- get_legend(
+          p +
+            theme(legend.position = "bottom")
+        )
       }
       plist[[paste(
         paste0(l, collapse = "_"),
