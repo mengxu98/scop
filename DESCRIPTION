@@ -1,7 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.0.4
+Version: 0.0.5
+Date: 2025-06-06
 Authors@R:
     c(
     person(given = "Hao", family = "Zhang", email = "aozhang@njmu.edu.cn", role = c("aut")),
