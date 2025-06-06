@@ -696,7 +696,7 @@ CellDimPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
-    check_r("exaexa/scattermore")
+    check_r("scattermore")
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
