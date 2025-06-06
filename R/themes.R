@@ -669,7 +669,7 @@ panel_fix <- function(
   if (!inherits(x, "gtable")) {
     tryCatch(
       {
-        gtable <- as_gtable(x, BPPARAM = BPPARAM)
+        gtable <- as_gtable(x)
       },
       error = function(error) {
         stop(error, "\nCannot convert the x to a gtable object.")
@@ -712,7 +712,8 @@ panel_fix <- function(
       for (j in geom_index) {
         subgrob <- gtable$grobs[[i]][["children"]][[j]][["children"]][[1]][["children"]][[1]]
 
-        if (length(subgrob$grobs[[1]][["children"]]) > 0 && all(sapply(subgrob$grobs[[1]][["children"]], function(x) inherits(x, "recordedGrob")))) {
+        if (length(subgrob$grobs[[1]][["children"]]) > 0 &&
+          all(sapply(subgrob$grobs[[1]][["children"]], function(x) inherits(x, "recordedGrob")))) {
           subgrob <- panel_fix_overall(
             x = subgrob$grobs[[1]][["children"]],
             width = width,
@@ -767,7 +768,8 @@ panel_fix <- function(
       #   message("More than 2 panels detected. panel_fix may not work as expected.")
       # }
       subgrob <- gtable$grobs[[i]]
-      if (length(subgrob[["children"]]) > 0 && all(sapply(subgrob[["children"]], function(x) inherits(x, "recordedGrob")))) {
+      if (length(subgrob[["children"]]) > 0 &&
+        all(sapply(subgrob[["children"]], function(x) inherits(x, "recordedGrob")))) {
         subgrob <- panel_fix_overall(
           subgrob[["children"]],
           width = width,
@@ -953,7 +955,7 @@ panel_fix_overall <- function(
     }
     tryCatch(
       {
-        gtable <- as_gtable(x, BPPARAM = BPPARAM)
+        gtable <- as_gtable(x)
       },
       error = function(error) {
         stop(error, "\nCannot convert the x to a gtable object")

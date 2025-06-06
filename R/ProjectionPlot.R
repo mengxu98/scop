@@ -89,8 +89,9 @@ ProjectionPlot <- function(
         override.aes = list(size = 4)
       )
     )
-  p1legend <- get_legend(p1)
-  # p1legend <- gtable_filter(ggplot_gtable(ggplot_build(p1)), "guide-box")
+  p1legend <- get_legend(
+    p1 + theme(legend.position = "bottom")
+  )
 
   p2 <- do.call(
     CellDimPlot,
@@ -118,8 +119,9 @@ ProjectionPlot <- function(
         )
       )
     )
-  p2legend <- get_legend(p2)
-  # p2legend <- gtable_filter(ggplot_gtable(ggplot_build(p2)), "guide-box")
+  p2legend <- get_legend(
+    p2 + theme(legend.position = "bottom")
+  )
 
   if (!is.null(p1legend) && !is.null(p2legend)) {
     legend <- cbind(p1legend, p2legend)
