@@ -68,6 +68,7 @@
 #'   plot_type = "comparison"
 #' )
 #'
+#' \dontrun{
 #' pancreas_sub <- RunEnrichment(
 #'   srt = pancreas_sub,
 #'   group_by = "CellType",
@@ -120,7 +121,6 @@
 #'   plot_type = "comparison"
 #' )
 #'
-#' \dontrun{
 #' # Use a combined database
 #' pancreas_sub <- RunEnrichment(
 #'   srt = pancreas_sub,

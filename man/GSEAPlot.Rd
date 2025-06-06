@@ -201,21 +201,17 @@ GSEAPlot(
   group_by = "CellType",
   group_use = "Ductal"
 )
-GSEAPlot(
+
+p1 <- GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
   group_by = "CellType",
   group_use = "Ductal",
   id_use = "GO:0006412"
 )
-GSEAPlot(
-  pancreas_sub,
-  db = "GO_BP",
-  group_by = "CellType",
-  group_use = "Ductal",
-  id_use = c("GO:0046903", "GO:0015031", "GO:0007600")
-) \%>\%
-  panel_fix_overall(height = 6)
+p1
+
+panel_fix_overall(p1, height = 6)
 # As the plot is created by combining,
 # we can adjust the overall height and width directly.
 

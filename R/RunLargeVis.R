@@ -3,20 +3,35 @@
 #' @md
 #' @inheritParams uwot::lvish
 #' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used. Default is "pca".
-#' @param dims An integer vector specifying the dimensions to be used. Default is NULL.
-#' @param features A character vector specifying the features to be used. Default is NULL.
-#' @param assay A character string specifying the assay to be used. Default is NULL.
-#' @param layer A character string specifying the layer to be used. Default is "data".
-#' @param n_components An integer specifying the number of LargeVis components. Default is 2.
-#' @param pca_method Method to carry out any PCA dimensionality reduction when the pca parameter is specified. Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default. Uses "irlba", unless more than 50 case "svd" is used.)
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "largevis".
-#' @param reduction.key A character string specifying the prefix for the column names of the LargeVis embeddings. Default is "LargeVis_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
+#' @param reduction A character string specifying the reduction to be used.
+#' Default is "pca".
+#' @param dims An integer vector specifying the dimensions to be used.
+#' Default is NULL.
+#' @param features A character vector specifying the features to be used.
+#' Default is NULL.
+#' @param assay A character string specifying the assay to be used.
+#' Default is NULL.
+#' @param layer A character string specifying the layer to be used.
+#' Default is "data".
+#' @param n_components An integer specifying the number of LargeVis components.
+#' Default is 2.
+#' @param pca_method Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
+#' Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default.
+#' Uses "irlba", unless more than 50 case "svd" is used.)
+#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
+#' Default is "largevis".
+#' @param reduction.key A character string specifying the prefix for the column names of the LargeVis embeddings.
+#' Default is "LargeVis_".
+#' @param verbose A logical value indicating whether to print verbose output.
+#' Default is TRUE.
 #' @param seed.use An integer specifying the random seed to be used. Default is 11.
 #' @param ... Additional arguments to be passed to the [uwot::lvish] function.
 #'
+#' @rdname RunLargeVis
+#' @export
+#'
 #' @examples
+#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunLargeVis(
 #'   object = pancreas_sub,
@@ -27,10 +42,7 @@
 #'   group.by = "CellType",
 #'   reduction = "largevis"
 #' )
-#'
-#' @rdname RunLargeVis
-#' @export
-#'
+#' }
 RunLargeVis <- function(object, ...) {
   UseMethod(generic = "RunLargeVis", object = object)
 }
