@@ -88,15 +88,20 @@ RunLargeVis(object, ...)
 
 \item{...}{Additional arguments to be passed to the \link[uwot:lvish]{uwot::lvish} function.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is "pca".}
+\item{reduction}{A character string specifying the reduction to be used.
+Default is "pca".}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is NULL.}
+\item{dims}{An integer vector specifying the dimensions to be used.
+Default is NULL.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{A character vector specifying the features to be used.
+Default is NULL.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{A character string specifying the assay to be used.
+Default is NULL.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used.
+Default is "data".}
 
 \item{perplexity}{Controls the size of the local neighborhood used for
 manifold approximation. This is the analogous to \code{n_neighbors} in
@@ -106,7 +111,8 @@ manifold approximation. This is the analogous to \code{n_neighbors} in
 \code{perplexity}. Usually set to three times the value of the
 \code{perplexity}. Must be at least as large as \code{perplexity}.}
 
-\item{n_components}{An integer specifying the number of LargeVis components. Default is 2.}
+\item{n_components}{An integer specifying the number of LargeVis components.
+Default is 2.}
 
 \item{metric}{Type of distance metric to use to find nearest neighbors. For
  \code{nn_method = "annoy"} this can be one of:
@@ -415,13 +421,18 @@ epoch. Its signature should be: \code{(epoch, n_epochs, coords)}, where:
   epoch, as a matrix with dimensions (N, \code{n_components}).
 }}
 
-\item{pca_method}{Method to carry out any PCA dimensionality reduction when the pca parameter is specified. Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default. Uses "irlba", unless more than 50 case "svd" is used.)}
+\item{pca_method}{Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
+Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default.
+Uses "irlba", unless more than 50 case "svd" is used.)}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "largevis".}
+\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
+Default is "largevis".}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the LargeVis embeddings. Default is "LargeVis_".}
+\item{reduction.key}{A character string specifying the prefix for the column names of the LargeVis embeddings.
+Default is "LargeVis_".}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{A logical value indicating whether to print verbose output.
+Default is TRUE.}
 
 \item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
 }
@@ -429,6 +440,7 @@ epoch. Its signature should be: \code{(epoch, n_epochs, coords)}, where:
 Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
 }
 \examples{
+\dontrun{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
@@ -439,5 +451,5 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "largevis"
 )
-
+}
 }

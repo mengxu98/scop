@@ -60,6 +60,7 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunGSEA(
 #'   srt = pancreas_sub,
@@ -93,7 +94,6 @@
 #'   db = "GO_BP",
 #'   plot_type = "comparison"
 #' )
-#' \dontrun{
 #' # Use a combined database
 #' pancreas_sub <- RunGSEA(
 #'   srt = pancreas_sub,
