@@ -13,3 +13,4 @@ SCExplorer
 docs
 tmaps
 test
+*.h5ad
