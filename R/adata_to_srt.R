@@ -38,6 +38,8 @@ adata_to_srt <- function(adata) {
   }
   rownames(x) <- py_to_r_auto(adata$var_names$values)
   colnames(x) <- py_to_r_auto(adata$obs_names$values)
+  rownames(x) <- as.character(rownames(x))
+  colnames(x) <- as.character(colnames(x))
 
   metadata <- NULL
   if (length(adata$obs_keys()) > 0) {
