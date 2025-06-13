@@ -148,13 +148,13 @@ of the two groups, currently only used for poisson and negative binomial tests}
 
 \item{assay}{Assay to use in differential expression testing}
 
-\item{BPPARAM}{A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is BiocParallel::bpparam().}
+\item{BPPARAM}{A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
 
 \item{seed}{An integer value specifying the seed. Default is 11.}
 
 \item{verbose}{A logical value indicating whether to display progress messages during the differential test. Default is TRUE.}
 
-\item{...}{Additional arguments to pass to the \code{\link[Seurat]{FindMarkers}} function.}
+\item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
 }
 \description{
 This function utilizes the Seurat package to perform a differential expression (DE) test on gene expression data.

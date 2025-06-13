@@ -4,7 +4,8 @@
 \alias{words_excluded}
 \title{Excluded words in keyword enrichment analysis and extraction}
 \description{
-The variable "words_excluded" represents the words that are excluded during keyword enrichment analysis or keyword extraction process. These mainly include words that are excessively redundant or of little value.
+The variable "words_excluded" represents the words that are excluded during keyword enrichment analysis or keyword extraction process.
+These mainly include words that are excessively redundant or of little value.
 }
 \examples{
 \dontrun{

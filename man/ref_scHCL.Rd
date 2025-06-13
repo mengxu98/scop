@@ -6,7 +6,9 @@
 \alias{ref_scZCL}
 \title{Reference datasets for cell type annotation in single-cell RNA data}
 \source{
-\url{https://github.com/ggjlab/scHCL} \url{https://github.com/ggjlab/scMCA} \url{https://github.com/ggjlab/scZCL}
+\url{https://github.com/ggjlab/scHCL}
+\url{https://github.com/ggjlab/scMCA}
+\url{https://github.com/ggjlab/scZCL}
 }
 \usage{
 ref_scHCL
