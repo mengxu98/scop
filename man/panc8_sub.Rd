@@ -7,10 +7,17 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076} \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/} \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076} 
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} 
+\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/} 
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} 
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
 }
 \description{
-Human pancreatic islet cell datasets produced across four technologies, CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469), and SMART-Seq2 (E-MTAB-5061) from \href{https://github.com/satijalab/seurat-data}{SeuratData} package. For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8_sub} dataset.
+Human pancreatic islet cell datasets produced across four technologies,
+CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469), 
+and SMART-Seq2 (E-MTAB-5061) from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
+For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
 \dontrun{
@@ -23,6 +30,7 @@ if (interactive()) {
   library(Seurat)
   suppressWarnings(InstallData("panc8"))
   data("panc8")
+  panc8 <- Seurat::UpdateSeuratObject(panc8)
   set.seed(11)
   cells_sub <- unlist(
     lapply(
@@ -31,16 +39,46 @@ if (interactive()) {
     )
   )
   panc8_sub <- subset(panc8, cells = cells_sub)
+  panc8_sub <- Seurat::CreateSeuratObject(
+    counts = SeuratObject::GetAssayData(
+      panc8_sub,
+      slot = "counts"
+    ),
+    meta.data = panc8_sub@meta.data
+  )
   panc8_sub <- panc8_sub[Matrix::rowSums(
-    panc8_sub@assays$RNA@counts
+    SeuratObject::GetAssayData(
+      panc8_sub,
+      slot = "counts"
+    )
   ) > 0, ]
   panc8_sub <- panc8_sub[toupper(
     rownames(panc8_sub)
   ) \%in\% toupper(
     rownames(pancreas_sub)
   ), ]
-  panc8_sub <- UpdateSeuratObject(panc8_sub)
-  # usethis::use_data(panc8_sub, compress = "xz")
+  panc8_sub <- Seurat::NormalizeData(panc8_sub, verbose = FALSE)
+  panc8_sub <- Seurat::FindVariableFeatures(
+    panc8_sub,
+    verbose = FALSE
+  )
+  panc8_sub <- Seurat::ScaleData(panc8_sub, verbose = FALSE)
+  panc8_sub <- Seurat::RunPCA(panc8_sub, verbose = FALSE)
+  panc8_sub <- Seurat::RunUMAP(
+    panc8_sub,
+    dims = 1:30,
+    verbose = FALSE
+  )
+  panc8_sub <- Seurat::RunTSNE(
+    panc8_sub,
+    dims = 1:30,
+    verbose = FALSE
+  )
+  usethis::use_data(
+    panc8_sub,
+    compress = "xz",
+    overwrite = TRUE
+  )
 }
 }
 }

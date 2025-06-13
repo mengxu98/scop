@@ -1,8 +1,10 @@
 #' FeatureHeatmap
 #'
 #' @inheritParams GroupHeatmap
-#' @param max_cells An integer, maximum number of cells to sample per group, default is 100.
-#' @param cell_order A vector of cell names defining the order of cells, default is NULL.
+#' @param max_cells An integer, maximum number of cells to sample per group.
+#' Default is 100.
+#' @param cell_order A vector of cell names defining the order of cells.
+#' Default is NULL.
 #'
 #' @seealso \code{\link{RunDEtest}}
 #'
@@ -597,7 +599,6 @@ FeatureHeatmap <- function(
     )
   }
 
-  # data used to plot heatmap
   mat_list <- list()
   for (cell_group in group.by) {
     mat_tmp <- mat_raw[, names(cell_groups[[cell_group]])]
@@ -678,16 +679,22 @@ FeatureHeatmap <- function(
           assay = assay,
           layer = "data"
         )[
-          intersect(cell_annotation, rownames(Seurat::GetAssay(
-            srt,
-            assay = assay
-          ))),
+          intersect(
+            cell_annotation,
+            rownames(
+              Seurat::GetAssay(
+                srt,
+                assay = assay
+              )
+            )
+          ),
           colnames(mat_raw),
           drop = FALSE
         ]
       )
     )
   )
+
   feature_metadata <- cbind.data.frame(
     data.frame(
       row.names = features_unique,
@@ -700,11 +707,16 @@ FeatureHeatmap <- function(
       drop = FALSE
     ]
   )
+
   feature_metadata[, "duplicated"] <- feature_metadata[["features"]] %in%
     features[duplicated(features)]
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(title = exp_name, col_fun = colors, border = TRUE)
+  lgd[["ht"]] <- ComplexHeatmap::Legend(
+    title = exp_name,
+    col_fun = colors,
+    border = TRUE
+  )
 
   ha_top_list <- NULL
   cluster_columns_list <- list()
@@ -725,9 +737,11 @@ FeatureHeatmap <- function(
           column_split_list[[cell_group]]
         )
         cluster_columns_list[[cell_group]] <- dend
-        column_split_list[[cell_group]] <- length(unique(column_split_list[[
-          cell_group
-        ]]))
+        column_split_list[[cell_group]] <- length(
+          unique(
+            column_split_list[[cell_group]]
+          )
+        )
       }
     }
     if (cell_group != "All.groups") {
@@ -769,7 +783,10 @@ FeatureHeatmap <- function(
             x = cell_groups[[cell_group]]
           )
         ),
-        panel_fun = methods::getFunction("panel_fun", where = environment()),
+        panel_fun = methods::getFunction(
+          "panel_fun",
+          where = environment()
+        ),
         which = ifelse(flip, "row", "column"),
         show_name = FALSE
       )
@@ -1695,53 +1712,13 @@ heatmap_fixsize <- function(
     units,
     ht_list,
     legend_list) {
-  ht <- ComplexHeatmap::draw(ht_list, annotation_legend_list = legend_list)
+  ht <- ComplexHeatmap::draw(
+    ht_list,
+    annotation_legend_list = legend_list
+  )
   ht_width <- ComplexHeatmap:::width(ht)
   ht_height <- ComplexHeatmap:::height(ht)
-  # g_tree <- grid::grid.grabExpr(
-  #   {
-  #     ht <- ComplexHeatmap::draw(ht_list, annotation_legend_list = legend_list)
-  #     ht_width <- ComplexHeatmap:::width(ht)
-  #     ht_height <- ComplexHeatmap:::height(ht)
-  #     if (inherits(ht_list, "HeatmapList")) {
-  #       for (nm in names(ht_list@ht_list)) {
-  #         if (is.null(names(width))) {
-  #           width_fix <- width[1]
-  #         } else {
-  #           width_fix <- width[nm]
-  #         }
-  #         if (is.null(names(height))) {
-  #           height_fix <- height[1]
-  #         } else {
-  #           height_fix <- height[nm]
-  #         }
-  #         ht_list@ht_list[[nm]]@matrix_param$width <- grid::unit(
-  #           width_fix %||% dim(ht_list@ht_list[[nm]]@matrix)[1],
-  #           units = "null"
-  #         )
-  #         ht_list@ht_list[[nm]]@matrix_param$height <- grid::unit(
-  #           height_fix %||% dim(ht_list@ht_list[[nm]]@matrix)[2],
-  #           units = "null"
-  #         )
-  #       }
-  #     } else if (inherits(ht_list, "Heatmap")) {
-  #       ht_list@matrix_param$width <- grid::unit(
-  #         width[1] %||% dim(ht_list@matrix)[1],
-  #         units = "null"
-  #       )
-  #       ht_list@matrix_param$height <- grid::unit(
-  #         height[1] %||% dim(ht_list@matrix)[2],
-  #         units = "null"
-  #       )
-  #     } else {
-  #       stop("ht_list is not a class of HeatmapList or Heatmap.")
-  #     }
-  #   },
-  #   width = grid::unit(width_sum, units = units),
-  #   height = grid::unit(height_sum, units = units),
-  #   wrap = TRUE,
-  #   wrap.grobs = TRUE
-  # )
+
   if (grid::unitType(ht_width) == "npc") {
     ht_width <- grid::unit(width_sum, units = units)
   }
@@ -1770,8 +1747,16 @@ heatmap_fixsize <- function(
           units,
           valueOnly = TRUE
         ) +
-        grid::convertWidth(grid::unit(1, "in"), units, valueOnly = TRUE),
-      grid::convertWidth(grid::unit(0.95, "npc"), units, valueOnly = TRUE)
+        grid::convertWidth(
+          grid::unit(1, "in"),
+          units,
+          valueOnly = TRUE
+        ),
+      grid::convertWidth(
+        grid::unit(0.95, "npc"),
+        units,
+        valueOnly = TRUE
+      )
     )
     ht_width <- grid::unit(ht_width, units)
   }
@@ -1792,18 +1777,31 @@ heatmap_fixsize <- function(
           units,
           valueOnly = TRUE
         ) +
-        grid::convertHeight(grid::unit(1, "in"), units, valueOnly = TRUE),
+        grid::convertHeight(
+          grid::unit(1, "in"),
+          units,
+          valueOnly = TRUE
+        ),
       grid::convertHeight(
         ht@annotation_legend_param$size[2],
         units,
         valueOnly = TRUE
       ),
-      grid::convertHeight(grid::unit(0.95, "npc"), units, valueOnly = TRUE)
+      grid::convertHeight(
+        grid::unit(0.95, "npc"),
+        units,
+        valueOnly = TRUE
+      )
     )
     ht_height <- grid::unit(ht_height, units)
   }
   ht_width <- grid::convertUnit(ht_width, unitTo = units)
   ht_height <- grid::convertUnit(ht_height, unitTo = units)
 
-  return(list(ht_width = ht_width, ht_height = ht_height))
+  return(
+    list(
+      ht_width = ht_width,
+      ht_height = ht_height
+    )
+  )
 }

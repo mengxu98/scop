@@ -71,7 +71,7 @@ CellScoring(
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Defaults to FALSE.}
 
-\item{BPPARAM}{The BiocParallel parameter object. Defaults to BiocParallel::bpparam().}
+\item{BPPARAM}{The BiocParallel parameter object. Defaults to \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
 
 \item{seed}{The random seed for reproducibility. Defaults to 11.}
 
@@ -87,7 +87,8 @@ ccgenes <- CC_GenePrefetch("Mus_musculus")
 pancreas_sub <- CellScoring(
   srt = pancreas_sub,
   features = list(S = ccgenes$S, G2M = ccgenes$G2M),
-  method = "Seurat", name = "CC"
+  method = "Seurat",
+  name = "CC"
 )
 CellDimPlot(pancreas_sub, "CC_classification")
 FeatureDimPlot(pancreas_sub, "CC_G2M")
