@@ -1,67 +1,41 @@
-
-# scop: Single-Cell Omics analysis Pipeline
+# scop: Single-Cell Omics analysis Pipeline {#scop-single-cell-omics-analysis-pipeline}
 
 <!-- badges: start -->
 
-[![version](https://img.shields.io/github/r-package/v/mengxu98/scop)](https://github.com/mengxu98/scop)
-[![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop)
-[![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop)
+[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop)
 
 <!-- badges: end -->
 
-scop provides a comprehensive set of tools for single-cell data
-processing and downstream analysis.
+## Overview {#overview}
+The [*`scop`*](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.
 
-The package includes the following facilities:
+>News
+>- Update test data `pancreas_sub` and `panc8_sub` to Seurat v5, and resample data to 1000 cells by 5000 features and 1600 cells by 3988 features, respectively.
 
-- Integrated single-cell quality control methods.
-- Pipelines embedded with multiple methods for normalization, feature
-  reduction, and cell population identification (standard Seurat
-  workflow).
-- Pipelines embedded with multiple integration methods for scRNA-seq or
-  scATAC-seq data, including Uncorrected,
-  [Seurat](https://github.com/satijalab/seurat),
-  [scVI](https://github.com/scverse/scvi-tools),
-  [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html),
-  [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html),
-  [Harmony](https://github.com/immunogenomics/harmony),
-  [Scanorama](https://github.com/brianhie/scanorama),
-  [BBKNN](https://github.com/Teichlab/bbknn),
-  [CSS](https://github.com/quadbiolab/simspec),
-  [LIGER](https://github.com/welch-lab/liger),
-  [Conos](https://github.com/kharchenkolab/conos),
-  [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
-- Multiple single-cell downstream analyses such as identification of
-  differential features, enrichment analysis, GSEA analysis,
-  identification of dynamic features,
-  [PAGA](https://github.com/theislab/paga), [RNA
-  velocity](https://github.com/theislab/scvelo),
-  [Palantir](https://github.com/dpeerlab/Palantir),
-  [Monocle2](http://cole-trapnell-lab.github.io/monocle-release),
-  [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
-- Multiple methods for automatic annotation of single-cell data and
-  methods for projection between single-cell datasets.
-- High-quality data visualization methods.
-- Fast deployment of single-cell data into SCExplorer, a [shiny
-  app](https://shiny.rstudio.com/) that provides an interactive
-  visualization interface.
+## Introduction {#introduction}
+The [*`scop`*](https://github.com/mengxu98/scop) package includes the following facilities:
 
-The functions in the scop package are all developed around the [Seurat
-object](https://github.com/mojaveazure/seurat-object) and are compatible
-with other Seurat functions.
+-   Integrated single-cell quality control methods.
+-   Pipelines embedded with multiple methods for normalization, feature reduction, and cell population identification (standard Seurat workflow).
+-   Pipelines embedded with multiple integration methods for scRNA-seq or scATAC-seq data, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
+-   Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, [PAGA](https://github.com/theislab/paga), [RNA velocity](https://github.com/theislab/scvelo), [Palantir](https://github.com/dpeerlab/Palantir), [Monocle2](http://cole-trapnell-lab.github.io/monocle-release), [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
+-   Multiple methods for automatic annotation of single-cell data and methods for projection between single-cell datasets.
+-   High-quality data visualization methods.
+-   Fast deployment of single-cell data into SCExplorer, a [shiny app](https://shiny.rstudio.com/) that provides an interactive visualization interface.
 
-## Credits
+The functions in the scop package are all developed around the [Seurat object](https://github.com/mojaveazure/seurat-object) and are compatible with other Seurat functions.
+
+## Credits {#credits}
 
 The [*`scop`*](https://github.com/mengxu98/scop) package is developed based on the [*`SCP`*](https://github.com/zhanghao-njmu/SCP) package, making it compatible with Seurat V5 and adding support for multiple omics data.
 
-## R version requirement
+## R version requirement {#r-version-requirement}
 
-- R \>= 4.1.0
+-   R \>= 4.1.0
 
-## Installation in the global R environment
+## Installation in the global R environment {#installation-in-the-global-r-environment}
 
-You can install the latest version of scop from
-[GitHub](https://github.com/mengxu98/scop) with:
+You can install the latest version of scop from [GitHub](https://github.com/mengxu98/scop) with:
 
 ``` r
 if (!require("pak", quietly = TRUE)) {
@@ -70,32 +44,24 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-#### Create a python environment for scop
+#### Create a python environment for scop {#create-a-python-environment-for-scop}
 
-To run functions such as `RunPAGA` or `RunSCVELO`, scop requires
-[conda](https://docs.conda.io/en/latest/miniconda.html) to create a
-separate python environment. The default environment name is
-`"scop_env"`. You can specify the environment name for scop by setting
-`options(scop_env_name="new_name")`
+To run functions such as `RunPAGA` or `RunSCVELO`, scop requires [conda](https://docs.conda.io/en/latest/miniconda.html) to create a separate python environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_env_name="new_name")`
 
-Now, you can run `PrepareEnv()` to create the python environment for
-scop. If the conda binary is not found, it will automatically download
-and install miniconda.
+Now, you can run `PrepareEnv()` to create the python environment for scop. If the conda binary is not found, it will automatically download and install miniconda.
 
 ``` r
 scop::PrepareEnv()
 ```
 
-To force scop to use a specific conda binary, it is recommended to set
-`reticulate.conda_binary` R option:
+To force scop to use a specific conda binary, it is recommended to set `reticulate.conda_binary` R option:
 
 ``` r
 options(reticulate.conda_binary = "/path/to/conda")
 scop::PrepareEnv()
 ```
 
-If the download of miniconda or pip packages is slow, you can specify
-the miniconda repo and PyPI mirror according to your network region.
+If the download of miniconda or pip packages is slow, you can specify the miniconda repo and PyPI mirror according to your network region.
 
 ``` r
 scop::PrepareEnv(
@@ -106,47 +72,45 @@ scop::PrepareEnv(
 
 Available miniconda repositories:
 
-- <https://repo.anaconda.com/miniconda> (default)
+-   <https://repo.anaconda.com/miniconda> (default)
 
-- <http://mirrors.aliyun.com/anaconda/miniconda>
+-   <http://mirrors.aliyun.com/anaconda/miniconda>
 
-- <https://mirrors.bfsu.edu.cn/anaconda/miniconda>
+-   <https://mirrors.bfsu.edu.cn/anaconda/miniconda>
 
-- <https://mirrors.pku.edu.cn/anaconda/miniconda>
+-   <https://mirrors.pku.edu.cn/anaconda/miniconda>
 
-- <https://mirror.nju.edu.cn/anaconda/miniconda>
+-   <https://mirror.nju.edu.cn/anaconda/miniconda>
 
-- <https://mirrors.sustech.edu.cn/anaconda/miniconda>
+-   <https://mirrors.sustech.edu.cn/anaconda/miniconda>
 
-- <https://mirrors.xjtu.edu.cn/anaconda/miniconda>
+-   <https://mirrors.xjtu.edu.cn/anaconda/miniconda>
 
-- <https://mirrors.hit.edu.cn/anaconda/miniconda>
+-   <https://mirrors.hit.edu.cn/anaconda/miniconda>
 
 Available PyPI mirrors:
 
-- <https://pypi.python.org/simple> (default)
+-   <https://pypi.python.org/simple> (default)
 
-- <https://mirrors.aliyun.com/pypi/simple>
+-   <https://mirrors.aliyun.com/pypi/simple>
 
-- <https://pypi.tuna.tsinghua.edu.cn/simple>
+-   <https://pypi.tuna.tsinghua.edu.cn/simple>
 
-- <https://mirrors.pku.edu.cn/pypi/simple>
+-   <https://mirrors.pku.edu.cn/pypi/simple>
 
-- <https://mirror.nju.edu.cn/pypi/web/simple>
+-   <https://mirror.nju.edu.cn/pypi/web/simple>
 
-- <https://mirrors.sustech.edu.cn/pypi/simple>
+-   <https://mirrors.sustech.edu.cn/pypi/simple>
 
-- <https://mirrors.xjtu.edu.cn/pypi/simple>
+-   <https://mirrors.xjtu.edu.cn/pypi/simple>
 
-- <https://mirrors.hit.edu.cn/pypi/web/simple>
+-   <https://mirrors.hit.edu.cn/pypi/web/simple>
 
-## Installation in an isolated R environment using renv
+## Installation in an isolated R environment using renv {#installation-in-an-isolated-r-environment-using-renv}
 
-If you do not want to change your current R environment or require
-reproducibility, you can use the [renv](https://rstudio.github.io/renv/)
-package to install scop into an isolated R environment.
+If you do not want to change your current R environment or require reproducibility, you can use the [renv](https://rstudio.github.io/renv/) package to install scop into an isolated R environment.
 
-#### Create an isolated R environment
+#### Create an isolated R environment {#create-an-isolated-r-environment}
 
 ``` r
 if (!require("renv", quietly = TRUE)) {
@@ -165,8 +129,7 @@ renv::install("mengxu98/scop", repos = BiocManager::repositories())
 scop::PrepareEnv()
 ```
 
-Option 2: If scop is already installed in the global environment, copy
-scop from the local library
+Option 2: If scop is already installed in the global environment, copy scop from the local library
 
 ``` r
 renv::activate(project = "~/scop_env")
@@ -174,7 +137,7 @@ renv::hydrate("scop")
 scop::PrepareEnv()
 ```
 
-#### Activate scop environment first before use
+#### Activate scop environment first before use {#activate-scop-environment-first-before-use}
 
 ``` r
 renv::activate(project = "~/scop_env")
@@ -194,46 +157,47 @@ CellDimPlot(
 )
 ```
 
-#### Save and restore the state of scop environment
+#### Save and restore the state of scop environment {#save-and-restore-the-state-of-scop-environment}
 
 ``` r
 renv::snapshot(project = "~/scop_env")
 renv::restore(project = "~/scop_env")
 ```
 
-## Quick Start
+## Quick Start {#quick-start}
 
-- [scop: Single-Cell Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
-  - [Credits](#credits)
-  - [R version requirement](#r-version-requirement)
-  - [Installation in the global R environment](#installation-in-the-global-r-environment)
-      - [Create a python environment for scop](#create-a-python-environment-for-scop)
-  - [Installation in an isolated R environment using renv](#installation-in-an-isolated-r-environment-using-renv)
-      - [Create an isolated R environment](#create-an-isolated-r-environment)
-      - [Activate scop environment first before use](#activate-scop-environment-first-before-use)
-      - [Save and restore the state of scop environment](#save-and-restore-the-state-of-scop-environment)
-  - [Quick Start](#quick-start)
-    - [Data exploration](#data-exploration)
-    - [CellQC](#cellqc)
-    - [Standard pipeline](#standard-pipeline)
-    - [Integration pipeline](#integration-pipeline)
-    - [Cell projection between single-cell datasets](#cell-projection-between-single-cell-datasets)
-    - [Cell annotation using bulk RNA-seq datasets](#cell-annotation-using-bulk-rna-seq-datasets)
-    - [Cell annotation using single-cell datasets](#cell-annotation-using-single-cell-datasets)
-    - [PAGA analysis](#paga-analysis)
-    - [Velocity analysis](#velocity-analysis)
-    - [Differential expression analysis](#differential-expression-analysis)
-    - [Enrichment analysis(over-representation)](#enrichment-analysisover-representation)
-    - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
-    - [Trajectory inference](#trajectory-inference)
-    - [Dynamic features](#dynamic-features)
-    - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
-    - [Other visualization examples](#other-visualization-examples)
+- [scop: Single-Cell Omics analysis Pipeline {#scop-single-cell-omics-analysis-pipeline}](#scop-single-cell-omics-analysis-pipeline-scop-single-cell-omics-analysis-pipeline)
+  - [Overview {#overview}](#overview-overview)
+  - [Introduction {#introduction}](#introduction-introduction)
+  - [Credits {#credits}](#credits-credits)
+  - [R version requirement {#r-version-requirement}](#r-version-requirement-r-version-requirement)
+  - [Installation in the global R environment {#installation-in-the-global-r-environment}](#installation-in-the-global-r-environment-installation-in-the-global-r-environment)
+      - [Create a python environment for scop {#create-a-python-environment-for-scop}](#create-a-python-environment-for-scop-create-a-python-environment-for-scop)
+  - [Installation in an isolated R environment using renv {#installation-in-an-isolated-r-environment-using-renv}](#installation-in-an-isolated-r-environment-using-renv-installation-in-an-isolated-r-environment-using-renv)
+      - [Create an isolated R environment {#create-an-isolated-r-environment}](#create-an-isolated-r-environment-create-an-isolated-r-environment)
+      - [Activate scop environment first before use {#activate-scop-environment-first-before-use}](#activate-scop-environment-first-before-use-activate-scop-environment-first-before-use)
+      - [Save and restore the state of scop environment {#save-and-restore-the-state-of-scop-environment}](#save-and-restore-the-state-of-scop-environment-save-and-restore-the-state-of-scop-environment)
+  - [Quick Start {#quick-start}](#quick-start-quick-start)
+    - [Data exploration {#data-exploration}](#data-exploration-data-exploration)
+    - [CellQC {#cellqc}](#cellqc-cellqc)
+    - [Standard pipeline {#standard-pipeline}](#standard-pipeline-standard-pipeline)
+    - [Integration pipeline {#integration-pipeline}](#integration-pipeline-integration-pipeline)
+    - [Cell projection between single-cell datasets {#cell-projection-between-single-cell-datasets}](#cell-projection-between-single-cell-datasets-cell-projection-between-single-cell-datasets)
+    - [Cell annotation using bulk RNA-seq datasets {#cell-annotation-using-bulk-rna-seq-datasets}](#cell-annotation-using-bulk-rna-seq-datasets-cell-annotation-using-bulk-rna-seq-datasets)
+    - [Cell annotation using single-cell datasets {#cell-annotation-using-single-cell-datasets}](#cell-annotation-using-single-cell-datasets-cell-annotation-using-single-cell-datasets)
+    - [PAGA analysis {#paga-analysis}](#paga-analysis-paga-analysis)
+    - [Velocity analysis {#velocity-analysis}](#velocity-analysis-velocity-analysis)
+    - [Differential expression analysis {#differential-expression-analysis}](#differential-expression-analysis-differential-expression-analysis)
+    - [Enrichment analysis(over-representation) {#enrichment-analysisover-representation}](#enrichment-analysisover-representation-enrichment-analysisover-representation)
+    - [Enrichment analysis(GSEA) {#enrichment-analysisgsea}](#enrichment-analysisgsea-enrichment-analysisgsea)
+    - [Trajectory inference {#trajectory-inference}](#trajectory-inference-trajectory-inference)
+    - [Dynamic features {#dynamic-features}](#dynamic-features-dynamic-features)
+    - [Interactive data visualization with SCExplorer {#interactive-data-visualization-with-scexplorer}](#interactive-data-visualization-with-scexplorer-interactive-data-visualization-with-scexplorer)
+    - [Other visualization examples {#other-visualization-examples}](#other-visualization-examples-other-visualization-examples)
 
-### Data exploration
+### Data exploration {#data-exploration}
 
-The analysis is based on a subsetted version of [mouse pancreas
-data](https://doi.org/10.1242/dev.173849).
+The analysis is based on a subsetted version of [mouse pancreas data](https://doi.org/10.1242/dev.173849).
 
 ``` r
 library(scop)
@@ -258,7 +222,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/EDA-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellDimPlot(
@@ -267,7 +231,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/EDA-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -278,7 +242,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-3.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/EDA-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -292,7 +256,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-4.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/EDA-4.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 ht <- GroupHeatmap(
@@ -314,22 +278,22 @@ ht <- GroupHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/EDA-5.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/EDA-5.png" width="100%" style="display: block; margin: auto;"/>
 
-### CellQC
+### CellQC {#cellqc}
 
 ``` r
 pancreas_sub <- RunCellQC(srt = pancreas_sub)
 CellDimPlot(srt = pancreas_sub, group.by = "CellQC", reduction = "UMAP")
 ```
 
-<img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellStatPlot(srt = pancreas_sub, stat.by = "CellQC", group.by = "CellType", label = TRUE)
 ```
 
-<img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellStatPlot(
@@ -345,9 +309,9 @@ CellStatPlot(
 )
 ```
 
-<img src="man/figures/RunCellQC-3.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Standard pipeline
+### Standard pipeline {#standard-pipeline}
 
 ``` r
 pancreas_sub <- standard_scop(srt = pancreas_sub)
@@ -359,7 +323,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/standard_scop-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/standard_scop-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellDimPlot3D(
@@ -379,10 +343,9 @@ FeatureDimPlot3D(
 
 ![FeatureDimPlot3D](man/figures/FeatureDimPlot3D-1.png)
 
-### Integration pipeline
+### Integration pipeline {#integration-pipeline}
 
-Example data for integration is a subsetted version of [panc8(eight
-human pancreas datasets)](https://github.com/satijalab/seurat-data)
+Example data for integration is a subsetted version of [panc8(eight human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
 ``` r
 data("panc8_sub")
@@ -400,13 +363,13 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/integration_scop-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/integration_scop-1.png" width="100%" style="display: block; margin: auto;"/>
 
 UMAP embeddings based on different integration methods in scop:
 
 ![Integration-all](man/figures/Integration-all.png)
 
-### Cell projection between single-cell datasets
+### Cell projection between single-cell datasets {#cell-projection-between-single-cell-datasets}
 
 ``` r
 panc8_rename <- RenameFeatures(
@@ -429,9 +392,9 @@ ProjectionPlot(
 )
 ```
 
-<img src="man/figures/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Cell annotation using bulk RNA-seq datasets
+### Cell annotation using bulk RNA-seq datasets {#cell-annotation-using-bulk-rna-seq-datasets}
 
 ``` r
 data("ref_scMCA")
@@ -448,9 +411,9 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Cell annotation using single-cell datasets
+### Cell annotation using single-cell datasets {#cell-annotation-using-single-cell-datasets}
 
 ``` r
 pancreas_sub <- RunKNNPredict(
@@ -467,7 +430,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 
@@ -486,7 +449,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunKNNPredict-scrna-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunKNNPredict-scrna-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 
@@ -503,9 +466,9 @@ ht <- CellCorHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### PAGA analysis
+### PAGA analysis {#paga-analysis}
 
 ``` r
 pancreas_sub <- RunPAGA(
@@ -523,16 +486,11 @@ PAGAPlot(
 )
 ```
 
-<img src="man/figures/RunPAGA-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Velocity analysis
+### Velocity analysis {#velocity-analysis}
 
-> To estimate RNA velocity, you need to have both “spliced” and
-> “unspliced” assays in your Seurat object. You can generate these
-> matrices using [velocyto](http://velocyto.org/velocyto.py/index.html),
-> [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html),
-> or
-> [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
+> To estimate RNA velocity, you need to have both “spliced” and “unspliced” assays in your Seurat object. You can generate these matrices using [velocyto](http://velocyto.org/velocyto.py/index.html), [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
 
 ``` r
 pancreas_sub <- RunSCVELO(
@@ -548,7 +506,7 @@ VelocityPlot(
 )
 ```
 
-<img src="man/figures/RunSCVELO-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunSCVELO-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 VelocityPlot(
@@ -558,9 +516,9 @@ VelocityPlot(
 )
 ```
 
-<img src="man/figures/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"/>
 
-### Differential expression analysis
+### Differential expression analysis {#differential-expression-analysis}
 
 ``` r
 pancreas_sub <- RunDEtest(
@@ -575,7 +533,7 @@ VolcanoPlot(
 )
 ```
 
-<img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
@@ -603,9 +561,9 @@ ht <- FeatureHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Enrichment analysis(over-representation)
+### Enrichment analysis(over-representation) {#enrichment-analysisover-representation}
 
 ``` r
 pancreas_sub <- RunEnrichment(
@@ -623,7 +581,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -634,7 +592,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -646,7 +604,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -657,10 +615,9 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
 
-> To ensure that labels are visible, you can adjust the size of the
-> viewer panel on Rstudio IDE.
+> To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
 
 ``` r
 EnrichmentPlot(
@@ -671,7 +628,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -681,9 +638,9 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Enrichment analysis(GSEA)
+### Enrichment analysis(GSEA) {#enrichment-analysisgsea}
 
 ``` r
 pancreas_sub <- RunGSEA(
@@ -701,7 +658,7 @@ GSEAPlot(
 )
 ```
 
-<img src="man/figures/RunGSEA-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunGSEA-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 GSEAPlot(
@@ -714,7 +671,7 @@ GSEAPlot(
 )
 ```
 
-<img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 GSEAPlot(
@@ -724,9 +681,9 @@ GSEAPlot(
 )
 ```
 
-<img src="man/figures/GSEA_comparison-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/GSEA_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Trajectory inference
+### Trajectory inference {#trajectory-inference}
 
 ``` r
 pancreas_sub <- RunSlingshot(
@@ -736,7 +693,7 @@ pancreas_sub <- RunSlingshot(
 )
 ```
 
-<img src="man/figures/RunSlingshot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunSlingshot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -747,7 +704,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellDimPlot(
@@ -759,9 +716,9 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunSlingshot-3.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/RunSlingshot-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Dynamic features
+### Dynamic features {#dynamic-features}
 
 ``` r
 pancreas_sub <- RunDynamicFeatures(
@@ -798,7 +755,7 @@ ht <- DynamicHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/DynamicHeatmap-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/DynamicHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DynamicPlot(
@@ -813,7 +770,7 @@ DynamicPlot(
 )
 ```
 
-<img src="man/figures/DynamicPlot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/DynamicPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureStatPlot(
@@ -830,9 +787,9 @@ FeatureStatPlot(
 )
 ```
 
-<img src="man/figures/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Interactive data visualization with SCExplorer
+### Interactive data visualization with SCExplorer {#interactive-data-visualization-with-scexplorer}
 
 ``` r
 PrepareSCExplorer(
@@ -850,19 +807,10 @@ if (interactive()) {
 }
 ```
 
-![SCExplorer1](man/figures/SCExplorer-1.png)
-![SCExplorer2](man/figures/SCExplorer-2.png)
+![SCExplorer1](man/figures/SCExplorer-1.png) ![SCExplorer2](man/figures/SCExplorer-2.png)
 
-### Other visualization examples
+### Other visualization examples {#other-visualization-examples}
 
-[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.jpg)
-[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg)
-[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg)
-[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.jpg) [**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg) [**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg) [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
 
-You can also find more examples in the documentation of the function:
-[integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html),
-[RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html),
-[RunMonocle3](https://mengxu98.github.io/scop/reference/RunMonocle3.html),
-[RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html),
-etc.
+You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunMonocle3](https://mengxu98.github.io/scop/reference/RunMonocle3.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
