@@ -3,6 +3,7 @@
 #' This function performs cell scoring on a Seurat object.
 #' It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
 #'
+#' @md
 #' @inheritParams RunEnrichment
 #' @param srt A Seurat object
 #' @param features A named list of feature lists for scoring. If NULLL, \code{db} will be used to create features sets.
@@ -14,7 +15,7 @@
 #' @param classification Whether to perform classification based on the scores. Defaults to TRUE.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.
 #' @param new_assay Whether to create a new assay for storing the scores. Defaults to FALSE.
-#' @param BPPARAM The BiocParallel parameter object. Defaults to BiocParallel::bpparam().
+#' @param BPPARAM The BiocParallel parameter object. Defaults to [BiocParallel::bpparam()].
 #' @param seed The random seed for reproducibility. Defaults to 11.
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'
@@ -28,7 +29,8 @@
 #' pancreas_sub <- CellScoring(
 #'   srt = pancreas_sub,
 #'   features = list(S = ccgenes$S, G2M = ccgenes$G2M),
-#'   method = "Seurat", name = "CC"
+#'   method = "Seurat",
+#'   name = "CC"
 #' )
 #' CellDimPlot(pancreas_sub, "CC_classification")
 #' FeatureDimPlot(pancreas_sub, "CC_G2M")

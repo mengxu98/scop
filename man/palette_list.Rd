@@ -70,9 +70,15 @@ if (interactive()) {
 
   palette_list <- list()
   all_colors <- c(
-    rownames(brewer.pal.info), names(ggsci_db), rownames(redmonder.pal.info),
-    rownames(metacartocolors), names(nord_palettes), names(viridis_palettes),
-    ocean_names, names(dichromat_palettes), jcolors_names,
+    rownames(brewer.pal.info),
+    names(ggsci_db),
+    rownames(redmonder.pal.info),
+    rownames(metacartocolors),
+    names(nord_palettes),
+    names(viridis_palettes),
+    ocean_names,
+    names(dichromat_palettes),
+    jcolors_names,
     custom_names
   )
   for (pal in all_colors) {

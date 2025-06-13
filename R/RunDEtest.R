@@ -156,14 +156,17 @@ WilcoxDETest <- function(
       keep <- colnames(data.use)[!is.na(data.use[x, ])]
       j <- seq_len(length.out = length(x = intersect(cells.1, keep)))
       statistics <- data.use[x, keep]
-      return(min(
-        2 *
-          min(limma::rankSumTestWithCorrelation(
-            index = j,
-            statistics = statistics
-          )),
-        1
-      ))
+      return(
+        min(
+          2 * min(
+            limma::rankSumTestWithCorrelation(
+              index = j,
+              statistics = statistics
+            )
+          ),
+          1
+        )
+      )
     }
   )
 
@@ -176,6 +179,7 @@ WilcoxDETest <- function(
 #' This function utilizes the Seurat package to perform a differential expression (DE) test on gene expression data.
 #' Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
 #'
+#' @md
 #' @inheritParams Seurat::FindMarkers
 #' @param srt A Seurat object.
 #' @param layer The layer used.
@@ -191,10 +195,10 @@ WilcoxDETest <- function(
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test. Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'. Default is "LogNormalize".
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values. Default is "bonferroni".
-#' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is BiocParallel::bpparam().
+#' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is [BiocParallel::bpparam()].
 #' @param seed An integer value specifying the seed. Default is 11.
 #' @param verbose A logical value indicating whether to display progress messages during the differential test. Default is TRUE.
-#' @param ... Additional arguments to pass to the \code{\link[Seurat]{FindMarkers}} function.
+#' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
 #'
@@ -439,7 +443,7 @@ RunDEtest <- function(
       )
     }
   }
-  bpprogressbar(BPPARAM) <- TRUE
+  bpprogressbar(BPPARAM) <- verbose
   bpRNGseed(BPPARAM) <- seed
 
   time_start <- Sys.time()
@@ -508,6 +512,7 @@ RunDEtest <- function(
         verbose = FALSE,
         ...
       )
+
       if (!is.null(markers) && nrow(markers) > 0) {
         markers[, "gene"] <- rownames(markers)
         markers[, "group1"] <- group1 %||% "group1"
@@ -542,6 +547,7 @@ RunDEtest <- function(
         warning("No markers found.", immediate. = TRUE)
       }
     }
+
     if (markers_type == "conserved") {
       markers <- FindConservedMarkers2(
         object = srt,
@@ -608,7 +614,7 @@ RunDEtest <- function(
         colnames(srt_tmp),
         cells1
       )] <- NA
-      bpprogressbar(BPPARAM) <- FALSE
+      bpprogressbar(BPPARAM) <- verbose
       srt_tmp <- RunDEtest(
         srt = srt_tmp,
         assay = assay,
@@ -1009,6 +1015,7 @@ RunDEtest <- function(
         },
         BPPARAM = BPPARAM
       )
+
       DisturbedMarkers <- do.call(rbind.data.frame, DisturbedMarkers)
       if (!is.null(DisturbedMarkers) && nrow(DisturbedMarkers) > 0) {
         rownames(DisturbedMarkers) <- NULL

@@ -99,10 +99,13 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 CellStatPlot(
   srt = pancreas_sub,
   stat.by = c(
-    "db_qc", "outlier_qc", "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc", "ribo_mito_ratio_qc", "species_qc"
+    "db_qc", "outlier_qc",
+    "umi_qc", "gene_qc",
+    "mito_qc", "ribo_qc",
+    "ribo_mito_ratio_qc", "species_qc"
   ),
-  plot_type = "upset", stat_level = "Fail"
+  plot_type = "upset",
+  stat_level = "Fail"
 )
 table(pancreas_sub$CellQC)
 
@@ -116,10 +119,13 @@ ifnb_sub <- RunCellQC(
 CellStatPlot(
   srt = ifnb_sub,
   stat.by = c(
-    "db_qc", "outlier_qc", "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc", "ribo_mito_ratio_qc", "species_qc"
+    "db_qc", "outlier_qc",
+    "umi_qc", "gene_qc",
+    "mito_qc", "ribo_qc",
+    "ribo_mito_ratio_qc", "species_qc"
   ),
-  plot_type = "upset", stat_level = "Fail"
+  plot_type = "upset",
+  stat_level = "Fail"
 )
 table(ifnb_sub$CellQC)
 }

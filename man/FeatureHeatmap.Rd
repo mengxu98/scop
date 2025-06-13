@@ -135,9 +135,11 @@ Default is NULL.}
 \item{within_groups}{A logical value indicating whether to create separate heatmap scales for each group or within each group.
 Default is FALSE.}
 
-\item{max_cells}{An integer, maximum number of cells to sample per group, default is 100.}
+\item{max_cells}{An integer, maximum number of cells to sample per group.
+Default is 100.}
 
-\item{cell_order}{A vector of cell names defining the order of cells, default is NULL.}
+\item{cell_order}{A vector of cell names defining the order of cells.
+Default is NULL.}
 
 \item{border}{A logical value indicating whether to add a border to the heatmap.
 Default is TRUE.}
