@@ -50,10 +50,10 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group_by = "CellType"
-#' )
+#' # pancreas_sub <- RunDEtest(
+#' #  pancreas_sub,
+#' #   group_by = "CellType"
+#' # )
 #' pancreas_sub <- RunEnrichment(
 #'   srt = pancreas_sub,
 #'   group_by = "CellType",

@@ -520,7 +520,7 @@ ht4 <- DynamicHeatmap(
     "Paired", "simspec", "Purples"
   ),
   separate_annotation = list(
-    "SubCellType", c("Nnat", "Irx1")
+    "SubCellType", c("Arxes1", "Ncoa2")
   ),
   separate_annotation_palette = c(
     "Paired", "Set1"
@@ -553,7 +553,7 @@ ht5 <- DynamicHeatmap(
     "Paired", "simspec", "Purples"
   ),
   separate_annotation = list(
-    "SubCellType", c("Nnat", "Irx1")
+    "SubCellType", c("Arxes1", "Ncoa2")
   ),
   separate_annotation_palette = c("Paired", "Set1"),
   separate_annotation_params = list(width = grid::unit(10, "mm")),

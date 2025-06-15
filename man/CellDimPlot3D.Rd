@@ -32,7 +32,8 @@ CellDimPlot3D(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
 
-\item{reduction}{Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
 
 \item{dims}{Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions}
 
@@ -54,7 +55,8 @@ CellDimPlot3D(
 
 \item{sizes.highlight}{Size of highlighted cell points.}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot.
+If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_palette}{Color palette used for lineages.}
 
@@ -81,10 +83,11 @@ CellDimPlot3D(
   reduction = "StandardpcaUMAP3D"
 )
 
-#' pancreas_sub <- RunSlingshot(
+pancreas_sub <- RunSlingshot(
   srt = pancreas_sub,
   group.by = "SubCellType",
-  reduction = "StandardpcaUMAP3D"
+  reduction = "StandardpcaUMAP3D",
+  show_plot = FALSE
 )
 CellDimPlot3D(
   srt = pancreas_sub,

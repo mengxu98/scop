@@ -35,6 +35,7 @@
 #' CellDimPlot(pancreas_sub, "CC_classification")
 #' FeatureDimPlot(pancreas_sub, "CC_G2M")
 #'
+#' \dontrun{
 #' data("panc8_sub")
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
@@ -46,7 +47,6 @@
 #'   group.by = c("tech", "celltype")
 #'  )
 #'
-#' \dontrun{
 #' panc8_sub <- CellScoring(
 #'   srt = panc8_sub,
 #'   layer = "data",
@@ -103,6 +103,7 @@
 #'   capitalize(rownames(panc8_sub[["RNA"]]),
 #'   force_tolower = TRUE
 #' )
+#' names(genenames) <- rownames(panc8_sub)
 #' panc8_sub <- RenameFeatures(
 #'   srt = panc8_sub,
 #'   newnames = genenames,
@@ -249,7 +250,7 @@ CellScoring <- function(
   expressed <- names(
     which(
       Matrix::rowSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           layer = layer,
           assay = assay
@@ -337,7 +338,7 @@ CellScoring <- function(
       check_r("AUCell")
       CellRank <- AUCell::AUCell_buildRankings(
         Matrix::as.matrix(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt_sp,
             layer = layer,
             assay = assay
@@ -463,7 +464,7 @@ AddModuleScore2 <- function(
   assay.old <- SeuratObject::DefaultAssay(object = object)
   assay <- assay %||% assay.old
   SeuratObject::DefaultAssay(object = object) <- assay
-  assay.data <- SeuratObject::GetAssayData(object = object, layer = layer)
+  assay.data <- GetAssayData5(object = object, layer = layer)
   features.old <- features
   if (k) {
     .NotYetUsed(arg = "k")

@@ -93,6 +93,7 @@ pancreas_sub <- CellScoring(
 CellDimPlot(pancreas_sub, "CC_classification")
 FeatureDimPlot(pancreas_sub, "CC_G2M")
 
+\dontrun{
 data("panc8_sub")
 panc8_sub <- integration_scop(
   panc8_sub,
@@ -104,7 +105,6 @@ CellDimPlot(
   group.by = c("tech", "celltype")
  )
 
-\dontrun{
 panc8_sub <- CellScoring(
   srt = panc8_sub,
   layer = "data",
@@ -161,6 +161,7 @@ genenames <- make.unique(
   capitalize(rownames(panc8_sub[["RNA"]]),
   force_tolower = TRUE
 )
+names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
   srt = panc8_sub,
   newnames = genenames,

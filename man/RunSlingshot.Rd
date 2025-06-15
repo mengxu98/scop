@@ -82,7 +82,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3),
+  lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1,
   lineages_trim = c(0.05, 0.95)
 )

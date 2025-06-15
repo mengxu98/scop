@@ -52,9 +52,7 @@
 #' pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 #' FeatureCorPlot(
 #'   pancreas_sub,
-#'   features = c(
-#'     "Neurog3", "Hes6", "Fev", "Neurod1", "Rbp4", "Pyy"
-#'   ),
+#'   features = rownames(pancreas_sub)[1:5],
 #'   group.by = "SubCellType"
 #' )
 #' FeatureCorPlot(
@@ -196,7 +194,7 @@ FeatureCorPlot <- function(
     }
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = layer
@@ -207,7 +205,7 @@ FeatureCorPlot <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -224,7 +222,7 @@ FeatureCorPlot <- function(
   }
   if (length(features_gene) > 0) {
     dat_gene <- Matrix::t(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = layer

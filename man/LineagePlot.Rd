@@ -102,11 +102,11 @@ pancreas_sub <- RunSlingshot(
 )
 LineagePlot(
   pancreas_sub,
-  lineages = paste0("Lineage", 1:3)
+  lineages = paste0("Lineage", 1:2)
 )
 LineagePlot(
   pancreas_sub,
-  lineages = paste0("Lineage", 1:3),
+  lineages = paste0("Lineage", 1:2),
   whiskers = TRUE
 )
 }

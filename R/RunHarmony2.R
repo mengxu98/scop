@@ -14,26 +14,25 @@
 #' @param seed.use An integer specifying the random seed to be used. Default is 11.
 #' @param ... Additional arguments to be passed to the [harmony::RunHarmony] function.
 #'
+#' @rdname RunHarmony2
+#' @export
+#'
 #' @examples
-#' panc8_sub <- standard_scop(panc8_sub)
 #' panc8_sub <- RunHarmony2(
 #'   panc8_sub,
 #'   group.by.vars = "tech",
-#'   reduction = "Standardpca"
+#'   reduction = "pca"
 #' )
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype"),
-#'   reduction = "Standardpca"
+#'   reduction = "pca"
 #' )
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype"),
 #'   reduction = "Harmony"
 #' )
-#'
-#' @rdname RunHarmony2
-#' @export
 RunHarmony2 <- function(object, ...) {
   UseMethod(generic = "RunHarmony2", object = object)
 }

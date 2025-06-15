@@ -147,9 +147,7 @@ data("pancreas_sub")
 pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 FeatureCorPlot(
   pancreas_sub,
-  features = c(
-    "Neurog3", "Hes6", "Fev", "Neurod1", "Rbp4", "Pyy"
-  ),
+  features = rownames(pancreas_sub)[1:5],
   group.by = "SubCellType"
 )
 FeatureCorPlot(

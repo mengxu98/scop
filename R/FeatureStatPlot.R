@@ -280,11 +280,20 @@
 #' )
 #'
 #' library(Matrix)
-#' data <- pancreas_sub@assays$RNA@data
-#' pancreas_sub@assays$RNA@scale.data <- Matrix::as.matrix(data / rowMeans(data))
+#' data <- GetAssayData5(
+#'   pancreas_sub,
+#'   assay = "RNA",
+#'   layer = "data"
+#' )
+#' pancreas_sub <- SeuratObject::SetAssayData(
+#'   object = pancreas_sub,
+#'   layer = "scale.data",
+#'   assay = "RNA",
+#'   new.data = Matrix::as.matrix(data / rowMeans(data))
+#' )
 #' FeatureStatPlot(
 #'   pancreas_sub,
-#'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
+#'   stat.by = c("Neurog3", "Rbp4"),
 #'   group.by = "CellType",
 #'   layer = "scale.data",
 #'   ylab = "FoldChange",
@@ -378,7 +387,7 @@ FeatureStatPlot <- function(
   meta.data <- srt@meta.data
   meta.data[["cells"]] <- rownames(meta.data)
   assay <- assay %||% DefaultAssay(srt)
-  exp.data <- SeuratObject::GetAssayData(srt, assay = assay, layer = layer)
+  exp.data <- GetAssayData5(srt, assay = assay, layer = layer)
   plot.by <- match.arg(plot.by)
 
   if (plot.by == "feature") {

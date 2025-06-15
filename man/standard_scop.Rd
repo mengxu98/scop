@@ -94,9 +94,7 @@ This function performs a standard single-cell analysis workflow.
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- standard_scop(
-  srt = pancreas_sub
-)
+pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType"

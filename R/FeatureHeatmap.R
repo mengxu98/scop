@@ -12,10 +12,10 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group_by = "CellType"
-#' )
+#' # pancreas_sub <- RunDEtest(
+#' #  pancreas_sub,
+#' #   group_by = "CellType"
+#' # )
 #' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
@@ -563,7 +563,7 @@ FeatureHeatmap <- function(
   all_cells <- unique(unlist(lapply(cell_groups, names)))
   mat_raw <- Matrix::as.matrix(
     rbind(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = layer
@@ -577,7 +577,7 @@ FeatureHeatmap <- function(
       libsize_use <- libsize
     } else {
       libsize_use <- Matrix::colSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "counts"
@@ -674,7 +674,7 @@ FeatureHeatmap <- function(
         drop = FALSE
       ],
       Matrix::t(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "data"
