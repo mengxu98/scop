@@ -126,7 +126,7 @@ RunSymphonyMap <- function(
   }
 
   status_query <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay
@@ -134,7 +134,7 @@ RunSymphonyMap <- function(
   )
   message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_ref,
       layer = "data",
       assay = ref_assay
@@ -162,7 +162,7 @@ RunSymphonyMap <- function(
   )
   message("Run mapQuery")
   res <- mapQuery(
-    exp_query = SeuratObject::GetAssayData(
+    exp_query = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay

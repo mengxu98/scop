@@ -97,11 +97,10 @@ Generate a volcano plot based on differential expression analysis results.
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group_by = "CellType",
-  only.pos = FALSE
-)
+# pancreas_sub <- RunDEtest(
+#  pancreas_sub,
+#  group_by = "CellType"
+# )
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",

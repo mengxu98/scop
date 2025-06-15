@@ -97,7 +97,7 @@ RunFR.Seurat <- function(
   } else if (!is.null(x = features)) {
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::t(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         object = object,
         layer = layer,
         assay = assay

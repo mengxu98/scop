@@ -72,7 +72,7 @@ RunTriMap.Seurat <- function(
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
       Matrix::t(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           object = object,
           layer = layer,
           assay = assay

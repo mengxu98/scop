@@ -183,27 +183,42 @@ WilcoxDETest <- function(
 #' @inheritParams Seurat::FindMarkers
 #' @param srt A Seurat object.
 #' @param layer The layer used.
-#' @param group_by A grouping variable in the dataset to define the groups or conditions for the differential test. If not provided, the function uses the "active.ident" variable in the Seurat object.
-#' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group. If both group_by and group1 are provided, group1 takes precedence.
-#' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group. This parameter is only used when group_by or group1 is provided.
+#' @param group_by A grouping variable in the dataset to define the groups or conditions for the differential test.
+#' If not provided, the function uses the "active.ident" variable in the Seurat object.
+#' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group. 
+#' If both group_by and group1 are provided, group1 takes precedence.
+#' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group. 
+#' This parameter is only used when group_by or group1 is provided.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
-#' @param cells2 A vector of cell IDs specifying the cells that belong to group2. This parameter is only used when cells1 is provided.
-#' @param features A vector of gene names specifying the features to consider for the differential test. If not provided, all features in the dataset are considered.
-#' @param markers_type A character value specifying the type of markers to find. Possible values are "all", "paired", "conserved", and "disturbed".
-#' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers. This parameter is only used when markers_type is "conserved" or "disturbed".
-#' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups. By default, it is set to 1.5
-#' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test. Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
-#' @param norm.method Normalization method for fold change calculation when layer is 'data'. Default is "LogNormalize".
-#' @param p.adjust.method A character value specifying the method to use for adjusting p-values. Default is "bonferroni".
-#' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is [BiocParallel::bpparam()].
-#' @param seed An integer value specifying the seed. Default is 11.
-#' @param verbose A logical value indicating whether to display progress messages during the differential test. Default is TRUE.
+#' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
+#' This parameter is only used when cells1 is provided.
+#' @param features A vector of gene names specifying the features to consider for the differential test.
+#' If not provided, all features in the dataset are considered.
+#' @param markers_type A character value specifying the type of markers to find.
+#' Possible values are "all", "paired", "conserved", and "disturbed".
+#' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
+#' This parameter is only used when markers_type is "conserved" or "disturbed".
+#' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
+#' By default, it is set to 1.5
+#' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
+#' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
+#' @param norm.method Normalization method for fold change calculation when layer is 'data'.
+#' Default is "LogNormalize".
+#' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
+#' Default is "bonferroni".
+#' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for the differential test.
+#' Default is [BiocParallel::bpparam()].
+#' @param seed An integer value specifying the seed.
+#' Default is 11.
+#' @param verbose A logical value indicating whether to display progress messages during the differential test.
+#' Default is TRUE.
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
 #'
 #' @seealso \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
 #' @examples
+#' \dontrun{
 #' data("pancreas_sub")
 #' pancreas_sub <- RunDEtest(
 #'   srt = pancreas_sub,
@@ -353,6 +368,7 @@ WilcoxDETest <- function(
 #'   numerator = "smartseq2"
 #' )
 #' ht7$plot
+#' }
 RunDEtest <- function(
     srt,
     group_by = NULL,

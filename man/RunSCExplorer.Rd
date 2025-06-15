@@ -108,7 +108,7 @@ app <- RunSCExplorer(
   base_dir = "./SCExplorer",
   initial_dataset = "mouse_pancreas",
   initial_group = "CellType",
-  initial_feature = "Neurog3",
+  initial_feature = "Ncoa2",
   session_workers = 2,
   overwrite = TRUE
 )

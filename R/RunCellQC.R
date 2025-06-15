@@ -136,7 +136,7 @@ db_Scrublet <- function(
   scr <- reticulate::import("scrublet")
   raw_counts <- Matrix::t(
     Matrix::as.matrix(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         object = srt,
         assay = assay,
         layer = "counts"
@@ -199,7 +199,7 @@ db_DoubletDetection <- function(
   }
   check_python("doubletdetection")
   doubletdetection <- reticulate::import("doubletdetection")
-  counts <- SeuratObject::GetAssayData(
+  counts <- GetAssayData5(
     object = srt,
     assay = assay,
     layer = "counts"
@@ -494,7 +494,7 @@ RunCellQC <- function(
   }
   if (!paste0("nCount_", assay) %in% colnames(srt@meta.data)) {
     srt@meta.data[[paste0("nCount_", assay)]] <- Matrix::colSums(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = "counts"
@@ -503,7 +503,7 @@ RunCellQC <- function(
   }
   if (!paste0("nFeature_", assay) %in% colnames(srt@meta.data)) {
     srt@meta.data[[paste0("nFeature_", assay)]] <- Matrix::colSums(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = "counts"
@@ -574,7 +574,7 @@ RunCellQC <- function(
         c(paste0("nCount_", assay), sp),
         collapse = "."
       )]] <- Matrix::colSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "counts"
@@ -584,7 +584,7 @@ RunCellQC <- function(
         c(paste0("nFeature_", assay), sp),
         collapse = "."
       )]] <- Matrix::colSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "counts"

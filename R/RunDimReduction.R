@@ -272,7 +272,7 @@ RunDimReduction <- function(
     if (linear_reduction == "pca") {
       pca.out <- srt[[paste0(prefix, linear_reduction)]]
       center <- rowMeans(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           object = srt,
           layer = "scale.data",
           assay = assay

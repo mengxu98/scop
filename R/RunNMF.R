@@ -97,7 +97,7 @@ RunNMF.Assay <- function(
     seed.use = 11,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data.use <- SeuratObject::GetAssayData(object = object, layer = layer)
+  data.use <- GetAssayData5(object = object, layer = layer)
   features.var <- apply(
     X = data.use[features, ],
     MARGIN = 1,

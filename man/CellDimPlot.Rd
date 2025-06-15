@@ -132,7 +132,8 @@ CellDimPlot(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
 
-\item{reduction}{Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
@@ -140,7 +141,8 @@ CellDimPlot(
 
 \item{cells}{Subset cells to plot.}
 
-\item{show_na}{Whether to assign a color from the color palette to NA group. If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.}
+\item{show_na}{Whether to assign a color from the color palette to NA group.
+If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 
@@ -164,7 +166,8 @@ CellDimPlot(
 
 \item{label.bg.r}{Background ratio of label.}
 
-\item{label_insitu}{Whether to place the raw labels (group names) in the center of the cells with the corresponding group. Default is \code{FALSE}, which using numbers instead of raw labels.}
+\item{label_insitu}{Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
+Default is \code{FALSE}, which using numbers instead of raw labels.}
 
 \item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
 
@@ -198,15 +201,20 @@ CellDimPlot(
 
 \item{add_mark}{Whether to add marks around cell groups. Default is \code{FALSE}.}
 
-\item{mark_type}{Type of mark to add around cell groups. One of "hull", "ellipse", "rect", or "circle". Default is "hull".}
+\item{mark_type}{Type of mark to add around cell groups.
+One of "hull", "ellipse", "rect", or "circle". Default is "hull".}
 
-\item{mark_expand}{Expansion of the mark around the cell group. Default is \code{grid::unit(3, "mm")}.}
+\item{mark_expand}{Expansion of the mark around the cell group.
+Default is \code{grid::unit(3, "mm")}.}
 
-\item{mark_alpha}{Transparency of the mark. Default is 0.1.}
+\item{mark_alpha}{Transparency of the mark.
+Default is 0.1.}
 
-\item{mark_linetype}{Line type of the mark border. Default is 1 (solid line).}
+\item{mark_linetype}{Line type of the mark border.
+Default is 1 (solid line).}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot.
+If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
 
@@ -336,7 +344,8 @@ CellDimPlot(
 
 \item{raster}{Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells}
 
-\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).}
+\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore().
+Default is c(512, 512).}
 
 \item{aspect.ratio}{Aspect ratio of the panel.}
 
@@ -352,11 +361,13 @@ CellDimPlot(
 
 \item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object. If \code{FALSE}, return a list of ggplot objects.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
 \item{nrow}{Number of rows in the combined plot.}
 
@@ -591,7 +602,7 @@ CellDimPlot(
   edge_color = "grey80"
 )
 
-# Show lineages on the plot based on the pseudotime
+# Show lineages based on the pseudotime
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -600,27 +611,27 @@ pancreas_sub <- RunSlingshot(
 )
 FeatureDimPlot(
   pancreas_sub,
-  features = paste0("Lineage", 1:3),
+  features = paste0("Lineage", 1:2),
   reduction = "UMAP"
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3)
+  lineages = paste0("Lineage", 1:2)
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3),
+  lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3),
+  lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
 

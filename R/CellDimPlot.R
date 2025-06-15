@@ -5,7 +5,8 @@
 #' @md
 #' @param srt A Seurat object.
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
-#' @param reduction Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' @param reduction Which dimensionality reduction to use.
+#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
 #' @param split.by Name of a column in meta.data column to split plot by.
 #' @param palette Name of a color palette name collected in scop. Default is "Paired".
 #' @param palcolor Custom colors used to create a color palette.
@@ -19,15 +20,18 @@
 #' @param stroke.highlight Border width of highlighted cell points.
 #' @param legend.position The position of legends ("none", "left", "right", "bottom", "top").
 #' @param legend.direction Layout of items in legends ("horizontal" or "vertical")
-#' @param combine Combine plots into a single \code{patchwork} object. If \code{FALSE}, return a list of ggplot objects.
+#' @param combine Combine plots into a single \code{patchwork} object.
+#' If \code{FALSE}, return a list of ggplot objects.
 #' @param nrow Number of rows in the combined plot.
 #' @param ncol Number of columns in the combined plot.
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions
-#' @param show_na Whether to assign a color from the color palette to NA group. If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.
+#' @param show_na Whether to assign a color from the color palette to NA group.
+#' If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param label Whether to label the cell groups.
-#' @param label_insitu Whether to place the raw labels (group names) in the center of the cells with the corresponding group. Default is \code{FALSE}, which using numbers instead of raw labels.
+#' @param label_insitu Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
+#' Default is \code{FALSE}, which using numbers instead of raw labels.
 #' @param label.size Size of labels.
 #' @param label.fg Foreground color of label.
 #' @param label.bg Background color of label.
@@ -43,11 +47,16 @@
 #' @param density_filled_palette Color palette used to fill contour bands.
 #' @param density_filled_palcolor Custom colors used to fill contour bands.
 #' @param add_mark Whether to add marks around cell groups. Default is \code{FALSE}.
-#' @param mark_type Type of mark to add around cell groups. One of "hull", "ellipse", "rect", or "circle". Default is "hull".
-#' @param mark_expand Expansion of the mark around the cell group. Default is \code{grid::unit(3, "mm")}.
-#' @param mark_alpha Transparency of the mark. Default is 0.1.
-#' @param mark_linetype Line type of the mark border. Default is 1 (solid line).
-#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using [stats::loess] method.
+#' @param mark_type Type of mark to add around cell groups.
+#' One of "hull", "ellipse", "rect", or "circle". Default is "hull".
+#' @param mark_expand Expansion of the mark around the cell group.
+#' Default is \code{grid::unit(3, "mm")}.
+#' @param mark_alpha Transparency of the mark.
+#' Default is 0.1.
+#' @param mark_linetype Line type of the mark border.
+#' Default is 1 (solid line).
+#' @param lineages Lineages/pseudotime to add to the plot.
+#' If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
 #' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
 #' @param lineages_palette Color palette used for lineages.
@@ -112,8 +121,10 @@
 #' @param hex.binwidth Hexagonal bin width.
 #' @param hex.linewidth Border width of hexagonal bins.
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
-#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).
-#' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.
+#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
+#' Default is c(512, 512).
+#' @param theme_use Theme used. Can be a character string or a theme function.
+#' For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.
 #' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
@@ -348,7 +359,7 @@
 #'   edge_color = "grey80"
 #' )
 #'
-#' # Show lineages on the plot based on the pseudotime
+#' # Show lineages based on the pseudotime
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -357,27 +368,27 @@
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = paste0("Lineage", 1:3),
+#'   features = paste0("Lineage", 1:2),
 #'   reduction = "UMAP"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   lineages = paste0("Lineage", 1:3)
+#'   lineages = paste0("Lineage", 1:2)
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   lineages = paste0("Lineage", 1:3),
+#'   lineages = paste0("Lineage", 1:2),
 #'   lineages_whiskers = TRUE
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   lineages = paste0("Lineage", 1:3),
+#'   lineages = paste0("Lineage", 1:2),
 #'   lineages_span = 0.1
 #' )
 #'
@@ -1417,10 +1428,11 @@ CellDimPlot <- function(
 #'   reduction = "StandardpcaUMAP3D"
 #' )
 #'
-#' #' pancreas_sub <- RunSlingshot(
+#' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",
-#'   reduction = "StandardpcaUMAP3D"
+#'   reduction = "StandardpcaUMAP3D",
+#'   show_plot = FALSE
 #' )
 #' CellDimPlot3D(
 #'   srt = pancreas_sub,

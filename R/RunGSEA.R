@@ -23,12 +23,10 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
-#'   group_by = "CellType",
-#'   only.pos = FALSE,
-#'   fc.threshold = 1
-#' )
+#' # pancreas_sub <- RunDEtest(
+#' #  pancreas_sub,
+#' #  group_by = "CellType"
+#' # )
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
 #'   group_by = "CellType",

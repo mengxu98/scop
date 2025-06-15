@@ -5,7 +5,8 @@
 #' @param trans The transformation function to applied when data is presumed to be log-normalized.
 #' @param min_count Minimum UMI count of genes.
 #' @param tolerance When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
-#'  However, due to decimal point preservation during normalization, the calculated nCount is usually a floating point number close to the integer.
+#'  However, due to decimal point preservation during normalization,
+#'  the calculated nCount is usually a floating point number close to the integer.
 #'  The tolerance is its difference from the integer. Default is 0.1
 #' @param sf Set the scaling factor manually.
 #' @param verbose Whether to show messages.
@@ -14,17 +15,35 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' raw_counts <- pancreas_sub@assays$RNA@counts
+#' raw_counts <- GetAssayData5(
+#'   pancreas_sub,
+#'   assay = "RNA",
+#'   layer = "counts"
+#' )
 #'
 #' # Normalized the data
 #' pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 #'
 #' # Now replace counts with the log-normalized data matrix
-#' pancreas_sub@assays$RNA@counts <- pancreas_sub@assays$RNA@data
-#'
+#' data <- GetAssayData5(
+#'   pancreas_sub,
+#'   assay = "RNA",
+#'   layer = "data"
+#' )
+#' new_pancreas_sub <- SetAssayData(
+#'   object = pancreas_sub,
+#'   layer = "counts",
+#'   new.data = data,
+#'   assay = "RNA"
+#' )
 #' # Recover the counts and compare with the raw counts matrix
-#' pancreas_sub <- RecoverCounts(pancreas_sub)
-#' identical(raw_counts, pancreas_sub@assays$RNA@counts)
+#' pancreas_sub <- RecoverCounts(new_pancreas_sub)
+#' new_counts <- GetAssayData5(
+#'   pancreas_sub,
+#'   assay = "RNA",
+#'   layer = "counts"
+#' )
+#' identical(raw_counts, new_counts)
 RecoverCounts <- function(
     srt,
     assay = NULL,
@@ -34,7 +53,7 @@ RecoverCounts <- function(
     sf = NULL,
     verbose = TRUE) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  counts <- SeuratObject::GetAssayData(
+  counts <- GetAssayData5(
     srt,
     layer = "counts",
     assay = assay
@@ -342,10 +361,35 @@ srt_append <- function(
             if (!info %in% SeuratObject::Assays(srt_raw)) {
               srt_raw[[info]] <- srt_append[[info]]
             } else {
-              srt_raw[[info]]@counts <- srt_append[[info]]@counts
-              srt_raw[[info]]@data <- srt_append[[info]]@data
-              srt_raw[[info]]@key <- srt_append[[info]]@key
-              srt_raw[[info]]@var.features <- srt_append[[info]]@var.features
+              # srt_raw[[info]]@counts <- srt_append[[info]]@counts
+              srt_raw <- SeuratObject::SetAssayData(
+                object = srt_raw,
+                layer = "counts",
+                assay = "RNA",
+                new.data = GetAssayData5(
+                  srt_append,
+                  assay = info,
+                  layer = "counts"
+                )
+              )
+              # srt_raw[[info]]@data <- srt_append[[info]]@data
+              srt_raw <- SeuratObject::SetAssayData(
+                object = srt_raw,
+                layer = "data",
+                assay = "RNA",
+                new.data = GetAssayData5(
+                  srt_append,
+                  assay = info,
+                  layer = "data"
+                )
+              )
+              if (inherits(Seurat::GetAssay(srt_raw, assay = info), "Assay5")) {
+                srt_raw@assays[[info]]@key <- srt_append@assays[[info]]@key
+                srt_raw@assays[[info]]@meta.data$var.features <- srt_append@assays[[info]]@meta.data$var.features
+              } else {
+                srt_raw[[info]]@key <- srt_append[[info]]@key
+                srt_raw[[info]]@var.features <- srt_append[[info]]@var.features
+              }
               srt_raw[[info]]@misc <- srt_append[[info]]@misc
               meta.features <- cbind(
                 GetFeaturesData(srt_raw, assay = info),
@@ -663,7 +707,7 @@ Uncorrected_integrate <- function(
       (is.null(do_scaling) &&
         any(
           !HVF %in%
-            rownames(SeuratObject::GetAssayData(
+            rownames(GetAssayData5(
               srt_merge,
               layer = "scale.data",
               assay = SeuratObject::DefaultAssay(srt_merge)
@@ -821,9 +865,12 @@ Uncorrected_integrate <- function(
 #' Seurat_integrate
 #'
 #' @inheritParams integration_scop
-#' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function, default is an empty list.
-#' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function, default is an empty list.
-#' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function, default is an empty list.
+#' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function.
+#' Default is an empty list.
+#' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function.
+#' Default is an empty list.
+#' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function.
+#' Default is an empty list.
 #'
 #' @export
 Seurat_integrate <- function(
@@ -1062,7 +1109,7 @@ Seurat_integrate <- function(
             any(
               !HVF %in%
                 rownames(
-                  SeuratObject::GetAssayData(
+                  GetAssayData5(
                     srt,
                     layer = "scale.data",
                     assay = SeuratObject::DefaultAssay(srt)
@@ -1160,7 +1207,7 @@ Seurat_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                SeuratObject::GetAssayData(
+                GetAssayData5(
                   srtIntegrated,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -1837,7 +1884,7 @@ MNN_integrate <- function(
 
   sceList <- lapply(srt_list, function(srt) {
     sce <- as.SingleCellExperiment(CreateSeuratObject(
-      counts = SeuratObject::GetAssayData(
+      counts = GetAssayData5(
         srt,
         layer = "data",
         assay = SeuratObject::DefaultAssay(srt)
@@ -1884,7 +1931,7 @@ MNN_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              SeuratObject::GetAssayData(
+              GetAssayData5(
                 srtIntegrated,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -2166,7 +2213,7 @@ fastMNN_integrate <- function(
   sceList <- lapply(srt_list, function(srt) {
     sce <- Seurat::as.SingleCellExperiment(
       Seurat::CreateSeuratObject(
-        counts = SeuratObject::GetAssayData(
+        counts = GetAssayData5(
           srt,
           layer = "data",
           assay = SeuratObject::DefaultAssay(srt)
@@ -2494,7 +2541,7 @@ Harmony_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              SeuratObject::GetAssayData(
+              GetAssayData5(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -2571,7 +2618,7 @@ Harmony_integrate <- function(
   )
   if (
     nrow(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt_merge,
         layer = "scale.data",
         assay = SeuratObject::DefaultAssay(srt_merge)
@@ -2837,7 +2884,7 @@ Scanorama_integrate <- function(
   for (i in seq_along(srt_list)) {
     assaylist[[i]] <- Matrix::t(
       Matrix::as.matrix(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           object = srt_list[[i]],
           layer = "data",
           assay = SeuratObject::DefaultAssay(srt_list[[i]])
@@ -3159,7 +3206,7 @@ BBKNN_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              SeuratObject::GetAssayData(
+              GetAssayData5(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -3560,7 +3607,7 @@ CSS_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              SeuratObject::GetAssayData(
+              GetAssayData5(
                 srt_merge,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srt_merge)
@@ -3909,7 +3956,7 @@ LIGER_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                SeuratObject::GetAssayData(
+                GetAssayData5(
                   srt,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srt)
@@ -3936,7 +3983,7 @@ LIGER_integrate <- function(
       )
     }
     scale.data[[i]] <- Matrix::t(
-      x = SeuratObject::GetAssayData(
+      x = GetAssayData5(
         object = srt,
         layer = "scale.data",
         assay = SeuratObject::DefaultAssay(srt)
@@ -4281,7 +4328,7 @@ Conos_integrate <- function(
           any(
             !HVF %in%
               rownames(
-                SeuratObject::GetAssayData(
+                GetAssayData5(
                   srt,
                   layer = "scale.data",
                   assay = SeuratObject::DefaultAssay(srt)
@@ -4648,7 +4695,7 @@ ComBat_integrate <- function(
     "]",
     " Perform integration(Combat) on the data...\n"
   ))
-  dat <- SeuratObject::GetAssayData(
+  dat <- GetAssayData5(
     srt_merge,
     layer = "data",
     assay = SeuratObject::DefaultAssay(srt_merge)
@@ -4683,7 +4730,7 @@ ComBat_integrate <- function(
         any(
           !HVF %in%
             rownames(
-              SeuratObject::GetAssayData(
+              GetAssayData5(
                 srtIntegrated,
                 layer = "scale.data",
                 assay = SeuratObject::DefaultAssay(srtIntegrated)
@@ -4842,10 +4889,12 @@ ComBat_integrate <- function(
 #' @inheritParams check_srt_list
 #' @inheritParams check_srt_merge
 #' @inheritParams standard_scop
-#' @param scale_within_batch  Whether to scale data within each batch. Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.
+#' @param scale_within_batch  Whether to scale data within each batch.
+#' Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.
 #' @param integration_method  A character string specifying the integration method to use.
 #'   Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"}, \code{"Harmony"},
-#'   \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}. Default is \code{"Uncorrected"}.
+#'   \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
+#' Default is \code{"Uncorrected"}.
 #' @param append Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).
 #' @param ... Additional arguments to be passed to the integration method function.
 #'
@@ -4853,6 +4902,7 @@ ComBat_integrate <- function(
 #'
 #' @seealso \code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{standard_scop}}
 #'
+#' @export
 #' @examples
 #' data("panc8_sub")
 #' panc8_sub <- integration_scop(
@@ -4949,8 +4999,6 @@ ComBat_integrate <- function(
 #'   )
 #' }
 #' }
-#'
-#' @export
 integration_scop <- function(
     srt_merge = NULL,
     batch,
@@ -4988,57 +5036,40 @@ integration_scop <- function(
   if (is.null(srt_list) && is.null(srt_merge)) {
     stop("Neither 'srt_list' nor 'srt_merge' was found.")
   }
-  if (
-    length(integration_method) == 1 &&
-      integration_method %in%
-        c(
-          "Uncorrected",
-          "Seurat",
-          "scVI",
-          "MNN",
-          "fastMNN",
-          "Harmony",
-          "Scanorama",
-          "BBKNN",
-          "CSS",
-          "LIGER",
-          "Conos",
-          "ComBat"
-        )
-  ) {
-    # Convert the arguments of the function call to a list and remove the function itself
+  methods <- c(
+    "Uncorrected",
+    "Seurat",
+    "scVI",
+    "MNN",
+    "fastMNN",
+    "Harmony",
+    "Scanorama",
+    "BBKNN",
+    "CSS",
+    "LIGER",
+    "Conos",
+    "ComBat"
+  )
+  if (length(integration_method) == 1 && integration_method %in% methods) {
     args <- as.list(match.call())[-1]
-
-    # Create a new environment, the parent of which is the environment that called the foo function
     new_env <- new.env(parent = parent.frame())
-
-    # Evaluate the arguments in the new environment to get the correct values
     args <- lapply(args, function(x) eval(x, envir = new_env))
 
-    # Keep srt_merge and srt_list as type of 'symbol' when use `do.call` function
-    # args[!names(args) %in% c("srt_merge", "srt_list")] <- lapply(args[!names(args) %in% c("srt_merge", "srt_list")], function(x) eval(x, envir = new_env))
-
-    # print("================ args ================ ")
-    # print(args)
-
-    # Get the function's formal arguments and their default values
     formals <- mget(names(formals()))
     formals <- formals[names(formals) != "..."]
 
-    # print("================ formals ================ ")
-    # print(formals)
-
-    # Merge the formal arguments with the actual arguments, so that all arguments are included
     args <- utils::modifyList(formals, args)
 
     time_start <- Sys.time()
-    cat(paste0(
-      "[",
-      time_start,
-      "] ",
-      paste0("Start ", integration_method, "_integrate"),
-      "\n"
-    ))
+    cat(
+      paste0(
+        "[",
+        time_start,
+        "] ",
+        paste0("Start ", integration_method, "_integrate"),
+        "\n"
+      )
+    )
     srtIntegrated <- invoke_fun(
       .fn = paste0(integration_method, "_integrate"),
       .args = args[
@@ -5046,12 +5077,14 @@ integration_scop <- function(
       ]
     )
     time_end <- Sys.time()
-    cat(paste0(
-      "[",
-      time_end,
-      "] ",
-      paste0(integration_method, "_integrate done\n")
-    ))
+    cat(
+      paste0(
+        "[",
+        time_end,
+        "] ",
+        paste0(integration_method, "_integrate done\n")
+      )
+    )
     cat(
       "Elapsed time:",
       format(

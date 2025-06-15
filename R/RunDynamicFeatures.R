@@ -58,14 +58,15 @@
 #'   srt = pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   cell_annotation = "SubCellType",
-#'   n_split = 6, reverse_ht = "Lineage1"
+#'   n_split = 6,
+#'   reverse_ht = "Lineage1"
 #' )
 #' ht$plot
 #'
 #' DynamicPlot(
 #'   srt = pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
-#'   features = c("Nnat", "Irx1"),
+#'   features = c("Arxes1", "Ncoa2"),
 #'   group.by = "SubCellType",
 #'   compare_lineages = TRUE,
 #'   compare_features = FALSE
@@ -115,7 +116,7 @@ RunDynamicFeatures <- function(
     }
   }
 
-  y_mat <- SeuratObject::GetAssayData(
+  y_mat <- GetAssayData5(
     srt,
     layer = layer,
     assay = assay
@@ -133,7 +134,7 @@ RunDynamicFeatures <- function(
       )
     } else {
       y_libsize <- Matrix::colSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "counts"
@@ -178,7 +179,7 @@ RunDynamicFeatures <- function(
         ),
         assay = assay
       )
-      HVF_counts <- SeuratObject::GetAssayData(
+      HVF_counts <- GetAssayData5(
         srt_sub,
         assay = assay,
         layer = "counts"

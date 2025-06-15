@@ -106,7 +106,7 @@
 #'     "Paired", "simspec", "Purples"
 #'   ),
 #'   separate_annotation = list(
-#'     "SubCellType", c("Nnat", "Irx1")
+#'     "SubCellType", c("Arxes1", "Ncoa2")
 #'   ),
 #'   separate_annotation_palette = c(
 #'     "Paired", "Set1"
@@ -139,7 +139,7 @@
 #'     "Paired", "simspec", "Purples"
 #'   ),
 #'   separate_annotation = list(
-#'     "SubCellType", c("Nnat", "Irx1")
+#'     "SubCellType", c("Arxes1", "Ncoa2")
 #'   ),
 #'   separate_annotation_palette = c("Paired", "Set1"),
 #'   separate_annotation_params = list(width = grid::unit(10, "mm")),
@@ -604,7 +604,7 @@ DynamicHeatmap <- function(
           c(intersect(cell_annotation, colnames(srt@meta.data))),
           drop = FALSE
         ],
-        Matrix::t(SeuratObject::GetAssayData(
+        Matrix::t(GetAssayData5(
           srt,
           assay = assay,
           layer = "data"
@@ -787,7 +787,7 @@ DynamicHeatmap <- function(
   } else {
     mat_list <- list()
     y_libsize <- Matrix::colSums(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = "counts"
@@ -798,7 +798,7 @@ DynamicHeatmap <- function(
       cells <- gsub(pattern = l, replacement = "", x = cell_order_list[[l]])
       mat_tmp <- Matrix::as.matrix(
         rbind(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer

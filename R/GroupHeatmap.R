@@ -903,7 +903,7 @@ GroupHeatmap <- function(
 
   mat_raw <- Matrix::as.matrix(
     rbind(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = layer
@@ -917,7 +917,7 @@ GroupHeatmap <- function(
       libsize_use <- libsize
     } else {
       libsize_use <- Matrix::colSums(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "counts"
@@ -1084,7 +1084,7 @@ GroupHeatmap <- function(
         drop = FALSE
       ],
       Matrix::t(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = "data"

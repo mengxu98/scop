@@ -86,14 +86,15 @@ ht <- DynamicHeatmap(
   srt = pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   cell_annotation = "SubCellType",
-  n_split = 6, reverse_ht = "Lineage1"
+  n_split = 6,
+  reverse_ht = "Lineage1"
 )
 ht$plot
 
 DynamicPlot(
   srt = pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  features = c("Nnat", "Irx1"),
+  features = c("Arxes1", "Ncoa2"),
   group.by = "SubCellType",
   compare_lineages = TRUE,
   compare_features = FALSE

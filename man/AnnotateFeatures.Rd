@@ -2,8 +2,7 @@
 % Please edit documentation in R/AnnotateFeatures.R
 \name{AnnotateFeatures}
 \alias{AnnotateFeatures}
-\title{AnnotateFeatures
-Annotate features in a Seurat object with additional metadata from databases or a GTF file.}
+\title{AnnotateFeatures}
 \usage{
 AnnotateFeatures(
   srt,
@@ -54,15 +53,13 @@ AnnotateFeatures(
 \item{overwrite}{Logical value indicating whether to overwrite existing metadata. Default is FALSE.}
 }
 \description{
-AnnotateFeatures
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
+  srt = pancreas_sub,
   species = "Mus_musculus",
-  IDtype = "symbol",
   db = c(
     "Chromosome",
     "GeneType",
@@ -72,14 +69,24 @@ pancreas_sub <- AnnotateFeatures(
     "VerSeDa"
   )
 )
-head(pancreas_sub[["RNA"]]@meta.features)
+head(
+  GetFeaturesData(
+    pancreas_sub,
+    assays = "RNA"
+  )
+)
 
 ## Annotate features using a GTF file
 # pancreas_sub <- AnnotateFeatures(
 #   pancreas_sub,
 #   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
 # )
-# head(pancreas_sub[["RNA"]]@meta.features)
+# head(
+#   GetFeaturesData(
+#     pancreas_sub,
+#     assays = "RNA"
+#   )
+# )
 }
 \seealso{
 \code{\link{PrepareDB}} \code{\link{ListDB}}

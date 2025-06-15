@@ -4,18 +4,28 @@
 #'
 #' @param srt_query An object of class Seurat to be annotated with cell types.
 #' @param srt_ref An object of class Seurat storing the reference cells.
-#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows, for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.
+#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows,
+#' for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.
 #' @param query_group A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.
 #' @param ref_group A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.
-#' @param query_assay A character vector specifying the assay to be used for the query data. Defaults to the default assay of the `srt_query` object.
-#' @param ref_assay A character vector specifying the assay to be used for the reference data. Defaults to the default assay of the `srt_ref` object.
-#' @param query_reduction A character vector specifying the dimensionality reduction method used for the query data. If NULL, the function will use the default reduction method specified in the `srt_query` object.
-#' @param ref_reduction A character vector specifying the dimensionality reduction method used for the reference data. If NULL, the function will use the default reduction method specified in the `srt_ref` object.
-#' @param query_dims A numeric vector specifying the dimensions to be used for the query data. Defaults to the first 30 dimensions.
-#' @param ref_dims A numeric vector specifying the dimensions to be used for the reference data. Defaults to the first 30 dimensions.
+#' @param query_assay A character vector specifying the assay to be used for the query data.
+#' Defaults to the default assay of the `srt_query` object.
+#' @param ref_assay A character vector specifying the assay to be used for the reference data.
+#' Defaults to the default assay of the `srt_ref` object.
+#' @param query_reduction A character vector specifying the dimensionality reduction method used for the query data.
+#' If NULL, the function will use the default reduction method specified in the `srt_query` object.
+#' @param ref_reduction A character vector specifying the dimensionality reduction method used for the reference data.
+#' If NULL, the function will use the default reduction method specified in the `srt_ref` object.
+#' @param query_dims A numeric vector specifying the dimensions to be used for the query data.
+#' Defaults to the first 30 dimensions.
+#' @param ref_dims A numeric vector specifying the dimensions to be used for the reference data.
+#' Defaults to the first 30 dimensions.
 #' @param query_collapsing A boolean value indicating whether the query data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.
-#' @param ref_collapsing A boolean value indicating whether the reference data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.
-#' @param return_full_distance_matrix A boolean value indicating whether the full distance matrix should be returned. If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.
+#' @param ref_collapsing A boolean value indicating whether the reference data should be collapsed to group-level average expression values.
+#' If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group.
+#' Otherwise it will use the raw expression values for each cell.
+#' @param return_full_distance_matrix A boolean value indicating whether the full distance matrix should be returned.
+#' If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.
 #' @param features A character vector specifying the features (genes) to be used for the KNN prediction. If NULL, all the features in the query and reference data will be used.
 #' @param features_type A character vector specifying the type of features to be used for the KNN prediction. Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Defaults to "HVF".
 #' @param feature_source A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Defaults to "both".
@@ -78,6 +88,7 @@
 #'     force_tolower = TRUE
 #'   )
 #' )
+#' names(genenames) <- rownames(panc8_sub)
 #' panc8_sub <- RenameFeatures(
 #'   panc8_sub,
 #'   newnames = genenames
@@ -458,6 +469,7 @@ RunKNNPredict <- function(
       )
       if (isTRUE(ref_collapsing)) {
         ref <- Seurat::AverageExpression(
+          # ref <- Seurat::PseudobulkExpression( # require run JoinLayers
           object = srt_ref,
           features = features_common,
           layer = "data",
@@ -468,7 +480,7 @@ RunKNNPredict <- function(
         ref <- Matrix::t(log1p(ref))
       } else {
         ref <- Matrix::t(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt_ref,
             layer = "data",
             assay = ref_assay
@@ -505,6 +517,7 @@ RunKNNPredict <- function(
         stop("query_group must be provided when query_collapsing is TRUE.")
       }
       query <- Seurat::AverageExpression(
+        # query <- Seurat::PseudobulkExpression( # require run JoinLayers
         object = srt_query,
         features = colnames(ref),
         layer = "data",
@@ -515,7 +528,7 @@ RunKNNPredict <- function(
       query <- Matrix::t(log1p(query))
     } else {
       query <- Matrix::t(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt_query,
           layer = "data",
           assay = query_assay
@@ -740,11 +753,17 @@ RunKNNPredict <- function(
   srt_query@tools[[paste0(prefix, "_classification")]] <- result
 
   if (isTRUE(query_collapsing)) {
-    query_index <- as.character(srt_query[["query_group", drop = TRUE]])
+    query_index <- as.character(
+      srt_query[["query_group", drop = TRUE]]
+    )
     cell_type_to_id <- split(colnames(srt_query), query_index)
-    classification <- unlist(lapply(names(match_best), function(ct) {
-      rep(match_best[ct], length(cell_type_to_id[[ct]]))
-    }))
+    classification <- unlist(
+      lapply(
+        names(match_best), function(ct) {
+          rep(match_best[ct], length(cell_type_to_id[[ct]]))
+        }
+      )
+    )
     names(classification) <- unlist(cell_type_to_id)
   } else {
     query_index <- colnames(srt_query)

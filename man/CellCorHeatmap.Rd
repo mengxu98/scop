@@ -234,7 +234,6 @@ This function generates a heatmap to visualize the similarity between different 
 }
 \examples{
 data("pancreas_sub")
-pancreas_sub <- standard_scop(pancreas_sub)
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
@@ -244,10 +243,12 @@ ht1$plot
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
-  capitalize(rownames(panc8_sub),
+  capitalize(
+    rownames(panc8_sub),
     force_tolower = TRUE
   )
 )
+names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
@@ -292,8 +293,12 @@ ht4 <- CellCorHeatmap(
   show_column_names = TRUE,
   query_group = "SubCellType",
   ref_group = "celltype",
-  query_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"),
-  ref_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist")
+  query_cell_annotation = c(
+    "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+  ),
+  ref_cell_annotation = c(
+    "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+  )
 )
 ht4$plot
 }

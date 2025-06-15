@@ -28,9 +28,11 @@ FeatureDimPlot3D(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A character vector or a named list of features to plot. Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{A character vector or a named list of features to plot.
+Features can be gene names in Assay or names of numeric columns in meta.data.}
 
-\item{reduction}{Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.}
 
@@ -40,7 +42,7 @@ FeatureDimPlot3D(
 
 \item{layer}{Which layer to pull expression data from? Default is \code{data}.}
 
-\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \code{\link[SeuratObject]{DefaultAssay}}.}
+\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
 
 \item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
 
@@ -71,11 +73,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 FeatureDimPlot3D(
   pancreas_sub,
   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),
-  reduction = "StandardpcaUMAP3D"
-)
-FeatureDimPlot3D(
-  pancreas_sub,
-  features = c("StandardPC_1", "StandardPC_2"),
   reduction = "StandardpcaUMAP3D"
 )
 }

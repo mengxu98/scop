@@ -106,7 +106,7 @@ RunPCAMap <- function(
 
   pca.out <- srt_ref[[ref_pca]]
   status_query <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay
@@ -114,7 +114,7 @@ RunPCAMap <- function(
   )
   message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_ref,
       layer = "data",
       assay = ref_assay
@@ -134,7 +134,7 @@ RunPCAMap <- function(
   message("Run PCA projection")
   features <- rownames(pca.out@feature.loadings)
   center <- apply(
-    SeuratObject::GetAssayData(
+    GetAssayData5(
       object = srt_ref,
       layer = "data",
       assay = ref_assay
@@ -146,7 +146,7 @@ RunPCAMap <- function(
   )
   names(center) <- features
   sds <- apply(
-    SeuratObject::GetAssayData(
+    GetAssayData5(
       object = srt_ref,
       layer = "data",
       assay = ref_assay
@@ -169,7 +169,7 @@ RunPCAMap <- function(
   )
   message("Use ", length(features_common), " features to calculate PC.")
   query_data <- Matrix::t(
-    SeuratObject::GetAssayData(
+    GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay

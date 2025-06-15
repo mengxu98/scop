@@ -185,7 +185,13 @@ RunDynamicEnrichment <- function(
     srt <- RunDynamicFeatures(
       srt = srt,
       lineages = lineages,
-      features = rownames(srt[[term]]@counts),
+      features = rownames(
+        GetAssayData5(
+          srt,
+          assay = term,
+          layer = "counts"
+        )
+      ),
       suffix = paste(lineages, term, sep = "_"),
       assay = term
     )

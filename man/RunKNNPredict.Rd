@@ -37,29 +37,39 @@ RunKNNPredict(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{bulk_ref}{A cell atlas matrix, where cell types are represented by columns and genes are represented by rows, for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.}
+\item{bulk_ref}{A cell atlas matrix, where cell types are represented by columns and genes are represented by rows,
+for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.}
 
 \item{query_group}{A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.}
 
 \item{ref_group}{A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.}
 
-\item{query_assay}{A character vector specifying the assay to be used for the query data. Defaults to the default assay of the `srt_query` object.}
+\item{query_assay}{A character vector specifying the assay to be used for the query data.
+Defaults to the default assay of the `srt_query` object.}
 
-\item{ref_assay}{A character vector specifying the assay to be used for the reference data. Defaults to the default assay of the `srt_ref` object.}
+\item{ref_assay}{A character vector specifying the assay to be used for the reference data.
+Defaults to the default assay of the `srt_ref` object.}
 
-\item{query_reduction}{A character vector specifying the dimensionality reduction method used for the query data. If NULL, the function will use the default reduction method specified in the `srt_query` object.}
+\item{query_reduction}{A character vector specifying the dimensionality reduction method used for the query data.
+If NULL, the function will use the default reduction method specified in the `srt_query` object.}
 
-\item{ref_reduction}{A character vector specifying the dimensionality reduction method used for the reference data. If NULL, the function will use the default reduction method specified in the `srt_ref` object.}
+\item{ref_reduction}{A character vector specifying the dimensionality reduction method used for the reference data.
+If NULL, the function will use the default reduction method specified in the `srt_ref` object.}
 
-\item{query_dims}{A numeric vector specifying the dimensions to be used for the query data. Defaults to the first 30 dimensions.}
+\item{query_dims}{A numeric vector specifying the dimensions to be used for the query data.
+Defaults to the first 30 dimensions.}
 
-\item{ref_dims}{A numeric vector specifying the dimensions to be used for the reference data. Defaults to the first 30 dimensions.}
+\item{ref_dims}{A numeric vector specifying the dimensions to be used for the reference data.
+Defaults to the first 30 dimensions.}
 
 \item{query_collapsing}{A boolean value indicating whether the query data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.}
 
-\item{ref_collapsing}{A boolean value indicating whether the reference data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.}
+\item{ref_collapsing}{A boolean value indicating whether the reference data should be collapsed to group-level average expression values.
+If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group.
+Otherwise it will use the raw expression values for each cell.}
 
-\item{return_full_distance_matrix}{A boolean value indicating whether the full distance matrix should be returned. If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.}
+\item{return_full_distance_matrix}{A boolean value indicating whether the full distance matrix should be returned.
+If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.}
 
 \item{features}{A character vector specifying the features (genes) to be used for the KNN prediction. If NULL, all the features in the query and reference data will be used.}
 
@@ -134,6 +144,7 @@ genenames <- make.unique(
     force_tolower = TRUE
   )
 )
+names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames

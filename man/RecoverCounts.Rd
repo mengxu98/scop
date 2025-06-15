@@ -24,7 +24,8 @@ RecoverCounts(
 \item{min_count}{Minimum UMI count of genes.}
 
 \item{tolerance}{When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
-However, due to decimal point preservation during normalization, the calculated nCount is usually a floating point number close to the integer.
+However, due to decimal point preservation during normalization,
+the calculated nCount is usually a floating point number close to the integer.
 The tolerance is its difference from the integer. Default is 0.1}
 
 \item{sf}{Set the scaling factor manually.}
@@ -36,15 +37,33 @@ Attempt to recover raw counts from the normalized matrix.
 }
 \examples{
 data("pancreas_sub")
-raw_counts <- pancreas_sub@assays$RNA@counts
+raw_counts <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)
 
 # Normalized the data
 pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 
 # Now replace counts with the log-normalized data matrix
-pancreas_sub@assays$RNA@counts <- pancreas_sub@assays$RNA@data
-
+data <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "data"
+)
+new_pancreas_sub <- SetAssayData(
+  object = pancreas_sub,
+  layer = "counts",
+  new.data = data,
+  assay = "RNA"
+)
 # Recover the counts and compare with the raw counts matrix
-pancreas_sub <- RecoverCounts(pancreas_sub)
-identical(raw_counts, pancreas_sub@assays$RNA@counts)
+pancreas_sub <- RecoverCounts(new_pancreas_sub)
+new_counts <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)
+identical(raw_counts, new_counts)
 }

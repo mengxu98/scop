@@ -1,9 +1,9 @@
 #' @title FindExpressedMarkers
 #'
+#' @inheritParams Seurat::FindMarkers
 #' @param layer The layer used.
 #' @param min.expression The min.expression used.
 #' @param seed The seed used.
-#' @inheritParams Seurat::FindMarkers
 #' @export
 #'
 #' @examples
@@ -48,10 +48,7 @@ FindExpressedMarkers <- function(
     seed = 11,
     verbose = TRUE,
     ...) {
-  ########## FindMarkers.Seurat ##########
-
   assay <- assay %||% DefaultAssay(object)
-  data.use <- object[[assay]]
 
   if (!is.null(cells.1)) {
     if (is.null(cells.2)) {
@@ -76,8 +73,11 @@ FindExpressedMarkers <- function(
     )
   }
 
-  ########## FindMarkers.Assay ##########
-
+  data.use <- Seurat::GetAssayData(
+    object = object,
+    assay = assay,
+    layer = layer
+  )
   object <- data.use
 
   pseudocount.use <- pseudocount.use %||% 1
@@ -86,16 +86,13 @@ FindExpressedMarkers <- function(
     yes = "counts",
     no = layer
   )
-  data.use <- SeuratObject::GetAssayData(
-    object = object,
-    layer = data_layer
-  )
+
   data.use <- data.use[Matrix::rowSums(data.use) > 0, ]
   data.use <- Matrix::as.matrix(data.use)
   data.use[data.use <= min.expression] <- NA
   counts <- switch(
     EXPR = data_layer,
-    "scale.data" = SeuratObject::GetAssayData(
+    "scale.data" = GetAssayData5(
       object = object, layer = "counts"
     ),
     numeric()
@@ -116,10 +113,12 @@ FindExpressedMarkers <- function(
     return(rowMeans(x, na.rm = TRUE))
   }
   counts.mean.fxn <- function(x) {
-    return(log(
-      x = rowMeans(x = x, na.rm = TRUE) + pseudocount.use,
-      base = base
-    ))
+    return(
+      log(
+        x = rowMeans(x = x, na.rm = TRUE) + pseudocount.use,
+        base = base
+      )
+    )
   }
   if (!is.null(x = norm.method)) {
     # For anything apart from log normalization set to rowMeans

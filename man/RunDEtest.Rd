@@ -40,23 +40,31 @@ RunDEtest(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{group_by}{A grouping variable in the dataset to define the groups or conditions for the differential test. If not provided, the function uses the "active.ident" variable in the Seurat object.}
+\item{group_by}{A grouping variable in the dataset to define the groups or conditions for the differential test.
+If not provided, the function uses the "active.ident" variable in the Seurat object.}
 
-\item{group1}{A vector of cell IDs or a character vector specifying the cells that belong to the first group. If both group_by and group1 are provided, group1 takes precedence.}
+\item{group1}{A vector of cell IDs or a character vector specifying the cells that belong to the first group.
+If both group_by and group1 are provided, group1 takes precedence.}
 
-\item{group2}{A vector of cell IDs or a character vector specifying the cells that belong to the second group. This parameter is only used when group_by or group1 is provided.}
+\item{group2}{A vector of cell IDs or a character vector specifying the cells that belong to the second group.
+This parameter is only used when group_by or group1 is provided.}
 
 \item{cells1}{A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.}
 
-\item{cells2}{A vector of cell IDs specifying the cells that belong to group2. This parameter is only used when cells1 is provided.}
+\item{cells2}{A vector of cell IDs specifying the cells that belong to group2.
+This parameter is only used when cells1 is provided.}
 
-\item{features}{A vector of gene names specifying the features to consider for the differential test. If not provided, all features in the dataset are considered.}
+\item{features}{A vector of gene names specifying the features to consider for the differential test.
+If not provided, all features in the dataset are considered.}
 
-\item{markers_type}{A character value specifying the type of markers to find. Possible values are "all", "paired", "conserved", and "disturbed".}
+\item{markers_type}{A character value specifying the type of markers to find.
+Possible values are "all", "paired", "conserved", and "disturbed".}
 
-\item{grouping.var}{A character value specifying the grouping variable for finding conserved or disturbed markers. This parameter is only used when markers_type is "conserved" or "disturbed".}
+\item{grouping.var}{A character value specifying the grouping variable for finding conserved or disturbed markers.
+This parameter is only used when markers_type is "conserved" or "disturbed".}
 
-\item{meta.method}{A character value specifying the method to use for combining p-values in the conserved markers test. Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".}
+\item{meta.method}{A character value specifying the method to use for combining p-values in the conserved markers test.
+Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".}
 
 \item{test.use}{Denotes which test to use. Available options are:
 \itemize{
@@ -105,7 +113,8 @@ RunDEtest(
 
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
-\item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups. By default, it is set to 1.5}
+\item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
+By default, it is set to 1.5}
 
 \item{base}{The base with respect to which logarithms are computed.}
 
@@ -140,19 +149,24 @@ of the two groups, currently only used for poisson and negative binomial tests}
 
 \item{min.cells.group}{Minimum number of cells in one of the groups}
 
-\item{norm.method}{Normalization method for fold change calculation when layer is 'data'. Default is "LogNormalize".}
+\item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
+Default is "LogNormalize".}
 
-\item{p.adjust.method}{A character value specifying the method to use for adjusting p-values. Default is "bonferroni".}
+\item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
+Default is "bonferroni".}
 
 \item{layer}{The layer used.}
 
 \item{assay}{Assay to use in differential expression testing}
 
-\item{BPPARAM}{A BiocParallelParam object specifying the parallelization parameters for the differential test. Default is \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
+\item{BPPARAM}{A BiocParallelParam object specifying the parallelization parameters for the differential test.
+Default is \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
 
-\item{seed}{An integer value specifying the seed. Default is 11.}
+\item{seed}{An integer value specifying the seed.
+Default is 11.}
 
-\item{verbose}{A logical value indicating whether to display progress messages during the differential test. Default is TRUE.}
+\item{verbose}{A logical value indicating whether to display progress messages during the differential test.
+Default is TRUE.}
 
 \item{...}{Additional arguments to pass to the \link[Seurat:FindMarkers]{Seurat::FindMarkers} function.}
 }
@@ -161,6 +175,7 @@ This function utilizes the Seurat package to perform a differential expression (
 Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
 }
 \examples{
+\dontrun{
 data("pancreas_sub")
 pancreas_sub <- RunDEtest(
   srt = pancreas_sub,
@@ -310,6 +325,7 @@ ht7 <- GroupHeatmap(
   numerator = "smartseq2"
 )
 ht7$plot
+}
 }
 \seealso{
 \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
