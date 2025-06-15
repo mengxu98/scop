@@ -33,9 +33,11 @@ RunSingleR(
 
 \item{ref_group}{A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.}
 
-\item{query_assay}{A character vector specifying the assay to be used for the query data. Defaults to the default assay of the `srt_query` object.}
+\item{query_assay}{A character vector specifying the assay to be used for the query data.
+Defaults to the default assay of the `srt_query` object.}
 
-\item{ref_assay}{A character vector specifying the assay to be used for the reference data. Defaults to the default assay of the `srt_ref` object.}
+\item{ref_assay}{A character vector specifying the assay to be used for the reference data.
+Defaults to the default assay of the `srt_ref` object.}
 
 \item{genes}{"genes" parameter in \code{\link[SingleR]{SingleR}} function.}
 
@@ -74,6 +76,7 @@ genenames <- make.unique(
     force_tolower = TRUE
   )
 )
+names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames

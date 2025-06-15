@@ -85,7 +85,6 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' ht1 <- CellCorHeatmap(
 #'   srt_query = pancreas_sub,
 #'   query_group = "SubCellType"
@@ -95,10 +94,12 @@
 #' data("panc8_sub")
 #' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
-#'   capitalize(rownames(panc8_sub),
+#'   capitalize(
+#'     rownames(panc8_sub),
 #'     force_tolower = TRUE
 #'   )
 #' )
+#' names(genenames) <- rownames(panc8_sub)
 #' panc8_sub <- RenameFeatures(
 #'   panc8_sub,
 #'   newnames = genenames
@@ -143,8 +144,12 @@
 #'   show_column_names = TRUE,
 #'   query_group = "SubCellType",
 #'   ref_group = "celltype",
-#'   query_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"),
-#'   ref_cell_annotation = c("Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist")
+#'   query_cell_annotation = c(
+#'     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+#'   ),
+#'   ref_cell_annotation = c(
+#'     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+#'   )
 #' )
 #' ht4$plot
 CellCorHeatmap <- function(
@@ -354,6 +359,7 @@ CellCorHeatmap <- function(
       "])"
     )
   }
+  # colnames(simil_matrix) <- gsub("-", "_", colnames(simil_matrix))
   simil_matrix[is.infinite(simil_matrix)] <- max(
     abs(simil_matrix[!is.infinite(simil_matrix)]),
     na.rm = TRUE
@@ -586,8 +592,15 @@ CellCorHeatmap <- function(
     ],
     as.data.frame(
       Matrix::t(
-        srt_query[[query_assay]]@data[
-          intersect(query_cell_annotation, rownames(srt_query[[query_assay]])) %||%
+        GetAssayData5(
+          object = srt_ref,
+          assay = ref_assay,
+          layer = "data"
+        )[
+          intersect(
+            query_cell_annotation,
+            rownames(srt_query[[query_assay]])
+          ) %||%
             integer(), ,
           drop = FALSE
         ]
@@ -603,8 +616,15 @@ CellCorHeatmap <- function(
     ],
     as.data.frame(
       Matrix::t(
-        srt_ref[[ref_assay]]@data[
-          intersect(ref_cell_annotation, rownames(srt_ref[[ref_assay]])) %||%
+        GetAssayData5(
+          object = srt_ref,
+          assay = ref_assay,
+          layer = "data"
+        )[
+          intersect(
+            ref_cell_annotation,
+            rownames(srt_ref[[ref_assay]])
+          ) %||%
             integer(), ,
           drop = FALSE
         ]
@@ -790,6 +810,7 @@ CellCorHeatmap <- function(
           show_name = FALSE
         )
       }
+
       ha_cell_group <- do.call(
         ComplexHeatmap::HeatmapAnnotation,
         args = c(

@@ -34,7 +34,7 @@ buildReferenceFromSeurat <- function(
     vargenes_means_sds <- data.frame(
       symbol = var_features,
       mean = Matrix::rowMeans(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           obj,
           assay = assay,
           layer = "data"
@@ -45,7 +45,7 @@ buildReferenceFromSeurat <- function(
     )
 
     vargenes_means_sds$stddev <- symphony::rowSDs(
-      A = SeuratObject::GetAssayData(
+      A = GetAssayData5(
         obj,
         assay = assay,
         layer = "data"
@@ -56,7 +56,7 @@ buildReferenceFromSeurat <- function(
     vargenes_means_sds <- data.frame(
       symbol = var_features,
       mean = Matrix::rowMeans(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           obj,
           assay = assay,
           layer = "scale.data"
@@ -66,7 +66,7 @@ buildReferenceFromSeurat <- function(
       )
     )
     asdgc <- Matrix::Matrix(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         obj,
         assay = assay,
         layer = "scale.data"

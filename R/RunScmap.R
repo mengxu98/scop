@@ -20,6 +20,7 @@
 #'     force_tolower = TRUE
 #'   )
 #' )
+#' names(genenames) <- rownames(panc8_sub)
 #' panc8_sub <- RenameFeatures(
 #'   panc8_sub,
 #'   newnames = genenames
@@ -81,7 +82,7 @@ RunScmap <- function(
   }
 
   status_query <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay
@@ -89,7 +90,7 @@ RunScmap <- function(
   )
   message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
-    data = SeuratObject::GetAssayData(
+    data = GetAssayData5(
       srt_ref,
       layer = "data",
       assay = ref_assay
@@ -107,12 +108,12 @@ RunScmap <- function(
   }
 
   assays_query <- list(
-    counts = SeuratObject::GetAssayData(
+    counts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
       layer = "counts"
     ),
-    logcounts = SeuratObject::GetAssayData(
+    logcounts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
       layer = "data"
@@ -133,12 +134,12 @@ RunScmap <- function(
   )
 
   assays_ref <- list(
-    counts = SeuratObject::GetAssayData(
+    counts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
       layer = "counts"
     ),
-    logcounts = SeuratObject::GetAssayData(
+    logcounts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
       layer = "data"

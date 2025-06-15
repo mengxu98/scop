@@ -440,11 +440,20 @@ FeatureStatPlot(pancreas_sub,
 )
 
 library(Matrix)
-data <- pancreas_sub@assays$RNA@data
-pancreas_sub@assays$RNA@scale.data <- Matrix::as.matrix(data / rowMeans(data))
+data <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "data"
+)
+pancreas_sub <- SeuratObject::SetAssayData(
+  object = pancreas_sub,
+  layer = "scale.data",
+  assay = "RNA",
+  new.data = Matrix::as.matrix(data / rowMeans(data))
+)
 FeatureStatPlot(
   pancreas_sub,
-  stat.by = c("Neurog3", "Rbp4", "Ins1"),
+  stat.by = c("Neurog3", "Rbp4"),
   group.by = "CellType",
   layer = "scale.data",
   ylab = "FoldChange",

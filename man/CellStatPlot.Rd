@@ -330,18 +330,26 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "venn",
   stat_level = list(
-    CellType = c("Ductal", "Ngn3 low EP"),
+    CellType = c("Ductal", "Ngn3-low-EP"),
     Phase = "S"
   )
 )
-pancreas_sub$Progenitor <- pancreas_sub$CellType \%in\% c("Ngn3 low EP", "Ngn3 high EP")
+pancreas_sub$Progenitor <- pancreas_sub$CellType \%in\% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
-pancreas_sub$Sox9_Expressed <- pancreas_sub[["RNA"]]@counts["Sox9", ] > 0
-pancreas_sub$Neurog3_Expressed <- pancreas_sub[["RNA"]]@counts["Neurog3", ] > 0
+pancreas_sub$Fancb_Expressed <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)["Fancb", ] > 0
+pancreas_sub$Dlg3_Expressed <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)["Dlg3", ] > 0
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "Progenitor", "G2M", "Sox9_Expressed", "Neurog3_Expressed"
+    "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
   ),
   plot_type = "venn",
   stat_level = "TRUE"
@@ -349,7 +357,7 @@ CellStatPlot(
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "Progenitor", "G2M", "Sox9_Expressed", "Neurog3_Expressed"
+    "Progenitor", "G2M", "Fancb_Expressed", "Dlg3_Expressed"
   ),
   plot_type = "upset",
   stat_level = "TRUE"
@@ -357,8 +365,8 @@ CellStatPlot(
 sum(
   pancreas_sub$Progenitor == "FALSE" &
     pancreas_sub$G2M == "FALSE" &
-    pancreas_sub$Sox9_Expressed == "TRUE" &
-    pancreas_sub$Neurog3_Expressed == "FALSE"
+    pancreas_sub$Fancb_Expressed == "TRUE" &
+    pancreas_sub$Dlg3_Expressed == "FALSE"
 )
 }
 \seealso{

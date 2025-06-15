@@ -1,5 +1,7 @@
 #' AnnotateFeatures
+#'
 #' Annotate features in a Seurat object with additional metadata from databases or a GTF file.
+#'
 #' @param srt Seurat object to be annotated.
 #' @param species Name of the species to be used for annotation. Default is "Homo_sapiens".
 #' @param IDtype Type of identifier to use for annotation. Default is "symbol" with options "symbol", "ensembl_id", and "entrez_id".
@@ -21,11 +23,10 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
+#'   srt = pancreas_sub,
 #'   species = "Mus_musculus",
-#'   IDtype = "symbol",
 #'   db = c(
 #'     "Chromosome",
 #'     "GeneType",
@@ -35,14 +36,24 @@
 #'     "VerSeDa"
 #'   )
 #' )
-#' head(pancreas_sub[["RNA"]]@meta.features)
+#' head(
+#'   GetFeaturesData(
+#'     pancreas_sub,
+#'     assays = "RNA"
+#'   )
+#' )
 #'
 #' ## Annotate features using a GTF file
 #' # pancreas_sub <- AnnotateFeatures(
 #' #   pancreas_sub,
 #' #   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
 #' # )
-#' # head(pancreas_sub[["RNA"]]@meta.features)
+#' # head(
+#' #   GetFeaturesData(
+#' #     pancreas_sub,
+#' #     assays = "RNA"
+#' #   )
+#' # )
 AnnotateFeatures <- function(
     srt,
     species = "Homo_sapiens",
@@ -71,6 +82,7 @@ AnnotateFeatures <- function(
   if (is.null(db) && is.null(gtf)) {
     stop("Neither 'db' nor 'gtf' is specified")
   }
+
   if (!is.null(db)) {
     db_list <- PrepareDB(
       species = species,

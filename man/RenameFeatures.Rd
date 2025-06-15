@@ -26,6 +26,7 @@ genenames <- make.unique(
     force_tolower = TRUE
   )
 )
+names(genenames) <- rownames(panc8_sub)
 panc8_rename <- RenameFeatures(
   panc8_sub,
   newnames = genenames

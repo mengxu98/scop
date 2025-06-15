@@ -16,6 +16,7 @@
 #'     force_tolower = TRUE
 #'   )
 #' )
+#' names(genenames) <- rownames(panc8_sub)
 #' panc8_rename <- RenameFeatures(
 #'   panc8_sub,
 #'   newnames = genenames
@@ -27,7 +28,7 @@ RenameFeatures <- function(
     assays = NULL) {
   assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
   if (is.null(names(newnames))) {
-    if (!identical(length(newnames), nrow(srt))) {
+    if (length(newnames) == nrow(srt)) {
       stop("'newnames' must be named or the length of features in the srt.")
     }
     if (length(unique(sapply(srt@assays[assays], nrow))) > 1) {
@@ -39,29 +40,48 @@ RenameFeatures <- function(
   }
   for (assay in assays) {
     message("Rename features for the assay: ", assay)
-    assay_obj <- Seurat::GetAssay(srt, assay)
-    for (d in c("meta.features", "scale.data", "counts", "data")) {
-      index <- which(
-        rownames(methods::slot(assay_obj, d)) %in% names(newnames)
-      )
-      rownames(methods::slot(assay_obj, d))[index] <- newnames[rownames(
-        methods::slot(
-          assay_obj,
-          d
+    assay_obj <- Seurat::GetAssay(srt, assay = assay)
+    if (inherits(assay_obj, "Assay")) {
+      for (d in c("meta.features", "scale.data", "counts", "data")) {
+        index <- which(
+          rownames(methods::slot(assay_obj, d)) %in% names(newnames)
         )
-      )[index]]
+        rownames(methods::slot(assay_obj, d))[index] <- newnames[rownames(
+          methods::slot(
+            assay_obj,
+            d
+          )
+        )[index]]
+      }
+      if (length(methods::slot(assay_obj, "var.features")) > 0) {
+        index <- which(
+          methods::slot(
+            assay_obj, "var.features"
+          ) %in% names(newnames)
+        )
+        methods::slot(assay_obj, "var.features")[index] <- newnames[methods::slot(
+          assay_obj,
+          "var.features"
+        )[index]]
+      }
     }
-    if (length(methods::slot(assay_obj, "var.features")) > 0) {
-      index <- which(
-        methods::slot(
-          assay_obj, "var.features"
-        ) %in% names(newnames)
+
+    if (inherits(assay_obj, "Assay5")) {
+      meta.data <- methods::slot(assay_obj, "meta.data")
+      if ("var.features" %in% names(meta.data)) {
+        index <- which(
+          meta.data$var.features %in% names(newnames)
+        )
+        meta.data$var.features[index] <- newnames[meta.data$var.features[index]]
+        methods::slot(assay_obj, "meta.data") <- meta.data
+      }
+
+      index_all <- which(
+        rownames(assay_obj) %in% names(newnames)
       )
-      methods::slot(assay_obj, "var.features")[index] <- newnames[methods::slot(
-        assay_obj,
-        "var.features"
-      )[index]]
+      rownames(assay_obj) <- newnames[rownames(assay_obj)[index_all]]
     }
+
     srt[[assay]] <- assay_obj
   }
   return(srt)

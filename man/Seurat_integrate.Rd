@@ -74,7 +74,8 @@ Seurat_integrate(
 
 \item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
 
-\item{scale_within_batch}{Whether to scale data within each batch. Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
+\item{scale_within_batch}{Whether to scale data within each batch.
+Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{The linear dimensionality reduction method to use. Options are "pca", "svd", "ica", "nmf", "mds", or "glmpca" (default is "pca").}
 
@@ -102,11 +103,14 @@ Seurat_integrate(
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{FindIntegrationAnchors_params}{A list of parameters for the Seurat::FindIntegrationAnchors function, default is an empty list.}
+\item{FindIntegrationAnchors_params}{A list of parameters for the Seurat::FindIntegrationAnchors function.
+Default is an empty list.}
 
-\item{IntegrateData_params}{A list of parameters for the Seurat::IntegrateData function, default is an empty list.}
+\item{IntegrateData_params}{A list of parameters for the Seurat::IntegrateData function.
+Default is an empty list.}
 
-\item{IntegrateEmbeddings_params}{A list of parameters for the Seurat::IntegrateEmbeddings function, default is an empty list.}
+\item{IntegrateEmbeddings_params}{A list of parameters for the Seurat::IntegrateEmbeddings function.
+Default is an empty list.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }

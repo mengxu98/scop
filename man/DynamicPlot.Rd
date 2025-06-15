@@ -130,20 +130,20 @@ CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3),
+  lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
 DynamicPlot(
   srt = pancreas_sub,
   lineages = "Lineage1",
-  features = c("Nnat", "Irx1", "G2M_score"),
+  features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_features = TRUE
 )
 DynamicPlot(
   srt = pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  features = c("Nnat", "Irx1", "G2M_score"),
+  features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_lineages = TRUE,
   compare_features = FALSE
@@ -151,7 +151,7 @@ DynamicPlot(
 DynamicPlot(
   srt = pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  features = c("Nnat", "Irx1", "G2M_score"),
+  features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_lineages = FALSE,
   compare_features = FALSE

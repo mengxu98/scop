@@ -367,7 +367,7 @@ srt_to_adata <- function(
   }
 
   X <- Matrix::t(
-    SeuratObject::GetAssayData(
+    GetAssayData5(
       srt,
       assay = assay_x,
       layer = layer_x
@@ -387,7 +387,7 @@ srt_to_adata <- function(
   for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
     if (assay %in% assay_y) {
       layer <- Matrix::t(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = layer_y[assay]

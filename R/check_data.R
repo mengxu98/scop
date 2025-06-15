@@ -18,7 +18,7 @@ check_data_type <- function(
     assay = NULL) {
   if (is.null(data)) {
     assay <- assay %||% SeuratObject::DefaultAssay(srt)
-    data <- SeuratObject::GetAssayData(
+    data <- GetAssayData5(
       srt,
       layer = layer,
       assay = assay
@@ -495,7 +495,7 @@ check_srt_list <- function(
       intersect,
       lapply(srt_list, function(srt) {
         rownames(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             layer = "counts",
             assay = SeuratObject::DefaultAssay(srt)
@@ -509,7 +509,7 @@ check_srt_list <- function(
 
   hvf_sum <- lapply(srt_list, function(srt) {
     Matrix::colSums(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         layer = "counts",
         assay = SeuratObject::DefaultAssay(srt)

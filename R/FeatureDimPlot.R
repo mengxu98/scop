@@ -2,9 +2,12 @@
 #'
 #' Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
 #'
+#' @md
 #' @param srt A Seurat object.
-#' @param features A character vector or a named list of features to plot. Features can be gene names in Assay or names of numeric columns in meta.data.
-#' @param reduction Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' @param features A character vector or a named list of features to plot.
+#' Features can be gene names in Assay or names of numeric columns in meta.data.
+#' @param reduction Which dimensionality reduction to use.
+#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
 #' @param split.by Name of a column in meta.data to split plot by.
 #' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
@@ -29,7 +32,7 @@
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.
 #' @param layer Which layer to pull expression data from? Default is \code{data}.
-#' @param assay Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \code{\link[SeuratObject]{DefaultAssay}}.
+#' @param assay Which assay to pull expression data from. If \code{NULL}, will use the assay returned by [SeuratObject::DefaultAssay].
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
 #' @param compare_features Whether to show the values of multiple features on a single plot.
@@ -53,12 +56,12 @@
 #' @param label_point_size Size of the center points.
 #' @param label_point_color Color of the center points
 #' @param label_segment_color Color of the line segment for labels.
-#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \code{\link[stats]{loess}} method.
+#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
-#' @param lineages_span The parameter α which controls the degree of smoothing in \code{\link[stats]{loess}} method.
+#' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
 #' @param lineages_palette Color palette used for lineages.
 #' @param lineages_palcolor Custom colors used for lineages.
-#' @param lineages_arrow Set arrows of the lineages. See \code{\link[grid]{arrow}}.
+#' @param lineages_arrow Set arrows of the lineages. See [grid::arrow].
 #' @param lineages_linewidth Width of fitted curve lines for lineages.
 #' @param lineages_line_bg Background color of curve lines for lineages.
 #' @param lineages_line_bg_stroke Border width of curve lines background.
@@ -76,7 +79,7 @@
 #' @param hex.linewidth Border width of hexagonal bins.
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
 #' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).
-#' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.
+#' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.
 #' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
@@ -122,12 +125,6 @@
 #' )
 #'
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = c("StandardPC_1", "StandardPC_2"),
-#'   reduction = "UMAP",
-#'   bg_cutoff = -Inf
-#' )
 #'
 #' # Label and highlight cell points
 #' FeatureDimPlot(
@@ -135,7 +132,9 @@
 #'   features = "Rbp4",
 #'   reduction = "UMAP",
 #'   label = TRUE,
-#'   cells.highlight = colnames(pancreas_sub)[pancreas_sub$SubCellType == "Delta"]
+#'   cells.highlight = colnames(
+#'     pancreas_sub
+#'   )[pancreas_sub$SubCellType == "Delta"]
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
@@ -149,8 +148,10 @@
 #' # Add a density layer
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "Rbp4", reduction = "UMAP",
-#'   label = TRUE, add_density = TRUE
+#'   features = "Rbp4",
+#'   reduction = "UMAP",
+#'   label = TRUE,
+#'   add_density = TRUE
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
@@ -184,22 +185,22 @@
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "Lineage3",
+#'   features = "Lineage2",
 #'   reduction = "UMAP",
-#'   lineages = "Lineage3"
+#'   lineages = "Lineage2"
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "Lineage3",
+#'   features = "Lineage2",
 #'   reduction = "UMAP",
-#'   lineages = "Lineage3",
+#'   lineages = "Lineage2",
 #'   lineages_whiskers = TRUE
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "Lineage3",
+#'   features = "Lineage2",
 #'   reduction = "UMAP",
-#'   lineages = "Lineage3",
+#'   lineages = "Lineage2",
 #'   lineages_span = 0.1
 #' )
 #'
@@ -209,7 +210,10 @@
 #'   "EPs" = c("Neurog3", "Hes6"),
 #'   "Pre-endocrine" = c("Fev", "Neurod1"),
 #'   "Endocrine" = c("Rbp4", "Pyy"),
-#'   "Beta" = "Ins1", "Alpha" = "Gcg", "Delta" = "Sst", "Epsilon" = "Ghrl"
+#'   "Beta" = "Ins1",
+#'   "Alpha" = "Gcg",
+#'   "Delta" = "Sst",
+#'   "Epsilon" = "Ghrl"
 #' )
 #' FeatureDimPlot(
 #'   pancreas_sub,
@@ -516,7 +520,7 @@ FeatureDimPlot <- function(
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = layer
@@ -527,7 +531,7 @@ FeatureDimPlot <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -547,7 +551,7 @@ FeatureDimPlot <- function(
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
         Matrix::as.matrix(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -557,7 +561,7 @@ FeatureDimPlot <- function(
     } else {
       dat_gene <- Matrix::t(
         Matrix::as.matrix(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -1751,11 +1755,6 @@ FeatureDimPlot <- function(
 #'   features = c("Ghrl", "Ins1", "Gcg", "Ins2"),
 #'   reduction = "StandardpcaUMAP3D"
 #' )
-#' FeatureDimPlot3D(
-#'   pancreas_sub,
-#'   features = c("StandardPC_1", "StandardPC_2"),
-#'   reduction = "StandardpcaUMAP3D"
-#' )
 FeatureDimPlot3D <- function(
     srt,
     features,
@@ -1891,7 +1890,7 @@ FeatureDimPlot3D <- function(
     message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
-        SeuratObject::GetAssayData(
+        GetAssayData5(
           srt,
           assay = assay,
           layer = layer
@@ -1902,7 +1901,7 @@ FeatureDimPlot3D <- function(
     } else if (status == "log_normalized_counts") {
       srt@meta.data[["CoExp"]] <- apply(
         expm1(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -1922,7 +1921,7 @@ FeatureDimPlot3D <- function(
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
         Matrix::as.matrix(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer
@@ -1932,7 +1931,7 @@ FeatureDimPlot3D <- function(
     } else {
       dat_gene <- Matrix::t(
         Matrix::as.matrix(
-          SeuratObject::GetAssayData(
+          GetAssayData5(
             srt,
             assay = assay,
             layer = layer

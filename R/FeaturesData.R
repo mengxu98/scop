@@ -1,5 +1,6 @@
 #' @title GetFeaturesData
-#' @description Get the data from the Seurat object
+#' @description Get the data from the \pkg{Seurat} object
+#'
 #' @param object A object
 #' @param ... Additional arguments passed to the method
 #' @return data
@@ -43,7 +44,20 @@ GetFeaturesData.Assay <- function(
 GetFeaturesData.Assay5 <- function(
     object,
     ...) {
-  return(object@features@.Data)
+  misc <- object@misc
+  meta.features <- data.frame(
+    row.names = rownames(object)
+  ) |> as.data.frame()
+
+  if (is.null(misc)) {
+    return(meta.features)
+  } else {
+    if ("meta.features" %in% names(misc)) {
+      return(as.data.frame(misc[["meta.features"]]))
+    } else {
+      return(meta.features)
+    }
+  }
 }
 
 #' @title AddFeaturesData
@@ -89,6 +103,10 @@ AddFeaturesData.Assay <- function(object, features, ...) {
 #' @method AddFeaturesData Assay5
 #' @export
 AddFeaturesData.Assay5 <- function(object, features, ...) {
-  object@features@.Data <- features
+  # SeuratObject::Misc(
+  #   object = object,
+  #   slot = "meta.features"
+  # ) <- features
+  object@misc$meta.features <- features
   return(object)
 }

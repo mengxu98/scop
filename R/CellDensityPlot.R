@@ -156,7 +156,7 @@ CellDensityPlot <- function(
 
   if (length(features_gene) > 0) {
     dat_gene <- Matrix::t(
-      SeuratObject::GetAssayData(
+      GetAssayData5(
         srt,
         assay = assay,
         layer = layer

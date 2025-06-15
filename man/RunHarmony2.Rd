@@ -45,21 +45,19 @@ RunHarmony2(object, ...)
 This is a modified version of harmony::RunHarmony specifically designed for compatibility with RunSymphonyMap.
 }
 \examples{
-panc8_sub <- standard_scop(panc8_sub)
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
-  reduction = "Standardpca"
+  reduction = "pca"
 )
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
-  reduction = "Standardpca"
+  reduction = "pca"
 )
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
   reduction = "Harmony"
 )
-
 }

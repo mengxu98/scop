@@ -37,9 +37,7 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' pancreas_sub <- standard_scop(
-#'   srt = pancreas_sub
-#' )
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType"
@@ -204,7 +202,7 @@ standard_scop <- function(
       (is.null(do_scaling) &&
         any(
           !HVF %in%
-            rownames(SeuratObject::GetAssayData(
+            rownames(GetAssayData5(
               srt,
               layer = "scale.data",
               assay = assay

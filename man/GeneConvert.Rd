@@ -65,7 +65,11 @@ str(res)
 # Convert the human genes to mouse homologs,
 # and replace the raw counts in a Seurat object.
 data("pancreas_sub")
-counts <- pancreas_sub@assays$RNA@counts
+counts <- GetAssayData5(
+  pancreas_sub,
+  assay = "RNA",
+  layer = "counts"
+)
 res <- GeneConvert(
   geneID = rownames(counts),
   geneID_from_IDtype = "symbol",

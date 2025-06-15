@@ -92,9 +92,11 @@ FeatureDimPlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A character vector or a named list of features to plot. Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{A character vector or a named list of features to plot.
+Features can be gene names in Assay or names of numeric columns in meta.data.}
 
-\item{reduction}{Which dimensionality reduction to use. If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.}
 
@@ -104,7 +106,7 @@ FeatureDimPlot(
 
 \item{layer}{Which layer to pull expression data from? Default is \code{data}.}
 
-\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \code{\link[SeuratObject]{DefaultAssay}}.}
+\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 
@@ -122,9 +124,9 @@ FeatureDimPlot(
 
 \item{keep_scale}{How to handle the color scale across multiple plots. Options are:
 \itemize{
-  \item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
-  \item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
-  \item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
+\item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
+\item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
+\item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 }}
 
 \item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Vector of minimum and maximum cutoff values or quantile values for each feature.}
@@ -177,17 +179,17 @@ FeatureDimPlot(
 
 \item{label_segment_color}{Color of the line segment for labels.}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \code{\link[stats]{loess}} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
 
-\item{lineages_span}{The parameter α which controls the degree of smoothing in \code{\link[stats]{loess}} method.}
+\item{lineages_span}{The parameter α which controls the degree of smoothing in \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_palette}{Color palette used for lineages.}
 
 \item{lineages_palcolor}{Custom colors used for lineages.}
 
-\item{lineages_arrow}{Set arrows of the lineages. See \code{\link[grid]{arrow}}.}
+\item{lineages_arrow}{Set arrows of the lineages. See \link[grid:arrow]{grid::arrow}.}
 
 \item{lineages_linewidth}{Width of fitted curve lines for lineages.}
 
@@ -237,7 +239,7 @@ FeatureDimPlot(
 
 \item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \link[ggplot2:ggtheme]{ggplot2::theme_classic}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
 
@@ -287,12 +289,6 @@ FeatureDimPlot(
 )
 
 pancreas_sub <- standard_scop(pancreas_sub)
-FeatureDimPlot(
-  pancreas_sub,
-  features = c("StandardPC_1", "StandardPC_2"),
-  reduction = "UMAP",
-  bg_cutoff = -Inf
-)
 
 # Label and highlight cell points
 FeatureDimPlot(
@@ -300,7 +296,9 @@ FeatureDimPlot(
   features = "Rbp4",
   reduction = "UMAP",
   label = TRUE,
-  cells.highlight = colnames(pancreas_sub)[pancreas_sub$SubCellType == "Delta"]
+  cells.highlight = colnames(
+    pancreas_sub
+  )[pancreas_sub$SubCellType == "Delta"]
 )
 FeatureDimPlot(
   pancreas_sub,
@@ -314,8 +312,10 @@ FeatureDimPlot(
 # Add a density layer
 FeatureDimPlot(
   pancreas_sub,
-  features = "Rbp4", reduction = "UMAP",
-  label = TRUE, add_density = TRUE
+  features = "Rbp4",
+  reduction = "UMAP",
+  label = TRUE,
+  add_density = TRUE
 )
 FeatureDimPlot(
   pancreas_sub,
@@ -349,22 +349,22 @@ pancreas_sub <- RunSlingshot(
 )
 FeatureDimPlot(
   pancreas_sub,
-  features = "Lineage3",
+  features = "Lineage2",
   reduction = "UMAP",
-  lineages = "Lineage3"
+  lineages = "Lineage2"
 )
 FeatureDimPlot(
   pancreas_sub,
-  features = "Lineage3",
+  features = "Lineage2",
   reduction = "UMAP",
-  lineages = "Lineage3",
+  lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
 FeatureDimPlot(
   pancreas_sub,
-  features = "Lineage3",
+  features = "Lineage2",
   reduction = "UMAP",
-  lineages = "Lineage3",
+  lineages = "Lineage2",
   lineages_span = 0.1
 )
 
@@ -374,7 +374,10 @@ markers <- list(
   "EPs" = c("Neurog3", "Hes6"),
   "Pre-endocrine" = c("Fev", "Neurod1"),
   "Endocrine" = c("Rbp4", "Pyy"),
-  "Beta" = "Ins1", "Alpha" = "Gcg", "Delta" = "Sst", "Epsilon" = "Ghrl"
+  "Beta" = "Ins1",
+  "Alpha" = "Gcg",
+  "Delta" = "Sst",
+  "Epsilon" = "Ghrl"
 )
 FeatureDimPlot(
   pancreas_sub,

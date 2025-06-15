@@ -26,7 +26,7 @@ GetFeaturesData(object, ...)
 data
 }
 \description{
-Get the data from the Seurat object
+Get the data from the \pkg{Seurat} object
 }
 \examples{
 data("pancreas_sub")
