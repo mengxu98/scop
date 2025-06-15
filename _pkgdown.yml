@@ -184,19 +184,20 @@ reference:
   - compute_velocity_on_grid
   - download
   - drop_data
-  - srt_to_adata
-  - srt_append
-  - srt_reorder
-  - RenameClusters
-  - RenameFeatures
-  - GeneConvert
-  - unnest
   - get_vars
-  - try_get
-  - slim_data
+  - GeneConvert
+  - GetAssayData5
   - invoke_fun
   - make_long
+  - RenameClusters
+  - RenameFeatures
   - segements_df
+  - slim_data
+  - srt_append
+  - srt_to_adata
+  - srt_reorder
+  - try_get
+  - unnest
 
 - subtitle: "Database Operations"
 - contents:
