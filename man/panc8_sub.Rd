@@ -7,78 +7,76 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076} 
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} 
-\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/} 
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi} 
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
+\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
 }
 \description{
 Human pancreatic islet cell datasets produced across four technologies,
-CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469), 
+CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469),
 and SMART-Seq2 (E-MTAB-5061) from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
 For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  data("pancreas_sub")
-  if (!require("SeuratData", quietly = TRUE)) {
-    pak::pak("satijalab/seurat-data")
-  }
-  library(SeuratData)
-  library(Seurat)
-  suppressWarnings(InstallData("panc8"))
-  data("panc8")
-  panc8 <- Seurat::UpdateSeuratObject(panc8)
-  set.seed(11)
-  cells_sub <- unlist(
-    lapply(
-      split(colnames(panc8), panc8$dataset),
-      function(x) sample(x, size = 200)
+    data("pancreas_sub")
+    if (!require("SeuratData", quietly = TRUE)) {
+        pak::pak("satijalab/seurat-data")
+    }
+    library(SeuratData)
+    library(Seurat)
+    suppressWarnings(InstallData("panc8"))
+    data("panc8")
+    panc8 <- Seurat::UpdateSeuratObject(panc8)
+    set.seed(11)
+    cells_sub <- unlist(
+        lapply(
+            split(colnames(panc8), panc8$dataset),
+            function(x) sample(x, size = 200)
+        )
     )
-  )
-  panc8_sub <- subset(panc8, cells = cells_sub)
-  panc8_sub <- Seurat::CreateSeuratObject(
-    counts = SeuratObject::GetAssayData(
-      panc8_sub,
-      slot = "counts"
-    ),
-    meta.data = panc8_sub@meta.data
-  )
-  panc8_sub <- panc8_sub[Matrix::rowSums(
-    SeuratObject::GetAssayData(
-      panc8_sub,
-      slot = "counts"
+    panc8_sub <- subset(panc8, cells = cells_sub)
+    counts <- GetAssayData5(
+        panc8_sub,
+        slot = "counts"
     )
-  ) > 0, ]
-  panc8_sub <- panc8_sub[toupper(
-    rownames(panc8_sub)
-  ) \%in\% toupper(
-    rownames(pancreas_sub)
-  ), ]
-  panc8_sub <- Seurat::NormalizeData(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::FindVariableFeatures(
-    panc8_sub,
-    verbose = FALSE
-  )
-  panc8_sub <- Seurat::ScaleData(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::RunPCA(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::RunUMAP(
-    panc8_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  panc8_sub <- Seurat::RunTSNE(
-    panc8_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  usethis::use_data(
-    panc8_sub,
-    compress = "xz",
-    overwrite = TRUE
-  )
+    panc8_sub <- Seurat::CreateSeuratObject(
+        counts = counts,
+        meta.data = panc8_sub@meta.data
+    )
+    panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
+    panc8_sub <- panc8_sub[toupper(
+        rownames(panc8_sub)
+    ) \%in\% toupper(
+        rownames(pancreas_sub)
+    ), ]
+    panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
+    panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
+    panc8_sub <- Seurat::NormalizeData(panc8_sub, verbose = FALSE)
+    panc8_sub <- Seurat::FindVariableFeatures(
+        panc8_sub,
+        verbose = FALSE
+    )
+    panc8_sub <- Seurat::ScaleData(panc8_sub, verbose = FALSE)
+    panc8_sub <- Seurat::RunPCA(panc8_sub, verbose = FALSE)
+    panc8_sub <- Seurat::RunUMAP(
+        panc8_sub,
+        dims = 1:30,
+        verbose = FALSE
+    )
+    panc8_sub <- Seurat::RunTSNE(
+        panc8_sub,
+        dims = 1:30,
+        verbose = FALSE
+    )
+    usethis::use_data(
+        panc8_sub,
+        compress = "xz",
+        overwrite = TRUE
+    )
 }
 }
 }

@@ -7,7 +7,7 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/} 
+\url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}
 \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
 }
 \description{
@@ -17,61 +17,68 @@ A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
 \examples{
 \dontrun{
 if (interactive()) {
-  library(Seurat)
-  library(reticulate)
-  check_python("scvelo")
-  scv <- import("scvelo")
-  adata <- scv$datasets$pancreas()
-  pancreas <- adata_to_srt(adata)
-  set.seed(11)
-  features <- sample(rownames(pancreas), size = 5000)
-  cells <- sample(colnames(pancreas), size = 1000)
-  pancreas_sub <- pancreas[features, cells]
-  pancreas_sub <- pancreas_sub[Matrix::rowSums(
-    SeuratObject::GetAssayData(
-      pancreas_sub,
-      slot = "counts"
+    library(Seurat)
+    library(reticulate)
+    check_python("scvelo")
+    scv <- import("scvelo")
+    adata <- scv$datasets$pancreas()
+    pancreas <- adata_to_srt(adata)
+    set.seed(11)
+    cells <- sample(colnames(pancreas), size = 1000)
+    pancreas_sub <- pancreas[, cells]
+    pancreas_sub <- pancreas_sub[Matrix::rowSums(
+        GetAssayData5(
+            pancreas_sub,
+            slot = "counts"
+        )
+    ) > 0, ]
+    pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
+    pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
+    pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
+    pancreas_sub[["Phase"]] <- ifelse(
+        pancreas_sub$S_score > pancreas_sub$G2M_score,
+        "S",
+        "G2M"
     )
-  ) > 0, ]
-  pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
-  pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
-  pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
-  pancreas_sub[["Phase"]] <- ifelse(
-    pancreas_sub$S_score > pancreas_sub$G2M_score,
-    "S",
-    "G2M"
-  )
-  pancreas_sub[["Phase"]][apply(
-    pancreas_sub[[]][, c("S_score", "G2M_score")],
-    1,
-    max
-  ) < 0, ] <- "G1"
-  pancreas_sub[["Phase", drop = TRUE]] <- factor(
-    pancreas_sub[["Phase", drop = TRUE]],
-    levels = c("G1", "S", "G2M")
-  )
-  pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::FindVariableFeatures(
-    pancreas_sub,
-    verbose = FALSE
-  )
-  pancreas_sub <- Seurat::ScaleData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::RunPCA(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::RunUMAP(
-    pancreas_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  pancreas_sub <- Seurat::RunTSNE(
-    pancreas_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  usethis::use_data(
-    pancreas_sub,
-    compress = "xz",
-    overwrite = TRUE
-  )
+    pancreas_sub[["Phase"]][apply(
+        pancreas_sub[[]][, c("S_score", "G2M_score")],
+        1,
+        max
+    ) < 0, ] <- "G1"
+    pancreas_sub[["Phase", drop = TRUE]] <- factor(
+        pancreas_sub[["Phase", drop = TRUE]],
+        levels = c("G1", "S", "G2M")
+    )
+    pancreas_sub$CellType <- gsub("_", "-", pancreas_sub$CellType)
+    pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
+    pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
+    pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
+    pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
+    pancreas_sub <- Seurat::FindVariableFeatures(
+        pancreas_sub,
+        verbose = FALSE
+    )
+    pancreas_sub <- Seurat::ScaleData(pancreas_sub, verbose = FALSE)
+    pancreas_sub <- Seurat::RunPCA(pancreas_sub, verbose = FALSE)
+    pancreas_sub <- Seurat::RunUMAP(
+        pancreas_sub,
+        dims = 1:30,
+        verbose = FALSE
+    )
+    pancreas_sub <- Seurat::RunTSNE(
+        pancreas_sub,
+        dims = 1:30,
+        verbose = FALSE
+    )
+    pancreas_sub <- RunDEtest(
+        pancreas_sub,
+        group_by = "CellType"
+    )
+    usethis::use_data(
+        pancreas_sub,
+        compress = "xz",
+        overwrite = TRUE
+    )
 }
 }
 }

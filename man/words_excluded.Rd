@@ -10,18 +10,18 @@ These mainly include words that are excessively redundant or of little value.
 \examples{
 \dontrun{
 if (interactive()) {
-  words_excluded <- c(
-    "the", "is", "and", "or", "a",
-    "in", "on", "under", "between", "of",
-    "through", "via", "along", "that",
-    "for", "with", "within", "without",
-    "cell", "cellular", "dna", "rna",
-    "protein", "peptide", "amino", "acid",
-    "development", "involved", "organization", "system",
-    "regulation", "regulated", "positive", "negative",
-    "response", "process", "processing", "small", "large", "change"
-  )
-  # usethis::use_data(words_excluded)
+    words_excluded <- c(
+        "the", "is", "and", "or", "a",
+        "in", "on", "under", "between", "of",
+        "through", "via", "along", "that",
+        "for", "with", "within", "without",
+        "cell", "cellular", "dna", "rna",
+        "protein", "peptide", "amino", "acid",
+        "development", "involved", "organization", "system",
+        "regulation", "regulated", "positive", "negative",
+        "response", "process", "processing", "small", "large", "change"
+    )
+    # usethis::use_data(words_excluded)
 }
 }
 }
