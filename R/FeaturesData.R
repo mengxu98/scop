@@ -69,7 +69,10 @@ GetFeaturesData.Assay5 <- function(
 #' @return data
 #' @export
 AddFeaturesData <- function(object, ...) {
-  UseMethod(generic = "AddFeaturesData", object = object)
+  UseMethod(
+    generic = "AddFeaturesData",
+    object = object
+  )
 }
 
 #' @rdname AddFeaturesData
@@ -79,7 +82,11 @@ AddFeaturesData <- function(object, ...) {
 #' data("pancreas_sub")
 #' features <- GetFeaturesData(pancreas_sub)
 #' pancreas_sub <- AddFeaturesData(pancreas_sub, features)
-AddFeaturesData.Seurat <- function(object, features, assay = NULL, ...) {
+AddFeaturesData.Seurat <- function(
+    object,
+    features,
+    assay = NULL,
+    ...) {
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   assay_obj <- Seurat::GetAssay(
     object,
@@ -94,7 +101,10 @@ AddFeaturesData.Seurat <- function(object, features, assay = NULL, ...) {
 #' @rdname AddFeaturesData
 #' @method AddFeaturesData Assay
 #' @export
-AddFeaturesData.Assay <- function(object, features, ...) {
+AddFeaturesData.Assay <- function(
+    object,
+    features,
+    ...) {
   object@meta.features <- features
   return(object)
 }
@@ -102,11 +112,10 @@ AddFeaturesData.Assay <- function(object, features, ...) {
 #' @rdname AddFeaturesData
 #' @method AddFeaturesData Assay5
 #' @export
-AddFeaturesData.Assay5 <- function(object, features, ...) {
-  # SeuratObject::Misc(
-  #   object = object,
-  #   slot = "meta.features"
-  # ) <- features
+AddFeaturesData.Assay5 <- function(
+    object,
+    features,
+    ...) {
   object@misc$meta.features <- features
   return(object)
 }

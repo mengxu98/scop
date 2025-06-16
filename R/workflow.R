@@ -30,7 +30,7 @@
 #'   assay = "RNA",
 #'   layer = "data"
 #' )
-#' new_pancreas_sub <- SetAssayData(
+#' new_pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
 #'   layer = "counts",
 #'   new.data = data,

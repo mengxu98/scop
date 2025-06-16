@@ -2,21 +2,45 @@
 % Please edit documentation in R/GetAssayData5.R
 \name{GetAssayData5}
 \alias{GetAssayData5}
+\alias{GetAssayData5.Seurat}
+\alias{GetAssayData5.Assay5}
+\alias{GetAssayData5.Assay}
 \title{GetAssayData5}
 \usage{
-GetAssayData5(object, layer = "counts", assay = NULL, verbose = TRUE, ...)
+GetAssayData5(object, ...)
+
+\method{GetAssayData5}{Seurat}(
+  object,
+  layer = "counts",
+  assay = NULL,
+  join.layers = TRUE,
+  verbose = TRUE,
+  ...
+)
+
+\method{GetAssayData5}{Assay5}(
+  object,
+  layer = "counts",
+  join.layers = TRUE,
+  verbose = TRUE,
+  ...
+)
+
+\method{GetAssayData5}{Assay}(object, layer = "counts", assay = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{An object}
+
+\item{...}{Additional arguments passed to \link[SeuratObject:AssayData]{SeuratObject::GetAssayData}.}
 
 \item{layer}{Name of layer to get or set}
 
 \item{assay}{Specific assay to get data from or set data for;
 defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 
-\item{verbose}{Logical, whether to print messages.}
+\item{join.layers}{Logical, whether to join layers if the object is an Assay5 object.}
 
-\item{...}{Additional arguments passed to \link[SeuratObject:AssayData]{SeuratObject::GetAssayData}.}
+\item{verbose}{Logical, whether to print messages.}
 }
 \value{
 A matrix or data frame containing the assay data.
