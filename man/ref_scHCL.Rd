@@ -23,19 +23,19 @@ Reference datasets for cell type annotation in single-cell RNA data
 \examples{
 \dontrun{
 if (interactive()) {
-    check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
-    ref_scHCL <- Seurat::NormalizeData(scHCL::ref.expr)
-    ref_scMCA <- Seurat::NormalizeData(scMCA::ref.expr)
-    ref_scZCL <- Seurat::NormalizeData(scZCL::ref.expr)
-    Encoding(colnames(ref_scHCL)) <- "latin1"
-    colnames(ref_scHCL) <- iconv(colnames(ref_scHCL), "latin1", "UTF-8")
-    Encoding(colnames(ref_scMCA)) <- "latin1"
-    colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-    Encoding(colnames(ref_scZCL)) <- "latin1"
-    colnames(ref_scZCL) <- iconv(colnames(ref_scZCL), "latin1", "UTF-8")
-    # usethis::use_data(ref_scHCL, compress = "xz")
-    # usethis::use_data(ref_scMCA, compress = "xz")
-    # usethis::use_data(ref_scZCL, compress = "xz")
+  check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
+  ref_scHCL <- Seurat::NormalizeData(scHCL::ref.expr)
+  ref_scMCA <- Seurat::NormalizeData(scMCA::ref.expr)
+  ref_scZCL <- Seurat::NormalizeData(scZCL::ref.expr)
+  Encoding(colnames(ref_scHCL)) <- "latin1"
+  colnames(ref_scHCL) <- iconv(colnames(ref_scHCL), "latin1", "UTF-8")
+  Encoding(colnames(ref_scMCA)) <- "latin1"
+  colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
+  Encoding(colnames(ref_scZCL)) <- "latin1"
+  colnames(ref_scZCL) <- iconv(colnames(ref_scZCL), "latin1", "UTF-8")
+  # usethis::use_data(ref_scHCL, compress = "xz")
+  # usethis::use_data(ref_scMCA, compress = "xz")
+  # usethis::use_data(ref_scZCL, compress = "xz")
 }
 }
 }

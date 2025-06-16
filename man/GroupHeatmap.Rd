@@ -503,10 +503,10 @@ panel_fix(
   dpi = 50
 )
 
-pancreas_sub <- RunDEtest(
-  pancreas_sub,
-  group_by = "CellType"
-)
+# pancreas_sub <- RunDEtest(
+#  pancreas_sub,
+#   group_by = "CellType"
+# )
 de_filter <- filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1

@@ -56,8 +56,6 @@
 #' p1
 #'
 #' panel_fix_overall(p1, height = 6)
-#' # As the plot is created by combining,
-#' # we can adjust the overall height and width directly.
 #'
 #' GSEAPlot(
 #'   pancreas_sub,
@@ -72,7 +70,7 @@
 #'   group_by = "CellType",
 #'   topTerm = 3,
 #'   plot_type = "comparison",
-#'   direction = "neg"
+#'   direction = "pos"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
