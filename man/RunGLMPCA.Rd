@@ -4,6 +4,7 @@
 \alias{RunGLMPCA}
 \alias{RunGLMPCA.Seurat}
 \alias{RunGLMPCA.Assay}
+\alias{RunGLMPCA.Assay5}
 \alias{RunGLMPCA.default}
 \title{Run GLMPCA (generalized version of principal components analysis)}
 \usage{
@@ -27,6 +28,22 @@ RunGLMPCA(object, ...)
 )
 
 \method{RunGLMPCA}{Assay}(
+  object,
+  assay = NULL,
+  layer = "counts",
+  features = NULL,
+  L = 5,
+  fam = c("poi", "nb", "nb2", "binom", "mult", "bern"),
+  rev.gmlpca = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
+  reduction.key = "GLMPC_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+)
+
+\method{RunGLMPCA}{Assay5}(
   object,
   assay = NULL,
   layer = "counts",
@@ -109,5 +126,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "glmpca"
 )
-
 }
