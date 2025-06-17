@@ -145,6 +145,7 @@
 #'   features = "KNNPredict_simil"
 #' )
 #'
+#' \dontrun{
 #' # Annotate with DE gene instead of HVF
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
@@ -180,6 +181,7 @@
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
 #' )
+#' }
 RunKNNPredict <- function(
     srt_query,
     srt_ref = NULL,

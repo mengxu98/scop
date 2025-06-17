@@ -114,7 +114,7 @@ Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
 \item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-By default, it is set to 1.5}
+Default is 1.5.}
 
 \item{base}{The base with respect to which logarithms are computed.}
 
