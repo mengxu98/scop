@@ -8,7 +8,6 @@ FoldChange.default <- function(
     features = NULL,
     ...) {
   features <- features %||% rownames(x = object)
-  # Calculate percent expressed
   thresh.min <- 0
   pct.1 <- round(
     x = Matrix::rowSums(
@@ -26,7 +25,6 @@ FoldChange.default <- function(
       length(x = cells.2),
     digits = 3
   )
-  # Calculate fold change
   data.1 <- mean.fxn(object[features, cells.1, drop = FALSE])
   data.2 <- mean.fxn(object[features, cells.2, drop = FALSE])
   fc <- (data.1 - data.2)
@@ -199,7 +197,7 @@ WilcoxDETest <- function(
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-#' By default, it is set to 1.5
+#' Default is 1.5.
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
@@ -459,8 +457,8 @@ RunDEtest <- function(
       )
     }
   }
-  bpprogressbar(BPPARAM) <- verbose
-  bpRNGseed(BPPARAM) <- seed
+  BiocParallel::bpprogressbar(BPPARAM) <- FALSE
+  BiocParallel::bpRNGseed(BPPARAM) <- seed
 
   time_start <- Sys.time()
   if (verbose) {
@@ -630,7 +628,7 @@ RunDEtest <- function(
         colnames(srt_tmp),
         cells1
       )] <- NA
-      bpprogressbar(BPPARAM) <- verbose
+      bpprogressbar(BPPARAM) <- FALSE
       srt_tmp <- RunDEtest(
         srt = srt_tmp,
         assay = assay,
@@ -733,7 +731,7 @@ RunDEtest <- function(
       )
     }
     if (markers_type == "all") {
-      AllMarkers <- bplapply(
+      AllMarkers <- BiocParallel::bplapply(
         levels(cell_group),
         FUN = function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
@@ -797,7 +795,7 @@ RunDEtest <- function(
     if (markers_type == "paired") {
       pair <- expand.grid(x = levels(cell_group), y = levels(cell_group))
       pair <- pair[pair[, 1] != pair[, 2], , drop = FALSE]
-      PairedMarkers <- bplapply(
+      PairedMarkers <- BiocParallel::bplapply(
         seq_len(nrow(pair)),
         function(i) {
           cells.1 <- names(cell_group)[which(cell_group == pair[i, 1])]
@@ -870,12 +868,11 @@ RunDEtest <- function(
     }
 
     if (markers_type == "conserved") {
-      ConservedMarkers <- bplapply(
+      ConservedMarkers <- BiocParallel::bplapply(
         levels(cell_group),
         FUN = function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
           cells.2 <- names(cell_group)[which(cell_group != group)]
-          # print(paste0(group," cells.1:",length(cells.1)," cells.2:",length(cells.2)))
           if (length(cells.1) < 3 || length(cells.2) < 3) {
             return(NULL)
           } else {
@@ -974,9 +971,9 @@ RunDEtest <- function(
     }
 
     if (markers_type == "disturbed") {
-      sub_BPPARAM <- SerialParam()
-      bpprogressbar(sub_BPPARAM) <- FALSE
-      DisturbedMarkers <- bplapply(
+      sub_BPPARAM <- BiocParallel::SerialParam()
+      BiocParallel::bpprogressbar(sub_BPPARAM) <- FALSE
+      DisturbedMarkers <- BiocParallel::bplapply(
         levels(cell_group),
         FUN = function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
