@@ -32,6 +32,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/FindExpressedMarkers.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GSEAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GeneConvert.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GetAssayData5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GraphPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
@@ -122,7 +123,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/installed_Python_pkgs.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/invoke_fun.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/isOutlier.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/is_outlier.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/lifemap_cell.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/make_long.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/palette_list.html</loc></url>
@@ -136,7 +137,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop-package.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop_logo.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/segementsDf.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/segements_df.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/show_palettes.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/slim_data.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/srt_append.html</loc></url>
