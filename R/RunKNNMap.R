@@ -72,12 +72,18 @@ RunKNNMap <- function(
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        stop("ref_group must be one of the column names in the meta.data")
+        log_message(
+          "ref_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
       }
     } else {
-      stop("Length of ref_group must be one or length of srt_ref.")
+      log_message(
+        "Length of ref_group must be one or length of srt_ref.",
+        message_type = "error"
+      )
     }
     ref_group <- "ref_group"
   }
@@ -90,9 +96,12 @@ RunKNNMap <- function(
       )]
     )[1]
     if (length(ref_umap) == 0) {
-      stop("Cannot find UMAP reduction in the srt_ref")
+      log_message(
+        "Cannot find UMAP reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -100,15 +109,16 @@ RunKNNMap <- function(
     projection_method == "model" &&
       !"model" %in% names(srt_ref[[ref_umap]]@misc)
   ) {
-    message("No UMAP model detected. Set the projection_method to 'knn'")
+    log_message("No UMAP model detected. Set the projection_method to 'knn'")
     projection_method <- "knn"
   }
   if (
     projection_method == "model" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      message_type = "error"
     )
   }
   simil_method <- c(
@@ -135,25 +145,28 @@ RunKNNMap <- function(
     "hamming"
   )
   if (!distance_metric %in% c(simil_method, dist_method)) {
-    stop(distance_metric, " method is invalid.")
+    log_message(
+      paste0(distance_metric, " method is invalid."),
+      message_type = "error"
+    )
   }
   if (projection_method == "model") {
     model <- srt_ref[[ref_umap]]@misc$model
     if ("layout" %in% names(model)) {
       if (k != model$config$n_neighbors) {
         k <- model$config$n_neighbors
-        message("Set k to ", k, " which is used in the umap model")
+        log_message("Set k to ", k, " which is used in the umap model")
       }
     } else if ("embedding" %in% names(model)) {
       if (k != model$n_neighbors) {
         k <- model$n_neighbors
-        message("Set k to ", k, " which is used in the umap model")
+        log_message("Set k to ", k, " which is used in the umap model")
       }
     }
   }
 
   if (!is.null(query_reduction) && !is.null(ref_reduction)) {
-    message("Use the reduction to calculate distance metric.")
+    log_message("Use the reduction to calculate distance metric.")
     if (
       !is.null(query_dims) &&
         !is.null(ref_dims) &&
@@ -162,25 +175,28 @@ RunKNNMap <- function(
       query <- Seurat::Embeddings(srt_query, reduction = query_reduction)[, query_dims]
       ref <- Seurat::Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims]
     } else {
-      stop("query_dims and ref_dims must be provided with the same length.")
+      log_message(
+        "query_dims and ref_dims must be provided with the same length.",
+        message_type = "error"
+      )
     }
   } else {
-    message("Use the features to calculate distance metric.")
+    log_message("Use the features to calculate distance metric.")
     status_query <- check_data_type(
       data = GetAssayData5(srt_query, layer = "data", assay = query_assay)
     )
-    message("Detected srt_query data type: ", status_query)
+    log_message("Detected srt_query data type: ", status_query)
     status_ref <- check_data_type(
       data = GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
     )
-    message("Detected srt_ref data type: ", status_ref)
+    log_message("Detected srt_ref data type: ", status_ref)
     if (
       status_ref != status_query ||
         any(status_query == "unknown", status_ref == "unknown")
     ) {
-      warning(
+      log_message(
         "Data type is unknown or different between srt_query and srt_ref.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     if (length(features) == 0) {
@@ -211,7 +227,7 @@ RunKNNMap <- function(
         rownames(srt_ref[[ref_assay]])
       )
     )
-    message("Use ", length(features_common), " features to calculate distance.")
+    log_message("Use ", length(features_common), " features to calculate distance.")
     query <- Matrix::t(
       GetAssayData5(
         srt_query,
@@ -253,16 +269,20 @@ RunKNNMap <- function(
       nn_method <- "raw"
     }
   }
-  message("Use '", nn_method, "' method to find neighbors.")
+  log_message("Use '", nn_method, "' method to find neighbors.")
   if (!nn_method %in% c("raw", "annoy", "rann")) {
-    stop("nn_method must be one of raw, rann and annoy")
+    log_message(
+      "nn_method must be one of raw, rann and annoy",
+      message_type = "error"
+    )
   }
   if (
     nn_method == "annoy" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'",
+      message_type = "error"
     )
   }
 
@@ -389,7 +409,7 @@ RunKNNMap <- function(
   }
 
   if (!is.null(ref_group)) {
-    message("Predicting cell types based on ref_group.") ## slow
+    log_message("Predicting cell types based on ref_group.") ## slow
     level <- as.character(unique(srt_ref[["ref_group", drop = TRUE]]))
     if (k == 1) {
       match_best <- srt_ref[["ref_group", drop = TRUE]][match_k_cell[, 1]]

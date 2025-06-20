@@ -3,26 +3,39 @@
 #' Annotate features in a Seurat object with additional metadata from databases or a GTF file.
 #'
 #' @param srt Seurat object to be annotated.
-#' @param species Name of the species to be used for annotation. Default is "Homo_sapiens".
-#' @param IDtype Type of identifier to use for annotation. Default is "symbol" with options "symbol", "ensembl_id", and "entrez_id".
-#' @param db Vector of database names to be used for annotation. Default is NULL.
-#' @param db_update Logical value indicating whether to update the database. Default is FALSE.
-#' @param db_version Version of the database to use. Default is "latest".
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.
-#' @param Ensembl_version Version of the Ensembl database to use. Default is 103.
-#' @param mirror URL of the mirror to use for Ensembl database. Default is NULL.
-#' @param gtf Path to the GTF file to be used for annotation. Default is NULL.
-#' @param merge_gtf_by Column name to merge the GTF file by. Default is "gene_name".
-#' @param columns Vector of column names to be used from the GTF file. Default is
-#'     "seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type".
-#' @param assays Character vector of assay names to be annotated. Default is "RNA".
-#' @param overwrite Logical value indicating whether to overwrite existing metadata. Default is FALSE.
+#' @param species Name of the species to be used for annotation.
+#' Default is "Homo_sapiens".
+#' @param IDtype Type of identifier to use for annotation.
+#' Default is "symbol" with options "symbol", "ensembl_id", and "entrez_id".
+#' @param db Vector of database names to be used for annotation.
+#' Default is NULL.
+#' @param db_update Logical value indicating whether to update the database.
+#' Default is FALSE.
+#' @param db_version Version of the database to use.
+#' Default is "latest".
+#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' The default value is TRUE.
+#' @param Ensembl_version Version of the Ensembl database to use.
+#' Default is 103.
+#' @param mirror URL of the mirror to use for Ensembl database.
+#' Default is NULL.
+#' @param gtf Path to the GTF file to be used for annotation.
+#' Default is NULL.
+#' @param merge_gtf_by Column name to merge the GTF file by.
+#' Default is "gene_name".
+#' @param columns Vector of column names to be used from the GTF file.
+#' Default is "seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type".
+#' @param assays Character vector of assay names to be annotated.
+#' Default is "RNA".
+#' @param overwrite Logical value indicating whether to overwrite existing metadata.
+#' Default is FALSE.
 #'
 #' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
 #'   srt = pancreas_sub,
@@ -43,17 +56,18 @@
 #'   )
 #' )
 #'
-#' ## Annotate features using a GTF file
-#' # pancreas_sub <- AnnotateFeatures(
-#' #   pancreas_sub,
-#' #   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
-#' # )
-#' # head(
-#' #   GetFeaturesData(
-#' #     pancreas_sub,
-#' #     assays = "RNA"
-#' #   )
-#' # )
+#' # Annotate features using a GTF file
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   gtf = "/refdata-gex-mm10-2020-A/genes/genes.gtf"
+#' )
+#' head(
+#'   GetFeaturesData(
+#'     pancreas_sub,
+#'     assays = "RNA"
+#'   )
+#' )
+#' }
 AnnotateFeatures <- function(
     srt,
     species = "Homo_sapiens",
@@ -80,7 +94,10 @@ AnnotateFeatures <- function(
     overwrite = FALSE) {
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
-    stop("Neither 'db' nor 'gtf' is specified")
+    log_message(
+      "Neither 'db' nor 'gtf' is specified",
+      message_type = "error"
+    )
   }
 
   if (!is.null(db)) {
@@ -96,10 +113,13 @@ AnnotateFeatures <- function(
     )
     db_notfound <- setdiff(db, names(db_list[[species]]))
     if (length(db_notfound) > 0) {
-      warning(paste0(
-        "The following databases are not found:",
-        paste0(db_notfound, collapse = ",")
-      ))
+      log_message(
+        paste0(
+          "The following databases are not found:",
+          paste0(db_notfound, collapse = ",")
+        ),
+        message_type = "warning"
+      )
     }
     for (single_db in names(db_list[[species]])) {
       TERM2GENE <- unique(db_list[[species]][[single_db]][["TERM2GENE"]])
@@ -134,11 +154,14 @@ AnnotateFeatures <- function(
           drop = FALSE
         ]
         if (nrow(db_sub) == 0) {
-          stop(paste0(
-            "No data to append was found in the Seurat object. Please check if the species name is correct. The expected feature names are ",
-            paste(utils::head(rownames(db_df), 10), collapse = ","),
-            "."
-          ))
+          log_message(
+            paste0(
+              "No data to append was found in the Seurat object. Please check if the species name is correct. The expected feature names are ",
+              paste(utils::head(rownames(db_df), 10), collapse = ","),
+              "."
+            ),
+            message_type = "error"
+          )
         }
         meta.features <- cbind(
           meta.features,

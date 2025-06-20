@@ -7,10 +7,13 @@
 #' @importFrom stats median
 #' @importFrom ggrepel GeomTextRepel
 #' @importFrom Signac RunSVD
+#' @importFrom thisutils log_message
 #' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
 #' @export
 dplyr::`%>%`
+
+.scop_env <- new.env(parent = emptyenv())
 
 #' @importFrom rlang %||%
 #' @export

@@ -89,7 +89,10 @@ RunLargeVis.Seurat <- function(
     seed.use = 11L,
     ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) == 3) {
-    stop("Please specify only one of the following arguments: dims, features")
+    log_message(
+      "Please specify only one of the following arguments: dims, features",
+      message_type = "error"
+    )
   }
   if (!is.null(x = features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
@@ -103,13 +106,13 @@ RunLargeVis.Seurat <- function(
       )
     )
     if (ncol(x = data.use) < n_components) {
-      stop(
+      log_message(
         "Please provide as many or more features than n_components: ",
         length(x = features),
         " features provided, ",
         n_components,
         " LargeVis components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else if (!is.null(x = dims)) {
@@ -120,17 +123,20 @@ RunLargeVis.Seurat <- function(
       object = object[[reduction]]
     )
     if (length(x = dims) < n_components) {
-      stop(
+      log_message(
         "Please provide as many or more dims than n_components: ",
         length(x = dims),
         " dims provided, ",
         n_components,
         " LargeVis components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else {
-    stop("Please specify one of dims, features")
+    log_message(
+      "Please specify one of dims, features",
+      message_type = "error"
+    )
   }
   object[[reduction.name]] <- RunLargeVis(
     object = data.use,

@@ -143,8 +143,8 @@ RunGSEA <- function(
   bpprogressbar(BPPARAM) <- TRUE
   bpRNGseed(BPPARAM) <- seed
   time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start GSEA"))
-  message("Workers: ", bpworkers(BPPARAM))
+  log_message("Start GSEA")
+  log_message("Workers: ", bpworkers(BPPARAM))
 
   use_srt <- FALSE
   if (is.null(geneID)) {
@@ -156,10 +156,11 @@ RunGSEA <- function(
       !layer %in% names(srt@tools) ||
         length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
     ) {
-      stop(
+      log_message(
         "Cannot find the DEtest result for the group '",
         group_by,
-        "'. You may perform RunDEtest first."
+        "'. You may perform RunDEtest first.",
+        message_type = "error"
       )
     }
     index <- grep(
@@ -167,7 +168,10 @@ RunGSEA <- function(
       names(srt@tools[[layer]])
     )[1]
     if (is.na(index)) {
-      stop("Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.")
+      log_message(
+        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.",
+        message_type = "error"
+      )
     }
     de <- names(srt@tools[[layer]])[index]
     de_df <- srt@tools[[layer]][[de]]
@@ -194,23 +198,29 @@ RunGSEA <- function(
     levels = levels(geneID_groups)[levels(geneID_groups) %in% geneID_groups]
   )
   if (length(geneID_groups) != length(geneID)) {
-    stop("length(geneID_groups)!=length(geneID)")
+    log_message(
+      "length(geneID_groups)!=length(geneID)",
+      message_type = "error"
+    )
   }
   if (length(geneScore) != length(geneID)) {
-    stop("geneScore must be the same length with geneID")
+    log_message(
+      "geneScore must be the same length with geneID",
+      message_type = "error"
+    )
   }
   if (all(geneScore > 0) && scoreType != "pos") {
     scoreType <- "pos"
-    warning(
+    log_message(
       "All values in the geneScore are greater than zero. Set scoreType = 'pos'.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
   if (all(geneScore < 0) && scoreType != "neg") {
     scoreType <- "neg"
-    warning(
+    log_message(
       "All values in the geneScore are less than zero. Set scoreType = 'neg'.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
@@ -223,7 +233,7 @@ RunGSEA <- function(
 
   na_index <- which(is.na(geneScore))
   if (length(na_index) > 0) {
-    message("Ignore ", length(na_index), " NA geneScore")
+    log_message("Ignore ", length(na_index), " NA geneScore")
     input <- input[-na_index, , drop = FALSE]
   }
   input[
@@ -265,7 +275,7 @@ RunGSEA <- function(
     db_list[[species]][[db]][["version"]] <- "custom"
   }
   if (isTRUE(db_combine)) {
-    message("Create 'Combined' database ...")
+    log_message("Create 'Combined' database ...")
     TERM2GENE <- do.call(
       rbind,
       lapply(
@@ -321,7 +331,7 @@ RunGSEA <- function(
   input <- unnest(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
 
-  message("Permform GSEA...")
+  log_message("Permform GSEA...")
   comb <- expand.grid(
     group = levels(geneID_groups),
     term = db,
@@ -409,12 +419,12 @@ RunGSEA <- function(
             eval(rlang::parse_expr(GO_simplify_cutoff))
           ))
           if (nterm_simplify <= 1) {
-            warning(
+            log_message(
               group,
               "|",
               term,
               " has no term to simplify.",
-              immediate. = TRUE
+              message_type = "warning"
             )
           } else {
             sim_res@result <- sim_res@result[
@@ -467,8 +477,8 @@ RunGSEA <- function(
   rownames(enrichment) <- NULL
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "GSEA done"))
-  message(
+  log_message("GSEA done")
+  log_message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),

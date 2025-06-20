@@ -195,7 +195,7 @@ RunNMF.default <- function(
       dims = ndims.print,
       nfeatures = nfeatures.print
     ))
-    message(paste(msg, collapse = "\n"))
+    log_message(paste(msg, collapse = "\n"))
   }
 
   return(reduction.data)

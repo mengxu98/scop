@@ -90,8 +90,8 @@ RunDynamicFeatures <- function(
   assay <- assay %||% DefaultAssay(srt)
 
   time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start RunDynamicFeatures"))
-  message("Workers: ", BiocParallel::bpworkers(BPPARAM))
+  log_message("Start RunDynamicFeatures")
+  log_message("Workers: ", BiocParallel::bpworkers(BPPARAM))
 
   check_r("mgcv")
   meta <- c()
@@ -103,16 +103,19 @@ RunDynamicFeatures <- function(
       srt@meta.data[, meta, drop = FALSE], is.numeric
     )
     if (!all(isnum)) {
-      warning(
+      log_message(
         paste0(meta[!isnum], collapse = ","),
         " is not numeric and will be dropped.",
-        immediate. = TRUE
+        message_type = "warning"
       )
       meta <- meta[isnum]
     }
     features <- c(gene, meta)
     if (length(features) == 0) {
-      stop("No feature found in the srt object.")
+      log_message(
+        "No feature found in the srt object.",
+        message_type = "error"
+      )
     }
   }
 
@@ -150,7 +153,10 @@ RunDynamicFeatures <- function(
     } else if (length(libsize) == ncol(srt)) {
       y_libsize <- stats::setNames(libsize, colnames(srt))
     } else {
-      stop("libsize must be length of 1 or the number of cells.")
+      log_message(
+        "libsize must be length of 1 or the number of cells.",
+        message_type = "error"
+      )
     }
   }
 
@@ -169,7 +175,10 @@ RunDynamicFeatures <- function(
     )
     if (is.null(features)) {
       if (is.null(n_candidates)) {
-        stop("'features' or 'n_candidates' must provided at least one.")
+        log_message(
+          "'features' or 'n_candidates' must provided at least one.",
+          message_type = "error"
+        )
       }
       HVF <- SeuratObject::VariableFeatures(
         Seurat::FindVariableFeatures(
@@ -199,7 +208,7 @@ RunDynamicFeatures <- function(
   features <- unique(unlist(features_list))
   gene <- features[features %in% rownames(srt[[assay]])]
   meta <- features[features %in% colnames(srt@meta.data)]
-  message("Number of candidate features(union): ", length(features))
+  log_message("Number of candidate features(union): ", length(features))
 
   if (layer == "counts") {
     gene_status <- status
@@ -221,8 +230,9 @@ RunDynamicFeatures <- function(
       names(family) <- features
     }
     if (length(family) != length(features)) {
-      stop(
-        "'family' must be one character or a vector of the same length as features."
+      log_message(
+        "'family' must be one character or a vector of the same length as features.",
+        message_type = "error"
       )
     }
   }
@@ -244,7 +254,7 @@ RunDynamicFeatures <- function(
       )
     )
 
-    message("Calculate dynamic features for ", l, "...")
+    log_message("Calculate dynamic features for ", l, "...")
     system.time({
       gam_out <- BiocParallel::bplapply(
         seq_len(nrow(y_ordered)),
@@ -255,10 +265,10 @@ RunDynamicFeatures <- function(
             min(y_ordered[feature_nm, ]) < 0 &&
               family_current %in% c("nb", "poisson", "binomial")
           ) {
-            warning(
+            log_message(
               "Negative values detected. Replace family with 'gaussian' for the feature: ",
               feature_nm,
-              immediate. = TRUE
+              message_type = "warning"
             )
             family_use <- "gaussian"
           } else {
@@ -396,8 +406,8 @@ RunDynamicFeatures <- function(
   }
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "RunDynamicFeatures done"))
-  message(
+  log_message("RunDynamicFeatures done")
+  log_message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),

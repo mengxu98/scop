@@ -58,7 +58,10 @@ ProjectionPlot <- function(
     pt.size = 0.8,
     stroke.highlight = 0.5) {
   if (is.null(ref_reduction)) {
-    stop("Please specify the ref_reduction.")
+    log_message(
+      "Please specify the ref_reduction.",
+      message_type = "error"
+    )
   }
   query_param[["show_stat"]] <- FALSE
   ref_param[["show_stat"]] <- FALSE

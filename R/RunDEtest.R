@@ -48,11 +48,11 @@ PerformDE <- function(
     !(test.use %in% c("negbinom", "poisson", "MAST", "LR")) &&
       !is.null(x = latent.vars)
   ) {
-    warning(
+    log_message(
       "'latent.vars' is only used for the following tests: ",
       paste(c("negbinom", "poisson", "MAST", "LR"), collapse = ", "),
-      call. = FALSE,
-      immediate. = TRUE
+      message_type = "warning",
+      verbose = verbose
     )
   }
   data.use <- object[
@@ -129,7 +129,10 @@ PerformDE <- function(
       latent.vars = latent.vars,
       verbose = verbose
     ),
-    stop("Unknown test: ", test.use)
+    log_message(
+      "Unknown test: ", test.use,
+      message_type = "error"
+    )
   )
   return(de.results)
 }
@@ -183,9 +186,9 @@ WilcoxDETest <- function(
 #' @param layer The layer used.
 #' @param group_by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
-#' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group. 
+#' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
 #' If both group_by and group1 are provided, group1 takes precedence.
-#' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group. 
+#' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group.
 #' This parameter is only used when group_by or group1 is provided.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
 #' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
@@ -415,8 +418,9 @@ RunDEtest <- function(
   meta.method <- match.arg(meta.method)
   if (markers_type %in% c("conserved", "disturbed")) {
     if (is.null(grouping.var)) {
-      stop(
-        "'grouping.var' must be provided when finding conserved or disturbed markers"
+      log_message(
+        "'grouping.var' must be provided when finding conserved or disturbed markers",
+        message_type = "error"
       )
     }
   }
@@ -424,13 +428,17 @@ RunDEtest <- function(
 
   status <- check_data_type(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
-    stop("Data in the 'counts' layer is not raw counts.")
+    log_message(
+      "Data in the 'counts' layer is not raw counts.",
+      message_type = "error"
+    )
   }
   if (layer == "data" && status != "log_normalized_counts") {
     if (status == "raw_counts") {
-      warning(
+      log_message(
         "Data in the 'data' layer is raw counts. Perform NormalizeData(LogNormalize) on the data.",
-        immediate. = TRUE
+        message_type = "warning",
+        verbose = verbose
       )
       srt <- NormalizeData(
         object = srt,
@@ -440,9 +448,10 @@ RunDEtest <- function(
       )
     }
     if (status == "raw_normalized_counts") {
-      warning(
+      log_message(
         "Data in the 'data' layer is raw_normalized_counts. Perform NormalizeData(LogNormalize) on the data.",
-        immediate. = TRUE
+        message_type = "warning",
+        verbose = verbose
       )
       srt <- NormalizeData(
         object = srt,
@@ -452,8 +461,10 @@ RunDEtest <- function(
       )
     }
     if (status == "unknown") {
-      warning(
-        "Data in the 'data' layer is unknown. Please check the data type."
+      log_message(
+        "Data in the 'data' layer is unknown. Please check the data type.",
+        message_type = "warning",
+        verbose = verbose
       )
     }
   }
@@ -461,19 +472,25 @@ RunDEtest <- function(
   BiocParallel::bpRNGseed(BPPARAM) <- seed
 
   time_start <- Sys.time()
-  if (verbose) {
-    message(paste0("[", time_start, "] ", "Start DEtest"))
-    message("Workers: ", bpworkers(BPPARAM))
-  }
+
+  log_message("Start DEtest", verbose = verbose)
+  log_message("Workers: ", bpworkers(BPPARAM), verbose = verbose)
+
 
   if (fc.threshold < 1) {
-    stop("fc.threshold must be greater than or equal to 1")
+    log_message(
+      "fc.threshold must be greater than or equal to 1",
+      message_type = "error"
+    )
   }
 
   if (!is.null(cells1) || !is.null(group1)) {
     if (is.null(cells1)) {
       if (is.null(group_by)) {
-        stop("'group_by' must be provided when 'group1' specified")
+        log_message(
+          "'group_by' must be provided when 'group1' specified",
+          message_type = "error"
+        )
       }
       cells1 <- colnames(srt)[srt[[group_by, drop = TRUE]] %in% group1]
     }
@@ -481,27 +498,36 @@ RunDEtest <- function(
       cells2 <- colnames(srt)[srt[[group_by, drop = TRUE]] %in% group2]
     }
     if (!all(cells1 %in% colnames(srt))) {
-      stop("cells1 has some cells not in the Seurat object.")
+      log_message(
+        "cells1 has some cells not in the Seurat object.",
+        message_type = "error"
+      )
     }
     if (is.null(cells2)) {
       cells2 <- colnames(srt)[!colnames(srt) %in% cells1]
       group2 <- "others"
     }
     if (!all(cells2 %in% colnames(srt))) {
-      stop("cells2 has some cells not in the Seurat object.")
-    }
-    if (length(cells1) < 3 || length(cells2) < 3) {
-      stop("Cell groups must have more than 3 cells")
-    }
-    if (verbose) {
-      message(
-        "Find ",
-        markers_type,
-        " markers(",
-        test.use,
-        ") for custom cell groups..."
+      log_message(
+        "cells2 has some cells not in the Seurat object.",
+        message_type = "error"
       )
     }
+    if (length(cells1) < 3 || length(cells2) < 3) {
+      log_message(
+        "Cell groups must have more than 3 cells",
+        message_type = "error"
+      )
+    }
+
+    log_message(
+      "Find ",
+      markers_type,
+      " markers(",
+      test.use,
+      ") for custom cell groups...",
+      verbose = verbose
+    )
 
     if (markers_type == "all") {
       markers <- Seurat::FindMarkers(
@@ -558,7 +584,11 @@ RunDEtest <- function(
         srt@tools[["DEtest_custom"]][["cells1"]] <- cells1
         srt@tools[["DEtest_custom"]][["cells2"]] <- cells2
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
       }
     }
 
@@ -619,7 +649,11 @@ RunDEtest <- function(
         srt@tools[["DEtest_custom"]][["cells1"]] <- cells1
         srt@tools[["DEtest_custom"]][["cells2"]] <- cells2
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
       }
     }
     if (markers_type == "disturbed") {
@@ -668,7 +702,11 @@ RunDEtest <- function(
         )]] <- markers
         srt@tools[["DEtest_custom"]][["cells1"]] <- cells1
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
       }
     }
   } else {
@@ -719,17 +757,17 @@ RunDEtest <- function(
       ...
     )
 
-    if (verbose) {
-      message(
-        "Find ",
-        markers_type,
-        " markers(",
-        test.use,
-        ") among ",
-        nlevels(cell_group),
-        " groups..."
-      )
-    }
+
+    log_message(
+      "Find ",
+      markers_type,
+      " markers(",
+      test.use,
+      ") among ",
+      nlevels(cell_group),
+      " groups..."
+    )
+
     if (markers_type == "all") {
       AllMarkers <- BiocParallel::bplapply(
         levels(cell_group),
@@ -855,7 +893,11 @@ RunDEtest <- function(
           test.use
         )]] <- PairedMarkersMatrix
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
         srt@tools[[paste0("DEtest_", group_by)]][[paste0(
           "PairedMarkers_",
           test.use
@@ -962,7 +1004,11 @@ RunDEtest <- function(
           test.use
         )]] <- ConservedMarkers
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
         srt@tools[[paste0("DEtest_", group_by)]][[paste0(
           "ConservedMarkers_",
           test.use
@@ -1058,7 +1104,11 @@ RunDEtest <- function(
           test.use
         )]] <- DisturbedMarkers
       } else {
-        warning("No markers found.", immediate. = TRUE)
+        log_message(
+          "No markers found.",
+          message_type = "warning",
+          verbose = verbose
+        )
         srt@tools[[paste0("DEtest_", group_by)]][[paste0(
           "DisturbedMarkers_",
           test.use
@@ -1067,15 +1117,16 @@ RunDEtest <- function(
     }
   }
   time_end <- Sys.time()
-  if (verbose) {
-    message(paste0("[", time_end, "] ", "DEtest done"))
-    message(
-      "Elapsed time:",
-      format(
-        round(difftime(time_end, time_start), 2),
-        format = "%Y-%m-%d %H:%M:%S"
-      )
-    )
-  }
+
+  log_message("DEtest done", verbose = verbose)
+  log_message(
+    "Elapsed time:",
+    format(
+      round(difftime(time_end, time_start), 2),
+      format = "%Y-%m-%d %H:%M:%S"
+    ),
+    verbose = verbose
+  )
+
   return(srt)
 }

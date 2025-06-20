@@ -92,8 +92,9 @@ RunUMAP2.Seurat <- function(
     )) ==
       4
   ) {
-    stop(
-      "Please specify only one of the following arguments: dims, features, neighbor or graph"
+    log_message(
+      "Please specify only one of the following arguments: dims, features, neighbor or graph",
+      message_type = "error"
     )
   }
   if (!is.null(x = features)) {
@@ -108,52 +109,55 @@ RunUMAP2.Seurat <- function(
       )
     )
     if (ncol(x = data.use) < n.components) {
-      stop(
+      log_message(
         "Please provide as many or more features than n.components: ",
         length(x = features),
         " features provided, ",
         n.components,
         " UMAP components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else if (!is.null(x = dims)) {
     data.use <- Matrix::as.matrix(Embeddings(object[[reduction]])[, dims])
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(x = dims) < n.components) {
-      stop(
+      log_message(
         "Please provide as many or more dims than n.components: ",
         length(x = dims),
         " dims provided, ",
         n.components,
         " UMAP components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else if (!is.null(x = neighbor)) {
     if (!inherits(x = object[[neighbor]], what = "Neighbor")) {
-      stop(
+      log_message(
         "Please specify a Neighbor object name, ",
         "instead of the name of a ",
         class(object[[neighbor]]),
         " object",
-        call. = FALSE
+        message_type = "error"
       )
     }
     data.use <- object[[neighbor]]
   } else if (!is.null(x = graph)) {
     if (!inherits(x = object[[graph]], what = "Graph")) {
-      stop(
+      log_message(
         "Please specify a Graph object name, ",
         "instead of the name of a ",
         class(object[[graph]]),
         " object",
-        call. = FALSE
+        message_type = "error"
       )
     }
     data.use <- object[[graph]]
   } else {
-    stop("Please specify one of dims, features, neighbor, or graph")
+    log_message(
+      "Please specify one of dims, features, neighbor, or graph",
+      message_type = "error"
+    )
   }
   object[[reduction.name]] <- RunUMAP2(
     object = data.use,
@@ -214,27 +218,27 @@ RunUMAP2.default <- function(
   }
   if (return.model) {
     if (verbose) {
-      message("UMAP will return its model")
+      log_message("UMAP will return its model")
     }
   }
   if (!is.null(x = reduction.model)) {
     if (verbose) {
-      message("Running UMAP projection")
+      log_message("Running UMAP projection")
     }
     if (
       is.null(x = reduction.model) ||
         !inherits(x = reduction.model, what = "DimReduc")
     ) {
-      stop(
+      log_message(
         "If running projection UMAP, please pass a DimReduc object with the model stored to reduction.model.",
-        call. = FALSE
+        message_type = "error"
       )
     }
     model <- SeuratObject::Misc(object = reduction.model, slot = "model")
     if (length(x = model) == 0) {
-      stop(
+      log_message(
         "The provided reduction.model does not have a model stored.",
-        call. = FALSE
+        message_type = "error"
       )
     }
     umap.method <- ifelse(
@@ -338,7 +342,10 @@ RunUMAP2.default <- function(
         obs_sample <- 1:ncol(object)
       }
       if (!isSymmetric(Matrix::as.matrix(object[obs_sample, obs_sample]))) {
-        stop("Graph must be a symmetric matrix.")
+        log_message(
+          "Graph must be a symmetric matrix.",
+          message_type = "error"
+        )
       }
 
       coo <- matrix(ncol = 3, nrow = length(object@x))
@@ -375,9 +382,9 @@ RunUMAP2.default <- function(
         global = TRUE
       )
       if (return.model) {
-        warning(
+        log_message(
           "return.model does not support 'Graph' input.",
-          immediate. = TRUE
+          message_type = "warning"
         )
       }
       return(reduction)
@@ -433,9 +440,9 @@ RunUMAP2.default <- function(
         global = TRUE
       )
       if (return.model) {
-        warning(
+        log_message(
           "return.model does not support 'dist' input.",
-          immediate. = TRUE
+          message_type = "warning"
         )
       }
       return(reduction)
@@ -490,7 +497,10 @@ RunUMAP2.default <- function(
         obs_sample <- 1:ncol(object)
       }
       if (!isSymmetric(Matrix::as.matrix(object[obs_sample, obs_sample]))) {
-        stop("Graph must be a symmetric matrix.")
+        log_message(
+          "Graph must be a symmetric matrix.",
+          message_type = "error"
+        )
       }
       val <- split(object@x, rep(1:ncol(object), diff(object@p)))
       pos <- split(object@i + 1, rep(1:ncol(object), diff(object@p)))
@@ -614,10 +624,11 @@ RunUMAP2.default <- function(
     ) {
       class(model) <- "umap"
       if (any(!colnames(model$data) %in% colnames(object))) {
-        stop(
+        log_message(
           "query data must contain the same features with the model:\n",
           paste(utils::head(colnames(model$data), 10), collapse = ","),
-          " ......"
+          " ......",
+          message_type = "error"
         )
       }
       embeddings <- stats::predict(model, object[, colnames(model$data)])
@@ -631,15 +642,19 @@ RunUMAP2.default <- function(
       )
       return(reduction)
     } else {
-      stop("naive umap model only support 'matrix' input.")
+      log_message(
+        "naive umap model only support 'matrix' input.",
+        message_type = "error"
+      )
     }
   }
 
   if (umap.method == "uwot-predict") {
     if (inherits(x = object, what = "list")) {
       if (ncol(object[["idx"]]) != model$n_neighbors) {
-        warning(
-          "Number of neighbors between query and reference is not equal to the number of neighbros within reference"
+        log_message(
+          "Number of neighbors between query and reference is not equal to the number of neighbros within reference",
+          message_type = "warning"
         )
         model$n_neighbors <- ncol(object[["idx"]])
       }

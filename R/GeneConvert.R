@@ -58,13 +58,19 @@
 #' db_genes <- length(unique(res$geneID_res$from_geneID))
 #' converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
 #' converted_genes_output <- length(unique(res$geneID_expand$symbol))
-#' cat("Number of input gene IDs:", input_genes, "\n")
-#' cat("Number of gene IDs mapped in the database:", db_genes, "\n")
-#' cat(
-#'   "Number of input gene IDs that were successfully converted:",
-#'   converted_genes_input, "\n"
+#' log_message(
+#'   "Number of input gene IDs:", input_genes
 #' )
-#' cat("Number of converted gene IDs:", converted_genes_output, "\n")
+#' log_message(
+#'   "Number of gene IDs mapped in the database:", db_genes
+#' )
+#' log_message(
+#'   "Number of input gene IDs that were successfully converted:",
+#'   converted_genes_input
+#' )
+#' log_message(
+#'   "Number of converted gene IDs:", converted_genes_output
+#' )
 #'
 #' homologs_counts <- stats::aggregate(
 #'   x = counts[res$geneID_expand[, "from_geneID"], ],
@@ -94,7 +100,10 @@ GeneConvert <- function(
   }
 
   if (missing(geneID)) {
-    stop("'geneID' must be provided.")
+    log_message(
+      "'geneID' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(species_to)) {
     species_to <- species_from
@@ -173,7 +182,7 @@ GeneConvert <- function(
   }
 
   if (is.null(biomart)) {
-    message("Connect to the Ensembl archives...")
+    log_message("Connect to the Ensembl archives...")
     archives <- try_get(
       expr = {
         biomaRt::listEnsemblArchives()
@@ -188,7 +197,7 @@ GeneConvert <- function(
         which(archives$current_release == "*"),
         "version"
       ])
-      message(
+      log_message(
         "Using the ",
         Ensembl_version,
         "(",
@@ -202,15 +211,16 @@ GeneConvert <- function(
         which(archives$version == Ensembl_version),
         "version"
       ])
-      message("Using the ", version, " version of biomart...")
+      log_message("Using the ", version, " version of biomart...")
     } else {
-      stop(
+      log_message(
         "Ensembl_version is invalid. Must be one of current_release,",
+        message_type = "error",
         paste0(archives$version, collapse = ",")
       )
     }
 
-    message("Connecting to the biomart...")
+    log_message("Connecting to the biomart...")
     mart <- try_get(
       expr = {
         if (!is.null(mirror)) {
@@ -243,7 +253,7 @@ GeneConvert <- function(
       ),
       nm = c("ensembl", "protists_mart", "fungi_mart", "plants_mart")
     )
-    message("Connecting to the biomart(", biomart, ")...")
+    log_message("Connecting to the biomart(", biomart, ")...")
     if (length(biomart) == 1) {
       mart <- try_get(
         expr = {
@@ -258,7 +268,10 @@ GeneConvert <- function(
       )
       mart_from <- mart_to <- mart
     } else {
-      stop("Supports conversion within one mart only.")
+      log_message(
+        "Supports conversion within one mart only.",
+        message_type = "error"
+      )
       mart_from <- try_get(
         expr = {
           biomaRt::useMart(
@@ -290,7 +303,7 @@ GeneConvert <- function(
     }
   }
 
-  message("Searching the dataset ", species_from_simp, " ...")
+  log_message("Searching the dataset ", species_from_simp, " ...")
   Datasets <- try_get(
     expr = {
       biomaRt::listDatasets(mart_from)
@@ -302,14 +315,14 @@ GeneConvert <- function(
       ")"
     )
   )
-  dataset <- searchDatasets(
+  dataset <- search_datasets(
     Datasets,
     pattern = species_from_simp
   )[["dataset"]][
     1
   ]
   if (is.null(dataset)) {
-    warning(
+    log_message(
       paste0(
         "Can not find the dataset for the species: ",
         species_from,
@@ -317,7 +330,7 @@ GeneConvert <- function(
         species_from_simp,
         ")"
       ),
-      immediate. = TRUE
+      message_type = "warning"
     )
     return(list(
       geneID_res = NULL,
@@ -329,7 +342,7 @@ GeneConvert <- function(
     ))
   }
 
-  message("Connecting to the dataset ", dataset, " ...")
+  log_message("Connecting to the dataset ", dataset, " ...")
   mart1 <- try_get(
     expr = {
       biomaRt::useDataset(
@@ -349,7 +362,7 @@ GeneConvert <- function(
     species_from != species_to &&
       any(!geneID_to_IDtype %in% c("symbol", "ensembl_id"))
   ) {
-    message("Searching the dataset ", species_to_simp, " ...")
+    log_message("Searching the dataset ", species_to_simp, " ...")
     Datasets2 <- try_get(
       expr = {
         biomaRt::listDatasets(mart_to)
@@ -361,14 +374,14 @@ GeneConvert <- function(
         ")"
       )
     )
-    dataset2 <- searchDatasets(
+    dataset2 <- search_datasets(
       Datasets2,
       pattern = species_to_simp
     )[[
       "dataset"
     ]][1]
     if (is.null(dataset2)) {
-      warning(
+      log_message(
         paste0(
           "Can not find the dataset for the species: ",
           species_to,
@@ -376,7 +389,7 @@ GeneConvert <- function(
           species_to_simp,
           ")"
         ),
-        immediate. = TRUE
+        message_type = "warning"
       )
       return(
         list(
@@ -390,7 +403,7 @@ GeneConvert <- function(
       )
     }
 
-    message("Connecting to the dataset ", dataset2, " ...")
+    log_message("Connecting to the dataset ", dataset2, " ...")
     mart2 <- try_get(
       expr = {
         biomaRt::useDataset(
@@ -415,21 +428,21 @@ GeneConvert <- function(
   if (any(!to_attr %in% Attributes$name)) {
     to_attr_drop <- to_attr[!to_attr %in% Attributes$name]
     to_attr <- to_attr[to_attr %in% Attributes$name]
-    warning(
+    log_message(
       paste0(
         "Can not find the attributes for the species ",
         species_from,
         ": ",
         paste(to_attr_drop, collapse = ", ")
       ),
-      immediate. = TRUE
+      message_type = "warning"
     )
     if (length(to_attr) == 0) {
-      warning(
+      log_message(
         "No attribute found for the species ",
         species_from,
         ". Please check the 'Attributes' in the result.",
-        immediate. = TRUE
+        message_type = "warning"
       )
       return(
         list(
@@ -444,7 +457,7 @@ GeneConvert <- function(
     }
   }
 
-  message("Converting the geneIDs...")
+  log_message("Converting the geneIDs...")
   if (species_from != species_to) {
     for (from_attr in from_IDtype) {
       if (length(geneID) > 0) {
@@ -614,7 +627,7 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        message(paste(sum(ismap), "genes mapped with", from_name))
+        log_message(paste(sum(ismap), "genes mapped with", from_name))
         geneID <- geneID[!ismap]
       }
     }
@@ -688,12 +701,12 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        message(paste(sum(ismap), "genes mapped with", from_name))
+        log_message(paste(sum(ismap), "genes mapped with", from_name))
         geneID <- geneID[!ismap]
       }
     }
   }
-  message(
+  log_message(
     paste0(
       paste0(rep("=", 30), collapse = ""),
       "\n",
@@ -714,14 +727,19 @@ GeneConvert <- function(
       nrow(geneID_res) == 0 ||
       all(is.na(geneID_res[["to_geneID"]]))
   ) {
-    warning(paste0("None of the gene IDs were converted"), immediate. = TRUE)
-    return(list(
-      geneID_res = NULL,
-      geneID_collapse = NULL,
-      geneID_expand = NULL,
-      Datasets = Datasets,
-      Attributes = Attributes
-    ))
+    log_message(
+      paste0("None of the gene IDs were converted"),
+      message_type = "warning"
+    )
+    return(
+      list(
+        geneID_res = NULL,
+        geneID_collapse = NULL,
+        geneID_expand = NULL,
+        Datasets = Datasets,
+        Attributes = Attributes
+      )
+    )
   }
   geneID_res_stat <- by(
     geneID_res,
@@ -772,4 +790,30 @@ GeneConvert <- function(
       geneID_unmapped = geneID
     )
   )
+}
+
+search_datasets <- function(datasets, pattern) {
+  colIdx <- vapply(
+    datasets,
+    FUN = function(x) {
+      return(
+        grepl(
+          pattern = pattern,
+          x = x,
+          ignore.case = TRUE
+        )
+      )
+    },
+    FUN.VALUE = logical(length = nrow(datasets))
+  )
+  rowIdx <- apply(colIdx, 1, any)
+  if (any(rowIdx)) {
+    return(datasets[rowIdx, , drop = FALSE])
+  } else {
+    log_message(
+      "No matching datasets found",
+      message_type = "warning"
+    )
+    return(NULL)
+  }
 }

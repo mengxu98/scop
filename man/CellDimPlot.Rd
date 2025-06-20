@@ -384,10 +384,18 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 }
 \examples{
 data("pancreas_sub")
-CellDimPlot(
+p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
+)
+p1
+
+panel_fix(
+  p1,
+  height = 2,
+  raster = TRUE,
+  dpi = 30
 )
 CellDimPlot(
   pancreas_sub,
@@ -401,15 +409,6 @@ CellDimPlot(
   reduction = "UMAP",
   theme_use = ggplot2::theme_classic,
   theme_args = list(base_size = 16)
-)
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "UMAP"
-) |> panel_fix(
-  height = 2,
-  raster = TRUE,
-  dpi = 30
 )
 
 # Highlight cells
@@ -559,9 +558,9 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "UMAP",
   stat.by = "Phase",
-  stat_plot_type = "bar", 
-stat_type = "count", 
-stat_plot_position = "dodge"
+  stat_plot_type = "bar",
+  stat_type = "count",
+  stat_plot_position = "dodge"
 )
 
 # Chane the plot type from point to the hexagonal bin
@@ -705,7 +704,7 @@ CellDimPlot(
   pt.size = 5,
   pt.alpha = 0.2,
   velocity = "stochastic",
- velocity_plot_type = "grid"
+  velocity_plot_type = "grid"
 )
 CellDimPlot(
   pancreas_sub,
@@ -714,8 +713,8 @@ CellDimPlot(
   pt.size = 5,
   pt.alpha = 0.2,
   velocity = "stochastic",
- velocity_plot_type = "grid", 
-velocity_scale = 1.5
+  velocity_plot_type = "grid",
+  velocity_scale = 1.5
 )
 CellDimPlot(
   pancreas_sub,
@@ -723,8 +722,8 @@ CellDimPlot(
   reduction = "UMAP",
   pt.size = 5,
   pt.alpha = 0.2,
-  velocity = "stochastic", 
-velocity_plot_type = "stream"
+  velocity = "stochastic",
+  velocity_plot_type = "stream"
 )
 CellDimPlot(
   pancreas_sub,

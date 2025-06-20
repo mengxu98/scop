@@ -128,7 +128,10 @@ DynamicPlot <- function(
   check_r("MatrixGenerics")
   x_order <- match.arg(x_order)
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
-    stop(group.by, " is not in the meta.data of srt object.")
+    log_message(
+      paste0(group.by, " is not in the meta.data of srt object."),
+      message_type = "error"
+    )
   }
 
   data_nm <- c(ifelse(isTRUE(lib_normalize), "normalized", ""), layer)
@@ -150,7 +153,10 @@ DynamicPlot <- function(
   meta <- features[features %in% colnames(srt@meta.data)]
   features <- c(gene, meta)
   if (length(features) == 0) {
-    stop("No feature found in the srt object.")
+    log_message(
+      "No feature found in the srt object.",
+      message_type = "error"
+    )
   }
 
   cell_union <- c()
@@ -289,9 +295,9 @@ DynamicPlot <- function(
         isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
         if (isTRUE(isfloat)) {
           libsize_use <- rep(1, length(libsize_use))
-          warning(
+          log_message(
             "The values in the 'counts' layer are non-integer. Set the library size to 1.",
-            immediate. = TRUE
+            message_type = "warning"
           )
         }
       }

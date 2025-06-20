@@ -68,29 +68,30 @@ RunFR.Seurat <- function(
     )) ==
       4
   ) {
-    stop(
-      "Please specify only one of the following arguments: dims, features, neighbor or graph"
+    log_message(
+      "Please specify only one of the following arguments: dims, features, neighbor or graph",
+      message_type = "error"
     )
   }
   if (!is.null(x = graph)) {
     if (!inherits(x = object[[graph]], what = "Graph")) {
-      stop(
+      log_message(
         "Please specify a Graph object name, ",
         "instead of the name of a ",
         class(object[[graph]]),
         " object",
-        call. = FALSE
+        message_type = "error"
       )
     }
     data.use <- object[[graph]]
   } else if (!is.null(x = neighbor)) {
     if (!inherits(x = object[[neighbor]], what = "Neighbor")) {
-      stop(
+      log_message(
         "Please specify a Neighbor object name, ",
         "instead of the name of a ",
         class(object[[neighbor]]),
         " object",
-        call. = FALSE
+        message_type = "error"
       )
     }
     data.use <- object[[neighbor]]
@@ -112,7 +113,10 @@ RunFR.Seurat <- function(
       object = object[[reduction]]
     )
     if (max(dims) > ncol(x = data.use)) {
-      stop("More dimensions specified in dims than have been computed")
+      log_message(
+        "More dimensions specified in dims than have been computed",
+        message_type = "error"
+      )
     }
     data.use <- data.use[, dims]
     data.use <- Seurat::FindNeighbors(
@@ -120,7 +124,10 @@ RunFR.Seurat <- function(
       k.param = k.param
     )[["snn"]]
   } else {
-    stop("Please specify one of dims, features, neighbor, or graph")
+    log_message(
+      "Please specify one of dims, features, neighbor, or graph",
+      message_type = "error"
+    )
   }
   object[[reduction.name]] <- RunFR(
     object = data.use,

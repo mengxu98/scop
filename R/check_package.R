@@ -38,10 +38,10 @@ check_python <- function(
   }
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
-    warning(
+    log_message(
       envname,
       " python environment does not exist. Create it with the PrepareEnv function...",
-      immediate. = TRUE
+      message_type = "warning"
     )
     PrepareEnv()
   }
@@ -61,7 +61,9 @@ check_python <- function(
   }
   if (sum(!pkg_installed) > 0) {
     pkgs_to_install <- names(pkg_installed)[!pkg_installed]
-    message("Try to install ", paste0(pkgs_to_install, collapse = ","), " ...")
+    log_message(
+      "Try to install ", paste0(pkgs_to_install, collapse = ","), " ..."
+    )
     if (isTRUE(pip)) {
       pkgs_to_install <- c("pip", pkgs_to_install)
     }
@@ -86,12 +88,13 @@ check_python <- function(
     conda = conda
   )
   if (sum(!pkg_installed) > 0) {
-    stop(
+    log_message(
       "Failed to install the package(s): ",
       paste0(names(pkg_installed)[!pkg_installed], collapse = ","),
       " into the environment \"",
       envname,
-      "\". Please install manually."
+      "\". Please install manually.",
+      message_type = "error"
     )
   } else {
     return(invisible(NULL))
@@ -145,7 +148,9 @@ check_r <- function(
       ) ||
         isTRUE(force_update)
     ) {
-      message("Install package: \"", pkg_name, "\" ...")
+      log_message(
+        "Install package: \"", pkg_name, "\" ..."
+      )
       status_list[[pkg]] <- FALSE
       i <- 1
       while (isFALSE(status_list[[pkg]])) {
@@ -219,10 +224,11 @@ check_r <- function(
   out <- sapply(status_list, isTRUE)
   out <- out[!out]
   if (length(out) > 0) {
-    stop(
+    log_message(
       "Failed to install the package(s): ",
       paste0(names(out), collapse = ","),
-      ". Please install manually."
+      ". Please install manually.",
+      message_type = "error"
     )
   }
 }

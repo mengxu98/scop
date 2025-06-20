@@ -57,12 +57,18 @@ RunHarmony2.Seurat <- function(
     set.seed(seed = seed.use)
   }
   if (length(dims.use) == 1) {
-    stop("only specified one dimension in dims.use")
+    log_message(
+      "only specified one dimension in dims.use",
+      message_type = "error"
+    )
   }
 
   data.use <- Seurat::Embeddings(object[[reduction]])
   if (max(dims.use) > ncol(data.use)) {
-    stop("trying to use more dimensions than computed")
+    log_message(
+      "trying to use more dimensions than computed",
+      message_type = "error"
+    )
   }
 
   assay <- SeuratObject::DefaultAssay(object = object[[reduction]])

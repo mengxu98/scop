@@ -67,11 +67,8 @@ GetAssayData5.Assay5 <- function(
     ...) {
   if (verbose && join.layers) {
     warning_key <- "assay5_join_layers_warning"
-    if (!exists(".scop_env", envir = .GlobalEnv)) {
-      assign(".scop_env", new.env(), envir = .GlobalEnv)
-    }
-    last_warning_time <- if (exists(warning_key, envir = .GlobalEnv$.scop_env)) {
-      get(warning_key, envir = .GlobalEnv$.scop_env)
+    last_warning_time <- if (exists(warning_key, envir = .scop_env)) {
+      get(warning_key, envir = .scop_env)
     } else {
       as.numeric(Sys.time()) - 30000
     }
@@ -79,16 +76,17 @@ GetAssayData5.Assay5 <- function(
     current_time <- as.numeric(Sys.time())
     warning_interval <- getOption("scop.warning.interval", 28800)
     if (current_time - last_warning_time > warning_interval) {
-      warning(
+      log_message(
         "The input data is a 'Assay5' object. The 'SeuratObject::JoinLayers' function will be used to combine the layers.",
-        immediate. = TRUE
+        message_type = "warning"
       )
-      message(
+      log_message(
         "This warning will be shown only once every ",
         warning_interval / 3600,
-        " hours. To change this interval, set the 'scop.warning.interval' option."
+        " hours. To change this interval, set the 'scop.warning.interval' option.",
+        message_type = "warning"
       )
-      assign(warning_key, current_time, envir = .GlobalEnv$.scop_env)
+      assign(warning_key, current_time, envir = .scop_env)
     }
 
     object <- SeuratObject::JoinLayers(object)

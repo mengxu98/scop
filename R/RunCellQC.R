@@ -27,11 +27,17 @@ db_scDblFinder <- function(
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    stop("Data type is not raw counts!")
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "error"
+    )
   }
   check_r("scDblFinder")
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
@@ -71,11 +77,17 @@ db_scds <- function(
     method = c("hybrid", "cxds", "bcds"),
     ...) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    stop("Data type is not raw counts!")
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "error"
+    )
   }
   check_r("scds")
   method <- match.arg(method)
@@ -126,11 +138,17 @@ db_Scrublet <- function(
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    stop("Data type is not raw counts!")
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "error"
+    )
   }
   check_python("scrublet")
   scr <- reticulate::import("scrublet")
@@ -191,11 +209,17 @@ db_DoubletDetection <- function(
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    stop("Data type is not raw counts!")
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "error"
+    )
   }
   check_python("doubletdetection")
   doubletdetection <- reticulate::import("doubletdetection")
@@ -263,11 +287,17 @@ RunDoubletCalling <- function(
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    stop("Data type is not raw counts!")
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "error"
+    )
   }
   if (
     db_method %in%
@@ -305,12 +335,15 @@ RunDoubletCalling <- function(
         )
       },
       error = function(e) {
-        message(e)
+        log_message(e, message_type = "error")
       }
     )
     return(srt)
   } else {
-    stop(paste(db_method, "is not a suppoted doublet-calling method!"))
+    log_message(
+      paste(db_method, "is not a suppoted doublet-calling method!"),
+      message_type = "error"
+    )
   }
 }
 
@@ -477,20 +510,32 @@ RunCellQC <- function(
   set.seed(seed)
 
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
   if (!isTRUE(assay %in% SeuratObject::Assays(srt))) {
-    stop("srt does not contain '", assay, "' assay.")
+    log_message(
+      "srt does not contain '", assay, "' assay.",
+      message_type = "error"
+    )
   }
   if (length(species) != length(species_gene_prefix)) {
-    stop("'species_gene_prefix' must be the same length as 'species'.")
+    log_message(
+      "'species_gene_prefix' must be the same length as 'species'.",
+      message_type = "error"
+    )
   }
   if (length(species) == 0) {
     species <- species_gene_prefix <- NULL
   }
   status <- check_data_type(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
-    warning("Data type is not raw counts!", immediate. = TRUE)
+    log_message(
+      "Data type is not raw counts!",
+      message_type = "warning"
+    )
   }
   if (!paste0("nCount_", assay) %in% colnames(srt@meta.data)) {
     srt@meta.data[[paste0("nCount_", assay)]] <- Matrix::colSums(
@@ -520,7 +565,7 @@ RunCellQC <- function(
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
     if (!is.null(split.by)) {
-      cat("===", srt@meta.data[[split.by]][1], "===\n")
+      log_message(paste0(srt@meta.data[[split.by]][1]))
     }
     ntotal <- ncol(srt)
 
@@ -531,7 +576,10 @@ RunCellQC <- function(
           db_rate <- ncol(srt) / 1000 * db_coefficient
         }
         if (db_rate >= 1) {
-          stop("The db_rate is equal to or greater than 1!")
+          log_message(
+            "The db_rate is equal to or greater than 1!",
+            message_type = "error"
+          )
         }
         for (dbm in db_method) {
           srt <- RunDoubletCalling(
@@ -661,10 +709,11 @@ RunCellQC <- function(
             colnames(srt@meta.data) |
             sapply(var, FUN = function(x) exists(x, where = environment()))
           if (any(!var_valid)) {
-            stop(
+            log_message(
               "Variable ",
               paste0(names(var_valid)[!var_valid], collapse = ","),
-              " is not found in the srt object."
+              " is not found in the srt object.",
+              message_type = "error"
             )
           }
           outlier <- lapply(
@@ -760,22 +809,17 @@ RunCellQC <- function(
       ribo_mito_ratio_qc,
       species_qc
     ))
-    cat(">>>", "Total cells:", ntotal, "\n")
-    cat(">>>", "Cells which are filtered out:", length(CellQC), "\n")
-    cat("...", length(db_qc), "potential doublets", "\n")
-    cat("...", length(outlier_qc), "outlier cells", "\n")
-    cat("...", length(umi_qc), "low-UMI cells", "\n")
-    cat("...", length(gene_qc), "low-gene cells", "\n")
-    cat("...", length(mito_qc), "high-mito cells", "\n")
-    cat("...", length(ribo_qc), "high-ribo cells", "\n")
-    cat(
-      "...",
-      length(ribo_mito_ratio_qc),
-      "ribo_mito_ratio outlier cells",
-      "\n"
-    )
-    cat("...", length(species_qc), "species-contaminated cells", "\n")
-    cat(">>>", "Remained cells after filtering:", ntotal - length(CellQC), "\n")
+    log_message(">>> Total cells: ", ntotal)
+    log_message(">>> Cells which are filtered out: ", length(CellQC))
+    log_message(">>> ", length(db_qc), " potential doublets")
+    log_message(">>> ", length(outlier_qc), " outlier cells")
+    log_message(">>> ", length(umi_qc), "low-UMI cells")
+    log_message(">>> ", length(gene_qc), "low-gene cells")
+    log_message(">>> ", length(mito_qc), "high-mito cells")
+    log_message(">>> ", length(ribo_qc), "high-ribo cells")
+    log_message(">>> ", length(ribo_mito_ratio_qc), "ribo_mito_ratio outlier cells")
+    log_message(">>> ", length(species_qc), "species-contaminated cells")
+    log_message(">>> Remained cells after filtering: ", ntotal - length(CellQC))
 
     qc_nm <- c(
       "db_qc",

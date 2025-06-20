@@ -127,41 +127,57 @@ GraphPlot <- function(
   edge_line <- match.arg(edge_line)
   transition_line <- match.arg(transition_line)
   if (!is.data.frame(node)) {
-    stop("'node' must be a data.frame object.")
+    log_message(
+      "'node' must be a data.frame object.",
+      message_type = "error"
+    )
   }
   if (!is.matrix(edge)) {
-    stop("'edge' must be a matrix object.")
+    log_message(
+      "'edge' must be a matrix object.",
+      message_type = "error"
+    )
   }
   if (!identical(nrow(edge), ncol(edge))) {
-    stop("nrow and ncol is not identical in edge matrix")
+    log_message(
+      "nrow and ncol is not identical in edge matrix",
+      message_type = "error"
+    )
   }
   if (!identical(nrow(edge), nrow(node))) {
-    stop("nrow is not identical between edge and node.")
+    log_message(
+      "nrow is not identical between edge and node.",
+      message_type = "error"
+    )
   }
   if (!identical(rownames(edge), rownames(node))) {
-    warning(
+    log_message(
       "rownames of node is not identical with edge matrix. They will correspond according to the order.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     colnames(edge) <- rownames(edge) <- rownames(node) <- rownames(node) %||%
       colnames(edge) %||%
       rownames(edge)
   }
   if (!all(node_coord %in% colnames(node))) {
-    stop(
+    log_message(
       "Cannot find the node_coord ",
       paste(node_coord[!node_coord %in% colnames(node)], collapse = ","),
-      " in the node column"
+      " in the node column",
+      message_type = "error"
     )
   }
   if (!is.null(transition)) {
     if (!identical(nrow(transition), nrow(node))) {
-      stop("nrow is not identical between transition and node.")
+      log_message(
+        "nrow is not identical between transition and node.",
+        message_type = "error"
+      )
     }
     if (!identical(rownames(transition), rownames(node))) {
-      warning(
+      log_message(
         "rownames of node is not identical with transition matrix. They will correspond according to the order.",
-        immediate. = TRUE
+        message_type = "warning"
       )
       colnames(transition) <- rownames(transition) <- rownames(
         node

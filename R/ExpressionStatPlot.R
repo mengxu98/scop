@@ -101,9 +101,9 @@ ExpressionStatPlot <- function(
         isTRUE(add_trend) ||
         isTRUE(add_stat != "none")
     ) {
-      warning(
+      log_message(
         "Cannot add other layers when plot_type is 'col'",
-        immediate. = TRUE
+        message_type = "warning"
       )
       add_box <- add_point <- add_trend <- FALSE
     }
@@ -112,16 +112,25 @@ ExpressionStatPlot <- function(
     (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) &&
       plot_type %in% c("col")
   ) {
-    warning("Cannot add comparison when plot_type is 'col'", immediate. = TRUE)
+    log_message(
+      "Cannot add comparison when plot_type is 'col'",
+      message_type = "warning"
+    )
     multiplegroup_comparisons <- FALSE
     comparisons <- NULL
   }
   if (isTRUE(comparisons) && is.null(split.by)) {
-    stop("'split.by' must provided when comparisons=TRUE")
+    log_message(
+      "'split.by' must provided when comparisons=TRUE",
+      message_type = "error"
+    )
   }
 
   if (nrow(meta.data) == 0) {
-    stop("meta.data is empty.")
+    log_message(
+      "meta.data is empty.",
+      message_type = "error"
+    )
   }
   if (is.null(group.by)) {
     group.by <- "All.groups"
@@ -137,7 +146,10 @@ ExpressionStatPlot <- function(
   }
   for (i in unique(c(group.by, split.by, bg.by))) {
     if (!i %in% colnames(meta.data)) {
-      stop(paste0(i, " is not in the meta.data."))
+      log_message(
+        paste0(i, " is not in the meta.data."),
+        message_type = "error"
+      )
     }
     if (!is.factor(meta.data[[i]])) {
       meta.data[[i]] <- factor(meta.data[[i]], levels = unique(meta.data[[i]]))
@@ -148,7 +160,10 @@ ExpressionStatPlot <- function(
     for (g in group.by) {
       df_table <- table(meta.data[[g]], meta.data[[bg.by]])
       if (max(Matrix::rowSums(df_table > 0), na.rm = TRUE) > 1) {
-        stop("'group.by' must be a part of 'bg.by'")
+        log_message(
+          "'group.by' must be a part of 'bg.by'",
+          message_type = "error"
+        )
       } else {
         bg_map[[g]] <- stats::setNames(
           colnames(df_table)[apply(df_table, 1, function(x) which(x > 0))],
@@ -163,10 +178,16 @@ ExpressionStatPlot <- function(
   }
   if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
     if (!any(cells.highlight %in% allcells)) {
-      stop("No cells in 'cells.highlight' found.")
+      log_message(
+        "No cells in 'cells.highlight' found.",
+        message_type = "error"
+      )
     }
     if (!all(cells.highlight %in% allcells)) {
-      warning("Some cells in 'cells.highlight' not found.", immediate. = TRUE)
+      log_message(
+        "Some cells in 'cells.highlight' not found.",
+        message_type = "warning"
+      )
     }
     cells.highlight <- intersect(cells.highlight, allcells)
   }
@@ -174,21 +195,25 @@ ExpressionStatPlot <- function(
     cells.highlight <- allcells
   }
   if (!is.null(cells.highlight) && isFALSE(add_point)) {
-    warning(
+    log_message(
       "'cells.highlight' is valid only when add_point=TRUE.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
   if (isTRUE(stack) & isTRUE(sort)) {
-    message("Set sort to FALSE when stack is TRUE")
+    log_message(
+      "Set sort to FALSE when stack is TRUE",
+      message_type = "warning"
+    )
     sort <- FALSE
   }
   if (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) {
     check_r("ggpubr")
     ncomp <- sapply(comparisons, length)
     if (any(ncomp > 2)) {
-      stop(
-        "'comparisons' must be a list in which all elements must be vectors of length 2"
+      log_message(
+        "'comparisons' must be a list in which all elements must be vectors of length 2",
+        message_type = "error"
       )
     }
   }
@@ -198,10 +223,10 @@ ExpressionStatPlot <- function(
     !stat.by %in% c(rownames(exp.data), colnames(meta.data))
   ]
   if (length(features_drop) > 0) {
-    warning(
+    log_message(
       paste0(features_drop, collapse = ","),
       " are not found.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     stat.by <- stat.by[!stat.by %in% features_drop]
   }
@@ -209,22 +234,25 @@ ExpressionStatPlot <- function(
   features_gene <- stat.by[stat.by %in% rownames(exp.data)]
   features_meta <- stat.by[stat.by %in% colnames(meta.data)]
   if (length(intersect(features_gene, features_meta)) > 0) {
-    warning(
+    log_message(
       "Features appear in both gene names and metadata names: ",
-      paste0(intersect(features_gene, features_meta), collapse = ",")
+      paste0(intersect(features_gene, features_meta), collapse = ","),
+      message_type = "warning"
     )
   }
 
   if (isTRUE(calculate_coexp) && length(features_gene) > 1) {
     if (length(features_meta) > 0) {
-      warning(
+      log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     status <- check_data_type(data = exp.data)
-    message("Data type: ", status)
+    log_message(
+      "Data type: ", status
+    )
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       meta.data[["CoExp"]] <- apply(
         exp.data[features_gene, , drop = FALSE],
@@ -238,7 +266,10 @@ ExpressionStatPlot <- function(
         function(x) log1p(exp(mean(log(x))))
       )
     } else {
-      stop("Can not determine the data type.")
+      log_message(
+        "Can not determine the data type.",
+        message_type = "error"
+      )
     }
     stat.by <- c(stat.by, "CoExp")
     features_meta <- c(features_meta, "CoExp")
@@ -261,7 +292,10 @@ ExpressionStatPlot <- function(
   stat.by <- unique(stat.by[stat.by %in% c(features_gene, features_meta)])
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
-    stop("'stat.by' must be type of numeric variable.")
+    log_message(
+      "'stat.by' must be type of numeric variable.",
+      message_type = "error"
+    )
   }
   dat_group <- meta.data[,
     unique(c("cells", group.by, bg.by, split.by)),
@@ -276,7 +310,10 @@ ExpressionStatPlot <- function(
     dat_use <- dat_use[intersect(rownames(dat_use), cells), , drop = FALSE]
   }
   if (nrow(dat_group) == 0) {
-    stop("No specified cells found.")
+    log_message(
+      "No specified cells found.",
+      message_type = "error"
+    )
   }
 
   if (is.null(pt.size)) {
@@ -286,10 +323,10 @@ ExpressionStatPlot <- function(
   nlev <- sapply(dat_group, nlevels)
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && !isTRUE(force)) {
-    warning(
+    log_message(
       paste(names(nlev), sep = ","),
       " have more than 100 levels.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
@@ -730,7 +767,7 @@ ExpressionStatPlot <- function(
         if (
           any(Matrix::rowSums(table(dat[["group.by"]], dat[["split.by"]]) >= 2) >= 3)
         ) {
-          message(
+          log_message(
             "Detected more than 2 groups. Use multiple_method for comparison"
           )
           method <- multiple_method

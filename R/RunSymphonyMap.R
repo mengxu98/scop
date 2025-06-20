@@ -55,12 +55,18 @@ RunSymphonyMap <- function(
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        stop("ref_group must be one of the column names in the meta.data")
+        log_message(
+          "ref_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
       }
     } else {
-      stop("Length of ref_group must be one or length of srt_ref.")
+      log_message(
+        "Length of ref_group must be one or length of srt_ref.",
+        message_type = "error"
+      )
     }
     ref_group <- "ref_group"
   }
@@ -73,9 +79,12 @@ RunSymphonyMap <- function(
       )]
     )[1]
     if (length(ref_pca) == 0) {
-      stop("Cannot find PCA reduction in the srt_ref")
+      log_message(
+        "Cannot find PCA reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_pca to ", ref_pca)
+      log_message("Set ref_pca to ", ref_pca)
     }
   }
   if (is.null(ref_harmony)) {
@@ -87,9 +96,12 @@ RunSymphonyMap <- function(
       )]
     )[1]
     if (length(ref_harmony) == 0) {
-      stop("Cannot find Harmony reduction in the srt_ref")
+      log_message(
+        "Cannot find Harmony reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_harmony to ", ref_harmony)
+      log_message("Set ref_harmony to ", ref_harmony)
     }
   }
   if (is.null(ref_umap)) {
@@ -101,9 +113,12 @@ RunSymphonyMap <- function(
       )]
     )[1]
     if (length(ref_umap) == 0) {
-      stop("Cannot find UMAP reduction in the srt_ref")
+      log_message(
+        "Cannot find UMAP reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap)
     }
   }
   ref_pca_dims <- srt_ref[[ref_harmony]]@misc$reduction_dims
@@ -113,15 +128,19 @@ RunSymphonyMap <- function(
     projection_method == "model" &&
       !"model" %in% names(srt_ref[[ref_umap]]@misc)
   ) {
-    message("No UMAP model detected. Set the projection_method to 'knn'")
+    log_message(
+      "No UMAP model detected. Set the projection_method to 'knn'",
+      message_type = "warning"
+    )
     projection_method <- "knn"
   }
   if (
     projection_method == "model" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      message_type = "error"
     )
   }
 
@@ -132,7 +151,7 @@ RunSymphonyMap <- function(
       assay = query_assay
     )
   )
-  message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
     data = GetAssayData5(
       srt_ref,
@@ -140,18 +159,18 @@ RunSymphonyMap <- function(
       assay = ref_assay
     )
   )
-  message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
-    warning(
+    log_message(
       "Data type is unknown or different between srt_query and srt_ref.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
-  message("Build reference")
+  log_message("Build reference")
   ref <- buildReferenceFromSeurat(
     obj = srt_ref,
     assay = ref_assay,
@@ -160,7 +179,7 @@ RunSymphonyMap <- function(
     harmony = ref_harmony,
     umap = ref_umap
   )
-  message("Run mapQuery")
+  log_message("Run mapQuery")
   res <- mapQuery(
     exp_query = GetAssayData5(
       srt_query,
@@ -192,7 +211,7 @@ RunSymphonyMap <- function(
     misc = list(R = R_query)
   )
 
-  message("Run UMAP projection")
+  log_message("Run UMAP projection")
   ref_dims <- seq_len(dim(srt_ref[[ref_harmony]])[2])
   srt_query <- RunKNNMap(
     srt_query = srt_query,
