@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -670,19 +670,21 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p1</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="CellDimPlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="panel_fix.html">panel_fix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">p1</span>,</span></span>
+<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  raster <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  dpi <span class="op">=</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
@@ -691,8 +693,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span>,</span></span>
-<span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
@@ -700,11 +701,9 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="panel_fix.html">panel_fix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>  raster <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  dpi <span class="op">=</span> <span class="fl">30</span></span></span>
+<span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
+<span class="r-in"><span>  theme_use <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span>,</span></span>
+<span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
@@ -955,9 +954,9 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"bar"</span>, </span></span>
-<span class="r-in"><span>stat_type <span class="op">=</span> <span class="st">"count"</span>, </span></span>
-<span class="r-in"><span>stat_plot_position <span class="op">=</span> <span class="st">"dodge"</span></span></span>
+<span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
+<span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
+<span class="r-in"><span>  stat_plot_position <span class="op">=</span> <span class="st">"dodge"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
@@ -1002,26 +1001,26 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show neighbors graphs on the plot</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:27.10483] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:27.105825] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:28.24961] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:28.251] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:28.52014] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:29.026273] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:29.122744] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:57] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:57] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:58] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:58] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:58] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59]  Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59]  Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59] linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:44:59] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:00] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 12:45:00] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once every 8 hours.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:29.211676] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:11:34.457403] standard_scop done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Elapsed time:7.35 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:00]  Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:00] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:02] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:05] standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 12:45:05] Elapsed time:7.61 secs</span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -1181,7 +1180,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  pt.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
-<span class="r-in"><span> velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span></span></span>
+<span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1190,8 +1189,8 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  pt.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
-<span class="r-in"><span> velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span>, </span></span>
-<span class="r-in"><span>velocity_scale <span class="op">=</span> <span class="fl">1.5</span></span></span>
+<span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span>,</span></span>
+<span class="r-in"><span>  velocity_scale <span class="op">=</span> <span class="fl">1.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1199,8 +1198,8 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  pt.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
-<span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>, </span></span>
-<span class="r-in"><span>velocity_plot_type <span class="op">=</span> <span class="st">"stream"</span></span></span>
+<span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
+<span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"stream"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

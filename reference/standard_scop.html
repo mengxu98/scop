@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -194,24 +194,24 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">standard_scop</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:20.336897] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:20.337513] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:21.468031] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:21.468723] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:21.725303] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:22.294528] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:22.389834] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:22.473819] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:31.342425] standard_scop done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Elapsed time:11.01 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:52] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:52] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:52] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:52] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53]  Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53]  Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:53] linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:54] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:54] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:25:54] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:54]  Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:54] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:25:59] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:03] standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:03] Elapsed time:11.32 secs</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
@@ -230,25 +230,25 @@
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="va">linear_reductions</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:31.480997] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:31.48179] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:32.663998] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:32.66533] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:32.939009] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:33.430233] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:33.531388] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:33.625016] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:03] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:03] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:04]  Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05]  Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05] linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:26:05] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05]  Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:05] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:10] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:42.347049] Perform linear dimension reduction (nmf) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:14]  Perform linear dimension reduction (nmf) on the data...</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RcppML::nmf(Matrix::t(object), k = nbes, tol = tol, maxit = maxit,     verbose = verbose, ...):</span> unused argument (features = c("Gcg", "Ins2", "Nnat", "Ghrl", "Ins1", "Iapp", "Ppy", "Sst", "Gast", "Lrpprc", "Npy", "Pyy", "Chgb", "2810417H13Rik", "Rbp4", "Cdkn1a", "Slc38a5", "8430408G22Rik", "Neurog3", "Ppp1r1a", "Cck", "Gip", "Cdc20", "Gadd45a", "Krtap17-1", "Hmgb2", "Ccnb1", "Ccnd1", "Cym", "Spp1", "Tmem27", "Cyr61", "Arg1", "Chga", "Cenpa", "Clu", "Sdf2l1", "Tff3", "Cpa1", "Hhex", "Birc5", "Cartpt", "Serpina1c", "Peg10", "Cks2", "Fev", "Id1", "Cenpf", "Cdk1", "Nusap1", "Isl1", "Mt1", "Ccnd2", "Cryba2", </span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> "Top2a", "Gng12", "Btbd17", "Tuba1b", "Ppp1r14a", "Cpa2", "Rrm2", "Ldha", "Stmn1", "Tubb3", "Myl9", "Hes1", "Ccnb2", "Mboat4", "Ttr", "Scg2", "H2afx", "Pcsk2", "Zcchc18", "Dlk1", "Maged2", "Pcsk1n", "Kirrel2", "Cdca3", "Aard", "Cdkn1c", "Tmsb4x", "Cdca8", "Gadd45g", "1700086L19Rik", "Mt2", "Tuba1a", "Arhgap36", "Igfbpl1", "Dbpht2", "Mfap4", "Ptn", "Gm8773", "Ccna2", "Prc1", "Irx2", "Hap1", "Gch1", "Nab2", "Aurkb", "Igfbp2", "Dbi", "Sparc", "Serpina1e", "Tubb5", "Mafb", "Gpx3", "Tuba1c", "Id2", "Mest", </span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> "Wfdc2", "Tmsb15b2", "Spc25", "Sox9", "Pbk", "Fam159b", "Cldn10", "Phlda1", "Anxa2", "Arx", "Sox4", "Arl6ip1", "Aurka", "Spc24", "Resp18", "Klf2", "Pax4", "C2cd4b", "Lig1", "Sytl4", "Plk1", "Cldn3", "Vim", "Cpe", "Rgs4", "Slc30a8", "Sepp1", "Irx1", "Ckb", "Tpx2", "Gmnn", "Phgdh", "Ass1", "Creld2", "Mki67", "Upk3bl", "Fam64a", "Serpina6", "Avp", "Irs4", "Hspa1a", "Bicc1", "Gsta3", "Mgst1", "Nrarp", "Cks1b", "H19", "Aldh1b1", "Fmo1", "Hist1h1b", "Smc4", "Tyms", "Nudt19", "Cenpe", "Dusp1", "C2cd4a", </span>
@@ -300,44 +300,71 @@
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"pca"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="va">nonlinear_reductions</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:42.89618] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:42.897198] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:44.090493] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:44.092289] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:44.363499] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:44.845964] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:44.945781] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:45.039925] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:15] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:15] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:15] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:15] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16]  Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16]  Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:16] linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:17] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:17] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:26:17] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:17]  Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:17] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:22] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:53.779026] Perform nonlinear dimension reduction (tsne) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:47:59.65818] Perform nonlinear dimension reduction (dm) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:26]  Perform nonlinear dimension reduction (tsne) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:26] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:28] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:32]  Perform nonlinear dimension reduction (dm) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:32] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = Matrix::as.matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:33] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = Matrix::as.matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [2025-06-17 04:48:01.116122] Perform nonlinear dimension reduction (phate) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>scop_env python environment does not exist. Create it with the PrepareEnv function...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:33]  Perform nonlinear dimension reduction (phate) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:26:33] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:26:47] scop_env python environment does not exist. Create it with the PrepareEnv function...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> + /usr/share/miniconda/bin/conda create --yes --name scop_env 'python=3.8' pytables --quiet -c conda-forge</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try to install leidenalg==0.10.1,matplotlib==3.6.3,numba==0.55.2,numpy==1.21.6,palantir==1.0.1,pandas==1.3.5,python-igraph==0.10.2,scanpy==1.9.5,scikit-learn==1.3.2,scipy==1.10.1,scvelo==0.2.5,wot==1.0.8.post2,trimap==1.1.4,pacmap==0.7.0,phate==1.0.11,bbknn==1.6.0,scanorama==1.7.4,scvi-tools==0.20.3 ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_python(packages = packages, envname = envname, conda = conda,     force = force, ...):</span> Failed to install the package(s): palantir==1.0.1,scanpy==1.9.5,scvelo==0.2.5,wot==1.0.8.post2,pacmap==0.7.0,phate==1.0.11,bbknn==1.6.0,scanorama==1.7.4,scvi-tools==0.20.3 into the environment "scop_env". Please install manually.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:27:12] Try to install leidenalg==0.10.1,matplotlib==3.6.3,numba==0.55.2,numpy==1.21.6,palantir==1.0.1,pandas==1.3.5,python-igraph==0.10.2,scanpy==1.9.5,scikit-learn==1.3.2,scipy==1.10.1,scvelo==0.2.5,wot==1.0.8.post2,trimap==1.1.4,pacmap==0.7.0,phate==1.0.11,bbknn==1.6.0,scanorama==1.7.4,scvi-tools==0.20.3 ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ====================== scop conda environment ======================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> conda: /usr/share/miniconda/bin/conda</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> environment: /usr/share/miniconda/envs/scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ======================== scop python config ========================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> python:         /usr/share/miniconda/envs/scop_env/bin/python3.8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.8.so</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> version:        3.8.20 | packaged by conda-forge | (default, Sep 30 2024, 17:52:49)  [GCC 13.3.0]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.8/site-packages/numpy</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy_version:  1.21.6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> NOTE: Python version was forced by use_python() function</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ===================================================================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:29:25] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:29:36]  Perform nonlinear dimension reduction (pacmap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:29:36] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:29:53] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:30:01]  Perform nonlinear dimension reduction (trimap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:30:01] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:30:16] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:30:24]  Perform nonlinear dimension reduction (largevis) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:30:24] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:32:46] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:35:17]  Perform nonlinear dimension reduction (fr) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:35:17] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:35:18] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:35:19] standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:35:19] Elapsed time:9.07 mins</span>
 <span class="r-in"><span><span class="va">plist2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">nonlinear_reductions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nr</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>

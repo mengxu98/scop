@@ -11,7 +11,7 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -264,7 +264,7 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="CellStatPlot.html">CellStatPlot</a></code></p></div>
+    <div class="dont-index"><p><a href="CellStatPlot.html">CellStatPlot</a></p></div>
     </div>
 
     <div class="section level2">
@@ -301,37 +301,93 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="StatPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.features</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'head': no slot of name "meta.features" for this object of class "Assay5"</span>
 <span class="r-in"><span><span class="fu">StatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.features</span>,</span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.data</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"highly_variable_genes"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span>,</span></span>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in nrow(meta.data):</span> no slot of name "meta.features" for this object of class "Assay5"</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_text_repel()`).</span>
+<span class="r-plt img"><img src="StatPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="AnnotateFeatures.html">AnnotateFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GeneType"</span></span></span>
+<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"VerSeDa"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Species: Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading cached db: GeneType version:3.21.0 nterm:11 created:2025-06-17 04:09:58.833741</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.features</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'head': no slot of name "meta.features" for this object of class "Assay5"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:23:53] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-06-20 13:23:53] Preparing database: TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:23:56] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:23:56] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:23:56] Failed to download using "auto". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:00] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:00] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:00] Failed to download using "wget". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:04] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:04] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:04] Failed to download using "libcurl". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:07] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'curl' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:07] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:07] Failed to download using "curl". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:08] Error in match.arg(method, c("auto", "internal", "libcurl", "wget", "curl", : 'arg' should be one of “auto”, “internal”, “libcurl”, “wget”, “curl”, “lynx”</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:08] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:08] Failed to download using "wininet". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:09] Error in utils::download.file(url = url, destfile = destfile, method = method, : the 'internal' method for http:// URLs is defunct</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:09] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:09] Failed to download using "internal". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:11] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:11] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:11] Failed to download using "auto". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:15] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:15] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:15] Failed to download using "wget". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:18] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:18] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Mus_musculus_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:18] Failed to download using "libcurl". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:23] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Mus_musculus_Cof'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:23] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Mus_musculus_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:23] Failed to download using "auto". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:43] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:43] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Mus_musculus_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:43] Failed to download using "wget". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:47] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Mus_musculus_Cof'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:47] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Mus_musculus_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:47] Failed to download using "libcurl". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:49] Use the human annotation to create the TF database for Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:50] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:50] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:50] Failed to download using "auto". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:52] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:52] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:52] Failed to download using "wget". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:54] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:54] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:54] Failed to download using "libcurl". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:56] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:56] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:56] Failed to download using "auto". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:59] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:59] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:24:59] Failed to download using "wget". Retry...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:25:00] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:25:00] Cannot download from the url: http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-06-20 13:25:00] Failed to download using "libcurl". Retry...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in data.frame(Term = "TF", symbol = tf[["Symbol"]]):</span> arguments imply differing number of rows: 1, 0</span>
 <span class="r-in"><span><span class="fu">StatPlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.features</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"highly_variable_genes"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"GeneType"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"RNA"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"TF"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"VerSeDa"</span>,</span></span>
 <span class="r-in"><span>  stat_type <span class="op">=</span> <span class="st">"count"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  position <span class="op">=</span> <span class="st">"dodge"</span>,</span></span>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  NA_stat <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in nrow(meta.data):</span> no slot of name "meta.features" for this object of class "Assay5"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> VerSeDa is not in the meta.data.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
