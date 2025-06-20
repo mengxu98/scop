@@ -409,23 +409,32 @@ EnrichmentPlot <- function(
   words_excluded <- words_excluded %||% scop::words_excluded
 
   if (any(!split_by %in% c("Database", "Groups"))) {
-    stop("'split_by' must be either 'Database', 'Groups', or both of them")
+    log_message(
+      "'split_by' must be either 'Database', 'Groups', or both of them",
+      message_type = "error"
+    )
   }
   if (plot_type %in% c("network", "enrichmap") & length(split_by) == 1) {
-    warning(
+    log_message(
       "When 'plot_type' is 'network' or 'enrichmap', the 'split_by' parameter does not take effect.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     split_by <- c("Database", "Groups")
   }
 
   if (is.null(res)) {
     if (is.null(group_by)) {
-      stop("'group_by' must be provided.")
+      log_message(
+        "'group_by' must be provided.",
+        message_type = "error"
+      )
     }
     layer <- paste("Enrichment", group_by, test.use, sep = "_")
     if (!layer %in% names(srt@tools)) {
-      stop("No enrichment result found. You may perform RunEnrichment first.")
+      log_message(
+        "No enrichment result found. You may perform RunEnrichment first.",
+        message_type = "error"
+      )
     }
     enrichment <- srt@tools[[layer]][["enrichment"]]
   } else {
@@ -433,7 +442,10 @@ EnrichmentPlot <- function(
   }
 
   if (is.null(pvalueCutoff) && is.null(padjustCutoff)) {
-    stop("One of 'pvalueCutoff' or 'padjustCutoff' must be specified")
+    log_message(
+      "One of 'pvalueCutoff' or 'padjustCutoff' must be specified",
+      message_type = "error"
+    )
   }
   if (!is.factor(enrichment["Groups"])) {
     enrichment[["Groups"]] <- factor(
@@ -442,10 +454,13 @@ EnrichmentPlot <- function(
     )
   }
   if (length(db[!db %in% enrichment[["Database"]]]) > 0) {
-    stop(paste0(
-      db[!db %in% enrichment[["Database"]]],
-      " is not in the enrichment result."
-    ))
+    log_message(
+      paste0(
+        db[!db %in% enrichment[["Database"]]],
+        " is not in the enrichment result."
+      ),
+      message_type = "error"
+    )
   }
   if (!is.factor(enrichment[["Database"]])) {
     enrichment[["Database"]] <- factor(
@@ -463,16 +478,21 @@ EnrichmentPlot <- function(
     topTerm <- Inf
     if (is.list(id_use)) {
       if (is.null(names(id_use))) {
-        stop("'id_use' must be named when it is a list.")
+        log_message(
+          "'id_use' must be named when it is a list.",
+          message_type = "error"
+        )
       }
       if (!all(names(id_use) %in% enrichment[["Groups"]])) {
-        stop(paste0(
+        log_message(paste0(
           "Names in 'id_use' is invalid: ",
           paste0(
             names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
             collapse = ","
           )
-        ))
+        ),
+        message_type = "error"
+        )
       }
       enrichment_list <- list()
       for (i in seq_along(id_use)) {
@@ -516,11 +536,12 @@ EnrichmentPlot <- function(
     drop = FALSE
   ]
   if (nrow(enrichment_sig) == 0) {
-    stop(
+    log_message(
       "No term enriched using the threshold: ",
       paste0("pvalueCutoff = ", pvalueCutoff),
       "; ",
-      paste0("padjustCutoff = ", padjustCutoff)
+      paste0("padjustCutoff = ", padjustCutoff),
+      message_type = "error"
     )
   }
   df_list <- split(

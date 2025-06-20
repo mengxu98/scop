@@ -392,14 +392,20 @@ FeatureStatPlot <- function(
 
   if (plot.by == "feature") {
     if (length(group.by) > 1) {
-      stop(
-        "The 'group.by' must have a length of 1 when 'plot.by' is set to 'feature'"
+      log_message(
+        "The 'group.by' must have a length of 1 when 'plot.by' is set to 'feature'",
+        message_type = "error"
       )
     }
     if (!is.null(bg.by)) {
-      message("'bg.by' is invalid when plot.by is set to 'feature'")
+      log_message(
+        "'bg.by' is invalid when plot.by is set to 'feature'",
+        message_type = "warning"
+      )
     }
-    message("Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'")
+    log_message(
+      "Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'"
+    )
     srt@assays[setdiff(names(srt@assays), assay)] <- NULL
     meta.reshape <- SeuratObject::FetchData(
       srt,

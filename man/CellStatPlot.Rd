@@ -141,19 +141,16 @@ Statistical plot of cells
 }
 \examples{
 data("pancreas_sub")
-CellStatPlot(
+p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "SubCellType",
   label = TRUE
 )
-CellStatPlot(
-  pancreas_sub,
-  stat.by = "Phase",
-  group.by = "SubCellType",
-  label = TRUE
-) \%>\%
-  panel_fix(height = 2, width = 3)
+p1
+
+panel_fix(p1, height = 2, width = 3)
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -162,6 +159,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",

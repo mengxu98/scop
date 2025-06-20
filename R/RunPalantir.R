@@ -83,22 +83,30 @@ RunPalantir <- function(
     return_seurat = !is.null(srt)) {
   check_python("palantir")
   if (all(is.null(srt), is.null(adata))) {
-    stop("One of 'srt', 'adata' must be provided.")
+    log_message(
+      "One of 'srt', 'adata' must be provided.",
+      message_type = "error"
+    )
   }
   if (
     is.null(group_by) && any(!is.null(early_group), !is.null(terminal_groups))
   ) {
-    stop(
-      "'group_by' must be provided when early_group or terminal_groups provided."
+    log_message(
+      "'group_by' must be provided when early_group or terminal_groups provided.",
+      message_type = "error"
     )
   }
   if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
-    stop(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one."
+    log_message(
+      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      message_type = "error"
     )
   }
   if (is.null(early_cell) && is.null(early_group)) {
-    stop("'early_cell' or 'early_group' must be provided.")
+    log_message(
+      "'early_cell' or 'early_group' must be provided.",
+      message_type = "error"
+    )
   }
   args <- mget(names(formals()))
   args <- lapply(args, function(x) {

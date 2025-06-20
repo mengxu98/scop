@@ -118,14 +118,21 @@ RunSCVELO <- function(
     check_python("magic-impute")
   }
   if (all(is.null(srt), is.null(adata))) {
-    stop("One of 'srt', 'adata' must be provided.")
+    log_message(
+      "One of 'srt', 'adata' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(group_by)) {
-    stop("'group_by' must be provided.")
+    log_message(
+      "'group_by' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
-    stop(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one."
+    log_message(
+      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      message_type = "error"
     )
   }
   args <- mget(names(formals()))

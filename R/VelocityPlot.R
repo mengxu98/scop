@@ -135,11 +135,17 @@ VelocityPlot <- function(
   check_r("metR")
 
   if (!reduction %in% names(srt@reductions)) {
-    stop(paste0(reduction, " is not in the srt reduction names."))
+    log_message(
+      paste0(reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
   }
   V_reduction <- paste0(velocity, "_", reduction)
   if (!V_reduction %in% names(srt@reductions)) {
-    stop("Cannot find the velocity embedding ", V_reduction, ".")
+    log_message(
+      "Cannot find the velocity embedding ", V_reduction, ".",
+      message_type = "error"
+    )
   }
   X_emb <- srt@reductions[[reduction]]@cell.embeddings[, dims]
   V_emb <- srt@reductions[[V_reduction]]@cell.embeddings[, dims]

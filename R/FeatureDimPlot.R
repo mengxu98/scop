@@ -420,7 +420,10 @@ FeatureDimPlot <- function(
     }
   }
   if (!inherits(features, "character")) {
-    stop("'features' is not a character vectors")
+    log_message(
+      "'features' is not a character vectors",
+      message_type = "error"
+    )
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -430,7 +433,10 @@ FeatureDimPlot <- function(
   }
   for (i in c(split.by)) {
     if (!i %in% colnames(srt@meta.data)) {
-      stop(paste0(i, " is not in the meta.data of srt object."))
+      log_message(
+        paste0(i, " is not in the meta.data of srt object."),
+        message_type = "error"
+      )
     }
     if (!is.factor(srt@meta.data[[i]])) {
       srt@meta.data[[i]] <- factor(
@@ -441,11 +447,17 @@ FeatureDimPlot <- function(
   }
   for (l in lineages) {
     if (!l %in% colnames(srt@meta.data)) {
-      stop(paste0(l, " is not in the meta.data of srt object."))
+      log_message(
+        paste0(l, " is not in the meta.data of srt object."),
+        message_type = "error"
+      )
     }
   }
   if (!is.null(graph) && !graph %in% names(srt@graphs)) {
-    stop("Graph ", graph, " is not exist in the srt object.")
+    log_message(
+      "Graph ", graph, " is not exist in the srt object.",
+      message_type = "error"
+    )
   }
   if (!is.null(graph)) {
     graph <- srt@graphs[[graph]]
@@ -456,16 +468,22 @@ FeatureDimPlot <- function(
     reduction <- DefaultReduction(srt, pattern = reduction)
   }
   if (!reduction %in% names(srt@reductions)) {
-    stop(paste0(reduction, " is not in the srt reduction names."))
+    log_message(
+      paste0(reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
   }
   if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      stop("No cells in 'cells.highlight' found in srt.")
+      log_message(
+        "No cells in 'cells.highlight' found in srt.",
+        message_type = "error"
+      )
     }
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      warning(
+      log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -487,10 +505,10 @@ FeatureDimPlot <- function(
       )
   ]
   if (length(features_drop) > 0) {
-    warning(
+    log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     features <- features[!features %in% features_drop]
   }
@@ -499,25 +517,29 @@ FeatureDimPlot <- function(
   features_meta <- features[features %in% colnames(srt@meta.data)]
   features_embedding <- features[features %in% names(embeddings)]
   if (length(intersect(features_gene, features_meta)) > 0) {
-    warning(
+    log_message(
       "Features appear in both gene names and metadata names: ",
-      paste0(intersect(features_gene, features_meta), collapse = ",")
+      paste0(intersect(features_gene, features_meta), collapse = ","),
+      message_type = "warning"
     )
   }
   if (length(c(features_gene, features_meta, features_embedding)) == 0) {
-    stop("There are no valid features present.")
+    log_message(
+      "There are no valid features present.",
+      message_type = "error"
+    )
   }
 
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
     if (length(features_meta) > 0) {
-      warning(
+      log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     status <- check_data_type(srt, layer = layer, assay = assay)
-    message("Data type detected in ", layer, " layer: ", status)
+    log_message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
         GetAssayData5(
@@ -541,7 +563,10 @@ FeatureDimPlot <- function(
         function(x) log1p(exp(mean(log(x))))
       )
     } else {
-      stop("Can not determine the data type.")
+      log_message(
+        "Can not determine the data type.",
+        message_type = "error"
+      )
     }
     features <- c(features, "CoExp")
     features_meta <- c(features_meta, "CoExp")
@@ -596,12 +621,18 @@ FeatureDimPlot <- function(
   ])
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
-    stop("'features' must be type of numeric variable.")
+    log_message(
+      "'features' must be type of numeric variable.",
+      message_type = "error"
+    )
   }
   dat_exp[, features][dat_exp[, features] <= bg_cutoff] <- NA
 
   if (length(features) > 50 && !isTRUE(force)) {
-    warning("More than 50 features to be plotted", immediate. = TRUE)
+    log_message(
+      "More than 50 features to be plotted",
+      message_type = "warning"
+    )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
@@ -618,11 +649,14 @@ FeatureDimPlot <- function(
     } else if (length(subtitle) == length(features)) {
       subtitle <- stats::setNames(subtitle, nm = features)
     } else {
-      stop(paste0(
-        "Subtitle length must be 1 or length of features(",
-        length(features),
-        ")"
-      ))
+      log_message(
+        paste0(
+          "Subtitle length must be 1 or length of features(",
+          length(features),
+          ")"
+        ),
+        message_type = "error"
+      )
     }
   }
 
@@ -645,7 +679,10 @@ FeatureDimPlot <- function(
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
-      stop("'raster.dpi' must be a two-length numeric vector")
+      log_message(
+        "'raster.dpi' must be a two-length numeric vector",
+        message_type = "error"
+      )
     }
   }
 
@@ -1780,7 +1817,10 @@ FeatureDimPlot3D <- function(
     features <- unlist(features)
   }
   if (!inherits(features, "character")) {
-    stop("'features' is not a character vectors")
+    log_message(
+      "'features' is not a character vectors",
+      message_type = "error"
+    )
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -1790,7 +1830,10 @@ FeatureDimPlot3D <- function(
   }
   for (i in split.by) {
     if (!i %in% colnames(srt@meta.data)) {
-      stop(paste0(i, " is not in the meta.data of srt object."))
+      log_message(
+        paste0(i, " is not in the meta.data of srt object."),
+        message_type = "error"
+      )
     }
     if (!is.factor(srt@meta.data[[i]])) {
       srt@meta.data[[i]] <- factor(
@@ -1805,19 +1848,28 @@ FeatureDimPlot3D <- function(
     reduction <- DefaultReduction(srt, pattern = reduction, min_dim = 3)
   }
   if (!reduction %in% names(srt@reductions)) {
-    stop(paste0(reduction, " is not in the srt reduction names."))
+    log_message(
+      paste0(reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
   }
   if (ncol(srt@reductions[[reduction]]@cell.embeddings) < 3) {
-    stop("Reduction must be in three dimensions or higher.")
+    log_message(
+      "Reduction must be in three dimensions or higher.",
+      message_type = "error"
+    )
   }
   if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      stop("No cells in 'cells.highlight' found in srt.")
+      log_message(
+        "No cells in 'cells.highlight' found in srt.",
+        message_type = "error"
+      )
     }
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      warning(
+      log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -1838,7 +1890,10 @@ FeatureDimPlot3D <- function(
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
     check_r("htmlwidgets")
     if (!grepl(".html$", save)) {
-      stop("'save' must be a string with .html as a suffix.")
+      log_message(
+        "'save' must be a string with .html as a suffix.",
+        message_type = "error"
+      )
     }
   }
 
@@ -1857,10 +1912,10 @@ FeatureDimPlot3D <- function(
       )
   ]
   if (length(features_drop) > 0) {
-    warning(
+    log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     features <- features[!features %in% features_drop]
   }
@@ -1869,25 +1924,29 @@ FeatureDimPlot3D <- function(
   features_meta <- features[features %in% colnames(srt@meta.data)]
   features_embedding <- features[features %in% names(embeddings)]
   if (length(intersect(features_gene, features_meta)) > 0) {
-    warning(
+    log_message(
       "Features appear in both gene names and metadata names: ",
-      paste0(intersect(features_gene, features_meta), collapse = ",")
+      paste0(intersect(features_gene, features_meta), collapse = ","),
+      message_type = "warning"
     )
   }
   if (length(c(features_gene, features_meta, features_embedding)) == 0) {
-    stop("There are no valid features present.")
+    log_message(
+      "There are no valid features present.",
+      message_type = "error"
+    )
   }
 
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
     if (length(features_meta) > 0) {
-      warning(
+      log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     status <- check_data_type(srt, layer = layer, assay = assay)
-    message("Data type detected in ", layer, " layer: ", status)
+    log_message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
         GetAssayData5(
@@ -1911,7 +1970,10 @@ FeatureDimPlot3D <- function(
         function(x) log1p(exp(mean(log(x))))
       )
     } else {
-      stop("Can not determine the data type.")
+      log_message(
+        "Can not determine the data type.",
+        message_type = "error"
+      )
     }
     features <- c(features, "CoExp")
     features_meta <- c(features_meta, "CoExp")
@@ -1966,10 +2028,16 @@ FeatureDimPlot3D <- function(
   ])
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
-    stop("'features' must be type of numeric variable.")
+    log_message(
+      "'features' must be type of numeric variable.",
+      message_type = "error"
+    )
   }
   if (length(features) > 50 && !isTRUE(force)) {
-    warning("More than 50 features to be plotted", immediate. = TRUE)
+    log_message(
+      "More than 50 features to be plotted",
+      message_type = "warning"
+    )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))

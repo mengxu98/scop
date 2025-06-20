@@ -52,7 +52,7 @@ PrepareEnv <- function(
   } else {
     force <- TRUE
     if (is.null(conda)) {
-      message("Conda not found. Installing miniconda...")
+      log_message("Conda not found. Installing miniconda...")
       options(timeout = 360)
       version <- "3"
       info <- as.list(Sys.info())
@@ -109,7 +109,10 @@ PrepareEnv <- function(
       python_version < numeric_version("3.7.0") ||
         python_version >= numeric_version("3.10.0")
     ) {
-      stop("scop currently only support python version 3.7-3.9!")
+      log_message(
+        "scop currently only support python version 3.7-3.9!",
+        message_type = "error"
+      )
     }
     python_path <- reticulate::conda_create(
       conda = conda,
@@ -122,7 +125,7 @@ PrepareEnv <- function(
     if (isFALSE(env)) {
       print(reticulate:::conda_info(conda = conda))
       print(reticulate::conda_list(conda = conda))
-      stop(
+      log_message(
         "Unable to find scop environment under the expected path: ",
         env_path,
         "\n",
@@ -131,7 +134,8 @@ PrepareEnv <- function(
         "\n",
         "scop python: ",
         python_path,
-        "\n"
+        "\n",
+        message_type = "error"
       )
     }
   }
@@ -342,7 +346,10 @@ installed_python_pkgs <- function(
   }
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
-    stop("Can not find the conda environment: ", envname)
+    log_message(
+      "Can not find the conda environment: ", envname,
+      message_type = "error"
+    )
   }
   all_installed <- reticulate:::conda_list_packages(
     conda = conda,
@@ -369,7 +376,10 @@ exist_python_pkgs <- function(
   }
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
-    stop("Can not find the conda environment: ", envname)
+    log_message(
+      "Can not find the conda environment: ", envname,
+      message_type = "error"
+    )
   }
   all_installed <- installed_python_pkgs(envname = envname, conda = conda)
   packages_installed <- NULL
@@ -525,7 +535,11 @@ conda_install <- function(
     if (status != 0L) {
       fmt <- "installation of '%s' into environment '%s' failed [error code %i]"
       msg <- sprintf(fmt, python_package, envname, status)
-      stop(msg, call. = FALSE)
+      log_message(
+        msg,
+        call. = FALSE,
+        message_type = "error"
+      )
     }
   }
   if (pip) {
@@ -571,7 +585,10 @@ conda_python <- function(
       return(path)
     }
     fmt <- "no conda environment exists at path '%s'"
-    stop(sprintf(fmt, envname))
+    log_message(
+      sprintf(fmt, envname),
+      message_type = "error"
+    )
   }
   conda_envs <- reticulate::conda_list(conda = conda)
   conda_envs <- conda_envs[
@@ -587,7 +604,10 @@ conda_python <- function(
   ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
-    stop("conda environment \"", envname, "\" not found")
+    log_message(
+      "conda environment \"", envname, "\" not found",
+      message_type = "error"
+    )
   }
   python <- if (all) env$python else env$python[[1L]]
   return(normalizePath(as.character(python), mustWork = FALSE))
@@ -606,8 +626,11 @@ run_python <- function(
       )
     },
     error = function(error) {
-      message(error)
-      stop("Failed to run \"", command, "\". Please check manually.")
+      log_message(error, message_type = "error")
+      log_message(
+        "Failed to run \"", command, "\". Please check manually.",
+        message_type = "error"
+      )
     }
   )
 }
@@ -632,10 +655,13 @@ run_python <- function(
 #' f <- function() {
 #'   value <- runif(1, min = 0, max = 1)
 #'   if (value > 0.5) {
-#'     message("value is larger than 0.5")
+#'     log_message("value is larger than 0.5")
 #'     return(value)
 #'   } else {
-#'     stop("value is smaller than 0.5")
+#'     log_message(
+#'       "value is smaller than 0.5",
+#'       message_type = "error"
+#'     )
 #'   }
 #' }
 #' f_evaluated <- try_get(expr = f())
@@ -652,20 +678,23 @@ try_get <- function(
     out <- tryCatch(
       expr = eval.parent(substitute(expr)),
       error = function(error) {
-        message(error)
-        message("")
-        message(error_message)
+        log_message(error)
+        log_message("")
+        log_message(error_message)
         Sys.sleep(1)
         return(error)
       }
     )
     if (inherits(out, "error") && ntry >= max_tries) {
-      stop(out)
+      log_message(
+        out,
+        message_type = "error"
+      )
     } else {
       if (!inherits(out, "error")) {
         break
       } else {
-        message(retry_message)
+        log_message(retry_message)
       }
     }
   }
@@ -690,7 +719,10 @@ download <- function(
     ...,
     max_tries = 2) {
   if (missing(url) || missing(destfile)) {
-    stop("'url' and 'destfile' must be both provided.")
+    log_message(
+      "'url' and 'destfile' must be both provided.",
+      message_type = "error"
+    )
   }
   ntry <- 0
   status <- NULL
@@ -710,9 +742,18 @@ download <- function(
           status <- 1
         },
         error = function(error) {
-          message(error)
-          message("Cannot download from the url: ", url)
-          message("Failed to download using \"", method, "\". Retry...\n")
+          log_message(
+            error,
+            message_type = "warning"
+          )
+          log_message(
+            "Cannot download from the url: ", url,
+            message_type = "warning"
+          )
+          log_message(
+            "Failed to download using \"", method, "\". Retry...",
+            message_type = "warning"
+          )
           Sys.sleep(1)
           return(NULL)
         }
@@ -723,7 +764,10 @@ download <- function(
     }
     ntry <- ntry + 1
     if (is.null(status) && ntry >= max_tries) {
-      stop("Download failed.")
+      log_message(
+        "Download failed.",
+        message_type = "error"
+      )
     }
   }
   return(invisible(NULL))
@@ -760,7 +804,10 @@ zero_range <- function(
     return(TRUE)
   }
   if (length(x) != 2) {
-    stop("x must be length 1 or 2")
+    log_message(
+      "x must be length 1 or 2",
+      message_type = "error"
+    )
   }
   if (any(is.na(x))) {
     return(NA)
@@ -879,7 +926,10 @@ capitalize <- function(x, force_tolower = FALSE) {
     x <- as.character(x)
   }
   if (!inherits(x, "character")) {
-    stop("x must be the type of character.")
+    log_message(
+      "x must be the type of character.",
+      message_type = "error"
+    )
   }
   if (isTRUE(force_tolower)) {
     x <- paste(

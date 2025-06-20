@@ -87,7 +87,10 @@ LineagePlot <- function(
     reduction <- DefaultReduction(srt, pattern = reduction)
   }
   if (!reduction %in% names(srt@reductions)) {
-    stop(paste0(reduction, " is not in the srt reduction names."))
+    log_message(
+      paste0(reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
   }
 
   reduction_key <- srt@reductions[[reduction]]@key

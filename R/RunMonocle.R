@@ -146,7 +146,7 @@ RunMonocle2 <- function(
       )$gene_id
     }
   }
-  message("features number: ", length(features))
+  log_message("features number: ", length(features))
   cds <- monocle::setOrderingFilter(cds, features)
   p <- monocle::plot_ordering_genes(cds)
   print(p)
@@ -234,16 +234,21 @@ orderCells <- function(
     num_paths = NULL,
     reverse = NULL) {
   if (class(cds)[1] != "CellDataSet") {
-    stop("Error cds is not of type 'CellDataSet'")
+    log_message(
+      "Error cds is not of type 'CellDataSet'",
+      message_type = "error"
+    )
   }
   if (is.null(cds@dim_reduce_type)) {
-    stop(
-      "Error: dimensionality not yet reduced. Please call reduceDimension() before calling this function."
+    log_message(
+      "Error: dimensionality not yet reduced. Please call reduceDimension() before calling this function.",
+      message_type = "error"
     )
   }
   if (any(c(length(cds@reducedDimS) == 0, length(cds@reducedDimK) == 0))) {
-    stop(
-      "Error: dimension reduction didn't prodvide correct results. Please check your reduceDimension() step and ensure correct dimension reduction are performed before calling this function."
+    log_message(
+      "Error: dimension reduction didn't prodvide correct results. Please check your reduceDimension() step and ensure correct dimension reduction are performed before calling this function.",
+      message_type = "error"
     )
   }
   root_cell <- monocle:::select_root_cell(cds, root_state, reverse)
@@ -292,8 +297,9 @@ orderCells <- function(
     )
   } else if (cds@dim_reduce_type == "DDRTree") {
     if (is.null(num_paths) == FALSE) {
-      message(
-        "Warning: num_paths only valid for method 'ICA' in reduceDimension()"
+      log_message(
+        "Warning: num_paths only valid for method 'ICA' in reduceDimension()",
+        message_type = "warning"
       )
     }
     cc_ordering <- extract_ddrtree_ordering(cds, root_cell)
@@ -358,8 +364,9 @@ orderCells <- function(
     )[which(igraph::degree(monocle::minSpanningTree(cds)) > 2)]$name
   } else if (cds@dim_reduce_type == "SimplePPT") {
     if (is.null(num_paths) == FALSE) {
-      message(
-        "Warning: num_paths only valid for method 'ICA' in reduceDimension()"
+      log_message(
+        "Warning: num_paths only valid for method 'ICA' in reduceDimension()",
+        message_type = "warning"
       )
     }
     cc_ordering <- extract_ddrtree_ordering(cds, root_cell)

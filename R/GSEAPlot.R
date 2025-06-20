@@ -210,11 +210,17 @@ GSEAPlot <- function(
 
   if (is.null(res)) {
     if (is.null(group_by)) {
-      stop("'group_by' must be provided.")
+      log_message(
+        "'group_by' must be provided.",
+        message_type = "error"
+      )
     }
     layer <- paste("GSEA", group_by, test.use, sep = "_")
     if (!layer %in% names(srt@tools)) {
-      stop("No enrichment result found. You may perform RunGSEA first.")
+      log_message(
+        "No enrichment result found. You may perform RunGSEA first.",
+        message_type = "error"
+      )
     }
     enrichment <- srt@tools[[layer]][["enrichment"]]
     res <- srt@tools[[layer]][["results"]]
@@ -226,7 +232,10 @@ GSEAPlot <- function(
   comb <- expand.grid(group_use, db)
   use <- names(res)[names(res) %in% paste(comb$Var1, comb$Var2, sep = "-")]
   if (length(use) == 0) {
-    stop(paste0(db, " is not in the enrichment result."))
+    log_message(
+      paste0(db, " is not in the enrichment result."),
+      message_type = "error"
+    )
   }
   res <- res[use]
   enrichment <- enrichment[
@@ -235,7 +244,10 @@ GSEAPlot <- function(
   ]
 
   if (is.null(pvalueCutoff) && is.null(padjustCutoff)) {
-    stop("One of 'pvalueCutoff' or 'padjustCutoff' must be specified")
+    log_message(
+      "One of 'pvalueCutoff' or 'padjustCutoff' must be specified",
+      message_type = "error"
+    )
   }
   if (!is.factor(enrichment[["Database"]])) {
     enrichment[["Database"]] <- factor(
@@ -250,25 +262,34 @@ GSEAPlot <- function(
     )
   }
   if (length(db[!db %in% enrichment[["Database"]]]) > 0) {
-    stop(paste0(
-      db[!db %in% enrichment[["Database"]]],
-      " is not in the enrichment result."
-    ))
+    log_message(
+      paste0(
+        db[!db %in% enrichment[["Database"]]],
+        " is not in the enrichment result."
+      ),
+      message_type = "error"
+    )
   }
   if (length(id_use) > 0) {
     topTerm <- Inf
     if (is.list(id_use)) {
       if (is.null(names(id_use))) {
-        stop("'id_use' must be named when it is a list.")
+        log_message(
+          "'id_use' must be named when it is a list.",
+          message_type = "error"
+        )
       }
       if (!all(names(id_use) %in% enrichment[["Groups"]])) {
-        stop(paste0(
-          "Names in 'id_use' is invalid: ",
+        log_message(
           paste0(
-            names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
-            collapse = ","
-          )
-        ))
+            "Names in 'id_use' is invalid: ",
+            paste0(
+              names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
+              collapse = ","
+            )
+          ),
+          message_type = "error"
+        )
       }
       enrichment_list <- list()
       for (i in seq_along(id_use)) {
@@ -685,12 +706,12 @@ GSEAPlot <- function(
             !features_label_tmp %in% df_gene$GeneName
           ]
           if (length(gene_drop) > 0) {
-            warning(
+            log_message(
               "Gene ",
               paste(gene_drop, collapse = ","),
               " is not in the geneset of the ",
               gsdata$Description[1],
-              immediate. = TRUE
+              message_type = "warning"
             )
           }
           x_nudge <- diff(range(gsdata$x)) * 0.05

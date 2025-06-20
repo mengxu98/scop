@@ -170,8 +170,8 @@ RunEnrichment <- function(
   bpprogressbar(BPPARAM) <- TRUE
   bpRNGseed(BPPARAM) <- seed
   time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start Enrichment"))
-  message("Workers: ", bpworkers(BPPARAM))
+  log_message("Start Enrichment")
+  log_message("Workers: ", bpworkers(BPPARAM))
 
   use_srt <- FALSE
   if (is.null(geneID)) {
@@ -183,10 +183,11 @@ RunEnrichment <- function(
       !layer %in% names(srt@tools) ||
         length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
     ) {
-      stop(
+      log_message(
         "Cannot find the DEtest result for the group '",
         group_by,
-        "'. You may perform RunDEtest first."
+        "'. You may perform RunDEtest first.",
+        message_type = "error"
       )
     }
     index <- grep(
@@ -194,7 +195,10 @@ RunEnrichment <- function(
       names(srt@tools[[layer]])
     )[1]
     if (is.na(index)) {
-      stop("Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.")
+      log_message(
+        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.",
+        message_type = "error"
+      )
     }
     de <- names(srt@tools[[layer]])[index]
     de_df <- srt@tools[[layer]][[de]]
@@ -220,7 +224,10 @@ RunEnrichment <- function(
     levels = levels(geneID_groups)[levels(geneID_groups) %in% geneID_groups]
   )
   if (length(geneID_groups) != length(geneID)) {
-    stop("length(geneID_groups)!=length(geneID)")
+    log_message(
+      "length(geneID_groups)!=length(geneID)",
+      message_type = "error"
+    )
   }
   names(geneID_groups) <- geneID
   input <- data.frame(geneID = geneID, geneID_groups = geneID_groups)
@@ -250,7 +257,7 @@ RunEnrichment <- function(
     db_list[[species]][[db]][["version"]] <- "custom"
   }
   if (isTRUE(db_combine)) {
-    message("Create 'Combined' database ...")
+    log_message("Create 'Combined' database ...")
     TERM2GENE <- do.call(
       rbind,
       lapply(
@@ -303,7 +310,7 @@ RunEnrichment <- function(
   input <- unnest(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
 
-  message("Permform enrichment...")
+  log_message("Permform enrichment...")
   comb <- expand.grid(
     group = levels(geneID_groups),
     term = db,
@@ -388,12 +395,12 @@ RunEnrichment <- function(
             eval(rlang::parse_expr(GO_simplify_cutoff))
           ))
           if (nterm_simplify <= 1) {
-            warning(
+            log_message(
               group,
               "|",
               term,
               " has no term to simplify.",
-              immediate. = TRUE
+              message_type = "warning"
             )
           } else {
             sim_res@result <- sim_res@result[
@@ -446,8 +453,8 @@ RunEnrichment <- function(
   rownames(enrichment) <- NULL
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "Enrichment done"))
-  message(
+  log_message("Enrichment done")
+  log_message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),

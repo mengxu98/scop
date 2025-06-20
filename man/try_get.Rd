@@ -29,10 +29,13 @@ attempts fail, it throws an error; if not, the evaluated expression is returned.
 f <- function() {
   value <- runif(1, min = 0, max = 1)
   if (value > 0.5) {
-    message("value is larger than 0.5")
+    log_message("value is larger than 0.5")
     return(value)
   } else {
-    stop("value is smaller than 0.5")
+    log_message(
+      "value is smaller than 0.5",
+      message_type = "error"
+    )
   }
 }
 f_evaluated <- try_get(expr = f())

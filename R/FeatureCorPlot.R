@@ -122,10 +122,16 @@ FeatureCorPlot <- function(
   set.seed(seed)
 
   if (is.null(features)) {
-    stop("'features' must be provided.")
+    log_message(
+      "'features' must be provided.",
+      message_type = "error"
+    )
   }
   if (!inherits(features, "character")) {
-    stop("'features' is not a character vectors")
+    log_message(
+      "'features' is not a character vectors",
+      message_type = "error"
+    )
   }
   assay <- assay %||% DefaultAssay(srt)
   if (is.null(split.by)) {
@@ -138,7 +144,10 @@ FeatureCorPlot <- function(
   }
   for (i in c(split.by, group.by)) {
     if (!i %in% colnames(srt@meta.data)) {
-      stop(paste0(i, " is not in the meta.data of srt object."))
+      log_message(
+        paste0(i, " is not in the meta.data of srt object."),
+        message_type = "error"
+      )
     }
     if (!is.factor(srt@meta.data[[i]])) {
       srt@meta.data[[i]] <- factor(
@@ -149,12 +158,14 @@ FeatureCorPlot <- function(
   }
   if (!is.null(cells.highlight) & !isTRUE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      stop("No cells in 'cells.highlight' found in srt.")
+      log_message("No cells in 'cells.highlight' found in srt.",
+        message_type = "error"
+      )
     }
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
-      warning(
+      log_message(
         "Some cells in 'cells.highlight' not found in srt.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     cells.highlight <- intersect(cells.highlight, colnames(srt@assays[[1]]))
@@ -167,10 +178,10 @@ FeatureCorPlot <- function(
     !features %in% c(rownames(srt@assays[[assay]]), colnames(srt@meta.data))
   ]
   if (length(features_drop) > 0) {
-    warning(
+    log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     features <- features[!features %in% features_drop]
   }
@@ -178,18 +189,19 @@ FeatureCorPlot <- function(
   features_gene <- features[features %in% rownames(srt@assays[[assay]])]
   features_meta <- features[features %in% colnames(srt@meta.data)]
   if (length(intersect(features_gene, features_meta)) > 0) {
-    warning(
+    log_message(
       "Features appear in both gene names and metadata names: ",
-      paste0(intersect(features_gene, features_meta), collapse = ",")
+      paste0(intersect(features_gene, features_meta), collapse = ","),
+      message_type = "warning"
     )
   }
 
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
     if (length(features_meta) > 0) {
-      warning(
+      log_message(
         paste(features_meta, collapse = ","),
         "is not used when calculating co-expression",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
@@ -215,7 +227,10 @@ FeatureCorPlot <- function(
         function(x) log1p(exp(mean(log(x))))
       )
     } else {
-      stop("Can not determine the data type.")
+      log_message(
+        "Can not determine the data type.",
+        message_type = "error"
+      )
     }
     features <- c(features, "CoExp")
     features_meta <- c(features_meta, "CoExp")
@@ -239,11 +254,17 @@ FeatureCorPlot <- function(
   dat_exp <- cbind(dat_gene, dat_meta)
   features <- unique(features[features %in% c(features_gene, features_meta)])
   if (length(features) < 2) {
-    stop("features must be a vector of length at least 2.")
+    log_message(
+      "features must be a vector of length at least 2.",
+      message_type = "error"
+    )
   }
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
-    stop("'features' must be type of numeric variable.")
+    log_message(
+      "'features' must be type of numeric variable.",
+      message_type = "error"
+    )
   }
   if (!inherits(dat_exp, "dgCMatrix")) {
     dat_exp <- SeuratObject::as.sparse(
@@ -251,9 +272,9 @@ FeatureCorPlot <- function(
     )
   }
   if (length(features) > 10 && !isTRUE(force)) {
-    warning(
+    log_message(
       "More than 10 features to be paired compared which will generate more than 50 plots.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
@@ -275,7 +296,10 @@ FeatureCorPlot <- function(
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
-      stop("'raster.dpi' must be a two-length numeric vector")
+      log_message(
+        "'raster.dpi' must be a two-length numeric vector",
+        message_type = "error"
+      )
     }
   }
 

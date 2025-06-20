@@ -483,8 +483,9 @@ CellCorHeatmap <- function(
       length(query_cell_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "query_cell_annotation_palette and query_cell_annotation_palcolor must be the same length as query_cell_annotation"
+      log_message(
+        "query_cell_annotation_palette and query_cell_annotation_palcolor must be the same length as query_cell_annotation",
+        message_type = "error"
       )
     }
     if (
@@ -493,7 +494,7 @@ CellCorHeatmap <- function(
           c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]]))
       )
     ) {
-      stop(
+      log_message(
         "query_cell_annotation: ",
         paste0(
           query_cell_annotation[
@@ -505,7 +506,8 @@ CellCorHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object."
+        " is not in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -528,8 +530,9 @@ CellCorHeatmap <- function(
       length(ref_cell_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "ref_cell_annotation_palette and ref_cell_annotation_palcolor must be the same length as ref_cell_annotation"
+      log_message(
+        "ref_cell_annotation_palette and ref_cell_annotation_palcolor must be the same length as ref_cell_annotation",
+        message_type = "error"
       )
     }
     if (
@@ -538,7 +541,7 @@ CellCorHeatmap <- function(
           c(colnames(srt_ref@meta.data), rownames(srt_ref[[ref_assay]]))
       )
     ) {
-      stop(
+      log_message(
         "ref_cell_annotation: ",
         paste0(
           ref_cell_annotation[
@@ -547,7 +550,8 @@ CellCorHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object."
+        " is not in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -1582,11 +1586,11 @@ CellCorHeatmap <- function(
     height = if (is.numeric(height)) grid::unit(height, units = units) else NULL
   )
   if (any(names(ht_params) %in% names(ht_args))) {
-    warning(
+    log_message(
       "ht_params: ",
       paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
       " were duplicated and will not be used.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
   ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])

@@ -29,17 +29,21 @@ RenameFeatures <- function(
   assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
   if (is.null(names(newnames))) {
     if (length(newnames) == nrow(srt)) {
-      stop("'newnames' must be named or the length of features in the srt.")
+      log_message(
+        "'newnames' must be named or the length of features in the srt.",
+        message_type = "error"
+      )
     }
     if (length(unique(sapply(srt@assays[assays], nrow))) > 1) {
-      stop(
-        "Assays in the srt object have different number of features. Please use a named vectors."
+      log_message(
+        "Assays in the srt object have different number of features. Please use a named vectors.",
+        message_type = "error"
       )
     }
     names(newnames) <- rownames(srt[[assays[1]]])
   }
   for (assay in assays) {
-    message("Rename features for the assay: ", assay)
+    log_message("Rename features for the assay: ", assay)
     assay_obj <- Seurat::GetAssay(srt, assay = assay)
     if (inherits(assay_obj, "Assay")) {
       for (d in c("meta.features", "scale.data", "counts", "data")) {
@@ -136,10 +140,16 @@ RenameClusters <- function(
     name = "newclusters",
     keep_levels = FALSE) {
   if (missing(group.by)) {
-    stop("group.by must be provided")
+    log_message(
+      "group.by must be provided",
+      message_type = "error"
+    )
   }
   if (!group.by %in% colnames(srt@meta.data)) {
-    stop(paste0(group.by, " is not in the meta.data of srt object."))
+    log_message(
+      paste0(group.by, " is not in the meta.data of srt object."),
+      message_type = "error"
+    )
   }
   if (length(nameslist) > 0 && is.null(names(nameslist))) {
     names(nameslist) <- levels(srt@meta.data[[group.by]])
@@ -152,16 +162,18 @@ RenameClusters <- function(
   } else {
     if (is.null(names(nameslist))) {
       if (!is.factor(srt@meta.data[[group.by]])) {
-        stop(
-          "'nameslist' must be named when srt@meta.data[[group.by]] is not a factor"
+        log_message(
+          "'nameslist' must be named when srt@meta.data[[group.by]] is not a factor",
+          message_type = "error"
         )
       }
       if (
         !identical(length(nameslist), length(unique(srt@meta.data[[group.by]])))
       ) {
-        stop(
+        log_message(
           "'nameslist' must be named or the length of ",
-          length(unique(srt@meta.data[[group.by]]))
+          length(unique(srt@meta.data[[group.by]])),
+          message_type = "error"
         )
       }
       names(nameslist) <- levels(srt@meta.data[[group.by]])
@@ -169,7 +181,10 @@ RenameClusters <- function(
     names_assign <- nameslist
   }
   if (all(!names(names_assign) %in% srt@meta.data[[group.by]])) {
-    stop("No group name mapped.")
+    log_message(
+      "No group name mapped.",
+      message_type = "error"
+    )
   }
   if (is.factor(srt@meta.data[[group.by]])) {
     levels <- levels(srt@meta.data[[group.by]])

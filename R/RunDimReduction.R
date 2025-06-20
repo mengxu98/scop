@@ -68,8 +68,9 @@ RunDimReduction <- function(
       ) ||
         length(linear_reduction) > 1
     ) {
-      stop(
-        "'linear_reduction' must be one of 'pca','svd', 'ica', 'nmf', 'mds', 'glmpca'."
+      log_message(
+        "'linear_reduction' must be one of 'pca','svd', 'ica', 'nmf', 'mds', 'glmpca'",
+        message_type = "error"
       )
     }
   }
@@ -92,8 +93,9 @@ RunDimReduction <- function(
       ) ||
         length(nonlinear_reduction) > 1
     ) {
-      stop(
-        "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'."
+      log_message(
+        "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'",
+        message_type = "error"
       )
     }
     if (
@@ -102,13 +104,14 @@ RunDimReduction <- function(
         is.null(neighbor_use) &&
         is.null(graph_use)
     ) {
-      stop(
-        "'features', 'reduction_use', 'neighbor_use', or 'graph_use' must be provided when running non-linear dimensionality reduction."
+      log_message(
+        "'features', 'reduction_use', 'neighbor_use', or 'graph_use' must be provided when running non-linear dimensionality reduction.",
+        message_type = "error"
       )
     }
     if (nonlinear_reduction %in% c("fr")) {
       if (!is.null(graph_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Graphs(",
@@ -116,7 +119,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(neighbor_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Neighbors(",
@@ -124,7 +127,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(features)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Features(length:",
@@ -132,7 +135,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(reduction_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Reduction(",
@@ -146,7 +149,7 @@ RunDimReduction <- function(
       }
     } else {
       if (!is.null(features)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Features(length:",
@@ -154,7 +157,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(reduction_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Reduction(",
@@ -166,7 +169,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(neighbor_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Neighbors(",
@@ -174,7 +177,7 @@ RunDimReduction <- function(
           ") as input"
         )
       } else if (!is.null(graph_use)) {
-        message(
+        log_message(
           "Non-linear dimensionality reduction(",
           nonlinear_reduction,
           ") using Graphs(",
@@ -188,7 +191,7 @@ RunDimReduction <- function(
     if (!isTRUE(force_linear_reduction)) {
       if (linear_reduction %in% SeuratObject::Reductions(srt)) {
         if (srt[[linear_reduction]]@assay.used == assay) {
-          message(
+          log_message(
             "linear_reduction(",
             linear_reduction,
             ") is already existed. Skip calculation."
@@ -199,7 +202,7 @@ RunDimReduction <- function(
           srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
           return(srt)
         } else {
-          message(
+          log_message(
             "assay.used is ",
             srt[[linear_reduction]]@assay.used,
             ", which is not the same as the ",
@@ -211,7 +214,7 @@ RunDimReduction <- function(
       }
     }
     if (is.null(features) || length(features) == 0) {
-      message("No features provided. Use variable features.")
+      log_message("No features provided. Use variable features.")
       if (length(SeuratObject::DefaultAssay(srt, assay = assay)) == 0) {
         srt <- Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE)
       }
@@ -307,7 +310,7 @@ RunDimReduction <- function(
           )
         },
         error = function(e) {
-          message(
+          log_message(
             "Can not estimate intrinsic dimensions with maxLikGlobalDimEst."
           )
           return(NA)
@@ -336,7 +339,7 @@ RunDimReduction <- function(
     if (!isTRUE(force_nonlinear_reduction)) {
       if (nonlinear_reduction %in% SeuratObject::Reductions(srt)) {
         if (srt[[nonlinear_reduction]]@assay.used == assay) {
-          message(
+          log_message(
             "nonlinear_reduction(",
             nonlinear_reduction,
             ") is already existed. Skip calculation."
@@ -347,7 +350,7 @@ RunDimReduction <- function(
           srt@misc[["Default_reduction"]] <- paste0(prefix, nonlinear_reduction)
           return(srt)
         } else {
-          message(
+          log_message(
             "assay.used is ",
             srt[[nonlinear_reduction]]@assay.used,
             ", which is not the same as the ",
@@ -358,12 +361,7 @@ RunDimReduction <- function(
         }
       }
     }
-    # if (!is.null(neighbor_use) && !nonlinear_reduction %in% c("umap", "umap-naive", "fr")) {
-    #   stop("'neighbor_use' only support 'umap', 'umap-naive' or 'fr' method")
-    # }
-    # if (!is.null(graph_use) && !nonlinear_reduction %in% c("umap", "umap-naive", "fr")) {
-    #   stop("'graph_use' only support 'umap', 'umap-naive' or 'fr' method")
-    # }
+
     fun_use <- switch(nonlinear_reduction,
       "umap" = "RunUMAP2",
       "umap-naive" = "RunUMAP2",

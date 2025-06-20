@@ -51,12 +51,18 @@ RunCSSMap <- function(
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        stop("ref_group must be one of the column names in the meta.data")
+        log_message(
+          "ref_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
       }
     } else {
-      stop("Length of ref_group must be one or length of srt_ref.")
+      log_message(
+        "Length of ref_group must be one or length of srt_ref.",
+        message_type = "error"
+      )
     }
     ref_group <- "ref_group"
   }
@@ -69,14 +75,20 @@ RunCSSMap <- function(
       )]
     )[1]
     if (length(ref_css) == 0) {
-      stop("Cannot find CSS reduction in the srt_ref")
+      log_message(
+        "Cannot find CSS reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_css to ", ref_css)
+      log_message("Set ref_css to ", ref_css)
       if (
         !"model" %in% names(srt_ref[[ref_css]]@misc) ||
           !"sim2profiles" %in% names(srt_ref[[ref_css]]@misc$model)
       ) {
-        stop("CSS model is not in the reduction: ", ref_css)
+        log_message(
+          "CSS model is not in the reduction: ", ref_css,
+          message_type = "error"
+        )
       }
     }
   }
@@ -89,9 +101,12 @@ RunCSSMap <- function(
       )]
     )[1]
     if (length(ref_umap) == 0) {
-      stop("Cannot find UMAP reduction in the srt_ref")
+      log_message(
+        "Cannot find UMAP reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -99,15 +114,19 @@ RunCSSMap <- function(
     projection_method == "model" &&
       !"model" %in% names(srt_ref[[ref_umap]]@misc)
   ) {
-    message("No UMAP model detected. Set the projection_method to 'knn'")
+    log_message(
+      "No UMAP model detected. Set the projection_method to 'knn'",
+      message_type = "warning"
+    )
     projection_method <- "knn"
   }
   if (
     projection_method == "model" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      message_type = "warning"
     )
   }
 
@@ -115,22 +134,22 @@ RunCSSMap <- function(
   status_query <- check_data_type(
     data = GetAssayData5(srt_query, layer = "data", assay = query_assay)
   )
-  message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
     data = GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
   )
-  message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
-    warning(
+    log_message(
       "Data type is unknown or different between srt_query and srt_ref.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
-  message("Run CSS projection")
+  log_message("Run CSS projection")
   CSSmodel <- srt_ref[[ref_css]]@misc$model
   raw_assay <- SeuratObject::DefaultAssay(srt_query)
   SeuratObject::DefaultAssay(srt_query) <- query_assay
@@ -140,7 +159,7 @@ RunCSSMap <- function(
   )
   SeuratObject::DefaultAssay(srt_query) <- raw_assay
 
-  message("Run UMAP projection")
+  log_message("Run UMAP projection")
   ref_dims <- seq_len(dim(srt_ref[[ref_css]])[2])
   srt_query <- RunKNNMap(
     srt_query = srt_query,

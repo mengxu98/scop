@@ -82,28 +82,43 @@ RunSingleR <- function(
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        stop("ref_group must be one of the column names in the meta.data")
+        log_message(
+          "ref_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
       }
     } else {
-      stop("Length of ref_group must be one or length of srt_ref.")
+      log_message(
+        "Length of ref_group must be one or length of srt_ref.",
+        message_type = "error"
+      )
     }
     ref_group <- "ref_group"
   } else {
-    stop("'ref_group' must be provided.")
+    log_message(
+      "'ref_group' must be provided.",
+      message_type = "error"
+    )
   }
   if (!is.null(query_group)) {
     if (length(query_group) == ncol(srt_query)) {
       srt_query[["query_group"]] <- query_group
     } else if (length(query_group) == 1) {
       if (!query_group %in% colnames(srt_query@meta.data)) {
-        stop("query_group must be one of the column names in the meta.data")
+        log_message(
+          "query_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_query[["query_group"]] <- srt_query[[query_group]]
       }
     } else {
-      stop("Length of query_group must be one or length of srt_query.")
+      log_message(
+        "Length of query_group must be one or length of srt_query.",
+        message_type = "error"
+      )
     }
     query_group <- "query_group"
     method <- "SingleRCluster"
@@ -118,7 +133,7 @@ RunSingleR <- function(
       assay = query_assay
     )
   )
-  message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
     data = GetAssayData5(
       srt_ref,
@@ -126,14 +141,14 @@ RunSingleR <- function(
       assay = ref_assay
     )
   )
-  message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
-    warning(
+    log_message(
       "Data type is unknown or different between query and ref.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
@@ -184,7 +199,7 @@ RunSingleR <- function(
   )
 
   if (method == "SingleRCluster") {
-    message("Perform ", method, " on the data...")
+    log_message("Perform ", method, " on the data...")
     SingleRCluster_results <- SingleR::SingleR(
       test = sce_query,
       ref = sce_ref,
@@ -239,7 +254,7 @@ RunSingleR <- function(
       }
     )[as.character(srt_query$query_group)]
   } else if (method == "SingleRCell") {
-    message("Perform ", method, " on the data...")
+    log_message("Perform ", method, " on the data...")
     SingleRCell_results <- SingleR::SingleR(
       test = sce_query,
       ref = sce_ref,

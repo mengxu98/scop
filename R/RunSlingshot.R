@@ -71,7 +71,10 @@ RunSlingshot <- function(
     seed = 11,
     ...) {
   if (missing(group.by)) {
-    stop("group.by is missing")
+    log_message(
+      "group.by is missing",
+      message_type = "error"
+    )
   }
   if (is.null(reduction)) {
     reduction <- DefaultReduction(srt)
@@ -86,8 +89,10 @@ RunSlingshot <- function(
 
   if (min(table(srt[[group.by]])) < 2) {
     celltypes <- names(which(table(srt[[group.by]]) < 2))
-    message(
-      "Warning: ", paste(celltypes, collapse = ", "), " have less than 2 cells. Removed from the analysis."
+    log_message(
+      paste(celltypes, collapse = ", "),
+      " have less than 2 cells. Removed from the analysis.",
+      message_type = "warning"
     )
     celltypes <- setdiff(names(table(srt[[group.by]])), celltypes)
     srt <- srt[, select_cells(srt, celltypes, group.by)]

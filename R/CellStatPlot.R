@@ -10,19 +10,16 @@
 #'
 #' @examples
 #' data("pancreas_sub")
-#' CellStatPlot(
+#' p1 <- CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   group.by = "SubCellType",
 #'   label = TRUE
 #' )
-#' CellStatPlot(
-#'   pancreas_sub,
-#'   stat.by = "Phase",
-#'   group.by = "SubCellType",
-#'   label = TRUE
-#' ) %>%
-#'   panel_fix(height = 2, width = 3)
+#' p1
+#' 
+#' panel_fix(p1, height = 2, width = 3)
+#' 
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -31,6 +28,7 @@
 #'   position = "dodge",
 #'   label = TRUE
 #' )
+#' 
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -340,12 +338,14 @@ CellStatPlot <- function(
   return(plot)
 }
 
-#' StatPlot
+#' @title StatPlot
 #'
+#' @description
 #' Visualizes data using various plot types such as bar plots,
 #' rose plots, ring plots, pie charts, trend plots, area plots,
 #' dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 #'
+#' @md
 #' @param meta.data The data frame containing the data to be plotted.
 #' @param stat.by The column name(s) in \code{meta.data} specifying the variable(s) to be plotted.
 #' @param group.by The column name in \code{meta.data} specifying the grouping variable.
@@ -391,7 +391,7 @@ CellStatPlot <- function(
 #' @param force Logical indicating whether to force the plot even if some variables have more than 100 levels.
 #' @param seed The random seed to use for reproducible results.
 #'
-#' @seealso \code{\link{CellStatPlot}}
+#' @seealso [CellStatPlot]
 #'
 #' @export
 #'
@@ -406,9 +406,8 @@ CellStatPlot <- function(
 #'   label = TRUE
 #' )
 #'
-#' head(pancreas_sub[["RNA"]]@meta.features)
 #' StatPlot(
-#'   pancreas_sub[["RNA"]]@meta.features,
+#'   pancreas_sub[["RNA"]]@meta.data,
 #'   stat.by = "highly_variable_genes",
 #'   plot_type = "ring",
 #'   label = TRUE
@@ -418,13 +417,12 @@ CellStatPlot <- function(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
 #'   IDtype = "symbol",
-#'   db = "GeneType"
+#'   db = c("VerSeDa", "TF")
 #' )
-#' head(pancreas_sub[["RNA"]]@meta.features)
 #' StatPlot(
-#'   pancreas_sub[["RNA"]]@meta.features,
-#'   stat.by = "highly_variable_genes",
-#'   group.by = "GeneType",
+#'   GetFeaturesData(pancreas_sub, "RNA"),
+#'   stat.by = "TF",
+#'   group.by = "VerSeDa",
 #'   stat_type = "count",
 #'   plot_type = "bar",
 #'   position = "dodge",
@@ -491,7 +489,10 @@ StatPlot <- function(
   position <- match.arg(position)
 
   if (nrow(meta.data) == 0) {
-    stop("meta.data is empty.")
+    log_message(
+      "meta.data is empty.",
+      message_type = "error"
+    )
   }
   if (is.null(group.by)) {
     group.by <- "All.groups"
@@ -505,7 +506,10 @@ StatPlot <- function(
 
   for (i in unique(c(group.by, split.by, bg.by))) {
     if (!i %in% colnames(meta.data)) {
-      stop(paste0(i, " is not in the meta.data."))
+      log_message(
+        paste0(i, " is not in the meta.data."),
+        message_type = "error"
+      )
     }
     if (!is.factor(meta.data[[i]])) {
       meta.data[[i]] <- factor(meta.data[[i]], levels = unique(meta.data[[i]]))
@@ -517,7 +521,10 @@ StatPlot <- function(
     for (g in group.by) {
       df_table <- table(meta.data[[g]], meta.data[[bg.by]])
       if (max(rowSums(df_table > 0), na.rm = TRUE) > 1) {
-        stop("'group.by' must be a part of 'bg.by'")
+        log_message(
+          "'group.by' must be a part of 'bg.by'",
+          message_type = "error"
+        )
       } else {
         bg_map[[g]] <- stats::setNames(
           colnames(df_table)[apply(df_table, 1, function(x) which(x > 0))],
@@ -533,7 +540,10 @@ StatPlot <- function(
 
   for (i in unique(stat.by)) {
     if (!i %in% colnames(meta.data)) {
-      stop(paste0(i, " is not in the meta.data."))
+      log_message(
+        paste0(i, " is not in the meta.data."),
+        message_type = "error"
+      )
     }
     if (plot_type %in% c("venn", "upset")) {
       if (!is.factor(meta.data[[i]]) && !is.logical(meta.data[[i]])) {
@@ -549,18 +559,21 @@ StatPlot <- function(
 
   if (length(stat.by) >= 2) {
     if (!plot_type %in% c("sankey", "chord", "venn", "upset")) {
-      stop(
-        "plot_type must be one of 'sankey', 'chord', 'venn' and 'upset' whtn multiple 'stat.by' provided."
+      log_message(
+        "plot_type must be one of 'sankey', 'chord', 'venn' and 'upset' whtn multiple 'stat.by' provided.",
+        message_type = "error"
       )
     }
     if (length(stat.by) > 2 && plot_type == "chord") {
-      stop(
-        "'stat.by' can only be a vector of length 2 when 'plot_type' is 'chord'."
+      log_message(
+        "'stat.by' can only be a vector of length 2 when 'plot_type' is 'chord'.",
+        message_type = "error"
       )
     }
     if (length(stat.by) > 7 && plot_type == "venn") {
-      stop(
-        "'stat.by' can only be a vector of length <= 7 when 'plot_type' is 'venn'."
+      log_message(
+        "'stat.by' can only be a vector of length <= 7 when 'plot_type' is 'venn'.",
+        message_type = "error"
       )
     }
   }
@@ -586,13 +599,18 @@ StatPlot <- function(
       stat_level <- lapply(stat.by, function(stat) {
         levels(meta.data[[stat]])[1] %||% sort(unique(meta.data[[stat]]))[1]
       })
-      message("stat_level is set to ", paste0(stat_level, collapse = ","))
+      log_message(
+        "stat_level is set to ", paste0(stat_level, collapse = ",")
+      )
     } else {
       if (length(stat_level) == 1) {
         stat_level <- rep(stat_level, length(stat.by))
       }
       if (length(stat_level) != length(stat.by)) {
-        stop("'stat_level' must be of length 1 or the same length as 'stat.by'")
+        log_message(
+          "'stat_level' must be of length 1 or the same length as 'stat.by'",
+          message_type = "error"
+        )
       }
     }
     if (is.null(names(stat_level))) {
@@ -611,18 +629,18 @@ StatPlot <- function(
     any(group.by != "All.groups") &&
       plot_type %in% c("sankey", "chord", "venn", "upset")
   ) {
-    warning(
+    log_message(
       "group.by is not used when plot sankey, chord, venn or upset",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
   if (
     stat_type == "percent" &&
       plot_type %in% c("sankey", "chord", "venn", "upset")
   ) {
-    warning(
+    log_message(
       "stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset",
-      immediate. = TRUE
+      message_type = "warning"
     )
     stat_type <- "count"
   }
@@ -634,10 +652,12 @@ StatPlot <- function(
   nlev <- sapply(dat_all, nlevels)
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && !isTRUE(force)) {
-    warning(
-      paste(names(nlev), sep = ","),
-      " have more than 100 levels.",
-      immediate. = TRUE
+    log_message(
+      paste0(
+        "The following variables have more than 100 levels: ",
+        paste(names(nlev), collapse = ",")
+      ),
+      message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {

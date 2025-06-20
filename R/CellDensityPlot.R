@@ -37,9 +37,9 @@
 #'   Default is NULL, which means determined automatically based on the number of plots.
 #' @param byrow A logical indicating whether to add plots by row or by column in the combined plot. Default is TRUE.
 #' @param force A logical indicating whether to continue plotting if there are more than 50 features. Default is FALSE.
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
@@ -68,45 +68,50 @@
 #' )
 #' }
 CellDensityPlot <- function(
-  srt,
-  features,
-  group.by = NULL,
-  split.by = NULL,
-  assay = NULL,
-  layer = "data",
-  flip = FALSE,
-  reverse = FALSE,
-  x_order = c("value", "rank"),
-  decreasing = NULL,
-  palette = "Paired",
-  palcolor = NULL,
-  cells = NULL,
-  keep_empty = FALSE,
-  y.nbreaks = 4,
-  y.min = NULL,
-  y.max = NULL,
-  same.y.lims = FALSE,
-  aspect.ratio = NULL,
-  title = NULL,
-  subtitle = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  theme_use = "theme_scop",
-  theme_args = list(),
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  force = FALSE
-) {
+    srt,
+    features,
+    group.by = NULL,
+    split.by = NULL,
+    assay = NULL,
+    layer = "data",
+    flip = FALSE,
+    reverse = FALSE,
+    x_order = c("value", "rank"),
+    decreasing = NULL,
+    palette = "Paired",
+    palcolor = NULL,
+    cells = NULL,
+    keep_empty = FALSE,
+    y.nbreaks = 4,
+    y.min = NULL,
+    y.max = NULL,
+    same.y.lims = FALSE,
+    aspect.ratio = NULL,
+    title = NULL,
+    subtitle = NULL,
+    legend.position = "right",
+    legend.direction = "vertical",
+    theme_use = "theme_scop",
+    theme_args = list(),
+    combine = TRUE,
+    nrow = NULL,
+    ncol = NULL,
+    byrow = TRUE,
+    force = FALSE) {
   check_r("ggridges")
   assay <- assay %||% DefaultAssay(srt)
   x_order <- match.arg(x_order)
   if (is.null(features)) {
-    stop("'features' must be provided.")
+    log_message(
+      "'features' must be provided.",
+      message_type = "error"
+    )
   }
   if (!inherits(features, "character")) {
-    stop("'features' is not a character vectors")
+    log_message(
+      "'features' is not a character vectors",
+      message_type = "error"
+    )
   }
   if (is.null(group.by)) {
     group.by <- "All.groups"
@@ -121,7 +126,10 @@ CellDensityPlot <- function(
   }
   for (i in c(group.by, split.by)) {
     if (!i %in% colnames(srt@meta.data)) {
-      stop(paste0(i, " is not in the meta.data of srt object."))
+      log_message(
+        paste0(i, " is not in the meta.data of srt object."),
+        message_type = "error"
+      )
     }
     if (!is.factor(srt@meta.data[[i]])) {
       srt@meta.data[[i]] <- factor(
@@ -135,12 +143,11 @@ CellDensityPlot <- function(
   features_drop <- features[
     !features %in% c(rownames(srt@assays[[assay]]), colnames(srt@meta.data))
   ]
-  # print(colnames(srt@meta.data))
   if (length(features_drop) > 0) {
-    warning(
+    log_message(
       paste0(features_drop, collapse = ","),
       " are not in the features of srt.",
-      immediate. = TRUE
+      message_type = "warning"
     )
     features <- features[!features %in% features_drop]
   }
@@ -148,9 +155,12 @@ CellDensityPlot <- function(
   features_gene <- features[features %in% rownames(srt@assays[[assay]])]
   features_meta <- features[features %in% colnames(srt@meta.data)]
   if (length(intersect(features_gene, features_meta)) > 0) {
-    warning(
-      "Features appear in both gene names and metadata names: ",
-      paste0(intersect(features_gene, features_meta), collapse = ",")
+    log_message(
+      paste0(
+        "Features appear in both gene names and metadata names: ",
+        paste0(intersect(features_gene, features_meta), collapse = ",")
+      ),
+      message_type = "warning"
     )
   }
 
@@ -174,10 +184,16 @@ CellDensityPlot <- function(
   features <- unique(features[features %in% c(features_gene, features_meta)])
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
-    stop("'features' must be type of numeric variable.")
+    log_message(
+      "'features' must be type of numeric variable.",
+      message_type = "error"
+    )
   }
   if (length(features) > 50 && !isTRUE(force)) {
-    warning("More than 50 features to be plotted", immediate. = TRUE)
+    log_message(
+      "More than 50 features to be plotted",
+      message_type = "warning"
+    )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
     if (!isTRUE(answer)) {
       return(invisible(NULL))
@@ -194,7 +210,8 @@ CellDensityPlot <- function(
 
   if (isTRUE(same.y.lims) && is.null(y.max)) {
     y.max <- max(
-      Matrix::as.matrix(dat_exp[,
+      Matrix::as.matrix(dat_exp[
+        ,
         features
       ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
       na.rm = TRUE
@@ -202,7 +219,8 @@ CellDensityPlot <- function(
   }
   if (isTRUE(same.y.lims) && is.null(y.min)) {
     y.min <- min(
-      Matrix::as.matrix(dat_exp[,
+      Matrix::as.matrix(dat_exp[
+        ,
         features
       ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
       na.rm = TRUE

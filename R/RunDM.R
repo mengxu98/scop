@@ -66,30 +66,33 @@ RunDM.Seurat <- function(
       )
     )
     if (ncol(x = data.use) < ndcs) {
-      stop(
+      log_message(
         "Please provide as many or more features than ndcs: ",
         length(x = features),
         " features provided, ",
         ndcs,
         " Diffusion components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else if (!is.null(x = dims)) {
     data.use <- SeuratObject::Embeddings(object[[reduction]])[, dims]
     assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
     if (length(x = dims) < ndcs) {
-      stop(
+      log_message(
         "Please provide as many or more dims than ndcs: ",
         length(x = dims),
         " dims provided, ",
         ndcs,
         " DiffusionMap components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else {
-    stop("Please specify one of dims, features")
+    log_message(
+      "Please specify one of dims, features",
+      message_type = "error"
+    )
   }
   reduction.data <- RunDM(
     object = data.use,

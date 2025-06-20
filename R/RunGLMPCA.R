@@ -221,7 +221,7 @@ RunGLMPCA.default <- function(
         nfeatures = nfeatures.print
       )
     )
-    message(paste(msg, collapse = "\n"))
+    log_message(paste(msg, collapse = "\n"))
   }
   return(reduction.data)
 }

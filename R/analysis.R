@@ -1,26 +1,3 @@
-searchDatasets <- function(datasets, pattern) {
-  colIdx <- vapply(
-    datasets,
-    FUN = function(x) {
-      return(
-        grepl(
-          pattern = pattern,
-          x = x,
-          ignore.case = TRUE
-        )
-      )
-    },
-    FUN.VALUE = logical(length = nrow(datasets))
-  )
-  rowIdx <- apply(colIdx, 1, any)
-  if (any(rowIdx)) {
-    return(datasets[rowIdx, , drop = FALSE])
-  } else {
-    message("No matching datasets found")
-    return(NULL)
-  }
-}
-
 #' Prefetch cycle gene
 #'
 #' Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
@@ -66,7 +43,9 @@ CC_GenePrefetch <- function(
       )
       R.cache::saveCache(res, key = list(species))
     } else {
-      message("Using cached conversion results for ", species)
+      log_message(
+        paste0("Using cached conversion results for ", species)
+      )
     }
     genes <- res[["geneID_collapse"]]
     S <- unlist(genes[S[S %in% rownames(genes)], "symbol"])
@@ -81,22 +60,6 @@ CC_GenePrefetch <- function(
   )
 }
 
-metap <- function(
-    p,
-    method = c(
-      "maximump",
-      "minimump",
-      "wilkinsonp",
-      "meanp",
-      "sump",
-      "votep"
-    ),
-    ...) {
-  method <- match.arg(method)
-  res <- do.call(method, args = list(p = p, ...))
-  return(res)
-}
-
 wilkinsonp <- function(p, r = 1, alpha = 0.05, log.p = FALSE) {
   alpha <- ifelse(alpha > 1, alpha / 100, alpha)
   stopifnot(alpha > 0, alpha < 1)
@@ -104,7 +67,10 @@ wilkinsonp <- function(p, r = 1, alpha = 0.05, log.p = FALSE) {
   keep <- (p >= 0) & (p <= 1)
   invalid <- sum(1L * keep) < 2
   if (invalid) {
-    warning("Must have at least two valid p values")
+    log_message(
+      "Must have at least two valid p values",
+      message_type = "warning"
+    )
     res <- list(
       p = NA_real_,
       pr = NA_real_,
@@ -117,11 +83,17 @@ wilkinsonp <- function(p, r = 1, alpha = 0.05, log.p = FALSE) {
     pi <- p[keep]
     k <- length(pi)
     if (k != length(p)) {
-      warning("Some studies omitted")
+      log_message(
+        "Some studies omitted",
+        message_type = "warning"
+      )
     }
     if ((r < 1) | (r > k)) {
       r <- 1
-      warning("Illegal r set to 1")
+      log_message(
+        "Illegal r set to 1",
+        message_type = "warning"
+      )
     }
     pi <- sort(pi)
     pr <- pi[r]
@@ -154,14 +126,20 @@ meanp <- function(p) {
   keep <- (p >= 0) & (p <= 1)
   invalid <- sum(1L * keep) < 4
   if (invalid) {
-    warning("Must have at least four valid p values")
+    log_message(
+      "Must have at least four valid p values",
+      message_type = "warning"
+    )
     res <- list(z = NA_real_, p = NA_real_, validp = p[keep])
   } else {
     pi <- mean(p[keep])
     k <- length(p[keep])
     z <- (0.5 - pi) * sqrt(12 * k)
     if (k != length(p)) {
-      warning("Some studies omitted")
+      log_message(
+        "Some studies omitted",
+        message_type = "warning"
+      )
     }
     res <- list(
       z = z,
@@ -176,7 +154,10 @@ sump <- function(p) {
   keep <- (p >= 0) & (p <= 1)
   invalid <- sum(1L * keep) < 2
   if (invalid) {
-    warning("Must have at least two valid p values")
+    log_message(
+      "Must have at least two valid p values",
+      message_type = "warning"
+    )
     res <- list(p = NA_real_, conservativep = NA_real_, validp = p[keep])
   } else {
     sigmap <- sum(p[keep])
@@ -199,10 +180,16 @@ sump <- function(p) {
       psum <- psum + pm * exp(terms[i])
     }
     if (k != length(p)) {
-      warning("Some studies omitted")
+      log_message(
+        "Some studies omitted",
+        message_type = "warning"
+      )
     }
     if (sigmap > 20) {
-      warning("Likely to be unreliable, check with another method")
+      log_message(
+        "Likely to be unreliable, check with another method",
+        message_type = "warning"
+      )
     }
     res <- list(
       p = psum,
@@ -227,7 +214,10 @@ votep <- function(p, alpha = 0.5) {
   }
   invalid <- sum(1L * keep) < 2
   if (invalid) {
-    warning("Must have at least two valid p values")
+    log_message(
+      "Must have at least two valid p values",
+      message_type = "warning"
+    )
     res <- list(
       p = NA_real_,
       pos = NA_integer_,
@@ -241,10 +231,16 @@ votep <- function(p, alpha = 0.5) {
     pos <- sum(1L * (pi < alp[1]))
     neg <- sum(1L * (pi > alp[2]))
     if (k != length(p)) {
-      warning("Some studies omitted")
+      log_message(
+        "Some studies omitted",
+        message_type = "warning"
+      )
     }
     if ((pos + neg) <= 0) {
-      warning("All p values are within specified limits of alpha")
+      log_message(
+        "All p values are within specified limits of alpha",
+        message_type = "warning"
+      )
       p <- 1
     } else {
       p <- stats::binom.test(
@@ -263,214 +259,6 @@ votep <- function(p, alpha = 0.5) {
   res
 }
 
-py_to_r_auto <- function(x) {
-  if (inherits(x, "python.builtin.object")) {
-    x <- reticulate::py_to_r(x)
-  }
-  return(x)
-}
-
-#' Convert a seurat object to an anndata object using reticulate
-#'
-#' This function takes a Seurat object and converts it to an anndata object using the reticulate package.
-#'
-#' @param srt A Seurat object.
-#' @param assay_x Assay to convert as the main data matrix (X) in the anndata object.
-#' @param layer_x Layer name for assay_x in the Seurat object.
-#' @param assay_y Assays to convert as layers in the anndata object.
-#' @param layer_y Layer names for the assay_y in the Seurat object.
-#' @param convert_tools Logical indicating whether to convert the tool-specific data.
-#' @param convert_misc Logical indicating whether to convert the miscellaneous data.
-#' @param features Optional vector of features to include in the anndata object.
-#' Defaults to all features in assay_x.
-#' @param verbose Logical indicating whether to print verbose messages during the conversion process.
-#'
-#' @return A \code{anndata} object.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' data("pancreas_sub")
-#' adata <- srt_to_adata(pancreas_sub)
-#' adata
-#'
-#' ## Or save as an h5ad file or a loom file
-#' # adata$write_h5ad(
-#' #   "pancreas_sub.h5ad"
-#' # )
-#' # adata$write_loom(
-#' #   "pancreas_sub.loom",
-#' #   write_obsm_varm = TRUE
-#' # )
-#' }
-srt_to_adata <- function(
-    srt,
-    features = NULL,
-    assay_x = "RNA",
-    layer_x = "counts",
-    assay_y = c("spliced", "unspliced"),
-    layer_y = "counts",
-    convert_tools = FALSE,
-    convert_misc = FALSE,
-    verbose = TRUE) {
-  check_python(c("scanpy", "numpy"))
-
-  if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
-  }
-
-  if (is.null(features)) {
-    features <- rownames(srt[[assay_x]])
-  }
-  if (length(layer_y) == 1) {
-    layer_y <- rep(layer_y, length(assay_y))
-    names(layer_y) <- assay_y
-  } else if (length(layer_y) != length(assay_y)) {
-    stop("layer_y must be one character or the same length of the assay_y")
-  }
-
-  sc <- reticulate::import("scanpy", convert = FALSE)
-  np <- reticulate::import("numpy", convert = FALSE)
-
-  obs <- srt@meta.data
-  if (ncol(obs) > 0) {
-    for (i in seq_len(ncol(obs))) {
-      if (is.logical(obs[, i])) {
-        obs[, i] <- factor(
-          as.character(obs[, i]),
-          levels = c("TRUE", "FALSE")
-        )
-      }
-    }
-  }
-
-  var <- GetFeaturesData(srt, assay = assay_x)[features, , drop = FALSE]
-  if (ncol(var) > 0) {
-    for (i in seq_len(ncol(var))) {
-      if (
-        is.logical(var[, i]) && !identical(colnames(var)[i], "highly_variable")
-      ) {
-        var[, i] <- factor(
-          as.character(var[, i]),
-          levels = c("TRUE", "FALSE")
-        )
-      }
-    }
-  }
-  if (length(SeuratObject::VariableFeatures(srt, assay = assay_x) > 0)) {
-    if ("highly_variable" %in% colnames(var)) {
-      var <- var[, colnames(var) != "highly_variable"]
-    }
-    var[["highly_variable"]] <- features %in%
-      SeuratObject::VariableFeatures(srt, assay = assay_x)
-  }
-
-  X <- Matrix::t(
-    GetAssayData5(
-      srt,
-      assay = assay_x,
-      layer = layer_x
-    )[features, , drop = FALSE]
-  )
-  adata <- sc$AnnData(
-    X = reticulate::np_array(X, dtype = np$float32),
-    obs = obs,
-    var = cbind(
-      data.frame(features = features),
-      var
-    )
-  )
-  adata$var_names <- features
-
-  layer_list <- list()
-  for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
-    if (assay %in% assay_y) {
-      layer <- Matrix::t(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = layer_y[assay]
-        )
-      )
-      if (!identical(dim(layer), dim(X))) {
-        if (all(colnames(X) %in% colnames(layer))) {
-          layer <- layer[, colnames(X)]
-        } else {
-          stop(
-            "The following features in the '",
-            assay_x,
-            "' assay can not be found in the '",
-            assay,
-            "' assay:\n  ",
-            paste0(
-              utils::head(colnames(X)[!colnames(X) %in% colnames(layer)], 10),
-              collapse = ","
-            ),
-            "..."
-          )
-        }
-      }
-      layer_list[[assay]] <- layer
-    } else {
-      if (isTRUE(verbose)) {
-        message("Assay '", assay, "' is in the srt object but not converted.")
-      }
-    }
-  }
-  if (length(layer_list) > 0) {
-    adata$layers <- layer_list
-  }
-
-  reduction_list <- list()
-  for (reduction in names(srt@reductions)) {
-    reduction_list[[paste0(reduction)]] <- srt[[reduction]]@cell.embeddings
-  }
-  if (length(reduction_list) > 0) {
-    adata$obsm <- reduction_list
-  }
-
-  obsp_list <- list()
-  for (graph in names(srt@graphs)) {
-    obsp_list[[graph]] <- srt[[graph]]
-  }
-  for (neighbor in names(srt@neighbors)) {
-    obsp_list[[neighbor]] <- srt[[neighbor]]
-  }
-  if (length(obsp_list) > 0) {
-    adata$obsp <- obsp_list
-  }
-
-  uns_list <- list()
-  if (isTRUE(convert_misc)) {
-    for (nm in names(srt@misc)) {
-      if (nm != "") {
-        uns_list[[nm]] <- srt@misc[[nm]]
-      }
-    }
-  } else {
-    if (isTRUE(verbose)) {
-      message("'misc' slot is not converted.")
-    }
-  }
-  if (isTRUE(convert_tools)) {
-    for (nm in names(srt@tools)) {
-      if (nm != "") {
-        uns_list[[nm]] <- srt@tools[[nm]]
-      }
-    }
-  } else {
-    if (isTRUE(verbose)) {
-      message("'tools' slot is not converted.")
-    }
-  }
-  if (length(uns_list) > 0) {
-    adata$uns <- uns_list
-  }
-
-  return(adata)
-}
-
 max_depth <- function(x, depth = 0) {
   if (is.list(x)) {
     return(max(unlist(lapply(x, max_depth, depth + 1))))
@@ -479,10 +267,12 @@ max_depth <- function(x, depth = 0) {
   }
 }
 
-check_python_element <- function(x, depth = max_depth(x)) {
+check_python_element <- function(
+    x,
+    depth = max_depth(x)) {
   if (depth == 0 || !is.list(x) || !inherits(x, "python.builtin.object")) {
     if (inherits(x, "python.builtin.object")) {
-      x_r <- tryCatch(reticulate::py_to_r(x), error = identity)
+      x_r <- tryCatch(py_to_r_auto(x), error = identity)
       if (inherits(x_r, "error")) {
         return(x)
       } else {
@@ -495,7 +285,7 @@ check_python_element <- function(x, depth = max_depth(x)) {
     raw_depth <- max_depth(x)
     x <- lapply(x, function(element) {
       if (inherits(element, "python.builtin.object")) {
-        element_r <- tryCatch(reticulate::py_to_r(element), error = identity)
+        element_r <- tryCatch(py_to_r_auto(element), error = identity)
         if (inherits(element_r, "error")) {
           return(element)
         } else {

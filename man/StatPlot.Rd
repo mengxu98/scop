@@ -149,9 +149,8 @@ StatPlot(
   label = TRUE
 )
 
-head(pancreas_sub[["RNA"]]@meta.features)
 StatPlot(
-  pancreas_sub[["RNA"]]@meta.features,
+  pancreas_sub[["RNA"]]@meta.data,
   stat.by = "highly_variable_genes",
   plot_type = "ring",
   label = TRUE
@@ -161,13 +160,12 @@ pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   IDtype = "symbol",
-  db = "GeneType"
+  db = c("VerSeDa", "TF")
 )
-head(pancreas_sub[["RNA"]]@meta.features)
 StatPlot(
-  pancreas_sub[["RNA"]]@meta.features,
-  stat.by = "highly_variable_genes",
-  group.by = "GeneType",
+  GetFeaturesData(pancreas_sub, "RNA"),
+  stat.by = "TF",
+  group.by = "VerSeDa",
   stat_type = "count",
   plot_type = "bar",
   position = "dodge",
@@ -176,5 +174,5 @@ StatPlot(
 )
 }
 \seealso{
-\code{\link{CellStatPlot}}
+\link{CellStatPlot}
 }

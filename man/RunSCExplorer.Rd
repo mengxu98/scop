@@ -119,7 +119,7 @@ list.files("./SCExplorer")
 if (interactive()) {
   shiny::runApp(app)
 }
-# Note: If scop installed in the isolated environment using renv, 
+# Note: If scop installed in the isolated environment using renv,
 # you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 
 ###########################
@@ -128,7 +128,7 @@ if (interactive()) {
 # Or deploy the app on the website
 # (https://www.shinyapps.io) for free:
 
-# step1: set the repository URL for Bioconductor packages 
+# step1: set the repository URL for Bioconductor packages
 # and update them to the latest version
 # options(repos = BiocManager::repositories())
 # BiocManager::install(ask = FALSE)

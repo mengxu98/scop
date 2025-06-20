@@ -3,7 +3,7 @@
 #' @param adata a connected python anndata object.
 #'
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
@@ -27,7 +27,10 @@
 #' }
 adata_to_srt <- function(adata) {
   if (!inherits(adata, "python.builtin.object")) {
-    stop("'adata' is not a python.builtin.object.")
+    log_message(
+      "'adata' is not a python.builtin.object.",
+      message_type = "error"
+    )
   }
   sc <- reticulate::import("scanpy", convert = TRUE)
   np <- reticulate::import("numpy", convert = TRUE)
@@ -61,12 +64,15 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       layer <- py_to_r_auto(adata$layers[[k]])
       if (!inherits(layer, c("Matrix", "matrix"))) {
-        stop(paste0(
-          "The object in '",
-          k,
-          "' layers is not a matrix: ",
-          paste0(class(adata$layers[[k]]), collapse = ",")
-        ))
+        log_message(
+          paste0(
+            "The object in '",
+            k,
+            "' layers is not a matrix: ",
+            paste0(class(adata$layers[[k]]), collapse = ",")
+          ),
+          message_type = "error"
+        )
       }
       layer <- Matrix::t(layer)
       if (!inherits(layer, "dgCMatrix")) {
@@ -87,11 +93,11 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       obsm <- tryCatch(py_to_r_auto(adata$obsm[[k]]), error = identity)
       if (inherits(obsm, "error")) {
-        warning(
+        log_message(
           "'obsm: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -118,11 +124,11 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       obsp <- tryCatch(py_to_r_auto(adata$obsp[[k]]), error = identity)
       if (inherits(obsp, "error")) {
-        warning(
+        log_message(
           "'obsp: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -153,11 +159,11 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       varm <- tryCatch(py_to_r_auto(adata$varm[[k]]), error = identity)
       if (inherits(varm, "error")) {
-        warning(
+        log_message(
           "'varm: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -179,11 +185,11 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       varp <- tryCatch(py_to_r_auto(adata$varp[[k]]), error = identity)
       if (inherits(varp, "error")) {
-        warning(
+        log_message(
           "'varp: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -205,36 +211,43 @@ adata_to_srt <- function(adata) {
     for (k in keys) {
       uns <- tryCatch(py_to_r_auto(adata$uns[[k]]), error = identity)
       if (inherits(uns, "error")) {
-        warning(
+        log_message(
           "'uns: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
       uns <- tryCatch(check_python_element(uns), error = identity)
       if (inherits(uns, "error")) {
-        warning(
+        log_message(
           "'uns: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
       if (!inherits(uns, "python.builtin.object")) {
         srt@misc[[py_to_r_auto(k)]] <- uns
       } else {
-        warning(
+        log_message(
           "'uns: ",
           k,
           "' will not be converted. You may need to convert it manually.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
     }
   }
   return(srt)
+}
+
+py_to_r_auto <- function(x) {
+  if (inherits(x, "python.builtin.object")) {
+    x <- reticulate::py_to_r(x)
+  }
+  return(x)
 }

@@ -533,7 +533,10 @@ GroupHeatmap <- function(
     check_r("magick")
   }
   if (is.null(features)) {
-    stop("No feature provided.")
+    log_message(
+      "No feature provided.",
+      message_type = "error"
+    )
   }
 
   split_method <- match.arg(split_method)
@@ -552,9 +555,9 @@ GroupHeatmap <- function(
   }
 
   if (!is.null(grouping.var) && exp_method != "log2fc") {
-    warning(
+    log_message(
       "When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'",
-      immediate. = TRUE
+      message_type = "warning"
     )
     exp_method <- "log2fc"
   }
@@ -562,7 +565,10 @@ GroupHeatmap <- function(
 
   if (!is.null(grouping.var)) {
     if (identical(split.by, grouping.var)) {
-      stop("'grouping.var' must be different from 'split.by'")
+      log_message(
+        "'grouping.var' must be different from 'split.by'",
+        message_type = "error"
+      )
     }
     if (!is.factor(srt@meta.data[[grouping.var]])) {
       srt@meta.data[[grouping.var]] <- factor(
@@ -572,14 +578,17 @@ GroupHeatmap <- function(
     }
     if (is.null(numerator)) {
       numerator <- levels(srt@meta.data[[grouping.var]])[1]
-      warning(
+      log_message(
         "'numerator' is not specified. Use the first level in 'grouping.var': ",
         numerator,
-        immediate. = TRUE
+        message_type = "warning"
       )
     } else {
       if (!numerator %in% levels(srt@meta.data[, grouping.var])) {
-        stop("'", numerator, "' is not an element of the '", grouping.var, "'")
+        log_message(
+          "'", numerator, "' is not an element of the '", grouping.var, "'",
+          message_type = "error"
+        )
       }
     }
     srt@meta.data[["grouping.var.use"]] <- srt@meta.data[[grouping.var]] ==
@@ -596,9 +605,10 @@ GroupHeatmap <- function(
   }
 
   if (any(!group.by %in% colnames(srt@meta.data))) {
-    stop(
+    log_message(
       group.by[!group.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object."
+      " is not in the meta data of the Seurat object.",
+      message_type = "error"
     )
   }
 
@@ -614,12 +624,16 @@ GroupHeatmap <- function(
   }
 
   if (length(split.by) > 1) {
-    stop("'split.by' only support one variable.")
+    log_message(
+      "'split.by' only support one variable.",
+      message_type = "error"
+    )
   }
   if (any(!split.by %in% colnames(srt@meta.data))) {
-    stop(
+    log_message(
       split.by[!split.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object."
+      " is not in the meta data of the Seurat object.",
+      message_type = "error"
     )
   }
   if (!is.null(split.by)) {
@@ -636,16 +650,20 @@ GroupHeatmap <- function(
   ))
 
   if (any(group_elements == 1) && exp_method == "zscore") {
-    stop(
+    log_message(
       "'zscore' cannot be applied to the group(s) consisting of one element: ",
-      paste0(names(group_elements)[group_elements == 1], collapse = ",")
+      paste0(names(group_elements)[group_elements == 1], collapse = ","),
+      message_type = "error"
     )
   }
   if (length(group_palette) == 1) {
     group_palette <- rep(group_palette, length(group.by))
   }
   if (length(group_palette) != length(group.by)) {
-    stop("'group_palette' must be the same length as 'group.by'")
+    log_message(
+      "'group_palette' must be the same length as 'group.by'",
+      message_type = "error"
+    )
   }
   group_palette <- stats::setNames(group_palette, nm = group.by)
   raw.group.by <- group.by
@@ -672,13 +690,19 @@ GroupHeatmap <- function(
     feature_split <- factor(feature_split, levels = unique(feature_split))
   }
   if (length(feature_split) != 0 && length(feature_split) != length(features)) {
-    stop("feature_split must be the same length as features")
+    log_message(
+      "feature_split must be the same length as features",
+      message_type = "error"
+    )
   }
   if (is.null(feature_split_by)) {
     feature_split_by <- group.by
   }
   if (any(!feature_split_by %in% group.by)) {
-    stop("feature_split_by must be a subset of group.by")
+    log_message(
+      "feature_split_by must be a subset of group.by",
+      message_type = "error"
+    )
   }
   if (!is.null(cell_annotation)) {
     if (length(cell_annotation_palette) == 1) {
@@ -699,8 +723,9 @@ GroupHeatmap <- function(
       length(cell_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation"
+      log_message(
+        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation",
+        message_type = "error"
       )
     }
     if (
@@ -714,7 +739,7 @@ GroupHeatmap <- function(
           ))
       )
     ) {
-      stop(
+      log_message(
         "cell_annotation: ",
         paste0(
           cell_annotation[
@@ -728,7 +753,8 @@ GroupHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object."
+        " is not in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -751,14 +777,15 @@ GroupHeatmap <- function(
       length(feature_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation"
+      log_message(
+        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation",
+        message_type = "error"
       )
     }
     if (
       any(!feature_annotation %in% colnames(GetFeaturesData(srt, assay = assay)))
     ) {
-      stop(
+      log_message(
         "feature_annotation: ",
         paste0(
           feature_annotation[
@@ -768,7 +795,8 @@ GroupHeatmap <- function(
         ),
         " is not in the meta data of the ",
         assay,
-        " assay in the Seurat object."
+        " assay in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -800,10 +828,16 @@ GroupHeatmap <- function(
     cells <- colnames(srt@assays[[1]])
   }
   if (all(!cells %in% colnames(srt@assays[[1]]))) {
-    stop("No cells found.")
+    log_message(
+      "No cells found.",
+      message_type = "error"
+    )
   }
   if (!all(cells %in% colnames(srt@assays[[1]]))) {
-    warning("Some cells not found.", immediate. = TRUE)
+    log_message(
+      "Some cells not found.",
+      message_type = "warning"
+    )
   }
   cells <- intersect(cells, colnames(srt@assays[[1]]))
 
@@ -926,9 +960,9 @@ GroupHeatmap <- function(
       isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
       if (isTRUE(isfloat)) {
         libsize_use <- rep(1, length(libsize_use))
-        warning(
+        log_message(
           "The values in the 'counts' layer are non-integer. Set the library size to 1.",
-          immediate. = TRUE
+          message_type = "warning"
         )
         if (!is.null(grouping.var)) {
           exp_name <- paste0(
@@ -1153,8 +1187,9 @@ GroupHeatmap <- function(
     if (isTRUE(cluster_column_slices) && !is.null(split.by)) {
       if (!isTRUE(cluster_columns)) {
         if (nlevels(column_split_list[[cell_group]]) == 1) {
-          stop(
-            "cluster_column_slices=TRUE can not be used when there is only one group."
+          log_message(
+            "cluster_column_slices=TRUE can not be used when there is only one group.",
+            message_type = "error"
           )
         }
         dend <- ComplexHeatmap::cluster_within_group(
@@ -1534,9 +1569,9 @@ GroupHeatmap <- function(
         if (split_method == "mfuzz") {
           status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
-            warning(
+            log_message(
               "The e1071 package was not found. Switch split_method to 'kmeans'",
-              immediate. = TRUE
+              message_type = "warning"
             )
             split_method <- "kmeans"
           } else {
@@ -1548,10 +1583,10 @@ GroupHeatmap <- function(
               fuzzification <- min_fuzzification + 0.1
             } else {
               if (fuzzification <= min_fuzzification) {
-                warning(
+                log_message(
                   "fuzzification value is samller than estimated:",
                   round(min_fuzzification, 2),
-                  immediate. = TRUE
+                  message_type = "warning"
                 )
               }
             }
@@ -1562,10 +1597,11 @@ GroupHeatmap <- function(
               m = fuzzification
             )
             if (length(cl$cluster) == 0) {
-              stop(
+              log_message(
                 "Clustering with mfuzz failed (fuzzification=",
                 round(fuzzification, 2),
-                "). Please set a larger fuzzification parameter manually."
+                "). Please set a larger fuzzification parameter manually.",
+                message_type = "error"
               )
             }
             row_split <- feature_split <- cl$cluster
@@ -1781,9 +1817,9 @@ GroupHeatmap <- function(
     index <- which(features_ordered %in% features_label)
     drop <- setdiff(features_label, features_ordered)
     if (length(drop) > 0) {
-      warning(
+      log_message(
         paste0(paste0(drop, collapse = ","), "was not found in the features"),
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
   }
@@ -2210,11 +2246,11 @@ GroupHeatmap <- function(
       }
     )
     if (any(names(ht_params) %in% names(ht_args))) {
-      warning(
+      log_message(
         "ht_params: ",
         paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
         " were duplicated and will not be used.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
@@ -2237,13 +2273,13 @@ GroupHeatmap <- function(
   ) {
     fix <- TRUE
     if (is.null(width) || is.null(height)) {
-      message(
+      log_message(
         "The size of the heatmap is fixed because certain elements are not scalable."
       )
-      message(
+      log_message(
         "The width and height of the heatmap are determined by the size of the current viewport."
       )
-      message(
+      log_message(
         "If you want to have more control over the size, you can manually set the parameters 'width' and 'height'."
       )
     }

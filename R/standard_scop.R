@@ -121,7 +121,10 @@ standard_scop <- function(
     cluster_resolution = 0.6,
     seed = 11) {
   if (!inherits(srt, "Seurat")) {
-    stop("'srt' is not a Seurat object.")
+    log_message(
+      "'srt' is not a Seurat object.",
+      message_type = "error"
+    )
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -130,8 +133,9 @@ standard_scop <- function(
     "nmf", "mds", "glmpca"
   )
   if (any(!linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt)))) {
-    stop(
-      "'linear_reduction' must be one of: ", paste(linear_reductions, "")
+    log_message(
+      "'linear_reduction' must be one of: ", paste(linear_reductions, ""),
+      message_type = "error"
     )
   }
   if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
@@ -143,12 +147,16 @@ standard_scop <- function(
     "trimap", "largevis", "fr"
   )
   if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
-    stop(
-      "'nonlinear_reduction' must be one of: ", paste(nonlinear_reductions, "")
+    log_message(
+      "'nonlinear_reduction' must be one of: ", paste(nonlinear_reductions, ""),
+      message_type = "error"
     )
   }
   if (!cluster_algorithm %in% c("louvain", "slm", "leiden")) {
-    stop("'cluster_algorithm' must be one of 'louvain', 'slm', 'leiden'.")
+    log_message(
+      "'cluster_algorithm' must be one of 'louvain', 'slm', 'leiden'.",
+      message_type = "error"
+    )
   }
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
@@ -164,7 +172,7 @@ standard_scop <- function(
   time_start <- Sys.time()
   set.seed(seed)
 
-  message(paste0("[", time_start, "] ", "Start standard_scop"))
+  log_message("Start standard_scop")
 
   checked <- check_srt_list(
     srt_list = list(srt),
@@ -187,12 +195,9 @@ standard_scop <- function(
   rm(checked)
 
   if (normalization_method == "TFIDF") {
-    message(paste0(
-      "[",
-      Sys.time(),
-      "]",
-      " normalization_method is 'TFIDF'. Use 'lsi' workflow..."
-    ))
+    log_message(
+      "normalization_method is 'TFIDF'. Use 'lsi' workflow..."
+    )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
@@ -210,7 +215,9 @@ standard_scop <- function(
         ))
   ) {
     if (normalization_method != "SCT") {
-      message(paste0("[", Sys.time(), "]", " Perform ScaleData on the data..."))
+      log_message(
+        " Perform ScaleData on the data..."
+      )
       srt <- Seurat::ScaleData(
         object = srt,
         assay = assay,
@@ -223,15 +230,8 @@ standard_scop <- function(
   }
 
   for (lr in linear_reduction) {
-    message(
-      paste0(
-        "[",
-        Sys.time(),
-        "]",
-        " Perform linear dimension reduction (",
-        lr,
-        ") on the data..."
-      )
+    log_message(
+      paste0(" Perform linear dimension reduction (", lr, ") on the data...")
     )
     srt <- RunDimReduction(
       srt,
@@ -279,14 +279,9 @@ standard_scop <- function(
           verbose = FALSE
         )
 
-        message(paste0(
-          "[",
-          Sys.time(),
-          "]",
-          " Perform FindClusters (",
-          cluster_algorithm,
-          ") on the data..."
-        ))
+        log_message(
+          paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        )
         srt <- Seurat::FindClusters(
           object = srt,
           resolution = cluster_resolution,
@@ -294,7 +289,7 @@ standard_scop <- function(
           graph.name = paste0(prefix, lr, "_SNN"),
           verbose = FALSE
         )
-        message(paste0("[", Sys.time(), "]", " Reorder clusters..."))
+        log_message("Reorder clusters...")
         srt <- srt_reorder(
           srt,
           features = HVF,
@@ -306,8 +301,11 @@ standard_scop <- function(
         srt
       },
       error = function(error) {
-        message(error)
-        message("Error when performing FindClusters. Skip this step...")
+        log_message(error, message_type = "warning")
+        log_message(
+          "Error when performing FindClusters. Skip this step...",
+          message_type = "warning"
+        )
         return(srt)
       }
     )
@@ -315,14 +313,11 @@ standard_scop <- function(
     srt <- tryCatch(
       {
         for (nr in nonlinear_reduction) {
-          message(paste0(
-            "[",
-            Sys.time(),
-            "]",
+          log_message(
             " Perform nonlinear dimension reduction (",
             nr,
             ") on the data..."
-          ))
+          )
           for (n in nonlinear_reduction_dims) {
             srt <- RunDimReduction(
               srt,
@@ -342,9 +337,13 @@ standard_scop <- function(
         srt
       },
       error = function(error) {
-        message(error)
-        message(
-          "Error when performing nonlinear dimension reduction. Skip this step..."
+        log_message(
+          error,
+          message_type = "warning"
+        )
+        log_message(
+          "Error when performing nonlinear dimension reduction. Skip this step...",
+          message_type = "error"
         )
         return(srt)
       }
@@ -383,8 +382,8 @@ standard_scop <- function(
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "standard_scop done"))
-  message(
+  log_message("standard_scop done")
+  log_message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),

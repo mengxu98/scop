@@ -69,16 +69,25 @@ RunScmap <- function(
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        stop("ref_group must be one of the column names in the meta.data")
+        log_message(
+          "ref_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
       }
     } else {
-      stop("Length of ref_group must be one or length of srt_ref.")
+      log_message(
+        "Length of ref_group must be one or length of srt_ref.",
+        message_type = "error"
+      )
     }
     ref_group <- "ref_group"
   } else {
-    stop("'ref_group' must be provided.")
+    log_message(
+      "'ref_group' must be provided.",
+      message_type = "error"
+    )
   }
 
   status_query <- check_data_type(
@@ -88,7 +97,7 @@ RunScmap <- function(
       assay = query_assay
     )
   )
-  message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
     data = GetAssayData5(
       srt_ref,
@@ -96,14 +105,14 @@ RunScmap <- function(
       assay = ref_assay
     )
   )
-  message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
-    warning(
+    log_message(
       "Data type is unknown or different between query and ref.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
@@ -159,7 +168,7 @@ RunScmap <- function(
     metadata_ref
   )
 
-  message("Perform selectFeatures on the data...")
+  log_message("Perform selectFeatures on the data...")
   sce_ref <- scmap::selectFeatures(
     sce_ref,
     n_features = nfeatures,
@@ -170,38 +179,44 @@ RunScmap <- function(
   ]
 
   if (method == "scmapCluster") {
-    message("Perform indexCluster on the data...")
+    log_message("Perform indexCluster on the data...")
     sce_ref <- scmap::indexCluster(sce_ref, cluster_col = ref_group)
-    message("Perform scmapCluster on the data...")
+    log_message("Perform scmapCluster on the data...")
     scmapCluster_results <- scmap::scmapCluster(
       projection = sce_query,
       index_list = list(S4Vectors::metadata(sce_ref)$scmap_cluster_index),
       threshold = threshold
     )
     if (!"scmap_cluster_labs" %in% names(scmapCluster_results)) {
-      stop("scmap failed to run. Please check the warning message.")
+      log_message(
+        "scmap failed to run. Please check the warning message.",
+        message_type = "error"
+      )
     }
     srt_query@tools[["scmapCluster_results"]] <- scmapCluster_results
     srt_query$scmap_annotation <- scmapCluster_results$scmap_cluster_labs[, 1]
     srt_query$scmap_score <- scmapCluster_results$scmap_cluster_siml[, 1]
   } else if (method == "scmapCell") {
-    message("Perform indexCell on the data...")
+    log_message("Perform indexCell on the data...")
     sce_ref <- scmap::indexCell(
       sce_ref,
       M = ifelse(nfeatures <= 1000, nfeatures / 10, 100),
       k = sqrt(ncol(sce_ref))
     )
-    message("Perform scmapCell on the data...")
+    log_message("Perform scmapCell on the data...")
     scmapCell_results <- scmap::scmapCell(
       projection = sce_query,
       index_list = list(S4Vectors::metadata(sce_ref)$scmap_cell_index),
       w = k
     )
     if (!"cells" %in% names(scmapCell_results[[1]])) {
-      stop("scmap failed to run. Please check the warning message.")
+      log_message(
+        "scmap failed to run. Please check the warning message.",
+        message_type = "error"
+      )
     }
     srt_query@tools[["scmapCell_results"]] <- scmapCell_results[[1]]
-    message("Perform scmapCell2Cluster on the data...")
+    log_message("Perform scmapCell2Cluster on the data...")
     scmapCell_clusters <- scmap::scmapCell2Cluster(
       scmapCell_results = scmapCell_results,
       cluster_list = list(

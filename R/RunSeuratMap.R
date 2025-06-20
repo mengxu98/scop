@@ -70,13 +70,13 @@ RunSeuratMap <- function(
         SeuratObject::Reductions(srt_ref)[grep("pca", SeuratObject::Reductions(srt_ref))]
       )[1]
     } else {
-      cat(
+      log_message(
         "'ref_pca' is NUll and no pca reduction detected. Run standard_scop first.\n"
       )
       srt_ref <- standard_scop(srt_ref)
       ref_pca <- "Standardpca"
     }
-    cat("Set the ref_pca to '", ref_pca, "'\n", sep = "")
+    log_message("Set the ref_pca to '", ref_pca, "'")
   }
   if (is.null(ref_umap)) {
     ref_umap <- sort(
@@ -87,9 +87,12 @@ RunSeuratMap <- function(
       )]
     )[1]
     if (length(ref_umap) == 0) {
-      stop("Cannot find UMAP reduction in the srt_ref")
+      log_message(
+        "Cannot find UMAP reduction in the srt_ref",
+        message_type = "error"
+      )
     } else {
-      message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to ", ref_umap)
     }
   }
   projection_method <- match.arg(projection_method)
@@ -97,37 +100,41 @@ RunSeuratMap <- function(
     projection_method == "model" &&
       !"model" %in% names(srt_ref[[ref_umap]]@misc)
   ) {
-    message("No UMAP model detected. Set the projection_method to 'knn'")
+    log_message(
+      "No UMAP model detected. Set the projection_method to 'knn'",
+      message_type = "warning"
+    )
     projection_method <- "knn"
   }
   if (
     projection_method == "model" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      message_type = "error"
     )
   }
 
   status_query <- check_data_type(
     data = GetAssayData5(srt_query, layer = "data", assay = query_assay)
   )
-  message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: ", status_query)
   status_ref <- check_data_type(
     data = GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
   )
-  message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: ", status_ref)
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
-    warning(
+    log_message(
       "Data type is unknown or different between srt_query and srt_ref.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
 
-  message("Run FindTransferAnchors")
+  log_message("Run FindTransferAnchors")
   anchors <- Seurat::FindTransferAnchors(
     query = srt_query,
     query.assay = query_assay,
@@ -153,7 +160,7 @@ RunSeuratMap <- function(
     )
   }
 
-  message("Run UMAP projection")
+  log_message("Run UMAP projection")
   srt_query <- RunKNNMap(
     srt_query = srt_query,
     query_assay = query_assay,
