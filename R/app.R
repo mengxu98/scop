@@ -29,7 +29,7 @@ CreateDataFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    message("Set the dataset name to ", name)
+    log_message("Set the dataset name to ", name)
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -38,7 +38,7 @@ CreateDataFile <- function(
     rhdf5::h5createGroup(file = DataFile, group = name)
   }
 
-  message("Write the expression matrix to hdf5 file: ", DataFile)
+  log_message("Write the expression matrix to hdf5 file: ", DataFile)
   for (assay in assays) {
     for (layer in layers) {
       data <- Matrix::t(
@@ -58,7 +58,7 @@ CreateDataFile <- function(
         )
       }
       if (paste0(name, "/", assay, "/", layer) %in% rhdf5::h5ls(DataFile)$group) {
-        message("Group ", paste0(name, "/", assay, "/", layer), " already exists in the ", DataFile)
+        log_message("Group ", paste0(name, "/", assay, "/", layer), " already exists in the ", DataFile)
       } else {
         if (!paste0(name, "/", assay) %in% rhdf5::h5ls(DataFile)$group) {
           rhdf5::h5createGroup(
@@ -82,7 +82,9 @@ CreateDataFile <- function(
     try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/Default_assay")), silent = TRUE)
   }
   if (paste0(name, "/Default_assay") %in% rhdf5::h5ls(DataFile)$group) {
-    message("Group ", paste0(name, "/Default_assay"), " already exists in the ", DataFile)
+    log_message(
+      "Group ", paste0(name, "/Default_assay"), " already exists in the ", DataFile
+    )
   } else {
     rhdf5::h5write(obj = DefaultAssay(srt), file = DataFile, name = paste0(name, "/Default_assay"), level = compression_level)
   }
@@ -90,7 +92,9 @@ CreateDataFile <- function(
     try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/cells")), silent = TRUE)
   }
   if (paste0(name, "/cells") %in% rhdf5::h5ls(DataFile)$group) {
-    message("Group ", paste0(name, "/cells"), " already exists in the ", DataFile)
+    log_message(
+      "Group ", paste0(name, "/cells"), " already exists in the ", DataFile
+    )
   } else {
     rhdf5::h5write(obj = colnames(srt), file = DataFile, name = paste0(name, "/cells"), level = compression_level)
   }
@@ -98,7 +102,9 @@ CreateDataFile <- function(
     try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/features")), silent = TRUE)
   }
   if (paste0(name, "/features") %in% rhdf5::h5ls(DataFile)$group) {
-    message("Group ", paste0(name, "/features"), " already exists in the ", DataFile)
+    log_message(
+      "Group ", paste0(name, "/features"), " already exists in the ", DataFile
+    )
   } else {
     rhdf5::h5write(obj = unique(unlist(lapply(srt@assays, rownames))), file = DataFile, name = paste0(name, "/features"), level = compression_level)
   }
@@ -138,7 +144,7 @@ CreateMetaFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    message("Set the dataset name to ", name)
+    log_message("Set the dataset name to ", name)
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -147,7 +153,7 @@ CreateMetaFile <- function(
     rhdf5::h5createGroup(file = MetaFile, group = name)
   }
 
-  message("Write the meta information to hdf5 file: ", MetaFile)
+  log_message("Write the meta information to hdf5 file: ", MetaFile)
   if (!paste0(name, "/metadata") %in% rhdf5::h5ls(MetaFile)$group) {
     rhdf5::h5createGroup(
       file = MetaFile,
@@ -176,7 +182,12 @@ CreateMetaFile <- function(
       meta_asfeatures <- c(meta_asfeatures, var)
     } else {
       if (length(unique(meta)) > ignore_nlevel) {
-        warning("The number of categories in ", var, " is greater than ", ignore_nlevel, ". It will be ignored.", immediate. = TRUE)
+        log_message(
+          paste0(
+            "The number of categories in ", var, " is greater than ", ignore_nlevel, ". It will be ignored."
+          ),
+          message_type = "warning"
+        )
       } else {
         meta_asgroups <- c(meta_asgroups, var)
       }
@@ -185,10 +196,15 @@ CreateMetaFile <- function(
       try(rhdf5::h5delete(file = MetaFile, name = paste0(name, "/metadata/", var)), silent = TRUE)
     }
     if (paste0(name, "/metadata/", var) %in% paste0(rhdf5::h5ls(MetaFile)$group, "/", rhdf5::h5ls(MetaFile)$name)) {
-      message("Group ", paste0(name, "/metadata/", var), " already exists in the ", MetaFile)
+      log_message(
+        "Group ", paste0(name, "/metadata/", var), " already exists in the ", MetaFile
+      )
     } else {
       if (all(is.na(meta))) {
-        warning("All of values in ", var, " is NA. It will be ignored.", immediate. = TRUE)
+        log_message(
+          paste0("All of values in ", var, " is NA. It will be ignored."),
+          message_type = "warning"
+        )
       } else {
         rhdf5::h5write(obj = meta, file = MetaFile, name = paste0(name, "/metadata/", var), write.attributes = write.attributes, level = compression_level)
       }
@@ -205,7 +221,9 @@ CreateMetaFile <- function(
     )
   }
   if (paste0(name, "/metadata.stat") %in% rhdf5::h5ls(MetaFile)$group) {
-    message("Group ", paste0(name, "/metadata.stat"), " already exists in the ", MetaFile)
+    log_message(
+      "Group ", paste0(name, "/metadata.stat"), " already exists in the ", MetaFile
+    )
   } else {
     rhdf5::h5createGroup(
       file = MetaFile,
@@ -244,7 +262,9 @@ CreateMetaFile <- function(
       )
     }
     if (paste0(name, "/reductions/", reduction) %in% paste0(rhdf5::h5ls(MetaFile)$group, "/", rhdf5::h5ls(MetaFile)$name)) {
-      message("Group ", paste0(name, "/reductions/", reduction), " already exists in the ", MetaFile)
+      log_message(
+        "Group ", paste0(name, "/reductions/", reduction), " already exists in the ", MetaFile
+      )
     } else {
       rhdf5::h5createDataset(
         file = MetaFile,
@@ -274,7 +294,9 @@ CreateMetaFile <- function(
     )
   }
   if (paste0(name, "/reductions.stat") %in% rhdf5::h5ls(MetaFile)$group) {
-    message("Group ", paste0(name, "/reductions.stat"), " already exists in the ", MetaFile)
+    log_message(
+      "Group ", paste0(name, "/reductions.stat"), " already exists in the ", MetaFile
+    )
   } else {
     rhdf5::h5createGroup(
       file = MetaFile,
@@ -299,7 +321,9 @@ CreateMetaFile <- function(
       )
     }
     if (paste0(name, "/misc") %in% rhdf5::h5ls(MetaFile)$group) {
-      message("Group ", paste0(name, "/misc"), " already exists in the ", MetaFile)
+      log_message(
+        "Group ", paste0(name, "/misc"), " already exists in the ", MetaFile
+      )
     } else {
       rhdf5::h5write(
         obj = srt@misc,
@@ -320,7 +344,9 @@ CreateMetaFile <- function(
       )
     }
     if (paste0(name, "/tools") %in% rhdf5::h5ls(MetaFile)$group) {
-      message("Group ", paste0(name, "/tools"), " already exists in the ", MetaFile)
+      log_message(
+        "Group ", paste0(name, "/tools"), " already exists in the ", MetaFile
+      )
     } else {
       rhdf5::h5write(
         obj = srt@tools,
@@ -366,7 +392,7 @@ PrepareSCExplorer <- function(
     overwrite = FALSE) {
   base_dir <- normalizePath(base_dir, mustWork = FALSE)
   if (!dir.exists(base_dir)) {
-    message("Create SCExplorer base directory: ", base_dir)
+    log_message("Create SCExplorer base directory: ", base_dir)
     dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
   }
   DataFile_full <- paste0(base_dir, "/", DataFile)
@@ -376,28 +402,43 @@ PrepareSCExplorer <- function(
     object <- list(object)
   }
   if (any(sapply(object, function(x) !inherits(x, "Seurat")))) {
-    stop("'object' must be one Seurat object or a list of Seurat object.")
+    log_message(
+      "'object' must be one Seurat object or a list of Seurat object.",
+      message_type = "error"
+    )
   }
   if (length(names(object)) > 0 && length(names(object)) != length(object)) {
-    stop("The object is named, but the name length is not equal to the number of elements.")
+    log_message(
+      "The object is named, but the name length is not equal to the number of elements.",
+      message_type = "error"
+    )
   }
   if (length(names(object)) == 0) {
     names(object) <- make.names(sapply(object, function(x) x@project.name), unique = TRUE)
-    message("Set the project name of each seurat object to their dataset name")
+    log_message("Set the project name of each seurat object to their dataset name")
   }
 
   for (i in seq_along(object)) {
     nm <- names(object)[i]
     srt <- object[[nm]]
-    message("Prepare data for object: ", nm)
+    log_message("Prepare data for object: ", nm)
     if (length(SeuratObject::Reductions(srt)) == 0) {
-      stop("No reduction found in the Seurat object ", i)
+      log_message(
+        paste0("No reduction found in the Seurat object ", i),
+        message_type = "error"
+      )
     }
     if (!any(assays %in% SeuratObject::Assays(srt))) {
-      warning("Assay:", assays[!assays %in% SeuratObject::Assays(srt)], " is not in the Seurat object ", i, immediate. = TRUE)
+      log_message(
+        paste0("Assay:", assays[!assays %in% SeuratObject::Assays(srt)], " is not in the Seurat object ", i),
+        message_type = "warning"
+      )
       assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
-        warning("No assays found in the Seurat object ", i, ". Use the default assay to create data file.")
+        log_message(
+          paste0("No assays found in the Seurat object ", i, ". Use the default assay to create data file."),
+          message_type = "warning"
+        )
         assays <- SeuratObject::DefaultAssay(srt)
       }
     }
@@ -479,7 +520,10 @@ FetchH5 <- function(
     metanames = NULL,
     reduction = NULL) {
   if (missing(DataFile) || missing(MetaFile)) {
-    stop("'DataFile', 'MetaFile' must be provided.")
+    log_message(
+      "'DataFile', 'MetaFile' must be provided.",
+      message_type = "error"
+    )
   }
   data_group <- rhdf5::h5ls(DataFile)$group
   meta_group <- rhdf5::h5ls(MetaFile)$group
@@ -489,9 +533,17 @@ FetchH5 <- function(
     group <- group[group != "/"]
     group <- sapply(group, function(x) substr(x, 2, nchar(x)))
     if (length(group) == 0) {
-      stop("Can not find the shared group name in the DataFile and the MetaFile. They may not correspond to the same project.")
+      log_message(
+        "Can not find the shared group name in the DataFile and the MetaFile. They may not correspond to the same project.",
+        message_type = "error"
+      )
     } else if (length(group) > 1) {
-      message(length(group), " possible dataset names were found: ", paste(group, collapse = ", "), "\nUse the first one.")
+      log_message(
+        length(group),
+        " possible dataset names were found: ",
+        paste(group, collapse = ", "),
+        "\nUse the first one."
+      )
     }
     name <- group[1]
   }
@@ -519,18 +571,35 @@ FetchH5 <- function(
   reduction_name <- meta_struc[meta_struc$group == paste0(name, "/reductions"), "name"]
 
   if (!is.null(features) && any(!features %in% c(all_features, meta_features_name))) {
-    warning("Can not find the features: ", paste0(features[!features %in% c(all_features, meta_features_name)], collapse = ","), immediate. = TRUE)
+    log_message(
+      paste0(
+        "Can not find the features: ",
+        paste0(features[!features %in% c(all_features, meta_features_name)], collapse = ","),
+        immediate. = TRUE
+      ),
+      message_type = "warning"
+    )
   }
   gene_features <- features[features %in% c(all_features)]
   meta_features <- features[features %in% c(meta_features_name)]
 
   if (!is.null(metanames) && any(!metanames %in% c(meta_features_name, meta_groups_name))) {
-    warning("Can not find the meta information: ", paste0(metanames[!metanames %in% c(meta_features_name, meta_groups_name)], collapse = ","), immediate. = TRUE)
+    log_message(
+      paste0(
+        "Can not find the meta information: ",
+        paste0(metanames[!metanames %in% c(meta_features_name, meta_groups_name)], collapse = ","),
+        immediate. = TRUE
+      ),
+      message_type = "warning"
+    )
   }
   metanames <- metanames[metanames %in% c(meta_features_name, meta_groups_name)]
 
   if (length(gene_features) == 0 && length(meta_features) == 0 && length(metanames) == 0) {
-    stop("No features or meta information found.")
+    log_message(
+      "No features or meta information found.",
+      message_type = "error"
+    )
   }
 
   if (length(gene_features) > 0) {
@@ -555,7 +624,12 @@ FetchH5 <- function(
       layer <- ifelse("counts" %in% layers, "counts", layers[1])
     }
     if (!paste0(name, "/", assay, "/", layer) %in% rhdf5::h5ls(DataFile)[["group"]]) {
-      stop("There is no ", paste0(name, "/", assay, "/", layer), " in DataFile, please write it first using the PrepareSCExplorer function")
+      log_message(
+        paste0(
+          "There is no ", paste0(name, "/", assay, "/", layer), " in DataFile, please write it first using the PrepareSCExplorer function"
+        ),
+        message_type = "error"
+      )
     }
     data <- HDF5Array::TENxMatrix(
       filepath = DataFile,
@@ -619,7 +693,10 @@ FetchH5 <- function(
   if (!is.null(reduction)) {
     reduction <- reduction_name[agrep(reduction, reduction_name)]
     if (length(reduction) == 0) {
-      stop("Can not find the reduction: ", as.character(reduction))
+      log_message(
+        paste0("Can not find the reduction: ", as.character(reduction)),
+        message_type = "error"
+      )
     }
     for (i in reduction) {
       reduction <- as.matrix(
@@ -658,13 +735,19 @@ CreateSeuratObject2 <- function(
     ...) {
   if (!is.null(x = meta.data)) {
     if (is.null(x = rownames(x = meta.data))) {
-      stop("Row names not set in metadata. Please ensure that rownames of metadata match column names of data matrix")
+      log_message(
+        "Row names not set in metadata. Please ensure that rownames of metadata match column names of data matrix",
+        message_type = "error"
+      )
     }
     if (length(x = setdiff(
       x = rownames(x = meta.data),
       y = colnames(x = counts)
     ))) {
-      warning("Some cells in meta.data not present in provided counts matrix.")
+      log_message(
+        "Some cells in meta.data not present in provided counts matrix.",
+        message_type = "warning"
+      )
       meta.data <- meta.data[intersect(x = rownames(x = meta.data), y = colnames(x = counts)), , drop = FALSE]
     }
     if (is.data.frame(x = meta.data)) {
@@ -681,8 +764,9 @@ CreateSeuratObject2 <- function(
   assay.list <- list(counts)
   names(x = assay.list) <- assay
   if (any(is.na(x = idents))) {
-    warning("Input parameters result in NA values for initial cell identities. Setting all initial idents to the project name",
-      call. = FALSE, immediate. = TRUE
+    log_message(
+      "Input parameters result in NA values for initial cell identities. Setting all initial idents to the project name",
+      message_type = "warning"
     )
   }
   ident.levels <- length(x = unique(x = idents))
@@ -773,7 +857,7 @@ CreateSeuratObject2 <- function(
 #' if (interactive()) {
 #'   shiny::runApp(app)
 #' }
-#' # Note: If scop installed in the isolated environment using renv, 
+#' # Note: If scop installed in the isolated environment using renv,
 #' # you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 #'
 #' ###########################
@@ -782,7 +866,7 @@ CreateSeuratObject2 <- function(
 #' # Or deploy the app on the website
 #' # (https://www.shinyapps.io) for free:
 #'
-#' # step1: set the repository URL for Bioconductor packages 
+#' # step1: set the repository URL for Bioconductor packages
 #' # and update them to the latest version
 #' # options(repos = BiocManager::repositories())
 #' # BiocManager::install(ask = FALSE)
@@ -842,7 +926,10 @@ RunSCExplorer <- function(
   DataFile_full <- paste0(base_dir, "/", DataFile)
   MetaFile_full <- paste0(base_dir, "/", MetaFile)
   if (!file.exists(DataFile_full) || !file.exists(MetaFile_full)) {
-    stop("Please create the DataFile and MetaFile using PrepareSCExplorer function first!")
+    log_message(
+      "Please create the DataFile and MetaFile using PrepareSCExplorer function first!",
+      message_type = "error"
+    )
   }
 
   main_code <- '
@@ -1751,9 +1838,13 @@ server <- function(input, output, session) {
     height <- attr(x, "size")$height
     units <- attr(x, "size")$units
     dpi <- attr(x, "dpi")
-    if (verbose) {
-      message(paste("width:", width, "height:", height, "units:", units, "dpi:", dpi))
-    }
+
+    log_message(
+      paste("width:", width, "height:", height, "units:", units, "dpi:", dpi),
+      message_type = "info",
+      verbose = verbose
+    )
+
     if (attr == "width") {
       return(width)
     }
@@ -2513,15 +2604,15 @@ server <- function(input, output, session) {
   if (isTRUE(create_script)) {
     app_file <- paste0(base_dir, "/app.R")
     if (!file.exists(app_file) || isTRUE(overwrite)) {
-      message("Create the SCExplorer app script: ", app_file)
+      log_message("Create the SCExplorer app script: ", app_file)
       suppressWarnings(file.remove(app_file))
       file.copy(from = temp, to = app_file, overwrite = TRUE)
       if (isTRUE(style_script)) {
-        message("Styling the script...")
+        log_message("Styling the script...")
         invisible(capture.output(styler::style_file(app_file)))
       }
     } else {
-      message("app.R already exists. You may regenerate it with 'overwrite = TRUE'.")
+      log_message("app.R already exists. You may regenerate it with 'overwrite = TRUE'.")
     }
   }
   unlink(temp)

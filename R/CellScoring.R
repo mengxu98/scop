@@ -149,19 +149,25 @@ CellScoring <- function(
   bpRNGseed(BPPARAM) <- seed
 
   if (!method %in% c("Seurat", "AUCell", "UCell")) {
-    stop("method must be 'Seurat', 'AUCell'or 'UCell'.")
+    log_message(
+      "method must be 'Seurat', 'AUCell'or 'UCell'.",
+      message_type = "error"
+    )
   }
   assay <- assay %||% DefaultAssay(srt)
   if (layer == "counts") {
     status <- check_data_type(srt, layer = "counts", assay = assay)
     if (status != "raw_counts") {
-      warning("Data is not raw counts", immediate. = TRUE)
+      log_message(
+        "Data is not raw counts",
+        message_type = "warning"
+      )
     }
   }
   if (layer == "data") {
     status <- check_data_type(srt, layer = "data", assay = assay)
     if (status == "raw_counts") {
-      message(
+      log_message(
         "Data is raw counts. Perform NormalizeData(LogNormalize) on the data ..."
       )
       srt <- NormalizeData(
@@ -172,7 +178,7 @@ CellScoring <- function(
       )
     }
     if (status == "raw_normalized_counts") {
-      message(
+      log_message(
         "Data is normalized without log transformation. Perform NormalizeData(LogNormalize) on the data..."
       )
       srt <- NormalizeData(
@@ -183,16 +189,19 @@ CellScoring <- function(
       )
     }
     if (status == "unknown") {
-      warning(
+      log_message(
         "Can not determine whether data ",
         i,
         " is log-normalized...\n",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
   }
   if (name == "" && isTRUE(new_assay)) {
-    stop("name must be specified when new_assay=TRUE")
+    log_message(
+      "name must be specified when new_assay=TRUE",
+      message_type = "error"
+    )
   }
   if (is.null(features)) {
     for (single_db in db) {
@@ -237,7 +246,10 @@ CellScoring <- function(
             names(features_tmp)
           )]
         } else {
-          stop("None of termnames found in the db: ", single_db)
+          log_message(
+            "None of termnames found in the db: ", single_db,
+            message_type = "error"
+          )
         }
       }
       features <- c(features, features_tmp)
@@ -245,7 +257,10 @@ CellScoring <- function(
   }
 
   if (!is.list(features) || length(names(features)) == 0) {
-    stop("'features' must be a named list")
+    log_message(
+      "'features' must be a named list",
+      message_type = "error"
+    )
   }
   expressed <- names(
     which(
@@ -268,20 +283,24 @@ CellScoring <- function(
   )
   filtered_none <- names(which(sapply(features, length) == 0))
   if (length(filtered_none) > 0) {
-    warning(
-      "The following list of features were filtered because none of features were found in the srt assay:\n",
-      paste0(filtered_none, collapse = ", "),
-      immediate. = TRUE
+    log_message(
+      paste0(
+        "The following list of features were filtered because none of features were found in the srt assay:\n",
+        paste0(filtered_none, collapse = ", ")
+      ),
+      message_type = "warning"
     )
   }
   features <- features[!names(features) %in% filtered_none]
   features_raw <- features
   names(features) <- make.names(names(features))
-  message("Number of feature lists to be scored: ", length(features))
+  log_message(
+    "Number of feature lists to be scored: ", length(features)
+  )
 
   time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start CellScoring"))
-  message("Workers: ", bpworkers(BPPARAM))
+  log_message("Start CellScoring")
+  log_message("Workers: ", bpworkers(BPPARAM))
 
   if (!is.null(split.by)) {
     split_list <- Seurat::SplitObject(srt, split.by = split.by)
@@ -324,10 +343,12 @@ CellScoring <- function(
         !paste0(names(features), name) %in% colnames(srt_tmp@meta.data)
       ]
       if (length(filtered) > 0) {
-        warning(
-          "The following list of features were filtered when scoring:\n",
-          paste0(filtered, collapse = ", "),
-          immediate. = TRUE
+        log_message(
+          paste0(
+            "The following list of features were filtered when scoring:\n",
+            paste0(filtered, collapse = ", ")
+          ),
+          message_type = "warning"
         )
       }
       features_keep <- features[!names(features) %in% filtered]
@@ -356,10 +377,10 @@ CellScoring <- function(
         !names(features) %in% rownames(AUCell::getAUC(cells_AUC))
       ]
       if (length(filtered) > 0) {
-        warning(
+        log_message(
           "The following list of features were filtered when scoring:",
           paste0(filtered, collapse = ", "),
-          immediate. = TRUE
+          message_type = "warning"
         )
       }
       features_keep <- features[!names(features) %in% filtered]
@@ -432,9 +453,9 @@ CellScoring <- function(
   }
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "CellScoring done"))
-  message(
-    "Elapsed time:",
+  log_message("CellScoring done")
+  log_message(
+    "Elapsed time: ",
     format(
       round(difftime(time_end, time_start), 2),
       format = "%Y-%m-%d %H:%M:%S"
@@ -477,12 +498,15 @@ AddModuleScore2 <- function(
     cluster.length <- length(x = features)
   } else {
     if (is.null(x = features)) {
-      stop("Missing input feature list")
+      log_message(
+        "Missing input feature list",
+        message_type = "error"
+      )
     }
     features <- lapply(X = features, FUN = function(x) {
       missing.features <- setdiff(x = x, y = rownames(x = object))
       if (length(x = missing.features) > 0) {
-        warning(
+        log_message(
           "The following features are not present in the object: ",
           paste(missing.features, collapse = ", "),
           ifelse(
@@ -490,8 +514,7 @@ AddModuleScore2 <- function(
             yes = ", attempting to find updated synonyms",
             no = ", not searching for symbol synonyms"
           ),
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         if (search) {
           tryCatch(
@@ -507,20 +530,18 @@ AddModuleScore2 <- function(
               }
             },
             error = function(...) {
-              warning(
+              log_message(
                 "Could not reach HGNC's gene names database",
-                call. = FALSE,
-                immediate. = TRUE
+                message_type = "warning"
               )
             }
           )
           missing.features <- setdiff(x = x, y = rownames(x = object))
           if (length(x = missing.features) > 0) {
-            warning(
+            log_message(
               "The following features are still not present in the object: ",
               paste(missing.features, collapse = ", "),
-              call. = FALSE,
-              immediate. = TRUE
+              message_type = "warning"
             )
           }
         }
@@ -530,11 +551,13 @@ AddModuleScore2 <- function(
     cluster.length <- length(x = features)
   }
   if (!all(check_length(values = features))) {
-    warning(paste(
+    log_message(paste(
       "Could not find enough features in the object from the following feature lists:",
       paste(names(x = which(x = !check_length(values = features)))),
       "Attempting to match case..."
-    ))
+    ),
+    message_type = "warning"
+  )
     features <- lapply(
       X = features.old,
       FUN = Seurat::CaseMatch,
@@ -542,11 +565,13 @@ AddModuleScore2 <- function(
     )
   }
   if (!all(check_length(values = features))) {
-    stop(paste(
+    log_message(paste(
       "The following feature lists do not have enough features present in the object:",
       paste(names(x = which(x = !check_length(values = features)))),
       "exiting..."
-    ))
+    ),
+    message_type = "error"
+  )
   }
   pool <- pool %||% rownames(x = object)
   data_avg <- Matrix::rowMeans(

@@ -122,14 +122,21 @@ RunPAGA <- function(
     return_seurat = !is.null(srt)) {
   check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
-    stop("One of 'srt', 'adata' must be provided.")
+    log_message(
+      "One of 'srt', 'adata' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(group_by)) {
-    stop("'group_by' must be provided.")
+    log_message(
+      "'group_by' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
-    stop(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one."
+    log_message(
+      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      message_type = "error"
     )
   }
   args <- mget(names(formals()))
@@ -429,7 +436,10 @@ PAGAPlot <- function(
     theme_args = list(),
     return_layer = FALSE) {
   if (is.null(paga)) {
-    stop("Cannot find the paga result.")
+    log_message(
+      "Cannot find the paga result.",
+      message_type = "error"
+    )
   }
   if (type == "connectivities_tree") {
     use_triangular <- "both"
@@ -444,7 +454,10 @@ PAGAPlot <- function(
     srt@meta.data[[groups]] <- factor(srt@meta.data[[groups]])
   }
   if (nlevels(srt@meta.data[[groups]]) != nrow(connectivities)) {
-    stop("nlevels in ", groups, " is not identical with the group in paga")
+    log_message(
+      "nlevels in ", groups, " is not identical with the group in paga",
+      message_type = "error"
+    )
   }
   if (is.null(reduction)) {
     reduction <- DefaultReduction(srt)
@@ -452,7 +465,10 @@ PAGAPlot <- function(
     reduction <- DefaultReduction(srt, pattern = reduction)
   }
   if (!reduction %in% names(srt@reductions)) {
-    stop(paste0(reduction, " is not in the srt reduction names."))
+    log_message(
+      paste0(reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
   }
   reduction_key <- srt@reductions[[reduction]]@key
   dat_dim <- as.data.frame(srt@reductions[[reduction]]@cell.embeddings)
@@ -475,9 +491,9 @@ PAGAPlot <- function(
   if (!isTRUE(show_transition)) {
     transition <- NULL
   } else if (isTRUE(show_transition) && is.null(transition)) {
-    warning(
+    log_message(
       "transitions_confidence need to be calculated first.",
-      immediate. = TRUE
+      message_type = "warning"
     )
   }
   xlab <- xlab %||% paste0(reduction_key, dims[1])

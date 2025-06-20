@@ -214,7 +214,10 @@ RunKNNPredict <- function(
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
   features_type <- match.arg(features_type, choices = c("HVF", "DE"))
   if (is.null(query_reduction) + is.null(ref_reduction) == 1) {
-    stop("query_reduction and ref_reduction must be both provided")
+    log_message(
+      "query_reduction and ref_reduction must be both provided",
+      message_type = "error"
+    )
   }
   if (is.null(query_reduction) + is.null(ref_reduction) == 2) {
     use_reduction <- FALSE
@@ -236,8 +239,9 @@ RunKNNPredict <- function(
         features_type == "DE" && feature_source %in% c("both", "query")
       ) {
         if (is.null(query_group)) {
-          stop(
-            "'query_group' must be provided when 'features_type' is 'DE' and 'feature_source' is 'both' or 'query'"
+          log_message(
+            "'query_group' must be provided when 'features_type' is 'DE' and 'feature_source' is 'both' or 'query'",
+            message_type = "error"
           )
         } else {
           layer <- paste0("DEtest_", query_group)
@@ -268,7 +272,7 @@ RunKNNPredict <- function(
             names(srt_query@tools[[layer]])
           )[1]
           de <- names(srt_query@tools[[layer]])[index]
-          message(
+          log_message(
             "Use the DE features from ",
             de,
             " to calculate distance metric."
@@ -311,7 +315,7 @@ RunKNNPredict <- function(
               }
             ))
           }
-          message(
+          log_message(
             "DE features number of the query data: ",
             length(features_query)
           )
@@ -327,7 +331,7 @@ RunKNNPredict <- function(
       features <- features_query
     }
     features_common <- intersect(features, rownames(bulk_ref))
-    message("Use ", length(features_common), " features to calculate distance.")
+    log_message("Use ", length(features_common), " features to calculate distance.")
     ref <- Matrix::t(bulk_ref[features_common, , drop = FALSE])
   } else if (!is.null(srt_ref)) {
     ref_assay <- ref_assay %||% SeuratObject::DefaultAssay(srt_ref)
@@ -336,24 +340,33 @@ RunKNNPredict <- function(
         srt_ref[["ref_group"]] <- ref_group
       } else if (length(ref_group) == 1) {
         if (!ref_group %in% colnames(srt_ref@meta.data)) {
-          stop("ref_group must be one of the column names in the meta.data")
+          log_message(
+            "ref_group must be one of the column names in the meta.data",
+            message_type = "error"
+          )
         } else {
           srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
         }
       } else {
-        stop("Length of ref_group must be one or length of srt_ref.")
+        log_message(
+          "Length of ref_group must be one or length of srt_ref.",
+          message_type = "error"
+        )
       }
     } else {
-      stop("ref_group must be provided.")
+      log_message(
+        "ref_group must be provided.",
+        message_type = "error"
+      )
     }
 
     drop_cell <- colnames(srt_ref)[is.na(srt_ref[["ref_group", drop = TRUE]])]
     if (length(drop_cell) > 0) {
-      message("Drop ", length(drop_cell), " cells with NA in the ref_group")
+      log_message("Drop ", length(drop_cell), " cells with NA in the ref_group")
       srt_ref <- srt_ref[, setdiff(colnames(srt_ref), drop_cell)]
     }
     if (isTRUE(use_reduction)) {
-      message("Use the reduction to calculate distance metric.")
+      log_message("Use the reduction to calculate distance metric.")
       if (
         !is.null(query_dims) &&
           !is.null(ref_dims) &&
@@ -365,12 +378,15 @@ RunKNNPredict <- function(
         ]
         ref <- Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims]
       } else {
-        stop("query_dims and ref_dims must be provided with the same length.")
+        log_message(
+          "query_dims and ref_dims must be provided with the same length.",
+          message_type = "error"
+        )
       }
     } else {
       if (length(features) == 0) {
         if (features_type == "HVF" && feature_source %in% c("both", "ref")) {
-          message("Use the HVF to calculate distance metric.")
+          log_message("Use the HVF to calculate distance metric.")
           if (length(SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
             srt_ref <- Seurat::FindVariableFeatures(
               srt_ref,
@@ -407,7 +423,7 @@ RunKNNPredict <- function(
             names(srt_ref@tools[[layer]])
           )[1]
           de <- names(srt_ref@tools[[layer]])[index]
-          message(
+          log_message(
             "Use the DE features from ",
             de,
             " to calculate distance metric."
@@ -450,7 +466,7 @@ RunKNNPredict <- function(
               }
             ))
           }
-          message("DE features number of the ref data: ", length(features_ref))
+          log_message("DE features number of the ref data: ", length(features_ref))
         } else {
           features_ref <- rownames(srt_ref[[ref_assay]])
         }
@@ -464,7 +480,7 @@ RunKNNPredict <- function(
           rownames(srt_ref[[ref_assay]])
         )
       )
-      message(
+      log_message(
         "Use ",
         length(features_common),
         " features to calculate distance."
@@ -491,7 +507,10 @@ RunKNNPredict <- function(
       }
     }
   } else {
-    stop("srt_ref or bulk_ref must be provided at least one.")
+    log_message(
+      "srt_ref or bulk_ref must be provided at least one.",
+      message_type = "error"
+    )
   }
 
   if (!inherits(ref, "matrix")) {
@@ -504,19 +523,28 @@ RunKNNPredict <- function(
       srt_query[["query_group"]] <- query_group
     } else if (length(query_group) == 1) {
       if (!query_group %in% colnames(srt_query@meta.data)) {
-        stop("query_group must be one of the column names in the meta.data")
+        log_message(
+          "query_group must be one of the column names in the meta.data",
+          message_type = "error"
+        )
       } else {
         srt_query[["query_group"]] <- srt_query[[query_group]]
       }
     } else {
-      stop("Length of query_group must be one or length of srt_query.")
+      log_message(
+        "Length of query_group must be one or length of srt_query.",
+        message_type = "error"
+      )
     }
   }
   if (!isTRUE(use_reduction)) {
     query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
     if (isTRUE(query_collapsing)) {
       if (is.null(query_group)) {
-        stop("query_group must be provided when query_collapsing is TRUE.")
+        log_message(
+          "query_group must be provided when query_collapsing is TRUE.",
+          message_type = "error"
+        )
       }
       query <- Seurat::AverageExpression(
         # query <- Seurat::PseudobulkExpression( # require run JoinLayers
@@ -541,21 +569,21 @@ RunKNNPredict <- function(
 
   if (!isTRUE(use_reduction)) {
     status_dat <- check_data_type(data = query)
-    message("Detected query data type: ", status_dat)
+    log_message("Detected query data type: ", status_dat)
     status_ref <- check_data_type(data = ref)
-    message("Detected reference data type: ", status_ref)
+    log_message("Detected reference data type: ", status_ref)
     if (
       status_ref != status_dat ||
         any(status_dat == "unknown", status_ref == "unknown")
     ) {
-      warning(
+      log_message(
         "Data type is unknown or different between query and reference.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
   }
 
-  message("Calculate similarity...")
+  log_message("Calculate similarity...")
 
   if (is.null(nn_method)) {
     if (as.numeric(nrow(query)) * as.numeric(nrow(ref)) >= 1e8) {
@@ -564,22 +592,25 @@ RunKNNPredict <- function(
       nn_method <- "raw"
     }
   }
-  message("Use '", nn_method, "' method to find neighbors.")
+  log_message("Use '", nn_method, "' method to find neighbors.")
   if (!nn_method %in% c("raw", "annoy", "rann")) {
-    stop("nn_method must be one of raw, rann and annoy")
+    log_message("nn_method must be one of raw, rann and annoy",
+      message_type = "error"
+    )
   }
   if (
     nn_method == "annoy" &&
       !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
   ) {
-    stop(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'"
+    log_message(
+      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'",
+      message_type = "error"
     )
   }
   if (isTRUE(return_full_distance_matrix) && nn_method != "raw") {
-    warning(
+    log_message(
       "Distance matrix will not be returned besause nn_method is not 'raw'",
-      immediate. = TRUE
+      message_type = "warning"
     )
     return_full_distance_matrix <- FALSE
   }
@@ -607,7 +638,10 @@ RunKNNPredict <- function(
     "hamming"
   )
   if (!distance_metric %in% c(simil_method, dist_method)) {
-    stop(distance_metric, " method is invalid.")
+    log_message(
+      distance_metric, " method is invalid.",
+      message_type = "error"
+    )
   }
 
   if (nn_method %in% c("annoy", "rann")) {
@@ -674,7 +708,7 @@ RunKNNPredict <- function(
     }
   }
 
-  message("Predict cell type...")
+  log_message("Predict cell type...")
   match_prob <- NULL
   if (!is.null(srt_ref) && (isFALSE(ref_collapsing) || isTRUE(use_reduction))) {
     level <- as.character(unique(srt_ref[["ref_group", drop = TRUE]]))

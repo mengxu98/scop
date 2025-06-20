@@ -83,13 +83,19 @@ input_genes <- length(rownames(counts))
 db_genes <- length(unique(res$geneID_res$from_geneID))
 converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
 converted_genes_output <- length(unique(res$geneID_expand$symbol))
-cat("Number of input gene IDs:", input_genes, "\n")
-cat("Number of gene IDs mapped in the database:", db_genes, "\n")
-cat(
-  "Number of input gene IDs that were successfully converted:",
-  converted_genes_input, "\n"
+log_message(
+  "Number of input gene IDs:", input_genes
 )
-cat("Number of converted gene IDs:", converted_genes_output, "\n")
+log_message(
+  "Number of gene IDs mapped in the database:", db_genes
+)
+log_message(
+  "Number of input gene IDs that were successfully converted:",
+  converted_genes_input
+)
+log_message(
+  "Number of converted gene IDs:", converted_genes_output
+)
 
 homologs_counts <- stats::aggregate(
   x = counts[res$geneID_expand[, "from_geneID"], ],

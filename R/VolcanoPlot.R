@@ -123,10 +123,11 @@ VolcanoPlot <- function(
     !layer %in% names(srt@tools) ||
       length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
   ) {
-    stop(
+    log_message(
       "Cannot find the DEtest result for the group '",
       group_by,
-      "'. You may perform RunDEtest first."
+      "'. You may perform RunDEtest first.",
+      message_type = "error"
     )
   }
   index <- grep(
@@ -134,7 +135,10 @@ VolcanoPlot <- function(
     names(srt@tools[[layer]])
   )[1]
   if (is.na(index)) {
-    stop("Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.")
+    log_message(
+      "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.",
+      message_type = "error"
+    )
   }
   de <- names(srt@tools[[layer]])[index]
   de_df <- srt@tools[[layer]][[de]]

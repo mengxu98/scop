@@ -77,17 +77,18 @@ RunDynamicEnrichment <- function(
   assay <- assay %||% DefaultAssay(srt)
 
   time_start <- Sys.time()
-  message(paste0("[", time_start, "] ", "Start RunDynamicFeatures"))
-  message("Workers: ", bpworkers(BPPARAM))
+  log_message("Start RunDynamicFeatures")
+  log_message("Workers: ", bpworkers(BPPARAM))
 
   feature_union <- c()
   cell_union <- c()
   dynamic <- list()
   for (l in lineages) {
     if (!paste0("DynamicFeatures_", l) %in% names(srt@tools)) {
-      stop(
+      log_message(
         l,
-        " info not found in the srt object. Should perform RunDynamicFeatures first!"
+        " info not found in the srt object. Should perform RunDynamicFeatures first!",
+        message_type = "error"
       )
     }
     DynamicFeatures <- srt@tools[[paste0("DynamicFeatures_", l)]][[
@@ -198,8 +199,8 @@ RunDynamicEnrichment <- function(
   }
 
   time_end <- Sys.time()
-  message(paste0("[", time_end, "] ", "RunDynamicEnrichment done"))
-  message(
+  log_message("RunDynamicEnrichment done")
+  log_message(
     "Elapsed time:",
     format(
       round(difftime(time_end, time_start), 2),

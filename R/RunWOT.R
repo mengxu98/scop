@@ -36,20 +36,33 @@ RunWOT <- function(
     return_seurat = !is.null(srt)) {
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
-    stop("One of 'srt', 'adata' must be provided.")
+    log_message(
+      "One of 'srt', 'adata' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(group_by)) {
-    stop("'group_by' must be provided.")
+    log_message(
+      "'group_by' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(time_field)) {
-    stop("'time_field' must be provided.")
+    log_message(
+      "'time_field' must be provided.",
+      message_type = "error"
+    )
   }
   if (is.null(time_from)) {
-    stop("'time_from' must be provided.")
+    log_message(
+      "'time_from' must be provided.",
+      message_type = "error"
+    )
   }
   if (isTRUE(get_coupling) && is.null(time_to)) {
-    warning(
-      "The 'get_coupling' paramter is only valid when 'time_to' is specified."
+    log_message(
+      "The 'get_coupling' paramter is only valid when 'time_to' is specified.",
+      message_type = "warning"
     )
   }
 

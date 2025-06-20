@@ -193,7 +193,10 @@ FindExpressedMarkers <- function(
   names(x = alpha.min) <- rownames(x = fc.results)
   features <- names(x = which(x = alpha.min >= min.pct))
   if (length(x = features) == 0) {
-    warning("No features pass min.pct threshold; returning empty data.frame")
+    log_message(
+      "No features pass min.pct threshold; returning empty data.frame",
+      message_type = "warning"
+    )
     return(fc.results[features, ])
   }
   alpha.diff <- alpha.min - pmin(fc.results$pct.1, fc.results$pct.2)
@@ -201,8 +204,9 @@ FindExpressedMarkers <- function(
     x = which(x = alpha.min >= min.pct & alpha.diff >= min.diff.pct)
   )
   if (length(x = features) == 0) {
-    warning(
-      "No features pass min.diff.pct threshold; returning empty data.frame"
+    log_message(
+      "No features pass min.diff.pct threshold; returning empty data.frame",
+      message_type = "warning"
     )
     return(fc.results[features, ])
   }
@@ -217,8 +221,9 @@ FindExpressedMarkers <- function(
     }
     features <- intersect(x = features, y = features.diff)
     if (length(x = features) == 0) {
-      warning(
-        "No features pass logfc.threshold threshold; returning empty data.frame"
+      log_message(
+        "No features pass logfc.threshold threshold; returning empty data.frame",
+        message_type = "warning"
       )
       return(fc.results[features, ])
     }
@@ -334,22 +339,21 @@ FindConservedMarkers2 <- function(
       ident.use.1.exists <- ident.use.1 %in% SeuratObject::Idents(object = object)
       if (!all(ident.use.1.exists)) {
         bad.ids <- ident.1[!ident.use.1.exists]
-        warning(
+        log_message(
           "Identity: ",
           paste(bad.ids, collapse = ", "),
           " not present in group ",
           level.use,
           ". Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
       ident.2 <- ident.2.save
       cells.1.use <- SeuratObject::WhichCells(object = object, idents = ident.use.1)
       if (length(cells.1.use) < min.cells.group) {
-        warning(
+        log_message(
           level.use,
           " has fewer than ",
           min.cells.group,
@@ -357,8 +361,7 @@ FindConservedMarkers2 <- function(
           paste(ident.1, collapse = ", "),
           ". Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -378,7 +381,10 @@ FindConservedMarkers2 <- function(
           x = ident.use.2
         )
         if (length(x = ident.use.2) == 0) {
-          stop(paste("Only one identity class present:", ident.1))
+          log_message(
+            paste("Only one identity class present:", ident.1),
+            message_type = "error"
+          )
         }
       } else {
         ident.use.2 <- paste(ident.2, level.use, sep = "_")
@@ -388,40 +394,39 @@ FindConservedMarkers2 <- function(
         )
       }
       if (length(cells.2.use) < min.cells.group) {
-        warning(
+        log_message(
           level.use,
           " has fewer than ",
           min.cells.group,
           " cells. Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
-      if (verbose) {
-        message(
-          "Testing group ",
-          level.use,
-          ": (",
-          paste(ident.1, collapse = ", "),
-          ") vs (",
-          paste(ident.2, collapse = ", "),
-          ")"
-        )
-      }
+
+      log_message(
+        "Testing group ",
+        level.use,
+        ": (",
+        paste(ident.1, collapse = ", "),
+        ") vs (",
+        paste(ident.2, collapse = ", "),
+        ")",
+        verbose = verbose
+      )
+
       ident.use.2.exists <- ident.use.2 %in% SeuratObject::Idents(object = object)
       if (!all(ident.use.2.exists)) {
         bad.ids <- ident.2[!ident.use.2.exists]
-        warning(
+        log_message(
           "Identity: ",
           paste(bad.ids, collapse = ", "),
           " not present in group ",
           level.use,
           ". Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -453,14 +458,13 @@ FindConservedMarkers2 <- function(
       level.use <- levels.split[i]
       cells.1.use <- intersect(cells[[i]], cells.1)
       if (length(cells.1.use) < min.cells.group) {
-        warning(
+        log_message(
           level.use,
           " has fewer than ",
           min.cells.group,
           " cells. Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
@@ -470,28 +474,26 @@ FindConservedMarkers2 <- function(
         cells.2.use <- intersect(cells[[i]], cells.2)
       }
       if (length(cells.2.use) < min.cells.group) {
-        warning(
+        log_message(
           level.use,
           " has fewer than ",
           min.cells.group,
           " cells. Skipping ",
           level.use,
-          call. = FALSE,
-          immediate. = TRUE
+          message_type = "warning"
         )
         next
       }
-      if (verbose) {
-        message(
-          "Testing group ",
-          level.use,
-          ": (",
-          paste("cells.1", collapse = ", "),
-          ") vs (",
-          paste("cells.2", collapse = ", "),
-          ")"
-        )
-      }
+      log_message(
+        "Testing group ",
+        level.use,
+        ": (",
+        paste("cells.1", collapse = ", "),
+        ") vs (",
+        paste("cells.2", collapse = ", "),
+        ")",
+        verbose = verbose
+      )
       marker.test[[level.use]] <- Seurat::FindMarkers(
         object = SeuratObject::Assays(object, assay),
         layer = layer,
@@ -518,7 +520,10 @@ FindConservedMarkers2 <- function(
   }
   marker.test <- marker.test[!sapply(marker.test, is.null)]
   if (length(marker.test) == 0) {
-    warning("No group was tested", call. = FALSE, immediate. = TRUE)
+    log_message(
+      "No group was tested",
+      message_type = "warning"
+    )
     return(NULL)
   }
   genes.conserved <- Reduce(
@@ -606,7 +611,26 @@ FindConservedMarkers2 <- function(
       ,
       "p_val"
     ] <- markers.combined[, pval.codes]
-    warning("Only a single group was tested", call. = FALSE, immediate. = TRUE)
+    log_message(
+      "Only a single group was tested",
+      message_type = "warning"
+    )
   }
   return(markers.combined)
+}
+
+metap <- function(
+    p,
+    method = c(
+      "maximump",
+      "minimump",
+      "wilkinsonp",
+      "meanp",
+      "sump",
+      "votep"
+    ),
+    ...) {
+  method <- match.arg(method)
+  res <- do.call(method, args = list(p = p, ...))
+  return(res)
 }

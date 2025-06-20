@@ -6,7 +6,10 @@ buildReferenceFromSeurat <- function(
     harmony = "harmony",
     umap = "umap") {
   if (!assay %in% c("RNA", "SCT")) {
-    stop("Only supported assays are RNA or SCT.")
+    log_message(
+      "Only supported assays are RNA or SCT.",
+      message_type = "error"
+    )
   }
   if (is.null(pca_dims)) {
     pca_dims <- seq_len(
@@ -23,10 +26,10 @@ buildReferenceFromSeurat <- function(
   res$Z_orig <- Matrix::t(
     SeuratObject::Embeddings(obj, pca)[, pca_dims, drop = FALSE]
   )
-  message("Saved embeddings")
+  log_message("Saved embeddings")
 
   res$R <- Matrix::t(obj[[harmony]]@misc$R)
-  message("Saved soft cluster assignments")
+  log_message("Saved soft cluster assignments")
 
   var_features <- SeuratObject::VariableFeatures(obj)
 
@@ -80,34 +83,35 @@ buildReferenceFromSeurat <- function(
   }
 
   res$vargenes_means_sds <- vargenes_means_sds
-  message(
+  log_message(
     "Saved variable gene information for ",
     nrow(vargenes_means_sds),
     " genes."
   )
 
   res$loadings <- obj[[pca]]@feature.loadings[, pca_dims, drop = FALSE]
-  message("Saved PCA loadings.")
+  log_message("Saved PCA loadings.")
 
   res$meta_data <- obj@meta.data
-  message("Saved metadata.")
+  log_message("Saved metadata.")
 
   if (is.null(obj[[umap]]@misc$model)) {
-    error(
-      "uwot model not initialiazed in Seurat object. Please do RunUMAP with umap.method='uwot', return.model=TRUE first."
+    log_message(
+      "uwot model not initialiazed in Seurat object. Please do RunUMAP with umap.method='uwot', return.model=TRUE first.",
+      message_type = "error"
     )
   }
   res$umap <- obj[[umap]]@misc$model
 
   ## Build Reference!
-  message("Calculate final L2 normalized reference centroids (Y_cos)")
+  log_message("Calculate final L2 normalized reference centroids (Y_cos)")
   res$centroids <- Matrix::t(
     symphony:::cosine_normalize_cpp(
       V = res$R %*% Matrix::t(res$Z_corr),
       dim = 1
     )
   )
-  message("Calculate reference compression terms (Nr and C)")
+  log_message("Calculate reference compression terms (Nr and C)")
   res$cache <- symphony:::compute_ref_cache(
     Rr = res$R,
     Zr = res$Z_corr
@@ -125,7 +129,7 @@ buildReferenceFromSeurat <- function(
     ),
     seq_len(nrow(res$Z_corr))
   )
-  message("Finished nicely.")
+  log_message("Finished nicely.")
   return(res)
 }
 
@@ -137,12 +141,12 @@ mapQuery <- function(
     sigma = 0.1,
     verbose = TRUE) {
   if (verbose) {
-    message("Scaling and synchronizing query gene expression")
+    log_message("Scaling and synchronizing query gene expression")
   }
   idx_shared_genes <- which(ref_obj$vargenes$symbol %in% rownames(exp_query))
   shared_genes <- ref_obj$vargenes$symbol[idx_shared_genes]
   if (verbose) {
-    message(
+    log_message(
       "Found ",
       length(shared_genes),
       " reference variable genes in query dataset"
@@ -163,11 +167,11 @@ mapQuery <- function(
   rownames(exp_query_scaled_sync) <- ref_obj$vargenes$symbol
   colnames(exp_query_scaled_sync) <- colnames(exp_query)
   if (verbose) {
-    message("Project query cells using reference gene loadings")
+    log_message("Project query cells using reference gene loadings")
   }
   Z_pca_query <- Matrix::t(ref_obj$loadings) %*% exp_query_scaled_sync
   if (verbose) {
-    message("Clustering query cells to reference centroids")
+    log_message("Clustering query cells to reference centroids")
   }
   Z_pca_query_cos <- symphony:::cosine_normalize_cpp(
     V = Z_pca_query,
@@ -179,7 +183,7 @@ mapQuery <- function(
     sigma = sigma
   )
   if (verbose) {
-    message("Correcting query batch effects")
+    log_message("Correcting query batch effects")
   }
   if (!is.null(vars)) {
     design <- droplevels(metadata_query)[, vars] %>% as.data.frame()

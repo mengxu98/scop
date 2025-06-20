@@ -104,7 +104,10 @@ matrix_process <- function(
     matrix_processed <- log1p_matrix(matrix)
   }
   if (!identical(dim(matrix_processed), dim(matrix))) {
-    stop("The dimensions of the matrix are changed after processing")
+    log_message(
+      "The dimensions of the matrix are changed after processing",
+      message_type = "error"
+    )
   }
   return(matrix_processed)
 }
@@ -188,7 +191,8 @@ cluster_within_group2 <- function(mat, factor) {
 
   dend <- ComplexHeatmap::merge_dendrogram(parent, dend_list)
   stats::order.dendrogram(dend) <- unlist(
-    order_list[stats::order.dendrogram(parent)])
+    order_list[stats::order.dendrogram(parent)]
+  )
   return(dend)
 }
 
@@ -236,8 +240,9 @@ heatmap_enrichment <- function(
 
   if (isTRUE(anno_keys) || isTRUE(anno_features) || isTRUE(anno_terms)) {
     if (isTRUE(flip)) {
-      stop(
-        "anno_keys, anno_features and anno_terms can only be used when flip is FALSE."
+      log_message(
+        "anno_keys, anno_features and anno_terms can only be used when flip is FALSE.",
+        message_type = "error"
       )
     }
     if (all(is.na(geneID_groups))) {
@@ -283,7 +288,10 @@ heatmap_enrichment <- function(
       )
     }
     if (nrow(res$enrichment) == 0) {
-      warning("No enrichment result found.", immediate. = TRUE)
+      log_message(
+        "No enrichment result found.",
+        message_type = "warning"
+      )
     } else {
       metric <- ifelse(is.null(padjustCutoff), "pvalue", "p.adjust")
       metric_value <- ifelse(
@@ -299,12 +307,12 @@ heatmap_enrichment <- function(
       df <- df[df[[metric]] < metric_value, , drop = FALSE]
       df <- df[order(df[[metric]]), , drop = FALSE]
       if (nrow(df) == 0) {
-        warning(
+        log_message(
           "No term enriched using the threshold: ",
           paste0("pvalueCutoff = ", pvalueCutoff),
           "; ",
           paste0("padjustCutoff = ", padjustCutoff),
-          immediate. = TRUE
+          message_type = "warning"
         )
       } else {
         df_list <- split.data.frame(df, ~ Database + Groups)
@@ -316,14 +324,14 @@ heatmap_enrichment <- function(
             unlist(lapply(nm, function(x) x[[1]])) %in% enrich
           ]
           if (length(subdf_list) == 0) {
-            warning(
+            log_message(
               "No ",
               enrich,
               " term enriched using the threshold: ",
               paste0("pvalueCutoff = ", pvalueCutoff),
               "; ",
               paste0("padjustCutoff = ", padjustCutoff),
-              immediate. = TRUE
+              message_type = "warning"
             )
             next
           }
@@ -685,7 +693,10 @@ heatmap_rendersize <- function(
     name_width <- max(ht@row_names_param$max_width, name_width)
     name_height <- max(ht@column_names_param$max_height, name_height)
   } else {
-    stop("ht_list is not a class of HeatmapList or Heatmap.")
+    log_message(
+      "ht_list is not a class of HeatmapList or Heatmap.",
+      message_type = "error"
+    )
   }
 
   lgd_width <- grid::convertWidth(

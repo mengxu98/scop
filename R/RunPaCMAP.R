@@ -66,8 +66,9 @@ RunPaCMAP.Seurat <- function(
     seed.use = 11L,
     ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) < 1) {
-    stop(
-      "Please specify only one of the following arguments: dims, features, or graph"
+    log_message(
+      "Please specify only one of the following arguments: dims, features, or graph",
+      message_type = "error"
     )
   }
   if (!is.null(x = features)) {
@@ -82,30 +83,33 @@ RunPaCMAP.Seurat <- function(
       )
     )
     if (ncol(x = data.use) < n_components) {
-      stop(
+      log_message(
         "Please provide as many or more features than n_components: ",
         length(x = features),
         " features provided, ",
         n_components,
         " PaCMAP components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else if (!is.null(x = dims)) {
     data.use <- Embeddings(object[[reduction]])[, dims]
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(x = dims) < n_components) {
-      stop(
+      log_message(
         "Please provide as many or more dims than n_components: ",
         length(x = dims),
         " dims provided, ",
         n_components,
         " PaCMAP components requested",
-        call. = FALSE
+        message_type = "error"
       )
     }
   } else {
-    stop("Please specify one of dims or features")
+    log_message(
+      "Please specify one of dims or features",
+      message_type = "error"
+    )
   }
   object[[reduction.name]] <- RunPaCMAP(
     object = data.use,

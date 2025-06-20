@@ -64,7 +64,12 @@ sigmoid <- function(x_from, x_to, y_from, y_to, smooth = 5, n = 300) {
 #'
 #' @export
 make_long <- function(.df, ..., value = NULL) {
-  if ("..r" %in% names(.df)) stop("The column name '..r' is not allowed")
+  if ("..r" %in% names(.df)) {
+    log_message(
+      "The column name '..r' is not allowed",
+      message_type = "error"
+    )
+  }
   .vars <- dplyr::quos(...)
 
   if (!missing(value)) {

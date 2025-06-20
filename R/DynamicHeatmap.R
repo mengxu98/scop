@@ -332,7 +332,10 @@ DynamicHeatmap <- function(
         pseudotime <- srt@tools[[paste0("DynamicFeatures_", l)]][["lineages"]]
         srt@meta.data[[l]] <- srt@meta.data[[pseudotime]]
       } else {
-        stop("lineages: ", l, " is not in the meta data of the Seurat object")
+        log_message(
+          "lineages: ", l, " is not in the meta data of the Seurat object",
+          message_type = "error"
+        )
       }
     }
   }
@@ -342,19 +345,26 @@ DynamicHeatmap <- function(
   }
 
   if (any(!feature_split_by %in% lineages)) {
-    stop("'feature_split_by' must be a subset of lineages.")
+    log_message(
+      "'feature_split_by' must be a subset of lineages.",
+      message_type = "error"
+    )
   }
   if (
     !split_method %in%
       c("mfuzz", "kmeans", "kmeans-peaktime", "hclust", "hclust-peaktime")
   ) {
-    stop(
-      "'split_method' must be one of 'mfuzz', 'kmeans', 'kmeans-peaktime', 'hclust', 'hclust-peaktime'."
+    log_message(
+      "'split_method' must be one of 'mfuzz', 'kmeans', 'kmeans-peaktime', 'hclust', 'hclust-peaktime'.",
+      message_type = "error"
     )
   }
 
   if (!is.null(feature_split) && is.null(names(feature_split))) {
-    stop("'feature_split' must be named.")
+    log_message(
+      "'feature_split' must be named.",
+      message_type = "error"
+    )
   }
   if (!is.null(feature_split) && !is.factor(feature_split)) {
     feature_split <- factor(feature_split, levels = unique(feature_split))
@@ -385,7 +395,10 @@ DynamicHeatmap <- function(
       length(pseudotime_label_linewidth)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop("Parameters for the pseudotime_label must be the same length!")
+      log_message(
+        "Parameters for the pseudotime_label must be the same length!",
+        message_type = "error"
+      )
     }
   }
 
@@ -408,8 +421,9 @@ DynamicHeatmap <- function(
       length(cell_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation"
+      log_message(
+        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation",
+        message_type = "error"
       )
     }
     if (
@@ -418,7 +432,7 @@ DynamicHeatmap <- function(
           c(colnames(srt@meta.data), rownames(srt@assays[[assay]]))
       )
     ) {
-      stop(
+      log_message(
         "cell_annotation: ",
         paste0(
           cell_annotation[
@@ -451,15 +465,16 @@ DynamicHeatmap <- function(
       length(feature_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation"
+      log_message(
+        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation",
+        message_type = "error"
       )
     }
     srt_assay_features <- GetFeaturesData(srt@assays[[assay]])
     if (
       any(!feature_annotation %in% colnames(srt_assay_features))
     ) {
-      stop(
+      log_message(
         "feature_annotation: ",
         paste0(
           feature_annotation[
@@ -469,7 +484,8 @@ DynamicHeatmap <- function(
         ),
         " is not in the meta data of the ",
         assay,
-        " assay in the Seurat object."
+        " assay in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -493,8 +509,9 @@ DynamicHeatmap <- function(
       length(separate_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
-      stop(
-        "separate_annotation_palette and separate_annotation_palcolor must be the same length as separate_annotation"
+      log_message(
+        "separate_annotation_palette and separate_annotation_palcolor must be the same length as separate_annotation",
+        message_type = "error"
       )
     }
     if (
@@ -503,7 +520,7 @@ DynamicHeatmap <- function(
           c(colnames(srt@meta.data), rownames(srt@assays[[assay]]))
       )
     ) {
-      stop(
+      log_message(
         "separate_annotation: ",
         paste0(
           unique(unlist(separate_annotation))[
@@ -512,7 +529,8 @@ DynamicHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object."
+        " is not in the Seurat object.",
+        message_type = "error"
       )
     }
   }
@@ -567,7 +585,7 @@ DynamicHeatmap <- function(
       include.lowest = TRUE
     )
     ncells <- ceiling(max(table(bins), na.rm = TRUE) * cell_density)
-    message("ncell/bin=", ncells, "(", cell_bins, "bins)")
+    log_message("ncell/bin=", ncells, "(", cell_bins, "bins)")
     cell_keep <- unlist(sapply(levels(bins), function(x) {
       cells <- names(Pseudotime_assign)[bins == x]
       out <- sample(cells, size = min(length(cells), ncells))
@@ -625,10 +643,11 @@ DynamicHeatmap <- function(
         "DynamicFeatures"
       ]]
       if (is.null(DynamicFeatures)) {
-        stop(
+        log_message(
           "DynamicFeatures result for ",
           l,
-          " found in the srt object. Should perform RunDynamicFeatures first!"
+          " found in the srt object. Should perform RunDynamicFeatures first!",
+          message_type = "error"
         )
       }
       DynamicFeatures <- DynamicFeatures[
@@ -641,7 +660,7 @@ DynamicHeatmap <- function(
       dynamic[[l]] <- DynamicFeatures
       features <- c(features, DynamicFeatures[["features"]])
     }
-    message(
+    log_message(
       length(unique(features)),
       " features from ",
       paste0(lineages, collapse = ","),
@@ -713,7 +732,7 @@ DynamicHeatmap <- function(
     features_tab %in% (num_intersections %||% seq_along(lineages))
   )]
   if (!all(features %in% all_calculated)) {
-    message(
+    log_message(
       "Some features were missing in at least one lineage: \n",
       paste0(utils::head(features[!features %in% all_calculated], 10), collapse = ","),
       "..."
@@ -724,7 +743,10 @@ DynamicHeatmap <- function(
   gene <- features[features %in% rownames(srt@assays[[assay]])]
   meta <- features[features %in% colnames(srt@meta.data)]
   if (length(gene) == 0 && length(meta) == 0) {
-    stop("No dynamic features found in the meta.data or in the assay: ", assay)
+    log_message(
+      "No dynamic features found in the meta.data or in the assay: ", assay,
+      message_type = "error"
+    )
   }
   feature_metadata <- data.frame(
     row.names = features,
@@ -816,9 +838,9 @@ DynamicHeatmap <- function(
           isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
           if (isTRUE(isfloat)) {
             libsize_use <- rep(1, length(libsize_use))
-            warning(
+            log_message(
               "The values in the 'counts' layer are non-integer. Set the library size to 1.",
-              immediate. = TRUE
+              message_type = "warning"
             )
           }
         }
@@ -1247,9 +1269,9 @@ DynamicHeatmap <- function(
         if (split_method == "mfuzz") {
           status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
-            warning(
+            log_message(
               "The e1071 package was not found. Switch split_method to 'kmeans'",
-              immediate. = TRUE
+              message_type = "warning"
             )
             split_method <- "kmeans"
           } else {
@@ -1261,10 +1283,10 @@ DynamicHeatmap <- function(
               fuzzification <- min_fuzzification + 0.1
             } else {
               if (fuzzification <= min_fuzzification) {
-                warning(
+                log_message(
                   "fuzzification value is samller than estimated:",
                   round(min_fuzzification, 2),
-                  immediate. = TRUE
+                  message_type = "warning"
                 )
               }
             }
@@ -1275,10 +1297,11 @@ DynamicHeatmap <- function(
               m = fuzzification
             )
             if (length(cl$cluster) == 0) {
-              stop(
+              log_message(
                 "Clustering with mfuzz failed (fuzzification=",
                 round(fuzzification, 2),
-                "). Please set a larger fuzzification parameter manually."
+                "). Please set a larger fuzzification parameter manually.",
+                message_type = "error"
               )
             }
             row_split <- feature_split <- cl$cluster
@@ -1509,9 +1532,9 @@ DynamicHeatmap <- function(
     index <- which(features_ordered %in% features_label)
     drop <- setdiff(features_label, features_ordered)
     if (length(drop) > 0) {
-      warning(
+      log_message(
         paste0(paste0(drop, collapse = ","), "was not found in the features"),
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
   }
@@ -1778,11 +1801,11 @@ DynamicHeatmap <- function(
       }
     )
     if (any(names(ht_params) %in% names(ht_args))) {
-      warning(
+      log_message(
         "ht_params: ",
         paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
         " were duplicated and will not be used.",
-        immediate. = TRUE
+        message_type = "warning"
       )
     }
     ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
@@ -1805,7 +1828,7 @@ DynamicHeatmap <- function(
   ) {
     fix <- TRUE
     if (is.null(width) || is.null(height)) {
-      message(
+      log_message(
         "\nThe size of the heatmap is fixed because certain elements are not scalable.\nThe width and height of the heatmap are determined by the size of the current viewport.\nIf you want to have more control over the size, you can manually set the parameters 'width' and 'height'.\n"
       )
     }
