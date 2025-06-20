@@ -1781,6 +1781,38 @@
       "Maintainer": "Martin Maechler <mmaechler+Matrix@gmail.com>",
       "Repository": "CRAN"
     },
+    "N2R": {
+      "Package": "N2R",
+      "Version": "1.0.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Fast and Scalable Approximate k-Nearest Neighbor Search Methods using 'N2' Library",
+      "Authors@R": "c(person(\"Peter\", \"Kharchenko\", email = \"Peter_Kharchenko@hms.harvard.edu\", role = c(\"aut\")), person(\"Viktor\", \"Petukhov\", email = \"viktor.s.petukhov@ya.ru\", role = c(\"aut\")), person(\"Dirk\", \"Eddelbuettel\", email=\"edd@debian.org\", role=c(\"ctb\")), person(\"Evan\", \"Biederstedt\", email = \"evan.biederstedt@gmail.com\", role=c(\"cre\", \"aut\")))",
+      "Description": "Implements methods to perform fast approximate K-nearest neighbor search on input matrix. Algorithm based on the 'N2' implementation of an approximate nearest neighbor search using hierarchical  Navigable Small World (NSW) graphs. The original algorithm is described in \"Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs\", Y. Malkov and D. Yashunin, <doi:10.1109/TPAMI.2018.2889473>, <arXiv:1603.09320>.",
+      "License": "Apache License 2.0",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "Matrix"
+      ],
+      "Imports": [
+        "Rcpp (>= 1.0.4)"
+      ],
+      "Suggests": [
+        "testthat"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppSpdlog",
+        "RcppEigen"
+      ],
+      "RoxygenNote": "7.1.2",
+      "URL": "https://github.com/kharchenkolab/N2R",
+      "BugReports": "https://github.com/kharchenkolab/N2R/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Peter Kharchenko [aut], Viktor Petukhov [aut], Dirk Eddelbuettel [ctb], Evan Biederstedt [cre, aut]",
+      "Maintainer": "Evan Biederstedt <evan.biederstedt@gmail.com>",
+      "Repository": "CRAN"
+    },
     "NLP": {
       "Package": "NLP",
       "Version": "0.3-2",
@@ -5350,6 +5382,26 @@
       "NeedsCompilation": "no",
       "Author": "Guangchuang Yu [aut, cre, cph] (ORCID: <https://orcid.org/0000-0002-6485-8781>), Li-Gen Wang [ctb], Xiao Luo [ctb], Meijun Chen [ctb], Giovanni Dall'Olio [ctb], Wanqian Wei [ctb], Chun-Hui Gao [ctb] (ORCID: <https://orcid.org/0000-0002-1445-7939>)"
     },
+    "coda": {
+      "Package": "coda",
+      "Version": "0.19-4.1",
+      "Source": "Repository",
+      "Date": "2020-09-30",
+      "Title": "Output Analysis and Diagnostics for MCMC",
+      "Authors@R": "c(person(\"Martyn\", \"Plummer\", role=c(\"aut\",\"cre\",\"trl\"), email=\"martyn.plummer@gmail.com\"), person(\"Nicky\", \"Best\", role=\"aut\"), person(\"Kate\", \"Cowles\", role=\"aut\"), person(\"Karen\", \"Vines\", role=\"aut\"), person(\"Deepayan\", \"Sarkar\", role=\"aut\"), person(\"Douglas\", \"Bates\", role=\"aut\"), person(\"Russell\", \"Almond\", role=\"aut\"), person(\"Arni\", \"Magnusson\", role=\"aut\"))",
+      "Depends": [
+        "R (>= 2.14.0)"
+      ],
+      "Imports": [
+        "lattice"
+      ],
+      "Description": "Provides functions for summarizing and plotting the output from Markov Chain Monte Carlo (MCMC) simulations, as well as diagnostic tests of convergence to the equilibrium distribution of the Markov chain.",
+      "License": "GPL (>= 2)",
+      "NeedsCompilation": "no",
+      "Author": "Martyn Plummer [aut, cre, trl], Nicky Best [aut], Kate Cowles [aut], Karen Vines [aut], Deepayan Sarkar [aut], Douglas Bates [aut], Russell Almond [aut], Arni Magnusson [aut]",
+      "Maintainer": "Martyn Plummer <martyn.plummer@gmail.com>",
+      "Repository": "CRAN"
+    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-20",
@@ -5454,6 +5506,90 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>), John MacFarlane [cph] (Author of cmark)",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "conos": {
+      "Package": "conos",
+      "Version": "1.5.2",
+      "Source": "Bioconductor",
+      "Title": "Clustering on Network of Samples",
+      "Authors@R": "c(person(\"Viktor\",\"Petukhov\", email=\"viktor.s.petuhov@ya.ru\", role=\"aut\"), person(\"Nikolas\",\"Barkas\", email=\"nikolas_barkas@hms.harvard.edu\", role=\"aut\"), person(\"Peter\", \"Kharchenko\", email = \"peter_kharchenko@hms.harvard.edu\", role = \"aut\"), person(\"Weiliang\", \"Qiu\", email = \"weiliang.qiu@gmail.com\", role = c(\"ctb\")), person(\"Evan\", \"Biederstedt\", email=\"evan.biederstedt@gmail.com\", role=c(\"aut\", \"cre\")))",
+      "Description": "Wires together large collections of single-cell RNA-seq datasets, which allows for both the identification of recurrent cell clusters and the propagation of information between datasets in multi-sample or atlas-scale collections. 'Conos' focuses on the uniform mapping of homologous cell types across heterogeneous sample collections. For instance, users could investigate a collection of dozens of peripheral blood samples from cancer patients combined with dozens of controls, which perhaps includes samples of a related tissue such as lymph nodes. This package interacts with data available through the 'conosPanel' package, which is available in a 'drat' repository. To access this data package, see the instructions at <https://github.com/kharchenkolab/conos>. The size of the 'conosPanel' package is approximately 12 MB.",
+      "License": "GPL-3",
+      "Copyright": "See the file COPYRIGHTS for various conos copyright details",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "Depends": [
+        "R (>= 3.5.0)",
+        "Matrix",
+        "igraph"
+      ],
+      "biocViews": "",
+      "Imports": [
+        "abind",
+        "cowplot",
+        "ComplexHeatmap",
+        "dendextend",
+        "dplyr",
+        "ggplot2",
+        "ggrepel",
+        "gridExtra",
+        "irlba",
+        "leidenAlg",
+        "magrittr",
+        "methods",
+        "N2R",
+        "parallel",
+        "R6",
+        "reshape2",
+        "rlang",
+        "Rtsne",
+        "sccore (>= 1.0.0)",
+        "stats",
+        "tools",
+        "utils"
+      ],
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "AnnotationDbi",
+        "BiocParallel",
+        "conosPanel",
+        "drat",
+        "DESeq2",
+        "entropy",
+        "ggrastr",
+        "GO.db",
+        "jsonlite",
+        "knitr",
+        "org.Hs.eg.db",
+        "org.Mm.eg.db",
+        "p2data",
+        "pagoda2",
+        "PMA",
+        "plyr",
+        "rhdf5",
+        "rmarkdown",
+        "rmumps",
+        "Seurat",
+        "shinycssloaders",
+        "SummarizedExperiment",
+        "testthat",
+        "tibble",
+        "uwot",
+        "zoo"
+      ],
+      "Additional_repositories": "https://kharchenkolab.github.io/drat/",
+      "URL": "https://github.com/kharchenkolab/conos",
+      "BugReports": "https://github.com/kharchenkolab/conos/issues",
+      "NeedsCompilation": "yes",
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppEigen",
+        "RcppProgress"
+      ],
+      "Author": "Viktor Petukhov [aut], Nikolas Barkas [aut], Peter Kharchenko [aut], Weiliang Qiu [ctb], Evan Biederstedt [aut, cre]",
+      "Maintainer": "Evan Biederstedt <evan.biederstedt@gmail.com>",
       "Repository": "CRAN"
     },
     "corrplot": {
@@ -5827,6 +5963,70 @@
       "ByteCompile": "true",
       "License": "GPL (>= 2)",
       "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
+    "dendextend": {
+      "Package": "dendextend",
+      "Version": "1.19.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Extending 'dendrogram' Functionality in R",
+      "Date": "2024-11-15",
+      "Authors@R": "c(person(\"Tal\", \"Galili\", role = c(\"aut\", \"cre\", \"cph\"), email = \"tal.galili@gmail.com\", comment = \"https://www.r-statistics.com\"), person(\"Yoav\", \"Benjamini\", email = \"ybenja@tau.ac.il\",role = \"ths\"), person(\"Gavin\", \"Simpson\", role = \"ctb\"), person(\"Gregory\",\"Jefferis\", role = c(\"aut\", \"ctb\"), email = \"jefferis@gmail.com\", comment =\"imported code from his dendroextras package\"), person(\"Marco\", \"Gallotta\", role = \"ctb\", comment = \"a.k.a: marcog\") , person(\"Johan\", \"Renaudie\", role = \"ctb\", comment = \"https://github.com/plannapus\"), person(\"The R Core Team\", role = \"ctb\", comment = \"Thanks for the Infastructure, and code in the examples\"), person(\"Kurt\", \"Hornik\", role = \"ctb\"), person(\"Uwe\", \"Ligges\", role = \"ctb\"), person(\"Andrej-Nikolai\", \"Spiess\", role = \"ctb\"), person(\"Steve\", \"Horvath\",email = \"SHorvath@mednet.ucla.edu\", role = \"ctb\"), person(\"Peter\", \"Langfelder\",email = \"Peter.Langfelder@gmail.com\", role = \"ctb\"), person(\"skullkey\", role = \"ctb\"), person(\"Mark\", \"Van Der Loo\", email = \"mark.vanderloo@gmail.com\", comment = \"https://github.com/markvanderloo d3dendrogram\", role = \"ctb\"), person(\"Andrie\", \"de Vries\", email = \"apdevries@gmail.com\", comment = \"ggdendro author\", role = \"ctb\"), person(\"Zuguang\", \"Gu\", email = \"z.gu@dkfz-heidelberg.de\", comment = \"circlize author\", role = \"ctb\"),     person(\"Cath\", comment = \"https://github.com/CathG\", role = \"ctb\"), person(\"John\", \"Ma\", comment = \"https://github.com/JohnMCMa\", role = \"ctb\"), person(\"Krzysiek\", \"G\", comment = \"https://github.com/storaged\", role = \"ctb\"), person(\"Manuela\", \"Hummel\", email = \"m.hummel@dkfz.de\", comment = \"https://github.com/hummelma\", role = \"ctb\"),  person(\"Chase\", \"Clark\", comment = \"https://github.com/chasemc\", role = \"ctb\"),  person(\"Lucas\", \"Graybuck\", comment = \"https://github.com/hypercompetent\", role = \"ctb\"),  person(\"jdetribol\", comment = \"https://github.com/jdetribol\", role = \"ctb\"),  person(\"Ben\", \"Ho\", role = \"ctb\", email = \"ben.ho@sickkids.ca\", comment = \"https://github.com/SplitInf\"), person(\"Samuel\", \"Perreault\", role = \"ctb\", email = \"samuel.perreault.3@ulaval.ca\", comment = \"https://github.com/samperochkin\"), person(\"Christian\", \"Hennig\", role = \"ctb\", email = \"c.hennig@ucl.ac.uk\", comment = \"http://www.homepages.ucl.ac.uk/~ucakche/\"), person(\"David\", \"Bradley\", role = \"ctb\", comment = \"https://github.com/DBradley27\"), person(\"Houyun\", \"Huang\", role = \"ctb\", email = 'houyunhuang@163.com', comment = \"https://github.com/houyunhuang\"), person(\"Patrick\", \"Schupp\", role = \"ctb\", email = 'pschupp@sonic.net', comment = \"https://github.com/pschupp\"), person(\"Alec\", \"Buetow\", role = \"ctb\", email = 'alecbuetow@gmail.com', comment = \"https://github.com/alecbuetow\") )",
+      "Description": "Offers a set of functions for extending 'dendrogram' objects in R, letting you visualize and compare trees of 'hierarchical clusterings'. You can (1) Adjust a tree's graphical parameters - the color, size, type, etc of its branches, nodes and labels. (2) Visually and statistically compare different 'dendrograms' to one another.",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "utils",
+        "stats",
+        "datasets",
+        "magrittr (>= 1.0.1)",
+        "ggplot2",
+        "viridis"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat",
+        "seriation",
+        "colorspace",
+        "ape",
+        "microbenchmark",
+        "gplots",
+        "heatmaply",
+        "dynamicTreeCut",
+        "pvclust",
+        "corrplot",
+        "DendSer",
+        "MASS",
+        "cluster",
+        "fpc",
+        "circlize (>= 0.2.5)",
+        "covr"
+      ],
+      "Enhances": [
+        "ggdendro",
+        "dendroextras",
+        "Hmisc",
+        "data.table",
+        "rpart",
+        "WGCNA",
+        "moduleColor",
+        "distory",
+        "phangorn",
+        "zoo"
+      ],
+      "VignetteBuilder": "knitr",
+      "LazyData": "true",
+      "License": "GPL-2 | GPL-3",
+      "URL": "https://talgalili.github.io/dendextend/, https://github.com/talgalili/dendextend/, https://cran.r-project.org/package=dendextend, https://www.r-statistics.com/tag/dendextend/, https://doi.org/10.1093/bioinformatics/btv428",
+      "BugReports": "https://github.com/talgalili/dendextend/issues",
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Tal Galili [aut, cre, cph] (https://www.r-statistics.com), Yoav Benjamini [ths], Gavin Simpson [ctb], Gregory Jefferis [aut, ctb] (imported code from his dendroextras package), Marco Gallotta [ctb] (a.k.a: marcog), Johan Renaudie [ctb] (https://github.com/plannapus), The R Core Team [ctb] (Thanks for the Infastructure, and code in the examples), Kurt Hornik [ctb], Uwe Ligges [ctb], Andrej-Nikolai Spiess [ctb], Steve Horvath [ctb], Peter Langfelder [ctb], skullkey [ctb], Mark Van Der Loo [ctb] (https://github.com/markvanderloo d3dendrogram), Andrie de Vries [ctb] (ggdendro author), Zuguang Gu [ctb] (circlize author), Cath [ctb] (https://github.com/CathG), John Ma [ctb] (https://github.com/JohnMCMa), Krzysiek G [ctb] (https://github.com/storaged), Manuela Hummel [ctb] (https://github.com/hummelma), Chase Clark [ctb] (https://github.com/chasemc), Lucas Graybuck [ctb] (https://github.com/hypercompetent), jdetribol [ctb] (https://github.com/jdetribol), Ben Ho [ctb] (https://github.com/SplitInf), Samuel Perreault [ctb] (https://github.com/samperochkin), Christian Hennig [ctb] (http://www.homepages.ucl.ac.uk/~ucakche/), David Bradley [ctb] (https://github.com/DBradley27), Houyun Huang [ctb] (https://github.com/houyunhuang), Patrick Schupp [ctb] (https://github.com/pschupp), Alec Buetow [ctb] (https://github.com/alecbuetow)",
+      "Maintainer": "Tal Galili <tal.galili@gmail.com>",
       "Repository": "CRAN"
     },
     "desc": {
@@ -7004,6 +7204,40 @@
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
+    "formula.tools": {
+      "Package": "formula.tools",
+      "Version": "1.7.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Programmatic Utilities for Manipulating Formulas, Expressions, Calls, Assignments and Other R Objects",
+      "Date": "2018-02-22",
+      "Authors@R": "c( person(\"Christopher\", \"Brown\", , \"chris.brown@decisionpatterns.com\", c(\"aut\", \"cre\") ), person(\"Decision Patterns\", role = \"cph\") )",
+      "Description": "These utilities facilitate the programmatic manipulations of formulas, expressions, calls, assignments and other R language objects.  These objects all share the same structure: a left-hand side, operator and  right-hand side. This packages provides methods for accessing and  modifying this structures as well as extracting and replacing names and  symbols from these objects.",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "operator.tools(>= 1.4.0)",
+        "utils",
+        "methods"
+      ],
+      "Suggests": [
+        "magrittr",
+        "testthat"
+      ],
+      "License": "GPL-2 | file LICENSE",
+      "URL": "https://github.com/decisionpatterns/formula.tools",
+      "BugReports": "https://github.com/decisionpatterns/formula.tools/issues",
+      "LazyLoad": "yes",
+      "LazyData": "yes",
+      "Collate": "'as.character.formula.R' 'env.R' 'get.vars.R' 'invert.R' 'is.one.sided.R' 'is.two.sided.R' 'lhs.vars.R' 'op.type.R' 'parts.R' 'parts.lhs.get.R' 'parts.lhs.set.R' 'parts.op.get.R' 'parts.op.set.R' 'parts.rhs.get.R' 'parts.rhs.set.R' 'rhs.vars.R' 'split.terms.R' 'terms.R' 'toggle.sign.R' 'zzz.R'",
+      "RoxygenNote": "6.0.1.9000",
+      "Repository": "CRAN",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Christopher Brown [aut, cre], Decision Patterns [cph]",
+      "Maintainer": "Christopher Brown <chris.brown@decisionpatterns.com>"
+    },
     "fs": {
       "Package": "fs",
       "Version": "1.6.6",
@@ -7208,6 +7442,49 @@
       "Author": "Henrik Bengtsson [aut, cre, cph] (<https://orcid.org/0000-0002-7579-5165>), R Core Team [cph, ctb]",
       "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
       "Repository": "CRAN"
+    },
+    "genefilter": {
+      "Package": "genefilter",
+      "Version": "1.90.0",
+      "Source": "Bioconductor",
+      "Title": "genefilter: methods for filtering genes from high-throughput experiments",
+      "Authors@R": "c( person(\"Robert\", \"Gentleman\", role = \"aut\"), person(\"Vincent J.\", \"Carey\", role = \"aut\"), person(\"Wolfgang\", \"Huber\", role = \"aut\"), person(\"Florian\", \"Hahne\", role = \"aut\"), person(\"Emmanuel\", \"Taiwo\", role = \"ctb\", comment = \"'howtogenefinder' vignette translation from Sweave to RMarkdown / HTML.\"), person(\"Khadijah\", \"Amusat\", role = \"ctb\", comment = \"Converted genefilter vignette from Sweave to RMarkdown / HTML.\"), person(\"Bioconductor Package Maintainer\", role = \"cre\", email = \"maintainer@bioconductor.org\"))",
+      "Description": "Some basic functions for filtering genes.",
+      "Suggests": [
+        "class",
+        "hgu95av2.db",
+        "tkWidgets",
+        "ALL",
+        "ROC",
+        "RColorBrewer",
+        "BiocStyle",
+        "knitr"
+      ],
+      "Imports": [
+        "MatrixGenerics (>= 1.11.1)",
+        "AnnotationDbi",
+        "annotate",
+        "Biobase",
+        "graphics",
+        "methods",
+        "stats",
+        "survival",
+        "grDevices"
+      ],
+      "License": "Artistic-2.0",
+      "LazyLoad": "yes",
+      "LazyData": "yes",
+      "Collate": "AllClasses.R AllGenerics.R all.R dist2.R eSetFilter.R fastT.R filter_volcano.R filtered_p.R genefinder.R half.range.mode.R kappa_p.R nsFilter.R rejection_plot.R rowROC-accessors.R rowSds.R rowpAUCs-methods.R rowttests-methods.R shorth.R zzz.R",
+      "biocViews": "Microarray",
+      "VignetteBuilder": "knitr",
+      "git_url": "https://git.bioconductor.org/packages/genefilter",
+      "git_branch": "RELEASE_3_21",
+      "git_last_commit": "2a26692",
+      "git_last_commit_date": "2025-04-15",
+      "Repository": "Bioconductor 3.21",
+      "NeedsCompilation": "yes",
+      "Author": "Robert Gentleman [aut], Vincent J. Carey [aut], Wolfgang Huber [aut], Florian Hahne [aut], Emmanuel Taiwo [ctb] ('howtogenefinder' vignette translation from Sweave to RMarkdown / HTML.), Khadijah Amusat [ctb] (Converted genefilter vignette from Sweave to RMarkdown / HTML.), Bioconductor Package Maintainer [cre]",
+      "Maintainer": "Bioconductor Package Maintainer <maintainer@bioconductor.org>"
     },
     "generics": {
       "Package": "generics",
@@ -7442,6 +7719,43 @@
       "Maintainer": "Guangchuang Yu <guangchuangyu@gmail.com>",
       "Repository": "CRAN"
     },
+    "ggnetwork": {
+      "Package": "ggnetwork",
+      "Version": "0.5.13",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Geometries to Plot Networks with 'ggplot2'",
+      "Description": "Geometries to plot network objects with 'ggplot2'.",
+      "Date": "2024-02-14",
+      "Maintainer": "François Briatte <f.briatte@gmail.com>",
+      "Authors@R": "c( person(\"François\", \"Briatte\", email = \"f.briatte@gmail.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0001-6494-9774\")), person(\"Michał\", \"Bojanowski\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7503-852X\")), person(\"Mickaël\", \"Canouil\", role = \"ctb\", comment = c(ORCID = \"0000-0002-3396-4549\")), person(\"Zachary\", \"Charlop-Powers\", role = \"ctb\", comment = c(ORCID = \"0000-0001-8816-4680\")), person(\"Jacob C.\", \"Fisher\", role = \"ctb\", comment = c(ORCID = \"0000-0003-0299-0346\")), person(\"Kipp\", \"Johnson\", role = \"ctb\", comment = c(ORCID = \"0000-0002-5102-741X\")), person(\"Tyler\", \"Rinker\", role = \"ctb\") )",
+      "License": "GPL-3",
+      "URL": "https://github.com/briatte/ggnetwork",
+      "BugReports": "https://github.com/briatte/ggnetwork/issues",
+      "Depends": [
+        "R (>= 3.5)",
+        "ggplot2 (>= 2.0.0)"
+      ],
+      "Imports": [
+        "ggrepel (>= 0.5)",
+        "network",
+        "igraph",
+        "sna",
+        "utils"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat"
+      ],
+      "Collate": "'utilities.R' 'fortify-igraph.R' 'fortify-network.R' 'geom-nodes.R' 'geom-edges.R' 'ggnetwork.R'",
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.3.1",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "François Briatte [aut, cre] (<https://orcid.org/0000-0001-6494-9774>), Michał Bojanowski [ctb] (<https://orcid.org/0000-0001-7503-852X>), Mickaël Canouil [ctb] (<https://orcid.org/0000-0002-3396-4549>), Zachary Charlop-Powers [ctb] (<https://orcid.org/0000-0001-8816-4680>), Jacob C. Fisher [ctb] (<https://orcid.org/0000-0003-0299-0346>), Kipp Johnson [ctb] (<https://orcid.org/0000-0002-5102-741X>), Tyler Rinker [ctb]",
+      "Repository": "CRAN"
+    },
     "ggnewscale": {
       "Package": "ggnewscale",
       "Version": "0.5.1",
@@ -7653,6 +7967,66 @@
       "NeedsCompilation": "no",
       "Author": "Alboukadel Kassambara [aut, cre]",
       "Maintainer": "Alboukadel Kassambara <alboukadel.kassambara@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "ggraph": {
+      "Package": "ggraph",
+      "Version": "2.2.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "An Implementation of Grammar of Graphics for Graphs and Networks",
+      "Authors@R": "c(person(given = \"Thomas Lin\", family = \"Pedersen\", role = c(\"cre\", \"aut\"), email = \"thomasp85@gmail.com\", comment = c(ORCID = \"0000-0002-5147-4711\")), person(given = \"RStudio\", role = \"cph\"))",
+      "Maintainer": "Thomas Lin Pedersen <thomasp85@gmail.com>",
+      "Description": "The grammar of graphics as implemented in ggplot2 is a poor fit for graph and network visualizations due to its reliance on tabular data input. ggraph is an extension of the ggplot2 API tailored to graph visualizations and provides the same flexible approach to building up plots layer by layer.",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "LazyData": "TRUE",
+      "Imports": [
+        "dplyr",
+        "ggforce (>= 0.3.1)",
+        "grid",
+        "igraph (>= 1.0.0)",
+        "scales",
+        "MASS",
+        "ggrepel",
+        "utils",
+        "stats",
+        "viridis",
+        "rlang",
+        "tidygraph",
+        "graphlayouts (>= 1.1.0)",
+        "withr",
+        "cli",
+        "vctrs",
+        "lifecycle",
+        "memoise"
+      ],
+      "Suggests": [
+        "network",
+        "knitr",
+        "rmarkdown",
+        "purrr",
+        "tibble",
+        "seriation",
+        "deldir",
+        "gganimate",
+        "covr",
+        "sf",
+        "sfnetworks"
+      ],
+      "LinkingTo": [
+        "cpp11"
+      ],
+      "RoxygenNote": "7.3.1",
+      "Depends": [
+        "R (>= 2.10)",
+        "ggplot2 (>= 3.5.0)"
+      ],
+      "VignetteBuilder": "knitr",
+      "URL": "https://ggraph.data-imaginist.com, https://github.com/thomasp85/ggraph",
+      "BugReports": "https://github.com/thomasp85/ggraph/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), RStudio [cph]",
       "Repository": "CRAN"
     },
     "ggrastr": {
@@ -8397,6 +8771,41 @@
       "NeedsCompilation": "yes",
       "Author": "R Gentleman [aut], Elizabeth Whalen [aut], W Huber [aut], S Falcon [aut], Jeff Gentry [aut], Paul Shannon [aut], Halimat C. Atanda [ctb] (Converted 'MultiGraphClass' and 'GraphClass' vignettes from Sweave to RMarkdown / HTML.), Paul Villafuerte [ctb] (Converted vignettes from Sweave to RMarkdown / HTML.), Aliyu Atiku Mustapha [ctb] (Converted 'Graph' vignette from Sweave to RMarkdown / HTML.), Bioconductor Package Maintainer [cre]",
       "Maintainer": "Bioconductor Package Maintainer <maintainer@bioconductor.org>"
+    },
+    "graphlayouts": {
+      "Package": "graphlayouts",
+      "Version": "1.2.2",
+      "Source": "Repository",
+      "Title": "Additional Layout Algorithms for Network Visualizations",
+      "Authors@R": "person(\"David\", \"Schoch\", email = \"david@schochastics.net\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-2952-4812\"))",
+      "Description": "Several new layout algorithms to visualize networks are provided which are not part of 'igraph'.  Most are based on the concept of stress majorization by Gansner et al. (2004) <doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms allow the user to emphasize hidden group structures in networks or focus on specific nodes.",
+      "URL": "https://github.com/schochastics/graphlayouts, https://schochastics.github.io/graphlayouts/",
+      "BugReports": "https://github.com/schochastics/graphlayouts/issues",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "Imports": [
+        "igraph (>= 2.0.0)",
+        "Rcpp"
+      ],
+      "Suggests": [
+        "testthat",
+        "ggplot2",
+        "uwot",
+        "oaqc"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "David Schoch [aut, cre] (<https://orcid.org/0000-0003-2952-4812>)",
+      "Maintainer": "David Schoch <david@schochastics.net>",
+      "Repository": "CRAN"
     },
     "gridBase": {
       "Package": "gridBase",
@@ -9241,6 +9650,85 @@
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
     },
+    "inferCSN": {
+      "Package": "inferCSN",
+      "Version": "1.1.7",
+      "Source": "GitHub",
+      "Type": "Package",
+      "Title": "Inferring Cell-Specific Gene Regulatory Network",
+      "Date": "2025-03-30",
+      "Authors@R": "person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\"))",
+      "Maintainer": "Meng Xu <mengxu98@qq.com>",
+      "Description": "An R package for inferring cell-type specific gene regulatory network from single-cell RNA data.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://mengxu98.github.io/inferCSN/",
+      "BugReports": "https://github.com/mengxu98/inferCSN/issues",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "cli",
+        "dplyr",
+        "doParallel",
+        "foreach",
+        "ggnetwork",
+        "ggplot2",
+        "ggraph",
+        "Matrix",
+        "methods",
+        "parallel",
+        "pbapply",
+        "purrr",
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppParallel",
+        "stats"
+      ],
+      "Suggests": [
+        "ComplexHeatmap",
+        "circlize",
+        "gtools",
+        "gganimate",
+        "ggExtra",
+        "ggpointdensity",
+        "ggpubr",
+        "igraph",
+        "irlba",
+        "network",
+        "patchwork",
+        "plotly",
+        "precrec",
+        "pROC",
+        "proxy",
+        "tidygraph",
+        "RANN",
+        "RColorBrewer",
+        "Rtsne",
+        "RTransferEntropy",
+        "uwot",
+        "viridis"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppParallel"
+      ],
+      "Config/Needs/website": "mengxu98/mxtemplate",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "7.3.2",
+      "Language": "en-US",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "inferCSN",
+      "RemoteUsername": "mengxu98",
+      "RemotePkgRef": "mengxu98/inferCSN",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "981bc8145c1daa1a72d5a6b59b23a67ea78a6e4a",
+      "NeedsCompilation": "yes",
+      "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>)"
+    },
     "ini": {
       "Package": "ini",
       "Version": "0.3.1",
@@ -10073,6 +10561,52 @@
       "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
+    "lubridate": {
+      "Package": "lubridate",
+      "Version": "1.9.4",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Make Dealing with Dates a Little Easier",
+      "Authors@R": "c( person(\"Vitalie\", \"Spinu\", , \"spinuvit@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Garrett\", \"Grolemund\", role = \"aut\"), person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Davis\", \"Vaughan\", role = \"ctb\"), person(\"Ian\", \"Lyttle\", role = \"ctb\"), person(\"Imanuel\", \"Costigan\", role = \"ctb\"), person(\"Jason\", \"Law\", role = \"ctb\"), person(\"Doug\", \"Mitarotonda\", role = \"ctb\"), person(\"Joseph\", \"Larmarange\", role = \"ctb\"), person(\"Jonathan\", \"Boiser\", role = \"ctb\"), person(\"Chel Hee\", \"Lee\", role = \"ctb\") )",
+      "Maintainer": "Vitalie Spinu <spinuvit@gmail.com>",
+      "Description": "Functions to work with date-times and time-spans: fast and user friendly parsing of date-time data, extraction and updating of components of a date-time (years, months, days, hours, minutes, and seconds), algebraic manipulation on date-time and time-span objects. The 'lubridate' package has a consistent and memorable syntax that makes working with dates easy and fun.",
+      "License": "GPL (>= 2)",
+      "URL": "https://lubridate.tidyverse.org, https://github.com/tidyverse/lubridate",
+      "BugReports": "https://github.com/tidyverse/lubridate/issues",
+      "Depends": [
+        "methods",
+        "R (>= 3.2)"
+      ],
+      "Imports": [
+        "generics",
+        "timechange (>= 0.3.0)"
+      ],
+      "Suggests": [
+        "covr",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 2.1.0)",
+        "vctrs (>= 0.6.5)"
+      ],
+      "Enhances": [
+        "chron",
+        "data.table",
+        "timeDate",
+        "tis",
+        "zoo"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "7.2.3",
+      "SystemRequirements": "C++11, A system with zoneinfo data (e.g. /usr/share/zoneinfo). On Windows the zoneinfo included with R is used.",
+      "Collate": "'Dates.r' 'POSIXt.r' 'util.r' 'parse.r' 'timespans.r' 'intervals.r' 'difftimes.r' 'durations.r' 'periods.r' 'accessors-date.R' 'accessors-day.r' 'accessors-dst.r' 'accessors-hour.r' 'accessors-minute.r' 'accessors-month.r' 'accessors-quarter.r' 'accessors-second.r' 'accessors-tz.r' 'accessors-week.r' 'accessors-year.r' 'am-pm.r' 'time-zones.r' 'numeric.r' 'coercion.r' 'constants.r' 'cyclic_encoding.r' 'data.r' 'decimal-dates.r' 'deprecated.r' 'format_ISO8601.r' 'guess.r' 'hidden.r' 'instants.r' 'leap-years.r' 'ops-addition.r' 'ops-compare.r' 'ops-division.r' 'ops-integer-division.r' 'ops-m+.r' 'ops-modulo.r' 'ops-multiplication.r' 'ops-subtraction.r' 'package.r' 'pretty.r' 'round.r' 'stamp.r' 'tzdir.R' 'update.r' 'vctrs.R' 'zzz.R'",
+      "NeedsCompilation": "yes",
+      "Author": "Vitalie Spinu [aut, cre], Garrett Grolemund [aut], Hadley Wickham [aut], Davis Vaughan [ctb], Ian Lyttle [ctb], Imanuel Costigan [ctb], Jason Law [ctb], Doug Mitarotonda [ctb], Joseph Larmarange [ctb], Jonathan Boiser [ctb], Chel Hee Lee [ctb]",
+      "Repository": "CRAN"
+    },
     "magrittr": {
       "Package": "magrittr",
       "Version": "2.0.3",
@@ -10196,6 +10730,70 @@
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [aut], Jim Hester [aut], Winston Chang [aut, cre], Kirill Müller [aut], Daniel Cook [aut], Mark Edmondson [ctb]",
       "Maintainer": "Winston Chang <winston@rstudio.com>",
+      "Repository": "CRAN"
+    },
+    "metR": {
+      "Package": "metR",
+      "Version": "0.18.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Language": "en-GB",
+      "Title": "Tools for Easier Analysis of Meteorological Fields",
+      "Authors@R": "c(person(given = \"Elio\", family = \"Campitelli\", role = c(\"cre\", \"aut\"), email = \"eliocampitelli@gmail.com\", comment = c(ORCID = \"0000-0002-7742-9230\")))",
+      "Description": "Many useful functions and extensions for dealing with meteorological data in the tidy data framework. Extends 'ggplot2' for better plotting of scalar and vector fields and provides commonly used analysis methods in the atmospheric sciences.",
+      "License": "GPL-3",
+      "URL": "https://eliocamp.github.io/metR/",
+      "BugReports": "https://github.com/eliocamp/metR/issues",
+      "Depends": [
+        "R (>= 2.10)"
+      ],
+      "Imports": [
+        "checkmate",
+        "data.table",
+        "digest",
+        "Formula",
+        "formula.tools",
+        "ggplot2 (>= 3.5.0)",
+        "grid",
+        "gtable",
+        "memoise",
+        "plyr",
+        "scales",
+        "sf",
+        "stringr",
+        "purrr",
+        "isoband",
+        "lubridate"
+      ],
+      "Suggests": [
+        "maps",
+        "covr",
+        "irlba",
+        "knitr",
+        "ncdf4",
+        "pkgdown",
+        "reshape2",
+        "markdown",
+        "testthat (>= 2.1.0)",
+        "viridis",
+        "CFtime",
+        "gridExtra",
+        "vdiffr",
+        "proj4",
+        "kriging",
+        "terra",
+        "here",
+        "gsignal",
+        "rnaturalearth"
+      ],
+      "ByteCompile": "yes",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "7.3.2",
+      "VignetteBuilder": "knitr",
+      "NeedsCompilation": "no",
+      "Author": "Elio Campitelli [cre, aut] (ORCID: <https://orcid.org/0000-0002-7742-9230>)",
+      "Maintainer": "Elio Campitelli <eliocampitelli@gmail.com>",
       "Repository": "CRAN"
     },
     "metapod": {
@@ -10596,6 +11194,39 @@
       "RemoteSha": "98402ed0c10cac020524bebbb9300614a799f6d1",
       "Author": "Hannah Pliner [aut], Xiaojie Qiu [aut], Cole Trapnell [aut], Brent Ewing [cre]"
     },
+    "network": {
+      "Package": "network",
+      "Version": "1.19.0",
+      "Source": "Repository",
+      "Date": "2024-12-08",
+      "Title": "Classes for Relational Data",
+      "Authors@R": "c( person(\"Carter T.\", \"Butts\", role=c(\"aut\",\"cre\"), email=\"buttsc@uci.edu\"), person(\"David\", \"Hunter\", role=c(\"ctb\"), email=\"dhunter@stat.psu.edu\"), person(\"Mark\", \"Handcock\", role=c(\"ctb\"), email=\"handcock@stat.ucla.edu\"), person(\"Skye\", \"Bender-deMoll\", role=c(\"ctb\"), email=\"skyebend@uw.edu\"), person(\"Jeffrey\", \"Horner\", role=c(\"ctb\"), email=\"jeffrey.horner@gmail.com\"), person(\"Li\", \"Wang\", role=c(\"ctb\"), email=\"lxwang@uw.edu\"), person(\"Pavel N.\", \"Krivitsky\", role=c(\"ctb\"), email=\"pavel@statnet.org\", comment=c(ORCID=\"0000-0002-9101-3362\")), person(\"Brendan\", \"Knapp\", role=c(\"ctb\"), email=\"brendan.g.knapp@gmail.com\", comment=c(ORCID=\"0000-0003-3284-4972\")), person(\"Michał\", \"Bojanowski\", role=c(\"ctb\"), email = \"michal2992@gmail.com\", comment = c(ORCID = \"0000-0001-7503-852X\")), person(\"Chad\", \"Klumb\", role=c(\"ctb\"), email=\"cklumb@gmail.com\"))",
+      "Maintainer": "Carter T. Butts <buttsc@uci.edu>",
+      "Depends": [
+        "R (>= 2.10)",
+        "utils"
+      ],
+      "Imports": [
+        "tibble",
+        "magrittr",
+        "statnet.common (>= 4.5)",
+        "stats"
+      ],
+      "Suggests": [
+        "sna",
+        "testthat",
+        "covr"
+      ],
+      "Description": "Tools to create and modify network objects.  The network class can represent a range of relational data types, and supports arbitrary vertex/edge/graph attributes.",
+      "License": "GPL (>= 2)",
+      "URL": "https://statnet.org/",
+      "RoxygenNote": "7.3.2.9000",
+      "Collate": "'access.R' 'as.edgelist.R' 'assignment.R' 'coercion.R' 'constructors.R' 'dataframe.R' 'fileio.R' 'layout.R' 'misc.R' 'network-package.R' 'operators.R' 'plot.R' 'printsum.R' 'zzz.R'",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "yes",
+      "Author": "Carter T. Butts [aut, cre], David Hunter [ctb], Mark Handcock [ctb], Skye Bender-deMoll [ctb], Jeffrey Horner [ctb], Li Wang [ctb], Pavel N. Krivitsky [ctb] (<https://orcid.org/0000-0002-9101-3362>), Brendan Knapp [ctb] (<https://orcid.org/0000-0003-3284-4972>), Michał Bojanowski [ctb] (<https://orcid.org/0000-0001-7503-852X>), Chad Klumb [ctb]",
+      "Repository": "CRAN"
+    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-168",
@@ -10778,6 +11409,32 @@
       "Author": "Philipp Schauberger [aut], Alexander Walker [aut], Luca Braglia [ctb], Joshua Sturm [ctb], Jan Marvin Garbuszus [ctb, cre], Jordan Mark Barbone [ctb] (<https://orcid.org/0000-0001-9788-3628>), David Zimmermann [ctb], Reinhold Kainhofer [ctb]",
       "Maintainer": "Jan Marvin Garbuszus <jan.garbuszus@ruhr-uni-bochum.de>",
       "Repository": "CRAN"
+    },
+    "operator.tools": {
+      "Package": "operator.tools",
+      "Version": "1.6.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Utilities for Working with R's Operators",
+      "Date": "2017-02-28",
+      "Authors@R": "c( person(\"Christopher\", \"Brown\", , \"chris.brown@decisionpatterns.com\", c(\"aut\", \"cre\") ), person(\"Decision Patterns\", role = \"cph\") )",
+      "Imports": [
+        "utils (>= 3.3.2)"
+      ],
+      "Suggests": [
+        "operators (>= 0.1.8)",
+        "magrittr (>= 1.5)",
+        "testthat (>= 1.0.2)"
+      ],
+      "Description": "Provides a collection of utilities that allow programming with  R's operators. Routines allow classifying operators,  translating to and from an operator and its underlying function, and inverting  some operators (e.g. comparison operators), etc. All methods can be extended to custom infix operators.",
+      "License": "GPL-2 | file LICENSE",
+      "URL": "https://github.com/decisionpatterns/operator.tools",
+      "BugReports": "https://github.com/decisionpatterns/operator.tools/issues",
+      "RoxygenNote": "6.0.1.9000",
+      "Repository": "CRAN",
+      "NeedsCompilation": "no",
+      "Author": "Christopher Brown [aut, cre], Decision Patterns [cph]",
+      "Maintainer": "Christopher Brown <chris.brown@decisionpatterns.com>"
     },
     "pROC": {
       "Package": "pROC",
@@ -14430,6 +15087,32 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "sna": {
+      "Package": "sna",
+      "Version": "2.8",
+      "Source": "Repository",
+      "Date": "2024-09-07",
+      "Title": "Tools for Social Network Analysis",
+      "Authors@R": "person(given=c(\"Carter\", \"T.\"), family=\"Butts\", role=c(\"aut\",\"cre\",\"cph\"), email = \"buttsc@uci.edu\")",
+      "Depends": [
+        "R (>= 2.0.0)",
+        "utils",
+        "statnet.common",
+        "network"
+      ],
+      "Suggests": [
+        "rgl",
+        "numDeriv",
+        "SparseM"
+      ],
+      "Description": "A range of tools for social network analysis, including node and graph-level indices, structural distance and covariance methods, structural equivalence detection, network regression, random graph generation, and 2D/3D network visualization.",
+      "License": "GPL (>= 2)",
+      "URL": "https://statnet.org",
+      "NeedsCompilation": "yes",
+      "Author": "Carter T. Butts [aut, cre, cph]",
+      "Maintainer": "Carter T. Butts <buttsc@uci.edu>",
+      "Repository": "CRAN"
+    },
     "snow": {
       "Package": "snow",
       "Version": "0.4-4",
@@ -14978,6 +15661,40 @@
       "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
+    "statnet.common": {
+      "Package": "statnet.common",
+      "Version": "4.11.0",
+      "Source": "Repository",
+      "Date": "2024-12-29",
+      "Title": "Common R Scripts and Utilities Used by the Statnet Project Software",
+      "Authors@R": "c( person(c(\"Pavel\", \"N.\"), \"Krivitsky\", role=c(\"aut\",\"cre\"), email=\"pavel@statnet.org\", comment=c(ORCID=\"0000-0002-9101-3362\", affiliation=\"University of New South Wales\")), person(\"Skye\", \"Bender-deMoll\", role=c(\"ctb\"), email=\"skyebend@uw.edu\"), person(\"Chad\", \"Klumb\", role=c(\"ctb\"), email=\"cklumb@gmail.com\", comment=c(affiliation=\"University of Washington\")))",
+      "Description": "Non-statistical utilities used by the software developed by the Statnet Project. They may also be of use to others.",
+      "Depends": [
+        "R (>= 3.5)"
+      ],
+      "Imports": [
+        "utils",
+        "methods",
+        "coda",
+        "parallel",
+        "tools",
+        "Matrix"
+      ],
+      "BugReports": "https://github.com/statnet/statnet.common/issues",
+      "License": "GPL-3 + file LICENSE",
+      "URL": "https://statnet.org",
+      "RoxygenNote": "7.3.2.9000",
+      "Encoding": "UTF-8",
+      "Suggests": [
+        "covr",
+        "rlang (>= 1.1.1)",
+        "MASS"
+      ],
+      "NeedsCompilation": "yes",
+      "Author": "Pavel N. Krivitsky [aut, cre] (<https://orcid.org/0000-0002-9101-3362>, University of New South Wales), Skye Bender-deMoll [ctb], Chad Klumb [ctb] (University of Washington)",
+      "Maintainer": "Pavel N. Krivitsky <pavel@statnet.org>",
+      "Repository": "CRAN"
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.8.7",
@@ -15128,6 +15845,98 @@
       "NeedsCompilation": "yes",
       "Author": "Terry M Therneau [aut, cre], Thomas Lumley [ctb, trl] (original S->R port and R maintainer until 2009), Atkinson Elizabeth [ctb], Crowson Cynthia [ctb]",
       "Maintainer": "Terry M Therneau <therneau.terry@mayo.edu>",
+      "Repository": "CRAN"
+    },
+    "sva": {
+      "Package": "sva",
+      "Version": "3.56.0",
+      "Source": "Bioconductor",
+      "Title": "Surrogate Variable Analysis",
+      "Author": "Jeffrey T. Leek <jtleek@gmail.com>, W. Evan Johnson <wej@bu.edu>, Hilary S. Parker <hiparker@jhsph.edu>, Elana J. Fertig <ejfertig@jhmi.edu>, Andrew E. Jaffe <ajaffe@jhsph.edu>, Yuqing Zhang <zhangyuqing.pkusms@gmail.com>,  John D. Storey <jstorey@princeton.edu>,  Leonardo Collado Torres <lcolladotor@gmail.com>",
+      "Description": "The sva package contains functions for removing batch effects and other unwanted variation in high-throughput experiment. Specifically, the sva package contains functions for the identifying and building surrogate variables for high-dimensional data sets. Surrogate variables are covariates constructed directly from high-dimensional data (like gene expression/RNA sequencing/methylation/brain imaging data) that can be used in subsequent analyses to adjust for unknown, unmodeled, or latent sources of noise. The sva package can be used to remove artifacts in three ways: (1) identifying and estimating surrogate variables for unknown sources of variation in high-throughput experiments (Leek and Storey 2007 PLoS Genetics,2008 PNAS), (2) directly removing known batch effects using ComBat (Johnson et al. 2007 Biostatistics) and (3) removing batch effects with known control probes (Leek 2014 biorXiv). Removing batch effects and using surrogate variables in differential expression analysis have been shown to reduce dependence, stabilize error rate estimates, and improve reproducibility, see (Leek and Storey 2007 PLoS Genetics, 2008 PNAS or Leek et al. 2011 Nat. Reviews Genetics).",
+      "Maintainer": "Jeffrey T. Leek <jtleek@gmail.com>, John D. Storey <jstorey@princeton.edu>, W. Evan Johnson <wej@bu.edu>",
+      "Depends": [
+        "R (>= 3.2)",
+        "mgcv",
+        "genefilter",
+        "BiocParallel"
+      ],
+      "Imports": [
+        "matrixStats",
+        "stats",
+        "graphics",
+        "utils",
+        "limma",
+        "edgeR"
+      ],
+      "Suggests": [
+        "pamr",
+        "bladderbatch",
+        "BiocStyle",
+        "zebrafishRNASeq",
+        "testthat"
+      ],
+      "License": "Artistic-2.0",
+      "biocViews": "ImmunoOncology, Microarray, StatisticalMethod, Preprocessing, MultipleComparison, Sequencing, RNASeq, BatchEffect, Normalization",
+      "RoxygenNote": "7.0.2",
+      "git_url": "https://git.bioconductor.org/packages/sva",
+      "git_branch": "RELEASE_3_21",
+      "git_last_commit": "b128ddd",
+      "git_last_commit_date": "2025-04-15",
+      "Repository": "Bioconductor 3.21",
+      "NeedsCompilation": "yes"
+    },
+    "symphony": {
+      "Package": "symphony",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Title": "Efficient and Precise Single-Cell Reference Atlas Mapping",
+      "Authors@R": "c( person(given = \"Joyce\", family = \"Kang\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-1962-1291\"), email = \"joyce_kang@hms.harvard.edu\"), person(\"Ilya\", \"Korsunsky\", email = \"ilya.korsunsky@gmail.com\",  role = c(\"aut\"), comment = c(ORCID = \"0000-0003-4848-3948\")), person(\"Soumya\", \"Raychaudhuri\",  role = c(\"aut\"), comment = c(ORCID = \"0000-0002-1901-8265\")) )",
+      "Description": "Implements the Symphony single-cell reference building and query mapping algorithms and additional functions described in Kang et al <https://www.nature.com/articles/s41467-021-25957-x>.",
+      "License": "GPL (>= 3)",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat",
+        "ggthemes",
+        "ggrastr",
+        "ggrepel"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "Imports": [
+        "methods",
+        "Rcpp",
+        "harmony",
+        "uwot",
+        "irlba",
+        "class",
+        "purrr",
+        "dplyr",
+        "ggplot2",
+        "stats",
+        "utils",
+        "magrittr",
+        "data.table",
+        "tibble",
+        "Matrix",
+        "tidyr",
+        "rlang",
+        "RColorBrewer",
+        "RANN"
+      ],
+      "VignetteBuilder": "knitr",
+      "Depends": [
+        "R (>= 3.5)"
+      ],
+      "NeedsCompilation": "yes",
+      "Author": "Joyce Kang [aut, cre] (<https://orcid.org/0000-0002-1962-1291>), Ilya Korsunsky [aut] (<https://orcid.org/0000-0003-4848-3948>), Soumya Raychaudhuri [aut] (<https://orcid.org/0000-0002-1901-8265>)",
+      "Maintainer": "Joyce Kang <joyce_kang@hms.harvard.edu>",
       "Repository": "CRAN"
     },
     "sys": {
@@ -15314,6 +16123,49 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "thisutils": {
+      "Package": "thisutils",
+      "Version": "0.0.4",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Collection of Utility Functions for Data Analysis and Computing",
+      "Date": "2025-06-14",
+      "Authors@R": "person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\"))",
+      "Maintainer": "Meng Xu <mengxu98@qq.com>",
+      "Description": "Provides a collection of utility functions commonly used in data analysis and scientific computing. Includes functions for parallel processing, matrix operations, correlation calculations, and other computational tasks to streamline R workflows.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/mengxu98/thisutils",
+      "BugReports": "https://github.com/mengxu98/thisutils/issues",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "cli",
+        "doParallel",
+        "foreach",
+        "Matrix",
+        "methods",
+        "parallel",
+        "purrr",
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppParallel",
+        "stats"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo",
+        "RcppParallel"
+      ],
+      "Config/Needs/website": "mengxu98/mxtemplate",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Language": "en-US",
+      "NeedsCompilation": "yes",
+      "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>)",
+      "Repository": "CRAN"
+    },
     "tibble": {
       "Package": "tibble",
       "Version": "3.2.1",
@@ -15381,6 +16233,56 @@
       "NeedsCompilation": "yes",
       "Author": "Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>), Hadley Wickham [aut], Romain Francois [ctb], Jennifer Bryan [ctb], RStudio [cph, fnd]",
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
+      "Repository": "CRAN"
+    },
+    "tidygraph": {
+      "Package": "tidygraph",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Tidy API for Graph Manipulation",
+      "Authors@R": "person(\"Thomas Lin\", \"Pedersen\", , \"thomasp85@gmail.com\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5147-4711\"))",
+      "Maintainer": "Thomas Lin Pedersen <thomasp85@gmail.com>",
+      "Description": "A graph, while not \"tidy\" in itself, can be thought of as two tidy data frames describing node and edge data respectively. 'tidygraph' provides an approach to manipulate these two virtual data frames using the API defined in the 'dplyr' package, as well as provides tidy interfaces to a lot of common graph algorithms.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://tidygraph.data-imaginist.com, https://github.com/thomasp85/tidygraph",
+      "BugReports": "https://github.com/thomasp85/tidygraph/issues",
+      "Imports": [
+        "cli",
+        "dplyr (>= 0.8.5)",
+        "igraph (>= 2.0.0)",
+        "lifecycle",
+        "magrittr",
+        "pillar",
+        "R6",
+        "rlang",
+        "stats",
+        "tibble",
+        "tidyr",
+        "tools",
+        "utils"
+      ],
+      "Suggests": [
+        "ape",
+        "covr",
+        "data.tree",
+        "graph",
+        "influenceR",
+        "methods",
+        "netrankr",
+        "NetSwan",
+        "network",
+        "seriation",
+        "testthat (>= 3.0.0)"
+      ],
+      "LinkingTo": [
+        "cpp11"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.1",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "yes",
+      "Author": "Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>)",
       "Repository": "CRAN"
     },
     "tidyr": {
@@ -15517,6 +16419,34 @@
       "NeedsCompilation": "no",
       "Author": "Guangchuang Yu [aut, cre, cph] (<https://orcid.org/0000-0002-6485-8781>), Bradley Jones [ctb], Zebulun Arendsee [ctb]",
       "Maintainer": "Guangchuang Yu <guangchuangyu@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "timechange": {
+      "Package": "timechange",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Title": "Efficient Manipulation of Date-Times",
+      "Authors@R": "c(person(\"Vitalie\", \"Spinu\", email = \"spinuvit@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Google Inc.\", role = c(\"ctb\", \"cph\")))",
+      "Description": "Efficient routines for manipulation of date-time objects while accounting for time-zones and daylight saving times. The package includes utilities for updating of date-time components (year, month, day etc.), modification of time-zones, rounding of date-times, period addition and subtraction etc. Parts of the 'CCTZ' source code, released under the Apache 2.0 License, are included in this package. See <https://github.com/google/cctz> for more details.",
+      "Depends": [
+        "R (>= 3.3)"
+      ],
+      "License": "GPL (>= 3)",
+      "Encoding": "UTF-8",
+      "LinkingTo": [
+        "cpp11 (>= 0.2.7)"
+      ],
+      "Suggests": [
+        "testthat (>= 0.7.1.99)",
+        "knitr"
+      ],
+      "SystemRequirements": "A system with zoneinfo data (e.g. /usr/share/zoneinfo) as well as a recent-enough C++11 compiler (such as g++-4.8 or later). On Windows the zoneinfo included with R is used.",
+      "BugReports": "https://github.com/vspinu/timechange/issues",
+      "URL": "https://github.com/vspinu/timechange/",
+      "RoxygenNote": "7.2.1",
+      "NeedsCompilation": "yes",
+      "Author": "Vitalie Spinu [aut, cre], Google Inc. [ctb, cph]",
+      "Maintainer": "Vitalie Spinu <spinuvit@gmail.com>",
       "Repository": "CRAN"
     },
     "tinytex": {
@@ -15679,6 +16609,44 @@
       ],
       "NeedsCompilation": "yes",
       "Author": "Thomas Lin Pedersen [aut, cre] (<https://orcid.org/0000-0002-5147-4711>)",
+      "Repository": "CRAN"
+    },
+    "umap": {
+      "Package": "umap",
+      "Version": "0.2.10.0",
+      "Source": "Repository",
+      "Title": "Uniform Manifold Approximation and Projection",
+      "Authors@R": "person(\"Tomasz\", \"Konopka\", , \"tokonopka@gmail.com\", role = c(\"aut\", \"cre\"))",
+      "Author": "Tomasz Konopka [aut, cre]",
+      "Maintainer": "Tomasz Konopka <tokonopka@gmail.com>",
+      "Description": "Uniform manifold approximation and projection is a technique for dimension reduction. The algorithm was described by McInnes and Healy (2018) in <arXiv:1802.03426>. This package provides an interface for two implementations. One is written from scratch, including components for nearest-neighbor search and for embedding. The second implementation is a wrapper for 'python' package 'umap-learn' (requires separate installation, see vignette for more details).",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "Imports": [
+        "Matrix",
+        "methods",
+        "openssl",
+        "reticulate",
+        "Rcpp (>= 0.12.6)",
+        "RSpectra",
+        "stats"
+      ],
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/tkonopka/umap",
+      "BugReports": "https://github.com/tkonopka/umap/issues",
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat"
+      ],
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.2",
+      "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
     "units": {
