@@ -9,10 +9,15 @@
 ## Overview
 The [*`scop`*](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.
 
->News
->- [0.0.5] Update test data `pancreas_sub` and `panc8_sub` to Seurat v5.
->- [0.0.6] Add `GetAssayData5` function, which is a re-implementation of the GetAssayData function to compatible with Assay5 objects.
->- [0.0.6] Update `GetFeaturesData` and `AddFeaturesData` functions to obtain or add metadata of features.
+> [!IMPORTANT]
+>
+> [0.0.5] Update test data `pancreas_sub` and `panc8_sub` to Seurat v5.
+>
+> [0.0.6] Add `GetAssayData5()` function, which is a re-implementation of the GetAssayData function to compatible with Assay5 objects.
+> 
+> [0.0.6] Update `GetFeaturesData()` and `AddFeaturesData()` functions to obtain or add metadata of features.
+>
+> [0.0.9] Fixed the `PrepareEnv()` function, with the default Python version set to '3.10-1'. Now it can successfully run functions such as `RunPAGA()` and `RunSCVELO()` 'based on the Python environment.
 
 ## Introduction
 The [*`scop`*](https://github.com/mengxu98/scop) package includes the following facilities:
