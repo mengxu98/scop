@@ -41,7 +41,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data("pancreas_sub")
 #' CellDensityPlot(
 #'   pancreas_sub,
@@ -49,7 +48,7 @@
 #'   group.by = "SubCellType"
 #' )
 #'
-#' pancreas_sub <- RunSlingshot( # bug in methods::validObject(out)
+#' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
@@ -66,7 +65,6 @@
 #'   group.by = "SubCellType",
 #'   flip = TRUE
 #' )
-#' }
 CellDensityPlot <- function(
     srt,
     features,

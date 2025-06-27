@@ -17,9 +17,9 @@
 #'   label = TRUE
 #' )
 #' p1
-#' 
+#'
 #' panel_fix(p1, height = 2, width = 3)
-#' 
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -28,7 +28,7 @@
 #'   position = "dodge",
 #'   label = TRUE
 #' )
-#' 
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",

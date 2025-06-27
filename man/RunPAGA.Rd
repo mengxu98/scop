@@ -115,8 +115,8 @@ pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  linear_reduction = "pca",
+  nonlinear_reduction = "umap"
 )
 CellDimPlot(
   pancreas_sub,
@@ -134,14 +134,13 @@ CellDimPlot(
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
   group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
+  linear_reduction = "pca",
+  nonlinear_reduction = "umap",
   embedded_with_PAGA = TRUE,
   infer_pseudotime = TRUE,
   root_group = "Ductal"
 )
-head(pancreas_sub[[]])
-names(pancreas_sub@reductions)
+
 FeatureDimPlot(
   pancreas_sub,
   features = "dpt_pseudotime",
@@ -157,5 +156,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\code{\link{srt_to_adata}} \code{\link{PAGAPlot}} \code{\link{CellDimPlot}} \code{\link{RunSCVELO}}
+\link{srt_to_adata} \link{PAGAPlot} \link{CellDimPlot} \link{RunSCVELO}
 }

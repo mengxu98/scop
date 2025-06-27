@@ -41,17 +41,16 @@ RunHarmony2 <- function(object, ...) {
 #' @method RunHarmony2 Seurat
 #' @export
 RunHarmony2.Seurat <- function(
-  object,
-  group.by.vars,
-  reduction = "pca",
-  dims.use = 1:30,
-  project.dim = TRUE,
-  reduction.name = "Harmony",
-  reduction.key = "Harmony_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    group.by.vars,
+    reduction = "pca",
+    dims.use = 1:30,
+    project.dim = TRUE,
+    reduction.name = "Harmony",
+    reduction.key = "Harmony_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   check_r("harmony@1.1.0")
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)

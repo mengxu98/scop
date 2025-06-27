@@ -38,22 +38,21 @@ RunDM <- function(object, ...) {
 #' @method RunDM Seurat
 #' @export
 RunDM.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = 1:30,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  ndcs = 2,
-  sigma = "local",
-  k = 30,
-  dist.method = "euclidean",
-  reduction.name = "dm",
-  reduction.key = "DM_",
-  verbose = TRUE,
-  seed.use = 11,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = 1:30,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    ndcs = 2,
+    sigma = "local",
+    k = 30,
+    dist.method = "euclidean",
+    reduction.name = "dm",
+    reduction.key = "DM_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
   if (!is.null(x = features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
     data.use <- Matrix::as.matrix(
@@ -116,18 +115,17 @@ RunDM.Seurat <- function(
 #' @method RunDM default
 #' @export
 RunDM.default <- function(
-  object,
-  assay = NULL,
-  layer = "data",
-  ndcs = 2,
-  sigma = "local",
-  k = 30,
-  dist.method = "euclidean",
-  reduction.key = "DM_",
-  verbose = TRUE,
-  seed.use = 11,
-  ...
-) {
+    object,
+    assay = NULL,
+    layer = "data",
+    ndcs = 2,
+    sigma = "local",
+    k = 30,
+    dist.method = "euclidean",
+    reduction.key = "DM_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
   check_r("destiny")
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)

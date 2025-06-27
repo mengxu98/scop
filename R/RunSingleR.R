@@ -1,4 +1,3 @@
-
 #' Annotate single cells using SingleR
 #'
 #' @inheritParams RunKNNPredict

@@ -145,7 +145,7 @@ RunGLMPCA.Assay5 <- function(
     seed.use = 11,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
-    data.use <- GetAssayData5(
+  data.use <- GetAssayData5(
     object = object,
     layer = layer,
     ...
