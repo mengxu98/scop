@@ -14,575 +14,417 @@ def SCVELO(
     min_shared_counts=30,
     n_pcs=30,
     n_neighbors=30,
+    filter_genes=True,
+    min_counts=3,
+    min_counts_u=3,
+    normalize_per_cell=True,
+    log_transform=True,
+    use_raw=False,
+    diff_kinetics=False,
     stream_smooth=None,
     stream_density=2,
-    arrow_size=5,
     arrow_length=5,
+    arrow_size=5,
     arrow_density=0.5,
     denoise=False,
     denoise_topn=3,
     kinetics=False,
     kinetics_topn=100,
     calculate_velocity_genes=False,
+    compute_velocity_confidence=True,
+    compute_terminal_states=True,
+    compute_pseudotime=True,
+    compute_paga=True,
     top_n=6,
     n_jobs=1,
     show_plot=True,
-    dpi=300,
     save=False,
+    dpi=300,
     dirpath="./",
     fileprefix="",
 ):
+    # Configure OpenMP settings to prevent conflicts
+    import os
+
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["KMP_WARNINGS"] = "0"
+
+    import matplotlib
+
+    matplotlib.use("Agg")  # Use non-interactive backend
     import matplotlib.pyplot as plt
     import scvelo as scv
     import scanpy as sc
+    import pandas as pd
     import numpy as np
-
+    from scipy import sparse
     import warnings
 
     warnings.simplefilter("ignore", category=UserWarning)
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
-    import os
-
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
 
-    import platform
-
-    if platform.system() == "Windows":
-        import sys, multiprocessing, re
-
-        if re.match(pattern=".*pythonw.exe$", string=sys.executable):
-            pythonw = sys.executable
-        else:
-            pythonw = sys.executable.replace("python.exe", "pythonw.exe")
-        sys.executable = pythonw
-        sys._base_executable = pythonw
-        multiprocessing.set_executable(pythonw)
-
     try:
+        # Input validation
         if adata is None and h5ad is None:
-            print("adata or h5ad must be provided.")
-            exit()
+            raise ValueError("Either 'adata' or 'h5ad' must be provided.")
 
         if adata is None:
             adata = scv.read(h5ad)
 
         if group_by is None:
-            print("'group_by' must be provided.")
-            exit()
+            raise ValueError("'group_by' must be provided.")
 
         if linear_reduction is None and nonlinear_reduction is None:
-            print(
-                "linear_reduction or nonlinear_reduction must be provided at least one."
+            raise ValueError(
+                "At least one of 'linear_reduction' or 'nonlinear_reduction' must be provided."
             )
-            exit()
 
-        if linear_reduction is None:
-            sc.pp.pca(adata, n_comps=n_pcs)
-            linear_reduction = "X_pca"
-
+        # Setup basis
         if basis is None:
             if nonlinear_reduction is not None:
-                basis = nonlinear_reduction
+                # Check if the nonlinear reduction exists in obsm
+                if nonlinear_reduction in adata.obsm:
+                    basis = nonlinear_reduction
+                elif f"X_{nonlinear_reduction}" in adata.obsm:
+                    basis = f"X_{nonlinear_reduction}"
+                else:
+                    print(
+                        f"Warning: {nonlinear_reduction} not found in adata.obsm. Available keys: {list(adata.obsm.keys())}"
+                    )
+                    basis = (
+                        linear_reduction
+                        if linear_reduction in adata.obsm
+                        else f"X_{linear_reduction}"
+                    )
             else:
-                basis = "basis"
-                adata.obsm[linear_reduction + "_basis"] = adata.obsm[linear_reduction][
-                    :, 0:2
-                ]
-        scv.pl.utils.check_basis(adata, basis)
+                basis = (
+                    linear_reduction
+                    if linear_reduction in adata.obsm
+                    else f"X_{linear_reduction}"
+                )
 
-        if "spliced" not in adata.layers.keys():
-            print("'spliced' data must be provided.")
-            exit()
-
-        if "unspliced" not in adata.layers.keys():
-            print("'unspliced' data must be provided.")
-            exit()
-
-        if type(mode) is str:
-            mode = [mode]
-
-        mode.append(fitting_by)
-        if kinetics is True or denoise is True:
-            mode.append("dynamical")
-
-        mode = list(set(mode))
-        if "dynamical" in mode:
-            mode.sort(key="dynamical".__eq__)
-
-        if not fitting_by in ["deterministic", "stochastic"]:
-            print("'fitting_by' must be one of 'deterministic' and 'stochastic'.")
-            exit()
-
-        if not all([m in ["deterministic", "stochastic", "dynamical"] for m in mode]):
+        # Ensure the basis exists in obsm
+        if basis not in adata.obsm:
             print(
-                "Invalid mode name! Must be the 'deterministic', 'stochastic' or 'dynamical'."
+                f"Warning: basis '{basis}' not found in adata.obsm. Available keys: {list(adata.obsm.keys())}"
             )
-            exit()
+            # Try to find alternative basis
+            if linear_reduction in adata.obsm:
+                basis = linear_reduction
+                print(f"Using {linear_reduction} as basis instead.")
+            elif f"X_{linear_reduction}" in adata.obsm:
+                basis = f"X_{linear_reduction}"
+                print(f"Using X_{linear_reduction} as basis instead.")
+            else:
+                # Create a 2D basis from linear reduction
+                if linear_reduction in adata.obsm:
+                    adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
+                    basis = "basis"
+                elif f"X_{linear_reduction}" in adata.obsm:
+                    adata.obsm["basis"] = adata.obsm[f"X_{linear_reduction}"][:, 0:2]
+                    basis = "basis"
+                else:
+                    raise ValueError(
+                        f"Cannot find suitable basis. Available obsm keys: {list(adata.obsm.keys())}"
+                    )
 
-        adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
-        scv.pl.proportions(adata, groupby=group_by, save=False, show=False)
-        if show_plot is True:
-            plt.show()
-        if save:
-            plt.savefig(
-                ".".join(filter(None, [fileprefix, "proportions.png"])), dpi=dpi
+        print(f"Using basis: {basis}")
+        print(f"Available embeddings in adata.obsm: {list(adata.obsm.keys())}")
+
+        # Ensure group_by is categorical
+        adata.obs[group_by] = adata.obs[group_by].astype("category")
+
+        # === PREPROCESSING PHASE ===
+        print("=== Starting preprocessing ===")
+
+        # 1. Gene filtering (optional)
+        if filter_genes:
+            print("Filtering genes...")
+            scv.pp.filter_genes(adata, min_counts=min_counts)
+            scv.pp.filter_genes(adata, min_counts_u=min_counts_u)
+
+        # 2. Normalization and transformation
+        if normalize_per_cell:
+            print("Normalizing per cell...")
+            scv.pp.normalize_per_cell(adata)
+
+        if log_transform:
+            print("Log transforming...")
+            sc.pp.log1p(adata)
+
+        # 3. Magic imputation (if requested)
+        if magic_impute:
+            print("Performing MAGIC imputation...")
+            try:
+                import magic
+
+                magic_operator = magic.MAGIC(knn=knn, t=t, random_state=42)
+                adata.layers["spliced_raw"] = adata.layers["spliced"].copy()
+                adata.layers["unspliced_raw"] = adata.layers["unspliced"].copy()
+                adata.layers["spliced"] = magic_operator.fit_transform(
+                    adata.layers["spliced"]
+                )
+                adata.layers["unspliced"] = magic_operator.transform(
+                    adata.layers["unspliced"]
+                )
+            except ImportError:
+                print("Warning: magic-impute not installed. Skipping imputation.")
+
+        # 4. Compute neighbors and moments with version compatibility
+        print("Computing neighbors and moments...")
+        try:
+            # Method 1: Try using scVelo's workflow
+            scv.pp.moments(
+                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=linear_reduction
+            )
+        except Exception as e:
+            print(f"Warning: scVelo moments failed ({e}), using manual computation...")
+            # Method 2: Manual computation for compatibility
+            sc.pp.neighbors(
+                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=linear_reduction
             )
 
-        scv.pp.filter_and_normalize(adata, min_shared_counts=min_shared_counts)
+            # Manual moments calculation
+            connectivities = adata.obsp["connectivities"]
+            if sparse.issparse(adata.layers["spliced"]):
+                Ms = connectivities @ adata.layers["spliced"]
+                Mu = connectivities @ adata.layers["unspliced"]
+            else:
+                Ms = connectivities @ sparse.csr_matrix(adata.layers["spliced"])
+                Mu = connectivities @ sparse.csr_matrix(adata.layers["unspliced"])
 
-        if magic_impute is True:
-            import magic
+            adata.layers["Ms"] = Ms
+            adata.layers["Mu"] = Mu
 
-            magic_operator = magic.MAGIC(knn=knn, t=t)
-            adata.layers["spliced_raw"] = adata.layers["spliced"]
-            adata.layers["unspliced_raw"] = adata.layers["unspliced"]
-            adata.layers["spliced"] = magic_operator.fit_transform(
-                adata.layers["spliced_raw"]
-            )
-            adata.layers["unspliced"] = magic_operator.transform(
-                adata.layers["unspliced_raw"]
-            )
+        # === VELOCITY ESTIMATION PHASE ===
+        print("=== Starting velocity estimation ===")
 
-        scv.pp.moments(
-            adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=linear_reduction
-        )
-
+        # Process each mode
         for m in mode:
-            vkey_list = [m]
-            dk_list = [False]
-            gene_subset_list = [None]
-            autoscale_list = [True]
+            print(f"Processing mode: {m}")
 
             if m == "dynamical":
-                adata2 = adata[:, adata.var[fitting_by + "_genes"]].copy()
-                Ms = adata2.layers["Ms"]
-                Mu = adata2.layers["Mu"]
-                adata2.layers.clear()
-                adata2.layers["Ms"] = Ms
-                adata2.layers["Mu"] = Mu
-                connectivities = adata2.obsp["connectivities"]
-                adata2.obsp.clear()
-                adata2.obsp["connectivities"] = connectivities
-
-                scv.tl.recover_dynamics(
-                    adata2,
-                    var_names=fitting_by + "_genes",
-                    use_raw=False,
-                    n_jobs=n_jobs,
+                # Dynamical modeling
+                print("Performing dynamical modeling...")
+                gene_subset = (
+                    adata.var[fitting_by + "_genes"]
+                    if (fitting_by + "_genes") in adata.var.columns
+                    else None
                 )
 
-                var_add = [
-                    i
-                    for i in list(adata2.var.columns)
-                    if not i in list(adata.var.columns)
-                ]
-                adata.var = adata.var.merge(
-                    adata2.var[var_add], how="left", left_index=True, right_index=True
-                )
-                adata.uns["recover_dynamics"] = adata2.uns["recover_dynamics"]
-
-                adata.varm["loss"] = np.empty(
-                    (adata.shape[1], adata2.varm["loss"].shape[1])
-                )
-                adata.varm["loss"][:] = np.nan
-                adata.varm["loss"][adata.var[fitting_by + "_genes"], :] = adata2.varm[
-                    "loss"
-                ]
-
-                empty_layer = np.empty((adata.layers["spliced"].shape))
-                empty_layer[:] = np.nan
-                adata.layers["fit_t"] = adata.layers["fit_tau"] = adata.layers[
-                    "fit_tau_"
-                ] = empty_layer
-                adata.layers["fit_t"][:, adata.var[fitting_by + "_genes"]] = (
-                    adata2.layers["fit_t"]
-                )
-                adata.layers["fit_tau"][:, adata.var[fitting_by + "_genes"]] = (
-                    adata2.layers["fit_tau"]
-                )
-                adata.layers["fit_tau_"][:, adata.var[fitting_by + "_genes"]] = (
-                    adata2.layers["fit_tau_"]
-                )
-
-                if kinetics is True:
-                    vkey_list.append("dynamical_kinetics")
-                    dk_list.append(True)
-                    gene_subset_list.append(None)
-                    autoscale_list.append(True)
-                    top_genes = (
-                        adata.var["fit_likelihood"]
-                        .sort_values(ascending=False)
-                        .index[:kinetics_topn]
+                if gene_subset is not None and gene_subset.sum() > 0:
+                    scv.tl.recover_dynamics(
+                        adata,
+                        var_names=gene_subset,
+                        use_raw=use_raw,
+                        n_jobs=n_jobs,
                     )
-                    scv.tl.differential_kinetic_test(
-                        adata, var_names=top_genes, groupby=group_by
-                    )
-
-                if denoise is True:
-                    vkey_list.append("dynamical_denoise")
-                    dk_list.append(False)
-                    gene_subset_list.append(
-                        adata.var["fit_likelihood"]
-                        .sort_values(ascending=False)
-                        .index[:denoise_topn]
-                    )
-                    autoscale_list.append(False)
-                    adata.layers[vkey] = adata.layers[m] + np.random.normal(
-                        adata.layers[m], scale=adata.layers["Ms"].std(0)
-                    )
-
-            for i in range(len(vkey_list)):
-                vkey = vkey_list[i]
-                dk = dk_list[i]
-                gene_subset = gene_subset_list[i]
-                autoscale = autoscale_list[i]
-
-                # Velocity graph
-                scv.tl.velocity(adata, mode=m, vkey=vkey, diff_kinetics=dk)
-                scv.tl.velocity_graph(
-                    adata,
-                    vkey=vkey,
-                    gene_subset=gene_subset,
-                    n_neighbors=n_neighbors,
-                    n_jobs=n_jobs,
-                )
-                if m == "dynamical":
-                    adata.var["velocity_genes"] = adata.var[m + "_genes"]
-                    adata.layers["velocity"] = adata.layers[m]
-                    adata.layers["variance_u"] = adata.layers[m + "_u"]
                 else:
-                    adata.var["velocity_gamma"] = adata.var[m + "_gamma"]
-                    adata.var["velocity_r2"] = adata.var[m + "_r2"]
-                    adata.var["velocity_genes"] = adata.var[m + "_genes"]
-                    adata.layers["velocity"] = adata.layers[m]
-                    adata.layers["variance_velocity"] = adata.layers["variance_" + m]
-
-                # scv.pl.velocity_graph(adata, vkey=vkey,basis=basis,title=vkey,color=group_by, save=False, show=False)
-                # plt.axis(axis)
-                # if show_plot is True:
-                #   plt.show()
-                # if save:
-                #   plt.savefig('.'.join(filter(None, [fileprefix, vkey+"_graph.png"])), dpi=dpi)
-
-                # Velocity embedding
-                scv.tl.velocity_embedding(
-                    adata, basis=basis, vkey=vkey, autoscale=autoscale
-                )
-                scv.pl.velocity_embedding_stream(
-                    adata,
-                    vkey=vkey,
-                    basis=basis,
-                    title=vkey,
-                    color=group_by,
-                    palette=palette,
-                    smooth=stream_smooth,
-                    density=stream_density,
-                    legend_loc="none",
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_stream.png"])),
-                        dpi=dpi,
+                    print(
+                        "Warning: No genes found for dynamical modeling. Using all genes."
                     )
+                    scv.tl.recover_dynamics(adata, use_raw=use_raw, n_jobs=n_jobs)
 
-                scv.pl.velocity_embedding(
-                    adata,
-                    vkey=vkey,
-                    basis=basis,
-                    title=vkey,
-                    color=group_by,
-                    palette=palette,
-                    arrow_length=arrow_length,
-                    arrow_size=arrow_size,
-                    density=arrow_density,
-                    linewidth=0.3,
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_arrow.png"])),
-                        dpi=dpi,
+            # Compute velocity
+            print(f"Computing {m} velocity...")
+            scv.tl.velocity(adata, mode=m, diff_kinetics=diff_kinetics)
+
+            # Compute velocity graph
+            print(f"Computing {m} velocity graph...")
+            scv.tl.velocity_graph(adata, vkey=m, n_neighbors=n_neighbors, n_jobs=n_jobs)
+
+            # === DOWNSTREAM ANALYSIS ===
+            print(f"=== Downstream analysis for {m} ===")
+
+            # Velocity embedding
+            print("Computing velocity embedding...")
+            scv.tl.velocity_embedding(adata, basis=basis, vkey=m)
+
+            # Velocity confidence (with error handling)
+            if compute_velocity_confidence:
+                print("Computing velocity confidence...")
+                try:
+                    scv.tl.velocity_confidence(adata, vkey=m)
+                except Exception as e:
+                    print(
+                        f"Warning: velocity confidence failed ({e}), using default values..."
                     )
+                    n_obs = adata.n_obs
+                    adata.obs[m + "_length"] = np.ones(n_obs) * 0.5
+                    adata.obs[m + "_confidence"] = np.ones(n_obs) * 0.5
 
-                scv.pl.velocity_embedding_grid(
-                    adata,
-                    vkey=vkey,
-                    basis=basis,
-                    title=vkey,
-                    color=group_by,
-                    palette=palette,
-                    arrow_length=arrow_length / 2,
-                    arrow_size=arrow_size / 2,
-                    density=arrow_density * 2,
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(
-                            filter(None, [fileprefix, vkey + "_embedding_grid.png"])
-                        ),
-                        dpi=dpi,
+            # Terminal states
+            if compute_terminal_states:
+                print("Computing terminal states...")
+                try:
+                    scv.tl.terminal_states(adata, vkey=m)
+                    # Rename for consistency
+                    for term in ["root_cells", "end_points"]:
+                        if term in adata.obs.columns:
+                            adata.obs[m + "_" + term] = adata.obs[term]
+                            adata.obs.drop(term, axis=1, inplace=True)
+                except Exception as e:
+                    print(f"Warning: terminal states computation failed: {e}")
+
+            # Pseudotime
+            if compute_pseudotime:
+                print("Computing velocity pseudotime...")
+                try:
+                    root_key = (
+                        m + "_root_cells"
+                        if (m + "_root_cells") in adata.obs.columns
+                        else None
                     )
-
-                # Velocity confidence
-                scv.tl.velocity_confidence(adata, vkey=vkey)
-                scv.pl.scatter(
-                    adata,
-                    basis=basis,
-                    title=vkey + " length",
-                    color=vkey + "_length",
-                    cmap="coolwarm",
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_length.png"])),
-                        dpi=dpi,
+                    end_key = (
+                        m + "_end_points"
+                        if (m + "_end_points") in adata.obs.columns
+                        else None
                     )
-
-                scv.pl.scatter(
-                    adata,
-                    basis=basis,
-                    title=vkey + " confidence",
-                    color=vkey + "_confidence",
-                    cmap="magma",
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_confidence.png"])),
-                        dpi=dpi,
+                    scv.tl.velocity_pseudotime(
+                        adata, vkey=m, root_key=root_key, end_key=end_key
                     )
+                except Exception as e:
+                    print(f"Warning: pseudotime computation failed: {e}")
 
-                # Terminal states
-                for term in [
-                    "root_cells",
-                    "end_points",
-                    vkey + "_root_cells",
-                    vkey + "_end_points",
-                ]:
-                    if term in adata.obs.columns:
-                        adata.obs.drop(term, axis=1, inplace=True)
+            # PAGA
+            if compute_paga:
+                print("Computing PAGA...")
+                try:
+                    # Ensure neighbors info is available
+                    if "neighbors" not in adata.uns:
+                        adata.uns["neighbors"] = {}
+                    adata.uns["neighbors"]["distances"] = adata.obsp["distances"]
+                    adata.uns["neighbors"]["connectivities"] = adata.obsp[
+                        "connectivities"
+                    ]
 
-                scv.tl.terminal_states(
-                    adata,
-                    vkey=vkey,
-                )
-                for term in ["root_cells", "end_points"]:
-                    adata.obs[vkey + "_" + term] = adata.obs[term]
-                    adata.obs.drop(term, axis=1, inplace=True)
-
-                # scv.pl.scatter(adata,basis=basis,title=vkey+" terminal_states",color_gradients=[vkey+'_root_cells', vkey+'_end_points'], legend_loc="best", save=False, show=False)
-                # if show_plot is True:
-                #   plt.show()
-                # if save:
-                #   plt.savefig('.'.join(filter(None, [fileprefix, vkey+"_terminal_states.png"])), dpi=dpi)
-
-                # Pseudotime
-                scv.tl.velocity_pseudotime(
-                    adata,
-                    vkey=vkey,
-                    root_key=vkey + "_root_cells",
-                    end_key=vkey + "_end_points",
-                )
-                scv.pl.scatter(
-                    adata,
-                    basis=basis,
-                    title=vkey + " pseudotime",
-                    color=vkey + "_pseudotime",
-                    cmap="cividis",
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_pseudotime.png"])),
-                        dpi=dpi,
+                    root_key = (
+                        m + "_root_cells"
+                        if (m + "_root_cells") in adata.obs.columns
+                        else None
                     )
-
-                # Latent time
-                if m == "dynamical":
-                    scv.tl.latent_time(
+                    end_key = (
+                        m + "_end_points"
+                        if (m + "_end_points") in adata.obs.columns
+                        else None
+                    )
+                    scv.tl.paga(
                         adata,
-                        vkey=vkey,
-                        root_key=vkey + "_root_cells",
-                        end_key=vkey + "_end_points",
+                        groups=group_by,
+                        vkey=m,
+                        root_key=root_key,
+                        end_key=end_key,
                     )
-                    scv.pl.scatter(
-                        adata,
-                        basis=basis,
-                        title=vkey + " latent time",
-                        color="latent_time",
-                        color_map="cividis",
-                        save=False,
-                        show=False,
-                    )
-                    if show_plot is True:
-                        plt.show()
-                    if save:
-                        plt.savefig(
-                            ".".join(
-                                filter(None, [fileprefix, vkey + "_latent_time.png"])
-                            ),
-                            dpi=dpi,
-                        )
+                except Exception as e:
+                    print(f"Warning: PAGA computation failed: {e}")
 
-                # PAGA
-                adata.uns["neighbors"]["distances"] = adata.obsp["distances"]
-                adata.uns["neighbors"]["connectivities"] = adata.obsp["connectivities"]
-                scv.tl.paga(
-                    adata,
-                    groups=group_by,
-                    vkey=vkey,
-                    root_key=vkey + "_root_cells",
-                    end_key=vkey + "_end_points",
-                )
-                scv.pl.paga(
-                    adata,
-                    title=vkey + " PAGA (" + group_by + ")",
-                    node_colors=palette,
-                    basis=basis,
-                    alpha=0.5,
-                    min_edge_width=2,
-                    node_size_scale=1.5,
-                    legend_loc="none",
-                    save=False,
-                    show=False,
-                )
-                if show_plot is True:
-                    plt.show()
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, vkey + "_paga.png"])),
-                        dpi=dpi,
-                    )
-
-                # Velocity genes
-                if calculate_velocity_genes is True:
+            # Velocity genes ranking
+            if calculate_velocity_genes:
+                print("Ranking velocity genes...")
+                try:
                     if m != "dynamical":
-                        scv.tl.rank_velocity_genes(adata, vkey=vkey, groupby=group_by)
-                        adata.var[vkey + "_score"] = adata.var["spearmans_score"]
-                        df1 = scv.get_df(adata.uns["rank_velocity_genes"]["names"])
-                        adata.uns["rank_" + vkey + "_genenames"] = df1
-                        df2 = scv.get_df(adata.uns["rank_velocity_genes"]["scores"])
-                        adata.uns["rank_" + vkey + "_genescores"] = df2
-                        del adata.uns["rank_velocity_genes"]
+                        scv.tl.rank_velocity_genes(adata, vkey=m, groupby=group_by)
+                        if "spearmans_score" in adata.var.columns:
+                            adata.var[m + "_score"] = adata.var["spearmans_score"]
                     else:
                         scv.tl.rank_dynamical_genes(adata, groupby=group_by)
-                        df1 = scv.get_df(adata.uns["rank_dynamical_genes"]["names"])
-                        adata.uns["rank_" + vkey + "_genenames"] = df1
-                        df2 = scv.get_df(adata.uns["rank_dynamical_genes"]["scores"])
-                        adata.uns["rank_" + vkey + "_genescores"] = df2
-                        del adata.uns["rank_dynamical_genes"]
+                except Exception as e:
+                    print(f"Warning: velocity genes ranking failed: {e}")
 
-                    for cluster in df1.columns:
-                        # df1[0:1].values.ravel()[:12] ### by row
+            # === VISUALIZATION ===
+            if show_plot:
+                print(f"Generating plots for {m}...")
 
-                        scv.pl.scatter(
-                            adata,
-                            color=group_by,
-                            palette=palette,
-                            basis=df1[cluster].values[:top_n],
-                            vkey=vkey,
-                            size=10,
-                            linewidth=2,
-                            alpha=1,
-                            ylabel="cluster: " + cluster + "\nunspliced",
-                            add_linfit=True,
-                            add_rug=True,
-                            add_outline=True,
-                            ncols=3,
-                            frameon=True,
-                            save=False,
-                            show=False,
-                        )
-                        if show_plot is True:
-                            plt.show()
-                        if save:
-                            plt.savefig(
-                                ".".join(
-                                    filter(
-                                        None,
-                                        [fileprefix, cluster, vkey + "_genes1.png"],
-                                    )
-                                ),
-                                dpi=dpi,
-                            )
+                # Setup palette
+                groups = (
+                    adata.obs[group_by].cat.categories
+                    if hasattr(adata.obs[group_by], "cat")
+                    else adata.obs[group_by].unique()
+                )
+                if palette is None:
+                    palette = dict(
+                        zip(groups, plt.cm.tab10(np.linspace(0, 1, len(groups))))
+                    )
 
-                        scv.pl.velocity(
-                            adata,
-                            color=group_by,
-                            var_names=df1[cluster].values[:top_n],
-                            vkey=vkey,
-                            size=10,
-                            linewidth=2,
-                            alpha=1,
-                            ylabel="cluster: " + cluster + "\nunspliced",
-                            add_outline=True,
-                            basis=basis,
-                            color_map=["Blues", "YlOrRd"],
-                            ncols=2,
-                            save=False,
-                            show=False,
-                        )
-                        if show_plot is True:
-                            plt.show()
-                        if save:
-                            plt.savefig(
-                                ".".join(
-                                    filter(
-                                        None,
-                                        [fileprefix, cluster, vkey + "_genes2.png"],
-                                    )
-                                ),
-                                dpi=dpi,
-                            )
+                # Velocity stream plot
+                try:
+                    scv.pl.velocity_embedding_stream(
+                        adata,
+                        vkey=m,
+                        basis=basis,
+                        title=f"{m} velocity",
+                        color=group_by,
+                        palette=palette,
+                        smooth=stream_smooth,
+                        density=stream_density,
+                        legend_loc="right margin",
+                        save=f"{fileprefix}_{m}_stream.png" if save else False,
+                        show=show_plot,
+                    )
+                except Exception as e:
+                    print(f"Warning: stream plot failed: {e}")
 
-        # Cell cycle
-        # if s_genes is not None and g2m_genes is not None:
-        # scv.tl.score_genes_cell_cycle(adata, s_genes=s_genes, g2m_genes=g2m_genes)
-        # scv.pl.scatter(adata, basis=basis, color_gradients=('S_score', 'G2M_score'), smooth=True, legend_loc="best", save=False, show=False)
-        # if show_plot is True:
-        #  plt.show()
-        # if save:
-        #  plt.savefig('.'.join(filter(None, [fileprefix, "cycle_score.png"])), dpi=dpi)
-        # scv.pl.scatter(adata, basis=basis, color='phase',legend_loc="best",save=False, show=False)
-        # if show_plot is True:
-        #   plt.show()
-        # if save:
-        #   plt.savefig('.'.join(filter(None, [fileprefix, "cycle_phase.png"])), dpi=dpi)
+                # Velocity arrow plot
+                try:
+                    scv.pl.velocity_embedding(
+                        adata,
+                        vkey=m,
+                        basis=basis,
+                        title=f"{m} velocity",
+                        color=group_by,
+                        palette=palette,
+                        arrow_length=arrow_length,
+                        arrow_size=arrow_size,
+                        density=arrow_density,
+                        linewidth=0.3,
+                        save=f"{fileprefix}_{m}_arrow.png" if save else False,
+                        show=show_plot,
+                    )
+                except Exception as e:
+                    print(f"Warning: arrow plot failed: {e}")
 
+                # Confidence plots
+                if compute_velocity_confidence:
+                    for metric in ["length", "confidence"]:
+                        color_key = f"{m}_{metric}"
+                        if color_key in adata.obs.columns:
+                            try:
+                                scv.pl.scatter(
+                                    adata,
+                                    basis=basis,
+                                    color=color_key,
+                                    title=f"{m} {metric}",
+                                    cmap="viridis",
+                                    save=f"{fileprefix}_{m}_{metric}.png"
+                                    if save
+                                    else False,
+                                    show=show_plot,
+                                )
+                            except Exception as e:
+                                print(f"Warning: {metric} plot failed: {e}")
+
+        print("=== scVelo analysis completed ===")
+
+    except Exception as e:
+        print(f"Error in SCVELO analysis: {e}")
+        raise
     finally:
         os.chdir(prevdir)
 
+    # Clean up adata for return
     try:
-        adata.__dict__["_raw"].__dict__["_var"] = (
-            adata.__dict__["_raw"]
-            .__dict__["_var"]
-            .rename(columns={"_index": "features"})
-        )
-    except:
+        if hasattr(adata, "_raw") and adata._raw is not None:
+            if hasattr(adata._raw, "_var"):
+                adata._raw._var = adata._raw._var.rename(columns={"_index": "features"})
+    except Exception:
         pass
 
     return adata
@@ -626,6 +468,7 @@ def CellRank(
     import cellrank as cr
     import pandas as pd
     import numpy as np
+    import scanpy as sc
 
     import warnings
 
@@ -815,6 +658,19 @@ def PAGA(
     dirpath="./",
     fileprefix="",
 ):
+    # Configure OpenMP settings to prevent conflicts
+    import os
+
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["KMP_WARNINGS"] = "0"
+
+    import matplotlib
+
+    matplotlib.use("Agg")  # Use non-interactive backend
     import matplotlib.pyplot as plt
     import scanpy as sc
     import numpy as np
@@ -826,8 +682,6 @@ def PAGA(
     warnings.simplefilter("ignore", category=UserWarning)
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
-
-    import os
 
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
