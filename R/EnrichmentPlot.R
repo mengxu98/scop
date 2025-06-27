@@ -484,14 +484,15 @@ EnrichmentPlot <- function(
         )
       }
       if (!all(names(id_use) %in% enrichment[["Groups"]])) {
-        log_message(paste0(
-          "Names in 'id_use' is invalid: ",
+        log_message(
           paste0(
-            names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
-            collapse = ","
-          )
-        ),
-        message_type = "error"
+            "Names in 'id_use' is invalid: ",
+            paste0(
+              names(id_use)[!names(id_use) %in% enrichment[["Groups"]]],
+              collapse = ","
+            )
+          ),
+          message_type = "error"
         )
       }
       enrichment_list <- list()

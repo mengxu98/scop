@@ -663,7 +663,7 @@ RunMonocle3 <- function(
     seed = 11) {
   set.seed(seed)
   if (!requireNamespace("monocle3", quietly = TRUE) ||
-      utils::packageVersion("monocle3") < package_version("1.2.0")
+    utils::packageVersion("monocle3") < package_version("1.2.0")
   ) {
     check_r("cole-trapnell-lab/monocle3", force = TRUE)
   }

@@ -1,5 +1,3 @@
-
-
 #' Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 #'
 #' @param object An object. This can be a Seurat object or a matrix-like object.
@@ -51,31 +49,30 @@ RunPHATE <- function(object, ...) {
 #' @method RunPHATE Seurat
 #' @export
 RunPHATE.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  n_components = 2,
-  knn = 5,
-  decay = 40,
-  n_landmark = 2000,
-  t = "auto",
-  gamma = 1,
-  n_pca = 100,
-  knn_dist = "euclidean",
-  knn_max = NULL,
-  t_max = 100,
-  do_cluster = FALSE,
-  n_clusters = "auto",
-  max_clusters = 100,
-  reduction.name = "phate",
-  reduction.key = "PHATE_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    n_components = 2,
+    knn = 5,
+    decay = 40,
+    n_landmark = 2000,
+    t = "auto",
+    gamma = 1,
+    n_pca = 100,
+    knn_dist = "euclidean",
+    knn_max = NULL,
+    t_max = 100,
+    do_cluster = FALSE,
+    n_clusters = "auto",
+    max_clusters = 100,
+    reduction.name = "phate",
+    reduction.key = "PHATE_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) == 2) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
@@ -151,26 +148,25 @@ RunPHATE.Seurat <- function(
 #' @method RunPHATE default
 #' @export
 RunPHATE.default <- function(
-  object,
-  assay = NULL,
-  n_components = 2,
-  knn = 5,
-  decay = 40,
-  n_landmark = 2000,
-  t = "auto",
-  gamma = 1,
-  n_pca = 100,
-  knn_dist = "euclidean",
-  knn_max = NULL,
-  t_max = 100,
-  do_cluster = FALSE,
-  n_clusters = "auto",
-  max_clusters = 100,
-  reduction.key = "PHATE_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    assay = NULL,
+    n_components = 2,
+    knn = 5,
+    decay = 40,
+    n_landmark = 2000,
+    t = "auto",
+    gamma = 1,
+    n_pca = 100,
+    knn_dist = "euclidean",
+    knn_max = NULL,
+    t_max = 100,
+    do_cluster = FALSE,
+    n_clusters = "auto",
+    max_clusters = 100,
+    reduction.key = "PHATE_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }

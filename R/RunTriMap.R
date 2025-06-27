@@ -44,27 +44,26 @@ RunTriMap <- function(object, ...) {
 #' @method RunTriMap Seurat
 #' @export
 RunTriMap.Seurat <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  features = NULL,
-  assay = NULL,
-  layer = "data",
-  n_components = 2,
-  n_inliers = 12,
-  n_outliers = 4,
-  n_random = 3,
-  distance_method = "euclidean",
-  lr = 0.1,
-  n_iters = 400,
-  apply_pca = TRUE,
-  opt_method = "dbd",
-  reduction.name = "trimap",
-  reduction.key = "TriMap_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    n_components = 2,
+    n_inliers = 12,
+    n_outliers = 4,
+    n_random = 3,
+    distance_method = "euclidean",
+    lr = 0.1,
+    n_iters = 400,
+    apply_pca = TRUE,
+    opt_method = "dbd",
+    reduction.name = "trimap",
+    reduction.key = "TriMap_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (sum(c(is.null(x = dims), is.null(x = features))) == 2) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
@@ -135,22 +134,21 @@ RunTriMap.Seurat <- function(
 #' @method RunTriMap default
 #' @export
 RunTriMap.default <- function(
-  object,
-  assay = NULL,
-  n_components = 2,
-  n_inliers = 12,
-  n_outliers = 4,
-  n_random = 3,
-  distance_method = "euclidean",
-  lr = 0.1,
-  n_iters = 400,
-  apply_pca = TRUE,
-  opt_method = "dbd",
-  reduction.key = "TriMap_",
-  verbose = TRUE,
-  seed.use = 11L,
-  ...
-) {
+    object,
+    assay = NULL,
+    n_components = 2,
+    n_inliers = 12,
+    n_outliers = 4,
+    n_random = 3,
+    distance_method = "euclidean",
+    lr = 0.1,
+    n_iters = 400,
+    apply_pca = TRUE,
+    opt_method = "dbd",
+    reduction.key = "TriMap_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }

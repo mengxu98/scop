@@ -170,7 +170,10 @@ CellCorHeatmap <- function(
     features_type = c("HVF", "DE"),
     feature_source = "both",
     nfeatures = 2000,
-    DEtest_param = list(max.cells.per.ident = 200, test.use = "wilcox"),
+    DEtest_param = list(
+      max.cells.per.ident = 200,
+      test.use = "wilcox"
+    ),
     DE_threshold = "p_val_adj < 0.05",
     distance_metric = "cosine",
     k = 30,
@@ -359,7 +362,6 @@ CellCorHeatmap <- function(
       "])"
     )
   }
-  # colnames(simil_matrix) <- gsub("-", "_", colnames(simil_matrix))
   simil_matrix[is.infinite(simil_matrix)] <- max(
     abs(simil_matrix[!is.infinite(simil_matrix)]),
     na.rm = TRUE
