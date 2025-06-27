@@ -2,13 +2,13 @@
 % Please edit documentation in R/utils.R
 \name{PrepareEnv}
 \alias{PrepareEnv}
-\title{This function prepares the scop Python environment by installing the required dependencies and setting up the environment.}
+\title{Prepare the scop Python environment by installing the required dependencies and setting up the environment.}
 \usage{
 PrepareEnv(
   conda = "auto",
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   envname = NULL,
-  version = "3.8-1",
+  version = "3.10-1",
   force = FALSE,
   ...
 )
@@ -27,7 +27,7 @@ PrepareEnv(
 \item{...}{Other arguments passed to \code{\link[reticulate]{conda_install}}}
 }
 \description{
-This function prepares the scop Python environment by installing the required dependencies and setting up the environment.
+Prepare the scop Python environment by installing the required dependencies and setting up the environment.
 }
 \details{
 This function prepares the scop Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with scop.

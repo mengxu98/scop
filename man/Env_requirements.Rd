@@ -4,10 +4,11 @@
 \alias{env_requirements}
 \title{env_requirements function}
 \usage{
-env_requirements(version = "3.8-1")
+env_requirements(version = "3.10-1")
 }
 \arguments{
-\item{version}{A character vector specifying the version of the environment (default is "3.8-1").}
+\item{version}{A character vector specifying the version of the environment.
+Default is "3.10-1".}
 }
 \value{
 A list of requirements for the specified version.
@@ -17,10 +18,10 @@ This function provides the scop python environment requirements for a specific v
 }
 \details{
 The function returns a list of requirements including the required Python version
-         and a list of packages with their corresponding versions.
+and a list of packages with their corresponding versions.
 }
 \examples{
-# Get requirements for version "3.8-1"
-env_requirements("3.8-1")
-
+\dontrun{
+env_requirements("3.10-1")
+}
 }
