@@ -3,6 +3,7 @@
 #' PAGA is a graph-based method used to infer cellular trajectories.
 #' This function runs the PAGA analysis on a Seurat object.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param assay_x Assay to convert as the main data matrix (X) in the anndata object.
 #' @param layer_x Layer name for assay_x in the Seurat object.
@@ -36,7 +37,7 @@
 #' @param fileprefix The file prefix to use for the PAGA plots.
 #' @param return_seurat Whether to return a Seurat object instead of an anndata object. Default is TRUE.
 #'
-#' @seealso \code{\link{srt_to_adata}} \code{\link{PAGAPlot}} \code{\link{CellDimPlot}} \code{\link{RunSCVELO}}
+#' @seealso [srt_to_adata] [PAGAPlot] [CellDimPlot] [RunSCVELO]
 #'
 #' @export
 #'
@@ -47,8 +48,8 @@
 #'   srt = pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP"
+#'   linear_reduction = "pca",
+#'   nonlinear_reduction = "umap"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -66,14 +67,13 @@
 #' pancreas_sub <- RunPAGA(
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP",
+#'   linear_reduction = "pca",
+#'   nonlinear_reduction = "umap",
 #'   embedded_with_PAGA = TRUE,
 #'   infer_pseudotime = TRUE,
 #'   root_group = "Ductal"
 #' )
-#' head(pancreas_sub[[]])
-#' names(pancreas_sub@reductions)
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "dpt_pseudotime",
@@ -119,7 +119,23 @@ RunPAGA <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
+          return_seurat = !is.null(srt)) {
+  
+  # Set Python environment variables for stability
+  tryCatch({
+    reticulate::py_run_string("
+import os
+os.environ.setdefault('OMP_NUM_THREADS', '1')
+os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')  
+os.environ.setdefault('MKL_NUM_THREADS', '1')
+os.environ.setdefault('VECLIB_MAXIMUM_THREADS', '1')
+os.environ.setdefault('NUMEXPR_NUM_THREADS', '1')
+os.environ.setdefault('KMP_WARNINGS', '0')
+")
+  }, error = function(e) {
+    # Silently continue if setting fails
+  })
+  
   check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
