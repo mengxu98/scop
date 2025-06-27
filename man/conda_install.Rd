@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{conda_install}
 \alias{conda_install}
-\title{Installs a list of packages into a specified conda environment}
+\title{Enhanced conda installation}
 \usage{
 conda_install(
   envname = NULL,
@@ -57,5 +57,5 @@ conda environment.}
 \item{...}{Optional arguments, reserved for future expansion.}
 }
 \description{
-Installs a list of packages into a specified conda environment
+Enhanced conda installation
 }
