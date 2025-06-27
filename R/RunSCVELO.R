@@ -1,18 +1,31 @@
 #' Run scVelo workflow
 #'
-#' scVelo is a scalable toolkit for RNA velocity analysis in single cells. This function runs scVelo workflow on a Seurat object.
+#' scVelo is a scalable toolkit for RNA velocity analysis in single cells.
+#' This function runs an enhanced scVelo workflow on a Seurat object with improved
+#' error handling, version compatibility, and modular design.
 #'
+#' @md
 #' @inheritParams RunPAGA
-#' @param mode Velocity estimation model to use, e.g., "stochastic".
-#' @param fitting_by Method used to fit gene velocities, e.g., "stochastic".
+#' @param mode Velocity estimation models to use. Can be a vector containing "deterministic", "stochastic", and/or "dynamical".
+#' @param fitting_by Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".
 #' @param magic_impute Flag indicating whether to perform magic imputation.
 #' @param knn The number of nearest neighbors for magic.MAGIC.
 #' @param t power to which the diffusion operator is powered for magic.MAGIC.
 #' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
 #' @param n_pcs Number of principal components (PCs) used for velocity estimation.
 #' @param n_neighbors Number of nearest neighbors used for velocity estimation.
+#' @param filter_genes Whether to filter genes based on minimum counts.
+#' @param min_counts Minimum counts for gene filtering.
+#' @param min_counts_u Minimum unspliced counts for gene filtering.
+#' @param normalize_per_cell Whether to normalize counts per cell.
+#' @param log_transform Whether to apply log transformation.
+#' @param use_raw Whether to use raw data for dynamical modeling.
+#' @param diff_kinetics Whether to use differential kinetics.
 #' @param stream_smooth Multiplication factor for scale in Gaussian kernel around grid point.
-#' @param stream_density Controls the closeness of streamlines. When density = 2 (default), the domain is divided into a 60x60 grid, whereas density linearly scales this grid. Each cell in the grid can have, at most, one traversing streamline.
+#' @param stream_density Controls the closeness of streamlines.
+#' When density = 2 (default), the domain is divided into a 60x60 grid,
+#' whereas density linearly scales this grid.
+#' Each cell in the grid can have, at most, one traversing streamline.
 #' @param arrow_length Length of arrows.
 #' @param arrow_size Size of arrows.
 #' @param arrow_density Amount of velocities to show.
@@ -21,11 +34,16 @@
 #' @param kinetics Boolean flag indicating whether to estimate RNA kinetics.
 #' @param kinetics_topn Number of genes with highest likelihood selected to infer velocity directions.
 #' @param calculate_velocity_genes Boolean flag indicating whether to calculate velocity genes.
+#' @param compute_velocity_confidence Whether to compute velocity confidence metrics.
+#' @param compute_terminal_states Whether to compute terminal states (root and end points).
+#' @param compute_pseudotime Whether to compute velocity pseudotime.
+#' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
 #' @param top_n The number of top features to plot.
 #' @param n_jobs The number of parallel jobs to run.
 #'
-#' @seealso \code{\link{srt_to_adata}} \code{\link{VelocityPlot}} \code{\link{CellDimPlot}} \code{\link{RunPAGA}}
+#' @seealso [srt_to_adata] [VelocityPlot] [CellDimPlot] [RunPAGA]
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' data("pancreas_sub")
@@ -33,8 +51,8 @@
 #'   srt = pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP"
+#'   linear_reduction = "pca",
+#'   nonlinear_reduction = "umap"
 #' )
 #' head(pancreas_sub[[]])
 #' names(pancreas_sub@assays)
@@ -60,20 +78,22 @@
 #'   velocity = "stochastic"
 #' )
 #'
-#' pancreas_sub <- standard_scop(
-#'   pancreas_sub,
-#'   normalization_method = "SCT",
-#'   nonlinear_reduction = "tsne"
-#' )
+#' # Advanced usage with custom parameters
 #' pancreas_sub <- RunSCVELO(
 #'   srt = pancreas_sub,
-#'   assay_x = "SCT",
+#'   assay_x = "RNA",
 #'   group_by = "SubCellType",
-#'   linear_reduction = "Standardpca",
-#'   nonlinear_reduction = "StandardTSNE2D"
+#'   linear_reduction = "pca",
+#'   nonlinear_reduction = "umap",
+#'   mode = c("deterministic", "stochastic"),
+#'   filter_genes = TRUE,
+#'   min_counts = 5,
+#'   compute_velocity_confidence = TRUE,
+#'   compute_terminal_states = TRUE,
+#'   compute_pseudotime = TRUE,
+#'   compute_paga = TRUE
 #' )
 #' }
-#' @export
 RunSCVELO <- function(
     srt = NULL,
     assay_x = "RNA",
@@ -93,16 +113,31 @@ RunSCVELO <- function(
     min_shared_counts = 30,
     n_pcs = 30,
     n_neighbors = 30,
+    # Preprocessing parameters
+    filter_genes = TRUE,
+    min_counts = 3,
+    min_counts_u = 3,
+    normalize_per_cell = TRUE,
+    log_transform = TRUE,
+    # Velocity computation parameters  
+    use_raw = FALSE,
+    diff_kinetics = FALSE,
+    # Visualization parameters
     stream_smooth = NULL,
     stream_density = 2,
     arrow_length = 5,
     arrow_size = 5,
     arrow_density = 0.5,
+    # Advanced analysis parameters
     denoise = FALSE,
     denoise_topn = 3,
     kinetics = FALSE,
     kinetics_topn = 100,
     calculate_velocity_genes = FALSE,
+    compute_velocity_confidence = TRUE,
+    compute_terminal_states = TRUE,
+    compute_pseudotime = TRUE,
+    compute_paga = TRUE,
     top_n = 6,
     n_jobs = 1,
     palette = "Paired",
@@ -113,10 +148,12 @@ RunSCVELO <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
+  
   check_python("scvelo")
   if (isTRUE(magic_impute)) {
     check_python("magic-impute")
   }
+  
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "One of 'srt', 'adata' must be provided.",
@@ -135,6 +172,12 @@ RunSCVELO <- function(
       message_type = "error"
     )
   }
+  
+  # Convert mode to list if it's a single string
+  if (is.character(mode) && length(mode) == 1) {
+    mode <- list(mode)
+  }
+  
   args <- mget(names(formals()))
   args <- lapply(args, function(x) {
     if (is.numeric(x)) {
@@ -144,6 +187,7 @@ RunSCVELO <- function(
     }
     return(y)
   })
+  
   call.envir <- parent.frame(1)
   args <- lapply(args, function(arg) {
     if (is.symbol(arg)) {
@@ -154,6 +198,7 @@ RunSCVELO <- function(
       arg
     }
   })
+  
   args <- args[
     !names(args) %in%
       c(
@@ -177,6 +222,7 @@ RunSCVELO <- function(
       layer_y = layer_y
     )
   }
+  
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
   args[["palette"]] <- palette_scop(
     levels(groups) %||% unique(groups),
@@ -189,6 +235,7 @@ RunSCVELO <- function(
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
+  
   adata <- do.call(scop_analysis$SCVELO, args)
 
   if (isTRUE(return_seurat)) {

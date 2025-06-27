@@ -23,6 +23,13 @@ RunSCVELO(
   min_shared_counts = 30,
   n_pcs = 30,
   n_neighbors = 30,
+  filter_genes = TRUE,
+  min_counts = 3,
+  min_counts_u = 3,
+  normalize_per_cell = TRUE,
+  log_transform = TRUE,
+  use_raw = FALSE,
+  diff_kinetics = FALSE,
   stream_smooth = NULL,
   stream_density = 2,
   arrow_length = 5,
@@ -33,6 +40,10 @@ RunSCVELO(
   kinetics = FALSE,
   kinetics_topn = 100,
   calculate_velocity_genes = FALSE,
+  compute_velocity_confidence = TRUE,
+  compute_terminal_states = TRUE,
+  compute_pseudotime = TRUE,
+  compute_paga = TRUE,
   top_n = 6,
   n_jobs = 1,
   palette = "Paired",
@@ -66,9 +77,9 @@ RunSCVELO(
 
 \item{basis}{The basis to use for reduction, e.g., "UMAP".}
 
-\item{mode}{Velocity estimation model to use, e.g., "stochastic".}
+\item{mode}{Velocity estimation models to use. Can be a vector containing "deterministic", "stochastic", and/or "dynamical".}
 
-\item{fitting_by}{Method used to fit gene velocities, e.g., "stochastic".}
+\item{fitting_by}{Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".}
 
 \item{magic_impute}{Flag indicating whether to perform magic imputation.}
 
@@ -82,9 +93,26 @@ RunSCVELO(
 
 \item{n_neighbors}{Number of nearest neighbors used for velocity estimation.}
 
+\item{filter_genes}{Whether to filter genes based on minimum counts.}
+
+\item{min_counts}{Minimum counts for gene filtering.}
+
+\item{min_counts_u}{Minimum unspliced counts for gene filtering.}
+
+\item{normalize_per_cell}{Whether to normalize counts per cell.}
+
+\item{log_transform}{Whether to apply log transformation.}
+
+\item{use_raw}{Whether to use raw data for dynamical modeling.}
+
+\item{diff_kinetics}{Whether to use differential kinetics.}
+
 \item{stream_smooth}{Multiplication factor for scale in Gaussian kernel around grid point.}
 
-\item{stream_density}{Controls the closeness of streamlines. When density = 2 (default), the domain is divided into a 60x60 grid, whereas density linearly scales this grid. Each cell in the grid can have, at most, one traversing streamline.}
+\item{stream_density}{Controls the closeness of streamlines.
+When density = 2 (default), the domain is divided into a 60x60 grid,
+whereas density linearly scales this grid.
+Each cell in the grid can have, at most, one traversing streamline.}
 
 \item{arrow_length}{Length of arrows.}
 
@@ -101,6 +129,14 @@ RunSCVELO(
 \item{kinetics_topn}{Number of genes with highest likelihood selected to infer velocity directions.}
 
 \item{calculate_velocity_genes}{Boolean flag indicating whether to calculate velocity genes.}
+
+\item{compute_velocity_confidence}{Whether to compute velocity confidence metrics.}
+
+\item{compute_terminal_states}{Whether to compute terminal states (root and end points).}
+
+\item{compute_pseudotime}{Whether to compute velocity pseudotime.}
+
+\item{compute_paga}{Whether to compute PAGA (Partition-based graph abstraction).}
 
 \item{top_n}{The number of top features to plot.}
 
@@ -123,7 +159,9 @@ RunSCVELO(
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
 }
 \description{
-scVelo is a scalable toolkit for RNA velocity analysis in single cells. This function runs scVelo workflow on a Seurat object.
+scVelo is a scalable toolkit for RNA velocity analysis in single cells.
+This function runs an enhanced scVelo workflow on a Seurat object with improved
+error handling, version compatibility, and modular design.
 }
 \examples{
 \dontrun{
@@ -132,8 +170,8 @@ pancreas_sub <- RunSCVELO(
   srt = pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  linear_reduction = "pca",
+  nonlinear_reduction = "umap"
 )
 head(pancreas_sub[[]])
 names(pancreas_sub@assays)
@@ -159,20 +197,23 @@ CellDimPlot(
   velocity = "stochastic"
 )
 
-pancreas_sub <- standard_scop(
-  pancreas_sub,
-  normalization_method = "SCT",
-  nonlinear_reduction = "tsne"
-)
+# Advanced usage with custom parameters
 pancreas_sub <- RunSCVELO(
   srt = pancreas_sub,
-  assay_x = "SCT",
+  assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "Standardpca",
-  nonlinear_reduction = "StandardTSNE2D"
+  linear_reduction = "pca",
+  nonlinear_reduction = "umap",
+  mode = c("deterministic", "stochastic"),
+  filter_genes = TRUE,
+  min_counts = 5,
+  compute_velocity_confidence = TRUE,
+  compute_terminal_states = TRUE,
+  compute_pseudotime = TRUE,
+  compute_paga = TRUE
 )
 }
 }
 \seealso{
-\code{\link{srt_to_adata}} \code{\link{VelocityPlot}} \code{\link{CellDimPlot}} \code{\link{RunPAGA}}
+\link{srt_to_adata} \link{VelocityPlot} \link{CellDimPlot} \link{RunPAGA}
 }

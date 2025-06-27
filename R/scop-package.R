@@ -4,7 +4,7 @@
 #'
 #' @description
 #' An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
-#' 
+#'
 #' @author Meng xu (Maintainer), \email{mengxu98@qq.com}
 #'
 #' @source \url{https://github.com/mengxu98/scop}
