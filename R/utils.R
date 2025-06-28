@@ -69,7 +69,7 @@ PrepareEnv <- function(
 
     if (is.null(conda)) {
       log_message("Installing miniconda...")
-      conda <- install_miniconda_enhanced(miniconda_repo)
+      conda <- install_miniconda2(miniconda_repo)
     }
 
     if (python_version < numeric_version("3.8.0") || python_version >= numeric_version("3.12.0")) {
@@ -134,7 +134,8 @@ PrepareEnv <- function(
 
 #' Enhanced miniconda installation
 #' @param miniconda_repo Repository URL for miniconda
-install_miniconda_enhanced <- function(miniconda_repo) {
+#' @export
+install_miniconda2 <- function(miniconda_repo) {
   log_message("Installing miniconda...")
   options(timeout = 600)
 
