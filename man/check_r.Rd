@@ -13,14 +13,16 @@ check_r(
 )
 }
 \arguments{
-\item{packages}{Package to be installed. Package source can be CRAN, Bioconductor or Github, e.g. scmap, quadbiolab/simspec.
+\item{packages}{Package to be installed.
+Package source can be CRAN, Bioconductor or Github.
 By default, the package name is extracted according to the \code{packages} parameter.}
 
 \item{install_methods}{Functions used to install R packages.}
 
 \item{lib}{The location of the library directories where to install the packages.}
 
-\item{force}{Whether to force the installation of packages. Default is \code{FALSE}.}
+\item{force}{Whether to force the installation of packages.
+Default is \code{FALSE}.}
 }
 \description{
 Check and install R packages

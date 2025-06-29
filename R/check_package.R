@@ -40,7 +40,7 @@ check_python <- function(
   if (isFALSE(env)) {
     log_message(
       envname,
-      " python environment does not exist. Create it with the PrepareEnv function...",
+      " python environment does not exist. Create it with 'PrepareEnv' function...",
       message_type = "warning"
     )
     PrepareEnv()
@@ -59,10 +59,11 @@ check_python <- function(
       conda = conda
     )
   }
+
   if (sum(!pkg_installed) > 0) {
     pkgs_to_install <- names(pkg_installed)[!pkg_installed]
     log_message(
-      "Try to install ", paste0(pkgs_to_install, collapse = ","), " ..."
+      "Try to install ", paste0(pkgs_to_install, collapse = ",")
     )
     if (isTRUE(pip)) {
       pkgs_to_install <- c("pip", pkgs_to_install)
@@ -80,13 +81,14 @@ check_python <- function(
       },
       error = identity
     )
+
+    pkg_installed <- exist_python_pkgs(
+      packages = packages,
+      envname = envname,
+      conda = conda
+    )
   }
 
-  pkg_installed <- exist_python_pkgs(
-    packages = packages,
-    envname = envname,
-    conda = conda
-  )
   if (sum(!pkg_installed) > 0) {
     log_message(
       "Failed to install the package(s): ",
@@ -94,7 +96,7 @@ check_python <- function(
       " into the environment \"",
       envname,
       "\". Please install manually.",
-      message_type = "error"
+      message_type = "warning"
     )
   } else {
     return(invisible(NULL))
@@ -103,11 +105,13 @@ check_python <- function(
 
 #' Check and install R packages
 #'
-#' @param packages Package to be installed. Package source can be CRAN, Bioconductor or Github, e.g. scmap, quadbiolab/simspec.
+#' @param packages Package to be installed.
+#' Package source can be CRAN, Bioconductor or Github.
 #' By default, the package name is extracted according to the \code{packages} parameter.
 #' @param install_methods Functions used to install R packages.
 #' @param lib The location of the library directories where to install the packages.
-#' @param force Whether to force the installation of packages. Default is \code{FALSE}.
+#' @param force Whether to force the installation of packages.
+#' Default is \code{FALSE}.
 #'
 #' @export
 check_r <- function(

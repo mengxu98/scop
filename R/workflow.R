@@ -528,14 +528,20 @@ DefaultReduction <- function(
   if (length(index) > 0) {
     default_reduc <- reduc_all[index]
   } else {
-    index <- c(unlist(sapply(pattern, function(pat) {
-      agrep(
-        pattern = pat,
-        x = reduc_all,
-        max.distance = max_distance,
-        ignore.case = TRUE
+    index <- c(
+      unlist(
+        sapply(
+          pattern, function(pat) {
+            agrep(
+              pattern = pat,
+              x = reduc_all,
+              max.distance = max_distance,
+              ignore.case = TRUE
+            )
+          }
+        )
       )
-    })))
+    )
     if (length(index) > 0) {
       default_reduc <- reduc_all[index]
     } else {

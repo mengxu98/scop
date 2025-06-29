@@ -52,6 +52,7 @@ def SCVELO(
     os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
     os.environ["NUMEXPR_NUM_THREADS"] = "1"
     os.environ["KMP_WARNINGS"] = "0"
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
     import matplotlib
 
