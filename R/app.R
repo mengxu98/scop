@@ -2609,7 +2609,11 @@ server <- function(input, output, session) {
       file.copy(from = temp, to = app_file, overwrite = TRUE)
       if (isTRUE(style_script)) {
         log_message("Styling the script...")
-        invisible(capture.output(styler::style_file(app_file)))
+        invisible(
+          utils::capture.output(
+            styler::style_file(app_file)
+          )
+        )
       }
     } else {
       log_message("app.R already exists. You may regenerate it with 'overwrite = TRUE'.")

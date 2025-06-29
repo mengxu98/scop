@@ -5,8 +5,8 @@
 \title{Compute velocity on grid}
 \usage{
 compute_velocity_on_grid(
-  X_emb,
-  V_emb,
+  x_emb,
+  v_emb,
   density = NULL,
   smooth = NULL,
   n_neighbors = NULL,
@@ -17,9 +17,9 @@ compute_velocity_on_grid(
 )
 }
 \arguments{
-\item{X_emb}{A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.}
+\item{x_emb}{A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.}
 
-\item{V_emb}{A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.}
+\item{v_emb}{A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.}
 
 \item{density}{An optional numeric value specifying the density of the grid points along each dimension. Default is 1.}
 
