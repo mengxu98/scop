@@ -170,8 +170,8 @@ pancreas_sub <- RunSCVELO(
   srt = pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "pca",
-  nonlinear_reduction = "umap"
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP"
 )
 head(pancreas_sub[[]])
 names(pancreas_sub@assays)
@@ -197,13 +197,12 @@ CellDimPlot(
   velocity = "stochastic"
 )
 
-# Advanced usage with custom parameters
 pancreas_sub <- RunSCVELO(
-  srt = pancreas_sub,
+  pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "pca",
-  nonlinear_reduction = "umap",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
   mode = c("deterministic", "stochastic"),
   filter_genes = TRUE,
   min_counts = 5,

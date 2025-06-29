@@ -22,7 +22,7 @@ rlang::`%||%`
 utils::globalVariables(
   c(
     ":=", "Axis_1", "Axis_2", "X", "Y",
-    "block_graphics", "capture.output", "celltype", "cluster",
+    "block_graphics", "celltype", "cluster",
     "color",
     "colour", "combn", "count", "Count", "Database",
     "Description", "DescriptionP", "dim1", "dim2",

@@ -4,7 +4,6 @@
 #'
 #' @md
 #' @inheritParams SeuratObject::GetAssayData
-#' @param join.layers Logical, whether to join layers if the object is an Assay5 object.
 #' @param verbose Logical, whether to print messages.
 #' @param ... Additional arguments passed to [SeuratObject::GetAssayData].
 #'
@@ -37,7 +36,6 @@ GetAssayData5.Seurat <- function(
     object,
     layer = "counts",
     assay = NULL,
-    join.layers = TRUE,
     verbose = TRUE,
     ...) {
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
@@ -49,23 +47,23 @@ GetAssayData5.Seurat <- function(
   data <- GetAssayData5(
     object = assay_obj,
     layer = layer,
-    join.layers = join.layers,
     verbose = verbose,
     ...
   )
   return(data)
 }
 
+#' @param join_layers Logical value, whether to join layers if the object is an Assay5 object.
 #' @rdname GetAssayData5
 #' @method GetAssayData5 Assay5
 #' @export
 GetAssayData5.Assay5 <- function(
     object,
     layer = "counts",
-    join.layers = TRUE,
+    join_layers = TRUE,
     verbose = TRUE,
     ...) {
-  if (verbose && join.layers) {
+  if (verbose && join_layers) {
     warning_key <- "assay5_join_layers_warning"
     last_warning_time <- if (exists(warning_key, envir = .scop_env)) {
       get(warning_key, envir = .scop_env)

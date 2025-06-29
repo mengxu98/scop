@@ -51,8 +51,8 @@
 #'   srt = pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
-#'   linear_reduction = "pca",
-#'   nonlinear_reduction = "umap"
+#'   linear_reduction = "PCA",
+#'   nonlinear_reduction = "UMAP"
 #' )
 #' head(pancreas_sub[[]])
 #' names(pancreas_sub@assays)
@@ -78,13 +78,12 @@
 #'   velocity = "stochastic"
 #' )
 #'
-#' # Advanced usage with custom parameters
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
-#'   linear_reduction = "pca",
-#'   nonlinear_reduction = "umap",
+#'   linear_reduction = "PCA",
+#'   nonlinear_reduction = "UMAP",
 #'   mode = c("deterministic", "stochastic"),
 #'   filter_genes = TRUE,
 #'   min_counts = 5,
@@ -113,22 +112,18 @@ RunSCVELO <- function(
     min_shared_counts = 30,
     n_pcs = 30,
     n_neighbors = 30,
-    # Preprocessing parameters
     filter_genes = TRUE,
     min_counts = 3,
     min_counts_u = 3,
     normalize_per_cell = TRUE,
     log_transform = TRUE,
-    # Velocity computation parameters  
     use_raw = FALSE,
     diff_kinetics = FALSE,
-    # Visualization parameters
     stream_smooth = NULL,
     stream_density = 2,
     arrow_length = 5,
     arrow_size = 5,
     arrow_density = 0.5,
-    # Advanced analysis parameters
     denoise = FALSE,
     denoise_topn = 3,
     kinetics = FALSE,
@@ -148,12 +143,12 @@ RunSCVELO <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  
+
   check_python("scvelo")
   if (isTRUE(magic_impute)) {
     check_python("magic-impute")
   }
-  
+
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "One of 'srt', 'adata' must be provided.",
@@ -166,18 +161,35 @@ RunSCVELO <- function(
       message_type = "error"
     )
   }
-  if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
+
+  if (is.null(linear_reduction)) {
+    linear_reduction <- DefaultReduction(srt)
+  } else {
+    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+  }
+  if (!linear_reduction %in% names(srt@reductions)) {
     log_message(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      paste0(linear_reduction, " is not in the srt reduction names."),
       message_type = "error"
     )
   }
-  
-  # Convert mode to list if it's a single string
+
+  if (is.null(nonlinear_reduction)) {
+    nonlinear_reduction <- DefaultReduction(srt)
+  } else {
+    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+  }
+  if (!nonlinear_reduction %in% names(srt@reductions)) {
+    log_message(
+      paste0(nonlinear_reduction, " is not in the srt reduction names."),
+      message_type = "error"
+    )
+  }
+
   if (is.character(mode) && length(mode) == 1) {
     mode <- list(mode)
   }
-  
+
   args <- mget(names(formals()))
   args <- lapply(args, function(x) {
     if (is.numeric(x)) {
@@ -187,7 +199,7 @@ RunSCVELO <- function(
     }
     return(y)
   })
-  
+
   call.envir <- parent.frame(1)
   args <- lapply(args, function(arg) {
     if (is.symbol(arg)) {
@@ -198,7 +210,7 @@ RunSCVELO <- function(
       arg
     }
   })
-  
+
   args <- args[
     !names(args) %in%
       c(
@@ -222,7 +234,7 @@ RunSCVELO <- function(
       layer_y = layer_y
     )
   }
-  
+
   groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
   args[["palette"]] <- palette_scop(
     levels(groups) %||% unique(groups),
@@ -235,7 +247,7 @@ RunSCVELO <- function(
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  
+
   adata <- do.call(scop_analysis$SCVELO, args)
 
   if (isTRUE(return_seurat)) {

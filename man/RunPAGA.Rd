@@ -70,7 +70,7 @@ RunPAGA(
 
 \item{embedded_with_PAGA}{Whether to embed data using PAGA layout. Default is FALSE.}
 
-\item{paga_layout}{The layout for plotting PAGA graph. See See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in scanpy.pl.paga function.}
+\item{paga_layout}{The layout for plotting PAGA graph. See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in scanpy.pl.paga function.}
 
 \item{threshold}{The threshold for plotting PAGA graph. Edges for weights below this threshold will not draw.}
 
@@ -115,8 +115,8 @@ pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
-  linear_reduction = "pca",
-  nonlinear_reduction = "umap"
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP"
 )
 CellDimPlot(
   pancreas_sub,
@@ -134,8 +134,8 @@ CellDimPlot(
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
   group_by = "SubCellType",
-  linear_reduction = "pca",
-  nonlinear_reduction = "umap",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
   embedded_with_PAGA = TRUE,
   infer_pseudotime = TRUE,
   root_group = "Ductal"

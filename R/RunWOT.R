@@ -11,6 +11,42 @@
 #'
 #' @seealso \code{\link{srt_to_adata}}
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- RunSlingshot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP"
+#' )
+#'
+#' print(range(pancreas_sub$Lineage1, na.rm = TRUE))
+#'
+#' pancreas_sub <- RunWOT(
+#'   pancreas_sub,
+#'   group_by = "SubCellType",
+#'   time_field = "Lineage1",
+#'   time_from = min(pancreas_sub$Lineage1, na.rm = TRUE),
+#'   time_to = max(pancreas_sub$Lineage1, na.rm = TRUE),
+#'   get_coupling = TRUE,
+#'   tmap_out = "tmaps/lineage_tmap"
+#' )
+#'
+#' pancreas_sub$Custom_Time <- sample(
+#'   1:10,
+#'   ncol(pancreas_sub),
+#'   replace = TRUE
+#' )
+#' pancreas_sub <- RunWOT(
+#'   pancreas_sub,
+#'   group_by = "CellType",
+#'   time_field = "Custom_Time",
+#'   time_from = 1,
+#'   time_to = 10,
+#'   tmap_out = "tmaps/custom_tmap"
+#' )
+#' }
 RunWOT <- function(
     srt = NULL,
     assay_x = "RNA",

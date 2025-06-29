@@ -133,25 +133,30 @@ VelocityPlot <- function(
 
   plot_type <- match.arg(plot_type)
   check_r("metR")
+  if (is.null(reduction)) {
+    reduction <- DefaultReduction(srt)
+  } else {
+    reduction <- DefaultReduction(srt, pattern = reduction)
+  }
 
   if (!reduction %in% names(srt@reductions)) {
     log_message(
-      paste0(reduction, " is not in the srt reduction names."),
+      reduction, " is not in the srt reduction names.",
       message_type = "error"
     )
   }
-  V_reduction <- paste0(velocity, "_", reduction)
-  if (!V_reduction %in% names(srt@reductions)) {
+  v_reduction <- paste0(velocity, "_", reduction)
+  if (!v_reduction %in% names(srt@reductions)) {
     log_message(
-      "Cannot find the velocity embedding ", V_reduction, ".",
+      "Cannot find the velocity embedding ", v_reduction, ".",
       message_type = "error"
     )
   }
-  X_emb <- srt@reductions[[reduction]]@cell.embeddings[, dims]
-  V_emb <- srt@reductions[[V_reduction]]@cell.embeddings[, dims]
+  x_emb <- srt@reductions[[reduction]]@cell.embeddings[, dims]
+  v_emb <- srt@reductions[[v_reduction]]@cell.embeddings[, dims]
   if (!is.null(cells)) {
-    X_emb <- X_emb[intersect(rownames(X_emb), cells), , drop = FALSE]
-    V_emb <- V_emb[intersect(rownames(V_emb), cells), , drop = FALSE]
+    x_emb <- x_emb[intersect(rownames(x_emb), cells), , drop = FALSE]
+    v_emb <- v_emb[intersect(rownames(v_emb), cells), , drop = FALSE]
   }
 
   reduction_key <- srt@reductions[[reduction]]@key
@@ -164,15 +169,15 @@ VelocityPlot <- function(
 
   if (plot_type == "raw") {
     if (!is.null(density) && (density > 0 && density < 1)) {
-      s <- ceiling(density * nrow(X_emb))
-      ix_choice <- sample(seq_len(nrow(X_emb)), size = s, replace = FALSE)
-      X_emb <- X_emb[ix_choice, ]
-      V_emb <- V_emb[ix_choice, ]
+      s <- ceiling(density * nrow(x_emb))
+      ix_choice <- sample(seq_len(nrow(x_emb)), size = s, replace = FALSE)
+      x_emb <- x_emb[ix_choice, ]
+      v_emb <- v_emb[ix_choice, ]
     }
     if (!is.null(scale)) {
-      V_emb <- V_emb * scale
+      v_emb <- v_emb * scale
     }
-    df_field <- cbind.data.frame(X_emb, V_emb)
+    df_field <- cbind.data.frame(x_emb, v_emb)
     colnames(df_field) <- c("x", "y", "u", "v")
     df_field[["length"]] <- sqrt(df_field[["u"]]^2 + df_field[["v"]]^2)
     global_size <- sqrt(
@@ -234,18 +239,18 @@ VelocityPlot <- function(
   }
   if (plot_type == "grid") {
     res <- compute_velocity_on_grid(
-      X_emb,
-      V_emb,
+      x_emb,
+      v_emb,
       density = density,
       smooth = smooth,
       n_neighbors = n_neighbors,
       min_mass = min_mass,
       scale = scale
     )
-    X_grid <- res$X_grid
-    V_grid <- res$V_grid
+    x_grid <- res$x_grid
+    v_grid <- res$v_grid
 
-    df_field <- cbind.data.frame(X_grid, V_grid)
+    df_field <- cbind.data.frame(x_grid, v_grid)
     colnames(df_field) <- c("x", "y", "u", "v")
     df_field[["length"]] <- sqrt(df_field[["u"]]^2 + df_field[["v"]]^2)
     global_size <- sqrt(
@@ -272,8 +277,8 @@ VelocityPlot <- function(
   if (plot_type == "stream") {
     check_r("metR")
     res <- compute_velocity_on_grid(
-      X_emb,
-      V_emb,
+      x_emb,
+      v_emb,
       density = density,
       smooth = smooth,
       n_neighbors = n_neighbors,
@@ -282,13 +287,13 @@ VelocityPlot <- function(
       cutoff_perc = cutoff_perc,
       adjust_for_stream = TRUE
     )
-    X_grid <- res$X_grid
-    V_grid <- res$V_grid
+    x_grid <- res$x_grid
+    v_grid <- res$v_grid
 
-    df_field <- expand.grid(X_grid[1, ], X_grid[2, ])
+    df_field <- expand.grid(x_grid[1, ], x_grid[2, ])
     colnames(df_field) <- c("x", "y")
-    u <- reshape2::melt(Matrix::t(V_grid[1, , ]))
-    v <- reshape2::melt(Matrix::t(V_grid[2, , ]))
+    u <- reshape2::melt(Matrix::t(v_grid[1, , ]))
+    v <- reshape2::melt(Matrix::t(v_grid[2, , ]))
     df_field[, "u"] <- u$value
     df_field[, "v"] <- v$value
     df_field[is.na(df_field)] <- 0
@@ -450,8 +455,8 @@ VelocityPlot <- function(
 
 #' Compute velocity on grid
 #'
-#' @param X_emb A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.
-#' @param V_emb A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.
+#' @param x_emb A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.
+#' @param v_emb A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.
 #' @param density An optional numeric value specifying the density of the grid points along each dimension. Default is 1.
 #' @param smooth An optional numeric value specifying the smoothing factor for the velocity vectors. Default is 0.5.
 #' @param n_neighbors An optional numeric value specifying the number of nearest neighbors for each grid point. Default is ceiling(n_obs / 50).
@@ -465,8 +470,8 @@ VelocityPlot <- function(
 #'
 #' @export
 compute_velocity_on_grid <- function(
-    X_emb,
-    V_emb,
+    x_emb,
+    v_emb,
     density = NULL,
     smooth = NULL,
     n_neighbors = NULL,
@@ -474,8 +479,8 @@ compute_velocity_on_grid <- function(
     scale = 1,
     adjust_for_stream = FALSE,
     cutoff_perc = NULL) {
-  n_obs <- nrow(X_emb)
-  n_dim <- ncol(X_emb)
+  n_obs <- nrow(x_emb)
+  n_dim <- ncol(x_emb)
 
   density <- density %||% 1
   smooth <- smooth %||% 0.5
@@ -485,18 +490,18 @@ compute_velocity_on_grid <- function(
 
   grs <- list()
   for (dim_i in 1:n_dim) {
-    m <- min(X_emb[, dim_i], na.rm = TRUE)
-    M <- max(X_emb[, dim_i], na.rm = TRUE)
+    m <- min(x_emb[, dim_i], na.rm = TRUE)
+    M <- max(x_emb[, dim_i], na.rm = TRUE)
     # m <- m - 0.01 * abs(M - m)
     # M <- M + 0.01 * abs(M - m)
     gr <- seq(m, M, length.out = ceiling(50 * density))
     grs <- c(grs, list(gr))
   }
-  X_grid <- Matrix::as.matrix(expand.grid(grs))
+  x_grid <- Matrix::as.matrix(expand.grid(grs))
 
   d <- proxyC::dist(
-    x = SeuratObject::as.sparse(X_emb),
-    y = SeuratObject::as.sparse(X_grid),
+    x = SeuratObject::as.sparse(x_emb),
+    y = SeuratObject::as.sparse(x_grid),
     method = "euclidean",
     use_nan = TRUE
   )
@@ -519,22 +524,22 @@ compute_velocity_on_grid <- function(
   p_mass_V[p_mass_V < 1] <- 1
 
   neighbors_emb <- array(
-    V_emb[neighbors, seq_len(ncol(V_emb))],
-    dim = c(dim(neighbors), dim(V_emb)[2])
+    v_emb[neighbors, seq_len(ncol(v_emb))],
+    dim = c(dim(neighbors), dim(v_emb)[2])
   )
-  V_grid <- apply((neighbors_emb * c(weight)), c(1, 3), sum)
-  V_grid <- V_grid / p_mass_V
+  v_grid <- apply((neighbors_emb * c(weight)), c(1, 3), sum)
+  v_grid <- v_grid / p_mass_V
 
   if (isTRUE(adjust_for_stream)) {
-    X_grid <- matrix(
-      c(unique(X_grid[, 1]), unique(X_grid[, 2])),
+    x_grid <- matrix(
+      c(unique(x_grid[, 1]), unique(x_grid[, 2])),
       nrow = 2,
       byrow = TRUE
     )
-    ns <- floor(sqrt(length(V_grid[, 1])))
-    V_grid <- reticulate::array_reshape(Matrix::t(V_grid), c(2, ns, ns))
+    ns <- floor(sqrt(length(v_grid[, 1])))
+    v_grid <- reticulate::array_reshape(Matrix::t(v_grid), c(2, ns, ns))
 
-    mass <- sqrt(apply(V_grid**2, c(2, 3), sum))
+    mass <- sqrt(apply(v_grid**2, c(2, 3), sum))
     min_mass <- 10**(min_mass - 6) # default min_mass = 1e-5
     min_mass[min_mass > max(mass, na.rm = TRUE) * 0.9] <- max(
       mass,
@@ -546,14 +551,14 @@ compute_velocity_on_grid <- function(
     length <- Matrix::t(apply(apply(abs(neighbors_emb), c(1, 3), mean), 1, sum))
     length <- reticulate::array_reshape(length, dim = c(ns, ns))
     cutoff <- cutoff | length < stats::quantile(length, cutoff_perc / 100)
-    V_grid[1, , ][cutoff] <- NA
+    v_grid[1, , ][cutoff] <- NA
   } else {
     min_mass <- min_mass * stats::quantile(p_mass, 0.99) / 100
-    X_grid <- X_grid[p_mass > min_mass, ]
-    V_grid <- V_grid[p_mass > min_mass, ]
+    x_grid <- x_grid[p_mass > min_mass, ]
+    v_grid <- v_grid[p_mass > min_mass, ]
     if (!is.null(scale)) {
-      V_grid <- V_grid * scale
+      v_grid <- v_grid * scale
     }
   }
-  return(list(X_grid = X_grid, V_grid = V_grid))
+  return(list(x_grid = x_grid, v_grid = v_grid))
 }
