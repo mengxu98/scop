@@ -33,7 +33,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Prepare the scop Python environment by installing the required dependencies and setting up the environment.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
       <div class="d-none name"><code>PrepareEnv.Rd</code></div>
     </div>
 
@@ -62,7 +62,8 @@
 
 
 <dt id="arg-miniconda-repo">miniconda_repo<a class="anchor" aria-label="anchor" href="#arg-miniconda-repo"></a></dt>
-<dd><p>Repositories for miniconda. Default is <code>https://repo.anaconda.com/miniconda</code></p></dd>
+<dd><p>Repositories for miniconda.
+Default is <code>https://repo.anaconda.com/miniconda</code>.</p></dd>
 
 
 <dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
@@ -70,11 +71,14 @@
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>A character vector specifying the version of the environment (default is "3.8-1").</p></dd>
+<dd><p>A character vector specifying the version of the environment.
+Default is "3.10-1".</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
-<dd><p>Whether to force a new environment to be created. If <code>TRUE</code>, the existing environment will be recreated. Default is <code>FALSE</code></p></dd>
+<dd><p>Whether to force a new environment to be created.
+If <code>TRUE</code>, the existing environment will be recreated.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -83,10 +87,16 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function prepares the scop Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with scop.
-In order to create the environment, this function requires the path to the conda binary. If <code>conda</code> is set to <code>"auto"</code>, it will attempt to automatically find the conda binary.
-If a conda environment with the specified name already exists and <code>force</code> is set to <code>FALSE</code>, the function will use the existing environment. If <code>force</code> set to <code>TRUE</code>, the existing environment will be recreated. Note that recreating the environment will remove any existing data in the environment.
-The function also checks if the package versions in the environment meet the requirements specified by the <code>version</code> parameter. The default is <code>3.8-1</code>.</p>
+    <p>This function prepares the scop Python environment by checking if conda is installed,
+creating a new conda environment if needed, installing the required packages,
+and setting up the Python environment for use with scop.
+In order to create the environment, this function requires the path to the conda binary.
+If <code>conda</code> is set to <code>"auto"</code>, it will attempt to automatically find the conda binary.
+If a conda environment with the specified name already exists and <code>force</code> is set to <code>FALSE</code>,
+the function will use the existing environment.
+If <code>force</code> set to <code>TRUE</code>, the existing environment will be recreated.
+Note that recreating the environment will remove any existing data in the environment.
+The function also checks if the package versions in the environment meet the requirements specified by the <code>version</code> parameter.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
