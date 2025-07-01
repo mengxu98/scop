@@ -231,7 +231,7 @@ standard_scop <- function(
 
   for (lr in linear_reduction) {
     log_message(
-      paste0(" Perform linear dimension reduction (", lr, ") on the data...")
+      paste0("Perform linear dimension reduction (", lr, ") on the data...")
     )
     srt <- RunDimReduction(
       srt,
