@@ -254,7 +254,7 @@ invoke_fun <- function(
 #' If you want to preserve all rows,
 #' use \code{keep_empty = TRUE} to replace size-0 elements with a single row of missing values.
 #' @export
-unnest <- function(
+unnest_fun <- function(
     data,
     cols,
     keep_empty = FALSE) {
