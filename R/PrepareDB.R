@@ -2376,7 +2376,7 @@ PrepareDB <- function(
           }
           df <- as.data.frame(do.call(rbind, term_list))
           df$gene <- strsplit(df$gene, split = ",")
-          df <- unnest(df, cols = "gene")
+          df <- unnest_fun(df, cols = "gene")
 
           TERM2NAME <- df[, c(1, 2, 4)]
           TERM2GENE <- df[, c(1, 3)]
@@ -2608,7 +2608,7 @@ PrepareDB <- function(
             lr_list,
             function(x) paste0("receptor_", x[2:length(x)])
           )
-          lr <- unnest(data = lr, cols = "receptor_list", keep_empty = FALSE)
+          lr <- unnest_fun(data = lr, cols = "receptor_list", keep_empty = FALSE)
           TERM2GENE <- rbind(
             data.frame(
               "Term" = lr[["ligand_gene_symbol"]],
@@ -2844,7 +2844,7 @@ PrepareDB <- function(
             as.character(TERM2GENE[, 2]),
             "ensembl_id"
           ]
-          TERM2GENE <- unnest(
+          TERM2GENE <- unnest_fun(
             TERM2GENE,
             cols = "ensembl_id-converted",
             keep_empty = FALSE
@@ -2931,7 +2931,7 @@ PrepareDB <- function(
         }
         for (type in IDtypes) {
           TERM2GENE[[type]] <- map[as.character(TERM2GENE[, 2]), type]
-          TERM2GENE <- unnest(TERM2GENE, cols = type, keep_empty = TRUE)
+          TERM2GENE <- unnest_fun(TERM2GENE, cols = type, keep_empty = TRUE)
         }
         db_list[[sps]][[term]][["TERM2GENE"]] <- TERM2GENE
         ### save cache

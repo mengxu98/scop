@@ -438,7 +438,7 @@ heatmap_enrichment <- function(
                       " "
                     )
                   ) %>%
-                  unnest(cols = "keyword") %>%
+                  unnest_fun(cols = "keyword") %>%
                   dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
                   dplyr::reframe(
                     keyword = .data[["keyword"]],
@@ -519,7 +519,7 @@ heatmap_enrichment <- function(
                 dplyr::mutate(
                   keyword = strsplit(as.character(.data[["geneID"]]), "/")
                 ) %>%
-                unnest(cols = "keyword") %>%
+                unnest_fun(cols = "keyword") %>%
                 dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
                 dplyr::reframe(
                   keyword = .data[["keyword"]],

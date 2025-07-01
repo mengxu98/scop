@@ -307,7 +307,7 @@ RunEnrichment <- function(
 
   input[[IDtype]] <- geneMap[as.character(input$geneID), IDtype]
   input[[result_IDtype]] <- geneMap[as.character(input$geneID), result_IDtype]
-  input <- unnest(input, cols = c(IDtype, result_IDtype))
+  input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
 
   log_message("Permform enrichment...")
