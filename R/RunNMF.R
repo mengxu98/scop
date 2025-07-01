@@ -54,9 +54,9 @@ RunNMF.Seurat <- function(
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-  assay.data <- Seurat::GetAssay(object = object, assay = assay)
-  reduction.data <- RunNMF(
-    object = assay.data,
+  assay_data <- Seurat::GetAssay(object = object, assay = assay)
+  reduction_data <- RunNMF(
+    object = assay_data,
     assay = assay,
     layer = layer,
     features = features,
@@ -72,7 +72,7 @@ RunNMF.Seurat <- function(
     seed.use = seed.use,
     ...
   )
-  object[[reduction.name]] <- reduction.data
+  object[[reduction.name]] <- reduction_data
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)
 }
@@ -97,16 +97,16 @@ RunNMF.Assay <- function(
     seed.use = 11,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data.use <- GetAssayData5(object = object, layer = layer)
-  features.var <- apply(
-    X = data.use[features, ],
+  data_use <- GetAssayData5(object = object, layer = layer)
+  features_var <- apply(
+    X = data_use[features, ],
     MARGIN = 1,
     FUN = stats::var
   )
-  features.keep <- features[features.var > 0]
-  data.use <- data.use[features.keep, ]
-  reduction.data <- RunNMF(
-    object = data.use,
+  features_keep <- features[features_var > 0]
+  data_use <- data_use[features_keep, ]
+  reduction_data <- RunNMF(
+    object = data_use,
     assay = assay,
     layer = layer,
     nbes = nbes,
@@ -121,7 +121,54 @@ RunNMF.Assay <- function(
     seed.use = seed.use,
     ...
   )
-  return(reduction.data)
+  return(reduction_data)
+}
+
+#' @rdname RunNMF
+#' @method RunNMF Assay
+#' @export
+RunNMF.Assay5 <- function(
+    object,
+    assay = NULL,
+    layer = "data",
+    features = NULL,
+    nbes = 50,
+    nmf.method = "RcppML",
+    tol = 1e-5,
+    maxit = 100,
+    rev.nmf = FALSE,
+    ndims.print = 1:5,
+    nfeatures.print = 30,
+    reduction.key = "BE_",
+    verbose = TRUE,
+    seed.use = 11,
+    ...) {
+  features <- features %||% SeuratObject::VariableFeatures(object = object)
+  data_use <- GetAssayData5(object = object, layer = layer)
+  features_var <- apply(
+    X = data_use[features, ],
+    MARGIN = 1,
+    FUN = stats::var
+  )
+  features_keep <- features[features_var > 0]
+  data_use <- data_use[features_keep, ]
+  reduction_data <- RunNMF(
+    object = data_use,
+    assay = assay,
+    layer = layer,
+    nbes = nbes,
+    nmf.method = nmf.method,
+    tol = tol,
+    maxit = maxit,
+    rev.nmf = rev.nmf,
+    verbose = verbose,
+    ndims.print = ndims.print,
+    nfeatures.print = nfeatures.print,
+    reduction.key = reduction.key,
+    seed.use = seed.use,
+    ...
+  )
+  return(reduction_data)
 }
 
 #' @rdname RunNMF
@@ -142,21 +189,18 @@ RunNMF.default <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  if (!is.null(x = seed.use)) {
-    set.seed(seed = seed.use)
-  }
+  set.seed(seed = seed.use)
+
   if (rev.nmf) {
     object <- Matrix::t(x = object)
   }
   nbes <- min(nbes, nrow(x = object) - 1)
   if (nmf.method == "RcppML") {
     check_r("zdebruine/RcppML")
-    options("RcppML.verbose" = FALSE)
+    options("RcppML.verbose" = verbose)
     options("RcppML.threads" = 0)
-    if (!"package:Matrix" %in% search()) {
-      attachNamespace("Matrix")
-    }
-    nmf.results <- RcppML::nmf(
+
+    nmf_results <- RcppML::nmf(
       Matrix::t(object),
       k = nbes,
       tol = tol,
@@ -164,39 +208,46 @@ RunNMF.default <- function(
       verbose = verbose,
       ...
     )
-    cell.embeddings <- nmf.results$w
-    feature.loadings <- Matrix::t(nmf.results$h)
-  }
-  if (nmf.method == "NMF") {
-    check_r("NMF")
-    seed <- NMF::seed
-    nmf.results <- NMF::nmf(
-      x = Matrix::as.matrix(t(object)),
-      rank = nbes
-    )
-    cell.embeddings <- nmf.results@fit@W
-    feature.loadings <- Matrix::t(nmf.results@fit@H)
+    cell_embeddings <- nmf_results$w
+    feature_loadings <- Matrix::t(nmf_results$h)
   }
 
-  rownames(x = feature.loadings) <- rownames(x = object)
-  colnames(x = feature.loadings) <- paste0(reduction.key, 1:nbes)
-  rownames(x = cell.embeddings) <- colnames(x = object)
-  colnames(x = cell.embeddings) <- colnames(x = feature.loadings)
-  reduction.data <- Seurat::CreateDimReducObject(
-    embeddings = cell.embeddings,
-    loadings = feature.loadings,
+  if (nmf.method == "NMF") {
+    check_r("NMF")
+    nmf_results <- NMF::nmf(
+      x = Matrix::as.matrix(
+        Matrix::t(object)
+      ),
+      rank = nbes
+    )
+    cell_embeddings <- nmf_results@fit@W
+    feature_loadings <- Matrix::t(nmf_results@fit@H)
+  }
+
+  rownames(x = feature_loadings) <- rownames(x = object)
+  colnames(x = feature_loadings) <- paste0(reduction.key, 1:nbes)
+  rownames(x = cell_embeddings) <- colnames(x = object)
+  colnames(x = cell_embeddings) <- colnames(x = feature_loadings)
+  reduction_data <- Seurat::CreateDimReducObject(
+    embeddings = cell_embeddings,
+    loadings = feature_loadings,
     assay = assay,
     key = reduction.key,
-    misc = list(slot = layer, nmf.results = nmf.results)
+    misc = list(
+      slot = layer,
+      nmf_results = nmf_results
+    )
   )
   if (verbose) {
-    msg <- utils::capture.output(print(
-      x = reduction.data,
-      dims = ndims.print,
-      nfeatures = nfeatures.print
-    ))
+    msg <- utils::capture.output(
+      print(
+        x = reduction_data,
+        dims = ndims.print,
+        nfeatures = nfeatures.print
+      )
+    )
     log_message(paste(msg, collapse = "\n"))
   }
 
-  return(reduction.data)
+  return(reduction_data)
 }
