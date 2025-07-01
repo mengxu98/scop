@@ -990,7 +990,7 @@ EnrichmentPlot <- function(
         levels = unique(df[["Description"]])
       )
       df$geneID <- strsplit(df$geneID, "/")
-      df_unnest <- unnest(df, cols = "geneID")
+      df_unnest <- unnest_fun(df, cols = "geneID")
 
       nodes <- rbind(
         data.frame(
@@ -1241,7 +1241,7 @@ EnrichmentPlot <- function(
               perl = TRUE
             )
           ) |>
-          unnest(cols = "keyword") |>
+          unnest_fun(cols = "keyword") |>
           dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
           dplyr::reframe(
             keyword = capitalize(.data[["keyword"]]),
@@ -1296,7 +1296,7 @@ EnrichmentPlot <- function(
 
       df_keyword2 <- df_nodes |>
         dplyr::mutate(keyword = .data[["geneID"]]) |>
-        unnest(cols = "keyword") |>
+        unnest_fun(cols = "keyword") |>
         dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) |>
         dplyr::reframe(
           keyword = .data[["keyword"]],
@@ -1501,7 +1501,7 @@ EnrichmentPlot <- function(
                   " "
                 )
               ) |>
-              unnest(cols = "keyword") |>
+              unnest_fun(cols = "keyword") |>
               dplyr::group_by(.data[["keyword"]], Database, Groups) |>
               dplyr::reframe(
                 keyword = .data[["keyword"]],
@@ -1535,7 +1535,7 @@ EnrichmentPlot <- function(
       } else {
         df <- df |>
           dplyr::mutate(keyword = strsplit(as.character(.data[["geneID"]]), "/")) |>
-          unnest(cols = "keyword") |>
+          unnest_fun(cols = "keyword") |>
           dplyr::group_by(.data[["keyword"]], Database, Groups) |>
           dplyr::reframe(
             keyword = .data[["keyword"]],

@@ -1155,7 +1155,7 @@ GSEAPlot <- function(
         levels = unique(df[["Description"]])
       )
       df[["geneID"]] <- strsplit(df[["core_enrichment"]], "/")
-      df_unnest <- unnest(df, cols = "geneID")
+      df_unnest <- unnest_fun(df, cols = "geneID")
 
       nodes <- rbind(
         data.frame(
@@ -1445,7 +1445,7 @@ GSEAPlot <- function(
               perl = TRUE
             )
           ) %>%
-          unnest(cols = "keyword") %>%
+          unnest_fun(cols = "keyword") %>%
           dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) %>%
           dplyr::reframe(
             keyword = capitalize(.data[["keyword"]]),
@@ -1500,7 +1500,7 @@ GSEAPlot <- function(
 
       df_keyword2 <- df_nodes %>%
         dplyr::mutate(keyword = .data[["geneID"]]) %>%
-        unnest(cols = "keyword") %>%
+        unnest_fun(cols = "keyword") %>%
         dplyr::group_by(.data[["keyword"]], Database, Groups, clusters) %>%
         dplyr::reframe(
           keyword = .data[["keyword"]],
@@ -1740,7 +1740,7 @@ GSEAPlot <- function(
                   " "
                 )
               ) %>%
-              unnest(cols = "keyword") %>%
+              unnest_fun(cols = "keyword") %>%
               dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
               dplyr::reframe(
                 keyword = .data[["keyword"]],
@@ -1776,7 +1776,7 @@ GSEAPlot <- function(
           dplyr::mutate(
             keyword = strsplit(as.character(.data[["core_enrichment"]]), "/")
           ) %>%
-          unnest(cols = "keyword") %>%
+          unnest_fun(cols = "keyword") %>%
           dplyr::group_by(.data[["keyword"]], Database, Groups) %>%
           dplyr::reframe(
             keyword = .data[["keyword"]],

@@ -771,7 +771,7 @@ GeneConvert <- function(
     value.var = "to_geneID"
   )
   rownames(geneID_collapse) <- geneID_collapse[, "from_geneID"]
-  geneID_expand <- unnest(
+  geneID_expand <- unnest_fun(
     data = geneID_collapse,
     cols = colnames(geneID_collapse)[
       sapply(geneID_collapse, class) %in% c("list", "AsIs")
