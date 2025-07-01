@@ -24,9 +24,7 @@
 #' @examples
 #' if (interactive()) {
 #'   data("pancreas_sub")
-#'   pancreas_sub <- RunMonocle2(
-#'     srt = pancreas_sub
-#'   )
+#'   pancreas_sub <- RunMonocle2(pancreas_sub)
 #'   names(pancreas_sub@tools$Monocle2)
 #'   trajectory <- pancreas_sub@tools$Monocle2$trajectory
 #'
@@ -400,7 +398,8 @@ project2MST <- function(cds, Projection_Method) {
     P <- matrix(rep(0, length(Z)), nrow = nrow(Z))
     for (i in 1:length(closest_vertex)) {
       neighbors <- names(
-        igraph::V(dp_mst)[suppressWarnings(utils::nei(
+        igraph::V(dp_mst)[suppressWarnings(igraph::neighbors(
+          dp_mst,
           closest_vertex_names[i],
           mode = "all"
         ))]
