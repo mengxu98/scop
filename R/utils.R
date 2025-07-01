@@ -201,9 +201,18 @@ col2hex <- function(cname) {
 #' @param .fn A function, or function name as a string.
 #' @param .args A list of arguments.
 #' @param ... Other arguments passed to the function.
-#' @param .env Environment in which to evaluate the call. This will be most useful if .fn is a string, or the function has side-effects.
+#' @param .env Environment in which to evaluate the call.
+#' This will be most useful if .fn is a string, or the function has side-effects.
 #'
 #' @export
+#'
+#' @examples
+#' f <- function(x, y) {
+#'   x + y
+#' }
+#' invoke_fun(f, list(x = 1, y = 2))
+#' invoke_fun("f", list(x = 1, y = 2))
+#' invoke_fun("f", x = 1, y = 2)
 invoke_fun <- function(
     .fn,
     .args = list(),

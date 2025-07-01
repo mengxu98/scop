@@ -48,6 +48,7 @@ RunDimReduction <- function(
   } else {
     type <- "RNA"
   }
+
   linear_reduction_dims <- min(
     linear_reduction_dims,
     nrow(srt[[assay]]) - 1,
@@ -60,6 +61,7 @@ RunDimReduction <- function(
     ncol(srt[[assay]]) - 1,
     na.rm = TRUE
   )
+
   if (!is.null(linear_reduction)) {
     if (
       any(
@@ -74,6 +76,7 @@ RunDimReduction <- function(
       )
     }
   }
+
   if (!is.null(nonlinear_reduction)) {
     if (
       any(
@@ -98,6 +101,7 @@ RunDimReduction <- function(
         message_type = "error"
       )
     }
+
     if (
       is.null(features) &&
         is.null(reduction_use) &&
@@ -109,6 +113,7 @@ RunDimReduction <- function(
         message_type = "error"
       )
     }
+
     if (nonlinear_reduction %in% c("fr")) {
       if (!is.null(graph_use)) {
         log_message(
@@ -187,6 +192,7 @@ RunDimReduction <- function(
       }
     }
   }
+
   if (!is.null(linear_reduction)) {
     if (!isTRUE(force_linear_reduction)) {
       if (linear_reduction %in% SeuratObject::Reductions(srt)) {
@@ -213,9 +219,10 @@ RunDimReduction <- function(
         }
       }
     }
+
     if (is.null(features) || length(features) == 0) {
       log_message("No features provided. Use variable features.")
-      if (length(SeuratObject::DefaultAssay(srt, assay = assay)) == 0) {
+      if (length(SeuratObject::DefaultAssay(srt)) == 0) {
         srt <- Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE)
       }
       features <- SeuratObject::VariableFeatures(srt, assay = assay)
@@ -255,6 +262,10 @@ RunDimReduction <- function(
       verbose = verbose,
       seed.use = seed
     )
+    if (fun_use == "RunPCA") {
+      params[["slot"]] <- params[["layer"]]
+      params <- params[!names(params) %in% "layer"]
+    }
     if (fun_use %in% c("RunSVD", "RunICA")) {
       params <- params[!names(params) %in% "layer"]
     }
@@ -456,5 +467,6 @@ RunDimReduction <- function(
     )]]@misc[["reduction_use"]] <- reduction_use
     srt@misc[["Default_reduction"]] <- paste0(prefix, nonlinear_reduction_sim)
   }
+
   return(srt)
 }
