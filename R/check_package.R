@@ -117,6 +117,7 @@ check_python <- function(
 check_r <- function(
     packages,
     install_methods = c(
+      "pak::pak",
       "BiocManager::install",
       "install.packages",
       "devtools::install_github"
@@ -160,7 +161,27 @@ check_r <- function(
       while (isFALSE(status_list[[pkg]])) {
         tryCatch(
           expr = {
-            if (grepl("BiocManager", install_methods[i])) {
+            if (grepl("pak::pak", install_methods[i])) {
+              if (!requireNamespace("pak", quietly = TRUE)) {
+                utils::install.packages("pak", lib = lib)
+              }
+              if (!requireNamespace("withr", quietly = TRUE)) {
+                utils::install.packages("withr", lib = lib)
+              }
+              eval(
+                str2lang(
+                  paste0(
+                    "withr::with_libpaths(new = \"",
+                    lib,
+                    "\", ",
+                    install_methods[i],
+                    "(\"",
+                    dest,
+                    "\", ask = FALSE))"
+                  )
+                )
+              )
+            } else if (grepl("BiocManager", install_methods[i])) {
               if (!requireNamespace("BiocManager", quietly = TRUE)) {
                 utils::install.packages("BiocManager", lib = lib)
               }
