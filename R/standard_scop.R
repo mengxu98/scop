@@ -216,7 +216,7 @@ standard_scop <- function(
   ) {
     if (normalization_method != "SCT") {
       log_message(
-        " Perform ScaleData on the data..."
+        "Perform ScaleData on the data..."
       )
       srt <- Seurat::ScaleData(
         object = srt,
@@ -242,7 +242,7 @@ standard_scop <- function(
       linear_reduction_dims = linear_reduction_dims,
       linear_reduction_params = linear_reduction_params,
       force_linear_reduction = force_linear_reduction,
-      verbose = FALSE,
+      verbose = TRUE,
       seed = seed
     )
 
@@ -314,7 +314,7 @@ standard_scop <- function(
       {
         for (nr in nonlinear_reduction) {
           log_message(
-            " Perform nonlinear dimension reduction (",
+            "Perform nonlinear dimension reduction (",
             nr,
             ") on the data..."
           )
@@ -350,9 +350,7 @@ standard_scop <- function(
     )
   }
 
-  if (
-    paste0(prefix, linear_reduction[1], "clusters") %in% colnames(srt@meta.data)
-  ) {
+  if (paste0(prefix, linear_reduction[1], "clusters") %in% colnames(srt@meta.data)) {
     srt[[paste0(prefix, "clusters")]] <- srt[[paste0(
       prefix,
       linear_reduction[1],
@@ -361,10 +359,7 @@ standard_scop <- function(
   }
   for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
-      if (
-        paste0(prefix, linear_reduction[1], toupper(nr), n, "D") %in%
-          names(srt@reductions)
-      ) {
+      if (paste0(prefix, linear_reduction[1], toupper(nr), n, "D") %in% names(srt@reductions)) {
         reduc <- srt@reductions[[paste0(
           prefix,
           linear_reduction[1],
@@ -382,7 +377,7 @@ standard_scop <- function(
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   time_end <- Sys.time()
-  log_message("standard_scop done")
+  log_message("Run standard_scop done", message_type = "success")
   log_message(
     "Elapsed time:",
     format(

@@ -13,8 +13,17 @@ invoke_fun(.fn, .args = list(), ..., .env = rlang::caller_env())
 
 \item{...}{Other arguments passed to the function.}
 
-\item{.env}{Environment in which to evaluate the call. This will be most useful if .fn is a string, or the function has side-effects.}
+\item{.env}{Environment in which to evaluate the call.
+This will be most useful if .fn is a string, or the function has side-effects.}
 }
 \description{
 Invoke a function with a list of arguments
+}
+\examples{
+f <- function(x, y) {
+  x + y
+}
+invoke_fun(f, list(x = 1, y = 2))
+invoke_fun("f", list(x = 1, y = 2))
+invoke_fun("f", x = 1, y = 2)
 }

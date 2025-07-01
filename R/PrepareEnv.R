@@ -435,7 +435,9 @@ exist_python_pkgs <- function(
     }
   )
 
-  packages_installed <- setNames(rep(FALSE, length(packages)), packages)
+  packages_installed <- stats::setNames(
+    rep(FALSE, length(packages)), packages
+  )
   packages_checked <- 0
 
   for (i in seq_along(packages)) {
