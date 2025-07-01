@@ -6,7 +6,7 @@
 \usage{
 check_r(
   packages,
-  install_methods = c("BiocManager::install", "install.packages",
+  install_methods = c("pak::pak", "BiocManager::install", "install.packages",
     "devtools::install_github"),
   lib = .libPaths()[1],
   force = FALSE
