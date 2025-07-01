@@ -4,6 +4,7 @@
 \alias{RunNMF}
 \alias{RunNMF.Seurat}
 \alias{RunNMF.Assay}
+\alias{RunNMF.Assay5}
 \alias{RunNMF.default}
 \title{Run NMF (non-negative matrix factorization)}
 \usage{
@@ -22,6 +23,24 @@ RunNMF(object, ...)
   ndims.print = 1:5,
   nfeatures.print = 30,
   reduction.name = "nmf",
+  reduction.key = "BE_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+)
+
+\method{RunNMF}{Assay}(
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nbes = 50,
+  nmf.method = "RcppML",
+  tol = 1e-05,
+  maxit = 100,
+  rev.nmf = FALSE,
+  ndims.print = 1:5,
+  nfeatures.print = 30,
   reduction.key = "BE_",
   verbose = TRUE,
   seed.use = 11,
