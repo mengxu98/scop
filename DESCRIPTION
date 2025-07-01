@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.0.9
-Date: 2025-06-27
+Version: 0.1.0
+Date: 2025-07-01
 Authors@R:
     c(
     person(given = "Hao", family = "Zhang", email = "aozhang@njmu.edu.cn", role = c("aut")),
@@ -26,7 +26,6 @@ Imports:
     ggforce,
     gtable,
     igraph,
-    inferCSN,
     reticulate,
     rlang,
     ggplot2,
@@ -83,6 +82,7 @@ Suggests:
     limma,
     metR,
     monocle,
+    monocle3,
     MatrixGenerics,
     MASS,
     NMF,
