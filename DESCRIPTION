@@ -1,7 +1,7 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.1.0
+Version: 0.1.1
 Date: 2025-07-01
 Authors@R:
     c(
