@@ -565,7 +565,7 @@ RunCellQC <- function(
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
     if (!is.null(split.by)) {
-      log_message(paste0(srt@meta.data[[split.by]][1]))
+      log_message("Running QC for ", srt@meta.data[[split.by]][1])
     }
     ntotal <- ncol(srt)
 
@@ -651,7 +651,7 @@ RunCellQC <- function(
           collapse = "|"
         ),
         features = mito_gene
-      )[[1]]
+      )
       percent.ribo <- srt[[paste0(
         c("percent.ribo", sp),
         collapse = "."
@@ -665,7 +665,7 @@ RunCellQC <- function(
           collapse = "|"
         ),
         features = ribo_gene
-      )[[1]]
+      )
       percent.genome <- srt[[paste0(
         c("percent.genome", sp),
         collapse = "."
@@ -673,7 +673,8 @@ RunCellQC <- function(
         object = srt,
         assay = assay,
         pattern = paste0("^", prefix)
-      )[[1]]
+      )
+
       ribo.mito.ratio <- srt[[
         paste0(c("percent.ribo", sp), collapse = "."),
         drop = TRUE
@@ -799,16 +800,18 @@ RunCellQC <- function(
       )]
     }
 
-    CellQC <- unique(c(
-      db_qc,
-      outlier_qc,
-      umi_qc,
-      gene_qc,
-      mito_qc,
-      ribo_qc,
-      ribo_mito_ratio_qc,
-      species_qc
-    ))
+    CellQC <- unique(
+      c(
+        db_qc,
+        outlier_qc,
+        umi_qc,
+        gene_qc,
+        mito_qc,
+        ribo_qc,
+        ribo_mito_ratio_qc,
+        species_qc
+      )
+    )
     log_message(">>> Total cells: ", ntotal)
     log_message(">>> Cells which are filtered out: ", length(CellQC))
     log_message(">>> ", length(db_qc), " potential doublets")
@@ -849,6 +852,9 @@ RunCellQC <- function(
     rbind.data.frame,
     unname(lapply(srt_list, function(x) x@meta.data))
   )
-  srt_raw <- Seurat::AddMetaData(srt_raw, metadata = meta.data)
+  srt_raw <- Seurat::AddMetaData(
+    srt_raw,
+    metadata = meta.data
+  )
   return(srt_raw)
 }
