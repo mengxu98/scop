@@ -379,7 +379,7 @@ standard_scop <- function(
   time_end <- Sys.time()
   log_message("Run standard_scop done", message_type = "success")
   log_message(
-    "Elapsed time:",
+    "Elapsed time: ",
     format(
       round(difftime(time_end, time_start), 2),
       format = "%Y-%m-%d %H:%M:%S"
