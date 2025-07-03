@@ -29,6 +29,7 @@ RunFR(object, ...)
 
 \method{RunFR}{default}(
   object,
+  assay = NULL,
   ndim = 2,
   niter = 500,
   reduction.key = "FR_",
@@ -42,39 +43,52 @@ RunFR(object, ...)
 
 \item{...}{Additional arguments to be passed to the \link[igraph:layout_with_fr]{igraph::layout_with_fr} function.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is NULL.}
+\item{reduction}{A character string specifying the reduction to be used.
+Default is NULL.}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is NULL.}
+\item{dims}{An integer vector specifying the dimensions to be used.
+Default is NULL.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{A character vector specifying the features to be used.
+Default is NULL.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{A character string specifying the assay to be used.
+Default is NULL.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used.
+Default is "data".}
 
-\item{graph}{A character string specifying the name of the Graph object to be used. Default is NULL.}
+\item{graph}{A character string specifying the name of the Graph object to be used.
+Default is NULL.}
 
-\item{neighbor}{A character string specifying the name of the Neighbor object to be used. Default is NULL.}
+\item{neighbor}{A character string specifying the name of the Neighbor object to be used.
+Default is NULL.}
 
-\item{k.param}{An integer specifying the number of nearest neighbors to consider. Default is 20.}
+\item{k.param}{An integer specifying the number of nearest neighbors to consider.
+Default is 20.}
 
-\item{ndim}{An integer specifying the number of dimensions for the force-directed layout. Default is 2.}
+\item{ndim}{An integer specifying the number of dimensions for the force-directed layout.
+Default is 2.}
 
-\item{niter}{An integer specifying the number of iterations for the force-directed layout. Default is 500.}
+\item{niter}{An integer specifying the number of iterations for the force-directed layout.
+Default is 500.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "fr".}
+\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
+Default is "fr".}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the force-directed layout embeddings. Default is "FR_".}
+\item{reduction.key}{A character string specifying the prefix for the column names of the force-directed layout embeddings.
+Default is "FR_".}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{A logical value indicating whether to print verbose output.
+Default is TRUE.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{An integer specifying the random seed to be used.
+Default is 11.}
 }
 \description{
 Run Force-Directed Layout (Fruchterman-Reingold algorithm)
 }
 \examples{
-\dontrun{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 pancreas_sub <- RunFR(
   object = pancreas_sub,
@@ -85,5 +99,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "fr"
 )
-}
 }
