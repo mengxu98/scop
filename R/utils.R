@@ -225,7 +225,9 @@ invoke_fun <- function(
       .fn <- rlang::env_get(.env, .fn, inherit = TRUE)
     }
     call <- rlang::call2(.fn, !!!args)
-    return(.External2(rlang:::ffi_eval, call, .env))
+    return(
+      rlang::eval_bare(call, .env)
+    )
   }
   if (!rlang::is_character(.bury, 2L)) {
     rlang::abort("`.bury` must be a character vector of length 2")
@@ -242,7 +244,9 @@ invoke_fun <- function(
     .fn <- fn_nm
   }
   call <- rlang::call2(.fn, !!!args)
-  .External2(rlang:::ffi_eval, call, .env)
+  return(
+    rlang::eval_bare(call, .env)
+  )
 }
 
 #' Implement similar functions to the \code{unnest} function in the tidyr package
