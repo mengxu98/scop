@@ -235,6 +235,7 @@ PrepareDB <- function(
       )
       default_IDtypes[[db]] <- custom_IDtype
     }
+
     if (isFALSE(db_update) && is.null(custom_TERM2GENE)) {
       for (term in db) {
         # Try to load cached database, if already generated.
@@ -312,7 +313,7 @@ PrepareDB <- function(
       # default_IDtypes[c("GO", "GO_BP", "GO_CC", "GO_MF", "PFAM", "Chromosome", "GeneType", "Enzyme")] <- "sgd_gene"
     }
 
-    ## Prepare ----------------------------------------------------------------------
+    ## Prepare -----------------
     if (any(!sps %in% names(db_list)) || any(!db %in% names(db_list[[sps]]))) {
       orgdb_dependent <- c(
         "GO",
@@ -373,7 +374,7 @@ PrepareDB <- function(
       # }
 
       if (is.null(custom_TERM2GENE)) {
-        ## GO ---------------------------------------------------------------------------------
+        ## GO -----------------------
         if (
           any(db %in% c("GO", "GO_BP", "GO_CC", "GO_MF")) &&
             any(
@@ -466,7 +467,7 @@ PrepareDB <- function(
           }
         }
 
-        ## KEGG ---------------------------------------------------------------------------
+        ## KEGG -----------------
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: KEGG")
           check_r("httr")
@@ -602,7 +603,7 @@ PrepareDB <- function(
           }
         }
 
-        ## WikiPathway ---------------------------------------------------------------------------
+        ## WikiPathway -----------------
         if (
           any(db == "WikiPathway") &&
             (!"WikiPathway" %in% names(db_list[[sps]]))
@@ -710,10 +711,10 @@ PrepareDB <- function(
           }
         }
 
-        ## Pathwaycommons ---------------------------------------------------------------------------
+        ## Pathwaycommons -----------------
         # check_r("paxtoolsr")
 
-        ## Reactome ---------------------------------------------------------------------------
+        ## Reactome -----------------
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: Reactome")
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
@@ -804,7 +805,7 @@ PrepareDB <- function(
           }
         }
 
-        ## CORUM ---------------------------------------------------------------------------
+        ## CORUM -----------------
         if (any(db == "CORUM") && (!"CORUM" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -856,7 +857,7 @@ PrepareDB <- function(
           }
         }
 
-        ## DGI ---------------------------------------------------------------------------
+        ## DGI -----------------
         # if (any(db == "DGI") && (!"DGI" %in% names(db_list[[sps]]))) {
         #   if (sps != "Homo_sapiens") {
         #     if (isTRUE(convert_species)) {
@@ -907,7 +908,7 @@ PrepareDB <- function(
         #   }
         # }
 
-        ## MP ---------------------------------------------------------------------------
+        ## MP -----------------
         if (any(db == "MP") && (!"MP" %in% names(db_list[[sps]]))) {
           if (sps != "Mus_musculus") {
             if (isTRUE(convert_species)) {
@@ -1010,7 +1011,7 @@ PrepareDB <- function(
           }
         }
 
-        ## DO ---------------------------------------------------------------------------
+        ## DO -----------------
         if (any(db == "DO") && (!"DO" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: DO")
           temp <- tempfile(fileext = ".tsv.gz")
@@ -1093,7 +1094,7 @@ PrepareDB <- function(
           }
         }
 
-        ## HPO ---------------------------------------------------------------------------
+        ## HPO -----------------
         if (any(db == "HPO") && (!"HPO" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: HPO")
           if (!sps %in% c("Homo_sapiens")) {
@@ -1168,7 +1169,7 @@ PrepareDB <- function(
           }
         }
 
-        ## PFAM ---------------------------------------------------------------------------
+        ## PFAM -----------------
         if (any(db == "PFAM") && (!"PFAM" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: PFAM")
           if (!"PFAM" %in% AnnotationDbi::columns(orgdb)) {
@@ -1223,7 +1224,7 @@ PrepareDB <- function(
           }
         }
 
-        ## Chromosome ---------------------------------------------------------------------------
+        ## Chromosome -----------------
         if (
           any(db == "Chromosome") && (!"Chromosome" %in% names(db_list[[sps]]))
         ) {
@@ -1271,7 +1272,7 @@ PrepareDB <- function(
           }
         }
 
-        ## GeneType ---------------------------------------------------------------------------
+        ## GeneType -----------------
         if (any(db == "GeneType") && (!"GeneType" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: GeneType")
           if (!"GENETYPE" %in% AnnotationDbi::columns(orgdb)) {
@@ -1326,7 +1327,7 @@ PrepareDB <- function(
           }
         }
 
-        ## Enzyme ---------------------------------------------------------------------------
+        ## Enzyme -----------------
         if (any(db == "Enzyme") && (!"Enzyme" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: Enzyme")
           if (!"ENZYME" %in% AnnotationDbi::columns(orgdb)) {
@@ -1430,7 +1431,7 @@ PrepareDB <- function(
           }
         }
 
-        ## TF ---------------------------------------------------------------------------
+        ## TF -----------------
         if (any(db == "TF") && (!"TF" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: TF")
 
@@ -1439,11 +1440,11 @@ PrepareDB <- function(
             {
               temp <- tempfile()
               url <- paste0(
-                "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/",
+                "https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/",
                 sps,
                 "_TF"
               )
-              download(url = url, destfile = temp)
+              download(url = url, destfile = temp, use_httr = TRUE)
               tf <- utils::read.table(
                 temp,
                 header = TRUE,
@@ -1453,11 +1454,11 @@ PrepareDB <- function(
                 quote = ""
               )
               url <- paste0(
-                "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/",
+                "https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/",
                 sps,
                 "_Cof"
               )
-              download(url = url, destfile = temp)
+              download(url = url, destfile = temp, use_httr = TRUE)
               tfco <- utils::read.table(
                 temp,
                 header = TRUE,
@@ -1477,9 +1478,9 @@ PrepareDB <- function(
                   )
                   db_species["TF"] <- "Homo_sapiens"
                   url <- paste0(
-                    "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/TF_list_final/Homo_sapiens_TF"
+                    "https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF"
                   )
-                  download(url = url, destfile = temp)
+                  download(url = url, destfile = temp, use_httr = TRUE)
                   tf <- utils::read.table(
                     temp,
                     header = TRUE,
@@ -1489,9 +1490,9 @@ PrepareDB <- function(
                     quote = ""
                   )
                   url <- paste0(
-                    "http://bioinfo.life.hust.edu.cn/AnimalTFDB4/static/download/Cof_list_final/Homo_sapiens_Cof"
+                    "https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof"
                   )
-                  download(url = url, destfile = temp)
+                  download(url = url, destfile = temp, use_httr = TRUE)
                   tfco <- utils::read.table(
                     temp,
                     header = TRUE,
@@ -1545,16 +1546,14 @@ PrepareDB <- function(
               quote = ""
             )
             if (!"Symbol" %in% colnames(tf)) {
-              if (
-                isTRUE(convert_species) && db_species["TF"] != "Homo_sapiens"
-              ) {
+              if (isTRUE(convert_species) && db_species["TF"] != "Homo_sapiens") {
                 log_message(
                   "Use the human annotation to create the TF database for ",
                   sps,
                   message_type = "warning"
                 )
                 db_species["TF"] <- "Homo_sapiens"
-                url <- paste0(
+                url <- c(
                   "https://raw.githubusercontent.com/GuoBioinfoLab/AnimalTFDB3/master/AnimalTFDB3/static/AnimalTFDB3/download/Homo_sapiens_TF"
                 )
                 download(url = url, destfile = temp)
@@ -1620,7 +1619,7 @@ PrepareDB <- function(
           }
         }
 
-        ## CSPA ---------------------------------------------------------------------------
+        ## CSPA -----------------
         if (any(db == "CSPA") && (!"CSPA" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -1692,7 +1691,7 @@ PrepareDB <- function(
           }
         }
 
-        ## Surfaceome ---------------------------------------------------------------------------
+        ## Surfaceome -----------------
         if (
           any(db == "Surfaceome") && (!"Surfaceome" %in% names(db_list[[sps]]))
         ) {
@@ -1773,7 +1772,7 @@ PrepareDB <- function(
           }
         }
 
-        ## SPRomeDB ---------------------------------------------------------------------------
+        ## SPRomeDB -----------------
         if (any(db == "SPRomeDB") && (!"SPRomeDB" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -1842,7 +1841,7 @@ PrepareDB <- function(
           }
         }
 
-        ## VerSeDa ---------------------------------------------------------------------------
+        ## VerSeDa -----------------
         if (any(db == "VerSeDa") && (!"VerSeDa" %in% names(db_list[[sps]]))) {
           temp <- tempfile()
           download(
@@ -1958,7 +1957,7 @@ PrepareDB <- function(
           }
         }
 
-        ## TFLink ---------------------------------------------------------------------------
+        ## TFLink -----------------
         if (any(db == "TFLink") && (!"TFLink" %in% names(db_list[[sps]]))) {
           tflink_sp <- c(
             "Homo_sapiens",
@@ -2028,7 +2027,7 @@ PrepareDB <- function(
           }
         }
 
-        ## hTFtarget ---------------------------------------------------------------------------
+        ## hTFtarget -----------------
         if (
           any(db == "hTFtarget") && (!"hTFtarget" %in% names(db_list[[sps]]))
         ) {
@@ -2093,7 +2092,7 @@ PrepareDB <- function(
           }
         }
 
-        ## TRRUST ---------------------------------------------------------------------------
+        ## TRRUST -----------------
         if (any(db == "TRRUST") && (!"TRRUST" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2168,7 +2167,7 @@ PrepareDB <- function(
           }
         }
 
-        ## JASPAR ---------------------------------------------------------------------------
+        ## JASPAR -----------------
         if (any(db == "JASPAR") && (!"JASPAR" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -2224,7 +2223,7 @@ PrepareDB <- function(
           }
         }
 
-        ## ENCODE ---------------------------------------------------------------------------
+        ## ENCODE -----------------
         if (any(db == "ENCODE") && (!"ENCODE" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -2280,7 +2279,7 @@ PrepareDB <- function(
           }
         }
 
-        ## MSigDB ---------------------------------------------------------------------------
+        ## MSigDB -----------------
         if (
           any(grepl("MSigDB", db)) && (!"MSigDB" %in% names(db_list[[sps]]))
         ) {
@@ -2458,7 +2457,7 @@ PrepareDB <- function(
           }
         }
 
-        ## CellTalk ---------------------------------------------------------------------------
+        ## CellTalk -----------------
         if (any(db == "CellTalk") && (!"CellTalk" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2542,7 +2541,7 @@ PrepareDB <- function(
           }
         }
 
-        ## CellChat ---------------------------------------------------------------------------
+        ## CellChat -----------------
         if (any(db == "CellChat") && (!"CellChat" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2672,7 +2671,7 @@ PrepareDB <- function(
           }
         }
       } else {
-        ## Custom ---------------------------------------------------------------------------
+        ## Custom -----------------
         db_species[db] <- custom_species
         if (sps != custom_species) {
           if (isTRUE(convert_species)) {
@@ -2730,7 +2729,7 @@ PrepareDB <- function(
         }
       }
 
-      ## MeSH ---------------------------------------------------------------------------
+      ## MeSH -----------------
       # if (any(db == "MeSH") && (!"MeSH" %in% names(db_list[[sps]]))) {
       #   log_message("Preparing database: MeSH")
       #   # dir.create("~/.cache/R/AnnotationHub",recursive = TRUE,showWarnings = FALSE)
