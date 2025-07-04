@@ -8,7 +8,8 @@ download(
   url,
   destfile,
   methods = c("auto", "wget", "libcurl", "curl", "wininet", "internal"),
-  quiet = FALSE,
+  use_httr = FALSE,
+  verbose = TRUE,
   ...,
   max_tries = 2
 )
@@ -25,8 +26,8 @@ download(
 \item{methods}{Methods to be used for downloading files.
 The default is to try different download methods in turn until the download is successfully completed.}
 
-\item{quiet}{If \code{TRUE}, suppress status messages (if any), and
-    the progress bar.}
+\item{use_httr}{Logical value, default is \code{FALSE}.
+Whether to use the \code{httr} package to download files.}
 
 \item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}}
 
