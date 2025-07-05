@@ -156,62 +156,62 @@ theme_sankey <- function(
 
 #' @rdname theme_sankey
 #' @export
-theme_alluvial <-
-  function(base_size = 11,
-           base_family = "",
-           base_line_size = base_size / 22,
-           base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
-    base_size = base_size,
-    base_family = base_family,
-    base_line_size = base_line_size,
-    base_rect_size = base_rect_size
-  ) %+replace%
-    ggplot2::theme(
-      panel.border = ggplot2::element_blank(),
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      legend.key = ggplot2::element_blank(),
-      strip.background = ggplot2::element_rect(
-        fill = "white",
-        colour = "transparent",
-        size = ggplot2::rel(2)
-      ),
-      complete = TRUE,
-      axis.line.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank()
-    ) }
-  }
+theme_alluvial <- function(
+    base_size = 11,
+    base_family = "",
+    base_line_size = base_size / 22,
+    base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
+  base_size = base_size,
+  base_family = base_family,
+  base_line_size = base_line_size,
+  base_rect_size = base_rect_size
+) %+replace%
+  ggplot2::theme(
+    panel.border = ggplot2::element_blank(),
+    panel.grid.major = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    axis.line = ggplot2::element_blank(),
+    legend.key = ggplot2::element_blank(),
+    strip.background = ggplot2::element_rect(
+      fill = "white",
+      colour = "transparent",
+      size = ggplot2::rel(2)
+    ),
+    complete = TRUE,
+    axis.line.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+  ) }
+}
 
 #' @rdname theme_sankey
 #' @export
-theme_sankey_bump <-
-  function(base_size = 11,
-           base_family = "",
-           base_line_size = base_size / 22,
-           base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
-    base_size = base_size,
-    base_family = base_family,
-    base_line_size = base_line_size,
-    base_rect_size = base_rect_size
-  ) %+replace%
-    ggplot2::theme(
-      panel.border = ggplot2::element_blank(),
-      panel.grid.major.x = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      legend.key = ggplot2::element_blank(),
-      strip.background = ggplot2::element_rect(
-        fill = "white",
-        colour = "transparent",
-        size = ggplot2::rel(2)
-      ),
-      complete = TRUE,
-      axis.line.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
-      panel.grid.major.y = ggplot2::element_line("gray90")
-    ) }
-  }
+theme_sankey_bump <- function(
+    base_size = 11,
+    base_family = "",
+    base_line_size = base_size / 22,
+    base_rect_size = base_size / 22) {{ ggplot2::theme_bw(
+  base_size = base_size,
+  base_family = base_family,
+  base_line_size = base_line_size,
+  base_rect_size = base_rect_size
+) %+replace%
+  ggplot2::theme(
+    panel.border = ggplot2::element_blank(),
+    panel.grid.major.x = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    axis.line = ggplot2::element_blank(),
+    legend.key = ggplot2::element_blank(),
+    strip.background = ggplot2::element_rect(
+      fill = "white",
+      colour = "transparent",
+      size = ggplot2::rel(2)
+    ),
+    complete = TRUE,
+    axis.line.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_line("gray90")
+  ) }
+}
 
 
 # FLOW LAYER ---------
@@ -975,7 +975,8 @@ geom_sankey_text <- function(
 ## GEOM_ALLUVIAL
 #' @title geom_alluvial
 #'
-#' @description Creates an alluvial plot which visualize flows between nodes. Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
+#' @description Creates an alluvial plot which visualize flows between nodes.
+#' Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
 #' Also each observation should have a `node` and a `next_node` aesthetic which provide information about which group in the y-direction.
 #'
 #' @param mapping provide you own mapping. both x and y need to be numeric.
@@ -1022,7 +1023,8 @@ geom_alluvial <- function(
 #' @name geom_alluvial_label
 #' @aliases geom_alluvial_text
 #'
-#' @description Creates centered labels or text in nodes of your alluvial plot. Needs to have the exact same aestethics as the call to `geom_alluvial` to work.
+#' @description Creates centered labels or text in nodes of your alluvial plot.
+#' Needs to have the exact same aestethics as the call to `geom_alluvial` to work.
 #'
 #' @param mapping provide you own mapping. both x and y need to be numeric.
 #' @param data provide you own data
@@ -1034,7 +1036,9 @@ geom_alluvial <- function(
 #' @param inherit.aes should the geom inherits aestethics
 #' @param ... other arguments to be passed to the geo
 #'
-#' @details Other important arguments is; `space` which proves the space between nodes in the y-direction; `shift` which shifts nodes in the y-direction.
+#' @details Other important arguments is;
+#' `space` which proves the space between nodes in the y-direction;
+#' `shift` which shifts nodes in the y-direction.
 #'
 #' @return ggplot layer
 #'
@@ -1093,7 +1097,8 @@ geom_alluvial_label <- function(
 # geom_sankeybump
 #' @title geom_sankey_bump
 #'
-#' @description Creates an alluvial plot which visualize flows between nodes. Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
+#' @description Creates a sankey plot with a bump curve.
+#' Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
 #' Also each observation should have a `node` and a `next_node` aesthetic which provide information about which group in the y-direction.
 #'
 #' @param mapping provide you own mapping. both x and y need to be numeric.
@@ -1106,7 +1111,9 @@ geom_alluvial_label <- function(
 #' @param inherit.aes should the geom inherits aestethics
 #' @param ... other arguments to be passed to the geo
 #'
-#' @details Other important arguments is; `space` which proves the space between nodes in the y-direction; `shift` which shifts nodes in the y-direction.
+#' @details Other important arguments is;
+#' `space` which proves the space between nodes in the y-direction;
+#' `shift` which shifts nodes in the y-direction.
 #'
 #' @return ggplot layer
 #'
