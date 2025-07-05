@@ -191,41 +191,41 @@ Default is 11.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGLMPCA</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-04 02:55:30] GLMPC_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Ppy, Gast, Hspa1a, Rrad, Ifit1bl1, C8b, Onecut3, Efcab6, Bhlhe23, Ncan </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   L1cam, Gsdma2, Gm13613, Fgf8, Sytl2, S100g, Ina, Adgrv1, Gm43000, Gabrg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Crmp1, Crtac1, Nkx6-3, Gm4889, Parvb, Tcerg1l, Otc, Galnt9, Gm15559, Pyy </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Nipal4, Bmp3, Ptgfr, 1700001L19Rik, Tmem100, Sostdc1, 4930599N23Rik, Krt17, Tmem255b, Mmp7 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Plscr2, Nes, 2210407C18Rik, Eppin, P2ry2, Gm26808, Xkr5, Ctgf, Upk3b, Cldn1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   P2rx2, Aldh1a7, Il1r2, Myo1h, Dab2, Isg15, E130114P18Rik, Mapk11, Lce6a, Lmcd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> GLMPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Slc4a1, Fgf18, S100g, Efcab6, L1cam, A730017C20Rik, Pdcd1, Tmem114, Adra2c, Bhlhe23 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ankrd2, Pif1, Siglece, 1700128E19Rik, Nhlh1, Crtac1, Adamts18, Nes, Cryba4, Gm38037 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Wnt3, Gsdma2, E130114P18Rik, Tgm7, Troap, Snai1, Wdr62, Nusap1, 4932438H23Rik, Epb42 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Bmp3, Il1r2, RP23-53O7.2, Car3, Nlgn1, Speer4c, Cntn1, Nid1, Tmem100, Onecut3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Foxd3, Parp3, 4930524B15Rik, 4930426D05Rik, F730016J06Rik, Platr26, Myo1h, Fgb, RP23-4H17.3, Kiss1r </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Lce6a, Slco1a6, Rgs4, Ngf, Kcnj13, Npy1r, 4833422C13Rik, Aard, Wdr20rt, Gm26652 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> GLMPC_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Npy, 1700016F12Rik, Il1r2, Sst, Ins2, Gm38112, Syndig1l, Mapk11, Prl, Rasgef1c </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Gm38037, P2ry1, E130114P18Rik, Tmem215, Ins1, Eppin, RP23-53O7.2, A730017C20Rik, Chrnb4, Myo1h </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Arl14, Sytl4, Chrna3, Xkr5, Bmp3, Pif1, Cldn1, Nipal4, Nnat, Frzb </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Ghrl, Irs4, Avpr1b, Ptgfr, Bhlhe23, Gm17455, Plscr2, Upk3b, Ngf, Isg15 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Arhgap22, Snhg7os, Thbd, Nid1, Fgf21, Necab3, Nkx6-3, Gabra1, Fgf8, Ssc5d </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Spata20, Krt33b, Gast, Lrrtm3, Foxd3, Tfap2c, Il17b, Gcg, Rsph4a, Mboat4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> GLMPC_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rims1, Gm10382, Cxcl15, Igfbp3, Gm26532, Atp2a1, Tle4, Gm9949, Nr2f2, Tph1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc2a3, Cnksr2, Cym, 2900011O08Rik, Mapk12, Krt23, Akr1c18, Vsig8, Clca3a2, Ccl20 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Serpinb12, Zfp433, Rsph4a, RP23-4H17.3, Adm, Hs6st2, Etv4, Sult1c2, Lix1, Fgf13 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Col19a1, Bmp3, Ppy, Cntn1, Nipal4, Sostdc1, Bhlhe23, Ptgfr, S100g, Npy </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Vipr1, 4930599N23Rik, Gcg, 1700001L19Rik, Klk10, Sst, Fgb, F730016J06Rik, Efcab6, B230312C02Rik </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Tmem255b, Mapk11, Otc, Ghrl, Nkx6-3, Nes, Oxtr, Tmem100, Fstl4, Ins1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> GLMPC_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aldh1a7, Sostdc1, Col19a1, Gm26808, F730016J06Rik, Gcg, Ncan, Ppp1r27, Cldn1, E130114P18Rik </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Dlgap1, D130043K22Rik, Ache, Nipal4, 2900011O08Rik, Gabrg2, Lix1, 1700001L19Rik, Fgf13, Snhg7os </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Gm17767, 2210407C18Rik, Myo1h, Gap43, Sds, Slco1a6, Tmem255b, Islr2, Stmn3, Vgf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Sst, Irx3, Ppy, Ifit1bl1, Siglech, Nid1, Mef2c, Speer4c, Irs4, Cntn1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Avpr1b, Foxd3, Hist1h1b, Gm38112, Onecut3, Esco2, Npy, Clspn, Gm17455, Ngf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Gdf15, Ghrl, 2810417H13Rik, Fam111a, Nkx6-3, Oxtr, Aunip, Tcerg1l, Pyy, Slfn9 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 04:49:33] GLMPC_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Positive:  Ppy, Gast, Hspa1a, Rrad, Ifit1bl1, C8b, Onecut3, Efcab6, Bhlhe23, Ncan </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   L1cam, Gsdma2, Gm13613, Fgf8, Sytl2, S100g, Ina, Adgrv1, Gm43000, Gabrg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Crmp1, Crtac1, Nkx6-3, Gm4889, Parvb, Tcerg1l, Otc, Galnt9, Gm15559, Pyy </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Negative:  Nipal4, Bmp3, Ptgfr, 1700001L19Rik, Tmem100, Sostdc1, 4930599N23Rik, Krt17, Tmem255b, Mmp7 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Plscr2, Nes, 2210407C18Rik, Eppin, P2ry2, Gm26808, Xkr5, Ctgf, Upk3b, Cldn1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   P2rx2, Aldh1a7, Il1r2, Myo1h, Dab2, Isg15, E130114P18Rik, Mapk11, Lce6a, Lmcd1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] GLMPC_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Positive:  Slc4a1, Fgf18, S100g, Efcab6, L1cam, A730017C20Rik, Pdcd1, Tmem114, Adra2c, Bhlhe23 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Ankrd2, Pif1, Siglece, 1700128E19Rik, Nhlh1, Crtac1, Adamts18, Nes, Cryba4, Gm38037 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Wnt3, Gsdma2, E130114P18Rik, Tgm7, Troap, Snai1, Wdr62, Nusap1, 4932438H23Rik, Epb42 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Negative:  Bmp3, Il1r2, RP23-53O7.2, Car3, Nlgn1, Speer4c, Cntn1, Nid1, Tmem100, Onecut3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Foxd3, Parp3, 4930524B15Rik, 4930426D05Rik, F730016J06Rik, Platr26, Myo1h, Fgb, RP23-4H17.3, Kiss1r </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Lce6a, Slco1a6, Rgs4, Ngf, Kcnj13, Npy1r, 4833422C13Rik, Aard, Wdr20rt, Gm26652 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] GLMPC_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Positive:  Npy, 1700016F12Rik, Il1r2, Sst, Ins2, Gm38112, Syndig1l, Mapk11, Prl, Rasgef1c </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Gm38037, P2ry1, E130114P18Rik, Tmem215, Ins1, Eppin, RP23-53O7.2, A730017C20Rik, Chrnb4, Myo1h </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Arl14, Sytl4, Chrna3, Xkr5, Bmp3, Pif1, Cldn1, Nipal4, Nnat, Frzb </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Negative:  Ghrl, Irs4, Avpr1b, Ptgfr, Bhlhe23, Gm17455, Plscr2, Upk3b, Ngf, Isg15 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Arhgap22, Snhg7os, Thbd, Nid1, Fgf21, Necab3, Nkx6-3, Gabra1, Fgf8, Ssc5d </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Spata20, Krt33b, Gast, Lrrtm3, Foxd3, Tfap2c, Il17b, Gcg, Rsph4a, Mboat4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] GLMPC_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Positive:  Rims1, Gm10382, Cxcl15, Igfbp3, Gm26532, Atp2a1, Tle4, Gm9949, Nr2f2, Tph1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Slc2a3, Cnksr2, Cym, 2900011O08Rik, Mapk12, Krt23, Akr1c18, Vsig8, Clca3a2, Ccl20 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Serpinb12, Zfp433, Rsph4a, RP23-4H17.3, Adm, Hs6st2, Etv4, Sult1c2, Lix1, Fgf13 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Negative:  Col19a1, Bmp3, Ppy, Cntn1, Nipal4, Sostdc1, Bhlhe23, Ptgfr, S100g, Npy </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Vipr1, 4930599N23Rik, Gcg, 1700001L19Rik, Klk10, Sst, Fgb, F730016J06Rik, Efcab6, B230312C02Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Tmem255b, Mapk11, Otc, Ghrl, Nkx6-3, Nes, Oxtr, Tmem100, Fstl4, Ins1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] GLMPC_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Positive:  Aldh1a7, Sostdc1, Col19a1, Gm26808, F730016J06Rik, Gcg, Ncan, Ppp1r27, Cldn1, E130114P18Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Dlgap1, D130043K22Rik, Ache, Nipal4, 2900011O08Rik, Gabrg2, Lix1, 1700001L19Rik, Fgf13, Snhg7os </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Gm17767, 2210407C18Rik, Myo1h, Gap43, Sds, Slco1a6, Tmem255b, Islr2, Stmn3, Vgf </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] Negative:  Sst, Irx3, Ppy, Ifit1bl1, Siglech, Nid1, Mef2c, Speer4c, Irs4, Cntn1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Avpr1b, Foxd3, Hist1h1b, Gm38112, Onecut3, Esco2, Npy, Clspn, Gm17455, Ngf </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 04:49:33] 	   Gdf15, Ghrl, 2810417H13Rik, Fam111a, Nkx6-3, Oxtr, Aunip, Tcerg1l, Pyy, Slfn9 </span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
