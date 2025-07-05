@@ -9,7 +9,7 @@ download(
   destfile,
   methods = c("auto", "wget", "libcurl", "curl", "wininet", "internal"),
   max_tries = 2,
-  use_httr = FALSE,
+  use_curl = TRUE,
   verbose = TRUE,
   ...
 )
@@ -28,8 +28,8 @@ The default is to try different download methods in turn until the download is s
 
 \item{max_tries}{Number of tries for each download method.}
 
-\item{use_httr}{Logical value, default is \code{FALSE}.
-Whether to use \link[httr2:request]{httr2::request} to download the file.}
+\item{use_curl}{Logical value, default is \code{TRUE}.
+Whether to use \link[curl:curl_download]{curl::curl_download} to download the file.}
 
 \item{verbose}{Logical value, default is \code{TRUE}.
 Whether to print progress messages.}

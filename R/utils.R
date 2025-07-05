@@ -73,8 +73,8 @@ try_get <- function(
 #' @param max_tries Number of tries for each download method.
 #' @param verbose Logical value, default is `TRUE`.
 #' Whether to print progress messages.
-#' @param use_httr Logical value, default is `FALSE`.
-#' Whether to use [httr2::request] to download the file.
+#' @param use_curl Logical value, default is `TRUE`.
+#' Whether to use [curl::curl_download] to download the file.
 #' @param ... Other arguments passed to [utils::download.file]
 #'
 #' @export
@@ -83,7 +83,7 @@ download <- function(
     destfile,
     methods = c("auto", "wget", "libcurl", "curl", "wininet", "internal"),
     max_tries = 2,
-    use_httr = FALSE,
+    use_curl = TRUE,
     verbose = TRUE,
     ...) {
   if (missing(url) || missing(destfile)) {
@@ -95,56 +95,50 @@ download <- function(
   ntry <- 0
   status <- NULL
 
-  if (isTRUE(use_httr)) {
+  if (isTRUE(use_curl)) {
     tryCatch(
       {
         log_message(
-          "Attempting download with {.val httr2}...",
+          "Attempting download with {.val curl::curl_download}...",
           message_type = "info"
         )
-        check_r("httr2")
+        check_r("curl")
 
-        req <- httr2::request(url) |>
-          httr2::req_headers(
-            "Accept" = "text/plain,application/json;q=0.9,*/*;q=0.8",
-            "Accept-Language" = "zh-CN,zh;q=0.9,en;q=0.8",
-            "Cache-Control" = "no-cache",
-            "Connection" = "keep-alive",
-            "Host" = "guolab.wchscu.cn",
-            "Pragma" = "no-cache",
-            "Referer" = dirname(url),
-            "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-          ) |>
-          httr2::req_retry(max_tries = max_tries) |>
-          httr2::req_timeout(seconds = 30)
+        h <- curl::new_handle()
+        curl::handle_setopt(h, ssl_verifyhost = 0, ssl_verifypeer = 0)
+        curl::handle_setheaders(h,
+          "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+          "Referer" = "https://guolab.wchscu.cn/AnimalTFDB4/",
+          "Accept" = "*/*"
+        )
 
-        resp <- req |> httr2::req_perform(path = destfile)
+        curl::curl_download(
+          url = url,
+          destfile = destfile,
+          handle = h,
+          quiet = !verbose
+        )
 
-        if (httr2::resp_status(resp) == 200) {
-          if (file.exists(destfile)) {
-            content <- readLines(destfile, n = 1, warn = FALSE)
-            if (!grepl("^<!doctype|^<html", tolower(content))) {
-              log_message(
-                "Download completed successfully using {.val httr2}",
-                message_type = "success"
-              )
-              return(invisible(NULL))
-            }
+        if (file.exists(destfile)) {
+          content <- readLines(destfile, n = 1, warn = FALSE)
+          if (!grepl("^<!doctype|^<html", tolower(content))) {
+            log_message(
+              "Download completed successfully using {.val curl::curl_download}",
+              message_type = "success"
+            )
+            return(invisible(NULL))
+          } else {
+            unlink(destfile)
+            log_message(
+              "curl downloaded an HTML page, not data. Trying other methods.",
+              "warning"
+            )
           }
-          log_message(
-            "Downloaded file appears to be HTML instead of expected data",
-            message_type = "warning"
-          )
-        } else {
-          log_message(
-            paste0("HTTP error: ", httr2::resp_status(resp)),
-            message_type = "warning"
-          )
         }
       },
       error = function(e) {
         log_message(
-          paste0("httr2 request failed: ", conditionMessage(e)),
+          paste0("curl download failed: ", conditionMessage(e)),
           message_type = "warning"
         )
       }
@@ -197,7 +191,6 @@ download <- function(
   }
   return(invisible(NULL))
 }
-
 
 kegg_get <- function(url) {
   temp <- tempfile()
