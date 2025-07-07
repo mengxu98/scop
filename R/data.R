@@ -90,7 +90,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   data("pancreas_sub")
+#'   data(pancreas_sub)
 #'   if (!require("SeuratData", quietly = TRUE)) {
 #'     pak::pak("satijalab/seurat-data")
 #'   }

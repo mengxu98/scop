@@ -202,7 +202,7 @@ Default is TRUE.}
 This function generates various types of plots for enrichment (over-representation) analysis.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 # pancreas_sub <- RunDEtest(
 #   pancreas_sub,
 #   group_by = "CellType"

@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
 #'   adata = adata,

@@ -22,7 +22,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- RunPalantir( # bug
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType",

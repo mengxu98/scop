@@ -22,7 +22,7 @@ Default reduction name.
 Find the default reduction name in a Seurat object.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 names(pancreas_sub@reductions)
 DefaultReduction(pancreas_sub)
 

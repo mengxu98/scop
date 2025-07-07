@@ -86,7 +86,7 @@ This function calculates gene-set scores from the specified database (\code{db})
 It then treats these scores as expression values and uses them as input to the RunDynamicFeatures function to identify dynamically enriched terms along the lineage.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

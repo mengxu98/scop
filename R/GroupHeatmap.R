@@ -239,7 +239,14 @@
 #'
 #' @examples
 #' library(dplyr)
-#' data("pancreas_sub")
+#' data(pancreas_sub)
+#'
+#' # pancreas_sub <- AnnotateFeatures(
+#' #   srt = pancreas_sub,
+#' #   species = "Mus_musculus",
+#' #   db = c("TF", "CSPA")
+#' # )
+#'
 #' ht1 <- GroupHeatmap(
 #'   srt = pancreas_sub,
 #'   features = c(

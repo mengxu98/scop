@@ -41,7 +41,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' CellDensityPlot(
 #'   pancreas_sub,
 #'   features = "Sox9",

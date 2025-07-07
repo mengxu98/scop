@@ -22,7 +22,7 @@ This function performs doublet-calling using the doubletdetection(python) packag
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- db_DoubletDetection(pancreas_sub)
 CellDimPlot(
   srt = pancreas_sub,

@@ -61,7 +61,7 @@ Runs the Monocle3 algorithm on a Seurat object.
 }
 \examples{
 if (interactive()) {
-  data("pancreas_sub")
+  data(pancreas_sub)
   # Use Monocle clusters to infer the trajectories
   pancreas_sub <- RunMonocle3(
     srt = pancreas_sub,

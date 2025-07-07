@@ -16,7 +16,7 @@ Convert an anndata object to a seurat object using reticulate
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata <- RunPAGA(
   adata = adata,

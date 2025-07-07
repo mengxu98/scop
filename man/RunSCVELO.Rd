@@ -165,7 +165,7 @@ error handling, version compatibility, and modular design.
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   srt = pancreas_sub,
   assay_x = "RNA",
