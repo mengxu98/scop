@@ -39,9 +39,12 @@ geom_sankey_bump(
 ggplot layer
 }
 \description{
-Creates an alluvial plot which visualize flows between nodes. Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
+Creates a sankey plot with a bump curve.
+Each observation needs to have a `x` aesthetic as well as a `next_x` column which declares where that observation should flow.
 Also each observation should have a `node` and a `next_node` aesthetic which provide information about which group in the y-direction.
 }
 \details{
-Other important arguments is; `space` which proves the space between nodes in the y-direction; `shift` which shifts nodes in the y-direction.
+Other important arguments is;
+`space` which proves the space between nodes in the y-direction;
+`shift` which shifts nodes in the y-direction.
 }

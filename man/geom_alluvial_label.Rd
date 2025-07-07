@@ -52,8 +52,11 @@ geom_alluvial_label(
 ggplot layer
 }
 \description{
-Creates centered labels or text in nodes of your alluvial plot. Needs to have the exact same aestethics as the call to `geom_alluvial` to work.
+Creates centered labels or text in nodes of your alluvial plot.
+Needs to have the exact same aestethics as the call to `geom_alluvial` to work.
 }
 \details{
-Other important arguments is; `space` which proves the space between nodes in the y-direction; `shift` which shifts nodes in the y-direction.
+Other important arguments is;
+`space` which proves the space between nodes in the y-direction;
+`shift` which shifts nodes in the y-direction.
 }
