@@ -27,7 +27,7 @@ RenameClusters(
 Rename clusters for the Seurat object
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 
 # Rename all clusters
 levels(pancreas_sub@meta.data[["SubCellType"]]) <- unique(

@@ -27,7 +27,7 @@ db_scds(
 This function performs doublet-calling using the scds package on a Seurat object.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 CellDimPlot(
   srt = pancreas_sub,

@@ -64,7 +64,7 @@ str(res)
 
 # Convert the human genes to mouse homologs,
 # and replace the raw counts in a Seurat object.
-data("pancreas_sub")
+data(pancreas_sub)
 counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",

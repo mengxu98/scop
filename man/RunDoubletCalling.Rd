@@ -34,7 +34,7 @@ Returns Seurat object with the doublet prediction results and prediction scores 
 Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunDoubletCalling(
   srt = pancreas_sub,
   db_method = "scDblFinder"

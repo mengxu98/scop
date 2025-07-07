@@ -36,7 +36,7 @@ The tolerance is its difference from the integer. Default is 0.1}
 Attempt to recover raw counts from the normalized matrix.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 raw_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",

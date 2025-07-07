@@ -29,7 +29,7 @@ data
 Get the data from the \pkg{Seurat} object
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 features <- GetFeaturesData(pancreas_sub)
 head(features)
 }
