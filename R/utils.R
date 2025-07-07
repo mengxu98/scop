@@ -5,12 +5,11 @@
 #' @param methods Methods to be used for downloading files.
 #' The default is to try different download methods in turn until the download is successfully completed.
 #' @param max_tries Number of tries for each download method.
+#' @param max_tries Number of tries for each download method.
+#' @param use_curl Logical value, default is `TRUE`.
 #' @param verbose Logical value, default is `TRUE`.
 #' Whether to print progress messages.
-#' @param use_curl Logical value, default is `TRUE`.
-#' Whether to use [curl::curl_download] to download the file.
 #' @param ... Other arguments passed to [utils::download.file]
-#' @param max_tries Number of tries for each download method.
 #'
 #' @export
 download <- function(
