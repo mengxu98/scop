@@ -82,7 +82,7 @@ This function performs cell scoring on a Seurat object.
 It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 ccgenes <- CC_GenePrefetch("Mus_musculus")
 pancreas_sub <- CellScoring(
   srt = pancreas_sub,

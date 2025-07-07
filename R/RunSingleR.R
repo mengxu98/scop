@@ -33,7 +33,7 @@
 #' )[["srt_merge"]]
 #'
 #' # Annotation
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSingleR( # bug
 #'   srt_query = pancreas_sub,
