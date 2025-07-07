@@ -47,7 +47,7 @@ RunNMF(object, ...)
   ...
 )
 
-\method{RunNMF}{Assay}(
+\method{RunNMF}{Assay5}(
   object,
   assay = NULL,
   layer = "data",

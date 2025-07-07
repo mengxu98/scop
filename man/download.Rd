@@ -29,6 +29,8 @@ The default is to try different download methods in turn until the download is s
 \item{use_httr}{Logical value, default is \code{FALSE}.
 Whether to use the \code{httr} package to download files.}
 
+\item{verbose}{Logical value, default is \code{TRUE}.}
+
 \item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}}
 
 \item{max_tries}{Number of tries for each download method.}

@@ -243,7 +243,7 @@ ht1$plot
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
-  capitalize(
+  thisutils::capitalize(
     rownames(panc8_sub),
     force_tolower = TRUE
   )

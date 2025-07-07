@@ -536,11 +536,6 @@ ht3 <- GroupHeatmap(
 )
 ht3$plot
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
 de_top <- de_filter \%>\%
   group_by(gene) \%>\%
   top_n(1, avg_log2FC) \%>\%
