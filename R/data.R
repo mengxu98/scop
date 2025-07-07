@@ -17,7 +17,7 @@
 #'   scv <- import("scvelo")
 #'   adata <- scv$datasets$pancreas()
 #'   pancreas <- adata_to_srt(adata)
-#'   set.seed(11)
+#'   set.seed(42)
 #'   cells <- sample(colnames(pancreas), size = 1000)
 #'   pancreas_sub <- pancreas[, cells]
 #'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
@@ -47,26 +47,19 @@
 #'   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
 #'   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-#'   pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-#'   pancreas_sub <- Seurat::FindVariableFeatures(
-#'     pancreas_sub,
-#'     verbose = FALSE
-#'   )
-#'   pancreas_sub <- Seurat::ScaleData(pancreas_sub, verbose = FALSE)
-#'   pancreas_sub <- Seurat::RunPCA(pancreas_sub, verbose = FALSE)
-#'   pancreas_sub <- Seurat::RunUMAP(
-#'     pancreas_sub,
-#'     dims = 1:30,
-#'     verbose = FALSE
-#'   )
-#'   pancreas_sub <- Seurat::RunTSNE(
-#'     pancreas_sub,
-#'     dims = 1:30,
-#'     verbose = FALSE
-#'   )
+#'   pancreas_sub <- NormalizeData(pancreas_sub)
+#'   pancreas_sub <- FindVariableFeatures(pancreas_sub)
+#'   pancreas_sub <- ScaleData(pancreas_sub)
+#'   pancreas_sub <- RunPCA(pancreas_sub)
+#'   pancreas_sub <- RunUMAP(pancreas_sub, dims = 1:20)
 #'   pancreas_sub <- RunDEtest(
 #'     pancreas_sub,
 #'     group_by = "CellType"
+#'   )
+#'   pancreas_sub <- AnnotateFeatures(
+#'     srt = pancreas_sub,
+#'     species = "Mus_musculus",
+#'     db = c("TF", "CSPA")
 #'   )
 #'   usethis::use_data(
 #'     pancreas_sub,
@@ -105,8 +98,8 @@ NULL
 #'   library(Seurat)
 #'   suppressWarnings(InstallData("panc8"))
 #'   data("panc8")
-#'   panc8 <- Seurat::UpdateSeuratObject(panc8)
-#'   set.seed(11)
+#'   panc8 <- UpdateSeuratObject(panc8)
+#'   set.seed(42)
 #'   cells_sub <- unlist(
 #'     lapply(
 #'       split(colnames(panc8), panc8$dataset),
@@ -118,7 +111,7 @@ NULL
 #'     panc8_sub,
 #'     slot = "counts"
 #'   )
-#'   panc8_sub <- Seurat::CreateSeuratObject(
+#'   panc8_sub <- CreateSeuratObject(
 #'     counts = counts,
 #'     meta.data = panc8_sub@meta.data
 #'   )
@@ -130,23 +123,11 @@ NULL
 #'   ), ]
 #'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
 #'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   panc8_sub <- Seurat::NormalizeData(panc8_sub, verbose = FALSE)
-#'   panc8_sub <- Seurat::FindVariableFeatures(
-#'     panc8_sub,
-#'     verbose = FALSE
-#'   )
-#'   panc8_sub <- Seurat::ScaleData(panc8_sub, verbose = FALSE)
-#'   panc8_sub <- Seurat::RunPCA(panc8_sub, verbose = FALSE)
-#'   panc8_sub <- Seurat::RunUMAP(
-#'     panc8_sub,
-#'     dims = 1:30,
-#'     verbose = FALSE
-#'   )
-#'   panc8_sub <- Seurat::RunTSNE(
-#'     panc8_sub,
-#'     dims = 1:30,
-#'     verbose = FALSE
-#'   )
+#'   panc8_sub <- NormalizeData(panc8_sub)
+#'   panc8_sub <- FindVariableFeatures(panc8_sub)
+#'   panc8_sub <- ScaleData(panc8_sub)
+#'   panc8_sub <- RunPCA(panc8_sub)
+#'   panc8_sub <- RunUMAP(panc8_sub, dims = 1:20)
 #'   usethis::use_data(
 #'     panc8_sub,
 #'     compress = "xz",
@@ -411,10 +392,11 @@ NULL
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
+#'   library(Seurat)
 #'   check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
-#'   ref_scHCL <- Seurat::NormalizeData(scHCL::ref.expr)
-#'   ref_scMCA <- Seurat::NormalizeData(scMCA::ref.expr)
-#'   ref_scZCL <- Seurat::NormalizeData(scZCL::ref.expr)
+#'   ref_scHCL <- NormalizeData(scHCL::ref.expr)
+#'   ref_scMCA <- NormalizeData(scMCA::ref.expr)
+#'   ref_scZCL <- NormalizeData(scZCL::ref.expr)
 #'   Encoding(colnames(ref_scHCL)) <- "latin1"
 #'   colnames(ref_scHCL) <- iconv(colnames(ref_scHCL), "latin1", "UTF-8")
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
