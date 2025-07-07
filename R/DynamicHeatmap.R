@@ -86,11 +86,6 @@
 #' )
 #' ht3$plot
 #'
-#' pancreas_sub <- AnnotateFeatures(
-#'   srt = pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c("TF", "CSPA")
-#' )
 #' ht4 <- DynamicHeatmap(
 #'   srt = pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),

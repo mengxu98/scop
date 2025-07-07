@@ -383,7 +383,9 @@ UMAP embeddings based on different integration methods in scop:
 panc8_rename <- RenameFeatures(
   srt = panc8_sub,
   newnames = make.unique(
-    capitalize(rownames(panc8_sub[["RNA"]]),
+    thisutils::capitalize(
+      rownames(panc8_sub[["RNA"]]
+    ),
     force_tolower = TRUE)
   ),
   assays = "RNA"

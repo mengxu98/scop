@@ -100,7 +100,9 @@
 #' )
 #'
 #' genenames <- make.unique(
-#'   capitalize(rownames(panc8_sub[["RNA"]]),
+#'   thisutils::capitalize(
+#'     rownames(panc8_sub[["RNA"]])
+#'   ),
 #'   force_tolower = TRUE
 #' )
 #' names(genenames) <- rownames(panc8_sub)

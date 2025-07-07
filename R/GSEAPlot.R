@@ -372,9 +372,9 @@ GSEAPlot <- function(
       enrichment_sub[["Database"]],
       levels = db
     )
-    enrichment_sub[["Description"]] <- capitalize(enrichment_sub[[
-      "Description"
-    ]])
+    enrichment_sub[["Description"]] <- capitalize(
+      enrichment_sub[["Description"]]
+    )
     enrichment_sub[["Description"]] <- str_wrap(
       enrichment_sub[["Description"]],
       width = character_width

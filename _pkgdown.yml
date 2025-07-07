@@ -182,14 +182,12 @@ reference:
 - contents:
   - adata_to_srt
   - AnnotateFeatures
-  - capitalize
   - compute_velocity_on_grid
   - download
   - drop_data
   - get_vars
   - GeneConvert
   - GetAssayData5
-  - invoke_fun
   - make_long
   - RenameClusters
   - RenameFeatures
@@ -198,8 +196,6 @@ reference:
   - srt_append
   - srt_to_adata
   - srt_reorder
-  - try_get
-  - unnest_fun
 
 - subtitle: "Database Operations"
 - contents:
