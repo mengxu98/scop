@@ -58,17 +58,17 @@
 #' db_genes <- length(unique(res$geneID_res$from_geneID))
 #' converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
 #' converted_genes_output <- length(unique(res$geneID_expand$symbol))
-#' log_message(
+#' thisutils::log_message(
 #'   "Number of input gene IDs:", input_genes
 #' )
-#' log_message(
+#' thisutils::log_message(
 #'   "Number of gene IDs mapped in the database:", db_genes
 #' )
-#' log_message(
+#' thisutils::log_message(
 #'   "Number of input gene IDs that were successfully converted:",
 #'   converted_genes_input
 #' )
-#' log_message(
+#' thisutils::log_message(
 #'   "Number of converted gene IDs:", converted_genes_output
 #' )
 #'

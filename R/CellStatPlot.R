@@ -417,7 +417,7 @@ CellStatPlot <- function(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
 #'   IDtype = "symbol",
-#'   db = c("VerSeDa", "TF")
+#'   db = "VerSeDa"
 #' )
 #' StatPlot(
 #'   GetFeaturesData(pancreas_sub, "RNA"),

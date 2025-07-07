@@ -48,7 +48,8 @@ Annotate single cells using scmap.
 data("panc8_sub")
 
 genenames <- make.unique(
-  capitalize(rownames(panc8_sub),
+  thisutils::capitalize(
+    rownames(panc8_sub),
     force_tolower = TRUE
   )
 )

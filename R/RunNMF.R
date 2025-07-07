@@ -125,7 +125,7 @@ RunNMF.Assay <- function(
 }
 
 #' @rdname RunNMF
-#' @method RunNMF Assay
+#' @method RunNMF Assay5
 #' @export
 RunNMF.Assay5 <- function(
     object,

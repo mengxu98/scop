@@ -150,7 +150,7 @@ RunPalantir <- function(
       layer_y = layer_y
     )
   }
-  groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
+  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
   args[["palette"]] <- palette_scop(
     levels(groups) %||% unique(groups),
     palette = palette,
