@@ -176,7 +176,7 @@ Users have the flexibility to specify custom cell groups, marker types, and vari
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunDEtest(
   srt = pancreas_sub,
   group_by = "SubCellType"

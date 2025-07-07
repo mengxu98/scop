@@ -31,7 +31,7 @@ data
 Add the data to the Seurat object
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 features <- GetFeaturesData(pancreas_sub)
 pancreas_sub <- AddFeaturesData(pancreas_sub, features)
 }

@@ -95,7 +95,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score", reduction = "UMAP"
@@ -1785,7 +1785,7 @@ FeatureDimPlot <- function(
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureDimPlot3D(
 #'   pancreas_sub,
