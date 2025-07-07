@@ -28,13 +28,10 @@ The default is to try different download methods in turn until the download is s
 
 \item{max_tries}{Number of tries for each download method.}
 
-\item{use_curl}{Logical value, default is \code{TRUE}.
-Whether to use \link[curl:curl_download]{curl::curl_download} to download the file.}
+\item{use_curl}{Logical value, default is \code{TRUE}.}
 
 \item{verbose}{Logical value, default is \code{TRUE}.
 Whether to print progress messages.}
-
-\item{verbose}{Logical value, default is \code{TRUE}.}
 
 \item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}}
 }
