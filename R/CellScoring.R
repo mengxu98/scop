@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' ccgenes <- CC_GenePrefetch("Mus_musculus")
 #' pancreas_sub <- CellScoring(
 #'   srt = pancreas_sub,

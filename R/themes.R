@@ -598,7 +598,7 @@ show_palettes <- function(
 #' # )
 #'
 #' # fix the panel of the plot combined by `patchwork`
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' p1 <- CellDimPlot(
 #'   pancreas_sub,
 #'   "Phase",

@@ -42,7 +42,7 @@ A matrix or data frame containing the assay data.
 A re-implementation of the GetAssayData function to compatible with Assay5 objects.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 GetAssayData5(
   pancreas_sub,
   layer = "counts",

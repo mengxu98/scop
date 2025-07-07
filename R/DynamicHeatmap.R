@@ -34,7 +34,13 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
+#' # pancreas_sub <- AnnotateFeatures(
+#' #   srt = pancreas_sub,
+#' #   species = "Mus_musculus",
+#' #   db = c("TF", "CSPA")
+#' # )
+#'
 #' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",
@@ -45,6 +51,7 @@
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   n_candidates = 200
 #' )
+#'
 #' ht1 <- DynamicHeatmap(
 #'   srt = pancreas_sub,
 #'   lineages = "Lineage1",
@@ -53,6 +60,7 @@
 #'   cell_annotation = "SubCellType"
 #' )
 #' ht1$plot
+#'
 #' panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 #'
 #' ht2 <- DynamicHeatmap(
@@ -68,6 +76,7 @@
 #'   cell_annotation = "SubCellType"
 #' )
 #' ht2$plot
+#'
 #' panel_fix(
 #'   ht2$plot,
 #'   height = 5,

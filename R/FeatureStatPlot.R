@@ -83,7 +83,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),

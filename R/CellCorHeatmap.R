@@ -84,7 +84,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' ht1 <- CellCorHeatmap(
 #'   srt_query = pancreas_sub,
 #'   query_group = "SubCellType"
