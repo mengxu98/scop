@@ -36,6 +36,8 @@
 #' @export
 #'
 #' @examples
+#' library(Matrix)
+#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot(

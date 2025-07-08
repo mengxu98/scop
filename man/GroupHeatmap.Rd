@@ -127,7 +127,9 @@ GroupHeatmap(
   width = NULL,
   units = "inch",
   seed = 11,
-  ht_params = list()
+  ht_params = list(),
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -464,6 +466,11 @@ Default is "inch".}
 
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Default is an empty list.}
+
+\item{verbose}{A logical value indicating whether to print messages.
+Default is TRUE.}
+
+\item{...}{Additional arguments passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.}
 }
 \value{
 A list with the following elements:
@@ -548,7 +555,8 @@ de_top <- de_filter \%>\%
   top_n(1, avg_log2FC) \%>\%
   group_by(group1) \%>\%
   top_n(3, avg_log2FC)
-ht4 <- GroupHeatmap(pancreas_sub,
+ht4 <- GroupHeatmap(
+  pancreas_sub,
   features = de_top$gene,
   feature_split = de_top$group1,
   group.by = "CellType",
