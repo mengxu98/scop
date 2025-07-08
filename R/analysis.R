@@ -5,6 +5,7 @@
 #' @inheritParams GeneConvert
 #' @param species Latin names for animals,i.e., "Homo_sapiens", "Mus_musculus"
 #' @param use_cached_gene Whether to use previously cached cell cycle gene conversion results for the species.
+#' @param verbose Whether to print messages.
 #'
 #' @return A list of S-phase and G2M-phase genes.
 #'
@@ -22,9 +23,14 @@ CC_GenePrefetch <- function(
     Ensembl_version = 103,
     mirror = NULL,
     max_tries = 5,
-    use_cached_gene = TRUE) {
-  S <- Seurat::cc.genes.updated.2019$s.genes
-  G2M <- Seurat::cc.genes.updated.2019$g2m.genes
+    use_cached_gene = TRUE,
+    verbose = TRUE) {
+  log_message(
+    "Prefetching cell cycle genes for", species, "...",
+    verbose = verbose
+  )
+  s_genes <- Seurat::cc.genes.updated.2019$s.genes
+  g2m_genes <- Seurat::cc.genes.updated.2019$g2m.genes
   res <- NULL
   if (species != "Homo_sapiens") {
     if (isTRUE(use_cached_gene)) {
@@ -32,7 +38,7 @@ CC_GenePrefetch <- function(
     }
     if (is.null(res)) {
       res <- GeneConvert(
-        geneID = unique(c(S, G2M)),
+        geneID = unique(c(s_genes, g2m_genes)),
         geneID_from_IDtype = "symbol",
         geneID_to_IDtype = "symbol",
         species_from = "Homo_sapiens",
@@ -42,20 +48,34 @@ CC_GenePrefetch <- function(
         mirror = mirror
       )
       R.cache::saveCache(res, key = list(species))
+      log_message(
+        "Cached conversion results for", species,
+        verbose = verbose
+      )
     } else {
       log_message(
-        paste0("Using cached conversion results for ", species)
+        "Using cached conversion results for", species,
+        verbose = verbose
       )
     }
     genes <- res[["geneID_collapse"]]
-    S <- unlist(genes[S[S %in% rownames(genes)], "symbol"])
-    G2M <- unlist(genes[G2M[G2M %in% rownames(genes)], "symbol"])
+    s_genes <- unlist(
+      genes[s_genes[s_genes %in% rownames(genes)], "symbol"]
+    )
+    g2m_genes <- unlist(
+      genes[g2m_genes[g2m_genes %in% rownames(genes)], "symbol"]
+    )
   }
+  log_message(
+    "Cell cycle gene prefetching completed",
+    message_type = "success",
+    verbose = verbose
+  )
   return(
     list(
       res = res,
-      S = S,
-      G2M = G2M
+      S = s_genes,
+      G2M = g2m_genes
     )
   )
 }
@@ -272,7 +292,7 @@ check_python_element <- function(
     depth = max_depth(x)) {
   if (depth == 0 || !is.list(x) || !inherits(x, "python.builtin.object")) {
     if (inherits(x, "python.builtin.object")) {
-      x_r <- tryCatch(py_to_r_auto(x), error = identity)
+      x_r <- tryCatch(py_to_r2(x), error = identity)
       if (inherits(x_r, "error")) {
         return(x)
       } else {
@@ -285,7 +305,7 @@ check_python_element <- function(
     raw_depth <- max_depth(x)
     x <- lapply(x, function(element) {
       if (inherits(element, "python.builtin.object")) {
-        element_r <- tryCatch(py_to_r_auto(element), error = identity)
+        element_r <- tryCatch(py_to_r2(element), error = identity)
         if (inherits(element_r, "error")) {
           return(element)
         } else {

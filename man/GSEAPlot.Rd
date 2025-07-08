@@ -225,7 +225,7 @@ Default is TRUE.}
 This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 # pancreas_sub <- RunDEtest(
 #  pancreas_sub,
 #   group_by = "CellType"

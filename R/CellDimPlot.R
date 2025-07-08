@@ -140,7 +140,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' p1 <- CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -1445,7 +1445,7 @@ CellDimPlot <- function(
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot3D(
 #'   srt = pancreas_sub,

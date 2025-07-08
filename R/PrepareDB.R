@@ -1,25 +1,37 @@
-#' Prepare the gene annotation databases
+#' @title Prepare the gene annotation databases
 #'
-#' This function prepares the gene annotation databases for a given species and set of annotation sources.
+#' @description This function prepares the gene annotation databases for a given species and set of annotation sources.
 #' It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
 #' The list contains the annotation data for each specified annotation source.
 #'
+#' @md
 #' @inheritParams GeneConvert
-#' @param species A character vector specifying the species for which the gene annotation databases should be prepared. Default is c("Homo_sapiens", "Mus_musculus").
+#' @param species A character vector specifying the species for which the gene annotation databases should be prepared.
+#' Default is c("Homo_sapiens", "Mus_musculus").
 #' @param db A character vector specifying the annotation sources to be included in the gene annotation databases.
 #' Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 #' "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
 #' "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
 #' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF").
-#' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases. Default is c("symbol", "entrez_id", "ensembl_id").
-#' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved. Default is "latest".
-#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.
-#' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source. Default is NULL.
-#' @param custom_TERM2NAME A data frame containing a custom TERM2NAME mapping for the specified species and annotation source. Default is NULL.
-#' @param custom_species A character vector specifying the species name to be used in a custom database. Default is NULL.
-#' @param custom_IDtype A character vector specifying the ID type to be used in a custom database. Default is NULL.
-#' @param custom_version A character vector specifying the version to be used in a custom database. Default is NULL.
+#' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
+#' Default is c("symbol", "entrez_id", "ensembl_id").
+#' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved.
+#' Default is "latest".
+#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated.
+#' If set to FALSE, the function will attempt to load the cached databases instead.
+#' Default is FALSE.
+#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' The default value is TRUE.
+#' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
+#' Default is NULL.
+#' @param custom_TERM2NAME A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
+#' Default is NULL.
+#' @param custom_species A character vector specifying the species name to be used in a custom database.
+#' Default is NULL.
+#' @param custom_IDtype A character vector specifying the ID type to be used in a custom database.
+#' Default is NULL.
+#' @param custom_version A character vector specifying the version to be used in a custom database.
+#' Default is NULL.
 #'
 #' @details
 #' The `PrepareDB` function prepares gene annotation databases for a given species and set of annotation sources.
@@ -44,7 +56,8 @@
 #'   db = "GO_BP"
 #' )
 #' ListDB(
-#'   species = "Homo_sapiens", db = "GO_BP"
+#'   species = "Homo_sapiens",
+#'   db = "GO_BP"
 #' )
 #' head(
 #'   db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
@@ -125,7 +138,7 @@
 #'   custom_TERM2GENE = custom_TERM2GENE,
 #'   custom_species = "Homo_sapiens",
 #'   custom_IDtype = "symbol",
-#'   custom_version = "Seurat_v4"
+#'   custom_version = "Seurat_v5"
 #' )
 #' ListDB(db = "CellCycle")
 #'
@@ -178,10 +191,14 @@ PrepareDB <- function(
     custom_TERM2NAME = NULL,
     custom_species = NULL,
     custom_IDtype = NULL,
-    custom_version = NULL) {
+    custom_version = NULL,
+    verbose = TRUE) {
   db_list <- list()
   for (sps in species) {
-    log_message("Species: ", sps)
+    log_message(
+      "Species: ", sps,
+      verbose = verbose
+    )
     default_IDtypes <- list(
       "GO" = "entrez_id",
       "GO_BP" = "entrez_id",
@@ -219,11 +236,7 @@ PrepareDB <- function(
           message_type = "error"
         )
       }
-      if (
-        is.null(custom_IDtype) ||
-          is.null(custom_species) ||
-          is.null(custom_version)
-      ) {
+      if (is.null(custom_IDtype) || is.null(custom_species) || is.null(custom_version)) {
         log_message(
           "When building a custom database, 'custom_IDtype', 'custom_species' and 'custom_version' must be provided.",
           message_type = "error"
@@ -238,7 +251,6 @@ PrepareDB <- function(
 
     if (isFALSE(db_update) && is.null(custom_TERM2GENE)) {
       for (term in db) {
-        # Try to load cached database, if already generated.
         dbinfo <- ListDB(species = sps, db = term)
         if (nrow(dbinfo) > 0 && !is.null(dbinfo)) {
           if (db_version == "latest") {
@@ -369,20 +381,14 @@ PrepareDB <- function(
       if ("Reactome" %in% db) {
         check_r("reactome.db")
       }
-      # if ("MeSH" %in% db) {
-      #   check_r(c("AHMeSHDbs", "MeSHDbi", "MeSH.db", "AnnotationHub"))
-      # }
 
       if (is.null(custom_TERM2GENE)) {
         ## GO -----------------------
-        if (
-          any(db %in% c("GO", "GO_BP", "GO_CC", "GO_MF")) &&
-            any(
-              !intersect(db, c("GO", "GO_BP", "GO_CC", "GO_MF")) %in%
-                names(db_list[[sps]])
-            )
+        go_categories <- c("GO", "GO_BP", "GO_CC", "GO_MF")
+        if (any(db %in% go_categories) &&
+          any(!intersect(db, go_categories) %in% names(db_list[[sps]]))
         ) {
-          terms <- db[db %in% c("GO", "GO_BP", "GO_CC", "GO_MF")]
+          terms <- db[db %in% go_categories]
           bg <- suppressMessages(
             AnnotationDbi::select(
               orgdb,
@@ -856,57 +862,6 @@ PrepareDB <- function(
             )
           }
         }
-
-        ## DGI -----------------
-        # if (any(db == "DGI") && (!"DGI" %in% names(db_list[[sps]]))) {
-        #   if (sps != "Homo_sapiens") {
-        #     if (isTRUE(convert_species)) {
-        #       log_message(
-        #         "Use the human annotation to create the DGI database for ",
-        #         sps,
-        #         message_type = "warning"
-        #       )
-        #       db_species["DGI"] <- "Homo_sapiens"
-        #     } else {
-        #       log_message(
-        #         "DGI database only support Homo_sapiens. Consider using convert_species=TRUE",
-        #         message_type = "warning"
-        #       )
-        #       log_message(
-        #         "Stop the preparation.",
-        #         message_type = "error"
-        #       )
-        #     }
-        #   }
-        #   log_message("Preparing database: DGI")
-        #   temp <- tempfile()
-        #   download(url = "https://www.dgidb.org/downloads", destfile = temp)
-        #   lines <- readLines(temp, warn = FALSE)
-        #   lines <- lines[grep("data/monthly_tsvs/.*interactions.tsv", lines, perl = TRUE)]
-        #   lines <- gsub("(<td><a href=\\\")|(\\\">interactions.tsv</a></td>)", "", lines)
-        #   version <- strsplit(lines[1], split = "/")[[1]][3]
-        #   download(url = paste0("https://www.dgidb.org/", lines[1]), destfile = temp)
-        #   dgi <- utils::read.table(temp, header = TRUE, sep = "\t", fill = TRUE, quote = "")
-        #   unlink(temp)
-        #   dgi <- dgi[!is.na(dgi[["entrez_id"]]), , drop = FALSE]
-        #   dgi <- dgi[, c("entrez_id", "drug_claim_name")]
-        #   dgi[, "drug_claim_name"] <- toupper(dgi[, "drug_claim_name"])
-        #   TERM2GENE <- dgi[, c("drug_claim_name", "entrez_id")]
-        #   TERM2NAME <- dgi[, c("drug_claim_name", "drug_claim_name")]
-        #   colnames(TERM2GENE) <- c("Term", default_IDtypes["DGI"])
-        #   colnames(TERM2NAME) <- c("Term", "Name")
-        #   TERM2GENE <- stats::na.omit(unique(TERM2GENE))
-        #   TERM2NAME <- stats::na.omit(unique(TERM2NAME))
-        #   db_list[[db_species["DGI"]]][["DGI"]][["TERM2GENE"]] <- TERM2GENE
-        #   db_list[[db_species["DGI"]]][["DGI"]][["TERM2NAME"]] <- TERM2NAME
-        #   db_list[[db_species["DGI"]]][["DGI"]][["version"]] <- version
-        #   if (sps == db_species["DGI"]) {
-        #     R.cache::saveCache(db_list[[db_species["DGI"]]][["DGI"]],
-        #       key = list(version, as.character(db_species["DGI"]), "DGI"),
-        #       comment = paste0(version, " nterm:", length(TERM2NAME[[1]]), "|", db_species["DGI"], "-DGI")
-        #     )
-        #   }
-        # }
 
         ## MP -----------------
         if (any(db == "MP") && (!"MP" %in% names(db_list[[sps]]))) {
@@ -2728,74 +2683,9 @@ PrepareDB <- function(
           )
         }
       }
-
-      ## MeSH -----------------
-      # if (any(db == "MeSH") && (!"MeSH" %in% names(db_list[[sps]]))) {
-      #   log_message("Preparing database: MeSH")
-      #   # dir.create("~/.cache/R/AnnotationHub",recursive = TRUE,showWarnings = FALSE)
-      #   ### A (Anatomy);B (Organisms);C (Diseases);D (Chemicals and Drugs);
-      #   ### E (Analytical Diagnostic and Therapeutic Techniques and Equipment);F (Psychiatry and Psychology);
-      #   ### G (Phenomena and Processes);H (Disciplines and Occupations);
-      #   ### I (Anthropology, Education, Sociology and Social Phenomena);J (Technology and Food and Beverages);
-      #   ### K (Humanities);L (Information Science);M (Persons);N (Health Care);
-      #   ### V (Publication Type);Z (Geographical Locations)
-      #
-      # library(AnnotationHub)
-      # ah <- AnnotationHub()
-      # qr <- query(ah, paste(c("MeSHDb for", sp), collapse = " "))
-      # if (length(qr) == 0) {
-      #   log_message(
-      #     "no MeSH records found for ", sp,
-      #     message_type = "error"
-      #   )
-      # }
-      # qr <- qr[length(qr)]
-      # db <- qr[[1]]
-      #
-      # library("meshr")
-      # library("MeSHDbi")
-      # MeSH.db <- MeSHDbi::MeSHDb(db)
-      # geneid <- AnnotationDbi::keys(MeSH.db, keytype = "GENEID")
-      #
-      # RSQLite::dbConnect(db)
-      # library("MeSHDbi")
-      # meshdb <- MeSHDbi::MeSHDb(db)
-      # MeSHDbi::dbconn(meshdb)
-      # MeSHDbi::dbschema(meshdb)
-      # MeSHDbi::dbconn(meshdb)
-      #
-      #   AnnotationDbi::select(file, keys = AnnotationDbi::keys(file), columns = AnnotationDbi::columns(file))
-      #
-      #
-      #   bg <- AnnotationDbi::select(meshdb, keys = AnnotationDbi::keys(meshdb, keytype = "GENEID"), keytype = "GENEID", columns = c("GENEID", "MESHID", "MESHCATEGORY"))
-      #   # bg <-  bg[which(bg$GENEID %in% AnnotationDbi::keys(orgdb)),]
-      #   # bg_all <- AnnotationDbi::select(MeSH.db, keys=AnnotationDbi::keys(MeSH.db,keytype = "MESHID"),columns = c("MESHID","MESHTERM"),keytype = "MESHID")
-      #   # saveRDS(bg_all,"./MeSHID2Term.rds")
-      #   bg_all <- readRDS("./MeSHID2Term.rds")
-      #   bg <- merge(x = bg, by.x = "MESHID", y = bg_all, by.y = "MESHID", all.x = TRUE)
-      #   bg[which(is.na(bg$MESHTERM)), "MESHTERM"] <- bg[which(is.na(bg$MESHTERM)), "MESHID"]
-      #   assign(paste0(sps, "_meshall"), bg)
-      #
-      #   bg <- suppressMessages(AnnotationDbi::select(meshdb, keys = AnnotationDbi::keys(meshdb), columns = "PFAM"))
-      #   bg <- unique(bg[!is.na(bg$PFAM), ])
-      #   bg2 <- as.data.frame(PFAM.db::PFAMDE2AC[AnnotationDbi::mappedkeys(PFAM.db::PFAMDE2AC)])
-      #   rownames(bg2) <- bg2[["ac"]]
-      #   bg[["PFAM_name"]] <- bg2[bg$PFAM, "de"]
-      #   bg[is.na(bg[["PFAM_name"]]), "PFAM_name"] <- bg[is.na(bg[["PFAM_name"]]), "PFAM"]
-      #   TERM2GENE <- bg[, c(2, 1)]
-      #   TERM2NAME <- bg[, c(2, 3)]
-      #   version <- utils::packageVersion(org_sp)
-      #   db_list[[sps]][["PFAM"]][["TERM2GENE"]] <- TERM2GENE
-      #   db_list[[sps]][["PFAM"]][["TERM2NAME"]] <- TERM2NAME
-      #   db_list[[sps]][["PFAM"]][["version"]] <- version
-      #   R.cache::saveCache(db_list[[sps]][["PFAM"]],
-      #     key = list(sps, "PFAM"),
-      #     comment = paste0(version, " nterm:", length(unique(TERM2NAME[[1]])))
-      #   )
-      # }
     }
 
-    ### Convert species
+    # Convert species
     if (!all(db_species == sps)) {
       for (term in names(db_species[db_species != sps])) {
         log_message("Convert species for the database: ", term)
@@ -2867,7 +2757,7 @@ PrepareDB <- function(
         db_info[["version"]] <- version
         db_list[[sps]][[term]] <- db_info
         default_IDtypes[[term]] <- "ensembl_id"
-        ### save cache
+        # save cache
         R.cache::saveCache(
           db_list[[sps]][[term]],
           key = list(version, sps, term),
@@ -2884,7 +2774,7 @@ PrepareDB <- function(
       }
     }
 
-    ### Convert ID types
+    # Convert ID types
     for (term in names(db_list[[sps]])) {
       IDtypes <- db_IDtypes[
         !db_IDtypes %in% colnames(db_list[[sps]][[term]][["TERM2GENE"]])
@@ -2933,7 +2823,7 @@ PrepareDB <- function(
           TERM2GENE <- unnest_fun(TERM2GENE, cols = type, keep_empty = TRUE)
         }
         db_list[[sps]][[term]][["TERM2GENE"]] <- TERM2GENE
-        ### save cache
+        # save cache
         version <- db_list[[sps]][[term]][["version"]]
         R.cache::saveCache(
           db_list[[sps]][[term]],
@@ -2967,8 +2857,9 @@ PrepareDB <- function(
 #' @examples
 #' ListDB(species = "Homo_sapiens")
 #' ListDB(species = "Mus_musculus", db = "GO_BP")
-#'
-ListDB <- function(species = "Homo_sapiens", db = NULL) {
+ListDB <- function(
+    species = "Homo_sapiens",
+    db = NULL) {
   stopifnot(length(species) == 1)
   pathnames <- dir(
     path = R.cache::getCacheRootPath(),
@@ -2978,13 +2869,15 @@ ListDB <- function(species = "Homo_sapiens", db = NULL) {
   if (length(pathnames) == 0) {
     return(NULL)
   }
-  dbinfo <- lapply(pathnames, function(x) {
-    info <- R.cache::readCacheHeader(x)
-    info[["date"]] <- as.character(info[["timestamp"]])
-    info[["db_version"]] <- strsplit(info[["comment"]], "\\|")[[1]][1]
-    info[["db_name"]] <- strsplit(info[["comment"]], "\\|")[[1]][2]
-    return(info)
-  })
+  dbinfo <- lapply(
+    pathnames, function(x) {
+      info <- R.cache::readCacheHeader(x)
+      info[["date"]] <- as.character(info[["timestamp"]])
+      info[["db_version"]] <- strsplit(info[["comment"]], "\\|")[[1]][1]
+      info[["db_name"]] <- strsplit(info[["comment"]], "\\|")[[1]][2]
+      return(info)
+    }
+  )
   dbinfo <- do.call(rbind.data.frame, dbinfo)
   dbinfo[["file"]] <- pathnames
 

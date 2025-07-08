@@ -23,10 +23,11 @@ Reference datasets for cell type annotation in single-cell RNA data
 \examples{
 \dontrun{
 if (interactive()) {
+  library(Seurat)
   check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
-  ref_scHCL <- Seurat::NormalizeData(scHCL::ref.expr)
-  ref_scMCA <- Seurat::NormalizeData(scMCA::ref.expr)
-  ref_scZCL <- Seurat::NormalizeData(scZCL::ref.expr)
+  ref_scHCL <- NormalizeData(scHCL::ref.expr)
+  ref_scMCA <- NormalizeData(scMCA::ref.expr)
+  ref_scZCL <- NormalizeData(scZCL::ref.expr)
   Encoding(colnames(ref_scHCL)) <- "latin1"
   colnames(ref_scHCL) <- iconv(colnames(ref_scHCL), "latin1", "UTF-8")
   Encoding(colnames(ref_scMCA)) <- "latin1"

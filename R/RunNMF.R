@@ -22,6 +22,7 @@
 #' @export
 #'
 #' @examples
+#' library(Matrix)
 #' pancreas_sub <- RunNMF(object = pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -125,7 +126,7 @@ RunNMF.Assay <- function(
 }
 
 #' @rdname RunNMF
-#' @method RunNMF Assay
+#' @method RunNMF Assay5
 #' @export
 RunNMF.Assay5 <- function(
     object,
@@ -246,7 +247,11 @@ RunNMF.default <- function(
         nfeatures = nfeatures.print
       )
     )
-    log_message(paste(msg, collapse = "\n"))
+    log_message(
+      paste(msg, collapse = "\n"),
+      multiline_indent = FALSE,
+      timestamp = FALSE
+    )
   }
 
   return(reduction_data)

@@ -94,7 +94,7 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 This function handles multiple quality control methods for single-cell RNA-seq data.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunCellQC(pancreas_sub)
 CellStatPlot(
   srt = pancreas_sub,

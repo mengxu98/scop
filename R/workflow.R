@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' raw_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
@@ -167,7 +167,7 @@ RecoverCounts <- function(
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- srt_reorder(
 #'   srt = pancreas_sub,
 #'   reorder_by = "SubCellType",
@@ -456,7 +456,7 @@ srt_append <- function(
 #' @param max_distance Maximum distance allowed for a match.
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' names(pancreas_sub@reductions)
 #' DefaultReduction(pancreas_sub)
 #'

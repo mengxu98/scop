@@ -107,7 +107,7 @@ Plots the density of specified features in a single or multiple groups,
 grouped by specified variables.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 CellDensityPlot(
   pancreas_sub,
   features = "Sox9",

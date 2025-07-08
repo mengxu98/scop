@@ -140,7 +140,7 @@ Can be one of "right", "left", "bottom", "top", or "none".}
 Statistical plot of cells
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",

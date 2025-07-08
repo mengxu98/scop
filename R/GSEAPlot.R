@@ -28,7 +28,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' # pancreas_sub <- RunDEtest(
 #' #  pancreas_sub,
 #' #   group_by = "CellType"
@@ -372,9 +372,9 @@ GSEAPlot <- function(
       enrichment_sub[["Database"]],
       levels = db
     )
-    enrichment_sub[["Description"]] <- capitalize(enrichment_sub[[
-      "Description"
-    ]])
+    enrichment_sub[["Description"]] <- capitalize(
+      enrichment_sub[["Description"]]
+    )
     enrichment_sub[["Description"]] <- str_wrap(
       enrichment_sub[["Description"]],
       width = character_width

@@ -383,7 +383,7 @@ If \code{FALSE}, return a list of ggplot objects.}
 Plotting cell points on a reduced 2D plane and coloring according to the groups.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",

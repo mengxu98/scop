@@ -4325,6 +4325,7 @@ ComBat_integrate <- function(
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
+#' \dontrun{
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
@@ -4333,7 +4334,6 @@ ComBat_integrate <- function(
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' \dontrun{
 #' integration_methods <- c(
 #'   "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
 #'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"

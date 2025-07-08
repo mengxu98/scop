@@ -420,10 +420,15 @@ Default is an empty list.}
 FeatureHeatmap
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 # pancreas_sub <- RunDEtest(
 #  pancreas_sub,
 #   group_by = "CellType"
+# )
+# pancreas_sub <- AnnotateFeatures(
+#   srt = pancreas_sub,
+#   species = "Mus_musculus",
+#   db = c("TF", "CSPA")
 # )
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -471,11 +476,6 @@ ht3 <- FeatureHeatmap(
 )
 ht3$plot
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
 ht4 <- FeatureHeatmap(
   srt = pancreas_sub,
   features = de_filter$gene,

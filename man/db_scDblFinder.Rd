@@ -19,7 +19,7 @@ db_scDblFinder(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 This function performs doublet-calling using the scDblFinder package on a Seurat object.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- db_scDblFinder(pancreas_sub)
 CellDimPlot(
   srt = pancreas_sub,

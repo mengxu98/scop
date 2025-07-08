@@ -65,7 +65,7 @@ Returns the modified Seurat object with the calculated dynamic features stored i
 Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

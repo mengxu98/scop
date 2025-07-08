@@ -222,6 +222,9 @@
 #' @param seed An integer specifying the random seed. Default is 11.
 #' @param ht_params A list specifying additional parameters passed to the [ComplexHeatmap::Heatmap] function.
 #' Default is an empty list.
+#' @param verbose A logical value indicating whether to print messages.
+#' Default is TRUE.
+#' @param ... Additional arguments passed to the [ComplexHeatmap::Heatmap] function.
 #'
 #' @seealso \code{\link{RunDEtest}}
 #'
@@ -239,7 +242,14 @@
 #'
 #' @examples
 #' library(dplyr)
-#' data("pancreas_sub")
+#' data(pancreas_sub)
+#'
+#' # pancreas_sub <- AnnotateFeatures(
+#' #   srt = pancreas_sub,
+#' #   species = "Mus_musculus",
+#' #   db = c("TF", "CSPA")
+#' # )
+#'
 #' ht1 <- GroupHeatmap(
 #'   srt = pancreas_sub,
 #'   features = c(
@@ -294,17 +304,13 @@
 #' )
 #' ht3$plot
 #'
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c("TF", "CSPA")
-#' )
 #' de_top <- de_filter %>%
 #'   group_by(gene) %>%
 #'   top_n(1, avg_log2FC) %>%
 #'   group_by(group1) %>%
 #'   top_n(3, avg_log2FC)
-#' ht4 <- GroupHeatmap(pancreas_sub,
+#' ht4 <- GroupHeatmap(
+#'   pancreas_sub,
 #'   features = de_top$gene,
 #'   feature_split = de_top$group1,
 #'   group.by = "CellType",
@@ -526,7 +532,9 @@ GroupHeatmap <- function(
     width = NULL,
     units = "inch",
     seed = 11,
-    ht_params = list()) {
+    ht_params = list(),
+    verbose = TRUE,
+    ...) {
   set.seed(seed)
 
   if (isTRUE(raster_by_magick)) {
@@ -534,7 +542,7 @@ GroupHeatmap <- function(
   }
   if (is.null(features)) {
     log_message(
-      "No feature provided.",
+      "{.arg features} is not provided.",
       message_type = "error"
     )
   }
@@ -557,7 +565,8 @@ GroupHeatmap <- function(
   if (!is.null(grouping.var) && exp_method != "log2fc") {
     log_message(
       "When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     exp_method <- "log2fc"
   }
@@ -579,14 +588,15 @@ GroupHeatmap <- function(
     if (is.null(numerator)) {
       numerator <- levels(srt@meta.data[[grouping.var]])[1]
       log_message(
-        "'numerator' is not specified. Use the first level in 'grouping.var': ",
+        "'{.arg numerator}' is not specified. Use the first level in '{.arg grouping.var}': ",
         numerator,
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     } else {
       if (!numerator %in% levels(srt@meta.data[, grouping.var])) {
         log_message(
-          "'", numerator, "' is not an element of the '", grouping.var, "'",
+          "'{.arg numerator}' is not an element of the '{.arg grouping.var}'",
           message_type = "error"
         )
       }
@@ -598,6 +608,7 @@ GroupHeatmap <- function(
   }
 
   assay <- assay %||% DefaultAssay(srt)
+  assay_use <- Seurat::GetAssay(srt, assay = assay)
 
   if (is.null(group.by)) {
     srt@meta.data[["All.groups"]] <- factor("")
@@ -625,7 +636,7 @@ GroupHeatmap <- function(
 
   if (length(split.by) > 1) {
     log_message(
-      "'split.by' only support one variable.",
+      "'{.arg split.by}' only support one variable.",
       message_type = "error"
     )
   }
@@ -651,7 +662,7 @@ GroupHeatmap <- function(
 
   if (any(group_elements == 1) && exp_method == "zscore") {
     log_message(
-      "'zscore' cannot be applied to the group(s) consisting of one element: ",
+      "{.arg exp_method} {.val zscore} cannot be applied to the group(s) consisting of one element: ",
       paste0(names(group_elements)[group_elements == 1], collapse = ","),
       message_type = "error"
     )
@@ -661,13 +672,13 @@ GroupHeatmap <- function(
   }
   if (length(group_palette) != length(group.by)) {
     log_message(
-      "'group_palette' must be the same length as 'group.by'",
+      "{.arg group_palette} must be the same length as {.arg group.by}",
       message_type = "error"
     )
   }
   group_palette <- stats::setNames(group_palette, nm = group.by)
-  raw.group.by <- group.by
-  raw.group_palette <- group_palette
+  raw_group_by <- group.by
+  raw_group_palette <- group_palette
   if (isTRUE(within_groups)) {
     new.group.by <- c()
     new.group_palette <- group_palette
@@ -686,12 +697,13 @@ GroupHeatmap <- function(
     group.by <- new.group.by
     group_palette <- unlist(new.group_palette)
   }
+
   if (!is.null(feature_split) && !is.factor(feature_split)) {
     feature_split <- factor(feature_split, levels = unique(feature_split))
   }
   if (length(feature_split) != 0 && length(feature_split) != length(features)) {
     log_message(
-      "feature_split must be the same length as features",
+      "{.arg feature_split} must be the same length as {.arg features}",
       message_type = "error"
     )
   }
@@ -700,7 +712,7 @@ GroupHeatmap <- function(
   }
   if (any(!feature_split_by %in% group.by)) {
     log_message(
-      "feature_split_by must be a subset of group.by",
+      "{.arg feature_split_by} must be a subset of {.arg group.by}",
       message_type = "error"
     )
   }
@@ -724,19 +736,14 @@ GroupHeatmap <- function(
     ))
     if (length(npal[npal != 0]) > 1) {
       log_message(
-        "cell_annotation_palette and cell_annotation_palcolor must be the same length as cell_annotation",
+        "{.arg cell_annotation_palette} and {.arg cell_annotation_palcolor} must be the same length as {.arg cell_annotation}",
         message_type = "error"
       )
     }
     if (
       any(
         !cell_annotation %in%
-          c(colnames(srt@meta.data), rownames(
-            Seurat::GetAssay(
-              srt,
-              assay = assay
-            )
-          ))
+          c(colnames(srt@meta.data), rownames(assay_use))
       )
     ) {
       log_message(
@@ -744,12 +751,7 @@ GroupHeatmap <- function(
         paste0(
           cell_annotation[
             !cell_annotation %in%
-              c(colnames(srt@meta.data), rownames(
-                Seurat::GetAssay(
-                  srt,
-                  assay = assay
-                )
-              ))
+              c(colnames(srt@meta.data), rownames(assay_use))
           ],
           collapse = ","
         ),
@@ -758,6 +760,10 @@ GroupHeatmap <- function(
       )
     }
   }
+  feature_annotation_data <- GetFeaturesData(
+    srt,
+    assay = assay
+  )
   if (!is.null(feature_annotation)) {
     if (length(feature_annotation_palette) == 1) {
       feature_annotation_palette <- rep(
@@ -778,18 +784,16 @@ GroupHeatmap <- function(
     ))
     if (length(npal[npal != 0]) > 1) {
       log_message(
-        "feature_annotation_palette and feature_annotation_palcolor must be the same length as feature_annotation",
+        "{.arg feature_annotation_palette} and {.arg feature_annotation_palcolor} must be the same length as {.arg feature_annotation}",
         message_type = "error"
       )
     }
-    if (
-      any(!feature_annotation %in% colnames(GetFeaturesData(srt, assay = assay)))
-    ) {
+    if (any(!feature_annotation %in% colnames(feature_annotation_data))) {
       log_message(
         "feature_annotation: ",
         paste0(
           feature_annotation[
-            !feature_annotation %in% colnames(GetFeaturesData(srt, assay = assay))
+            !feature_annotation %in% colnames(feature_annotation_data)
           ],
           collapse = ","
         ),
@@ -800,6 +804,7 @@ GroupHeatmap <- function(
       )
     }
   }
+
   if (length(width) == 1) {
     width <- rep(width, length(group.by))
   }
@@ -825,30 +830,30 @@ GroupHeatmap <- function(
   }
 
   if (is.null(cells)) {
-    cells <- colnames(srt@assays[[1]])
+    cells <- colnames(assay_use)
   }
-  if (all(!cells %in% colnames(srt@assays[[1]]))) {
+  if (all(!cells %in% colnames(assay_use))) {
     log_message(
-      "No cells found.",
+      "No cells found",
       message_type = "error"
     )
   }
-  if (!all(cells %in% colnames(srt@assays[[1]]))) {
+  if (!all(cells %in% colnames(assay_use))) {
     log_message(
-      "Some cells not found.",
-      message_type = "warning"
+      "Some cells not found",
+      message_type = "warning",
+      verbose = verbose
     )
   }
-  cells <- intersect(cells, colnames(srt@assays[[1]]))
+  cells <- intersect(cells, colnames(assay_use))
 
   if (is.null(features)) {
-    features <- SeuratObject::VariableFeatures(srt, assay = assay)
-  }
-  index <- features %in%
-    c(rownames(Seurat::GetAssay(
+    features <- SeuratObject::VariableFeatures(
       srt,
       assay = assay
-    )), colnames(srt@meta.data))
+    )
+  }
+  index <- features %in% c(rownames(assay_use), colnames(srt@meta.data))
   features <- features[index]
   features_unique <- make.unique(features)
   if (!is.null(feature_split)) {
@@ -904,6 +909,7 @@ GroupHeatmap <- function(
         levels = levels[levels %in% cell_groups[[cell_group]]]
       )
     }
+
     if (!is.null(grouping.var)) {
       levels <- apply(
         expand.grid(c("TRUE", "FALSE"), levels(cell_groups[[cell_group]])),
@@ -925,14 +931,8 @@ GroupHeatmap <- function(
     }
   }
 
-  gene <- features[features %in% rownames(Seurat::GetAssay(
-    srt,
-    assay = assay
-  ))]
-  gene_unique <- features_unique[features %in% rownames(Seurat::GetAssay(
-    srt,
-    assay = assay
-  ))]
+  gene <- features[features %in% rownames(assay_use)]
+  gene_unique <- features_unique[features %in% rownames(assay_use)]
   meta <- features[features %in% colnames(srt@meta.data)]
 
   mat_raw <- Matrix::as.matrix(
@@ -961,8 +961,9 @@ GroupHeatmap <- function(
       if (isTRUE(isfloat)) {
         libsize_use <- rep(1, length(libsize_use))
         log_message(
-          "The values in the 'counts' layer are non-integer. Set the library size to 1.",
-          message_type = "warning"
+          "The values in the {.val counts} layer are non-integer. Set the library size to {.val 1}",
+          message_type = "warning",
+          verbose = verbose
         )
         if (!is.null(grouping.var)) {
           exp_name <- paste0(
@@ -1068,15 +1069,6 @@ GroupHeatmap <- function(
   }
 
   # data used to do clustering
-  # if (length(feature_split_by) == 1) {
-  #   mat_split <- mat_list[[feature_split_by]]
-  # } else {
-  #   # mat_split <- do.call(cbind, mat_raw_list[feature_split_by])
-  #   # mat_split <- matrix_process(mat_split, method = exp_method)
-  #   mat_split <- do.call(cbind, mat_list[feature_split_by])
-  #   mat_split[is.infinite(mat_split)] <- max(abs(mat_split[!is.infinite(mat_split)])) * ifelse(mat_split[is.infinite(mat_split)] > 0, 1, -1)
-  #   mat_split[is.na(mat_split)] <- mean(mat_split, na.rm = TRUE)
-  # }
   mat_split <- do.call(cbind, mat_list[feature_split_by])
 
   if (is.null(limits)) {
@@ -1087,10 +1079,8 @@ GroupHeatmap <- function(
             stats::quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
           ),
           na.rm = TRUE
-        ) *
-          2
-      ) /
-        2
+        ) * 2
+      ) / 2
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
         palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
@@ -1122,15 +1112,7 @@ GroupHeatmap <- function(
           srt,
           assay = assay,
           layer = "data"
-        )[
-          intersect(cell_annotation, rownames(Seurat::GetAssay(
-            srt,
-            assay = assay
-          ))) %||%
-            integer(),
-          cells,
-          drop = FALSE
-        ]
+        )[intersect(cell_annotation, rownames(assay_use)) %||% integer(), cells, drop = FALSE]
       )
     )
   )
@@ -1140,11 +1122,11 @@ GroupHeatmap <- function(
       features = features,
       features_uique = features_unique
     ),
-    GetFeaturesData(srt, assay = assay)[
+    feature_annotation_data[
       features,
       intersect(
         feature_annotation,
-        colnames(GetFeaturesData(srt, assay = assay))
+        colnames(feature_annotation_data)
       ),
       drop = FALSE
     ]
@@ -1153,7 +1135,11 @@ GroupHeatmap <- function(
     features[duplicated(features)]
 
   lgd <- list()
-  lgd[["ht"]] <- ComplexHeatmap::Legend(title = exp_name, col_fun = colors, border = TRUE)
+  lgd[["ht"]] <- ComplexHeatmap::Legend(
+    title = exp_name,
+    col_fun = colors,
+    border = TRUE
+  )
   if (isTRUE(add_dot)) {
     lgd[["point"]] <- ComplexHeatmap::Legend(
       labels = paste0(seq(20, 100, length.out = 5), "%"),
@@ -1202,6 +1188,7 @@ GroupHeatmap <- function(
         ]]))
       }
     }
+
     if (cell_group != "All.groups") {
       funbody <- paste0(
         "
@@ -1319,8 +1306,8 @@ GroupHeatmap <- function(
     }
   }
 
-  for (i in seq_along(raw.group.by)) {
-    cell_group <- raw.group.by[i]
+  for (i in seq_along(raw_group_by)) {
+    cell_group <- raw_group_by[i]
     if (cell_group != "All.groups") {
       lgd[[cell_group]] <- ComplexHeatmap::Legend(
         title = cell_group,
@@ -1328,7 +1315,7 @@ GroupHeatmap <- function(
         legend_gp = grid::gpar(
           fill = palette_scop(
             levels(srt@meta.data[[cell_group]]),
-            palette = raw.group_palette[i],
+            palette = raw_group_palette[i],
             palcolor = group_palcolor[[i]]
           )
         ),
@@ -1570,8 +1557,9 @@ GroupHeatmap <- function(
           status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
             log_message(
-              "The e1071 package was not found. Switch split_method to 'kmeans'",
-              message_type = "warning"
+              "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",
+              message_type = "warning",
+              verbose = verbose
             )
             split_method <- "kmeans"
           } else {
@@ -1586,7 +1574,8 @@ GroupHeatmap <- function(
                 log_message(
                   "fuzzification value is samller than estimated:",
                   round(min_fuzzification, 2),
-                  message_type = "warning"
+                  message_type = "warning",
+                  verbose = verbose
                 )
               }
             }
@@ -1676,6 +1665,7 @@ GroupHeatmap <- function(
       mat_split
     )]
   }
+
   if (!is.null(feature_split)) {
     feature_metadata[["feature_split"]] <- feature_split
   } else {
@@ -1686,7 +1676,9 @@ GroupHeatmap <- function(
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
       if (!isTRUE(cluster_rows)) {
-        dend <- ComplexHeatmap::cluster_within_group(Matrix::t(mat_split), row_split_raw)
+        dend <- ComplexHeatmap::cluster_within_group(
+          Matrix::t(mat_split), row_split_raw
+        )
         cluster_rows <- dend
         row_split <- length(unique(row_split_raw))
       }
@@ -1785,13 +1777,14 @@ GroupHeatmap <- function(
   )
   ht_args <- c(ht_args, ht_params[setdiff(names(ht_params), names(ht_args))])
   ht_list <- do.call(ComplexHeatmap::Heatmap, args = ht_args)
-  features_ordered <- rownames(mat_list[[1]])[unlist(
+  ht_order <- unlist(
     suppressWarnings(
       ComplexHeatmap::row_order(
         ht_list
       )
     )
-  )]
+  )
+  features_ordered <- rownames(mat_list[[1]])[ht_order]
   feature_metadata[["index"]] <- stats::setNames(
     object = seq_along(features_ordered),
     nm = features_ordered
@@ -1823,6 +1816,7 @@ GroupHeatmap <- function(
       )
     }
   }
+
   if (length(index) > 0) {
     ha_mark <- ComplexHeatmap::HeatmapAnnotation(
       gene = ComplexHeatmap::anno_mark(
@@ -1860,19 +1854,30 @@ GroupHeatmap <- function(
           featan_values <- factor(featan_values, levels = unique(featan_values))
         }
         ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_block(
-          align_to = split(seq_along(featan_values), featan_values),
-          panel_fun = function(index, nm) {
-            grid::grid.rect(gp = grid::gpar(
-              fill = palette_scop(
-                featan_values,
-                palette = palette[i],
-                palcolor = palcolor
-              )[nm],
-              col = NA
-            ))
-          },
-          which = ifelse(flip, "column", "row")
+        # ha_feature[[featan]] <- ComplexHeatmap::anno_block(
+        #   align_to = split(seq_along(featan_values), featan_values),
+        #   panel_fun = function(index, nm) {
+        #     grid::grid.rect(gp = grid::gpar(
+        #       fill = palette_scop(
+        #         featan_values,
+        #         palette = palette[i],
+        #         palcolor = palcolor
+        #       )[nm],
+        #       col = NA
+        #     ))
+        #   },
+        #   which = ifelse(flip, "column", "row")
+        # )
+        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
+          x = as.character(featan_values),
+          col = palette_scop(
+            featan_values,
+            palette = palette,
+            palcolor = palcolor
+          ),
+          which = ifelse(flip, "column", "row"),
+          na_col = "transparent",
+          border = TRUE
         )
         anno_args <- c(
           ha_feature,
@@ -1919,15 +1924,22 @@ GroupHeatmap <- function(
           colors = palette_scop(palette = palette[i], palcolor = palcolor)
         )
         ha_feature <- list()
-        ha_feature[[featan]] <- ComplexHeatmap::anno_block(
-          align_to = split(seq_along(featan_values), featan_values),
-          panel_fun = function(index, nm) {
-            grid::grid.rect(gp = grid::gpar(
-              fill = col_fun(featan_values[nm]),
-              col = NA
-            ))
-          },
-          which = ifelse(flip, "column", "row")
+        # ha_feature[[featan]] <- ComplexHeatmap::anno_block(
+        #   align_to = split(seq_along(featan_values), featan_values),
+        #   panel_fun = function(index, nm) {
+        #     grid::grid.rect(gp = grid::gpar(
+        #       fill = col_fun(featan_values[nm]),
+        #       col = NA
+        #     ))
+        #   },
+        #   which = ifelse(flip, "column", "row")
+        # )
+        ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
+          x = featan_values,
+          col = col_fun,
+          which = ifelse(flip, "column", "row"),
+          na_col = "transparent",
+          border = TRUE
         )
         anno_args <- c(
           ha_feature,
@@ -2015,6 +2027,7 @@ GroupHeatmap <- function(
     palette <- feature_annotation_palette
     palcolor <- feature_annotation_palcolor
   }
+
   for (cell_group in group.by) {
     if (cell_group == group.by[1]) {
       left_annotation <- ha_left
@@ -2174,9 +2187,16 @@ GroupHeatmap <- function(
     )
     ht_args <- list(
       name = cell_group,
-      matrix = if (flip) Matrix::t(mat_list[[cell_group]]) else mat_list[[cell_group]],
+      matrix = if (flip) {
+        Matrix::t(mat_list[[cell_group]])
+      } else {
+        mat_list[[cell_group]]
+      },
       col = colors,
-      layer_fun = methods::getFunction("layer_fun", where = environment()),
+      layer_fun = methods::getFunction(
+        "layer_fun",
+        where = environment()
+      ),
       row_title = row_title %||%
         if (flip) {
           ifelse(cell_group != "All.groups", cell_group, "")
@@ -2193,8 +2213,16 @@ GroupHeatmap <- function(
       column_title_side = column_title_side,
       row_title_rot = row_title_rot,
       column_title_rot = column_title_rot,
-      row_split = if (flip) column_split_list[[cell_group]] else row_split,
-      column_split = if (flip) row_split else column_split_list[[cell_group]],
+      row_split = if (flip) {
+        column_split_list[[cell_group]]
+      } else {
+        row_split
+      },
+      column_split = if (flip) {
+        row_split
+      } else {
+        column_split_list[[cell_group]]
+      },
       cluster_rows = if (flip) {
         cluster_columns_list[[cell_group]]
       } else {
@@ -2245,6 +2273,7 @@ GroupHeatmap <- function(
         NULL
       }
     )
+
     if (any(names(ht_params) %in% names(ht_args))) {
       log_message(
         "ht_params: ",
@@ -2286,6 +2315,7 @@ GroupHeatmap <- function(
   } else {
     fix <- FALSE
   }
+
   rendersize <- heatmap_rendersize(
     width = width,
     height = height,

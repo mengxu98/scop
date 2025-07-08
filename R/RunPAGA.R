@@ -43,7 +43,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
 #'   srt = pancreas_sub,
 #'   assay_x = "RNA",
@@ -120,61 +120,43 @@ RunPAGA <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  tryCatch(
-    {
-      reticulate::py_run_string("
-import os
-os.environ.setdefault('OMP_NUM_THREADS', '1')
-os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
-os.environ.setdefault('MKL_NUM_THREADS', '1')
-os.environ.setdefault('VECLIB_MAXIMUM_THREADS', '1')
-os.environ.setdefault('NUMEXPR_NUM_THREADS', '1')
-os.environ.setdefault('KMP_WARNINGS', '0')
-")
-    },
-    error = function(e) {
-      log_message(
-        "Failed to set Python environment variables for stability.",
-        message_type = "warning"
-      )
-    }
-  )
-
   check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of 'srt', 'adata' must be provided.",
+      "One of {.val srt} or {.val adata} must be provided.",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "'group_by' must be provided.",
+      "{.val group_by} must be provided.",
       message_type = "error"
     )
   }
-  if (is.null(linear_reduction)) {
-    linear_reduction <- DefaultReduction(srt)
-  } else {
-    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
-  }
-  if (!linear_reduction %in% names(srt@reductions)) {
-    log_message(
-      paste0(linear_reduction, " is not in the srt reduction names."),
-      message_type = "error"
-    )
-  }
+  if (!is.null(srt)) {
+    if (is.null(linear_reduction)) {
+      linear_reduction <- DefaultReduction(srt)
+    } else {
+      linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+    }
+    if (!linear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val linear_reduction} is not in the srt reduction names.",
+        message_type = "error"
+      )
+    }
 
-  if (is.null(nonlinear_reduction)) {
-    nonlinear_reduction <- DefaultReduction(srt)
-  } else {
-    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
-  }
-  if (!nonlinear_reduction %in% names(srt@reductions)) {
-    log_message(
-      paste0(nonlinear_reduction, " is not in the srt reduction names."),
-      message_type = "error"
-    )
+    if (is.null(nonlinear_reduction)) {
+      nonlinear_reduction <- DefaultReduction(srt)
+    } else {
+      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+    }
+    if (!nonlinear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val nonlinear_reduction} is not in the srt reduction names.",
+        message_type = "error"
+      )
+    }
   }
 
   args <- mget(names(formals()))
@@ -226,7 +208,7 @@ os.environ.setdefault('KMP_WARNINGS', '0')
       layer_y = layer_y
     )
   }
-  groups <- py_to_r_auto(args[["adata"]]$obs)[[group_by]]
+  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
   args[["palette"]] <- palette_scop(
     levels(groups) %||% unique(groups),
     palette = palette,
