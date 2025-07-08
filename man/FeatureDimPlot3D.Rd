@@ -68,7 +68,7 @@ If not specified, will use the reduction returned by \code{\link{DefaultReductio
 Plotting cell points on a reduced 3D space and coloring according to the gene expression in the cells.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 FeatureDimPlot3D(
   pancreas_sub,

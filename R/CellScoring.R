@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' ccgenes <- CC_GenePrefetch("Mus_musculus")
 #' pancreas_sub <- CellScoring(
 #'   srt = pancreas_sub,
@@ -100,7 +100,9 @@
 #' )
 #'
 #' genenames <- make.unique(
-#'   capitalize(rownames(panc8_sub[["RNA"]]),
+#'   thisutils::capitalize(
+#'     rownames(panc8_sub[["RNA"]])
+#'   ),
 #'   force_tolower = TRUE
 #' )
 #' names(genenames) <- rownames(panc8_sub)

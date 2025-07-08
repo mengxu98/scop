@@ -233,7 +233,7 @@ A list with the following elements:
 This function generates a heatmap to visualize the similarity between different cell types or conditions. It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
@@ -243,7 +243,7 @@ ht1$plot
 data("panc8_sub")
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
-  capitalize(
+  thisutils::capitalize(
     rownames(panc8_sub),
     force_tolower = TRUE
   )

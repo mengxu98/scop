@@ -8,7 +8,7 @@
 #' @param ... Additional arguments to be passed to scDblFinder::scDblFinder function.
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- db_scDblFinder(pancreas_sub)
 #' CellDimPlot(
 #'   srt = pancreas_sub,
@@ -58,7 +58,7 @@ db_scDblFinder <- function(
 #' @param ... Additional arguments to be passed to scds::cxds_bcds_hybrid function.
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #' CellDimPlot(
 #'   srt = pancreas_sub,
@@ -119,7 +119,7 @@ db_scds <- function(
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
 #'   srt = pancreas_sub,
@@ -191,7 +191,7 @@ db_Scrublet <- function(
 #'
 #' @examples
 #' \dontrun{
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
 #'   srt = pancreas_sub,
@@ -265,7 +265,7 @@ db_DoubletDetection <- function(
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- RunDoubletCalling(
 #'   srt = pancreas_sub,
 #'   db_method = "scDblFinder"
@@ -430,7 +430,7 @@ is_outlier <- function(
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- RunCellQC(pancreas_sub)
 #' CellStatPlot(
 #'   srt = pancreas_sub,

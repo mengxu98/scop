@@ -43,8 +43,8 @@
 #'     "Chromosome",
 #'     "GeneType",
 #'     "Enzyme",
-#'     "TF",
-#'     "CSPA",
+#'     # "TF",
+#'     # "CSPA",
 #'     "VerSeDa"
 #'   )
 #' )
@@ -140,17 +140,17 @@ AnnotateFeatures <- function(
       rownames(db_df) <- db_df[["rowid"]]
       db_df[["rowid"]] <- NULL
       for (assay in assays) {
-        meta.features <- GetFeaturesData(srt, assay = assay)
+        meta_features <- GetFeaturesData(srt, assay = assay)
         if (
-          any(colnames(db_df) %in% colnames(meta.features)) && isTRUE(overwrite)
+          any(colnames(db_df) %in% colnames(meta_features)) && isTRUE(overwrite)
         ) {
-          meta.features <- meta.features[, setdiff(
-            colnames(meta.features),
+          meta_features <- meta_features[, setdiff(
+            colnames(meta_features),
             colnames(db_df)
           )]
         }
         db_sub <- db_df[
-          rownames(db_df) %in% rownames(meta.features), ,
+          rownames(db_df) %in% rownames(meta_features), ,
           drop = FALSE
         ]
         if (nrow(db_sub) == 0) {
@@ -163,18 +163,17 @@ AnnotateFeatures <- function(
             message_type = "error"
           )
         }
-        meta.features <- cbind(
-          meta.features,
+        meta_features <- cbind(
+          meta_features,
           db_sub[
-            rownames(meta.features),
-            setdiff(colnames(db_sub), colnames(meta.features)),
+            rownames(meta_features),
+            setdiff(colnames(db_sub), colnames(meta_features)),
             drop = FALSE
           ]
         )
-        # srt[[assay]]@meta.features <- meta.features
         srt <- AddFeaturesData(
           srt,
-          features = meta.features,
+          features = meta_features,
           assay = assay
         )
       }
@@ -230,33 +229,31 @@ AnnotateFeatures <- function(
     rownames(gtf_columns_collapse) <- gtf_columns_collapse[["rowid"]]
     gtf_columns_collapse[["rowid"]] <- NULL
     for (assay in assays) {
-      # meta.features <- srt[[assay]]@meta.features
-      meta.features <- GetFeaturesData(srt, assay = assay)
+      meta_features <- GetFeaturesData(srt, assay = assay)
       if (
         length(intersect(
-          colnames(meta.features),
+          colnames(meta_features),
           colnames(gtf_columns_collapse)
         )) >
           0 &&
           isTRUE(overwrite)
       ) {
-        meta.features <- meta.features[, setdiff(
-          colnames(meta.features),
+        meta_features <- meta_features[, setdiff(
+          colnames(meta_features),
           colnames(gtf_columns_collapse)
         )]
       }
-      meta.features <- cbind(
-        meta.features,
+      meta_features <- cbind(
+        meta_features,
         gtf_columns_collapse[
-          rownames(meta.features),
-          setdiff(colnames(gtf_columns_collapse), colnames(meta.features)),
+          rownames(meta_features),
+          setdiff(colnames(gtf_columns_collapse), colnames(meta_features)),
           drop = FALSE
         ]
       )
-      # srt[[assay]]@meta.features <- meta.features
       srt <- AddFeaturesData(
         srt,
-        features = meta.features,
+        features = meta_features,
         assay = assay
       )
     }

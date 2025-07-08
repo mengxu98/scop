@@ -93,7 +93,9 @@ A \code{Seurat} object.
 This function performs a standard single-cell analysis workflow.
 }
 \examples{
-data("pancreas_sub")
+library(Matrix)
+PrepareEnv()
+data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' p1 <- CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -396,7 +396,7 @@ CellStatPlot <- function(
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' head(pancreas_sub@meta.data)
 #' StatPlot(
 #'   pancreas_sub@meta.data,
@@ -410,14 +410,16 @@ CellStatPlot <- function(
 #'   pancreas_sub[["RNA"]]@meta.data,
 #'   stat.by = "highly_variable_genes",
 #'   plot_type = "ring",
-#'   label = TRUE
+#'   label = TRUE,
+#'   NA_stat = FALSE
 #' )
 #'
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
 #'   IDtype = "symbol",
-#'   db = c("VerSeDa", "TF")
+#'   # db = c("VerSeDa", "TF")
+#'   db = "VerSeDa"
 #' )
 #' StatPlot(
 #'   GetFeaturesData(pancreas_sub, "RNA"),

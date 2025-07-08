@@ -4,17 +4,19 @@
 \alias{adata_to_srt}
 \title{Convert an anndata object to a seurat object using reticulate}
 \usage{
-adata_to_srt(adata)
+adata_to_srt(adata, verbose = TRUE)
 }
 \arguments{
 \item{adata}{a connected python anndata object.}
+
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Convert an anndata object to a seurat object using reticulate
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata <- RunPAGA(
   adata = adata,
@@ -25,7 +27,7 @@ adata <- RunPAGA(
 srt <- adata_to_srt(adata)
 srt
 
-### Or convert a h5ad file to Seurat object
+## Or convert a h5ad file to Seurat object
 # library(reticulate)
 # check_python("scanpy")
 # sc <- import("scanpy")
