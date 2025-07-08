@@ -48,7 +48,8 @@ Annotate single cells using scmap.
 data("panc8_sub")
 
 genenames <- make.unique(
-  capitalize(rownames(panc8_sub),
+  thisutils::capitalize(
+    rownames(panc8_sub),
     force_tolower = TRUE
   )
 )
@@ -62,7 +63,7 @@ panc8_sub <- check_srt_merge(
   batch = "tech"
 )[["srt_merge"]]
 
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunScmap(
   srt_query = pancreas_sub,

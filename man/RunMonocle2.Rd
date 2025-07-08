@@ -57,7 +57,7 @@ Runs the Monocle2 algorithm on a Seurat object.
 }
 \examples{
 if (interactive()) {
-  data("pancreas_sub")
+  data(pancreas_sub)
   pancreas_sub <- RunMonocle2(pancreas_sub)
   names(pancreas_sub@tools$Monocle2)
   trajectory <- pancreas_sub@tools$Monocle2$trajectory

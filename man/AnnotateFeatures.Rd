@@ -76,8 +76,8 @@ pancreas_sub <- AnnotateFeatures(
     "Chromosome",
     "GeneType",
     "Enzyme",
-    "TF",
-    "CSPA",
+    # "TF",
+    # "CSPA",
     "VerSeDa"
   )
 )

@@ -12,7 +12,7 @@
 #' @seealso [SeuratObject::GetAssayData]
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' GetAssayData5(
 #'   pancreas_sub,
 #'   layer = "counts",

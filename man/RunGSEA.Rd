@@ -118,7 +118,7 @@ Enrichment result is a list with the following component:
 Perform the enrichment analysis (GSEA) on the genes
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 # pancreas_sub <- RunDEtest(
 #  pancreas_sub,
 #  group_by = "CellType"

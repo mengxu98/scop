@@ -48,7 +48,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 #' FeatureCorPlot(
 #'   pancreas_sub,

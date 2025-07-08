@@ -85,7 +85,7 @@ RunSCExplorer
 }
 \examples{
 \dontrun{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 data("panc8_sub")
 panc8_sub <- integration_scop(

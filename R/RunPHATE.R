@@ -143,7 +143,6 @@ RunPHATE.Seurat <- function(
   return(object)
 }
 
-
 #' @rdname RunPHATE
 #' @method RunPHATE default
 #' @export
@@ -170,7 +169,6 @@ RunPHATE.default <- function(
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }
-
   check_python("phate")
   phate <- reticulate::import("phate")
 

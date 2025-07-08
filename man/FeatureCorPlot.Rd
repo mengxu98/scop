@@ -143,7 +143,7 @@ Features correlation plot
 This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 FeatureCorPlot(
   pancreas_sub,

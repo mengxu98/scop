@@ -9,7 +9,8 @@ CC_GenePrefetch(
   Ensembl_version = 103,
   mirror = NULL,
   max_tries = 5,
-  use_cached_gene = TRUE
+  use_cached_gene = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ CC_GenePrefetch(
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
 \item{use_cached_gene}{Whether to use previously cached cell cycle gene conversion results for the species.}
+
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A list of S-phase and G2M-phase genes.

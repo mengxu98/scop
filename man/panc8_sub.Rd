@@ -22,7 +22,7 @@ For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8
 \examples{
 \dontrun{
 if (interactive()) {
-  data("pancreas_sub")
+  data(pancreas_sub)
   if (!require("SeuratData", quietly = TRUE)) {
     pak::pak("satijalab/seurat-data")
   }
@@ -30,8 +30,8 @@ if (interactive()) {
   library(Seurat)
   suppressWarnings(InstallData("panc8"))
   data("panc8")
-  panc8 <- Seurat::UpdateSeuratObject(panc8)
-  set.seed(11)
+  panc8 <- UpdateSeuratObject(panc8)
+  set.seed(42)
   cells_sub <- unlist(
     lapply(
       split(colnames(panc8), panc8$dataset),
@@ -43,7 +43,7 @@ if (interactive()) {
     panc8_sub,
     slot = "counts"
   )
-  panc8_sub <- Seurat::CreateSeuratObject(
+  panc8_sub <- CreateSeuratObject(
     counts = counts,
     meta.data = panc8_sub@meta.data
   )
@@ -55,23 +55,11 @@ if (interactive()) {
   ), ]
   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  panc8_sub <- Seurat::NormalizeData(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::FindVariableFeatures(
-    panc8_sub,
-    verbose = FALSE
-  )
-  panc8_sub <- Seurat::ScaleData(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::RunPCA(panc8_sub, verbose = FALSE)
-  panc8_sub <- Seurat::RunUMAP(
-    panc8_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  panc8_sub <- Seurat::RunTSNE(
-    panc8_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
+  panc8_sub <- NormalizeData(panc8_sub)
+  panc8_sub <- FindVariableFeatures(panc8_sub)
+  panc8_sub <- ScaleData(panc8_sub)
+  panc8_sub <- RunPCA(panc8_sub)
+  panc8_sub <- RunUMAP(panc8_sub, dims = 1:20)
   usethis::use_data(
     panc8_sub,
     compress = "xz",

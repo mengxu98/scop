@@ -44,7 +44,7 @@
 #' @export
 #'
 #' @examples
-#' data("pancreas_sub")
+#' data(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   srt = pancreas_sub,
 #'   group.by = "SubCellType",

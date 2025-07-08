@@ -243,7 +243,7 @@ FeatureStatPlot(
 This function generates a statistical plot for features.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
