@@ -23,7 +23,7 @@ if (interactive()) {
   scv <- import("scvelo")
   adata <- scv$datasets$pancreas()
   pancreas <- adata_to_srt(adata)
-  set.seed(11)
+  set.seed(42)
   cells <- sample(colnames(pancreas), size = 1000)
   pancreas_sub <- pancreas[, cells]
   pancreas_sub <- pancreas_sub[Matrix::rowSums(
@@ -53,26 +53,19 @@ if (interactive()) {
   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-  pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::FindVariableFeatures(
-    pancreas_sub,
-    verbose = FALSE
-  )
-  pancreas_sub <- Seurat::ScaleData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::RunPCA(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- Seurat::RunUMAP(
-    pancreas_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
-  pancreas_sub <- Seurat::RunTSNE(
-    pancreas_sub,
-    dims = 1:30,
-    verbose = FALSE
-  )
+  pancreas_sub <- NormalizeData(pancreas_sub)
+  pancreas_sub <- FindVariableFeatures(pancreas_sub)
+  pancreas_sub <- ScaleData(pancreas_sub)
+  pancreas_sub <- RunPCA(pancreas_sub)
+  pancreas_sub <- RunUMAP(pancreas_sub, dims = 1:20)
   pancreas_sub <- RunDEtest(
     pancreas_sub,
     group_by = "CellType"
+  )
+  pancreas_sub <- AnnotateFeatures(
+    srt = pancreas_sub,
+    species = "Mus_musculus",
+    db = c("TF", "CSPA")
   )
   usethis::use_data(
     pancreas_sub,

@@ -93,7 +93,7 @@ LineagePlot(
 Generate a lineage plot based on the pseudotime.
 }
 \examples{
-data("pancreas_sub")
+data(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

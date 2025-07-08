@@ -47,7 +47,7 @@ RunNMF(object, ...)
   ...
 )
 
-\method{RunNMF}{Assay}(
+\method{RunNMF}{Assay5}(
   object,
   assay = NULL,
   layer = "data",
@@ -119,6 +119,7 @@ RunNMF(object, ...)
 Run NMF (non-negative matrix factorization)
 }
 \examples{
+library(Matrix)
 pancreas_sub <- RunNMF(object = pancreas_sub)
 CellDimPlot(
   pancreas_sub,

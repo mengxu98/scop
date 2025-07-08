@@ -4,6 +4,7 @@
 \alias{RunMDS}
 \alias{RunMDS.Seurat}
 \alias{RunMDS.Assay}
+\alias{RunMDS.Assay5}
 \alias{RunMDS.default}
 \title{Run MDS (multi-dimensional scaling)}
 \usage{
@@ -40,6 +41,21 @@ RunMDS(object, ...)
   ...
 )
 
+\method{RunMDS}{Assay5}(
+  object,
+  assay = NULL,
+  layer = "data",
+  features = NULL,
+  nmds = 50,
+  dist.method = "euclidean",
+  mds.method = "cmdscale",
+  rev.mds = FALSE,
+  reduction.key = "MDS_",
+  verbose = TRUE,
+  seed.use = 11,
+  ...
+)
+
 \method{RunMDS}{default}(
   object,
   assay = NULL,
@@ -57,7 +73,7 @@ RunMDS(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the stats::\link[stats]{cmdscale}, MASS::\link[MASS]{isoMDS} or MASS::\link[MASS]{sammon} function.}
+\item{...}{Additional arguments to be passed to the \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon} function.}
 
 \item{assay}{A character string specifying the assay to be used for the analysis. Default is NULL.}
 
@@ -91,5 +107,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "mds"
 )
-
 }

@@ -17,7 +17,6 @@ Retrieves information about databases based on a given species and database name
 \examples{
 ListDB(species = "Homo_sapiens")
 ListDB(species = "Mus_musculus", db = "GO_BP")
-
 }
 \seealso{
 \code{\link{PrepareDB}}

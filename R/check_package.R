@@ -39,8 +39,8 @@ check_python <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      envname,
-      " python environment does not exist. Create it with 'PrepareEnv' function...",
+      "{.arg envname}: ", envname,
+      " python environment does not exist. Create it with {.fn PrepareEnv} function...",
       message_type = "warning"
     )
     PrepareEnv()
