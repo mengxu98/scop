@@ -119,6 +119,7 @@ RunNMF(object, ...)
 Run NMF (non-negative matrix factorization)
 }
 \examples{
+library(Matrix)
 pancreas_sub <- RunNMF(object = pancreas_sub)
 CellDimPlot(
   pancreas_sub,
