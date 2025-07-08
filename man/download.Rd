@@ -2,16 +2,15 @@
 % Please edit documentation in R/utils.R
 \name{download}
 \alias{download}
-\title{Download File from the Internet}
+\title{Download file from the Internet}
 \usage{
 download(
   url,
   destfile,
   methods = c("auto", "wget", "libcurl", "curl", "wininet", "internal"),
-  max_tries = 2,
-  use_curl = TRUE,
-  verbose = TRUE,
-  ...
+  quiet = FALSE,
+  ...,
+  max_tries = 2
 )
 }
 \arguments{
@@ -26,16 +25,13 @@ download(
 \item{methods}{Methods to be used for downloading files.
 The default is to try different download methods in turn until the download is successfully completed.}
 
+\item{quiet}{If \code{TRUE}, suppress status messages (if any), and
+    the progress bar.}
+
+\item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}.}
+
 \item{max_tries}{Number of tries for each download method.}
-
-\item{use_curl}{Logical value, default is \code{TRUE}.
-Whether to use \link[curl:curl_download]{curl::curl_download} to download the file.}
-
-\item{verbose}{Logical value, default is \code{TRUE}.
-Whether to print progress messages.}
-
-\item{...}{Other arguments passed to \link[utils:download.file]{utils::download.file}}
 }
 \description{
-Download File from the Internet
+Download file from the Internet
 }
