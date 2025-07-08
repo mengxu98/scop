@@ -3,6 +3,7 @@
 <url><loc>https://mengxu98.github.io/scop/LICENSE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/authors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/news/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AddFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AnnotateFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/BBKNN_integrate.html</loc></url>
@@ -28,12 +29,14 @@
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureStatPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/FetchDataZero.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FetchH5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FindExpressedMarkers.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GSEAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GeneConvert.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetAssayData5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetFeaturesData.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GetSimilarFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GraphPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony_integrate.html</loc></url>
@@ -88,13 +91,13 @@
 <url><loc>https://mengxu98.github.io/scop/reference/Scanorama_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Seurat_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/StatPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/TACSPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Uncorrected_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/VelocityPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/VolcanoPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/adata_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/adjcolors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/blendcolors.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/capitalize.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_data_type.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_python.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_r.html</loc></url>
@@ -124,7 +127,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/install_miniconda2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/installed_Python_pkgs.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/invoke_fun.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/is_outlier.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/lifemap_cell.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/make_long.html</loc></url>
@@ -149,8 +151,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/theme_blank.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/theme_sankey.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/theme_scop.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/try_get.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/unnest_fun.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/words_excluded.html</loc></url>
 </urlset>
 

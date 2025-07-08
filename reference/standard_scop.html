@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,6 +16,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
@@ -192,26 +193,89 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:25] === Preparing scop Python Environment ===</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:25] Environment name: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:25] Python version: 3.10-1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:25] Number of packages to install: 20</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:25] Auto-detecting conda...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:41:39] Creating conda environment with Python 3.10-1...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> + /usr/share/miniconda/bin/conda create --yes --name scop_env 'python=3.10-1' pip setuptools wheel --quiet -c conda-forge</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:42:02] Environment created successfully: /usr/share/miniconda/envs/scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:42:02] Checking and installing required packages...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:42:03] Try to install leidenalg,matplotlib&gt;=3.5,&lt;3.11,numba&gt;=0.59,&lt;0.60.0,llvmlite&gt;=0.42,&lt;0.43.0,numpy&gt;=1.24,&lt;1.27.0,palantir,pandas&gt;=2.0,&lt;2.1,python-igraph,scanpy&gt;=1.9,&lt;1.12,scikit-learn,scipy&gt;=1.10,scvelo,wot,trimap,pacmap,phate,bbknn,scanorama,scvi-tools,tbb</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:42:03] Installing 21 packages into environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:42:04] Installing packages via pip...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:07] Pip installation completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:08] Checking 20 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:09] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Leidenalg 0.10.2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Matplotlib 3.10.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Numba 0.59.1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Llvmlite 0.42.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Numpy 1.26.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Progress: 5/20 packages checked</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Palantir 1.4.1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Pandas 2.0.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Python-igraph 0.11.9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scanpy 1.11.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scikit-learn 1.7.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Progress: 10/20 packages checked</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scipy 1.15.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scvelo 0.3.3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Wot 1.0.8.post2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Trimap 1.1.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Pacmap 0.8.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Progress: 15/20 packages checked</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Phate 1.0.11</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Bbknn 1.6.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scanorama 1.7.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Scvi-tools 1.2.1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:11] Tbb 2022.2.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Progress: 20/20 packages checked</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Package check complete: 20/20 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:11] Setting up Python environment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ==================== scop conda environment ====================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> conda: /usr/share/miniconda/bin/conda</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> environment: /usr/share/miniconda/envs/scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> python: /usr/share/miniconda/envs/scop_env/bin/python3.10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ==================== scop python config ====================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> python:         /usr/share/miniconda/envs/scop_env/bin/python3.10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.10.so</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> version:        3.10.1 | packaged by conda-forge | (main, Dec 22 2021, 01:39:36) [GCC 9.4.0]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/numpy</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy_version:  1.26.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> NOTE: Python version was forced by use_python() function</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ==============================================================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:17] Initializing Python modules...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:19] Matplotlib initialized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:22] Scanpy initialized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:22] Scvelo initialized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:22] === scop Python Environment Ready ===</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">standard_scop</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:44] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:44] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:45] Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:45] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:45] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:45] Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:46] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 10:00:46] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:47] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:47] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:51] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:00:55] Run standard_scop done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:55] Elapsed time: 11.09 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:23] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:23] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:23] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:23] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:24] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:24] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:24] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:24] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:44:25] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:25] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:30] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:44:35] Run standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:35] Elapsed time: 11.78 secs</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
@@ -230,153 +294,223 @@
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="va">linear_reductions</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:56] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:56] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:56] Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:56] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:57] Linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:58] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:58] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 10:00:58] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:58] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:00:58] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:35] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:35] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:35] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:35] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:36] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:37] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:37] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:44:37] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:37] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:37] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:02] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:42] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:06] Perform linear dimension reduction (nmf) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:47] Perform linear dimension reduction (nmf) on the data...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter |      tol </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1 | 6.95e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2 | 1.01e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3 | 3.00e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4 | 1.43e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5 | 7.77e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    6 | 4.70e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    7 | 3.03e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    8 | 2.09e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    9 | 1.58e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   10 | 1.26e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   11 | 1.04e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   12 | 8.96e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   13 | 7.96e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   14 | 7.26e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   15 | 6.62e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   16 | 5.82e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   17 | 4.81e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   18 | 4.11e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   19 | 3.53e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   20 | 3.08e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   21 | 2.70e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   22 | 2.40e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   23 | 2.14e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   24 | 1.93e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   25 | 1.76e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   26 | 1.63e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   27 | 1.53e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   28 | 1.44e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   29 | 1.37e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   30 | 1.33e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   31 | 1.28e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   32 | 1.24e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   33 | 1.19e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   34 | 1.13e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   35 | 1.07e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   36 | 1.03e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   37 | 9.75e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   38 | 9.16e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   39 | 8.53e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   40 | 7.96e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   41 | 7.51e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   42 | 7.14e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   43 | 6.78e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   44 | 6.48e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   45 | 6.27e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   46 | 6.07e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   47 | 5.99e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   48 | 6.05e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   49 | 6.32e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   50 | 6.71e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   51 | 7.22e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   52 | 7.71e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   53 | 7.80e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   54 | 7.30e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   55 | 6.21e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   56 | 5.22e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   57 | 4.55e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   58 | 4.09e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   59 | 3.77e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   60 | 3.53e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   61 | 3.34e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   62 | 3.16e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   63 | 2.99e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   64 | 2.85e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   65 | 2.70e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   66 | 2.52e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   67 | 2.34e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   68 | 2.20e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   69 | 2.06e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   70 | 1.91e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   71 | 1.79e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   72 | 1.68e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   73 | 1.58e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   74 | 1.48e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   75 | 1.39e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   76 | 1.32e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   77 | 1.21e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   78 | 1.14e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   79 | 1.09e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   80 | 1.05e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   81 | 1.01e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   82 | 9.80e-06</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:10] StandardBE_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Positive:  Spp1, Cyr61, Vim, Cldn3, Jun, Sparc, Atp1b1, Sox4, Anxa2, Bicc1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Sox9, Krt18, Ifitm2, Peg3, Lurap1l, Myl12a, Krt8, 1700011H14Rik, Rhob, H19 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Mgst1, Hhex, Dbi, Gpx1, Hes1, Epcam, Krt19, Cd24a, Klf6, Clu </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Negative:  Cpxm1, Setdb2, Hist1h4j, Fgf11, Prps2, Sobp, Apobr, Dynll1, Serp1, Tmcc3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Clip3, Ankrd37, Tex30, Spcs3, Aqp7, Dnah9, Cox7a1, Impa2, Ace2, Vipr1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Chrnb4, Tnfaip8l3, Ppp1r3b, Gm15816, Xkr5, Vsig10l, Wdr62, Oxtr, Antxr1, Msantd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] StandardBE_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Positive:  Cck, Gadd45a, Ppp1r14a, Selm, Tmsb4x, Mdk, Btbd17, Nkx6-1, Tubb3, Sh3bgrl3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Igfbpl1, Jun, Sox4, Smarcd2, Cotl1, Upk3bl, Map1b, Cldn6, Mfap4, Ptma </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Ttc28, Ifitm2, Hes6, Neurod2, Dbn1, Btg2, Syt13, Sult2b1, Mfng, Ly6e </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Negative:  Cpxm1, Setdb2, Gmfg, Fkbp9, Prps2, Sobp, Apobr, Dynll1, P4ha3, Mgat4a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Mrps25, Ankrd37, Eef2k, Nucb2, Tex30, Spcs3, Rsad1, Tnip1, Dnah9, Axin2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Adamtsl2, Ispd, Pbxip1, Impa2, Fkbp10, Tnfrsf21, Ace2, Chrnb4, Tnfaip8l3, Ppp1r3b </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] StandardBE_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Positive:  Spp1, Id2, Atp1b1, Vim, Sparc, Mgst1, Mdk, Nudt19, Anxa2, Ccnd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Dbi, Cldn3, Jun, Sox9, Ptn, Col9a3, Tkt, Hes1, Wfdc2, Smtnl2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Gsta3, Adamts1, Ifitm2, Aldoc, Cd24a, Tead2, Gpx1, Lurap1l, Ttyh1, Pebp1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Negative:  Setdb2, Gmfg, Fgf11, Kif21b, Sobp, Tmcc3, Clip3, Ankrd37, Eef2k, Nucb2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Tex30, Tnip1, Aqp7, Dnah9, Axin2, Adamtsl2, Ispd, Cox7a1, Impa2, Fkbp10 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Tnfrsf21, Ace2, Vipr1, Chrnb4, Tnfaip8l3, Gm26759, Ppp1r3b, Gm15816, Vsig10l, Syce1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] StandardBE_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Positive:  Mt1, Mt2, Clu, Ambp, Pdzk1ip1, Muc1, Krt18, Gapdh, Csrp2, Ldha </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Serpinh1, H19, Rbbp7, H1f0, Hsd17b10, Cyba, Cldn10, Dbi, Eno1, Bex4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Epcam, Ybx1, Gsta3, Bex1, Mif, Krt19, Smco4, Tpi1, Acot1, Capg </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Negative:  Cpxm1, Setdb2, Gmfg, Kif21b, Sobp, Mgat4a, Serp1, Hn1l, Tmcc3, Mrps25 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Clip3, Tex30, Spcs3, Rangap1, Rsad1, Aqp7, Dnah9, Axin2, Adamtsl2, Ispd </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Fkbp10, Ace2, Vipr1, Chrnb4, Tnfaip8l3, Gm26759, Ppp1r3b, Xkr5, Vsig10l, Wdr62 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] StandardBE_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Positive:  2810417H13Rik, Rrm2, Hmgb2, Mcm5, Lig1, Dut, Gmnn, Pcna, Dek, Rpa2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Tyms, H2afz, Ranbp1, Tipin, Tuba1b, Mcm3, Uhrf1, Nasp, Rfc2, Orc6 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Tubb5, Dhfr, Tk1, Hsp90aa1, Gins2, Mcm6, Ptma, Siva1, Mcm7, Dnajc9 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] Negative:  Setdb2, Hist1h4j, Fgf11, Kif21b, Sobp, Serp1, Tmcc3, Clip3, Ankrd37, Rsad1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Tnip1, Aqp7, Dnah9, Axin2, Ispd, Rtkn, Cox7a1, Fkbp10, Tnfrsf21, Ace2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 10:01:10] 	   Vipr1, Chrnb4, Tnfaip8l3, Gm26759, Ppp1r3b, Gm15816, Vsig10l, Syce1, Wdr62, Oxtr </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:11] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:11] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 10:01:11] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:11] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:11] Non-linear dimensionality reduction(umap) using Reduction(Standardnmf, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:15] Non-linear dimensionality reduction(umap) using Reduction(Standardnmf, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:20] Perform linear dimension reduction (mds) on the data...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': no method for coercing this S4 class to a vector</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1 | 6.93e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2 | 1.03e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3 | 3.21e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4 | 1.47e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5 | 8.33e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    6 | 5.22e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    7 | 3.55e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    8 | 2.59e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    9 | 1.97e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   10 | 1.52e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   11 | 1.21e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   12 | 9.88e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   13 | 8.17e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   14 | 6.82e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   15 | 5.71e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   16 | 4.81e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   17 | 4.10e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   18 | 3.49e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19 | 3.08e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   20 | 2.80e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   21 | 2.53e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   22 | 2.30e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   23 | 2.12e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   24 | 1.95e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   25 | 1.83e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   26 | 1.72e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   27 | 1.64e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   28 | 1.58e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   29 | 1.54e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30 | 1.51e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   31 | 1.49e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   32 | 1.49e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   33 | 1.51e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34 | 1.54e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   35 | 1.58e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36 | 1.61e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   37 | 1.65e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   38 | 1.67e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   39 | 1.68e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   40 | 1.67e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   41 | 1.66e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   42 | 1.63e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   43 | 1.59e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   44 | 1.55e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   45 | 1.50e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   46 | 1.44e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   47 | 1.36e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   48 | 1.24e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   49 | 1.12e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   50 | 1.01e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   51 | 8.96e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   52 | 7.88e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   53 | 7.01e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   54 | 6.33e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   55 | 5.80e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   56 | 5.33e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   57 | 4.98e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   58 | 4.66e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   59 | 4.35e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   60 | 4.13e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   61 | 3.91e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   62 | 3.70e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   63 | 3.45e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   64 | 3.22e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   65 | 2.97e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   66 | 2.72e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   67 | 2.53e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   68 | 2.37e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   69 | 2.25e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   70 | 2.13e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   71 | 2.04e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   72 | 1.96e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   73 | 1.89e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   74 | 1.84e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   75 | 1.79e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   76 | 1.76e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   77 | 1.75e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   78 | 1.73e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   79 | 1.72e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   80 | 1.73e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   81 | 1.75e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   82 | 1.78e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   83 | 1.81e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   84 | 1.85e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   85 | 1.91e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   86 | 1.98e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   87 | 2.05e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   88 | 2.13e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   89 | 2.20e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   90 | 2.27e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   91 | 2.33e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   92 | 2.39e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   93 | 2.35e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   94 | 2.36e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   95 | 2.22e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   96 | 2.16e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   97 | 2.11e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   98 | 2.10e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   99 | 2.09e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  100 | 2.09e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  convergence not reached in 100 iterations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   (actual tol = 2.09e-05, target tol = 1.00e-05)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> StandardBE_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Positive:  Spp1, Sparc, Atp1b1, Vim, Dbi, Clu, Mgst1, Anxa2, Acot1, Cldn3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Krt18, Mt1, 1700011H14Rik, Id2, S100a10, Gsta3, S100a11, Krt8, Bicc1, Jun </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Pdzk1ip1, Mt2, Cyr61, Nudt19, Smtnl2, Ifitm2, Rps12, Sox9, Lurap1l, Rpl12 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Negative:  Doc2b, Fut1, Gm10244, Gm44210, Pdgfc, Ak5, Snhg11, 9930012K11Rik, Efnb2, Carhsp1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Hmgcr, Scnn1b, Gmds, Msh6, Ap3b2, Tmem184c, Cgref1, Diaph3, Antxr2, Insig1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Mat1a, Tmem198, Rfx6, Pif1, Xkr5, Elfn1, Msantd1, Ajap1, Gpld1, Ngb </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   StandardBE_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Positive:  Spp1, Ccnd1, Wfdc2, Mdk, Mgst1, Pebp1, Ptn, Cldn10, Vim, Gapdh </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Krt8, Cldn3, Sox9, Krt18, Dbi, Aldh1b1, Ldha, Eno1, Rps12, Npm1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Rpl12, Ptma, Phgdh, Lurap1l, Deb1, Cd24a, Id2, Atp1b1, Tst, Ybx1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Negative:  Fut1, Fxyd1, Foxm1, Gm10244, Gm44210, Pdgfc, Snhg11, 9930012K11Rik, Carhsp1, Hmgcr </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Ap3b2, Tmem184c, Cgref1, Antxr2, Nbl1, Syt17, Mat1a, Tmem198, Rfx6, Xkr5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Elfn1, Tmem132b, Msantd1, Ajap1, Hist2h4, Gpld1, Akr1c18, Ngb, Efr3b, Zfp879 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   StandardBE_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Positive:  Clu, Spp1, Mt1, Csrp2, Krt18, Muc1, H19, Cldn3, Mt2, Hhex </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Gapdh, Mdk, Rps12, Akr1c19, Mgst1, Rpl36a, Cyr61, Atp1b1, Zfos1, S100a11 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Pdzk1ip1, Sparc, 1700011H14Rik, Ambp, Gas6, Ldha, 8430408G22Rik, Ttr, Jun, Pdgfa </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Negative:  Doc2b, Fut1, Fxyd1, Foxm1, Prdm5, Gm10244, Gm44210, Ak5, Efnb2, Carhsp1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Rrbp1, Hmgcr, Scnn1b, Ap3b2, Tmem184c, Fgfr1, Diaph3, Dzip1l, Insig1, Mapkapk3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Tmem198, Rfx6, Pif1, Tmem132b, Ajap1, Hist2h4, Ngb, Efr3b, BC034090, Atp2c1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   StandardBE_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Positive:  Cck, Gadd45a, Mdk, Sox4, Ppp1r14a, Selm, Tmsb4x, Tubb3, Jun, Igfbpl1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Btbd17, Neurod2, Sult2b1, Cldn6, Cdkn1a, Smarcd2, Cotl1, Mfap4, Btg2, Hes6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Ptma, Aplp1, Sh3bgrl3, Hn1, Mfng, Ppp3ca, Camk2n1, Npm1, Rpl12, Gnas </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Negative:  Doc2b, Fut1, Fxyd1, Foxm1, Prdm5, Gm10244, Pdgfc, Ak5, Efnb2, Ugt2b35 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Rrbp1, Scnn1b, Sult5a1, Gmds, Notch1, Fgfr1, Clcf1, Cgref1, Diaph3, Neu2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Hprt, Antxr2, Nbl1, Dzip1l, Mapkapk3, Tmem198, Xkr5, Tmem132b, Hist2h4, Gpld1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   StandardBE_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Positive:  2810417H13Rik, Dut, Rrm2, Pcna, Lig1, Hmgb2, Tyms, H2afz, Gmnn, Tuba1b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Tipin, Dek, Dnajc9, Tubb5, Mcm5, Tk1, Nasp, Siva1, Gins2, Mcm6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Rpa2, Spc24, Mcm3, Dhfr, Ranbp1, Uhrf1, Rfc2, Snrpd1, Cks1b, Dnmt1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Negative:  Doc2b, Fut1, Prdm5, Gm44210, Ak5, Snhg11, 9930012K11Rik, Efnb2, Ugt2b35, Rrbp1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Scnn1b, Ap3b2, Pcdh9, Cgref1, Neu2, Mapkapk3, Tmem198, Rfx6, Pif1, Tmem132b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   	   Ajap1, Gpld1, Akr1c18, Ngb, Efr3b, Zfp879, BC034090, Rnf150, Ccer2, Tpm2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:57] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:57] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:44:57] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:57] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:44:57] Non-linear dimensionality reduction(umap) using Reduction(Standardnmf, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:02] Non-linear dimensionality reduction(umap) using Reduction(Standardnmf, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:07] Perform linear dimension reduction (mds) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:08] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:08] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:45:08] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:08] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:08] Non-linear dimensionality reduction(umap) using Reduction(Standardmds, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:13] Non-linear dimensionality reduction(umap) using Reduction(Standardmds, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:45:18] Perform linear dimension reduction (glmpca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:22] StandardGLMPC_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Positive:  Tro, Gpr119, Ffar3, Gm16006, Ucn3, Lix1l, Igfbp1, Nap1l5, Ccl28, Nfasc </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Ptprt, Gsg1l, Xkr6, Filip1, Meox1, Gm15496, Gm44210, Kcnc1, Spag8, Slitrk6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Ctnna3, Dll3, Glod5, Muc4, Snph, Rab27a, Slc8a2, Pabpn1l, Gm43948, Kcnb2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Negative:  Gm20649, Veph1, Vamp5, Lama1, Cd14, Ttk, Mcm10, Gm26588, Lrrc8e, Cox4i2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Atp1a2, Mme, Ctgf, Glipr1, Adam11, Anxa3, Xkr5, Nat8l, Vtcn1, Filip1l </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Spaca7, Exo1, Akr1cl, Akr1b7, AU021092, Cdkn2c, Smoc2, Ckap2l, Gpm6b, Scara3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] StandardGLMPC_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Positive:  Gm26588, Rgs5, Edn1, Nkain4, Colec12, Prdm5, Col1a1, Pik3c2b, Dpysl3, Gm35986 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Pcdh15, Pdpn, A830005F24Rik, D430041D05Rik, Tmem145, Rab17, Gm20649, Wnt5a, Col5a1, Atp2c1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Cym, Adam11, Ccdc106, Sapcd1, Gsg1l, Tpm2, Fam71a, Bmp2, Htr1d, 1700003F12Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Negative:  Wfs1, Emb, Cyp51, Pdia4, Anp32e, Gm15441, Bex2, Slc25a5, Foxa2, Ap3b2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Fdps, Hsp90b1, Hepacam2, Pgrmc1, Ap1s2, Ccdc86, Creld2, C1qa, Zc3h3, Pdia3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Zdbf2, Vimp, Akr1c19, Rab3a, Hspa14, Gm10941, Hspa5, Dck, Fbxo32, Tmem184c </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] StandardGLMPC_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Positive:  Lor, Fam20a, Tmprss7, Pde1a, Asb4, A830005F24Rik, Cdkn2b, Gm5420, Stmn3, Rasl11a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Cypt3, Cldn2, Slc13a4, Adgb, Plet1, Prss50, Spock3, Cntn1, Scn9a, Tmem145 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Tmem158, Gm10244, Fbp1, Sult1d1, Ptprz1, Ubash3b, Platr27, Phlda2, Icam1, Slc16a1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Negative:  Siglece, 1700128E19Rik, Bhlhe22, Cmklr1, Egr4, Cryba4, Ngfr, Fgf18, Ppp1r16b, Tmem114 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Sftpc, Ankrd2, Nhlh1, Ajap1, Klk10, Krt15, Slc52a3, Adam11, 1520401A03Rik, Neurod2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Slc43a1, 4932438H23Rik, Rnf165, Tgm7, Actrt3, Zeb1, Glod5, Cav2, Trpv6, Adra2c </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] StandardGLMPC_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Positive:  Lor, Pappa2, Rnf150, Myo5a, Ubash3b, Tph1, Tgfb1, Igfbp3, Gcnt3, Ntn1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Myl7, Vsig8, Xylt1, Sulf1, Wif1, Trpc4, Rpp25, Gm10382, Rnf165, Gm10244 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Gprc5a, Gm44210, Gng3, Nrip3, Oip5, Cdkn2b, Ciart, Neurl3, 2410021H03Rik, Atp2c1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Negative:  Mb, Rtp4, Sftpd, Gm8773, 2310057J18Rik, Otc, Snhg11, Fbp1, Gm6878, Snph </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Stra6, Awat2, Gm6410, Adh1, Fam124a, Cntn1, Zfp879, Igsf1, Abhd11os, Fgfbp1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Tfpi, Ctnna3, Gm15496, Bcas1os1, Ptprz1, Krt15, Timp3, Colec12, Slc4a1, Ccdc69 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] StandardGLMPC_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Positive:  Bvht, Hey1, 4933427D14Rik, Vegfc, Mstn, Fam227a, Gm35986, Platr27, RP23-428N8.3, G630016G05Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Rtn1, Tgfb2, Cd36, Scnn1b, Slc2a3, Slc8a2, Ak5, Kcnj13, Trpc4, Gm15496 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Wnt5a, Slc6a19, Egr4, 1700018L02Rik, Mb, Atp2c1, Ceacam10, Mmp16, Tenm3, Krt20 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] Negative:  Abhd11os, Zeb1, Nfatc2ip, Ppp1r16b, Tpmt, Xkr6, Slc45a3, Gm10244, Adrb2, Plscr2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   Adgra1, Msantd1, Lrrc8e, Cypt3, Neurl3, Lor, Adam11, Filip1, Zbtb7c, Stra6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-08 15:46:22] 	   C2cd4a, Gm2861, Snai1, Inmt, Gm26522, Gsg1l, Bcas1os1, Efcab11, Tpm2, Gcnt4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:23] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:23] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:46:23] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:23] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:23] Non-linear dimensionality reduction(umap) using Reduction(Standardglmpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:28] Non-linear dimensionality reduction(umap) using Reduction(Standardglmpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:46:33] Run standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:33] Elapsed time: 1.97 mins</span>
 <span class="r-in"><span><span class="va">plist1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">linear_reductions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lr</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
@@ -411,151 +545,87 @@
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"pca"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="va">nonlinear_reductions</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:20] Start standard_scop</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:20] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Data 1/1 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:21] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Linear_reduction(pca) is already existed. Skip calculation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 10:01:22] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:22] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:27] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:31] Perform nonlinear dimension reduction (tsne) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:31] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:33] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:37] Perform nonlinear dimension reduction (dm) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:37] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:33] Start standard_scop</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:33] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:34] Data 1/1 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:34] Perform FindVariableFeatures on the data 1/1 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:35] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:36] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:36] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-08 15:46:36] Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:36] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:36] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:41] Non-linear dimensionality reduction(umap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:45] Perform nonlinear dimension reduction (tsne) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:45] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:48] Non-linear dimensionality reduction(tsne) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:53] Perform nonlinear dimension reduction (dm) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:53] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = Matrix::as.matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:38] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:54] Non-linear dimensionality reduction(dm) using Reduction(Standardpca, dims:1-50) as input</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = Matrix::as.matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:38] Perform nonlinear dimension reduction (phate) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:38] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 10:01:58] Scop_env python environment does not exist. Create it with 'PrepareEnv' function...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:58] === Preparing scop Python Environment ===</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:58] Environment name: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:58] Python version: 3.10-1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:58] Number of packages to install: 20</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:58] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:01:59] Creating conda environment with Python 3.10-1...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> + /usr/share/miniconda/bin/conda create --yes --name scop_env 'python=3.10-1' pip setuptools wheel --quiet -c conda-forge</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:02:21] Environment created successfully: /usr/share/miniconda/envs/scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:02:21] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:02:21] Try to install leidenalg,matplotlib&gt;=3.5,&lt;3.11,numba&gt;=0.59,&lt;0.60.0,llvmlite&gt;=0.42,&lt;0.43.0,numpy&gt;=1.24,&lt;1.27.0,palantir,pandas&gt;=2.0,&lt;2.1,python-igraph,scanpy&gt;=1.9,&lt;1.12,scikit-learn,scipy&gt;=1.10,scvelo,wot,trimap,pacmap,phate,bbknn,scanorama,scvi-tools,tbb</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:02:21] Installing 21 packages into environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:02:23] Installing packages via pip...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:21] Pip installation completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:21] Checking 20 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:22] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Leidenalg 0.10.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Matplotlib 3.10.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Numba 0.59.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Llvmlite 0.42.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Numpy 1.26.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Progress: 5/20 packages checked</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Palantir 1.4.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Pandas 2.0.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Python-igraph 0.11.9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scanpy 1.11.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scikit-learn 1.7.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Progress: 10/20 packages checked</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scipy 1.15.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scvelo 0.3.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Wot 1.0.8.post2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Trimap 1.1.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Pacmap 0.8.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Progress: 15/20 packages checked</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Phate 1.0.11</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Bbknn 1.6.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scanorama 1.7.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Scvi-tools 1.2.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:24] Tbb 2022.2.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Progress: 20/20 packages checked</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Package check complete: 20/20 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:24] Setting up Python environment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ==================== scop conda environment ====================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> conda: /usr/share/miniconda/bin/conda</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> environment: /usr/share/miniconda/envs/scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> python: /usr/share/miniconda/envs/scop_env/bin/python3.10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ==================== scop python config ====================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> python:         /usr/share/miniconda/envs/scop_env/bin/python3.10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.10.so</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> version:        3.10.1 | packaged by conda-forge | (main, Dec 22 2021, 01:39:36) [GCC 9.4.0]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/numpy</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> numpy_version:  1.26.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> NOTE: Python version was forced by use_python() function</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ==============================================================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:30] Initializing Python modules...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:32] Matplotlib initialized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:34] Scanpy initialized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:34] Scvelo initialized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:34] === scop Python Environment Ready ===</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:35] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:35] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:37] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:37] Phate 1.0.11</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:37] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:39] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:40] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:40] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:42] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:42] Phate 1.0.11</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:42] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:44] Perform nonlinear dimension reduction (pacmap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:44] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:45] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:46] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:48] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:04:48] Pacmap 0.8.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:04:48] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:10] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:11] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:12] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:14] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:05:14] Pacmap 0.8.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:14] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:14] Perform nonlinear dimension reduction (trimap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:14] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:16] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:16] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:18] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:05:18] Trimap 1.1.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:18] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:34] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:35] Checking 1 packages in environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:36] Retrieving package list for environment: scop_env</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:38] Found 174 packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:05:38] Trimap 1.1.4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:38] Package check complete: 1/1 packages available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:38] Perform nonlinear dimension reduction (largevis) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:05:38] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:08:00] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:31] Perform nonlinear dimension reduction (fr) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:31] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:31] Running force-directed layout</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:32] Force-directed layout computed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:32] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:32] Running force-directed layout</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:34] Force-directed layout computed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-05 10:10:34] Run standard_scop done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 10:10:34] Elapsed time: 9.22 mins</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:55] Perform nonlinear dimension reduction (phate) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:55] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:56] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:57] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:59] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:46:59] Phate 1.0.11</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:46:59] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:00] Non-linear dimensionality reduction(phate) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:01] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:02] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:04] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:47:04] Phate 1.0.11</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:04] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:05] Perform nonlinear dimension reduction (pacmap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:05] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:07] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:07] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:09] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:47:09] Pacmap 0.8.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:09] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:32] Non-linear dimensionality reduction(pacmap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:34] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:35] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:37] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:47:37] Pacmap 0.8.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:37] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:37] Perform nonlinear dimension reduction (trimap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:37] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:38] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:39] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:41] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:47:41] Trimap 1.1.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:41] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:57] Non-linear dimensionality reduction(trimap) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:58] Checking 1 packages in environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:47:59] Retrieving package list for environment: scop_env</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:48:01] Found 174 packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:48:01] Trimap 1.1.4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:48:01] Package check complete: 1/1 packages available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:48:02] Perform nonlinear dimension reduction (largevis) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:48:02] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:50:35] Non-linear dimensionality reduction(largevis) using Reduction(Standardpca, dims:1-50) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:17] Perform nonlinear dimension reduction (fr) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:17] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:17] Running force-directed layout</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:18] Force-directed layout computed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:18] Non-linear dimensionality reduction(fr) using Graphs(Standardpca_SNN) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:18] Running force-directed layout</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:20] Force-directed layout computed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-07-08 15:53:20] Run standard_scop done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:53:20] Elapsed time: 6.77 mins</span>
 <span class="r-in"><span><span class="va">plist2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">nonlinear_reductions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nr</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>

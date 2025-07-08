@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -61,13 +62,6 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>The <a href="https://github.com/mengxu98/scop" class="external-link"><em><code>scop</code></em></a> package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.</p>
-<blockquote>
-<p>[!IMPORTANT]</p>
-<p>[0.0.5] Update test data <code>pancreas_sub</code> and <code>panc8_sub</code> to Seurat v5.</p>
-<p>[0.0.6] Add <code><a href="reference/GetAssayData5.html">GetAssayData5()</a></code> function, which is a re-implementation of the GetAssayData function to compatible with Assay5 objects.</p>
-<p>[0.0.6] Update <code><a href="reference/GetFeaturesData.html">GetFeaturesData()</a></code> and <code><a href="reference/AddFeaturesData.html">AddFeaturesData()</a></code> functions to obtain or add metadata of features.</p>
-<p>[0.0.9] Fixed the <code><a href="reference/PrepareEnv.html">PrepareEnv()</a></code> function, with the default Python version set to ‘3.10-1’. Now it can successfully run functions such as <code><a href="reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="reference/RunSCVELO.html">RunSCVELO()</a></code> ’based on the Python environment.</p>
-</blockquote>
 </div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
@@ -178,7 +172,7 @@
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span>project <span class="op">=</span> <span class="st">"~/scop_env"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span>
 <span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
 <span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
@@ -257,7 +251,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">register</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html" class="external-link">MulticoreParam</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">8</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="co">#&gt; An object of class Seurat</span></span>
 <span><span class="co">#&gt; 15000 features across 1000 samples within 3 assays</span></span>
@@ -402,7 +396,9 @@
 <code class="sourceCode R"><span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RenameFeatures.html">RenameFeatures</a></span><span class="op">(</span></span>
 <span>  srt <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
 <span>  newnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="reference/capitalize.html">capitalize</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="op">)</span>,</span>
 <span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  assays <span class="op">=</span> <span class="st">"RNA"</span></span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,6 +16,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
@@ -232,6 +233,12 @@
         <dd>GetFeaturesData</dd>
       </dl><dl><dt>
 
+          <code><a href="GetSimilarFeatures.html">GetSimilarFeatures()</a></code>
+
+        </dt>
+        <dd>Find genes with expression patterns similar to the genes you've specified.</dd>
+      </dl><dl><dt>
+
           <code><a href="RecoverCounts.html">RecoverCounts()</a></code>
 
         </dt>
@@ -260,6 +267,12 @@
 
         </dt>
         <dd>Find the default reduction name in a Seurat object.</dd>
+      </dl><dl><dt>
+
+          <code><a href="FetchDataZero.html">FetchDataZero()</a></code>
+
+        </dt>
+        <dd>FetchData but with zeroes for unavailable genes</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
@@ -719,6 +732,12 @@
         <dd>StatPlot</dd>
       </dl><dl><dt>
 
+          <code><a href="TACSPlot.html">TACSPlot()</a></code>
+
+        </dt>
+        <dd>Transcript-averaged cell scoring (TACS)</dd>
+      </dl><dl><dt>
+
           <code><a href="VelocityPlot.html">VelocityPlot()</a></code>
 
         </dt>
@@ -860,12 +879,6 @@
         <dd>AnnotateFeatures</dd>
       </dl><dl><dt>
 
-          <code><a href="capitalize.html">capitalize()</a></code>
-
-        </dt>
-        <dd>Capitalizes the characters Making the first letter uppercase</dd>
-      </dl><dl><dt>
-
           <code><a href="compute_velocity_on_grid.html">compute_velocity_on_grid()</a></code>
 
         </dt>
@@ -875,7 +888,7 @@
           <code><a href="download.html">download()</a></code>
 
         </dt>
-        <dd>Download File from the Internet</dd>
+        <dd>Download file from the Internet</dd>
       </dl><dl><dt>
 
           <code><a href="drop_data.html">drop_data()</a></code>
@@ -900,12 +913,6 @@
 
         </dt>
         <dd>GetAssayData5</dd>
-      </dl><dl><dt>
-
-          <code><a href="invoke_fun.html">invoke_fun()</a></code>
-
-        </dt>
-        <dd>Invoke a function with a list of arguments</dd>
       </dl><dl><dt>
 
           <code><a href="make_long.html">make_long()</a></code>
@@ -954,18 +961,6 @@
 
         </dt>
         <dd>Reorder idents by the gene expression</dd>
-      </dl><dl><dt>
-
-          <code><a href="try_get.html">try_get()</a></code>
-
-        </dt>
-        <dd>Try to evaluate an expression a set number of times before failing</dd>
-      </dl><dl><dt>
-
-          <code><a href="unnest_fun.html">unnest_fun()</a></code>
-
-        </dt>
-        <dd>Implement similar functions to the <code>unnest</code> function in the tidyr package</dd>
       </dl></div><div class="section level2">
 
       <h3 id="database-operations">Database Operations<a class="anchor" aria-label="anchor" href="#database-operations"></a></h3>

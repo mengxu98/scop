@@ -11,7 +11,7 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,7 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots."></head><b
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
@@ -269,29 +270,29 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pancreas_sub"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     orig.ident nCount_RNA nFeature_RNA    S_score   G2M_score</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTATTAGCC SeuratProject       8610         2980  0.3850226 -0.21053730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC SeuratProject       9592         3410  0.5562343 -0.05274934</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGTCAATAG SeuratProject       9720         3121  0.6643318  0.27641058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCACTGTGTA SeuratProject       7173         2664  0.1745044 -0.16067627</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT SeuratProject       6342         2430 -0.1568091 -0.16858186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTCGGGTCT SeuratProject       5818         2343 -0.2308148 -0.26084459</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     orig.ident nCount_RNA nFeature_RNA     S_score   G2M_score</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT SeuratProject       7071         2613 -0.01470664 -0.23261042</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGGCAATTA SeuratProject       4070         1984 -0.17125480 -0.28683382</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC SeuratProject       9592         3410  0.55623430 -0.05274934</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT SeuratProject       6194         2486 -0.16794573 -0.16668808</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAGGACAC SeuratProject      10490         3281  0.21798572  0.68136787</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT SeuratProject       6342         2430 -0.15680908 -0.16858186</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  nCount_spliced nFeature_spliced nCount_unspliced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTATTAGCC           8610             2980             1097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC           9592             3410             1335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGTCAATAG           9720             3121             1127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCACTGTGTA           7173             2664              830</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT           6342             2430             1111</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTCGGGTCT           5818             2343             1566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT           7071             2613              959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGGCAATTA           4070             1984             1076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC           9592             3410             1339</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT           6194             2486              728</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAGGACAC          10490             3281             1441</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT           6342             2430             1113</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_unspliced  CellType SubCellType Phase</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTATTAGCC                747    Ductal      Ductal     S</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC                892    Ductal      Ductal     S</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGTCAATAG                769    Ductal      Ductal     S</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCACTGTGTA                591    Ductal      Ductal     S</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT                806    Ductal      Ductal    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTCGGGTCT               1055 Endocrine       Alpha    G1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                643    Ductal      Ductal    G1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGGCAATTA                701 Endocrine       Alpha    G1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGTCTTTCCTC                894    Ductal      Ductal     S</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                556    Ductal      Ductal    G1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAGGACAC               1008    Ductal      Ductal   G2M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAGTTCCCT                808    Ductal      Ductal    G1</span>
 <span class="r-in"><span><span class="fu">StatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
@@ -305,7 +306,8 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">meta.data</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"highly_variable_genes"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"ring"</span>,</span></span>
-<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  NA_stat <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
@@ -317,64 +319,11 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
-<span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"VerSeDa"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># db = c("VerSeDa", "TF")</span></span></span>
+<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"VerSeDa"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:19] Species: Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:19] Preparing database: TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:19] Attempting download with <span style="color: #0000BB;">"curl::curl_download"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:21] Curl download failed: HTTP response code said error [guolab.wchscu.cn]:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 09:59:21] The requested URL returned error: 405</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:22] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Mus_musculus_TF'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:22] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Mus_musculus_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:22] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:24] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:24] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Mus_musculus_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:24] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:26] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Mus_musculus_TF'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:26] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Mus_musculus_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:26] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>incomplete final line found by readTableHeader on '/tmp/Rtmp4R7Mrg/file22fd5ba46fbf'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:28] Attempting download with <span style="color: #0000BB;">"curl::curl_download"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:29] Curl download failed: HTTP response code said error [guolab.wchscu.cn]:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 09:59:29] The requested URL returned error: 405</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:31] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Mus_musculus_Cof'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:31] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Mus_musculus_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:31] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:33] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:33] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Mus_musculus_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:33] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:35] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Mus_musculus_Cof'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:35] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Mus_musculus_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:35] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>incomplete final line found by readTableHeader on '/tmp/Rtmp4R7Mrg/file22fd5ba46fbf'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:37] Use the human annotation to create the TF database for Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:37] Attempting download with <span style="color: #0000BB;">"curl::curl_download"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:38] Curl download failed: HTTP response code said error [guolab.wchscu.cn]:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 09:59:38] The requested URL returned error: 405</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:39] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:39] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:39] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:41] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:41] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:41] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:44] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:44] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:44] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>incomplete final line found by readTableHeader on '/tmp/Rtmp4R7Mrg/file22fd5ba46fbf'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-05 09:59:46] Attempting download with <span style="color: #0000BB;">"curl::curl_download"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:47] Curl download failed: HTTP response code said error [guolab.wchscu.cn]:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   [2025-07-05 09:59:47] The requested URL returned error: 405</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:48] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:48] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:48] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:50] Error in utils::download.file(url = url, destfile = destfile, method = method, : 'wget' call had nonzero exit status</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:50] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:50] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:52] Error in utils::download.file(url = url, destfile = destfile, method = method, : cannot open URL 'https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:52] Cannot download from the url: https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-05 09:59:52] Failed to download using <span style="color: #0000BB;">"method"</span>. Retry...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>incomplete final line found by readTableHeader on '/tmp/Rtmp4R7Mrg/file22fd5ba46fbf'</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in data.frame(Term = "TF", symbol = tf[["Symbol"]]):</span> arguments imply differing number of rows: 1, 0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:40:33] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-08 15:40:33] Loading cached db: VerSeDa version:VerSeDa nterm:1 created:2025-07-08 15:04:37.813804</span>
 <span class="r-in"><span><span class="fu">StatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="GetFeaturesData.html">GetFeaturesData</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"RNA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"TF"</span>,</span></span>
@@ -385,7 +334,7 @@ Can be one of "right", "left", "bottom", "top", or "none".</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  NA_stat <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in StatPlot(GetFeaturesData(pancreas_sub, "RNA"), stat.by = "TF",     group.by = "VerSeDa", stat_type = "count", plot_type = "bar",     position = "dodge", label = TRUE, NA_stat = FALSE):</span> VerSeDa is not in the meta.data.</span>
+<span class="r-plt img"><img src="StatPlot-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

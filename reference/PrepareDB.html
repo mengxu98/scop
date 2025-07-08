@@ -11,7 +11,7 @@ The list contains the annotation data for each specified annotation source."></h
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,7 @@ The list contains the annotation data for each specified annotation source."></h
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
@@ -76,7 +77,8 @@ The list contains the annotation data for each specified annotation source.</p>
 
 
 <dl><dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>A character vector specifying the species for which the gene annotation databases should be prepared. Default is c("Homo_sapiens", "Mus_musculus").</p></dd>
+<dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
+Default is c("Homo_sapiens", "Mus_musculus").</p></dd>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
@@ -88,19 +90,24 @@ Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 
 
 <dt id="arg-db-idtypes">db_IDtypes<a class="anchor" aria-label="anchor" href="#arg-db-idtypes"></a></dt>
-<dd><p>A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases. Default is c("symbol", "entrez_id", "ensembl_id").</p></dd>
+<dd><p>A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
+Default is c("symbol", "entrez_id", "ensembl_id").</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
-<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved. Default is "latest".</p></dd>
+<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
+Default is "latest".</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
-<dd><p>A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.</p></dd>
+<dd><p>A logical value indicating whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
+Default is FALSE.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
-<dd><p>A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.</p></dd>
+<dd><p>A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+The default value is TRUE.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
@@ -121,23 +128,28 @@ Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_m
 
 
 <dt id="arg-custom-term-gene">custom_TERM2GENE<a class="anchor" aria-label="anchor" href="#arg-custom-term-gene"></a></dt>
-<dd><p>A data frame containing a custom TERM2GENE mapping for the specified species and annotation source. Default is NULL.</p></dd>
+<dd><p>A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-custom-term-name">custom_TERM2NAME<a class="anchor" aria-label="anchor" href="#arg-custom-term-name"></a></dt>
-<dd><p>A data frame containing a custom TERM2NAME mapping for the specified species and annotation source. Default is NULL.</p></dd>
+<dd><p>A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-custom-species">custom_species<a class="anchor" aria-label="anchor" href="#arg-custom-species"></a></dt>
-<dd><p>A character vector specifying the species name to be used in a custom database. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the species name to be used in a custom database.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-custom-idtype">custom_IDtype<a class="anchor" aria-label="anchor" href="#arg-custom-idtype"></a></dt>
-<dd><p>A character vector specifying the ID type to be used in a custom database. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the ID type to be used in a custom database.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-custom-version">custom_version<a class="anchor" aria-label="anchor" href="#arg-custom-version"></a></dt>
-<dd><p>A character vector specifying the version to be used in a custom database. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the version to be used in a custom database.
+Default is NULL.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -148,7 +160,7 @@ Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_m
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The `PrepareDB` function prepares gene annotation databases for a given species and set of annotation sources.
+    <p>The <code>PrepareDB</code> function prepares gene annotation databases for a given species and set of annotation sources.
 It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
 The function also supports creating custom databases based on user-provided gene sets.</p>
     </div>
@@ -165,7 +177,8 @@ The function also supports creating custom databases based on user-provided gene
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>, db <span class="op">=</span> <span class="st">"GO_BP"</span></span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
+<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">db_list</span><span class="op">[[</span><span class="st">"Homo_sapiens"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"GO_BP"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -246,7 +259,7 @@ The function also supports creating custom databases based on user-provided gene
 <span class="r-in"><span>  custom_TERM2GENE <span class="op">=</span> <span class="va">custom_TERM2GENE</span>,</span></span>
 <span class="r-in"><span>  custom_species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
 <span class="r-in"><span>  custom_IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
-<span class="r-in"><span>  custom_version <span class="op">=</span> <span class="st">"Seurat_v4"</span></span></span>
+<span class="r-in"><span>  custom_version <span class="op">=</span> <span class="st">"Seurat_v5"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span>db <span class="op">=</span> <span class="st">"CellCycle"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
