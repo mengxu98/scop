@@ -22,6 +22,7 @@
 #' @export
 #'
 #' @examples
+#' library(Matrix)
 #' pancreas_sub <- RunNMF(object = pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -246,7 +247,11 @@ RunNMF.default <- function(
         nfeatures = nfeatures.print
       )
     )
-    log_message(paste(msg, collapse = "\n"))
+    log_message(
+      paste(msg, collapse = "\n"),
+      multiline_indent = FALSE,
+      timestamp = FALSE
+    )
   }
 
   return(reduction_data)
