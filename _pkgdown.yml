@@ -68,11 +68,13 @@ reference:
   - check_srt_merge
   - AddFeaturesData
   - GetFeaturesData
+  - GetSimilarFeatures
   - RecoverCounts
   - CellScoring
   - CC_GenePrefetch
   - is_outlier
   - DefaultReduction
+  - FetchDataZero
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
@@ -155,6 +157,7 @@ reference:
   - panel_fix
   - ProjectionPlot
   - StatPlot
+  - TACSPlot
   - VelocityPlot
   - VolcanoPlot
 

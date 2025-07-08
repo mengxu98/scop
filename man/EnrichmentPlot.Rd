@@ -207,12 +207,14 @@ data(pancreas_sub)
 #   pancreas_sub,
 #   group_by = "CellType"
 # )
+
 pancreas_sub <- RunEnrichment(
   srt = pancreas_sub,
   db = c("GO_BP", "GO_CC"),
   group_by = "CellType",
   species = "Mus_musculus"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -220,6 +222,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "bar"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -228,6 +231,7 @@ EnrichmentPlot(
   color_by = "Groups",
   ncol = 2
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -260,6 +264,7 @@ EnrichmentPlot(
   topTerm = 3,
   plot_type = "comparison"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -268,6 +273,7 @@ EnrichmentPlot(
   plot_type = "comparison",
   compare_only_sig = TRUE
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -284,6 +290,7 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = "Groups"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
@@ -293,6 +300,7 @@ EnrichmentPlot(
   split_by = "Database",
   color_by = "Groups"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
@@ -301,6 +309,7 @@ EnrichmentPlot(
   plot_type = "bar",
   split_by = c("Database", "Groups")
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
@@ -327,6 +336,7 @@ EnrichmentPlot(
   plot_type = "dot",
   palette = "GdRd"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -378,6 +388,7 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -397,6 +408,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -405,6 +417,7 @@ EnrichmentPlot(
   plot_type = "enrichmap",
   enrichmap_expand = c(2, 1)
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -414,6 +427,7 @@ EnrichmentPlot(
   enrichmap_show_keyword = TRUE,
   character_width = 10
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -436,6 +450,7 @@ pancreas_sub <- RunEnrichment(
   convert_species = TRUE,
   species = "Mus_musculus"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = c("MP", "DO"),
