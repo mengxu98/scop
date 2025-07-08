@@ -1,84 +1,27 @@
-#' Download File from the Internet
+#' @title Download file from the Internet
 #'
 #' @md
 #' @inheritParams utils::download.file
-#' @param methods Methods to be used for downloading files.
+#' @param methods Methods to be used for downloading files. 
 #' The default is to try different download methods in turn until the download is successfully completed.
 #' @param max_tries Number of tries for each download method.
-#' @param max_tries Number of tries for each download method.
-#' @param use_curl Logical value, default is `TRUE`.
-#' @param verbose Logical value, default is `TRUE`.
-#' Whether to print progress messages.
-#' @param ... Other arguments passed to [utils::download.file]
+#' @param ... Other arguments passed to [utils::download.file].
 #'
 #' @export
 download <- function(
     url,
     destfile,
-    methods = c("auto", "wget", "libcurl", "curl", "wininet", "internal"),
-    max_tries = 2,
-    use_curl = TRUE,
-    verbose = TRUE,
-    ...) {
+    methods = c(
+      "auto", "wget", "libcurl", "curl", "wininet", "internal"
+    ),
+    quiet = FALSE,
+    ...,
+    max_tries = 2) {
   if (missing(url) || missing(destfile)) {
-    log_message(
-      "{.arg url} and {.arg destfile} must be both provided.",
-      message_type = "error"
-    )
+    stop("'url' and 'destfile' must be both provided.")
   }
   ntry <- 0
   status <- NULL
-
-  if (isTRUE(use_curl)) {
-    tryCatch(
-      {
-        log_message(
-          "Attempting download with {.val curl::curl_download}...",
-          message_type = "info"
-        )
-        check_r("curl")
-
-        h <- curl::new_handle()
-        curl::handle_setopt(h, ssl_verifyhost = 0, ssl_verifypeer = 0)
-        curl::handle_setheaders(h,
-          "User-Agent" = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-          "Referer" = "https://guolab.wchscu.cn/AnimalTFDB4/",
-          "Accept" = "*/*"
-        )
-
-        curl::curl_download(
-          url = url,
-          destfile = destfile,
-          handle = h,
-          quiet = !verbose
-        )
-
-        if (file.exists(destfile)) {
-          content <- readLines(destfile, n = 1, warn = FALSE)
-          if (!grepl("^<!doctype|^<html", tolower(content))) {
-            log_message(
-              "Download completed successfully using {.val curl::curl_download}",
-              message_type = "success"
-            )
-            return(invisible(NULL))
-          } else {
-            unlink(destfile)
-            log_message(
-              "curl downloaded an HTML page, not data. Trying other methods.",
-              "warning"
-            )
-          }
-        }
-      },
-      error = function(e) {
-        log_message(
-          paste0("curl download failed: ", conditionMessage(e)),
-          message_type = "warning"
-        )
-      }
-    )
-  }
-
   while (is.null(status)) {
     for (method in methods) {
       status <- tryCatch(
@@ -88,25 +31,15 @@ download <- function(
               url = url,
               destfile = destfile,
               method = method,
-              quiet = !verbose,
+              quiet = quiet,
               ...
             )
           )
           status <- 1
-        },
-        error = function(error) {
-          log_message(
-            error,
-            message_type = "warning"
-          )
-          log_message(
-            "Cannot download from the url: ", url,
-            message_type = "warning"
-          )
-          log_message(
-            "Failed to download using {.val method}. Retry...",
-            message_type = "warning"
-          )
+        }, error = function(error) {
+          log_message(error)
+          log_message("Cannot download from the url: ", url)
+          log_message("Failed to download using \"", method, "\". Retry...\n")
           Sys.sleep(1)
           return(NULL)
         }
@@ -117,10 +50,7 @@ download <- function(
     }
     ntry <- ntry + 1
     if (is.null(status) && ntry >= max_tries) {
-      log_message(
-        "Download failed.",
-        message_type = "error"
-      )
+      log_message("Download failed.", message_type = "error")
     }
   }
   return(invisible(NULL))
