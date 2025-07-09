@@ -22,7 +22,8 @@ PrepareDB(
   custom_TERM2NAME = NULL,
   custom_species = NULL,
   custom_IDtype = NULL,
-  custom_version = NULL
+  custom_version = NULL,
+  verbose = TRUE
 )
 }
 \arguments{

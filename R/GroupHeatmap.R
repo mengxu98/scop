@@ -790,7 +790,7 @@ GroupHeatmap <- function(
     }
     if (any(!feature_annotation %in% colnames(feature_annotation_data))) {
       log_message(
-        "feature_annotation: ",
+        "{.arg feature_annotation}: ",
         paste0(
           feature_annotation[
             !feature_annotation %in% colnames(feature_annotation_data)
