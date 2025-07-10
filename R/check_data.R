@@ -645,7 +645,7 @@ check_srt_merge <- function(
   srt_merge_raw <- srt_merge
 
   log_message(
-    " Spliting srt_merge into srt_list by column ",
+    "Spliting srt_merge into srt_list by column ",
     batch,
     "..."
   )
