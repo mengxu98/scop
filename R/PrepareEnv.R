@@ -1,14 +1,6 @@
-#' Prepare the scop Python environment by installing the required dependencies and setting up the environment.
-#'
-#' @inheritParams check_python
-#' @param miniconda_repo Repositories for miniconda.
-#' Default is \code{https://repo.anaconda.com/miniconda}.
-#' @param force Whether to force a new environment to be created.
-#' If \code{TRUE}, the existing environment will be recreated.
-#' Default is \code{FALSE}.
-#' @param version A character vector specifying the version of the environment.
-#' Default is "3.10-1".
-#' @details This function prepares the scop Python environment by checking if conda is installed,
+#' @title Prepare virtual Python environment
+#' @description Prepare the virtual environment by installing the required dependencies and setting up the environment.
+#' This function prepares the virtual environment by checking if conda is installed,
 #' creating a new conda environment if needed, installing the required packages,
 #' and setting up the Python environment for use with scop.
 #' In order to create the environment, this function requires the path to the conda binary.
@@ -19,6 +11,14 @@
 #' Note that recreating the environment will remove any existing data in the environment.
 #' The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter.
 #'
+#' @inheritParams check_python
+#' @param miniconda_repo Repositories for miniconda.
+#' Default is \url{https://repo.anaconda.com/miniconda}.
+#' @param force Whether to force a new environment to be created.
+#' If \code{TRUE}, the existing environment will be recreated.
+#' Default is \code{FALSE}.
+#' @param version A character vector specifying the version of the environment.
+#' Default is "3.10-1".
 #' @export
 PrepareEnv <- function(
     conda = "auto",
@@ -51,7 +51,10 @@ PrepareEnv <- function(
 
   if (is.null(conda)) {
     env <- FALSE
-    log_message("Conda not found, will install miniconda")
+    log_message(
+      "Conda not found, will install miniconda",
+      message_type = "warning"
+    )
   } else {
     envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
     env <- env_exist(
@@ -89,7 +92,9 @@ PrepareEnv <- function(
       )
     }
 
-    log_message("Creating conda environment with Python ", python_version, "...")
+    log_message(
+      "Creating conda environment with Python ", python_version, "..."
+    )
 
     python_path <- reticulate::conda_create(
       conda = conda,
@@ -113,18 +118,49 @@ PrepareEnv <- function(
         message_type = "error"
       )
     } else {
-      log_message("Environment created successfully: ", env_path)
+      log_message(
+        "Environment created successfully: ", env_path,
+        message_type = "success"
+      )
     }
   }
 
   log_message("Checking and installing required packages...")
-  check_python(
-    packages = packages,
-    envname = envname,
-    conda = conda,
-    force = force,
-    ...
-  )
+
+  install_methods <- requirements[["install_methods"]]
+
+  conda_packages <- packages[install_methods == "conda"]
+  pip_packages <- packages[install_methods == "pip"]
+
+  if (length(conda_packages) > 0) {
+    log_message(
+      "Installing {.pkg conda} packages: ",
+      paste0(conda_packages, collapse = ", ")
+    )
+    check_python(
+      packages = conda_packages,
+      envname = envname,
+      conda = conda,
+      force = force,
+      pip = FALSE,
+      ...
+    )
+  }
+
+  if (length(pip_packages) > 0) {
+    log_message(
+      "Installing {.pkg pip} packages: ",
+      paste0(pip_packages, collapse = ", ")
+    )
+    check_python(
+      packages = pip_packages,
+      envname = envname,
+      conda = conda,
+      force = force,
+      pip = TRUE,
+      ...
+    )
+  }
 
   log_message("Setting up Python environment...")
   Sys.unsetenv("RETICULATE_PYTHON")
@@ -136,8 +172,6 @@ PrepareEnv <- function(
   reticulate::use_python(python_path, required = TRUE)
 
   env_info(conda, envname)
-
-  initialize_modules()
 
   log_message("=== scop Python Environment Ready ===")
 }
@@ -159,11 +193,11 @@ install_miniconda2 <- function(miniconda_repo) {
     version <- "3"
     arch <- reticulate:::miniconda_installer_arch(info)
 
-    name <- if (reticulate:::is_windows()) {
+    name <- if (.is_windows()) {
       sprintf("Miniconda%s-latest-Windows-%s.exe", version, arch)
-    } else if (reticulate:::is_osx()) {
+    } else if (.is_osx()) {
       sprintf("Miniconda%s-latest-MacOSX-%s.sh", version, arch)
-    } else if (reticulate:::is_linux()) {
+    } else if (.is_linux()) {
       sprintf("Miniconda%s-latest-Linux-%s.sh", version, arch)
     } else {
       log_message(
@@ -226,76 +260,6 @@ env_info <- function(conda, envname) {
   invisible(lapply(pyinfo_mesg, packageStartupMessage))
 }
 
-initialize_modules <- function() {
-  log_message("Initializing Python modules...")
-
-  tryCatch(
-    {
-      reticulate::py_run_string("
-import os
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
-os.environ['NUMEXPR_NUM_THREADS'] = '1'
-os.environ['KMP_WARNINGS'] = '0'
-")
-    },
-    error = function(e) {
-      log_message(
-        "Warning: Could not set Python environment variables",
-        message_type = "warning"
-      )
-    }
-  )
-
-  tryCatch(
-    {
-      reticulate::py_run_string("import matplotlib")
-      reticulate::py_run_string("matplotlib.use('Agg')")
-      reticulate::py_run_string("import matplotlib.pyplot as plt")
-      log_message("matplotlib initialized", message_type = "success")
-    },
-    error = function(e) {
-      log_message(
-        "Warning: matplotlib initialization failed: ", e$message,
-        message_type = "warning"
-      )
-    }
-  )
-
-  Sys.sleep(0.1)
-
-  tryCatch(
-    {
-      reticulate::py_run_string("
-import numba
-numba.config.THREADING_LAYER = 'safe'
-")
-      reticulate::py_run_string("import scanpy as sc")
-      reticulate::py_run_string("sc.settings.verbosity = 1")
-      log_message("scanpy initialized", message_type = "success")
-    },
-    error = function(e) {
-      log_message(
-        "Warning: scanpy initialization failed: ", e$message,
-        message_type = "warning"
-      )
-    }
-  )
-
-  tryCatch(
-    {
-      reticulate::py_run_string("import scvelo as scv")
-      reticulate::py_run_string("scv.settings.verbosity = 1")
-      log_message("scvelo initialized", message_type = "success")
-    },
-    error = function(e) {
-      log_message("Note: scvelo not available (this is optional)")
-    }
-  )
-}
-
 #' env_requirements function
 #'
 #' This function provides the scop python environment requirements for a specific version.
@@ -308,39 +272,63 @@ numba.config.THREADING_LAYER = 'safe'
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' env_requirements("3.10-1")
-#' }
 env_requirements <- function(version = "3.10-1") {
   version <- match.arg(
     version,
     choices = c("3.8-1", "3.8-2", "3.9-1", "3.10-1", "3.11-1")
   )
 
+  package_install_methods <- c(
+    "leidenalg" = "conda",
+    "matplotlib" = "pip",
+    "numba" = "pip",
+    "llvmlite" = "pip",
+    "numpy" = "pip",
+    "palantir" = "pip",
+    "pandas" = "pip",
+    "python-igraph" = "conda",
+    "scanpy" = "pip",
+    "scikit-learn" = "pip",
+    "scipy" = "pip",
+    "scvelo" = "pip",
+    "wot" = "pip",
+    "trimap" = "pip",
+    "pacmap" = "pip",
+    "phate" = "pip",
+    "bbknn" = "pip",
+    "scanorama" = "pip",
+    "scvi-tools" = "pip",
+    "tbb" = "conda"
+  )
+
+  package_versions <- c(
+    "leidenalg" = "leidenalg",
+    "matplotlib" = "matplotlib>=3.5,<3.11",
+    "numba" = "numba>=0.59,<0.60.0",
+    "llvmlite" = "llvmlite>=0.42,<0.43.0",
+    "numpy" = "numpy>=1.24,<1.27.0",
+    "palantir" = "palantir",
+    "pandas" = "pandas>=2.0,<2.1",
+    "python-igraph" = "python-igraph",
+    "scanpy" = "scanpy>=1.9,<1.12",
+    "scikit-learn" = "scikit-learn",
+    "scipy" = "scipy>=1.10",
+    "scvelo" = "scvelo",
+    "wot" = "wot",
+    "trimap" = "trimap",
+    "pacmap" = "pacmap",
+    "phate" = "phate",
+    "bbknn" = "bbknn",
+    "scanorama" = "scanorama",
+    "scvi-tools" = "scvi-tools",
+    "tbb" = "tbb"
+  )
+
   requirements <- list(
     python = version,
-    packages = c(
-      "leidenalg" = "leidenalg",
-      "matplotlib" = "matplotlib>=3.5,<3.11",
-      "numba" = "numba>=0.59,<0.60.0",
-      "llvmlite" = "llvmlite>=0.42,<0.43.0",
-      "numpy" = "numpy>=1.24,<1.27.0",
-      "palantir" = "palantir",
-      "pandas" = "pandas>=2.0,<2.1",
-      "python-igraph" = "python-igraph",
-      "scanpy" = "scanpy>=1.9,<1.12",
-      "scikit-learn" = "scikit-learn",
-      "scipy" = "scipy>=1.10",
-      "scvelo" = "scvelo",
-      "wot" = "wot",
-      "trimap" = "trimap",
-      "pacmap" = "pacmap",
-      "phate" = "phate",
-      "bbknn" = "bbknn",
-      "scanorama" = "scanorama",
-      "scvi-tools" = "scvi-tools",
-      "tbb" = "tbb"
-    )
+    packages = package_versions,
+    install_methods = package_install_methods
   )
 
   return(requirements)
@@ -374,7 +362,9 @@ installed_python_pkgs <- function(
     )
   }
 
-  log_message("Retrieving package list for environment: ", envname)
+  log_message(
+    "Retrieving package list for environment: ", envname
+  )
 
   tryCatch(
     {
@@ -387,7 +377,10 @@ installed_python_pkgs <- function(
       return(all_installed)
     },
     error = function(e) {
-      log_message("Failed to retrieve package list: ", e$message, message_type = "error")
+      log_message(
+        "Failed to retrieve package list: ", e$message,
+        message_type = "error"
+      )
     }
   )
 }
@@ -421,7 +414,9 @@ exist_python_pkgs <- function(
     )
   }
 
-  log_message("Checking ", length(packages), " packages in environment: ", envname)
+  log_message(
+    "Checking ", length(packages), " packages in environment: ", envname
+  )
 
   all_installed <- tryCatch(
     {
@@ -489,7 +484,8 @@ exist_python_pkgs <- function(
   n_installed <- sum(packages_installed)
   n_total <- length(packages_installed)
   log_message(
-    "Package check complete: ", n_installed, "/", n_total, " packages available"
+    "Package check complete: ", n_installed, "/", n_total, " packages available",
+    message_type = "success"
   )
 
   return(packages_installed)
@@ -534,7 +530,8 @@ env_exist <- function(conda = "auto", envname = NULL, envs_dir = NULL) {
     if (exist) {
       conda_meta_path <- file.path(env_path, "conda-meta")
       if (!dir.exists(conda_meta_path)) {
-        log_message("Environment directory exists but appears invalid: ", env_path,
+        log_message(
+          "Environment directory exists but appears invalid: ", env_path,
           message_type = "warning"
         )
         return(FALSE)
@@ -745,9 +742,9 @@ conda_python <- function(
     conda = "auto",
     all = FALSE) {
   envname <- get_envname(envname)
-  envname <- reticulate:::condaenv_resolve(envname)
+  envname <- reticulate:::python_environment_resolve(envname)
   if (grepl("[/\\\\]", envname)) {
-    suffix <- if (reticulate:::is_windows()) "python.exe" else "bin/python"
+    suffix <- if (.is_windows()) "python.exe" else "bin/python"
     path <- file.path(envname, suffix)
     if (file.exists(path)) {
       return(path)
@@ -781,24 +778,163 @@ conda_python <- function(
   return(normalizePath(as.character(python), mustWork = FALSE))
 }
 
-run_python <- function(
-    command,
-    envir = .GlobalEnv) {
-  tryCatch(
-    expr = {
-      eval(
-        {
-          reticulate::py_run_string(command)
-        },
-        envir = envir
-      )
-    },
-    error = function(error) {
-      log_message(error, message_type = "error")
+#' Remove a conda environment
+#'
+#' @param envname The name of the conda environment to remove.
+#' If NULL, uses the default scop environment name.
+#' @param conda The path to a conda executable. Use "auto" to allow
+#' reticulate to automatically find an appropriate conda binary.
+#' @param force Whether to force removal without confirmation.
+#' Default is FALSE.
+#'
+#' @details This function removes a conda environment completely.
+#' This action cannot be undone, so use with caution.
+#' If the environment is currently active, it will be deactivated first.
+#'
+#' @return Invisibly returns TRUE if successful, FALSE otherwise.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Remove the default scop environment
+#' RemoveEnv()
+#'
+#' # Remove a specific environment
+#' RemoveEnv("my_old_env")
+#'
+#' # Force removal without confirmation
+#' RemoveEnv("my_old_env", force = TRUE)
+#' }
+RemoveEnv <- function(
+    envname = NULL,
+    conda = "auto",
+    force = FALSE) {
+  envname <- get_envname(envname)
+
+  log_message("Removing conda environment: ", envname)
+
+  if (identical(conda, "auto")) {
+    conda <- find_conda()
+  } else {
+    options(reticulate.conda_binary = conda)
+    conda <- find_conda()
+  }
+
+  if (is.null(conda)) {
+    log_message("Conda not found", message_type = "error")
+    return(invisible(FALSE))
+  }
+
+  env_exists <- env_exist(envname = envname, conda = conda)
+  if (isFALSE(env_exists)) {
+    log_message(
+      "Environment '", envname, "' does not exist",
+      message_type = "warning"
+    )
+    return(invisible(FALSE))
+  }
+
+  envs_dir <- reticulate:::conda_info(conda)$envs_dirs[1]
+  env_path <- file.path(envs_dir, envname)
+
+  if (!force) {
+    log_message("Environment path: ", env_path)
+    log_message("This will permanently delete the environment and all its packages.")
+
+    if (interactive()) {
+      response <- readline(paste0("Are you sure you want to remove environment '", envname, "'? (y/N): "))
+      if (!tolower(response) %in% c("y", "yes")) {
+        log_message("Environment removal cancelled.")
+        return(invisible(FALSE))
+      }
+    } else {
       log_message(
-        "Failed to run \"", command, "\". Please check manually.",
-        message_type = "error"
+        "Use force=TRUE to remove environment in non-interactive mode",
+        message_type = "warning"
       )
+      return(invisible(FALSE))
+    }
+  }
+
+  log_message("Removing environment '", envname, "'...")
+
+  result <- tryCatch(
+    {
+      reticulate::conda_remove(envname = envname, packages = NULL, conda = conda)
+      log_message(
+        "Environment removed successfully using conda_remove",
+        message_type = "success"
+      )
+      TRUE
+    },
+    error = function(e) {
+      log_message("conda_remove failed: ", e$message, message_type = "warning")
+      FALSE
     }
   )
+
+  if (!result) {
+    log_message("Attempting direct removal of environment directory...")
+
+    result <- tryCatch(
+      {
+        if (dir.exists(env_path)) {
+          unlink(env_path, recursive = TRUE, force = TRUE)
+
+          if (!dir.exists(env_path)) {
+            log_message("Environment directory removed successfully", message_type = "success")
+            TRUE
+          } else {
+            log_message("Failed to remove environment directory", message_type = "error")
+            FALSE
+          }
+        } else {
+          log_message("Environment directory does not exist", message_type = "warning")
+          TRUE
+        }
+      },
+      error = function(e) {
+        log_message("Direct removal failed: ", e$message, message_type = "error")
+        FALSE
+      }
+    )
+  }
+
+  if (result) {
+    log_message(
+      "Environment '", envname, "' removed successfully",
+      message_type = "success"
+    )
+  } else {
+    log_message(
+      "Failed to remove environment '", envname, "'",
+      message_type = "error"
+    )
+  }
+
+  return(invisible(result))
+}
+
+#' List conda environments
+#'
+#' @param conda The path to a conda executable. Use "auto" to allow
+#' reticulate to automatically find an appropriate conda binary.
+#'
+#' @return A data frame of conda environments.
+#' @export
+ListEnv <- function(conda = "auto") {
+  reticulate::conda_list(conda = conda)
+}
+
+.is_windows <- function() {
+  identical(.Platform$OS.type, "windows")
+}
+
+.is_osx <- function() {
+  Sys.info()[["sysname"]] == "Darwin"
+}
+
+.is_linux <- function() {
+  identical(tolower(Sys.info()[["sysname"]]), "linux")
 }
