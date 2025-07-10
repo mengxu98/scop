@@ -240,7 +240,7 @@ ht1 <- CellCorHeatmap(
 )
 ht1$plot
 
-data("panc8_sub")
+data(panc8_sub)
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
   thisutils::capitalize(

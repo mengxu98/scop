@@ -15,7 +15,8 @@ check_python(
 )
 }
 \arguments{
-\item{packages}{A character vector, indicating package names which should be installed or removed. Use \code{⁠<package>==<version>}⁠ to request the installation of a specific version of a package.}
+\item{packages}{A character vector, indicating package names which should be installed or removed.
+Use \code{<package>==<version>} to request the installation of a specific version of a package.}
 
 \item{envname}{The name of a conda environment.}
 
@@ -23,11 +24,13 @@ check_python(
 
 \item{force}{Whether to force package installation. Default is \code{FALSE}.}
 
-\item{pip}{Whether to use pip for package installation. By default, packages are installed from the active conda channels.}
+\item{pip}{Whether to use pip for package installation.
+Default is \code{TRUE}, packages are installed from the active conda channels.}
 
-\item{pip_options}{An optional character vector of additional command line arguments to be passed to \code{pip}. Only relevant when \code{pip = TRUE}.}
+\item{pip_options}{An optional character vector of additional command line arguments to be passed to \code{pip}.
+Only relevant when \code{pip = TRUE}.}
 
-\item{...}{Other arguments passed to \code{\link[reticulate]{conda_install}}}
+\item{...}{Other arguments passed to \link[reticulate:conda-tools]{reticulate::conda_install}}
 }
 \description{
 Check and install python packages
@@ -35,10 +38,10 @@ Check and install python packages
 \examples{
 \dontrun{
 check_python(
-  packages = c("bbknn", "scanorama")
+  packages = c("numpy", "pandas")
 )
 check_python(
-  packages = "scvi-tools==0.20.0",
+  packages = "numpy==1.26.4",
   envname = "scop_env",
   pip_options = "-i https://pypi.tuna.tsinghua.edu.cn/simple"
 )

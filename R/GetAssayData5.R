@@ -19,7 +19,7 @@
 #'   assay = "RNA"
 #' )[1:5, 1:5]
 #'
-#' data("panc8_sub")
+#' data(panc8_sub)
 #' GetAssayData5(
 #'   panc8_sub,
 #'   layer = "counts",

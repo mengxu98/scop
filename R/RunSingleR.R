@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("panc8_sub")
+#' data(panc8_sub)
 #' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
 #'   thisutils::capitalize(
@@ -39,7 +39,7 @@
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
 #'   query_group = "Standardclusters",
-#'   ref_group = "celltype",
+#'   ref_group = "celltype"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,

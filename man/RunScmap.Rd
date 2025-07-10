@@ -45,7 +45,7 @@ This should be a value between 0 and 1. The default value is 0.5.}
 Annotate single cells using scmap.
 }
 \examples{
-data("panc8_sub")
+data(panc8_sub)
 
 genenames <- make.unique(
   thisutils::capitalize(

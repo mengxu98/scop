@@ -4284,7 +4284,7 @@ ComBat_integrate <- function(
 #'
 #' @export
 #' @examples
-#' data("panc8_sub")
+#' data(panc8_sub)
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
