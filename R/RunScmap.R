@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#' data("panc8_sub")
+#' data(panc8_sub)
 #'
 #' genenames <- make.unique(
 #'   thisutils::capitalize(
