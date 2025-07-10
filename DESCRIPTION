@@ -1,7 +1,7 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.1.3
+Version: 0.1.4
 Date: 2025-07-07
 Authors@R:
     c(
@@ -88,6 +88,7 @@ Suggests:
     openxlsx,
     org.Hs.eg.db,
     org.Mm.eg.db,
+    pak,
     patchwork,
     pbapply,
     promises,
