@@ -21,7 +21,5 @@ The function returns a list of requirements including the required Python versio
 and a list of packages with their corresponding versions.
 }
 \examples{
-\dontrun{
 env_requirements("3.10-1")
-}
 }

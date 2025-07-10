@@ -225,7 +225,7 @@ ht3 <- GroupHeatmap(
 )
 ht3$plot
 
-data("panc8_sub")
+data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
