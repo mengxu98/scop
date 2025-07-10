@@ -118,7 +118,7 @@ A \code{Seurat} object.
 Integrate single-cell RNA-seq data using various integration methods.
 }
 \examples{
-data("panc8_sub")
+data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
