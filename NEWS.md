@@ -1,5 +1,11 @@
 # scop
 
+## scop 0.1.4
+
+*  **Enhancements**: Update `.onAttach()`, now `.onAttach()` will print more information about conda and Python.
+*  **Enhancements**: Update `PrepareEnv` for easy add or update a conda environmrnts and install Python packages.
+*  **New Functionality**: Added `ListEnv()` and `RemoveEnv()` for easy mangement of conda environmrnt and Python packages.
+
 ## scop 0.1.3
 
 *   **New Functionality**: Added `TACSPlot()` for creating FACS-like plots.

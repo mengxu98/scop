@@ -32,6 +32,8 @@
 #' Default is NULL.
 #' @param custom_version A character vector specifying the version to be used in a custom database.
 #' Default is NULL.
+#' @param verbose A logical value indicating whether to print verbose messages.
+#' Default is TRUE.
 #'
 #' @details
 #' The `PrepareDB` function prepares gene annotation databases for a given species and set of annotation sources.
