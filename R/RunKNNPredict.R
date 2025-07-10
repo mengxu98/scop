@@ -80,7 +80,7 @@
 #' )
 #'
 #' # Annotate using single cell RNA-seq data
-#' data("panc8_sub")
+#' data(panc8_sub)
 #' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
 #'   thisutils::capitalize(

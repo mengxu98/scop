@@ -490,7 +490,6 @@ GetSimilarFeatures <- function(
     assay = assay,
     layer = layer
   )[features_use, , drop = FALSE] |> Matrix::Matrix(sparse = TRUE)
-  assertthat::assert_that(grepl("Matrix", class(data_use)[[1]]))
 
   gene_averages <- Matrix::rowMeans(data_use)
   squares <- Matrix::rowSums(data_use^2)
@@ -572,8 +571,6 @@ FetchDataZero <- function(
     )
   )
   to_return <- cbind(to_return, pad)
-  assertthat::are_equal(sort(features), sort(colnames(to_return)))
   to_return <- to_return[, features, drop = FALSE]
-  assertthat::assert_that(is.data.frame(to_return))
   return(to_return)
 }

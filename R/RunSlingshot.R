@@ -2,21 +2,31 @@
 #'
 #' Runs the Slingshot algorithm on a Seurat object.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param group.by The variable to group the cells by.
-#' @param reduction The reduction technique to use for dimensionality reduction. Default is NULL, which uses the default reduction for the Seurat object.
-#' @param dims The dimensions to use for the Slingshot algorithm. Default is NULL, which uses first two dimensions.
-#' @param start The starting group for the Slingshot algorithm. Default is NULL.
-#' @param end The ending group for the Slingshot algorithm. Default is NULL.
-#' @param prefix The prefix to add to the column names of the resulting pseudotime variable. Default is NULL.
-#' @param reverse Logical value indicating whether to reverse the pseudotime variable. Default is FALSE.
-#' @param align_start Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime. Default is FALSE.
-#' @param show_plot Logical value indicating whether to show the dimensionality plot. Default is TRUE.
-#' @param lineage_palette The color palette to use for the lineages in the plot. Default is "Dark2".
+#' @param reduction The reduction technique to use for dimensionality reduction.
+#' Default is NULL, which uses the default reduction for the Seurat object.
+#' @param dims The dimensions to use for the Slingshot algorithm.
+#' Default is NULL, which uses first two dimensions.
+#' @param start The starting group for the Slingshot algorithm.
+#' Default is NULL.
+#' @param end The ending group for the Slingshot algorithm.
+#' Default is NULL.
+#' @param prefix The prefix to add to the column names of the resulting pseudotime variable.
+#' Default is NULL.
+#' @param reverse Logical value indicating whether to reverse the pseudotime variable.
+#' Default is FALSE.
+#' @param align_start Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime.
+#' Default is FALSE.
+#' @param show_plot Logical value indicating whether to show the dimensionality plot.
+#' Default is TRUE.
+#' @param lineage_palette The color palette to use for the lineages in the plot.
+#' Default is "Dark2".
 #' @param seed The random seed to use for reproducibility. Default is 11.
-#' @param ... Additional arguments to be passed to the \code{\link[slingshot]{slingshot}} function.
+#' @param ... Additional arguments to be passed to the [slingshot::slingshot] function.
 #'
-#' @seealso \code{\link{CellDimPlot}} \code{\link{RunDynamicFeatures}}
+#' @seealso [CellDimPlot] [RunDynamicFeatures]
 #'
 #' @export
 #'

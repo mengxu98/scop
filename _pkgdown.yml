@@ -42,6 +42,8 @@ reference:
 - subtitle: "Package Setup"
 - contents:
   - PrepareEnv
+  - ListEnv
+  - RemoveEnv
   - conda_install
   - conda_python
   - find_conda

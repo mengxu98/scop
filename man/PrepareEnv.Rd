@@ -2,7 +2,7 @@
 % Please edit documentation in R/PrepareEnv.R
 \name{PrepareEnv}
 \alias{PrepareEnv}
-\title{Prepare the scop Python environment by installing the required dependencies and setting up the environment.}
+\title{Prepare virtual Python environment}
 \usage{
 PrepareEnv(
   conda = "auto",
@@ -17,7 +17,7 @@ PrepareEnv(
 \item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{miniconda_repo}{Repositories for miniconda.
-Default is \code{https://repo.anaconda.com/miniconda}.}
+Default is \url{https://repo.anaconda.com/miniconda}.}
 
 \item{envname}{The name of a conda environment.}
 
@@ -28,13 +28,11 @@ Default is "3.10-1".}
 If \code{TRUE}, the existing environment will be recreated.
 Default is \code{FALSE}.}
 
-\item{...}{Other arguments passed to \code{\link[reticulate]{conda_install}}}
+\item{...}{Other arguments passed to \link[reticulate:conda-tools]{reticulate::conda_install}}
 }
 \description{
-Prepare the scop Python environment by installing the required dependencies and setting up the environment.
-}
-\details{
-This function prepares the scop Python environment by checking if conda is installed,
+Prepare the virtual environment by installing the required dependencies and setting up the environment.
+This function prepares the virtual environment by checking if conda is installed,
 creating a new conda environment if needed, installing the required packages,
 and setting up the Python environment for use with scop.
 In order to create the environment, this function requires the path to the conda binary.

@@ -94,7 +94,7 @@ CellDimPlot(pancreas_sub, "CC_classification")
 FeatureDimPlot(pancreas_sub, "CC_G2M")
 
 \dontrun{
-data("panc8_sub")
+data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
