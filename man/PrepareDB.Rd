@@ -72,6 +72,9 @@ Default is NULL.}
 
 \item{custom_version}{A character vector specifying the version to be used in a custom database.
 Default is NULL.}
+
+\item{verbose}{A logical value indicating whether to print verbose messages.
+Default is TRUE.}
 }
 \value{
 A list containing the prepared gene annotation databases:

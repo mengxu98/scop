@@ -18,7 +18,7 @@ or characters named with old features.}
 Rename features for the Seurat object
 }
 \examples{
-data("panc8_sub")
+data(panc8_sub)
 head(rownames(panc8_sub))
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
