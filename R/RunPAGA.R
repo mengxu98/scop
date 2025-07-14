@@ -30,11 +30,11 @@
 #' @param min_group_size The minimum size of a group (as a fraction of the total number of cells) to consider it as a potential branching point.
 #' @param palette The palette to use for coloring cells.
 #' @param palcolor A vector of colors to use as the palette.
-#' @param show_plot Whether to show the PAGA plot.
-#' @param dpi The DPI (dots per inch) for saving the PAGA plot.
-#' @param save Whether to save the PAGA plots.
-#' @param dirpath The directory to save the PAGA plots.
-#' @param fileprefix The file prefix to use for the PAGA plots.
+#' @param show_plot Whether to show the plot.
+#' @param dpi The DPI (dots per inch) for saving the plot.
+#' @param save Whether to save the plots.
+#' @param dirpath The directory to save the plots.
+#' @param fileprefix The file prefix to use for the plots.
 #' @param return_seurat Whether to return a Seurat object instead of an anndata object. Default is TRUE.
 #'
 #' @seealso [srt_to_adata] [PAGAPlot] [CellDimPlot] [RunSCVELO]
