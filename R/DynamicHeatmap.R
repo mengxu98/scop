@@ -1,9 +1,12 @@
-#' Heatmap plot for dynamic features along lineages
+#' @title Heatmap plot for dynamic features along lineages
 #'
+#' @md
 #' @inheritParams GroupHeatmap
 #' @param srt A Seurat object.
 #' @param lineages A character vector specifying the lineages to plot.
-#' @param features A character vector specifying the features to plot. By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters  \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.
+#' @param features A character vector specifying the features to plot.
+#' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
+#' \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.
 #' @param use_fitted A logical indicating whether to use fitted values. Default is FALSE.
 #' @param border A logical indicating whether to add a border to the heatmap. Default is TRUE.
 #' @param flip A logical indicating whether to flip the heatmap. Default is FALSE.
