@@ -140,7 +140,9 @@ DynamicHeatmap(
 
 \item{lineages}{A character vector specifying the lineages to plot.}
 
-\item{features}{A character vector specifying the features to plot. By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters  \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.}
+\item{features}{A character vector specifying the features to plot.
+By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
+\code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.}
 
 \item{use_fitted}{A logical indicating whether to use fitted values. Default is FALSE.}
 

@@ -146,15 +146,15 @@ Each cell in the grid can have, at most, one traversing streamline.}
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
-\item{show_plot}{Whether to show the PAGA plot.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{save}{Whether to save the PAGA plots.}
+\item{save}{Whether to save the plots.}
 
-\item{dpi}{The DPI (dots per inch) for saving the PAGA plot.}
+\item{dpi}{The DPI (dots per inch) for saving the plot.}
 
-\item{dirpath}{The directory to save the PAGA plots.}
+\item{dirpath}{The directory to save the plots.}
 
-\item{fileprefix}{The file prefix to use for the PAGA plots.}
+\item{fileprefix}{The file prefix to use for the plots.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
 }

@@ -1064,6 +1064,7 @@ def Palantir(
         pca_projections = pd.DataFrame(
             adata.obsm[linear_reduction][:, :n_pcs], index=adata.obs_names
         )
+        print("running diffusion maps")
         dm_res = palantir.utils.run_diffusion_maps(
             pca_projections,
             n_components=dm_n_components,
@@ -1071,8 +1072,9 @@ def Palantir(
             alpha=dm_alpha,
         )
         ms_data = palantir.utils.determine_multiscale_space(dm_res, n_eigs=dm_n_eigs)
+        print("running palantir")
         pr_res = palantir.core.run_palantir(
-            ms_data=ms_data,
+            data=ms_data,
             early_cell=early_cell,
             terminal_states=terminal_cells,
             knn=n_neighbors,
@@ -1108,7 +1110,7 @@ def Palantir(
                 terminal_cells = list(terminal_cells_dict.keys())
 
             pr_res = palantir.core.run_palantir(
-                ms_data=ms_data,
+                data=ms_data,
                 early_cell=early_cell,
                 terminal_states=terminal_cells,
                 knn=n_neighbors,

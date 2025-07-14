@@ -1,12 +1,12 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.1.4
-Date: 2025-07-07
+Version: 0.1.5
+Date: 2025-07-11
 Authors@R:
     c(
-    person(given = "Hao", family = "Zhang", email = "aozhang@njmu.edu.cn", role = c("aut")),
-    person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054"))
+    person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
+    person(given = "Hao", family = "Zhang", email = "aozhang@njmu.edu.cn", role = c("aut"))
     )
 Maintainer: Meng Xu <mengxu98@qq.com>
 Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.

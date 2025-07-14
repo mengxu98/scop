@@ -1,5 +1,9 @@
 # scop
 
+## scop 0.1.5
+
+*  **Bug Fixes**: Fix error for `RunPalantir()`, see [#23](https://github.com/mengxu98/scop/issues/23).
+
 ## scop 0.1.4
 
 *  **Enhancements**: Update `.onAttach()`, now `.onAttach()` will print more information about conda and Python.
