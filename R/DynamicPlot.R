@@ -2,6 +2,7 @@
 #'
 #' Plot dynamic features across pseudotime.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param features A character vector specifying the features to plot.
 #' @param lineages A character vector specifying the lineages to plot.
@@ -9,9 +10,13 @@
 #' @param cells A character vector specifying the cells to include in the plot. Default is NULL.
 #' @param layer A character string specifying the layer to use for the analysis. Default is "counts".
 #' @param assay A character string specifying the assay to use for the analysis. Default is NULL.
-#' @param family A character specifying the model used to calculate the dynamic features if needed. By default, this parameter is set to NULL, and the appropriate family will be automatically determined.
-#' @param exp_method A character specifying the method to transform the expression values. Default is "log1p" with options "log1p", "raw", "zscore", "fc", "log2fc".
-#' @param lib_normalize A boolean specifying whether to normalize the expression values using library size. By default, if the \code{layer} is counts, this parameter is set to TRUE. Otherwise, it is set to FALSE.
+#' @param family A character specifying the model used to calculate the dynamic features if needed.
+#' By default, this parameter is set to NULL, and the appropriate family will be automatically determined.
+#' @param exp_method A character specifying the method to transform the expression values.
+#' Default is "log1p" with options "log1p", "raw", "zscore", "fc", "log2fc".
+#' @param lib_normalize A boolean specifying whether to normalize the expression values using library size.
+#' Default the `layer` is counts, this parameter is set to TRUE.
+#' Otherwise, it is set to FALSE.
 #' @param libsize A numeric vector specifying the library size for each cell. Default is NULL.
 #' @param compare_lineages A boolean specifying whether to compare the lineages in the plot. Default is TRUE.
 #' @param compare_features A boolean specifying whether to compare the features in the plot. Default is FALSE.
