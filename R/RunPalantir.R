@@ -1,4 +1,4 @@
-#' Run Palantir analysis
+#' @title Run Palantir analysis
 #'
 #' @inheritParams RunPAGA
 #' @param dm_n_components The number of diffusion components to calculate.
@@ -12,7 +12,7 @@
 #' @param scale_components Should the cell fate probabilities be scaled for each component independently?
 #' @param use_early_cell_as_start Should the starting cell for each terminal group be set as early_cell?
 #' @param adjust_early_cell Whether to adjust the early cell to the cell with the minimum pseudotime value.
-#' @param adjust_terminal_cells hether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
+#' @param adjust_terminal_cells Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param n_jobs The number of parallel jobs to run.
 #'
@@ -23,7 +23,7 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- RunPalantir( # bug
+#' pancreas_sub <- RunPalantir(
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
@@ -71,7 +71,7 @@ RunPalantir <- function(
     adjust_early_cell = FALSE,
     adjust_terminal_cells = FALSE,
     max_iterations = 25,
-    n_jobs = 8,
+    n_jobs = 1,
     point_size = 20,
     palette = "Paired",
     palcolor = NULL,
@@ -84,27 +84,25 @@ RunPalantir <- function(
   check_python("palantir")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of 'srt', 'adata' must be provided.",
+      "{.arg srt} or {.arg adata} must be provided.",
       message_type = "error"
     )
   }
-  if (
-    is.null(group_by) && any(!is.null(early_group), !is.null(terminal_groups))
-  ) {
+  if (is.null(group_by) && any(!is.null(early_group), !is.null(terminal_groups))) {
     log_message(
-      "'group_by' must be provided when early_group or terminal_groups provided.",
+      "{.arg group_by} must be provided when {.arg early_group} or {.arg terminal_groups} provided.",
       message_type = "error"
     )
   }
   if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
     log_message(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      "{.arg linear_reduction} or {.arg nonlinear_reduction} must be provided at least one.",
       message_type = "error"
     )
   }
   if (is.null(early_cell) && is.null(early_group)) {
     log_message(
-      "'early_cell' or 'early_group' must be provided.",
+      "{.arg early_cell} or {.arg early_group} must be provided.",
       message_type = "error"
     )
   }
@@ -117,12 +115,12 @@ RunPalantir <- function(
     }
     return(y)
   })
-  call.envir <- parent.frame(1)
+  call_envir <- parent.frame(1)
   args <- lapply(args, function(arg) {
     if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else {
       arg
     }
@@ -149,6 +147,31 @@ RunPalantir <- function(
       assay_y = assay_y,
       layer_y = layer_y
     )
+    if (!is.null(linear_reduction)) {
+      if (!startsWith(linear_reduction, "X_")) {
+        args[["linear_reduction"]] <- paste0(
+          "X_", tolower(linear_reduction)
+        )
+      }
+    }
+    if (!is.null(nonlinear_reduction)) {
+      if (!startsWith(nonlinear_reduction, "X_")) {
+        args[["nonlinear_reduction"]] <- paste0(
+          "X_", tolower(nonlinear_reduction)
+        )
+      }
+    }
+    if (is.null(basis)) {
+      if (!is.null(args[["nonlinear_reduction"]])) {
+        args[["basis"]] <- args[["nonlinear_reduction"]]
+      } else if (!is.null(args[["linear_reduction"]])) {
+        args[["basis"]] <- args[["linear_reduction"]]
+      }
+    } else {
+      if (!startsWith(basis, "X_")) {
+        args[["basis"]] <- paste0("X_", tolower(basis))
+      }
+    }
   }
   groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
   args[["palette"]] <- palette_scop(

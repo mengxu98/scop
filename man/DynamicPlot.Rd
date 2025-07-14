@@ -58,11 +58,15 @@ DynamicPlot(
 
 \item{assay}{A character string specifying the assay to use for the analysis. Default is NULL.}
 
-\item{family}{A character specifying the model used to calculate the dynamic features if needed. By default, this parameter is set to NULL, and the appropriate family will be automatically determined.}
+\item{family}{A character specifying the model used to calculate the dynamic features if needed.
+By default, this parameter is set to NULL, and the appropriate family will be automatically determined.}
 
-\item{exp_method}{A character specifying the method to transform the expression values. Default is "log1p" with options "log1p", "raw", "zscore", "fc", "log2fc".}
+\item{exp_method}{A character specifying the method to transform the expression values.
+Default is "log1p" with options "log1p", "raw", "zscore", "fc", "log2fc".}
 
-\item{lib_normalize}{A boolean specifying whether to normalize the expression values using library size. By default, if the \code{layer} is counts, this parameter is set to TRUE. Otherwise, it is set to FALSE.}
+\item{lib_normalize}{A boolean specifying whether to normalize the expression values using library size.
+Default the \code{layer} is counts, this parameter is set to TRUE.
+Otherwise, it is set to FALSE.}
 
 \item{libsize}{A numeric vector specifying the library size for each cell. Default is NULL.}
 
