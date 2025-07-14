@@ -30,7 +30,7 @@ RunPalantir(
   adjust_early_cell = FALSE,
   adjust_terminal_cells = FALSE,
   max_iterations = 25,
-  n_jobs = 8,
+  n_jobs = 1,
   point_size = 20,
   palette = "Paired",
   palcolor = NULL,
@@ -89,7 +89,7 @@ RunPalantir(
 
 \item{adjust_early_cell}{Whether to adjust the early cell to the cell with the minimum pseudotime value.}
 
-\item{adjust_terminal_cells}{hether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.}
+\item{adjust_terminal_cells}{Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.}
 
 \item{max_iterations}{Maximum number of iterations for pseudotime convergence.}
 
@@ -101,15 +101,15 @@ RunPalantir(
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
-\item{show_plot}{Whether to show the PAGA plot.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{save}{Whether to save the PAGA plots.}
+\item{save}{Whether to save the plots.}
 
-\item{dpi}{The DPI (dots per inch) for saving the PAGA plot.}
+\item{dpi}{The DPI (dots per inch) for saving the plot.}
 
-\item{dirpath}{The directory to save the PAGA plots.}
+\item{dirpath}{The directory to save the plots.}
 
-\item{fileprefix}{The file prefix to use for the PAGA plots.}
+\item{fileprefix}{The file prefix to use for the plots.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
 }
@@ -119,7 +119,7 @@ Run Palantir analysis
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- RunPalantir( # bug
+pancreas_sub <- RunPalantir(
   srt = pancreas_sub,
   group_by = "SubCellType",
   linear_reduction = "PCA",
