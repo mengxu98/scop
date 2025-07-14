@@ -62,15 +62,15 @@ scop_logo <- function(
   structure(cli::col_blue(logo), class = "logo")
 }
 
-#' @title print logo
+#' @title print scop logo
 #'
 #' @param x Input infromation.
 #' @param ... Other parameters.
 #'
-#' @method print logo
+#' @method print scop
 #'
 #' @export
-print.logo <- function(x, ...) {
+print.scop <- function(x, ...) {
   cat(x, ..., sep = "\n")
   invisible(x)
 }
@@ -98,7 +98,7 @@ print.logo <- function(x, ...) {
     cli::col_grey("  suppressPackageStartupMessages(library(scop))")
   )
   msg <- paste0(
-    strrep("-", 80),
+    strrep("-", 60),
     "\n",
     msg
   )
@@ -106,31 +106,12 @@ print.logo <- function(x, ...) {
     msg <- paste0(
       msg,
       "\n",
-      strrep("-", 80)
+      strrep("-", 60)
     )
   }
   packageStartupMessage(scop_logo())
   packageStartupMessage(msg)
 
-  tryCatch(
-    {
-      reticulate::py_run_string("
-import os
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
-os.environ['NUMEXPR_NUM_THREADS'] = '1'
-os.environ['KMP_WARNINGS'] = '0'
-")
-    },
-    error = function(e) {
-      log_message(
-        "Could not set Python environment variables",
-        message_type = "warning"
-      )
-    }
-  )
   if (isTRUE(scop_env_init)) {
     tryCatch(
       {
@@ -141,11 +122,11 @@ os.environ['KMP_WARNINGS'] = '0'
           )
           return(invisible(NULL))
         }
-
+        envname <- get_envname()
         envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
         env <- env_exist(
           conda = conda,
-          envname = get_envname(),
+          envname = envname,
           envs_dir = envs_dir
         )
 
@@ -157,10 +138,7 @@ os.environ['KMP_WARNINGS'] = '0'
           )
           return(invisible(NULL))
         }
-
-        Sys.unsetenv("RETICULATE_PYTHON")
-        python_path <- conda_python(conda = conda)
-        reticulate::use_python(python_path, required = TRUE)
+        set_python_env(conda = conda, envname = envname)
 
         pyinfo <- utils::capture.output(reticulate::py_config())
         packageStartupMessage(
@@ -186,7 +164,7 @@ os.environ['KMP_WARNINGS'] = '0'
             "Disable Python initialization information: options(scop_env_init = FALSE)"
           ),
           "\n",
-          strrep("-", 80)
+          strrep("-", 60)
         )
       },
       error = function(e) {
@@ -197,7 +175,7 @@ os.environ['KMP_WARNINGS'] = '0'
             "\n",
             "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
             "\n",
-            strrep("-", 80)
+            strrep("-", 60)
           )
         )
       }
