@@ -44,6 +44,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/LIGER_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/LineagePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ListDB.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ListEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MNN_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PAGAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareDB.html</loc></url>
@@ -51,6 +52,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareSCExplorer.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RecoverCounts.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameClusters.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCSSMap.html</loc></url>
@@ -135,7 +137,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/panc8_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/pancreas_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/panel_fix.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/print.logo.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/print.scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ref_scHCL.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>

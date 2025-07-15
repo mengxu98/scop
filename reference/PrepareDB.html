@@ -11,7 +11,7 @@ The list contains the annotation data for each specified annotation source."></h
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,8 @@ The list contains the annotation data for each specified annotation source.</p>
 <span>  custom_TERM2NAME <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_species <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_IDtype <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  custom_version <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  custom_version <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -150,6 +151,11 @@ Default is NULL.</p></dd>
 <dt id="arg-custom-version">custom_version<a class="anchor" aria-label="anchor" href="#arg-custom-version"></a></dt>
 <dd><p>A character vector specifying the version to be used in a custom database.
 Default is NULL.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical value indicating whether to print verbose messages.
+Default is TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -275,7 +281,7 @@ The function also supports creating custom databases based on user-provided gene
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hao Zhang, Xu Meng.</p>
+  <p>Developed by Xu Meng, Hao Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">
