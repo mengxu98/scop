@@ -124,12 +124,14 @@ Otherwise, it is set to FALSE.}
 Plot dynamic features across pseudotime.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunSlingshot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -137,29 +139,33 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
+
 DynamicPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = "Lineage1",
   features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_features = TRUE
 )
+
 DynamicPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_lineages = TRUE,
   compare_features = FALSE
 )
+
 DynamicPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   features = c("Arxes1", "Ncoa2", "G2M_score"),
   group.by = "SubCellType",
   compare_lineages = FALSE,
   compare_features = FALSE
 )
+}
 }
 \seealso{
 \code{\link{RunDynamicFeatures}}
