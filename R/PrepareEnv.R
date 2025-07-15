@@ -28,6 +28,9 @@ PrepareEnv <- function(
     force = FALSE,
     ...) {
   log_message("=== Preparing scop Python Environment ===")
+  if (!is.null(envname)) {
+    options(scop_env_name = envname)
+  }
 
   envname <- get_envname(envname)
   log_message("Environment name: ", envname)
@@ -74,10 +77,7 @@ PrepareEnv <- function(
     }
   }
 
-  if (isTRUE(env)) {
-    python_path <- conda_python(conda = conda, envname = envname)
-    log_message("Python path: ", python_path)
-  } else {
+  if (isFALSE(env)) {
     force <- TRUE
 
     if (is.null(conda)) {
@@ -162,18 +162,48 @@ PrepareEnv <- function(
     )
   }
 
+  set_python_env(conda = conda, envname = envname)
+
+  env_info(conda, envname)
+
+  log_message("=== scop Python Environment Ready ===")
+}
+
+set_python_env <- function(conda, envname) {
   log_message("Setting up Python environment...")
+
+  python_path <- conda_python(conda = conda, envname = envname)
+  log_message("Python path: ", python_path)
+
   Sys.unsetenv("RETICULATE_PYTHON")
 
   options(reticulate.keras.backend = "tensorflow")
   options(reticulate.miniconda.enabled = FALSE)
 
+  # python_path <- reticulate::conda_python(conda = conda, envname = envname)
   python_path <- conda_python(conda = conda, envname = envname)
   reticulate::use_python(python_path, required = TRUE)
+  # Sys.setenv(RETICULATE_PYTHON = python_path)
 
-  env_info(conda, envname)
-
-  log_message("=== scop Python Environment Ready ===")
+  tryCatch(
+    {
+      reticulate::py_run_string("
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+os.environ['KMP_WARNINGS'] = '0'
+")
+    },
+    error = function(e) {
+      log_message(
+        "Could not set Python environment variables",
+        message_type = "warning"
+      )
+    }
+  )
 }
 
 #' Enhanced miniconda installation
