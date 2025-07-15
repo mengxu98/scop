@@ -37,7 +37,7 @@ reference:
 - contents:
   - scop-package
   - scop_logo
-  - print.logo
+  - print.scop
 
 - subtitle: "Package Setup"
 - contents:
