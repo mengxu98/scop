@@ -8,7 +8,7 @@ url: https://mengxu98.github.io/scop/
 template:
   bootstrap: 5
   light-switch: true
-  package: mxtemplate
+  package: thistemplate
 
 navbar:
   structure:
