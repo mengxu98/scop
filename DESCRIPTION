@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.1.5
-Date: 2025-07-11
+Version: 0.1.6
+Date: 2025-07-16
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -129,7 +129,7 @@ Suggests:
     UCell,
     withr
 RoxygenNote: 7.3.2
-Config/Needs/website: mengxu98/mxtemplate
+Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
