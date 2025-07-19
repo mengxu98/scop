@@ -37,7 +37,6 @@ reference:
 - contents:
   - scop-package
   - scop_logo
-  - print.scop
 
 - subtitle: "Package Setup"
 - contents:
@@ -194,6 +193,7 @@ reference:
   - GeneConvert
   - GetAssayData5
   - make_long
+  - print.scop_logo
   - RenameClusters
   - RenameFeatures
   - segements_df
