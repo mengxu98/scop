@@ -27,7 +27,7 @@ PrepareEnv <- function(
     version = "3.10-1",
     force = FALSE,
     ...) {
-  log_message("=== Preparing scop Python Environment ===")
+  log_message("{cli::col_blue('Preparing scop Python Environment')}")
   if (!is.null(envname)) {
     options(scop_env_name = envname)
   }
@@ -166,14 +166,14 @@ PrepareEnv <- function(
 
   env_info(conda, envname)
 
-  log_message("=== scop Python Environment Ready ===")
+  log_message("{cli::col_blue('scop Python Environment Ready')}")
 }
 
-set_python_env <- function(conda, envname) {
-  log_message("Setting up Python environment...")
-
-  python_path <- conda_python(conda = conda, envname = envname)
-  log_message("Python path: ", python_path)
+set_python_env <- function(conda, envname, verbose = TRUE) {
+  log_message(
+    "{cli::col_blue('Setting up Python environment...')}",
+    verbose = verbose
+  )
 
   Sys.unsetenv("RETICULATE_PYTHON")
 
@@ -497,7 +497,10 @@ exist_python_pkgs <- function(
       } else {
         packages_installed[pkg] <- TRUE
         installed_version <- all_installed$version[all_installed$package == pkg_name]
-        log_message(pkg_name, " ", installed_version, message_type = "success")
+        log_message(
+          "'", pkg_name, "' version: ", installed_version,
+          message_type = "success"
+        )
       }
     } else {
       packages_installed[pkg] <- FALSE
@@ -525,7 +528,10 @@ exist_python_pkgs <- function(
 #'
 #' @param envs_dir Directories in which conda environments are located.
 #' @inheritParams check_python
-env_exist <- function(conda = "auto", envname = NULL, envs_dir = NULL) {
+env_exist <- function(
+    conda = "auto",
+    envname = NULL,
+    envs_dir = NULL) {
   envname <- get_envname(envname)
 
   if (identical(conda, "auto")) {
@@ -542,7 +548,10 @@ env_exist <- function(conda = "auto", envname = NULL, envs_dir = NULL) {
           reticulate:::conda_info(conda = conda)
         },
         error = function(e) {
-          log_message("Failed to get conda info: ", e$message, message_type = "warning")
+          log_message(
+            "Failed to get conda info: ", e$message,
+            message_type = "warning"
+          )
           return(NULL)
         }
       )

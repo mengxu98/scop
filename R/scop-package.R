@@ -18,9 +18,10 @@
 #'
 #' @description
 #' The scop logo, using ASCII or Unicode characters
-#' Use [cli::ansi_strip()] to get rid of the colors.
+#' Use [cli::ansi_strip] to get rid of the colors.
 #' @md
-#' @param unicode Whether to use Unicode symbols. Default is `TRUE` on UTF-8 platforms.
+#' @param unicode Whether to use Unicode symbols on UTF-8 platforms.
+#' Default is [cli::is_utf8_output].
 #'
 #' @references
 #'  \url{https://github.com/tidyverse/tidyverse/blob/main/R/logo.R}
@@ -59,7 +60,7 @@ scop_logo <- function(
     logo <- sub(pat, col_hexa[[i + 1]], logo)
   }
 
-  structure(cli::col_blue(logo), class = "logo")
+  structure(cli::col_blue(logo), class = "scop_logo")
 }
 
 #' @title print scop logo
@@ -67,10 +68,10 @@ scop_logo <- function(
 #' @param x Input infromation.
 #' @param ... Other parameters.
 #'
-#' @method print scop
+#' @method print scop_logo
 #'
 #' @export
-print.scop <- function(x, ...) {
+print.scop_logo <- function(x, ...) {
   cat(x, ..., sep = "\n")
   invisible(x)
 }
@@ -118,7 +119,9 @@ print.scop <- function(x, ...) {
         conda <- find_conda()
         if (is.null(conda)) {
           packageStartupMessage(
-            cli::col_grey("Conda not found. Run: PrepareEnv() to create the environment")
+            cli::col_grey(
+              "Conda not found. Run: PrepareEnv() to create the environment"
+            )
           )
           return(invisible(NULL))
         }
@@ -138,7 +141,7 @@ print.scop <- function(x, ...) {
           )
           return(invisible(NULL))
         }
-        set_python_env(conda = conda, envname = envname)
+        set_python_env(conda = conda, envname = envname, verbose = FALSE)
 
         pyinfo <- utils::capture.output(reticulate::py_config())
         packageStartupMessage(
@@ -146,11 +149,21 @@ print.scop <- function(x, ...) {
         )
 
         pyinfo_mesg <- c(
-          cli::col_blue("conda environment: "),
-          cli::col_grey(paste0("  conda:          ", conda)),
-          cli::col_grey(paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))),
-          cli::col_blue("python config: "),
-          cli::col_grey(paste0("  ", pyinfo))
+          cli::col_blue(
+            "conda environment: "
+          ),
+          cli::col_grey(
+            paste0("  conda:          ", conda)
+          ),
+          cli::col_grey(
+            paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))
+          ),
+          cli::col_blue(
+            "python config: "
+          ),
+          cli::col_grey(
+            paste0("  ", pyinfo)
+          )
         )
         invisible(lapply(pyinfo_mesg, packageStartupMessage))
 
