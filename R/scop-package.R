@@ -18,9 +18,10 @@
 #'
 #' @description
 #' The scop logo, using ASCII or Unicode characters
-#' Use [cli::ansi_strip()] to get rid of the colors.
+#' Use [cli::ansi_strip] to get rid of the colors.
 #' @md
-#' @param unicode Whether to use Unicode symbols. Default is `TRUE` on UTF-8 platforms.
+#' @param unicode Whether to use Unicode symbols on UTF-8 platforms.
+#' Default is [cli::is_utf8_output].
 #'
 #' @references
 #'  \url{https://github.com/tidyverse/tidyverse/blob/main/R/logo.R}
@@ -59,7 +60,7 @@ scop_logo <- function(
     logo <- sub(pat, col_hexa[[i + 1]], logo)
   }
 
-  structure(cli::col_blue(logo), class = "logo")
+  structure(cli::col_blue(logo), class = "scop_logo")
 }
 
 #' @title print scop logo
@@ -67,10 +68,10 @@ scop_logo <- function(
 #' @param x Input infromation.
 #' @param ... Other parameters.
 #'
-#' @method print scop
+#' @method print scop_logo
 #'
 #' @export
-print.scop <- function(x, ...) {
+print.scop_logo <- function(x, ...) {
   cat(x, ..., sep = "\n")
   invisible(x)
 }
@@ -80,35 +81,37 @@ print.scop <- function(x, ...) {
 
   scop_env_init <- getOption("scop_env_init", default = FALSE)
   version <- utils::packageDescription(pkgname, fields = "Version")
-  msg <- cli::col_blue(pkgname, " version ", version)
+  msg <- paste0(
+    strrep("-", 60),
+    "\n",
+    cli::col_blue(pkgname, " version ", version),
+    "\n"
+  )
   if (!isTRUE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
       cli::col_grey("Python environment initialization is disabled."),
       "\n",
-      cli::col_grey("To enable it, set: options(scop_env_init = TRUE)")
+      cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
+      "\n"
     )
   }
-  msg <- paste0(
-    msg,
-    "\n",
+  suppress_msg <- paste0(
     cli::col_grey("This message can be suppressed by: "),
     "\n",
     cli::col_grey("  suppressPackageStartupMessages(library(scop))")
-  )
-  msg <- paste0(
-    strrep("-", 60),
-    "\n",
-    msg
   )
   if (!isTRUE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
+      suppress_msg,
+      "\n",
       strrep("-", 60)
     )
   }
+
   packageStartupMessage(scop_logo())
   packageStartupMessage(msg)
 
@@ -118,7 +121,9 @@ print.scop <- function(x, ...) {
         conda <- find_conda()
         if (is.null(conda)) {
           packageStartupMessage(
-            cli::col_grey("Conda not found. Run: PrepareEnv() to create the environment")
+            cli::col_grey(
+              "Conda not found. Run: PrepareEnv() to create the environment"
+            )
           )
           return(invisible(NULL))
         }
@@ -138,21 +143,13 @@ print.scop <- function(x, ...) {
           )
           return(invisible(NULL))
         }
-        set_python_env(conda = conda, envname = envname)
+        set_python_env(conda = conda, envname = envname, verbose = FALSE)
 
-        pyinfo <- utils::capture.output(reticulate::py_config())
         packageStartupMessage(
-          cli::col_grey("Conda environment initialized successfully")
+          cli::col_green("conda environment initialized successfully")
         )
 
-        pyinfo_mesg <- c(
-          cli::col_blue("conda environment: "),
-          cli::col_grey(paste0("  conda:          ", conda)),
-          cli::col_grey(paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))),
-          cli::col_blue("python config: "),
-          cli::col_grey(paste0("  ", pyinfo))
-        )
-        invisible(lapply(pyinfo_mesg, packageStartupMessage))
+        env_info(conda = conda, envname = envname)
 
         packageStartupMessage(
           "\n",
@@ -163,6 +160,8 @@ print.scop <- function(x, ...) {
           cli::col_grey(
             "Disable Python initialization information: options(scop_env_init = FALSE)"
           ),
+          "\n\n",
+          suppress_msg,
           "\n",
           strrep("-", 60)
         )
@@ -174,6 +173,8 @@ print.scop <- function(x, ...) {
             e$message,
             "\n",
             "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
+            "\n\n",
+            suppress_msg,
             "\n",
             strrep("-", 60)
           )
