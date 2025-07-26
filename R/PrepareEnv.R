@@ -134,8 +134,7 @@ PrepareEnv <- function(
 
   if (length(conda_packages) > 0) {
     log_message(
-      "Installing {.pkg conda} packages: ",
-      paste0(conda_packages, collapse = ", ")
+      "Installing {.pkg conda} packages"
     )
     check_python(
       packages = conda_packages,
@@ -149,8 +148,7 @@ PrepareEnv <- function(
 
   if (length(pip_packages) > 0) {
     log_message(
-      "Installing {.pkg pip} packages: ",
-      paste0(pip_packages, collapse = ", ")
+      "Installing {.pkg pip} packages"
     )
     check_python(
       packages = pip_packages,
@@ -166,15 +164,13 @@ PrepareEnv <- function(
 
   env_info(conda, envname)
 
-  log_message("{cli::col_blue('scop Python Environment Ready')}")
+  log_message(
+    "{cli::col_green('Python Environment Ready')}",
+    message_type = "success"
+  )
 }
 
 set_python_env <- function(conda, envname, verbose = TRUE) {
-  log_message(
-    "{cli::col_blue('Setting up Python environment...')}",
-    verbose = verbose
-  )
-
   Sys.unsetenv("RETICULATE_PYTHON")
 
   options(reticulate.keras.backend = "tensorflow")
@@ -198,9 +194,8 @@ os.environ['KMP_WARNINGS'] = '0'
 ")
     },
     error = function(e) {
-      log_message(
-        "Could not set Python environment variables",
-        message_type = "warning"
+      cli::col_red(
+        "Could not set Python environment variables"
       )
     }
   )
@@ -275,19 +270,26 @@ install_miniconda2 <- function(miniconda_repo) {
 env_info <- function(conda, envname) {
   envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
 
-  pyinfo <- utils::capture.output(reticulate::py_config())
+  py_info <- utils::capture.output(reticulate::py_config())
 
-  pyinfo_mesg <- c(
-    "==================== scop conda environment ====================",
-    paste0("conda: ", conda),
-    paste0("environment: ", paste0(envs_dir, "/", envname)),
-    paste0("python: ", conda_python(conda = conda, envname = envname)),
-    "==================== scop python config ====================",
-    pyinfo,
-    "=============================================================="
+  py_info_mesg <- c(
+    cli::col_blue(
+      "conda environment: "
+    ),
+    cli::col_grey(
+      paste0("  conda:          ", conda)
+    ),
+    cli::col_grey(
+      paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))
+    ),
+    cli::col_blue(
+      "python config: "
+    ),
+    cli::col_grey(
+      paste0("  ", py_info)
+    )
   )
-
-  invisible(lapply(pyinfo_mesg, packageStartupMessage))
+  invisible(lapply(py_info_mesg, packageStartupMessage))
 }
 
 #' env_requirements function
@@ -463,11 +465,9 @@ exist_python_pkgs <- function(
   packages_installed <- stats::setNames(
     rep(FALSE, length(packages)), packages
   )
-  packages_checked <- 0
 
   for (i in seq_along(packages)) {
     pkg <- packages[i]
-    packages_checked <- packages_checked + 1
 
     if (grepl("==", pkg)) {
       pkg_info <- strsplit(pkg, split = "==")[[1]]
@@ -506,20 +506,7 @@ exist_python_pkgs <- function(
       packages_installed[pkg] <- FALSE
       log_message(pkg_name, " not found", message_type = "warning")
     }
-
-    if (length(packages) > 10 && packages_checked %% 5 == 0) {
-      log_message(
-        "Progress: ", packages_checked, "/", length(packages), " packages checked"
-      )
-    }
   }
-
-  n_installed <- sum(packages_installed)
-  n_total <- length(packages_installed)
-  log_message(
-    "Package check complete: ", n_installed, "/", n_total, " packages available",
-    message_type = "success"
-  )
 
   return(packages_installed)
 }
@@ -708,7 +695,7 @@ conda_install <- function(
   }
 
   if (pip) {
-    log_message("Installing packages via pip...")
+    log_message("Installing packages via {.pkg pip}...")
     result <- tryCatch(
       {
         reticulate:::pip_install(
@@ -721,17 +708,23 @@ conda_install <- function(
         )
       },
       error = function(e) {
-        log_message("Pip installation failed: ", e$message, message_type = "error")
+        log_message(
+          "{.pkg pip} installation failed: ", e$message,
+          message_type = "error"
+        )
       }
     )
 
     if (!is.null(result)) {
-      log_message("Pip installation completed", message_type = "success")
+      log_message(
+        "{.pkg pip} installation completed",
+        message_type = "success"
+      )
     }
     return(result)
   }
 
-  log_message("Installing packages via conda...")
+  log_message("Installing packages via {.pkg conda}...")
   args <- reticulate:::conda_args("install", envname)
 
   channels <- if (length(channel)) {
@@ -747,14 +740,7 @@ conda_install <- function(
 
   args <- c(args, python_package, packages)
 
-  if (length(packages) <= 10) {
-    log_message("Installing packages: ", paste(packages, collapse = ", "))
-  } else {
-    log_message(
-      "Installing ", length(packages), " packages (",
-      paste(packages[1:3], collapse = ", "), "...)"
-    )
-  }
+  log_message("Installing ", length(packages), " packages...")
 
   result <- reticulate:::system2t(conda, shQuote(args))
 
@@ -765,7 +751,7 @@ conda_install <- function(
     )
   } else {
     log_message(
-      "Conda installation completed successfully",
+      "{.pkg conda} installation completed successfully",
       message_type = "success"
     )
   }
