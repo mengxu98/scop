@@ -43,7 +43,7 @@ adata_to_srt <- function(
   x <- Matrix::t(py_to_r2(adata$X))
   if (!inherits(x, "dgCMatrix")) {
     x <- SeuratObject::as.sparse(
-      x[1:nrow(x), , drop = FALSE]
+      x[seq_len(nrow(x)), , drop = FALSE]
     )
   }
   rownames(x) <- py_to_r2(adata$var_names$values)
@@ -81,7 +81,9 @@ adata_to_srt <- function(
       }
       layer <- Matrix::t(layer)
       if (!inherits(layer, "dgCMatrix")) {
-        layer <- SeuratObject::as.sparse(layer[1:nrow(layer), , drop = FALSE])
+        layer <- SeuratObject::as.sparse(
+          layer[seq_len(nrow(layer)), , drop = FALSE]
+        )
       }
       rownames(layer) <- py_to_r2(adata$var_names$values)
       colnames(layer) <- py_to_r2(adata$obs_names$values)
@@ -134,7 +136,9 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(obsp, "dgCMatrix")) {
-        obsp <- SeuratObject::as.sparse(obsp[1:nrow(obsp), , drop = FALSE])
+        obsp <- SeuratObject::as.sparse(
+          obsp[seq_len(nrow(obsp)), , drop = FALSE]
+        )
       }
       colnames(obsp) <- py_to_r2(adata$obs_names$values)
       rownames(obsp) <- py_to_r2(adata$obs_names$values)
@@ -235,6 +239,7 @@ adata_to_srt <- function(
   }
   log_message(
     "Conversion completed",
+    verbose = verbose,
     message_type = "success"
   )
   return(srt)
@@ -242,7 +247,6 @@ adata_to_srt <- function(
 
 py_to_r2 <- function(x) {
   if (inherits(x, "python.builtin.object")) {
-    x <- reticulate::py_to_r(x)
+    reticulate::py_to_r(x)
   }
-  return(x)
 }
