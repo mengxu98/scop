@@ -81,35 +81,37 @@ print.scop_logo <- function(x, ...) {
 
   scop_env_init <- getOption("scop_env_init", default = FALSE)
   version <- utils::packageDescription(pkgname, fields = "Version")
-  msg <- cli::col_blue(pkgname, " version ", version)
+  msg <- paste0(
+    strrep("-", 60),
+    "\n",
+    cli::col_blue(pkgname, " version ", version),
+    "\n"
+  )
   if (!isTRUE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
       cli::col_grey("Python environment initialization is disabled."),
       "\n",
-      cli::col_grey("To enable it, set: options(scop_env_init = TRUE)")
+      cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
+      "\n"
     )
   }
-  msg <- paste0(
-    msg,
-    "\n",
+  suppress_msg <- paste0(
     cli::col_grey("This message can be suppressed by: "),
     "\n",
     cli::col_grey("  suppressPackageStartupMessages(library(scop))")
-  )
-  msg <- paste0(
-    strrep("-", 60),
-    "\n",
-    msg
   )
   if (!isTRUE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
+      suppress_msg,
+      "\n",
       strrep("-", 60)
     )
   }
+
   packageStartupMessage(scop_logo())
   packageStartupMessage(msg)
 
@@ -143,29 +145,11 @@ print.scop_logo <- function(x, ...) {
         }
         set_python_env(conda = conda, envname = envname, verbose = FALSE)
 
-        pyinfo <- utils::capture.output(reticulate::py_config())
         packageStartupMessage(
-          cli::col_grey("Conda environment initialized successfully")
+          cli::col_green("conda environment initialized successfully")
         )
 
-        pyinfo_mesg <- c(
-          cli::col_blue(
-            "conda environment: "
-          ),
-          cli::col_grey(
-            paste0("  conda:          ", conda)
-          ),
-          cli::col_grey(
-            paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))
-          ),
-          cli::col_blue(
-            "python config: "
-          ),
-          cli::col_grey(
-            paste0("  ", pyinfo)
-          )
-        )
-        invisible(lapply(pyinfo_mesg, packageStartupMessage))
+        env_info(conda = conda, envname = envname)
 
         packageStartupMessage(
           "\n",
@@ -176,6 +160,8 @@ print.scop_logo <- function(x, ...) {
           cli::col_grey(
             "Disable Python initialization information: options(scop_env_init = FALSE)"
           ),
+          "\n\n",
+          suppress_msg,
           "\n",
           strrep("-", 60)
         )
@@ -187,6 +173,8 @@ print.scop_logo <- function(x, ...) {
             e$message,
             "\n",
             "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
+            "\n\n",
+            suppress_msg,
             "\n",
             strrep("-", 60)
           )

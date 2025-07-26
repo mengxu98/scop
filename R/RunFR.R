@@ -73,7 +73,7 @@ RunFR.Seurat <- function(
     ...) {
   log_message(
     "Running force-directed layout",
-    message_type = "info"
+    verbose = verbose
   )
   if (sum(c(is.null(dims), is.null(features), is.null(neighbor), is.null(graph))) == 4) {
     log_message(
@@ -113,7 +113,7 @@ RunFR.Seurat <- function(
     data_use <- Matrix::t(data_use[features, ])
     log_message(
       "Computing nearest neighbor graph and SNN",
-      message_type = "info"
+      verbose = verbose
     )
     data_use <- Seurat::FindNeighbors(
       data_use,
@@ -156,7 +156,7 @@ RunFR.Seurat <- function(
 
   log_message(
     "Force-directed layout computed",
-    message_type = "info"
+    verbose = verbose
   )
   return(object)
 }
