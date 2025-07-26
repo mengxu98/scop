@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -393,30 +393,65 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:36:50] Start GSEA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:36:50] Workers: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-17 14:36:51] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:36:51] Species: Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:36:51] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-07-17 14:28:35.546912</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:36:53] Permform GSEA...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |============================                                          |  40%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |====================================                                  |  52%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:38:28] GSEA done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-17 14:38:28] Elapsed time:1.63 mins</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:43] Start GSEA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:43] Workers: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-07-26 06:56:44] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:44] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:44] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-07-26 06:45:24.771567</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:45] Convert ID types for the database: GO_BP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:45] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:45] Using the 103 version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:56:45] Connecting to the biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] <span style="color: #BBBB00;">!</span> Timeout was reached [feb2021.archive.ensembl.org]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] Operation timed out after 60002 milliseconds with 0 bytes received</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:45] Get errors when connecting with ensembl mart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:57:46] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] <span style="color: #BBBB00;">!</span> Timeout was reached [feb2021.archive.ensembl.org]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] Operation timed out after 60002 milliseconds with 0 bytes received</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:46] Get errors when connecting with ensembl mart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:58:47] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] <span style="color: #BBBB00;">!</span> Timeout was reached [feb2021.archive.ensembl.org]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] Operation timed out after 60002 milliseconds with 0 bytes received</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:47] Get errors when connecting with ensembl mart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 06:59:48] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] <span style="color: #BBBB00;">!</span> Timeout was reached [feb2021.archive.ensembl.org]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] Operation timed out after 60002 milliseconds with 0 bytes received</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:48] Get errors when connecting with ensembl mart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:00:49] Retrying...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] <span style="color: #BBBB00;">!</span> Timeout was reached [feb2021.archive.ensembl.org]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] Operation timed out after 60002 milliseconds with 0 bytes received</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-07-26 07:01:49] Get errors when connecting with ensembl mart...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message(out, message_type = "error"):</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span> <span style="color: #BBBB00;">!</span> Failed to perform HTTP request. <span style="font-weight: bold;">Caused by</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">error in `curl::curl_fetch_memory()`:</span> <span style="color: #BBBB00;">!</span> Timeout was reached</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> [feb2021.archive.ensembl.org]: Operation timed out after 60002 milliseconds</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> with 0 bytes received</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -425,11 +460,12 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  id_use <span class="op">=</span> <span class="st">"GO:0006412"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="va">p1</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'p1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="panel_fix.html">panel_fix_overall</a></span><span class="op">(</span><span class="va">p1</span>, height <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-3.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'p1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -438,11 +474,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Vectorized input to `element_text()` is not officially supported.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Results may be unexpected or may change in future versions of ggplot2.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">alpha</span> values.</span>
-<span class="r-plt img"><img src="GSEAPlot-4.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -451,11 +483,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
 <span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"pos"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Vectorized input to `element_text()` is not officially supported.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Results may be unexpected or may change in future versions of ggplot2.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">alpha</span> values.</span>
-<span class="r-plt img"><img src="GSEAPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -464,18 +492,14 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
 <span class="r-in"><span>  compare_only_sig <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Vectorized input to `element_text()` is not officially supported.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Results may be unexpected or may change in future versions of ggplot2.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">alpha</span> values.</span>
-<span class="r-plt img"><img src="GSEAPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -483,7 +507,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"both"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -494,7 +518,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"both"</span>,</span></span>
 <span class="r-in"><span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red3"</span>, <span class="st">"steelblue"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-9.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -503,7 +527,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -511,7 +535,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -519,7 +543,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -528,7 +552,7 @@ Default is TRUE.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSEAPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in log_message("No enrichment result found. You may perform RunGSEA first.",     message_type = "error"):</span> No enrichment result found. You may perform RunGSEA first.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
