@@ -72,16 +72,18 @@ GetAssayData5.Assay5 <- function(
     }
 
     current_time <- as.numeric(Sys.time())
-    warning_interval <- getOption("scop.warning.interval", 28800)
+    warning_interval <- getOption("scop.warning_interval", 28800)
     if (current_time - last_warning_time > warning_interval) {
       log_message(
-        "The input data is a 'Assay5' object. The 'SeuratObject::JoinLayers' function will be used to combine the layers.",
+        "The input data is a 'Assay5' object. The 'SeuratObject::JoinLayers' function will be used to combine the layers",
         message_type = "warning"
       )
       log_message(
-        "This warning will be shown only once every ",
-        warning_interval / 3600,
-        " hours. To change this interval, set the 'scop.warning.interval' option.",
+        cli::col_grey(
+          "This warning will be shown only once every ",
+          warning_interval / 3600,
+          " hours. To change this interval, set the 'scop.warning_interval' option"
+        ),
         message_type = "warning"
       )
       assign(warning_key, current_time, envir = .scop_env)
