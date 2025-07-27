@@ -631,7 +631,8 @@ check_srt_merge <- function(
     )
   }
   if (!batch %in% colnames(srt_merge@meta.data)) {
-    log_message(paste0("No batch column('", batch, "') found in the meta.data"),
+    log_message(
+      "No batch column('", batch, "') found in the meta.data",
       message_type = "error"
     )
   }
@@ -645,7 +646,7 @@ check_srt_merge <- function(
   srt_merge_raw <- srt_merge
 
   log_message(
-    "Spliting srt_merge into srt_list by column ",
+    "Spliting {.arg srt_merge} into {.arg srt_list} by column ",
     batch,
     "..."
   )

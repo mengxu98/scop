@@ -1,23 +1,35 @@
 #' Run Monocle2 analysis
 #'
-#' Runs the Monocle2 algorithm on a Seurat object.
-#'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.
-#' @param layer The layer in the Seurat object to use for analysis. Default is "counts".
-#' @param expressionFamily The distribution family to use for modeling gene expression. Default is "negbinomial.size".
-#' @param features A vector of gene names or indices specifying the features to use in the analysis. Defaults to NULL, in which case features were determined by \code{feature_type}.
-#' @param feature_type The type of features to use in the analysis. Possible values are "HVF" for highly variable features
-#'   or "Disp" for features selected based on dispersion. Default is "HVF".
-#' @param disp_filter A string specifying the filter to use when \code{feature_type} is "Disp". Default is
-#'   "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit".
-#' @param max_components The maximum number of dimensions to use for dimensionality reduction. Default is 2.
-#' @param reduction_method The dimensionality reduction method to use. Possible values are "DDRTree" and "UMAP". Default is "DDRTree".
-#' @param norm_method The normalization method to use. Possible values are "log" and "none". Default is "log".
-#' @param residualModelFormulaStr A model formula specifying the effects to subtract. Default is NULL.
-#' @param pseudo_expr Amount to increase expression values before dimensionality reduction. Default is 1.
-#' @param root_state The state to use as the root of the trajectory. If NULL, will prompt for user input.
-#' @param seed An integer specifying the random seed to use. Default is 11.
+#' @param assay The name of the assay in the Seurat object to use for analysis.
+#' Defaults to NULL, in which case the default assay of the object is used.
+#' @param layer The layer in the Seurat object to use for analysis.
+#' Default is "counts".
+#' @param expressionFamily The distribution family to use for modeling gene expression.
+#' Default is "negbinomial.size".
+#' @param features A vector of gene names or indices specifying the features to use in the analysis.
+#' Defaults to NULL, in which case features were determined by \code{feature_type}.
+#' @param feature_type The type of features to use in the analysis.
+#' Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.
+#' Default is "HVF".
+#' @param disp_filter A string specifying the filter to use when \code{feature_type} is "Disp".
+#' Default is "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit".
+#' @param max_components The maximum number of dimensions to use for dimensionality reduction.
+#' Default is 2.
+#' @param reduction_method The dimensionality reduction method to use.
+#' Possible values are "DDRTree" and "UMAP".
+#' Default is "DDRTree".
+#' @param norm_method The normalization method to use.
+#' Possible values are "log" and "none".
+#' Default is "log".
+#' @param residualModelFormulaStr A model formula specifying the effects to subtract.
+#' Default is NULL.
+#' @param pseudo_expr Amount to increase expression values before dimensionality reduction.
+#' Default is 1.
+#' @param root_state The state to use as the root of the trajectory.
+#' If NULL, will prompt for user input.
+#' @param seed An integer specifying the random seed to use.
+#' Default is 11.
 #'
 #' @export
 #'
@@ -160,7 +172,9 @@ RunMonocle2 <- function(
   cds <- orderCells(cds)
 
   embeddings <- Matrix::t(cds@reducedDimS)
-  colnames(embeddings) <- paste0(cds@dim_reduce_type, "_", 1:ncol(embeddings))
+  colnames(embeddings) <- paste0(
+    cds@dim_reduce_type, "_", seq_len(ncol(embeddings))
+  )
   srt[[cds@dim_reduce_type]] <- SeuratObject::CreateDimReducObject(
     embeddings = embeddings,
     key = paste0(cds@dim_reduce_type, "_"),
@@ -175,7 +189,7 @@ RunMonocle2 <- function(
   edge_df <- igraph::as_data_frame(cds@minSpanningTree)
   edge_df[, c("x", "y")] <- reduced_dim_coords[edge_df[["from"]], 1:2]
   edge_df[, c("xend", "yend")] <- reduced_dim_coords[edge_df[["to"]], 1:2]
-  trajectory <- geom_segment(
+  trajectory <- ggplot2::geom_segment(
     data = edge_df,
     aes(x = x, y = y, xend = xend, yend = yend)
   )
@@ -239,13 +253,13 @@ orderCells <- function(
   }
   if (is.null(cds@dim_reduce_type)) {
     log_message(
-      "Error: dimensionality not yet reduced. Please call reduceDimension() before calling this function.",
+      "Dimensionality not yet reduced. Please call reduceDimension() before calling this function",
       message_type = "error"
     )
   }
   if (any(c(length(cds@reducedDimS) == 0, length(cds@reducedDimK) == 0))) {
     log_message(
-      "Error: dimension reduction didn't prodvide correct results. Please check your reduceDimension() step and ensure correct dimension reduction are performed before calling this function.",
+      "Dimension reduction didn't prodvide correct results. Please check your reduceDimension() step and ensure correct dimension reduction are performed before calling this function",
       message_type = "error"
     )
   }
@@ -255,13 +269,13 @@ orderCells <- function(
     if (is.null(num_paths)) {
       num_paths <- 1
     }
-    adjusted_S <- Matrix::t(cds@reducedDimS)
-    dp <- Matrix::as.matrix(stats::dist(adjusted_S))
-    monocle::cellPairwiseDistances(cds) <- Matrix::as.matrix(stats::dist(adjusted_S))
+    adjusted_s <- Matrix::t(cds@reducedDimS)
+    dp <- Matrix::as.matrix(stats::dist(adjusted_s))
+    monocle::cellPairwiseDistances(cds) <- Matrix::as.matrix(stats::dist(adjusted_s))
     gp <- igraph::graph.adjacency(dp, mode = "undirected", weighted = TRUE)
     dp_mst <- igraph::minimum.spanning.tree(gp)
     monocle::minSpanningTree(cds) <- dp_mst
-    next_node <- 0
+    # next_node <- 0
     res <- monocle:::pq_helper(
       dp_mst,
       use_weights = FALSE,
@@ -499,24 +513,40 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 
 #' Run Monocle3 analysis
 #'
-#' Runs the Monocle3 algorithm on a Seurat object.
-#'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.
-#' @param layer The layer in the Seurat object to use for analysis. Default is "counts".
-#' @param reduction The reduction used. Defaults to NULL, in which case the default reduction of the Seurat object is used.
-#' @param clusters The cluster variable in the Seurat object to use for analysis. Defaults to NULL, in which case use Monocle clusters is used.
-#' @param graph The name of the graph slot in the Seurat object to use for analysis. Defaults to NULL, in which case Monocle graph is used.
-#' @param partition_qval The q-value threshold for partitioning cells. Defaults to 0.05.
-#' @param k The number of nearest neighbors to consider for clustering. Defaults to 50.
-#' @param cluster_method The clustering method to use. Defaults to "louvain".
-#' @param num_iter The number of iterations for clustering. Defaults to 2.
-#' @param resolution The resolution parameter for clustering. Defaults to NULL.
-#' @param use_partition Whether to use partitions to learn disjoint graph in each partition. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param close_loop Whether to close loops in the graph. Defaults to TRUE.
-#' @param root_pr_nodes The root nodes to order cells. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param root_cells The root cells to order cells. If not specified, user will be prompted for input. Defaults to NULL.
-#' @param seed The random seed to use for reproducibility. Defaults to 11.
+#' @param assay The name of the assay in the Seurat object to use for analysis.
+#' Defaults to NULL, in which case the default assay of the object is used.
+#' @param layer The layer in the Seurat object to use for analysis.
+#' Default is "counts".
+#' @param reduction The reduction used.
+#' Defaults to NULL, in which case the default reduction of the Seurat object is used.
+#' @param clusters The cluster variable in the Seurat object to use for analysis.
+#' Defaults to NULL, in which case use Monocle clusters is used.
+#' @param graph The name of the graph slot in the Seurat object to use for analysis.
+#' Defaults to NULL, in which case Monocle graph is used.
+#' @param partition_qval The q-value threshold for partitioning cells.
+#' Defaults to 0.05.
+#' @param k The number of nearest neighbors to consider for clustering.
+#' Defaults to 50.
+#' @param cluster_method The clustering method to use.
+#' Defaults to "louvain".
+#' @param num_iter The number of iterations for clustering.
+#' Defaults to 2.
+#' @param resolution The resolution parameter for clustering.
+#' Defaults to NULL.
+#' @param use_partition Whether to use partitions to learn disjoint graph in each partition.
+#' If not specified, user will be prompted for input.
+#' Defaults to NULL.
+#' @param close_loop Whether to close loops in the graph.
+#' Defaults to TRUE.
+#' @param root_pr_nodes The root nodes to order cells.
+#' If not specified, user will be prompted for input.
+#' Defaults to NULL.
+#' @param root_cells The root cells to order cells.
+#' If not specified, user will be prompted for input.
+#' Defaults to NULL.
+#' @param seed The random seed to use for reproducibility.
+#' Defaults to 11.
 #'
 #' @export
 #'
@@ -647,7 +677,7 @@ RunMonocle3 <- function(
     srt,
     assay = NULL,
     layer = "counts",
-    reduction = DefaultReduction(srt),
+    reduction = NULL,
     clusters = NULL,
     graph = NULL,
     partition_qval = 0.05,
@@ -661,11 +691,8 @@ RunMonocle3 <- function(
     root_cells = NULL,
     seed = 11) {
   set.seed(seed)
-  if (!requireNamespace("monocle3", quietly = TRUE) ||
-    utils::packageVersion("monocle3") < package_version("1.2.0")
-  ) {
-    check_r("cole-trapnell-lab/monocle3", force = TRUE)
-  }
+  check_r("cole-trapnell-lab/monocle3")
+
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   expr_matrix <- SeuratObject::as.sparse(
     GetAssayData5(srt, assay = assay, layer = layer)
@@ -681,12 +708,16 @@ RunMonocle3 <- function(
     gene_metadata = f_data
   )
   if (!"Size_Factor" %in% colnames(cds@colData)) {
-    size.factor <- paste0("nCount_", assay)
-    if (size.factor %in% colnames(srt@meta.data)) {
-      cds[["Size_Factor"]] <- cds[[size.factor, drop = TRUE]]
+    size_factor <- paste0("nCount_", assay)
+    if (size_factor %in% colnames(srt@meta.data)) {
+      cds[["Size_Factor"]] <- cds[[size_factor, drop = TRUE]]
     }
   }
-  reduction <- reduction %||% DefaultReduction(srt)
+  if (is.null(reduction)) {
+    reduction <- DefaultReduction(srt)
+  } else {
+    reduction <- DefaultReduction(srt, pattern = reduction)
+  }
   SingleCellExperiment::reducedDims(cds)[["UMAP"]] <- SeuratObject::Embeddings(
     srt[[reduction]]
   )

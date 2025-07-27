@@ -24,36 +24,50 @@ RunMonocle2(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.}
+\item{assay}{The name of the assay in the Seurat object to use for analysis.
+Defaults to NULL, in which case the default assay of the object is used.}
 
-\item{layer}{The layer in the Seurat object to use for analysis. Default is "counts".}
+\item{layer}{The layer in the Seurat object to use for analysis.
+Default is "counts".}
 
-\item{expressionFamily}{The distribution family to use for modeling gene expression. Default is "negbinomial.size".}
+\item{expressionFamily}{The distribution family to use for modeling gene expression.
+Default is "negbinomial.size".}
 
-\item{features}{A vector of gene names or indices specifying the features to use in the analysis. Defaults to NULL, in which case features were determined by \code{feature_type}.}
+\item{features}{A vector of gene names or indices specifying the features to use in the analysis.
+Defaults to NULL, in which case features were determined by \code{feature_type}.}
 
-\item{feature_type}{The type of features to use in the analysis. Possible values are "HVF" for highly variable features
-or "Disp" for features selected based on dispersion. Default is "HVF".}
+\item{feature_type}{The type of features to use in the analysis.
+Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.
+Default is "HVF".}
 
-\item{disp_filter}{A string specifying the filter to use when \code{feature_type} is "Disp". Default is
-"mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit".}
+\item{disp_filter}{A string specifying the filter to use when \code{feature_type} is "Disp".
+Default is "mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit".}
 
-\item{max_components}{The maximum number of dimensions to use for dimensionality reduction. Default is 2.}
+\item{max_components}{The maximum number of dimensions to use for dimensionality reduction.
+Default is 2.}
 
-\item{reduction_method}{The dimensionality reduction method to use. Possible values are "DDRTree" and "UMAP". Default is "DDRTree".}
+\item{reduction_method}{The dimensionality reduction method to use.
+Possible values are "DDRTree" and "UMAP".
+Default is "DDRTree".}
 
-\item{norm_method}{The normalization method to use. Possible values are "log" and "none". Default is "log".}
+\item{norm_method}{The normalization method to use.
+Possible values are "log" and "none".
+Default is "log".}
 
-\item{residualModelFormulaStr}{A model formula specifying the effects to subtract. Default is NULL.}
+\item{residualModelFormulaStr}{A model formula specifying the effects to subtract.
+Default is NULL.}
 
-\item{pseudo_expr}{Amount to increase expression values before dimensionality reduction. Default is 1.}
+\item{pseudo_expr}{Amount to increase expression values before dimensionality reduction.
+Default is 1.}
 
-\item{root_state}{The state to use as the root of the trajectory. If NULL, will prompt for user input.}
+\item{root_state}{The state to use as the root of the trajectory.
+If NULL, will prompt for user input.}
 
-\item{seed}{An integer specifying the random seed to use. Default is 11.}
+\item{seed}{An integer specifying the random seed to use.
+Default is 11.}
 }
 \description{
-Runs the Monocle2 algorithm on a Seurat object.
+Run Monocle2 analysis
 }
 \examples{
 if (interactive()) {

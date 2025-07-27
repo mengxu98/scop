@@ -77,8 +77,6 @@ print.scop_logo <- function(x, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
-  options(memory.limit = Inf)
-
   scop_env_init <- getOption("scop_env_init", default = FALSE)
   version <- utils::packageDescription(pkgname, fields = "Version")
   msg <- paste0(
@@ -91,14 +89,14 @@ print.scop_logo <- function(x, ...) {
     msg <- paste0(
       msg,
       "\n",
-      cli::col_grey("Python environment initialization is disabled."),
+      cli::col_grey("Python environment initialization is disabled"),
       "\n",
       cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
       "\n"
     )
   }
   suppress_msg <- paste0(
-    cli::col_grey("This message can be suppressed by: "),
+    cli::col_grey("The message can be suppressed by: "),
     "\n",
     cli::col_grey("  suppressPackageStartupMessages(library(scop))")
   )

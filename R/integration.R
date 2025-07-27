@@ -1,3 +1,227 @@
+#' The integration_scop function
+#'
+#' Integrate single-cell RNA-seq data using various integration methods.
+#'
+#' @md
+#' @inheritParams check_srt_list
+#' @inheritParams check_srt_merge
+#' @inheritParams standard_scop
+#' @param scale_within_batch  Whether to scale data within each batch.
+#' Only valid when the \code{integration_method} is one of `"Uncorrected"`,
+#' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
+#' @param integration_method  A character string specifying the integration method to use.
+#' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"scVI"`, `"MNN"`, `"fastMNN"`,
+#' `"Harmony"`, `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
+#' Default is `"Uncorrected"`.
+#' @param append The integrated data will be appended to the original Seurat object (srt_merge).
+#' Default is `TRUE`.
+#' @param ... Additional arguments to be passed to the integration method function.
+#'
+#' @return A `Seurat` object.
+#'
+#' @seealso
+#' \code{\link{Seurat_integrate}},
+#' \code{\link{scVI_integrate}},
+#' \code{\link{MNN_integrate}},
+#' \code{\link{fastMNN_integrate}},
+#' \code{\link{Harmony_integrate}},
+#' \code{\link{Scanorama_integrate}},
+#' \code{\link{BBKNN_integrate}},
+#' \code{\link{CSS_integrate}},
+#' \code{\link{LIGER_integrate}},
+#' \code{\link{Conos_integrate}},
+#' \code{\link{ComBat_integrate}},
+#' \code{\link{standard_scop}}
+#'
+#' @export
+#' @examples
+#' data(panc8_sub)
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected"
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected",
+#'   HVF_min_intersection = 5
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected",
+#'   HVF_min_intersection = 5,
+#'   scale_within_batch = TRUE
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat"
+#' )
+#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+#'
+#' \dontrun{
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat",
+#'   FindIntegrationAnchors_params = list(reduction = "rpca")
+#' )
+#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+#'
+#' integration_methods <- c(
+#'   "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
+#'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
+#' )
+#' for (method in integration_methods) {
+#'   panc8_sub <- integration_scop(
+#'     panc8_sub,
+#'     batch = "tech",
+#'     integration_method = method,
+#'     linear_reduction_dims_use = 1:50,
+#'     nonlinear_reduction = "umap"
+#'   )
+#'   print(
+#'     CellDimPlot(panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0(method, "UMAP2D"),
+#'       xlab = "", ylab = "", title = method,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
+#' }
+#'
+#' nonlinear_reductions <- c(
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
+#' )
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat",
+#'   linear_reduction_dims_use = 1:50,
+#'   nonlinear_reduction = nonlinear_reductions
+#' )
+#' for (nr in nonlinear_reductions) {
+#'   print(
+#'     CellDimPlot(
+#'       panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0("Seurat", nr, "2D"),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
+#' }
+#' }
+integration_scop <- function(
+    srt_merge = NULL,
+    batch,
+    append = TRUE,
+    srt_list = NULL,
+    assay = NULL,
+    integration_method = "Uncorrected",
+    do_normalization = NULL,
+    normalization_method = "LogNormalize",
+    do_HVF_finding = TRUE,
+    HVF_source = "separate",
+    HVF_method = "vst",
+    nHVF = 2000,
+    HVF_min_intersection = 1,
+    HVF = NULL,
+    do_scaling = TRUE,
+    vars_to_regress = NULL,
+    regression_model = "linear",
+    scale_within_batch = FALSE,
+    linear_reduction = "pca",
+    linear_reduction_dims = 50,
+    linear_reduction_dims_use = NULL,
+    linear_reduction_params = list(),
+    force_linear_reduction = FALSE,
+    nonlinear_reduction = "umap",
+    nonlinear_reduction_dims = c(2, 3),
+    nonlinear_reduction_params = list(),
+    force_nonlinear_reduction = TRUE,
+    neighbor_metric = "euclidean",
+    neighbor_k = 20L,
+    cluster_algorithm = "louvain",
+    cluster_resolution = 0.6,
+    seed = 11,
+    ...) {
+  if (is.null(srt_list) && is.null(srt_merge)) {
+    log_message(
+      "Neither {.arg srt_list} nor {.arg srt_merge} was found.",
+      message_type = "error"
+    )
+  }
+  methods <- c(
+    "Uncorrected",
+    "Seurat",
+    "scVI",
+    "MNN",
+    "fastMNN",
+    "Harmony",
+    "Scanorama",
+    "BBKNN",
+    "CSS",
+    "LIGER",
+    "Conos",
+    "ComBat"
+  )
+  if (length(integration_method) == 1 && integration_method %in% methods) {
+    args <- as.list(match.call())[-1]
+    new_env <- new.env(parent = parent.frame())
+    args <- lapply(args, function(x) eval(x, envir = new_env))
+
+    formals <- mget(names(formals()))
+    formals <- formals[names(formals) != "..."]
+
+    args <- utils::modifyList(formals, args)
+
+    time_start <- Sys.time()
+    log_message(
+      "Run ", integration_method, "_integrate..."
+    )
+    srtIntegrated <- invoke_fun(
+      .fn = paste0(integration_method, "_integrate"),
+      .args = args[
+        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
+      ]
+    )
+    time_end <- Sys.time()
+    log_message(
+      "Run ", integration_method, "_integrate done",
+      message_type = "success"
+    )
+    log_message(
+      "Elapsed time: ", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S")
+    )
+
+    return(srtIntegrated)
+  } else {
+    log_message(
+      integration_method, " is not a supported integration method!",
+      message_type = "error"
+    )
+  }
+}
+
 #' Uncorrected_integrate
 #'
 #' @inheritParams integration_scop
@@ -48,34 +272,28 @@ Uncorrected_integrate <- function(
   }
   if (any(!linear_reduction %in% reduc_test)) {
     log_message(
-      "'linear_reduction' must be one of 'pca', 'ica', 'nmf', 'mds', 'glmpca'.",
+      "'linear_reduction' must be one of ", paste(reduc_test, collapse = ", "),
       message_type = "error"
     )
   }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
+  if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
@@ -88,7 +306,8 @@ Uncorrected_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -98,7 +317,7 @@ Uncorrected_integrate <- function(
   set.seed(seed)
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -107,7 +326,7 @@ Uncorrected_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -4259,213 +4478,5 @@ ComBat_integrate <- function(
     return(srt_merge_raw)
   } else {
     return(srtIntegrated)
-  }
-}
-
-#' integration_scop
-#'
-#' Integrate single-cell RNA-seq data using various integration methods.
-#'
-#' @inheritParams check_srt_list
-#' @inheritParams check_srt_merge
-#' @inheritParams standard_scop
-#' @param scale_within_batch  Whether to scale data within each batch.
-#' Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.
-#' @param integration_method  A character string specifying the integration method to use.
-#'   Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"}, \code{"Harmony"},
-#'   \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
-#' Default is \code{"Uncorrected"}.
-#' @param append Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).
-#' @param ... Additional arguments to be passed to the integration method function.
-#'
-#' @return A \code{Seurat} object.
-#'
-#' @seealso \code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{standard_scop}}
-#'
-#' @export
-#' @examples
-#' data(panc8_sub)
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected"
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   HVF_min_intersection = 5
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   HVF_min_intersection = 5,
-#'   scale_within_batch = TRUE
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat"
-#' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-#'
-#' \dontrun{
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   FindIntegrationAnchors_params = list(reduction = "rpca")
-#' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-#'
-#' integration_methods <- c(
-#'   "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
-#'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
-#' )
-#' for (method in integration_methods) {
-#'   panc8_sub <- integration_scop(
-#'     panc8_sub,
-#'     batch = "tech",
-#'     integration_method = method,
-#'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
-#'   )
-#'   print(
-#'     CellDimPlot(panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0(method, "UMAP2D"),
-#'       xlab = "", ylab = "", title = method,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
-#'
-#' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate",
-#'   "pacmap", "trimap", "largevis", "fr"
-#' )
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
-#' )
-#' for (nr in nonlinear_reductions) {
-#'   print(
-#'     CellDimPlot(
-#'       panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0("Seurat", nr, "2D"),
-#'       xlab = "", ylab = "", title = nr,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
-#' }
-integration_scop <- function(
-    srt_merge = NULL,
-    batch,
-    append = TRUE,
-    srt_list = NULL,
-    assay = NULL,
-    integration_method = "Uncorrected",
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_source = "separate",
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF_min_intersection = 1,
-    HVF = NULL,
-    do_scaling = TRUE,
-    vars_to_regress = NULL,
-    regression_model = "linear",
-    scale_within_batch = FALSE,
-    linear_reduction = "pca",
-    linear_reduction_dims = 50,
-    linear_reduction_dims_use = NULL,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = "umap",
-    nonlinear_reduction_dims = c(2, 3),
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    neighbor_metric = "euclidean",
-    neighbor_k = 20L,
-    cluster_algorithm = "louvain",
-    cluster_resolution = 0.6,
-    seed = 11,
-    ...) {
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "Neither 'srt_list' nor 'srt_merge' was found.",
-      message_type = "error"
-    )
-  }
-  methods <- c(
-    "Uncorrected",
-    "Seurat",
-    "scVI",
-    "MNN",
-    "fastMNN",
-    "Harmony",
-    "Scanorama",
-    "BBKNN",
-    "CSS",
-    "LIGER",
-    "Conos",
-    "ComBat"
-  )
-  if (length(integration_method) == 1 && integration_method %in% methods) {
-    args <- as.list(match.call())[-1]
-    new_env <- new.env(parent = parent.frame())
-    args <- lapply(args, function(x) eval(x, envir = new_env))
-
-    formals <- mget(names(formals()))
-    formals <- formals[names(formals) != "..."]
-
-    args <- utils::modifyList(formals, args)
-
-    time_start <- Sys.time()
-    log_message(
-      paste0("Start ", integration_method, "_integrate")
-    )
-    srtIntegrated <- invoke_fun(
-      .fn = paste0(integration_method, "_integrate"),
-      .args = args[
-        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
-      ]
-    )
-    time_end <- Sys.time()
-    log_message(
-      paste0(integration_method, "_integrate done")
-    )
-    log_message(
-      paste0("Elapsed time: ", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S"))
-    )
-
-    return(srtIntegrated)
-  } else {
-    log_message(
-      paste(integration_method, "is not a supported integration method!"),
-      message_type = "error"
-    )
   }
 }
