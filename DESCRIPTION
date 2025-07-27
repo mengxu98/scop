@@ -84,6 +84,7 @@ Suggests:
     monocle,
     MatrixGenerics,
     MASS,
+    monocle3,
     NMF,
     openxlsx,
     org.Hs.eg.db,
@@ -128,6 +129,9 @@ Suggests:
     umap,
     UCell,
     withr
+Remotes:
+    mengxu98/thisutils,
+    cole-trapnell-lab/monocle3
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
