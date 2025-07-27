@@ -36,7 +36,8 @@ fastMNN_integrate(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
+\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+Default is \code{TRUE}.}
 
 \item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
