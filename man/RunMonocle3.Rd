@@ -8,7 +8,7 @@ RunMonocle3(
   srt,
   assay = NULL,
   layer = "counts",
-  reduction = DefaultReduction(srt),
+  reduction = NULL,
   clusters = NULL,
   graph = NULL,
   partition_qval = 0.05,
@@ -26,38 +26,56 @@ RunMonocle3(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The name of the assay in the Seurat object to use for analysis. Defaults to NULL, in which case the default assay of the object is used.}
+\item{assay}{The name of the assay in the Seurat object to use for analysis.
+Defaults to NULL, in which case the default assay of the object is used.}
 
-\item{layer}{The layer in the Seurat object to use for analysis. Default is "counts".}
+\item{layer}{The layer in the Seurat object to use for analysis.
+Default is "counts".}
 
-\item{reduction}{The reduction used. Defaults to NULL, in which case the default reduction of the Seurat object is used.}
+\item{reduction}{The reduction used.
+Defaults to NULL, in which case the default reduction of the Seurat object is used.}
 
-\item{clusters}{The cluster variable in the Seurat object to use for analysis. Defaults to NULL, in which case use Monocle clusters is used.}
+\item{clusters}{The cluster variable in the Seurat object to use for analysis.
+Defaults to NULL, in which case use Monocle clusters is used.}
 
-\item{graph}{The name of the graph slot in the Seurat object to use for analysis. Defaults to NULL, in which case Monocle graph is used.}
+\item{graph}{The name of the graph slot in the Seurat object to use for analysis.
+Defaults to NULL, in which case Monocle graph is used.}
 
-\item{partition_qval}{The q-value threshold for partitioning cells. Defaults to 0.05.}
+\item{partition_qval}{The q-value threshold for partitioning cells.
+Defaults to 0.05.}
 
-\item{k}{The number of nearest neighbors to consider for clustering. Defaults to 50.}
+\item{k}{The number of nearest neighbors to consider for clustering.
+Defaults to 50.}
 
-\item{cluster_method}{The clustering method to use. Defaults to "louvain".}
+\item{cluster_method}{The clustering method to use.
+Defaults to "louvain".}
 
-\item{num_iter}{The number of iterations for clustering. Defaults to 2.}
+\item{num_iter}{The number of iterations for clustering.
+Defaults to 2.}
 
-\item{resolution}{The resolution parameter for clustering. Defaults to NULL.}
+\item{resolution}{The resolution parameter for clustering.
+Defaults to NULL.}
 
-\item{use_partition}{Whether to use partitions to learn disjoint graph in each partition. If not specified, user will be prompted for input. Defaults to NULL.}
+\item{use_partition}{Whether to use partitions to learn disjoint graph in each partition.
+If not specified, user will be prompted for input.
+Defaults to NULL.}
 
-\item{close_loop}{Whether to close loops in the graph. Defaults to TRUE.}
+\item{close_loop}{Whether to close loops in the graph.
+Defaults to TRUE.}
 
-\item{root_pr_nodes}{The root nodes to order cells. If not specified, user will be prompted for input. Defaults to NULL.}
+\item{root_pr_nodes}{The root nodes to order cells.
+If not specified, user will be prompted for input.
+Defaults to NULL.}
 
-\item{root_cells}{The root cells to order cells. If not specified, user will be prompted for input. Defaults to NULL.}
+\item{root_cells}{The root cells to order cells.
+If not specified, user will be prompted for input.
+Defaults to NULL.}
 
-\item{seed}{The random seed to use for reproducibility. Defaults to 11.}
+\item{seed}{The random seed to use for reproducibility.
+Defaults to 11.}
 }
 \description{
-Runs the Monocle3 algorithm on a Seurat object.
+Run Monocle3 analysis
 }
 \examples{
 if (interactive()) {

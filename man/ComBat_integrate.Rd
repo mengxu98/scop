@@ -44,7 +44,8 @@ ComBat_integrate(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
+\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+Default is \code{TRUE}.}
 
 \item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
@@ -73,7 +74,8 @@ ComBat_integrate(
 \item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
 
 \item{scale_within_batch}{Whether to scale data within each batch.
-Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
+Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
+\code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{The linear dimensionality reduction method to use. Options are "pca", "svd", "ica", "nmf", "mds", or "glmpca" (default is "pca").}
 
