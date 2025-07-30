@@ -88,7 +88,8 @@ Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
 
 \item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{CSS_dims_use}{A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.}
+\item{CSS_dims_use}{A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
+If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
 
@@ -106,7 +107,8 @@ Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{CSS_params}{A list of parameters for the simspec::cluster_sim_spectrum function, default is an empty list.}
+\item{CSS_params}{A list of parameters for the simspec::cluster_sim_spectrum function.
+Default is an empty list.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }
