@@ -27,7 +27,7 @@ Harmony_integrate(
   linear_reduction_dims_use = NULL,
   linear_reduction_params = list(),
   force_linear_reduction = FALSE,
-  Harmony_dims_use = NULL,
+  harmony_dims_use = NULL,
   nonlinear_reduction = "umap",
   nonlinear_reduction_dims = c(2, 3),
   nonlinear_reduction_params = list(),
@@ -88,7 +88,7 @@ Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
 
 \item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{Harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}

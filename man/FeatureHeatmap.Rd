@@ -425,10 +425,11 @@ data(pancreas_sub)
 #  pancreas_sub,
 #   group_by = "CellType"
 # )
+# "CSPA" and "TF" have been restored in pancreas_sub
 # pancreas_sub <- AnnotateFeatures(
 #   srt = pancreas_sub,
 #   species = "Mus_musculus",
-#   db = c("TF", "CSPA")
+#   db = c("CSPA", "TF")
 # )
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
