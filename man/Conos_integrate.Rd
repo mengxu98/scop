@@ -93,9 +93,11 @@ Default is \code{TRUE}.}
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{buildGraph_params}{A list of parameters for the buildGraph function, default is an empty list.}
+\item{buildGraph_params}{A list of parameters for the buildGraph function.
+Default is an empty list.}
 
-\item{num_threads}{An integer setting the number of threads for Conos, default is 2.}
+\item{num_threads}{An integer setting the number of threads for Conos.
+Default is 2.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }

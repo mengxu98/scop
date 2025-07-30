@@ -69,7 +69,8 @@ Default is \code{TRUE}.}
 
 \item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
 
-\item{Scanorama_dims_use}{A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.}
+\item{Scanorama_dims_use}{A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction.
+If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
 
@@ -87,9 +88,11 @@ Default is \code{TRUE}.}
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{return_corrected}{Logical indicating whether to return the corrected data. Default is FALSE.}
+\item{return_corrected}{Logical indicating whether to return the corrected data.
+Default is FALSE.}
 
-\item{Scanorama_params}{A list of parameters for the scanorama.correct function, default is an empty list.}
+\item{Scanorama_params}{A list of parameters for the scanorama.correct function.
+Default is an empty list.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }

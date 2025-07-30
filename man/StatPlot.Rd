@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellStatPlot.R
 \name{StatPlot}
 \alias{StatPlot}
-\title{StatPlot}
+\title{Statistic Plot}
 \usage{
 StatPlot(
   meta.data,
@@ -157,17 +157,17 @@ StatPlot(
   NA_stat = FALSE
 )
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  IDtype = "symbol",
-  # db = c("VerSeDa", "TF")
-  db = "VerSeDa"
-)
+# "CSPA" and "TF" have been restored in pancreas_sub
+# pancreas_sub <- AnnotateFeatures(
+#  pancreas_sub,
+#  species = "Mus_musculus",
+#  IDtype = "symbol",
+#  db = c("CSPA", "TF")
+#)
 StatPlot(
   GetFeaturesData(pancreas_sub, "RNA"),
   stat.by = "TF",
-  group.by = "VerSeDa",
+  group.by = "CSPA",
   stat_type = "count",
   plot_type = "bar",
   position = "dodge",

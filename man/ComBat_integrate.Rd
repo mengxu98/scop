@@ -103,7 +103,8 @@ Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{ComBat_params}{A list of parameters for the sva::ComBat function, default is an empty list.}
+\item{ComBat_params}{A list of parameters for the sva::ComBat function.
+Default is an empty list.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }
