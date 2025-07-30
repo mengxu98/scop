@@ -44,21 +44,25 @@
 #'   stat.by = "Phase",
 #'   plot_type = "bar"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   plot_type = "rose"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   plot_type = "ring"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   plot_type = "pie"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -71,30 +75,35 @@
 #'   group.by = "CellType",
 #'   plot_type = "bar"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "rose"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "ring"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "area"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "dot"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -117,6 +126,7 @@
 #'   stat_type = "count",
 #'   plot_type = "bar"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -124,6 +134,7 @@
 #'   stat_type = "count",
 #'   plot_type = "rose"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -131,6 +142,7 @@
 #'   stat_type = "count",
 #'   plot_type = "ring"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -138,6 +150,7 @@
 #'   stat_type = "count",
 #'   plot_type = "area"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -145,6 +158,7 @@
 #'   stat_type = "count",
 #'   plot_type = "dot"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -162,6 +176,7 @@
 #'   position = "dodge",
 #'   label = TRUE
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -171,6 +186,7 @@
 #'   position = "dodge",
 #'   label = TRUE
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -186,6 +202,7 @@
 #'   stat.by = c("CellType", "Phase"),
 #'   plot_type = "sankey"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("CellType", "Phase"),
@@ -201,6 +218,7 @@
 #'     Phase = "S"
 #'   )
 #' )
+#'
 #' pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
 #' pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
 #' pancreas_sub$Fancb_Expressed <- GetAssayData5(
@@ -221,6 +239,7 @@
 #'   plot_type = "venn",
 #'   stat_level = "TRUE"
 #' )
+#'
 #' CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
@@ -229,6 +248,7 @@
 #'   plot_type = "upset",
 #'   stat_level = "TRUE"
 #' )
+#'
 #' sum(
 #'   pancreas_sub$Progenitor == "FALSE" &
 #'     pancreas_sub$G2M == "FALSE" &
@@ -338,7 +358,7 @@ CellStatPlot <- function(
   return(plot)
 }
 
-#' @title StatPlot
+#' @title Statistic Plot
 #'
 #' @description
 #' Visualizes data using various plot types such as bar plots,
@@ -414,17 +434,17 @@ CellStatPlot <- function(
 #'   NA_stat = FALSE
 #' )
 #'
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   IDtype = "symbol",
-#'   # db = c("VerSeDa", "TF")
-#'   db = "VerSeDa"
-#' )
+#' # "CSPA" and "TF" have been restored in pancreas_sub
+#' # pancreas_sub <- AnnotateFeatures(
+#' #  pancreas_sub,
+#' #  species = "Mus_musculus",
+#' #  IDtype = "symbol",
+#' #  db = c("CSPA", "TF")
+#' # )
 #' StatPlot(
 #'   GetFeaturesData(pancreas_sub, "RNA"),
 #'   stat.by = "TF",
-#'   group.by = "VerSeDa",
+#'   group.by = "CSPA",
 #'   stat_type = "count",
 #'   plot_type = "bar",
 #'   position = "dodge",
@@ -748,19 +768,19 @@ StatPlot <- function(
           colors_use <- c(colors_use, colors["NA"])
         }
         if (stat_type == "percent") {
-          dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] %>%
+          dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] |>
             stats::xtabs(
               formula = paste0("~", stat.by, "+", g),
               addNA = NA_stat
-            ) %>%
-            as.data.frame() %>%
+            ) |>
+            as.data.frame() |>
             dplyr::group_by(
               dplyr::across(
                 dplyr::all_of(g)
               ),
               .drop = FALSE
-            ) %>%
-            dplyr::mutate(groupn = sum(Freq)) %>%
+            ) |>
+            dplyr::mutate(groupn = sum(Freq)) |>
             dplyr::group_by(
               dplyr::across(
                 dplyr::all_of(
@@ -768,16 +788,16 @@ StatPlot <- function(
                 )
               ),
               .drop = FALSE
-            ) %>%
-            dplyr::mutate(value = Freq / groupn) %>%
+            ) |>
+            dplyr::mutate(value = Freq / groupn) |>
             as.data.frame()
         } else {
-          dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] %>%
+          dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]] |>
             stats::xtabs(
               formula = paste0("~", stat.by, "+", g),
               addNA = NA_stat
-            ) %>%
-            as.data.frame() %>%
+            ) |>
+            as.data.frame() |>
             dplyr::mutate(value = Freq)
         }
         dat <- dat_use[dat_use[[g]] %in% single_group, , drop = FALSE]

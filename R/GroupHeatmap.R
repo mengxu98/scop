@@ -244,10 +244,11 @@
 #' library(dplyr)
 #' data(pancreas_sub)
 #'
+#' # "CSPA" and "TF" have been restored in pancreas_sub
 #' # pancreas_sub <- AnnotateFeatures(
 #' #   srt = pancreas_sub,
 #' #   species = "Mus_musculus",
-#' #   db = c("TF", "CSPA")
+#' #   db = c("CSPA", "TF")
 #' # )
 #'
 #' ht1 <- GroupHeatmap(
