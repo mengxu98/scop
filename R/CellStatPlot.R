@@ -4,7 +4,7 @@
 #' @param srt A Seurat object.
 #' @param cells A character vector specifying the cells to include in the plot. Default is NULL.
 #'
-#' @seealso \code{\link{StatPlot}}
+#' @seealso \link{StatPlot}
 #'
 #' @export
 #'

@@ -194,5 +194,5 @@ head(
 }
 }
 \seealso{
-\code{\link{ListDB}}
+\link{ListDB}
 }

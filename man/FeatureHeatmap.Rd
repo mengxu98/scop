@@ -525,5 +525,5 @@ ht6 <- FeatureHeatmap(
 ht6$plot
 }
 \seealso{
-\code{\link{RunDEtest}}
+\link{RunDEtest}
 }

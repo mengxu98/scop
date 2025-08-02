@@ -63,5 +63,5 @@ FeatureDimPlot(
 }
 }
 \seealso{
-\code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{RunSCExplorer}}
+\link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
 }

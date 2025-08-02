@@ -123,5 +123,5 @@ ht2 <- DynamicHeatmap(
 ht2$plot
 }
 \seealso{
-\code{\link{RunDynamicFeatures}} \code{\link{DynamicHeatmap}}
+\link{RunDynamicFeatures}, \link{DynamicHeatmap}
 }

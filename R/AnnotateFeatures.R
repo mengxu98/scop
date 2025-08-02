@@ -30,7 +30,7 @@
 #' @param overwrite Logical value indicating whether to overwrite existing metadata.
 #' Default is FALSE.
 #'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
+#' @seealso \link{PrepareDB}, \link{ListDB}
 #'
 #' @export
 #'

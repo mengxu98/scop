@@ -62,7 +62,7 @@
 #' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
 #' @param return_layer A logical value indicating whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.
 #'
-#' @seealso \code{\link{RunPAGA}} \code{\link{CellDimPlot}}
+#' @seealso \link{RunPAGA}, \link{CellDimPlot}
 #'
 #' @export
 #'

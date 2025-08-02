@@ -660,5 +660,5 @@ ht8 <- GroupHeatmap(
 ht8$plot
 }
 \seealso{
-\code{\link{RunDEtest}}
+\link{RunDEtest}
 }

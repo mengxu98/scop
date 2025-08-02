@@ -10,7 +10,7 @@
 #' @param compression_level Compression level for the HDF5 dataset. Default is 6.
 #' @param overwrite Logical value indicating whether to overwrite existing data in the data file. Default is FALSE.
 #'
-#' @seealso \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 CreateDataFile <- function(
@@ -124,7 +124,7 @@ CreateDataFile <- function(
 #' @param compression_level The level of compression for the meta file. Default is 6.
 #' @param overwrite A logical value indicating whether to overwrite existing metadata and reductions in the meta file. Default is FALSE.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateDataFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 CreateMetaFile <- function(
@@ -369,7 +369,7 @@ CreateMetaFile <- function(
 #' @param object A Seurat object or a list of Seurat objects.
 #' @param base_dir The base directory where the SCExplorer hdf5 files will be written. Default is "SCExplorer".
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateDataFile}, \link{CreateMetaFile}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 #' @examples
@@ -484,7 +484,7 @@ PrepareSCExplorer <- function(
 #'
 #' @return A Seurat object with the fetched data.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
 #'
 #' @export
 #' @examples
@@ -817,7 +817,7 @@ CreateSeuratObject2 <- function(
 #' @param overwrite A logical. Whether to overwrite existing files. Default is FALSE.
 #' @param return_app A logical. Whether to return the SCExplorer app. Default is TRUE.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}}
+#' @seealso \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}
 #'
 #' @export
 #'

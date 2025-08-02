@@ -28,8 +28,6 @@ CC_GenePrefetch(
 }
 \value{
 A list of S-phase and G2M-phase genes.
-
-\code{\link{GeneConvert}}
 }
 \description{
 Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
@@ -39,4 +37,7 @@ ccgenes <- CC_GenePrefetch("Homo_sapiens")
 str(ccgenes)
 ccgenes <- CC_GenePrefetch("Mus_musculus")
 str(ccgenes)
+}
+\seealso{
+\link{GeneConvert}
 }

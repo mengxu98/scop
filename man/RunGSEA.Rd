@@ -207,5 +207,5 @@ GSEAPlot(
 }
 }
 \seealso{
-\code{\link{PrepareDB}} \code{\link{ListDB}} \code{\link{GSEAPlot}} \code{\link{RunEnrichment}} \code{\link{EnrichmentPlot}}
+\link{PrepareDB}, \link{ListDB}, \link{GSEAPlot}, \link{RunEnrichment}, \link{EnrichmentPlot}
 }

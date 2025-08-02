@@ -163,7 +163,7 @@ StatPlot(
 #  species = "Mus_musculus",
 #  IDtype = "symbol",
 #  db = c("CSPA", "TF")
-#)
+# )
 StatPlot(
   GetFeaturesData(pancreas_sub, "RNA"),
   stat.by = "TF",

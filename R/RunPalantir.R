@@ -16,7 +16,7 @@
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param n_jobs The number of parallel jobs to run.
 #'
-#' @seealso \code{\link{srt_to_adata}}
+#' @seealso \link{srt_to_adata}
 #'
 #' @export
 #'

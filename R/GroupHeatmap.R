@@ -226,7 +226,7 @@
 #' Default is TRUE.
 #' @param ... Additional arguments passed to the [ComplexHeatmap::Heatmap] function.
 #'
-#' @seealso \code{\link{RunDEtest}}
+#' @seealso \link{RunDEtest}
 #'
 #' @return A list with the following elements:
 #'   \itemize{

@@ -42,7 +42,8 @@
 #' @param return_layer Whether to return the plot layers as a list. Defaults to FALSE.
 #' @param seed Random seed for reproducibility. Defaults to 11.
 #'
-#' @seealso \code{\link{RunSCVELO}} \code{\link{CellDimPlot}}
+#' @seealso
+#' \link{RunSCVELO}, \link{CellDimPlot}
 #'
 #' @export
 #'

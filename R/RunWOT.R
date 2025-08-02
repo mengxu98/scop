@@ -9,7 +9,7 @@
 #' @param get_coupling A logical value indicating whether to compute and store the coupling matrix between the specified `time_from` and `time_to`. Default is FALSE.
 #' @param recalculate A logical value indicating whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location. Default is FALSE.
 #'
-#' @seealso \code{\link{srt_to_adata}}
+#' @seealso \link{srt_to_adata}
 #' @export
 #'
 #' @examples

@@ -111,5 +111,5 @@ LineagePlot(
 )
 }
 \seealso{
-\code{\link{RunSlingshot}} \code{\link{CellDimPlot}}
+\link{RunSlingshot}, \link{CellDimPlot}
 }

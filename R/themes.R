@@ -1,10 +1,9 @@
-#' scop theme
+#' @title The default theme for scop plot function.
 #'
-#' The default theme for scop plot function.
-#'
+#' @md
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param base_size Base font size
-#' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
+#' @param ... Arguments passed to the [ggplot2::theme].
 #'
 #' @export
 #'
@@ -85,15 +84,17 @@ theme_scop <- function(
   )
   args2 <- as.list(match.call())[-1]
   call_envir <- parent.frame(1)
-  args2 <- lapply(args2, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
+  args2 <- lapply(
+    args2, function(arg) {
+      if (is.symbol(arg)) {
+        eval(arg, envir = call_envir)
+      } else if (is.call(arg)) {
+        eval(arg, envir = call_envir)
+      } else {
+        arg
+      }
     }
-  })
+  )
   for (n in names(args2)) {
     args1[[n]] <- args2[[n]]
   }
@@ -105,18 +106,19 @@ theme_scop <- function(
   return(out)
 }
 
-#' Blank theme
+#' @title Blank theme
 #'
-#' This function creates a theme with all elements blank except for axis lines and labels.
+#' @description This function creates a theme with all elements blank except for axis lines and labels.
 #' It can optionally add coordinate axes in the plot.
 #'
-#' @param add_coord Whether to add coordinate arrows. Default is \code{TRUE}.
+#' @md
+#' @param add_coord Whether to add coordinate arrows. Default is `TRUE`.
 #' @param xlen_npc The length of the x-axis arrow in "npc".
 #' @param ylen_npc The length of the y-axis arrow in "npc".
-#' @param xlab x-axis label.
-#' @param ylab y-axis label.
-#' @param lab_size Label size.
-#' @param ... Arguments passed to the \code{\link[ggplot2]{theme}}.
+#' @param xlab The label of the x-axis.
+#' @param ylab The label of the y-axis.
+#' @param lab_size The size of the axis labels.
+#' @param ... Arguments passed to the [ggplot2::theme].
 #'
 #' @export
 #'
@@ -154,15 +156,17 @@ theme_blank <- function(
   )
   args2 <- as.list(match.call())[-1]
   call_envir <- parent.frame(1)
-  args2 <- lapply(args2, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
+  args2 <- lapply(
+    args2, function(arg) {
+      if (is.symbol(arg)) {
+        eval(arg, envir = call_envir)
+      } else if (is.call(arg)) {
+        eval(arg, envir = call_envir)
+      } else {
+        arg
+      }
     }
-  })
+  )
   for (n in names(args2)) {
     args1[[n]] <- args2[[n]]
   }
@@ -218,21 +222,24 @@ theme_blank <- function(
   }
 }
 
-#' Color palettes collected in scop.
+#' @title Color palettes collected in scop.
 #'
+#' @description This function creates a color palette for a given vector of values.
+#'
+#' @md
 #' @param x A vector of character/factor or numeric values.
 #' If missing, numeric values 1:n will be used as x.
 #' @param n The number of colors to return for numeric values.
 #' @param palette Palette name. All available palette names can be queried with \code{show_palettes()}.
 #' @param palcolor Custom colors used to create a color palette.
-#' @param type Type of \code{x}. Can be one of "auto", "discrete" or "continuous".
-#' The default is "auto", which automatically detects if \code{x} is a numeric value.
-#' @param matched If \code{TRUE}, will return a color vector of the same length as \code{x}.
+#' @param type Type of `x`. Can be one of "auto", "discrete" or "continuous".
+#' The default is "auto", which automatically detects if `x` is a numeric value.
+#' @param matched If `TRUE`, will return a color vector of the same length as `x`.
 #' @param reverse Whether to invert the colors.
-#' @param NA_keep Whether to keep the color assignment to NA in \code{x}.
-#' @param NA_color Color assigned to NA if NA_keep is \code{TRUE}.
+#' @param NA_keep Whether to keep the color assignment to NA in `x`.
+#' @param NA_color Color assigned to NA if NA_keep is `TRUE`.
 #'
-#' @seealso \code{\link{show_palettes}} \code{\link{palette_list}}
+#' @seealso \link{show_palettes} \link{palette_list}
 #'
 #' @export
 #'
@@ -409,18 +416,25 @@ palette_scop <- function(
   return(color)
 }
 
-#' Show the color palettes
+#' @title Show the color palettes
 #'
-#' This function displays color palettes using ggplot2.
+#' @description This function displays color palettes using ggplot2.
 #'
-#' @param palettes A list of color palettes. If `NULL`, uses default palettes.
-#' @param type A character vector specifying the type of palettes to include. Default is "discrete".
-#' @param index A numeric vector specifying the indices of the palettes to include. Default is `NULL`.
-#' @param palette_names A character vector specifying the names of the scop palettes to include. Default is `NULL`.
-#' @param return_names A logical value indicating whether to return the names of the selected palettes. Default is `TRUE`.
-#' @param return_palettes A logical value indicating whether to return the colors of selected palettes. Default is `FALSE`.
+#' @md
+#' @param palettes A list of color palettes.
+#' If `NULL`, uses default palettes.
+#' @param type A character vector specifying the type of palettes to include.
+#' Default is "discrete".
+#' @param index A numeric vector specifying the indices of the palettes to include.
+#' Default is `NULL`.
+#' @param palette_names A character vector specifying the names of the scop palettes to include.
+#' Default is `NULL`.
+#' @param return_names A logical value indicating whether to return the names of the selected palettes.
+#' Default is `TRUE`.
+#' @param return_palettes A logical value indicating whether to return the colors of selected palettes.
+#' Default is `FALSE`.
 #'
-#' @seealso \code{\link{palette_scop}} \code{\link{palette_list}}
+#' @seealso \link{palette_scop} \link{palette_list}
 #'
 #' @export
 #'
@@ -511,9 +525,9 @@ show_palettes <- function(
   }
 }
 
-#' Set the panel width/height of a plot object to a fixed value.
+#' @title Set the panel width/height of a plot object to a fixed value.
 #'
-#' The ggplot object, when stored, can only specify the height and width of the entire plot, not the panel.
+#' @description The ggplot object, when stored, can only specify the height and width of the entire plot, not the panel.
 #' The latter is obviously more important to control the final result of a plot.
 #' This function can set the panel width/height of plot to a fixed value and rasterize it.
 #'
@@ -525,13 +539,13 @@ show_palettes <- function(
 #' @param height The desired height of the fixed panels.
 #' @param margin The margin to add around each panel, in inches. The default is 1 inch.
 #' @param padding The padding to add around each panel, in inches. The default is 0 inches.
-#' @param units The units in which \code{height}, \code{width} and \code{margin} are given. Can be \code{mm}, \code{cm}, \code{in}, etc. See [grid::unit].
+#' @param units The units in which `height`, `width` and `margin` are given.
+#' Can be `mm`, `cm`, `in`, etc. See [grid::unit].
 #' @param raster Whether to rasterize the panel.
 #' @param dpi Plot resolution.
-#' @param BPPARAM An [BiocParallel::BiocParallelParam] instance determining the parallel back-end to be used during building the object made by patchwork package.
-#' @param return_grob If \code{TRUE} then return a grob object instead of a wrapped \code{patchwork} object.
-#' @param save NULL or the file name used to save the plot.
-#' @param bg_color Plot background color.
+#' @param return_grob If `TRUE` then return a grob object instead of a wrapped `patchwork` object.
+#' @param save `NULL` or the file name used to save the plot.
+#' @param bg_color The background color of the plot.
 #' @param verbose Whether to print messages.
 #' @param ... Unused.
 #'
@@ -670,7 +684,6 @@ panel_fix <- function(
     units = "in",
     raster = FALSE,
     dpi = 300,
-    BPPARAM = BiocParallel::SerialParam(),
     return_grob = FALSE,
     bg_color = "white",
     save = NULL,
@@ -720,7 +733,7 @@ panel_fix <- function(
     )
     if (length(geom_index) > 0) {
       log_message(
-        paste0("panel ", i, " is detected as generated by plot_grid."),
+        "panel ", i, " is detected as generated by plot_grid.",
         verbose = verbose
       )
       for (j in geom_index) {
@@ -963,7 +976,6 @@ panel_fix_overall <- function(
     units = "in",
     raster = FALSE,
     dpi = 300,
-    BPPARAM = BiocParallel::SerialParam(),
     return_grob = FALSE,
     bg_color = "white",
     save = NULL,
@@ -1050,7 +1062,7 @@ panel_fix_overall <- function(
     }
   } else {
     log_message(
-      "No panel detected.",
+      "No panel detected",
       message_type = "error"
     )
   }
@@ -1093,8 +1105,14 @@ panel_fix_overall <- function(
       width <- raw_w
       height <- raw_h
       if (all(width == 0) && all(height == 0)) {
-        width <- grid::convertWidth(grid::unit(1, "npc"), units, valueOnly = TRUE)
-        height <- grid::convertHeight(grid::unit(1, "npc"), units, valueOnly = TRUE)
+        width <- grid::convertWidth(
+          grid::unit(1, "npc"), units,
+          valueOnly = TRUE
+        )
+        height <- grid::convertHeight(
+          grid::unit(1, "npc"), units,
+          valueOnly = TRUE
+        )
         if (isTRUE(gtable$respect)) {
           if (raw_aspect <= 1) {
             height <- width * raw_aspect
@@ -1208,7 +1226,8 @@ panel_fix_overall <- function(
   if (isTRUE(return_grob)) {
     return(gtable)
   } else {
-    p <- patchwork::wrap_plots(gtable) + theme(plot.background = element_rect(fill = bg_color, color = bg_color))
+    p <- patchwork::wrap_plots(gtable) +
+      theme(plot.background = element_rect(fill = bg_color, color = bg_color))
     if (units != "null") {
       plot_width <- grid::convertWidth(
         sum(gtable[["widths"]]),
@@ -1358,7 +1377,10 @@ drop_data.default <- function(p) {
 
 #' Drop unused data from the plot to reduce the object size
 #'
-#' @param p A \code{ggplot} object or a \code{patchwork} object.
+#' @md
+#' @param p A `ggplot` object or a `patchwork` object.
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
 #' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
@@ -1369,8 +1391,6 @@ drop_data.default <- function(p) {
 #' p_slim <- slim_data(p)
 #' object.size(p_slim)
 #' colnames(p_slim$data)
-#'
-#' @export
 slim_data <- function(p) {
   UseMethod(generic = "slim_data", object = p)
 }
@@ -1411,26 +1431,48 @@ slim_data.default <- function(p) {
 }
 
 
-#' Get used vars in a ggplot object
-#' @param p A \code{ggplot} object.
-#' @param reverse If \code{TRUE} then will return unused vars.
+#' @title Get used vars in a ggplot object
+#'
+#' @md
+#' @param p A `ggplot` object.
+#' @param reverse If `TRUE` then will return unused vars.
 #' @param verbose Whether to print messages.
+#'
 #' @export
 get_vars <- function(p, reverse, verbose = FALSE) {
   mappings <- c(
     as.character(p$mapping),
-    unlist(lapply(p$layers, function(x) as.character(x$mapping))),
-    unlist(lapply(p$layers, function(x) names(p$layers[[1]]$aes_params))),
-    names(p$facet$params$facets), names(p$facet$params$rows), names(p$facet$params$cols)
+    unlist(
+      lapply(p$layers, function(x) as.character(x$mapping))
+    ),
+    unlist(
+      lapply(p$layers, function(x) names(p$layers[[1]]$aes_params))
+    ),
+    names(
+      p$facet$params$facets
+    ), names(p$facet$params$rows), names(p$facet$params$cols)
   )
-  vars <- unique(unlist(strsplit(gsub("[~\\[\\]\\\"\\(\\)]", " ", unique(mappings), perl = TRUE), " ")))
-  vars_used <- intersect(unique(c(colnames(p$data), unlist(lapply(p$layers, function(x) colnames(x$data))))), vars)
+  vars <- unique(
+    unlist(
+      strsplit(
+        gsub(
+          "[~\\[\\]\\\"\\(\\)]", " ", unique(mappings),
+          perl = TRUE
+        ), " "
+      )
+    )
+  )
+  vars_used <- intersect(
+    unique(
+      c(
+        colnames(p$data), unlist(lapply(p$layers, function(x) colnames(x$data)))
+      )
+    ), vars
+  )
 
   log_message(
-    paste0(
-      "vars_used: ", paste0(vars_used, collapse = ","), "\n",
-      "vars_notused: ", paste0(setdiff(names(p$data), vars), collapse = ",")
-    ),
+    "vars_used: ", paste0(vars_used, collapse = ","), "\n",
+    "vars_notused: ", paste0(setdiff(names(p$data), vars), collapse = ","),
     verbose = verbose
   )
   return(vars_used)
@@ -1476,7 +1518,7 @@ adjcolors <- function(colors, alpha) {
 #' @param colors Color vectors.
 #' @param mode Blend mode. One of "blend", "average", "screen", or "multiply".
 #'
-#' @seealso \code{\link{FeatureDimPlot}}
+#' @seealso \link{FeatureDimPlot}
 #'
 #' @export
 #' @examples
@@ -1792,9 +1834,8 @@ as_grob <- function(plot, ...) {
   } else if (inherits(plot, "ggplot")) {
     ggplot2::ggplotGrob(plot)
   } else {
-    log_message(
-      "Cannot convert object of class ", paste0(class(plot), collapse = ","), " into a grob.",
-      message_type = "warning"
+    cli::cli_alert_warning(
+      "Cannot convert object of {.cls {class(plot)}} into a grob"
     )
   }
 }
@@ -1824,14 +1865,13 @@ get_legend <- function(plot) {
   grobs <- plot$grobs
   grob_index <- which(
     grepl(
-      "guide-box-bottom", # guide-box
+      "guide-box-bottom",
       grob_names
     )
   )
   grob_index <- grob_index[1]
   matched_grobs <- grobs[[grob_index]]
-
-  return(matched_grobs)
+  matched_grobs
 }
 
 add_grob <- function(
