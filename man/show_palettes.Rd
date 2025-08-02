@@ -14,17 +14,23 @@ show_palettes(
 )
 }
 \arguments{
-\item{palettes}{A list of color palettes. If `NULL`, uses default palettes.}
+\item{palettes}{A list of color palettes.
+If \code{NULL}, uses default palettes.}
 
-\item{type}{A character vector specifying the type of palettes to include. Default is "discrete".}
+\item{type}{A character vector specifying the type of palettes to include.
+Default is "discrete".}
 
-\item{index}{A numeric vector specifying the indices of the palettes to include. Default is `NULL`.}
+\item{index}{A numeric vector specifying the indices of the palettes to include.
+Default is \code{NULL}.}
 
-\item{palette_names}{A character vector specifying the names of the scop palettes to include. Default is `NULL`.}
+\item{palette_names}{A character vector specifying the names of the scop palettes to include.
+Default is \code{NULL}.}
 
-\item{return_names}{A logical value indicating whether to return the names of the selected palettes. Default is `TRUE`.}
+\item{return_names}{A logical value indicating whether to return the names of the selected palettes.
+Default is \code{TRUE}.}
 
-\item{return_palettes}{A logical value indicating whether to return the colors of selected palettes. Default is `FALSE`.}
+\item{return_palettes}{A logical value indicating whether to return the colors of selected palettes.
+Default is \code{FALSE}.}
 }
 \description{
 This function displays color palettes using ggplot2.
@@ -56,5 +62,5 @@ show_palettes(
 )
 }
 \seealso{
-\code{\link{palette_scop}} \code{\link{palette_list}}
+\link{palette_scop} \link{palette_list}
 }

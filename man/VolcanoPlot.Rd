@@ -147,5 +147,5 @@ VolcanoPlot(
 )
 }
 \seealso{
-\code{\link{RunDEtest}}
+\link{RunDEtest}
 }

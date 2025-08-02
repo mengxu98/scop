@@ -44,7 +44,8 @@
 #'  \item \code{DE_threshold}: A specific threshold for differential expression analysis (only returned if input is a Seurat object).
 #' }
 #'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}} \code{\link{EnrichmentPlot}} \code{\link{RunGSEA}} \code{\link{GSEAPlot}}
+#' @seealso
+#' \link{PrepareDB}, \link{ListDB}, \link{EnrichmentPlot}, \link{RunGSEA}, \link{GSEAPlot}
 #'
 #' @export
 #'

@@ -32,7 +32,7 @@
 #' @param separate_annotation_params A list of other parameters to be passed to the HeatmapAnnotation function when creating the separate annotation blocks.
 #' @param reverse_ht A logical indicating whether to reverse the heatmap. Default is NULL.
 #'
-#' @seealso \code{\link{RunDynamicFeatures}} \code{\link{RunDynamicEnrichment}}
+#' @seealso \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
 #'
 #' @export
 #'

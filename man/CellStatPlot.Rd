@@ -175,21 +175,25 @@ CellStatPlot(
   stat.by = "Phase",
   plot_type = "bar"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "rose"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "ring"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "pie"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -202,30 +206,35 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "bar"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "rose"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "ring"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "area"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "dot"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -248,6 +257,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "bar"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -255,6 +265,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "rose"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -262,6 +273,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -269,6 +281,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "area"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -276,6 +289,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "dot"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -293,6 +307,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -302,6 +317,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -317,6 +333,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
@@ -332,6 +349,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
+
 pancreas_sub$Progenitor <- pancreas_sub$CellType \%in\% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
 pancreas_sub$Fancb_Expressed <- GetAssayData5(
@@ -352,6 +370,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
@@ -360,6 +379,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
+
 sum(
   pancreas_sub$Progenitor == "FALSE" &
     pancreas_sub$G2M == "FALSE" &
@@ -368,5 +388,5 @@ sum(
 )
 }
 \seealso{
-\code{\link{StatPlot}}
+\link{StatPlot}
 }

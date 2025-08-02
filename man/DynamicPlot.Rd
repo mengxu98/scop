@@ -168,5 +168,5 @@ DynamicPlot(
 }
 }
 \seealso{
-\code{\link{RunDynamicFeatures}}
+\link{RunDynamicFeatures}
 }

@@ -7,7 +7,7 @@
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' If not specified, will use the reduction returned by \link{DefaultReduction}.
 #' @param split.by Name of a column in meta.data to split plot by.
 #' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
@@ -90,7 +90,7 @@
 #' @param theme_args Other arguments passed to the \code{theme_use}.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \code{\link{CellDimPlot}}
+#' @seealso \link{CellDimPlot}
 #'
 #' @export
 #'
@@ -1780,7 +1780,7 @@ FeatureDimPlot <- function(
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
 #'
-#' @seealso \code{\link{FeatureDimPlot}} \code{\link{CellDimPlot3D}}
+#' @seealso \link{FeatureDimPlot}, \link{CellDimPlot3D}
 #'
 #' @export
 #'

@@ -44,7 +44,7 @@
 #' @param byrow A boolean specifying whether to fill plots by row in the combined plot. Default is TRUE.
 #' @param seed A numeric specifying the random seed. Default is 11.
 #'
-#' @seealso \code{\link{RunDynamicFeatures}}
+#' @seealso \link{RunDynamicFeatures}
 #'
 #' @export
 #'

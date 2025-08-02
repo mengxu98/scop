@@ -2,7 +2,7 @@
 % Please edit documentation in R/themes.R
 \name{theme_scop}
 \alias{theme_scop}
-\title{scop theme}
+\title{The default theme for scop plot function.}
 \usage{
 theme_scop(aspect.ratio = NULL, base_size = 12, ...)
 }
@@ -11,7 +11,7 @@ theme_scop(aspect.ratio = NULL, base_size = 12, ...)
 
 \item{base_size}{Base font size}
 
-\item{...}{Arguments passed to the \code{\link[ggplot2]{theme}}.}
+\item{...}{Arguments passed to the \link[ggplot2:theme]{ggplot2::theme}.}
 }
 \description{
 The default theme for scop plot function.

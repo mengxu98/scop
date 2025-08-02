@@ -6,7 +6,7 @@
 #' @param srt A Seurat object.
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' If not specified, will use the reduction returned by \link{DefaultReduction}.
 #' @param split.by Name of a column in meta.data column to split plot by.
 #' @param palette Name of a color palette name collected in scop. Default is "Paired".
 #' @param palcolor Custom colors used to create a color palette.
@@ -135,7 +135,7 @@
 #' @param theme_args Other arguments passed to the \code{theme_use}.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \code{\link{FeatureDimPlot}}
+#' @seealso \link{FeatureDimPlot}
 #'
 #' @export
 #'
@@ -1439,7 +1439,7 @@ CellDimPlot <- function(
 #' @param width Width in pixels, defaults to automatic sizing.
 #' @param height Height in pixels, defaults to automatic sizing.
 #' @param save The name of the file to save the plot to. Must end in ".html".
-#' @seealso \code{\link{CellDimPlot}} \code{\link{FeatureDimPlot3D}}
+#' @seealso \link{CellDimPlot}, \link{FeatureDimPlot3D}
 #'
 #' @export
 #'

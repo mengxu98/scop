@@ -592,5 +592,5 @@ ht6 <- DynamicHeatmap(
 ht6$plot
 }
 \seealso{
-\code{\link{RunDynamicFeatures}} \code{\link{RunDynamicEnrichment}}
+\link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
 }

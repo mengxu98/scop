@@ -19,7 +19,7 @@
 #' @param seed The random seed for reproducibility. Defaults to 11.
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
+#' @seealso \link{PrepareDB}, \link{ListDB}
 #'
 #' @export
 #'

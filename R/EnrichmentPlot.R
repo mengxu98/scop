@@ -39,7 +39,7 @@
 #' Default is "term".
 #' @param word_size The size range for words in wordcloud. Default is c(2, 8).
 #' @param words_excluded Words to be excluded from the wordcloud.
-#' The default value is NULL, which means that the built-in words (\code{\link{words_excluded}}) will be used.
+#' The default value is NULL, which means that the built-in words (\link{words_excluded}) will be used.
 #' @param network_layout The layout algorithm to use for network plot.
 #' Options are "fr", "kk","random", "circle", "tree", "grid", or other algorithm from 'igraph' package.
 #' Default is "fr".
@@ -100,7 +100,7 @@
 #' Default is TRUE.
 #' @param seed The random seed to use. Default is 11.
 #'
-#' @seealso \code{\link{RunEnrichment}}
+#' @seealso \link{RunEnrichment}
 #'
 #' @export
 #'
