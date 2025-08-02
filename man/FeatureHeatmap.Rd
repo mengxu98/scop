@@ -121,7 +121,8 @@ FeatureHeatmap(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{The features to include in the heatmap.}
+\item{features}{The features to include in the heatmap.
+Default is NULL.}
 
 \item{cells}{A character vector specifying the cells to include in the heatmap.
 Default is NULL.}
