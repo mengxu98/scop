@@ -182,5 +182,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\code{\link{PrepareDB}} \code{\link{ListDB}}
+\link{PrepareDB}, \link{ListDB}
 }

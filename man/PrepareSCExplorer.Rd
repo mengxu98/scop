@@ -52,5 +52,5 @@ PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 }
 }
 \seealso{
-\code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+\link{CreateDataFile}, \link{CreateMetaFile}, \link{FetchH5}, \link{RunSCExplorer}
 }

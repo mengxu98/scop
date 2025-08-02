@@ -33,5 +33,5 @@ CreateDataFile(
 Creates a data file in HDF5 format from a Seurat object.
 }
 \seealso{
-\code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+\link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
 }

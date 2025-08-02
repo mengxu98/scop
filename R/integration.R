@@ -20,18 +20,18 @@
 #' @return A `Seurat` object.
 #'
 #' @seealso
-#' \code{\link{Seurat_integrate}},
-#' \code{\link{scVI_integrate}},
-#' \code{\link{MNN_integrate}},
-#' \code{\link{fastMNN_integrate}},
-#' \code{\link{Harmony_integrate}},
-#' \code{\link{Scanorama_integrate}},
-#' \code{\link{BBKNN_integrate}},
-#' \code{\link{CSS_integrate}},
-#' \code{\link{LIGER_integrate}},
-#' \code{\link{Conos_integrate}},
-#' \code{\link{ComBat_integrate}},
-#' \code{\link{standard_scop}}
+#' \link{Seurat_integrate},
+#' \link{scVI_integrate},
+#' \link{MNN_integrate},
+#' \link{fastMNN_integrate},
+#' \link{Harmony_integrate},
+#' \link{Scanorama_integrate},
+#' \link{BBKNN_integrate},
+#' \link{CSS_integrate},
+#' \link{LIGER_integrate},
+#' \link{Conos_integrate},
+#' \link{ComBat_integrate},
+#' \link{standard_scop}
 #'
 #' @export
 #' @examples
