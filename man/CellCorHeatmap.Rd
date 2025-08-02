@@ -303,5 +303,5 @@ ht4 <- CellCorHeatmap(
 ht4$plot
 }
 \seealso{
-\code{\link{RunKNNMap}} \code{\link{RunKNNPredict}}
+\link{RunKNNMap}, \link{RunKNNPredict}
 }

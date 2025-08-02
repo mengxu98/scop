@@ -6,7 +6,7 @@
 #' @param cell_order A vector of cell names defining the order of cells.
 #' Default is NULL.
 #'
-#' @seealso \code{\link{RunDEtest}}
+#' @seealso \link{RunDEtest}
 #'
 #' @export
 #'

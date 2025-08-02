@@ -61,7 +61,7 @@
 #' @param theme_args A list of arguments to be passed to the theme.
 #' @param return_layer A logical value indicating whether to return the layers of the plot instead of the plot itself.
 #'
-#' @seealso \code{\link{CellDimPlot}}
+#' @seealso \link{CellDimPlot}
 #'
 #' @export
 GraphPlot <- function(

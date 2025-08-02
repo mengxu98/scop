@@ -133,7 +133,7 @@ CellDimPlot(
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
 
 \item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
@@ -746,5 +746,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\code{\link{FeatureDimPlot}}
+\link{FeatureDimPlot}
 }

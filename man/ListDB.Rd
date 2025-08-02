@@ -19,5 +19,5 @@ ListDB(species = "Homo_sapiens")
 ListDB(species = "Mus_musculus", db = "GO_BP")
 }
 \seealso{
-\code{\link{PrepareDB}}
+\link{PrepareDB}
 }

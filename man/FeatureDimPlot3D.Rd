@@ -32,7 +32,7 @@ FeatureDimPlot3D(
 Features can be gene names in Assay or names of numeric columns in meta.data.}
 
 \item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.}
 
@@ -77,5 +77,5 @@ FeatureDimPlot3D(
 )
 }
 \seealso{
-\code{\link{FeatureDimPlot}} \code{\link{CellDimPlot3D}}
+\link{FeatureDimPlot}, \link{CellDimPlot3D}
 }
