@@ -101,5 +101,5 @@ DynamicPlot(
 )
 }
 \seealso{
-\code{\link{DynamicHeatmap}} \code{\link{DynamicPlot}} \code{\link{RunDynamicEnrichment}}
+\link{DynamicHeatmap}, \link{DynamicPlot}, \link{RunDynamicEnrichment}
 }

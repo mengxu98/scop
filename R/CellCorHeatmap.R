@@ -79,7 +79,7 @@
 #'     \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
 #'   }
 #'
-#' @seealso \code{\link{RunKNNMap}} \code{\link{RunKNNPredict}}
+#' @seealso \link{RunKNNMap}, \link{RunKNNPredict}
 #'
 #' @export
 #'

@@ -9,7 +9,7 @@
 #'
 #' @return A list of S-phase and G2M-phase genes.
 #'
-#' \code{\link{GeneConvert}}
+#' @seealso \link{GeneConvert}
 #'
 #' @export
 #'

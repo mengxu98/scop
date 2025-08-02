@@ -32,7 +32,8 @@
 #'
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
 #'
-#' @seealso \code{\link{DynamicHeatmap}} \code{\link{DynamicPlot}} \code{\link{RunDynamicEnrichment}}
+#' @seealso
+#' \link{DynamicHeatmap}, \link{DynamicPlot}, \link{RunDynamicEnrichment}
 #'
 #' @export
 #'

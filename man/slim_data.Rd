@@ -28,5 +28,4 @@ colnames(p$data)
 p_slim <- slim_data(p)
 object.size(p_slim)
 colnames(p_slim$data)
-
 }
