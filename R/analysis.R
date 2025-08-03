@@ -1,5 +1,6 @@
-#' Prefetch cycle gene
+#' @title Prefetch cell cycle genes
 #'
+#' @description
 #' Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 #'
 #' @inheritParams GeneConvert
@@ -14,19 +15,20 @@
 #' @export
 #'
 #' @examples
-#' ccgenes <- CC_GenePrefetch("Homo_sapiens")
+#' ccgenes <- CycGenePrefetch("Homo_sapiens")
 #' str(ccgenes)
-#' ccgenes <- CC_GenePrefetch("Mus_musculus")
+#'
+#' ccgenes <- CycGenePrefetch("Mus_musculus")
 #' str(ccgenes)
-CC_GenePrefetch <- function(
+CycGenePrefetch <- function(
     species = "Homo_sapiens",
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     max_tries = 5,
     use_cached_gene = TRUE,
     verbose = TRUE) {
   log_message(
-    "Prefetching cell cycle genes for", species, "...",
+    "Prefetching cell cycle genes for {.val {species}}...",
     verbose = verbose
   )
   s_genes <- Seurat::cc.genes.updated.2019$s.genes
@@ -49,12 +51,12 @@ CC_GenePrefetch <- function(
       )
       R.cache::saveCache(res, key = list(species))
       log_message(
-        "Cached conversion results for", species,
+        "Cached conversion results for {.val {species}}",
         verbose = verbose
       )
     } else {
       log_message(
-        "Using cached conversion results for", species,
+        "Using cached conversion results for {.val {species}}",
         verbose = verbose
       )
     }
@@ -67,7 +69,7 @@ CC_GenePrefetch <- function(
     )
   }
   log_message(
-    "Cell cycle gene prefetching completed",
+    "Cell cycle gene prefetching completed {.val {species}}",
     message_type = "success",
     verbose = verbose
   )
@@ -258,7 +260,7 @@ votep <- function(p, alpha = 0.5) {
     }
     if ((pos + neg) <= 0) {
       log_message(
-        "All p values are within specified limits of alpha",
+        "All p-values are within specified limits of alpha",
         message_type = "warning"
       )
       p <- 1
