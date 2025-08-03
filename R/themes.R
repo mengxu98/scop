@@ -1181,7 +1181,7 @@ panel_fix_overall <- function(
       index <- panel_index[i]
       g <- g_new <- gtable$grobs[[index]]
       vp <- g$vp
-      childrenOrder <- g$childrenOrder
+      children_order <- g$childrenOrder
       if (is.null(g$vp)) {
         g$vp <- grid::viewport()
       }
@@ -1192,7 +1192,7 @@ panel_fix_overall <- function(
         if (!is.null(child$vp) ||
           any(grepl("(text)|(label)", child_nm)) ||
           any(grepl("(text)|(segments)|(legend)", class(child$list[[1]])))) {
-          zero <- zeroGrob()
+          zero <- ggplot2::zeroGrob()
           zero$name <- g[["children"]][[j]]$name
           g[["children"]][[j]] <- zero
         } else if (inherits(child$list[[1]], "grob") || is.null(child$list[[1]])) {
@@ -1214,7 +1214,7 @@ panel_fix_overall <- function(
       unlink(temp)
       g <- grid::addGrob(g_new, g_ras)
       g$vp <- vp
-      g$childrenOrder <- c(g_ras$name, childrenOrder)
+      g$childrenOrder <- c(g_ras$name, children_order)
       gtable$grobs[[index]] <- g
     }
   }
@@ -1278,6 +1278,9 @@ panel_fix_overall <- function(
 #' Drop all data in the plot (only one observation is kept)
 #'
 #' @param p A \code{ggplot} object or a \code{patchwork} object.
+#'
+#' @export
+#'
 #' @examples
 #' library(ggplot2)
 #' p <- ggplot(data = mtcars, aes(x = mpg, y = wt, colour = cyl)) +
@@ -1291,8 +1294,6 @@ panel_fix_overall <- function(
 #' object.size(p_drop)
 #'
 #' p / p_drop
-#'
-#' @export
 drop_data <- function(p) {
   UseMethod(generic = "drop_data", object = p)
 }
@@ -1648,8 +1649,7 @@ BlendRGBList <- function(
 
 build_patchwork <- function(
     x,
-    guides = "auto",
-    BPPARAM = BiocParallel::SerialParam()) {
+    guides = "auto") {
   x$layout <- utils::modifyList(
     patchwork:::default_layout,
     x$layout[!vapply(x$layout, is.null, logical(1))]
@@ -1660,11 +1660,10 @@ build_patchwork <- function(
   } else {
     x$layout$guides
   }
-  gt <- BiocParallel::bplapply(
+  gt <- lapply(
     x$plots,
     patchwork:::plot_table,
-    guides = guides,
-    BPPARAM = BPPARAM
+    guides = guides
   )
   fixed_asp <- vapply(
     gt, function(x) isTRUE(x$respect), logical(1)
@@ -1673,10 +1672,9 @@ build_patchwork <- function(
     lapply(gt, `[[`, "collected_guides"),
     recursive = FALSE
   )
-  gt <- BiocParallel::bplapply(
+  gt <- lapply(
     gt,
-    patchwork:::simplify_gt,
-    BPPARAM = BPPARAM
+    patchwork:::simplify_gt
   )
   gt <- patchwork:::add_insets(gt)
   if (is.null(x$layout$design)) {
@@ -1804,10 +1802,7 @@ build_patchwork <- function(
   gt_new
 }
 
-patchwork_grob <- function(
-    x,
-    BPPARAM = BiocParallel::SerialParam(),
-    ...) {
+patchwork_grob <- function(x, ...) {
   annotation <- utils::modifyList(
     patchwork:::default_annotation,
     x$patches$annotation[!vapply(x$patches$annotation, is.null, logical(1))]
@@ -1820,7 +1815,7 @@ patchwork_grob <- function(
     annotation$tag_sep
   )$patches
   plot <- patchwork:::get_patches(x)
-  gtable <- build_patchwork(plot, BPPARAM = BPPARAM)
+  gtable <- build_patchwork(plot)
   gtable <- patchwork:::annotate_table(gtable, annotation)
   class(gtable) <- setdiff(class(gtable), "gtable_patchwork")
   gtable

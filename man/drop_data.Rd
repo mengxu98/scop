@@ -34,5 +34,4 @@ p_drop <- drop_data(p)
 object.size(p_drop)
 
 p / p_drop
-
 }

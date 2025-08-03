@@ -355,7 +355,7 @@ check_srt_list <- function(
             length(srt_list),
             " of the srt_list is ",
             status,
-            ". Perform NormalizeData(LogNormalize) on the data ..."
+            ". Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
           )
           srt_list[[i]] <- Seurat::NormalizeData(
             object = srt_list[[i]],
@@ -372,7 +372,7 @@ check_srt_list <- function(
             length(srt_list),
             " of the srt_list is ",
             status,
-            ". Perform RunTFIDF on the data ..."
+            ". Perform {.fn RunTFIDF} on the data..."
           )
           srt_list[[i]] <- Signac::RunTFIDF(
             object = srt_list[[i]],

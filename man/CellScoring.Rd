@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellScoring.R
 \name{CellScoring}
 \alias{CellScoring}
-\title{CellScoring}
+\title{Cell scoring}
 \usage{
 CellScoring(
   srt,
@@ -31,9 +31,9 @@ CellScoring(
 )
 }
 \arguments{
-\item{srt}{A Seurat object}
+\item{srt}{A Seurat object.}
 
-\item{features}{A named list of feature lists for scoring. If NULLL, \code{db} will be used to create features sets.}
+\item{features}{A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.}
 
 \item{layer}{The layer of the Seurat object to use for scoring. Defaults to "data".}
 
@@ -71,7 +71,7 @@ CellScoring(
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Defaults to FALSE.}
 
-\item{BPPARAM}{The BiocParallel parameter object. Defaults to \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
+\item{BPPARAM}{The BiocParallel parameter object. Defaults to \link[BiocParallel:register]{BiocParallel::bpparam}.}
 
 \item{seed}{The random seed for reproducibility. Defaults to 11.}
 
@@ -82,8 +82,9 @@ This function performs cell scoring on a Seurat object.
 It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
-ccgenes <- CC_GenePrefetch("Mus_musculus")
+ccgenes <- CycGenePrefetch("Mus_musculus")
 pancreas_sub <- CellScoring(
   srt = pancreas_sub,
   features = list(S = ccgenes$S, G2M = ccgenes$G2M),
@@ -91,9 +92,9 @@ pancreas_sub <- CellScoring(
   name = "CC"
 )
 CellDimPlot(pancreas_sub, "CC_classification")
+
 FeatureDimPlot(pancreas_sub, "CC_G2M")
 
-\dontrun{
 data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
@@ -103,7 +104,7 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype")
- )
+)
 
 panc8_sub <- CellScoring(
   srt = panc8_sub,
@@ -127,7 +128,7 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype")
- )
+)
 
 pancreas_sub <- CellScoring(
   srt = pancreas_sub,
@@ -143,7 +144,7 @@ pancreas_sub <- CellScoring(
 pancreas_sub <- standard_scop(
   pancreas_sub,
   assay = "GO"
- )
+)
 CellDimPlot(pancreas_sub, "SubCellType")
 
 pancreas_sub[["tech"]] <- "Mouse"

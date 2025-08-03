@@ -2352,76 +2352,42 @@ GroupHeatmap <- function(
     )
     ht_width <- fixsize[["ht_width"]]
     ht_height <- fixsize[["ht_height"]]
-
-    g_tree <- grid::grid.grabExpr(
-      {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
-                enrich_anno_element,
-                slice = 1,
-                {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-                }
-              )
-            }
-          }
-        }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
   } else {
     ht_width <- grid::unit(width_sum, units = units)
     ht_height <- grid::unit(height_sum, units = units)
-    g_tree <- grid::grid.grabExpr(
-      {
-        ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
-        for (enrich in db) {
-          enrich_anno <- names(ha_right)[grep(
-            paste0("_split_", enrich),
-            names(ha_right)
-          )]
-          if (length(enrich_anno) > 0) {
-            for (enrich_anno_element in enrich_anno) {
-              enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
-              ComplexHeatmap::decorate_annotation(
-                enrich_anno_element,
-                slice = 1,
-                {
-                  grid::grid.text(
-                    paste0(enrich, " (", enrich_obj, ")"),
-                    x = grid::unit(1, "npc"),
-                    y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
-                    just = c("left", "bottom")
-                  )
-                }
-              )
-            }
+  }
+  g_tree <- grid::grid.grabExpr(
+    {
+      ComplexHeatmap::draw(ht_list, annotation_legend_list = lgd)
+      for (enrich in db) {
+        enrich_anno <- names(ha_right)[grep(
+          paste0("_split_", enrich),
+          names(ha_right)
+        )]
+        if (length(enrich_anno) > 0) {
+          for (enrich_anno_element in enrich_anno) {
+            enrich_obj <- strsplit(enrich_anno_element, "_split_")[[1]][1]
+            ComplexHeatmap::decorate_annotation(
+              enrich_anno_element,
+              slice = 1,
+              {
+                grid::grid.text(
+                  paste0(enrich, " (", enrich_obj, ")"),
+                  x = grid::unit(1, "npc"),
+                  y = grid::unit(1, "npc") + grid::unit(2.5, "mm"),
+                  just = c("left", "bottom")
+                )
+              }
+            )
           }
         }
-      },
-      width = ht_width,
-      height = ht_height,
-      wrap = TRUE,
-      wrap.grobs = TRUE
-    )
-  }
-
+      }
+    },
+    width = ht_width,
+    height = ht_height,
+    wrap = TRUE,
+    wrap.grobs = TRUE
+  )
   if (isTRUE(fix)) {
     p <- panel_fix_overall(
       g_tree,
@@ -2436,6 +2402,7 @@ GroupHeatmap <- function(
   return(
     list(
       plot = p,
+      g_tree = g_tree,
       matrix_list = mat_list,
       feature_split = feature_split,
       cell_metadata = cell_metadata,
