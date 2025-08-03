@@ -1997,7 +1997,7 @@ server <- function(input, output, session) {
 
         # print(">>> panel_fix:")
         # print(system.time(
-        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
         # ))
         attr(p1_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
@@ -2150,7 +2150,7 @@ server <- function(input, output, session) {
 
         # print(">>> panel_fix:")
         # print(system.time(
-        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
         # ))
         attr(p2_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
@@ -2320,9 +2320,9 @@ server <- function(input, output, session) {
         # print(">>> panel_fix:")
         # print(system.time(
         if (flip3) {
-          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
         }
         # ))
         attr(p3, "dpi") <- 300
@@ -2486,9 +2486,9 @@ server <- function(input, output, session) {
         # print(">>> panel_fix:")
         # print(system.time(
         if (flip4) {
-          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
         }
 
         # ))
@@ -2589,12 +2589,6 @@ server <- function(input, output, session) {
     "library(ggplot2)",
     "library(rlang)",
     args_code,
-    "plan(multisession, workers = session_workers)",
-    "if (.Platform$OS.type == 'windows') {
-      BPPARAM = SerialParam()
-    } else {
-      BPPARAM = MulticoreParam(workers = plotting_workers)
-    }",
     "page_theme <- bs_theme(bootswatch = 'zephyr')",
     main_code,
     "shinyApp(ui = ui, server = server)"

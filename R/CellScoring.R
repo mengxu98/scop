@@ -1,12 +1,13 @@
-#' CellScoring
+#' @title Cell scoring
 #'
+#' @description
 #' This function performs cell scoring on a Seurat object.
 #' It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
 #'
 #' @md
 #' @inheritParams RunEnrichment
-#' @param srt A Seurat object
-#' @param features A named list of feature lists for scoring. If NULLL, \code{db} will be used to create features sets.
+#' @param srt A Seurat object.
+#' @param features A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.
 #' @param layer The layer of the Seurat object to use for scoring. Defaults to "data".
 #' @param assay The assay of the Seurat object to use for scoring. Defaults to NULL, in which case the default assay of the object is used.
 #' @param split.by A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Defaults to NULL.
@@ -15,7 +16,7 @@
 #' @param classification Whether to perform classification based on the scores. Defaults to TRUE.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.
 #' @param new_assay Whether to create a new assay for storing the scores. Defaults to FALSE.
-#' @param BPPARAM The BiocParallel parameter object. Defaults to [BiocParallel::bpparam()].
+#' @param BPPARAM The BiocParallel parameter object. Defaults to [BiocParallel::bpparam].
 #' @param seed The random seed for reproducibility. Defaults to 11.
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'
@@ -24,8 +25,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
-#' ccgenes <- CC_GenePrefetch("Mus_musculus")
+#' ccgenes <- CycGenePrefetch("Mus_musculus")
 #' pancreas_sub <- CellScoring(
 #'   srt = pancreas_sub,
 #'   features = list(S = ccgenes$S, G2M = ccgenes$G2M),
@@ -33,9 +35,9 @@
 #'   name = "CC"
 #' )
 #' CellDimPlot(pancreas_sub, "CC_classification")
+#'
 #' FeatureDimPlot(pancreas_sub, "CC_G2M")
 #'
-#' \dontrun{
 #' data(panc8_sub)
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
@@ -45,7 +47,7 @@
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype")
-#'  )
+#' )
 #'
 #' panc8_sub <- CellScoring(
 #'   srt = panc8_sub,
@@ -69,7 +71,7 @@
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype")
-#'  )
+#' )
 #'
 #' pancreas_sub <- CellScoring(
 #'   srt = pancreas_sub,
@@ -85,7 +87,7 @@
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
 #'   assay = "GO"
-#'  )
+#' )
 #' CellDimPlot(pancreas_sub, "SubCellType")
 #'
 #' pancreas_sub[["tech"]] <- "Mouse"
@@ -150,9 +152,10 @@ CellScoring <- function(
   bpprogressbar(BPPARAM) <- TRUE
   bpRNGseed(BPPARAM) <- seed
 
-  if (!method %in% c("Seurat", "AUCell", "UCell")) {
+  score_methods <- c("Seurat", "AUCell", "UCell")
+  if (!method %in% score_methods) {
     log_message(
-      "method must be 'Seurat', 'AUCell'or 'UCell'.",
+      "{.arg method} must be one of {.val {score_methods}}",
       message_type = "error"
     )
   }
@@ -170,7 +173,7 @@ CellScoring <- function(
     status <- check_data_type(srt, layer = "data", assay = assay)
     if (status == "raw_counts") {
       log_message(
-        "Data is raw counts. Perform NormalizeData(LogNormalize) on the data ..."
+        "Data is raw counts. Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
       )
       srt <- NormalizeData(
         object = srt,
@@ -181,7 +184,7 @@ CellScoring <- function(
     }
     if (status == "raw_normalized_counts") {
       log_message(
-        "Data is normalized without log transformation. Perform NormalizeData(LogNormalize) on the data..."
+        "Data is normalized without log transformation. Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
       )
       srt <- NormalizeData(
         object = srt,
@@ -192,16 +195,14 @@ CellScoring <- function(
     }
     if (status == "unknown") {
       log_message(
-        "Can not determine whether data ",
-        i,
-        " is log-normalized...\n",
+        "Can not determine whether data is log-normalized...",
         message_type = "warning"
       )
     }
   }
   if (name == "" && isTRUE(new_assay)) {
     log_message(
-      "name must be specified when new_assay=TRUE",
+      "{.arg name} must be specified when {.arg new_assay = TRUE}",
       message_type = "error"
     )
   }
@@ -226,8 +227,7 @@ CellScoring <- function(
       na <- Matrix::rowSums(is.na(TERM2GENE_tmp)) > 0
       TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
       TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"],
-        ,
+        TERM2NAME_tmp[, "Term"] %in% TERM2GENE_tmp[, "Term"], ,
         drop = FALSE
       ]
 
@@ -260,7 +260,7 @@ CellScoring <- function(
 
   if (!is.list(features) || length(names(features)) == 0) {
     log_message(
-      "'features' must be a named list",
+      "{.arg features} must be a named list",
       message_type = "error"
     )
   }
@@ -286,10 +286,7 @@ CellScoring <- function(
   filtered_none <- names(which(sapply(features, length) == 0))
   if (length(filtered_none) > 0) {
     log_message(
-      paste0(
-        "The following list of features were filtered because none of features were found in the srt assay:\n",
-        paste0(filtered_none, collapse = ", ")
-      ),
+      "The following features were filtered because not found in the srt assay: {.val {filtered_none}}",
       message_type = "warning"
     )
   }
@@ -297,12 +294,12 @@ CellScoring <- function(
   features_raw <- features
   names(features) <- make.names(names(features))
   log_message(
-    "Number of feature lists to be scored: ", length(features)
+    "Number of feature lists to be scored: {.val {length(features)}}"
   )
 
   time_start <- Sys.time()
   log_message("Start CellScoring")
-  log_message("Workers: ", bpworkers(BPPARAM))
+  log_message("Workers: {.val {bpworkers(BPPARAM)}}")
 
   if (!is.null(split.by)) {
     split_list <- Seurat::SplitObject(srt, split.by = split.by)
@@ -329,7 +326,6 @@ CellScoring <- function(
         scores <- srt_tmp[[paste0("X", seq_along(features))]]
       }
       features_nm <- features_raw
-      colnames(scores) <- make.names(paste(name, names(features_nm), sep = "_"))
     } else if (method == "UCell") {
       check_r("UCell")
       srt_tmp <- UCell::AddModuleScore_UCell(
@@ -346,20 +342,16 @@ CellScoring <- function(
       ]
       if (length(filtered) > 0) {
         log_message(
-          paste0(
-            "The following list of features were filtered when scoring:\n",
-            paste0(filtered, collapse = ", ")
-          ),
+          "The following features were filtered when scoring: {.val {filtered}}",
           message_type = "warning"
         )
       }
       features_keep <- features[!names(features) %in% filtered]
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
-      colnames(scores) <- make.names(paste(name, names(features_nm), sep = "_"))
     } else if (method == "AUCell") {
       check_r("AUCell")
-      CellRank <- AUCell::AUCell_buildRankings(
+      cell_rank <- AUCell::AUCell_buildRankings(
         Matrix::as.matrix(
           GetAssayData5(
             srt_sp,
@@ -370,18 +362,17 @@ CellScoring <- function(
         BPPARAM = BPPARAM,
         plotStats = FALSE
       )
-      cells_AUC <- AUCell::AUCell_calcAUC(
+      cells_auc <- AUCell::AUCell_calcAUC(
         geneSets = features,
-        rankings = CellRank,
+        rankings = cell_rank,
         ...
       )
       filtered <- names(features)[
-        !names(features) %in% rownames(AUCell::getAUC(cells_AUC))
+        !names(features) %in% rownames(AUCell::getAUC(cells_auc))
       ]
       if (length(filtered) > 0) {
         log_message(
-          "The following list of features were filtered when scoring:",
-          paste0(filtered, collapse = ", "),
+          "The following features were filtered when scoring: {.val {filtered}}",
           message_type = "warning"
         )
       }
@@ -389,13 +380,13 @@ CellScoring <- function(
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- as.data.frame(
         Matrix::t(
-          AUCell::getAUC(cells_AUC)
+          AUCell::getAUC(cells_auc)
         )
       )[, names(features_keep)]
-      colnames(scores) <- make.names(
-        paste(name, names(features_nm), sep = "_")
-      )
     }
+    colnames(scores) <- make.names(
+      paste(name, names(features_nm), sep = "_")
+    )
     features_nm_list[[i]] <- stats::setNames(
       object = names(features_nm),
       nm = colnames(scores)
@@ -553,13 +544,14 @@ AddModuleScore2 <- function(
     cluster.length <- length(x = features)
   }
   if (!all(check_length(values = features))) {
-    log_message(paste(
-      "Could not find enough features in the object from the following feature lists:",
-      paste(names(x = which(x = !check_length(values = features)))),
-      "Attempting to match case..."
-    ),
-    message_type = "warning"
-  )
+    log_message(
+      paste(
+        "Could not find enough features in the object from the following feature lists:",
+        paste(names(x = which(x = !check_length(values = features)))),
+        "Attempting to match case..."
+      ),
+      message_type = "warning"
+    )
     features <- lapply(
       X = features.old,
       FUN = Seurat::CaseMatch,
@@ -567,13 +559,14 @@ AddModuleScore2 <- function(
     )
   }
   if (!all(check_length(values = features))) {
-    log_message(paste(
-      "The following feature lists do not have enough features present in the object:",
-      paste(names(x = which(x = !check_length(values = features)))),
-      "exiting..."
-    ),
-    message_type = "error"
-  )
+    log_message(
+      paste(
+        "The following feature lists do not have enough features present in the object:",
+        paste(names(x = which(x = !check_length(values = features)))),
+        "exiting..."
+      ),
+      message_type = "error"
+    )
   }
   pool <- pool %||% rownames(x = object)
   data_avg <- Matrix::rowMeans(
