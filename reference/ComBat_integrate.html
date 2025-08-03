@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Combat_integrate</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
       <div class="d-none name"><code>ComBat_integrate.Rd</code></div>
     </div>
 
@@ -93,7 +93,8 @@
 
 
 <dt id="arg-append">append<a class="anchor" aria-label="anchor" href="#arg-append"></a></dt>
-<dd><p>Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).</p></dd>
+<dd><p>The integrated data will be appended to the original Seurat object (srt_merge).
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-srt-list">srt_list<a class="anchor" aria-label="anchor" href="#arg-srt-list"></a></dt>
@@ -150,7 +151,8 @@
 
 <dt id="arg-scale-within-batch">scale_within_batch<a class="anchor" aria-label="anchor" href="#arg-scale-within-batch"></a></dt>
 <dd><p>Whether to scale data within each batch.
-Only valid when the <code>integration_method</code> is one of <code>"Uncorrected"</code>, <code>"Seurat"</code>, <code>"MNN"</code>, <code>"Harmony"</code>, <code>"BBKNN"</code>, <code>"CSS"</code>, <code>"ComBat"</code>.</p></dd>
+Only valid when the <code>integration_method</code> is one of <code>"Uncorrected"</code>,
+<code>"Seurat"</code>, <code>"MNN"</code>, <code>"Harmony"</code>, <code>"BBKNN"</code>, <code>"CSS"</code>, <code>"ComBat"</code>.</p></dd>
 
 
 <dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
@@ -206,7 +208,8 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 
 
 <dt id="arg-combat-params">ComBat_params<a class="anchor" aria-label="anchor" href="#arg-combat-params"></a></dt>
-<dd><p>A list of parameters for the sva::ComBat function, default is an empty list.</p></dd>
+<dd><p>A list of parameters for the sva::ComBat function.
+Default is an empty list.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>

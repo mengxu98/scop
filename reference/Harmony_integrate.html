@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Harmony_integrate</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
       <div class="d-none name"><code>Harmony_integrate.Rd</code></div>
     </div>
 
@@ -67,7 +67,7 @@
 <span>  linear_reduction_dims_use <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  linear_reduction_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  force_linear_reduction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  Harmony_dims_use <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  harmony_dims_use <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span>,</span>
 <span>  nonlinear_reduction_dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
 <span>  nonlinear_reduction_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -94,7 +94,8 @@
 
 
 <dt id="arg-append">append<a class="anchor" aria-label="anchor" href="#arg-append"></a></dt>
-<dd><p>Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).</p></dd>
+<dd><p>The integrated data will be appended to the original Seurat object (srt_merge).
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-srt-list">srt_list<a class="anchor" aria-label="anchor" href="#arg-srt-list"></a></dt>
@@ -151,7 +152,8 @@
 
 <dt id="arg-scale-within-batch">scale_within_batch<a class="anchor" aria-label="anchor" href="#arg-scale-within-batch"></a></dt>
 <dd><p>Whether to scale data within each batch.
-Only valid when the <code>integration_method</code> is one of <code>"Uncorrected"</code>, <code>"Seurat"</code>, <code>"MNN"</code>, <code>"Harmony"</code>, <code>"BBKNN"</code>, <code>"CSS"</code>, <code>"ComBat"</code>.</p></dd>
+Only valid when the <code>integration_method</code> is one of <code>"Uncorrected"</code>,
+<code>"Seurat"</code>, <code>"MNN"</code>, <code>"Harmony"</code>, <code>"BBKNN"</code>, <code>"CSS"</code>, <code>"ComBat"</code>.</p></dd>
 
 
 <dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
@@ -174,7 +176,7 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <dd><p>A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.</p></dd>
 
 
-<dt id="arg-harmony-dims-use">Harmony_dims_use<a class="anchor" aria-label="anchor" href="#arg-harmony-dims-use"></a></dt>
+<dt id="arg-harmony-dims-use">harmony_dims_use<a class="anchor" aria-label="anchor" href="#arg-harmony-dims-use"></a></dt>
 <dd><p>A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 If set to NULL, all the returned dimensions will be used by default.</p></dd>
 
