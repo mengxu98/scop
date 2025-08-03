@@ -118,7 +118,7 @@
 #' )
 #'
 #' # You can also build a custom database based on the gene sets you have
-#' ccgenes <- CC_GenePrefetch("Homo_sapiens")
+#' ccgenes <- CycGenePrefetch("Homo_sapiens")
 #' custom_TERM2GENE <- rbind(
 #'   data.frame(
 #'     term = "S_genes",

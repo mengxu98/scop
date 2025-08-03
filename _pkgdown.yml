@@ -72,7 +72,7 @@ reference:
   - GetSimilarFeatures
   - RecoverCounts
   - CellScoring
-  - CC_GenePrefetch
+  - CycGenePrefetch
   - is_outlier
   - DefaultReduction
   - FetchDataZero
