@@ -65,7 +65,7 @@ if (interactive()) {
   pancreas_sub <- AnnotateFeatures(
     srt = pancreas_sub,
     species = "Mus_musculus",
-    db = c("TF", "CSPA")
+    db = c("CSPA", "TF")
   )
   usethis::use_data(
     pancreas_sub,

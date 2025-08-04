@@ -451,10 +451,12 @@ Heatmap plot for dynamic features along lineages
 }
 \examples{
 data(pancreas_sub)
+
+# "CSPA" and "TF" have been restored in pancreas_sub
 # pancreas_sub <- AnnotateFeatures(
 #   srt = pancreas_sub,
 #   species = "Mus_musculus",
-#   db = c("TF", "CSPA")
+#   db = c("CSPA", "TF")
 # )
 
 pancreas_sub <- RunSlingshot(
@@ -590,5 +592,5 @@ ht6 <- DynamicHeatmap(
 ht6$plot
 }
 \seealso{
-\code{\link{RunDynamicFeatures}} \code{\link{RunDynamicEnrichment}}
+\link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
 }

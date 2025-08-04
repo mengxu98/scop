@@ -1,3 +1,227 @@
+#' The integration_scop function
+#'
+#' Integrate single-cell RNA-seq data using various integration methods.
+#'
+#' @md
+#' @inheritParams check_srt_list
+#' @inheritParams check_srt_merge
+#' @inheritParams standard_scop
+#' @param scale_within_batch  Whether to scale data within each batch.
+#' Only valid when the \code{integration_method} is one of `"Uncorrected"`,
+#' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
+#' @param integration_method  A character string specifying the integration method to use.
+#' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"scVI"`, `"MNN"`, `"fastMNN"`,
+#' `"Harmony"`, `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
+#' Default is `"Uncorrected"`.
+#' @param append The integrated data will be appended to the original Seurat object (srt_merge).
+#' Default is `TRUE`.
+#' @param ... Additional arguments to be passed to the integration method function.
+#'
+#' @return A `Seurat` object.
+#'
+#' @seealso
+#' \link{Seurat_integrate},
+#' \link{scVI_integrate},
+#' \link{MNN_integrate},
+#' \link{fastMNN_integrate},
+#' \link{Harmony_integrate},
+#' \link{Scanorama_integrate},
+#' \link{BBKNN_integrate},
+#' \link{CSS_integrate},
+#' \link{LIGER_integrate},
+#' \link{Conos_integrate},
+#' \link{ComBat_integrate},
+#' \link{standard_scop}
+#'
+#' @export
+#' @examples
+#' data(panc8_sub)
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected"
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected",
+#'   HVF_min_intersection = 5
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Uncorrected",
+#'   HVF_min_intersection = 5,
+#'   scale_within_batch = TRUE
+#' )
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype")
+#' )
+#'
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat"
+#' )
+#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+#'
+#' \dontrun{
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat",
+#'   FindIntegrationAnchors_params = list(reduction = "rpca")
+#' )
+#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
+#'
+#' integration_methods <- c(
+#'   "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
+#'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
+#' )
+#' for (method in integration_methods) {
+#'   panc8_sub <- integration_scop(
+#'     panc8_sub,
+#'     batch = "tech",
+#'     integration_method = method,
+#'     linear_reduction_dims_use = 1:50,
+#'     nonlinear_reduction = "umap"
+#'   )
+#'   print(
+#'     CellDimPlot(panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0(method, "UMAP2D"),
+#'       xlab = "", ylab = "", title = method,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
+#' }
+#'
+#' nonlinear_reductions <- c(
+#'   "umap", "tsne", "dm", "phate",
+#'   "pacmap", "trimap", "largevis", "fr"
+#' )
+#' panc8_sub <- integration_scop(
+#'   panc8_sub,
+#'   batch = "tech",
+#'   integration_method = "Seurat",
+#'   linear_reduction_dims_use = 1:50,
+#'   nonlinear_reduction = nonlinear_reductions
+#' )
+#' for (nr in nonlinear_reductions) {
+#'   print(
+#'     CellDimPlot(
+#'       panc8_sub,
+#'       group.by = c("tech", "celltype"),
+#'       reduction = paste0("Seurat", nr, "2D"),
+#'       xlab = "", ylab = "", title = nr,
+#'       legend.position = "none", theme_use = "theme_blank"
+#'     )
+#'   )
+#' }
+#' }
+integration_scop <- function(
+    srt_merge = NULL,
+    batch,
+    append = TRUE,
+    srt_list = NULL,
+    assay = NULL,
+    integration_method = "Uncorrected",
+    do_normalization = NULL,
+    normalization_method = "LogNormalize",
+    do_HVF_finding = TRUE,
+    HVF_source = "separate",
+    HVF_method = "vst",
+    nHVF = 2000,
+    HVF_min_intersection = 1,
+    HVF = NULL,
+    do_scaling = TRUE,
+    vars_to_regress = NULL,
+    regression_model = "linear",
+    scale_within_batch = FALSE,
+    linear_reduction = "pca",
+    linear_reduction_dims = 50,
+    linear_reduction_dims_use = NULL,
+    linear_reduction_params = list(),
+    force_linear_reduction = FALSE,
+    nonlinear_reduction = "umap",
+    nonlinear_reduction_dims = c(2, 3),
+    nonlinear_reduction_params = list(),
+    force_nonlinear_reduction = TRUE,
+    neighbor_metric = "euclidean",
+    neighbor_k = 20L,
+    cluster_algorithm = "louvain",
+    cluster_resolution = 0.6,
+    seed = 11,
+    ...) {
+  if (is.null(srt_list) && is.null(srt_merge)) {
+    log_message(
+      "Neither {.arg srt_list} nor {.arg srt_merge} was found.",
+      message_type = "error"
+    )
+  }
+  methods <- c(
+    "Uncorrected",
+    "Seurat",
+    "scVI",
+    "MNN",
+    "fastMNN",
+    "Harmony",
+    "Scanorama",
+    "BBKNN",
+    "CSS",
+    "LIGER",
+    "Conos",
+    "ComBat"
+  )
+  if (length(integration_method) == 1 && integration_method %in% methods) {
+    args <- as.list(match.call())[-1]
+    new_env <- new.env(parent = parent.frame())
+    args <- lapply(args, function(x) eval(x, envir = new_env))
+
+    formals <- mget(names(formals()))
+    formals <- formals[names(formals) != "..."]
+
+    args <- utils::modifyList(formals, args)
+
+    time_start <- Sys.time()
+    log_message(
+      "Run ", integration_method, "_integrate..."
+    )
+    srtIntegrated <- invoke_fun(
+      .fn = paste0(integration_method, "_integrate"),
+      .args = args[
+        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
+      ]
+    )
+    time_end <- Sys.time()
+    log_message(
+      "Run ", integration_method, "_integrate done",
+      message_type = "success"
+    )
+    log_message(
+      "Elapsed time: ", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S")
+    )
+
+    return(srtIntegrated)
+  } else {
+    log_message(
+      integration_method, " is not a supported integration method!",
+      message_type = "error"
+    )
+  }
+}
+
 #' Uncorrected_integrate
 #'
 #' @inheritParams integration_scop
@@ -48,34 +272,28 @@ Uncorrected_integrate <- function(
   }
   if (any(!linear_reduction %in% reduc_test)) {
     log_message(
-      "'linear_reduction' must be one of 'pca', 'ica', 'nmf', 'mds', 'glmpca'.",
+      "'linear_reduction' must be one of ", paste(reduc_test, collapse = ", "),
       message_type = "error"
     )
   }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
+  if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
@@ -88,7 +306,8 @@ Uncorrected_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -98,7 +317,7 @@ Uncorrected_integrate <- function(
   set.seed(seed)
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -107,7 +326,7 @@ Uncorrected_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -164,28 +383,23 @@ Uncorrected_integrate <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "normalization_method is 'TFIDF'. Use 'lsi' workflow..."
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
 
   log_message(
-    "Perform integration(Uncorrected) on the data..."
+    "Perform {.pkg Uncorrected} integration on the data..."
   )
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(GetAssayData5(
-              srt_merge,
-              layer = "scale.data",
-              assay = SeuratObject::DefaultAssay(srt_merge)
-            ))
-        ))
-  ) {
+  scale_features <- rownames(
+    GetAssayData5(
+      srt_merge,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_merge)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     if (normalization_method != "SCT") {
       log_message("Perform ScaleData on the data...")
       srt_merge <- Seurat::ScaleData(
@@ -382,7 +596,7 @@ Seurat_integrate <- function(
   }
   if (any(!linear_reduction %in% reduc_test)) {
     log_message(
-      "'linear_reduction' must be one of 'pca','svd', 'ica', 'nmf', 'mds', 'glmpca'.",
+      "'linear_reduction' must be one of ", paste(reduc_test, collapse = ", "),
       message_type = "error"
     )
   }
@@ -392,24 +606,20 @@ Seurat_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
@@ -432,7 +642,7 @@ Seurat_integrate <- function(
   set.seed(seed)
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -441,7 +651,7 @@ Seurat_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -505,14 +715,14 @@ Seurat_integrate <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "normalization_method is 'TFIDF'. Use 'rlsi' integration workflow..."
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg rlsi} integration workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
@@ -564,23 +774,17 @@ Seurat_integrate <- function(
   }
 
   if (isTRUE(FindIntegrationAnchors_params[["reduction"]] == "rpca")) {
-    log_message("Use 'rpca' integration workflow...")
+    log_message("Use {.pkg rpca} integration workflow...")
     for (i in seq_along(srt_list)) {
       srt <- srt_list[[i]]
-      if (
-        isTRUE(do_scaling) ||
-          (is.null(do_scaling) &&
-            any(
-              !HVF %in%
-                rownames(
-                  GetAssayData5(
-                    srt,
-                    layer = "scale.data",
-                    assay = SeuratObject::DefaultAssay(srt)
-                  )
-                )
-            ))
-      ) {
+      scale_features <- rownames(
+        GetAssayData5(
+          srt,
+          layer = "scale.data",
+          assay = SeuratObject::DefaultAssay(srt)
+        )
+      )
+      if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
         log_message(
           paste0("Perform ScaleData on the data ", i, " ...")
         )
@@ -645,20 +849,12 @@ Seurat_integrate <- function(
     SeuratObject::DefaultAssay(srtIntegrated) <- "Seuratcorrected"
     SeuratObject::VariableFeatures(srtIntegrated[["Seuratcorrected"]]) <- HVF
 
-    if (
-      isTRUE(do_scaling) ||
-        (is.null(do_scaling) &&
-          any(
-            !HVF %in%
-              rownames(
-                GetAssayData5(
-                  srtIntegrated,
-                  layer = "scale.data",
-                  assay = SeuratObject::DefaultAssay(srtIntegrated)
-                )
-              )
-          ))
-    ) {
+    scale_features <- rownames(GetAssayData5(
+      srtIntegrated,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srtIntegrated)
+    ))
+    if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
       log_message("Perform ScaleData on the data...")
       srtIntegrated <- Seurat::ScaleData(
         object = srtIntegrated,
@@ -1311,35 +1507,38 @@ MNN_integrate <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "normalization_method is 'TFIDF'. Use 'lsi' workflow..."
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-
-  sceList <- lapply(srt_list, function(srt) {
-    sce <- as.SingleCellExperiment(CreateSeuratObject(
-      counts = GetAssayData5(
-        srt,
-        layer = "data",
-        assay = SeuratObject::DefaultAssay(srt)
-      )[
-        HVF, ,
-        drop = FALSE
-      ]
-    ))
-    if (inherits(sce@assays@data$logcounts, "dgCMatrix")) {
-      sce@assays@data$logcounts <- Matrix::as.matrix(sce@assays@data$logcounts)
+  data_matrix <- GetAssayData5(
+    srt,
+    layer = "data",
+    assay = SeuratObject::DefaultAssay(srt)
+  )
+  sce_list <- lapply(
+    srt_list, function(srt) {
+      sce <- Seurat::as.SingleCellExperiment(
+        Seurat::CreateSeuratObject(
+          counts = data_matrix[HVF, ]
+        )
+      )
+      if (inherits(sce@assays@data$logcounts, "dgCMatrix")) {
+        sce@assays@data$logcounts <- Matrix::as.matrix(
+          sce@assays@data$logcounts
+        )
+      }
+      return(sce)
     }
-    return(sce)
-  })
-  if (is.null(names(sceList))) {
-    names(sceList) <- paste0("sce_", seq_along(sceList))
+  )
+  if (is.null(names(sce_list))) {
+    names(sce_list) <- paste0("sce_", seq_along(sce_list))
   }
 
-  log_message("Perform integration(MNN) on the data...")
+  log_message("Perform {.pkg MNN} integration on the data...")
   params <- list(
-    sceList,
+    sce_list,
     cos.norm.out = FALSE
   )
   for (nm in names(mnnCorrect_params)) {
@@ -1354,21 +1553,14 @@ MNN_integrate <- function(
   )
   SeuratObject::VariableFeatures(srtIntegrated[["MNNcorrected"]]) <- HVF
   SeuratObject::DefaultAssay(srtIntegrated) <- "MNNcorrected"
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(
-              GetAssayData5(
-                srtIntegrated,
-                layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srtIntegrated)
-              )
-            )
-        ))
-  ) {
+  scale_features <- rownames(
+    GetAssayData5(
+      srtIntegrated,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srtIntegrated)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     log_message("Perform ScaleData on the data...")
     srtIntegrated <- Seurat::ScaleData(
       object = srtIntegrated,
@@ -1639,7 +1831,7 @@ fastMNN_integrate <- function(
     type <- checked[["type"]]
   }
 
-  sceList <- lapply(srt_list, function(srt) {
+  sce_list <- lapply(srt_list, function(srt) {
     sce <- Seurat::as.SingleCellExperiment(
       Seurat::CreateSeuratObject(
         counts = GetAssayData5(
@@ -1654,13 +1846,13 @@ fastMNN_integrate <- function(
     }
     return(sce)
   })
-  if (is.null(names(sceList))) {
-    names(sceList) <- paste0("sce_", seq_along(sceList))
+  if (is.null(names(sce_list))) {
+    names(sce_list) <- paste0("sce_", seq_along(sce_list))
   }
 
   log_message("Perform integration(fastMNN) on the data...")
   params <- list(
-    sceList
+    sce_list
   )
   for (nm in names(fastMNN_params)) {
     params[[nm]] <- fastMNN_params[[nm]]
@@ -1785,7 +1977,7 @@ fastMNN_integrate <- function(
 #' Harmony_integrate
 #'
 #' @inheritParams integration_scop
-#' @param Harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
+#' @param harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param RunHarmony_params A list of parameters for the harmony::RunHarmony function, default is an empty list.
 #'
@@ -1813,7 +2005,7 @@ Harmony_integrate <- function(
     linear_reduction_dims_use = NULL,
     linear_reduction_params = list(),
     force_linear_reduction = FALSE,
-    Harmony_dims_use = NULL,
+    harmony_dims_use = NULL,
     nonlinear_reduction = "umap",
     nonlinear_reduction_dims = c(2, 3),
     nonlinear_reduction_params = list(),
@@ -1954,25 +2146,20 @@ Harmony_integrate <- function(
   }
 
   if (normalization_method == "TFIDF") {
-    log_message("normalization_method is 'TFIDF'. Use 'lsi' workflow...")
+    log_message(
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+    )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(
-              GetAssayData5(
-                srt_merge,
-                layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srt_merge)
-              )
-            )
-        ))
-  ) {
+  scale_features <- rownames(
+    GetAssayData5(
+      srt_merge,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_merge)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     log_message("Perform ScaleData on the data...")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
@@ -2011,7 +2198,7 @@ Harmony_integrate <- function(
     }
   }
 
-  log_message("Perform integration(Harmony) on the data...")
+  log_message("Perform {.pkg Harmony} integration on the data...")
   log_message(
     "Harmony integration using Reduction(",
     paste0("Harmony", linear_reduction),
@@ -2030,16 +2217,14 @@ Harmony_integrate <- function(
     reduction.save = "Harmony",
     verbose = FALSE
   )
-  if (
-    nrow(
-      GetAssayData5(
-        srt_merge,
-        layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt_merge)
-      )
-    ) ==
-      0
-  ) {
+  feature_num <- nrow(
+    GetAssayData5(
+      srt_merge,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_merge)
+    )
+  )
+  if (feature_num == 0) {
     params[["project.dim"]] <- FALSE
   }
   for (nm in names(RunHarmony_params)) {
@@ -2047,8 +2232,12 @@ Harmony_integrate <- function(
   }
   srtIntegrated <- invoke_fun(.fn = RunHarmony2, .args = params)
 
-  if (is.null(Harmony_dims_use)) {
-    Harmony_dims_use <- 1:ncol(srtIntegrated[["Harmony"]]@cell.embeddings)
+  if (is.null(harmony_dims_use)) {
+    harmony_dims_use <- seq_len(
+      ncol(
+        srtIntegrated[["Harmony"]]@cell.embeddings
+      )
+    )
   }
 
   srtIntegrated <- tryCatch(
@@ -2056,7 +2245,7 @@ Harmony_integrate <- function(
       srtIntegrated <- FindNeighbors(
         object = srtIntegrated,
         reduction = "Harmony",
-        dims = Harmony_dims_use,
+        dims = harmony_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
         # force.recalc = TRUE,
@@ -2107,7 +2296,7 @@ Harmony_integrate <- function(
             srtIntegrated,
             prefix = "Harmony",
             reduction_use = "Harmony",
-            reduction_dims = Harmony_dims_use,
+            reduction_dims = harmony_dims_use,
             graph_use = "Harmony_SNN",
             nonlinear_reduction = nr,
             nonlinear_reduction_dims = n,
@@ -2150,9 +2339,12 @@ Harmony_integrate <- function(
 #' Scanorama_integrate
 #'
 #' @inheritParams integration_scop
-#' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
-#' @param return_corrected Logical indicating whether to return the corrected data. Default is FALSE.
-#' @param Scanorama_params A list of parameters for the scanorama.correct function, default is an empty list.
+#' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction.
+#' If set to NULL, all the returned dimensions will be used by default.
+#' @param return_corrected Logical indicating whether to return the corrected data.
+#' Default is FALSE.
+#' @param Scanorama_params A list of parameters for the scanorama.correct function.
+#' Default is an empty list.
 #'
 #' @export
 Scanorama_integrate <- function(
@@ -2184,24 +2376,20 @@ Scanorama_integrate <- function(
     return_corrected = FALSE,
     Scanorama_params = list(),
     seed = 11) {
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
@@ -2214,7 +2402,8 @@ Scanorama_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -2501,7 +2690,9 @@ BBKNN_integrate <- function(
     )
     linear_reduction <- linear_reduction[1]
   }
-  reduc_test <- c("pca", "svd", "ica", "nmf", "mds", "glmpca")
+  reduc_test <- c(
+    "pca", "svd", "ica", "nmf", "mds", "glmpca"
+  )
   if (!is.null(srt_merge)) {
     reduc_test <- c(reduc_test, SeuratObject::Reductions(srt_merge))
   }
@@ -2610,25 +2801,20 @@ BBKNN_integrate <- function(
   }
 
   if (normalization_method == "TFIDF") {
-    log_message("normalization_method is 'TFIDF'. Use 'lsi' workflow...")
+    log_message(
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+    )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(
-              GetAssayData5(
-                srt_merge,
-                layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srt_merge)
-              )
-            )
-        ))
-  ) {
+  scale_features <- rownames(
+    GetAssayData5(
+      srt_merge,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_merge)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     log_message("Perform ScaleData on the data...")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
@@ -2642,7 +2828,7 @@ BBKNN_integrate <- function(
   }
 
   log_message(
-    paste0("Perform linear dimension reduction (", linear_reduction, ") on the data...")
+    "Perform linear dimension reduction (", linear_reduction, ") on the data..."
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -2693,7 +2879,9 @@ BBKNN_integrate <- function(
   n.neighbors <- bem[[3]]$n_neighbors
   srtIntegrated <- srt_merge
 
-  bbknn_graph <- SeuratObject::as.sparse(bem[[2]][1:nrow(bem[[2]]), , drop = FALSE])
+  bbknn_graph <- SeuratObject::as.sparse(
+    bem[[2]][1:nrow(bem[[2]]), , drop = FALSE]
+  )
   rownames(bbknn_graph) <- colnames(bbknn_graph) <- rownames(emb)
   bbknn_graph <- SeuratObject::as.Graph(bbknn_graph)
   bbknn_graph@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
@@ -2709,17 +2897,25 @@ BBKNN_integrate <- function(
   bbknn_dist@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
   srtIntegrated@graphs[["BBKNN_dist"]] <- bbknn_dist
 
-  val <- split(bbknn_dist@x, rep(1:ncol(bbknn_dist), diff(bbknn_dist@p)))
-  pos <- split(bbknn_dist@i + 1, rep(1:ncol(bbknn_dist), diff(bbknn_dist@p)))
-  idx <- Matrix::t(mapply(
-    function(x, y) {
-      out <- y[utils::head(order(x, decreasing = F), n.neighbors - 1)]
-      length(out) <- n.neighbors - 1
-      return(out)
-    },
-    x = val,
-    y = pos
-  ))
+  val <- split(
+    bbknn_dist@x,
+    rep(seq_len(ncol(bbknn_dist)), diff(bbknn_dist@p))
+  )
+  pos <- split(
+    bbknn_dist@i + 1,
+    rep(seq_len(ncol(bbknn_dist)), diff(bbknn_dist@p))
+  )
+  idx <- Matrix::t(
+    mapply(
+      function(x, y) {
+        out <- y[utils::head(order(x, decreasing = F), n.neighbors - 1)]
+        length(out) <- n.neighbors - 1
+        return(out)
+      },
+      x = val,
+      y = pos
+    )
+  )
   idx[is.na(idx)] <- sample(
     seq_len(nrow(idx)),
     size = sum(is.na(idx)),
@@ -2773,7 +2969,7 @@ BBKNN_integrate <- function(
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing FindClusters. Skip this step...",
+        "Error when performing {.fn FindClusters}. Skip this step...",
         message_type = "warning"
       )
       return(srtIntegrated)
@@ -2838,8 +3034,10 @@ BBKNN_integrate <- function(
 #' CSS_integrate
 #'
 #' @inheritParams integration_scop
-#' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
-#' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function, default is an empty list.
+#' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
+#' If set to NULL, all the returned dimensions will be used by default.
+#' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function.
+#' Default is an empty list.
 #' @export
 CSS_integrate <- function(
     srt_merge = NULL,
@@ -2898,24 +3096,20 @@ CSS_integrate <- function(
   ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
@@ -2928,7 +3122,8 @@ CSS_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -2940,7 +3135,7 @@ CSS_integrate <- function(
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -2949,7 +3144,7 @@ CSS_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -3006,26 +3201,19 @@ CSS_integrate <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "normalization_method is 'TFIDF'. Use 'lsi' workflow..."
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(
-              GetAssayData5(
-                srt_merge,
-                layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srt_merge)
-              )
-            )
-        ))
-  ) {
+  scale_features <- rownames(
+    GetAssayData5(
+      srt_merge,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_merge)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     log_message("Perform ScaleData on the data...")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
@@ -3039,7 +3227,7 @@ CSS_integrate <- function(
   }
 
   log_message(
-    paste0("Perform linear dimension reduction (", linear_reduction, ") on the data...")
+    "Perform linear dimension reduction (", linear_reduction, ") on the data..."
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -3063,7 +3251,7 @@ CSS_integrate <- function(
     }
   }
 
-  log_message("Perform integration(CSS) on the data...")
+  log_message("Perform {.pkg CSS} integration on the data...")
   log_message(
     "CSS integration using Reduction(",
     paste0("CSS", linear_reduction),
@@ -3095,12 +3283,14 @@ CSS_integrate <- function(
 
   if (any(is.na(srtIntegrated@reductions[["CSS"]]@cell.embeddings))) {
     log_message(
-      "NA detected in the CSS embeddings. You can try to use a lower resolution value in the CSS_param.",
+      "NA detected in the CSS embeddings. You can try to use a lower resolution value in the {.arg CSS_params}.",
       message_type = "error"
     )
   }
   if (is.null(CSS_dims_use)) {
-    CSS_dims_use <- 1:ncol(srtIntegrated[["CSS"]]@cell.embeddings)
+    CSS_dims_use <- seq_len(
+      ncol(srtIntegrated[["CSS"]]@cell.embeddings)
+    )
   }
 
   srtIntegrated <- tryCatch(
@@ -3203,9 +3393,12 @@ CSS_integrate <- function(
 #'
 #' @md
 #' @inheritParams integration_scop
-#' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction. If set to NULL, all the returned dimensions will be used by default.
-#' @param optimizeALS_params A list of parameters for the [rliger::optimizeALS] function, default is an empty list.
-#' @param quantilenorm_params A list of parameters for the [rliger::quantile_norm] function, default is an empty list.
+#' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction.
+#' If set to NULL, all the returned dimensions will be used by default.
+#' @param optimizeALS_params A list of parameters for the [rliger::optimizeALS] function.
+#' Default is an empty list.
+#' @param quantilenorm_params A list of parameters for the [rliger::quantile_norm] function.
+#' Default is an empty list.
 #'
 #' @export
 LIGER_integrate <- function(
@@ -3237,27 +3430,24 @@ LIGER_integrate <- function(
     optimizeALS_params = list(),
     quantilenorm_params = list(),
     seed = 11) {
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "'nonlinear_reduction' must be one of ", paste(nonlinear_reductions, collapse = ", "),
       message_type = "error"
     )
   }
+
   if (!cluster_algorithm %in% c("louvain", "slm", "leiden")) {
     log_message(
       "'cluster_algorithm' must be one of 'louvain', 'slm', 'leiden'.",
@@ -3267,7 +3457,8 @@ LIGER_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -3279,7 +3470,7 @@ LIGER_integrate <- function(
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -3288,7 +3479,7 @@ LIGER_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -3350,7 +3541,7 @@ LIGER_integrate <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
@@ -3358,21 +3549,15 @@ LIGER_integrate <- function(
   scale.data <- list()
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
-    if (
-      isTRUE(do_scaling) ||
-        (is.null(do_scaling) &&
-          any(
-            !HVF %in%
-              rownames(
-                GetAssayData5(
-                  srt,
-                  layer = "scale.data",
-                  assay = SeuratObject::DefaultAssay(srt)
-                )
-              )
-          ))
-    ) {
-      log_message(paste0("Perform ScaleData on the data ", i, " ..."))
+    scale_features <- rownames(
+      GetAssayData5(
+        srt,
+        layer = "scale.data",
+        assay = SeuratObject::DefaultAssay(srt)
+      )
+    )
+    if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
+      log_message("Perform ScaleData on the data ", i, " ...")
       srt <- Seurat::ScaleData(
         object = srt,
         assay = SeuratObject::DefaultAssay(srt),
@@ -3392,7 +3577,7 @@ LIGER_integrate <- function(
     )
   }
 
-  log_message("Perform integration(LIGER) on the data...")
+  log_message("Perform {.pkg LIGER} integration on the data...")
   params1 <- list(
     object = scale.data,
     k = 20,
@@ -3445,7 +3630,9 @@ LIGER_integrate <- function(
   srtIntegrated <- srt_merge
   srt_merge <- NULL
   if (is.null(LIGER_dims_use)) {
-    LIGER_dims_use <- 1:ncol(srtIntegrated[["LIGER"]]@cell.embeddings)
+    LIGER_dims_use <- seq_len(
+      ncol(srtIntegrated[["LIGER"]]@cell.embeddings)
+    )
   }
 
   srtIntegrated <- tryCatch(
@@ -3486,7 +3673,7 @@ LIGER_integrate <- function(
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing FindClusters. Skip this step...",
+        "Error when performing {.fn FindClusters}. Skip this step...",
         message_type = "warning"
       )
       return(srtIntegrated)
@@ -3547,8 +3734,10 @@ LIGER_integrate <- function(
 #' Conos_integrate
 #'
 #' @inheritParams integration_scop
-#' @param buildGraph_params A list of parameters for the buildGraph function, default is an empty list.
-#' @param num_threads  An integer setting the number of threads for Conos, default is 2.
+#' @param buildGraph_params A list of parameters for the buildGraph function.
+#' Default is an empty list.
+#' @param num_threads  An integer setting the number of threads for Conos.
+#' Default is 2.
 #'
 #' @export
 Conos_integrate <- function(
@@ -3584,7 +3773,7 @@ Conos_integrate <- function(
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
-      "Only the first method in the 'linear_reduction' will be used.",
+      "Only the first method in the {.arg linear_reduction} will be used.",
       message_type = "warning"
     )
     linear_reduction <- linear_reduction[1]
@@ -3595,7 +3784,7 @@ Conos_integrate <- function(
   }
   if (any(!linear_reduction %in% reduc_test)) {
     log_message(
-      "'linear_reduction' must be one of 'pca', 'svd', 'ica', 'nmf', 'mds', 'glmpca'.",
+      "'linear_reduction' must be one of ", paste(reduc_test, collapse = ", "),
       message_type = "error"
     )
   }
@@ -3620,7 +3809,8 @@ Conos_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -3632,7 +3822,7 @@ Conos_integrate <- function(
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -3641,7 +3831,7 @@ Conos_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -3699,11 +3889,14 @@ Conos_integrate <- function(
 
   if (min(sapply(srt_list, ncol)) < 30) {
     log_message(
-      "The cell count in some batches is lower than 30, which may not be suitable for the current integration method.",
+      "The cell count in some batches is lower than {.pkg 30}, which may not be suitable for the current integration method",
       message_type = "warning"
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    answer <- utils::askYesNo(
+      "Are you sure to continue?",
+      default = FALSE
+    )
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
@@ -3712,29 +3905,25 @@ Conos_integrate <- function(
   srt_merge <- NULL
 
   if (normalization_method == "TFIDF") {
-    log_message("normalization_method is 'TFIDF'. Use 'lsi' workflow...")
+    log_message(
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+    )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
 
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
-    if (
-      isTRUE(do_scaling) ||
-        (is.null(do_scaling) &&
-          any(
-            !HVF %in%
-              rownames(
-                GetAssayData5(
-                  srt,
-                  layer = "scale.data",
-                  assay = SeuratObject::DefaultAssay(srt)
-                )
-              )
-          ))
-    ) {
+    scale_features <- rownames(
+      GetAssayData5(
+        srt,
+        layer = "scale.data",
+        assay = SeuratObject::DefaultAssay(srt)
+      )
+    )
+    if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
       log_message(
-        paste0("Perform ScaleData on the data ", i, " ...")
+        "Perform ScaleData on the data ", i, " ..."
       )
       srt <- Seurat::ScaleData(
         object = srt,
@@ -3746,7 +3935,7 @@ Conos_integrate <- function(
       )
     }
     log_message(
-      paste0("Perform linear dimension reduction (", linear_reduction, ") on the data ", i, " ...")
+      "Perform linear dimension reduction (", linear_reduction, ") on the data ", i, " ..."
     )
     srt <- RunDimReduction(
       srt,
@@ -3781,7 +3970,7 @@ Conos_integrate <- function(
   }
 
   log_message(
-    " Perform integration(Conos) on the data..."
+    " Perform {.pkg Conos} integration on the data..."
   )
   log_message(
     "Conos integration using Reduction(",
@@ -3814,7 +4003,7 @@ Conos_integrate <- function(
   srtIntegrated <- tryCatch(
     {
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        "Perform {.fn FindClusters} (", cluster_algorithm, ") on the data..."
       )
       srtIntegrated <- FindClusters(
         object = srtIntegrated,
@@ -3841,7 +4030,7 @@ Conos_integrate <- function(
         message_type = "warning"
       )
       log_message(
-        "Error when performing FindClusters. Skip this step...",
+        "Error when performing {.fn FindClusters}. Skip this step...",
         message_type = "warning"
       )
       return(srtIntegrated)
@@ -3852,7 +4041,7 @@ Conos_integrate <- function(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          "Perform nonlinear dimension reduction (", nr, ") on the data..."
         )
         if (nr %in% c("fr")) {
           nonlinear_reduction_params[["n.neighbors"]] <- NULL
@@ -3908,7 +4097,8 @@ Conos_integrate <- function(
 #' Combat_integrate
 #'
 #' @inheritParams integration_scop
-#' @param ComBat_params A list of parameters for the sva::ComBat function, default is an empty list.
+#' @param ComBat_params A list of parameters for the sva::ComBat function.
+#' Default is an empty list.
 #'
 #' @export
 ComBat_integrate <- function(
@@ -3957,7 +4147,7 @@ ComBat_integrate <- function(
   }
   if (any(!linear_reduction %in% reduc_test)) {
     log_message(
-      "'linear_reduction' must be one of 'pca', 'svd', 'ica', 'nmf', 'mds', 'glmpca'.",
+      "'linear_reduction' must be one of ", paste(reduc_test, collapse = ", "),
       message_type = "error"
     )
   }
@@ -3997,7 +4187,8 @@ ComBat_integrate <- function(
   if (cluster_algorithm == "leiden") {
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -4009,7 +4200,7 @@ ComBat_integrate <- function(
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "srt_list and srt_merge were all empty",
       message_type = "error"
     )
   }
@@ -4018,7 +4209,7 @@ ComBat_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "srt_list and srt_merge have different cells",
         message_type = "error"
       )
     }
@@ -4074,12 +4265,14 @@ ComBat_integrate <- function(
   }
 
   if (normalization_method == "TFIDF") {
-    log_message("normalization_method is 'TFIDF'. Use 'lsi' workflow...")
+    log_message(
+      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+    )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
 
-  log_message("Perform integration(Combat) on the data...")
+  log_message("Perform {.pkg ComBat} integration on the data...")
   dat <- GetAssayData5(
     srt_merge,
     layer = "data",
@@ -4136,7 +4329,7 @@ ComBat_integrate <- function(
   }
 
   log_message(
-    paste0("Perform linear dimension reduction (", linear_reduction, ") on the data...")
+    "Perform linear dimension reduction (", linear_reduction, ") on the data..."
   )
   srtIntegrated <- RunDimReduction(
     srtIntegrated,
@@ -4259,213 +4452,5 @@ ComBat_integrate <- function(
     return(srt_merge_raw)
   } else {
     return(srtIntegrated)
-  }
-}
-
-#' integration_scop
-#'
-#' Integrate single-cell RNA-seq data using various integration methods.
-#'
-#' @inheritParams check_srt_list
-#' @inheritParams check_srt_merge
-#' @inheritParams standard_scop
-#' @param scale_within_batch  Whether to scale data within each batch.
-#' Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.
-#' @param integration_method  A character string specifying the integration method to use.
-#'   Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"}, \code{"Harmony"},
-#'   \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
-#' Default is \code{"Uncorrected"}.
-#' @param append Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).
-#' @param ... Additional arguments to be passed to the integration method function.
-#'
-#' @return A \code{Seurat} object.
-#'
-#' @seealso \code{\link{Seurat_integrate}} \code{\link{scVI_integrate}} \code{\link{MNN_integrate}} \code{\link{fastMNN_integrate}} \code{\link{Harmony_integrate}} \code{\link{Scanorama_integrate}} \code{\link{BBKNN_integrate}} \code{\link{CSS_integrate}} \code{\link{LIGER_integrate}} \code{\link{Conos_integrate}} \code{\link{ComBat_integrate}} \code{\link{standard_scop}}
-#'
-#' @export
-#' @examples
-#' data(panc8_sub)
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected"
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   HVF_min_intersection = 5
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Uncorrected",
-#'   HVF_min_intersection = 5,
-#'   scale_within_batch = TRUE
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("tech", "celltype")
-#' )
-#'
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat"
-#' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-#'
-#' \dontrun{
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   FindIntegrationAnchors_params = list(reduction = "rpca")
-#' )
-#' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-#'
-#' integration_methods <- c(
-#'   "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
-#'   "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
-#' )
-#' for (method in integration_methods) {
-#'   panc8_sub <- integration_scop(
-#'     panc8_sub,
-#'     batch = "tech",
-#'     integration_method = method,
-#'     linear_reduction_dims_use = 1:50,
-#'     nonlinear_reduction = "umap"
-#'   )
-#'   print(
-#'     CellDimPlot(panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0(method, "UMAP2D"),
-#'       xlab = "", ylab = "", title = method,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
-#'
-#' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate",
-#'   "pacmap", "trimap", "largevis", "fr"
-#' )
-#' panc8_sub <- integration_scop(
-#'   panc8_sub,
-#'   batch = "tech",
-#'   integration_method = "Seurat",
-#'   linear_reduction_dims_use = 1:50,
-#'   nonlinear_reduction = nonlinear_reductions
-#' )
-#' for (nr in nonlinear_reductions) {
-#'   print(
-#'     CellDimPlot(
-#'       panc8_sub,
-#'       group.by = c("tech", "celltype"),
-#'       reduction = paste0("Seurat", nr, "2D"),
-#'       xlab = "", ylab = "", title = nr,
-#'       legend.position = "none", theme_use = "theme_blank"
-#'     )
-#'   )
-#' }
-#' }
-integration_scop <- function(
-    srt_merge = NULL,
-    batch,
-    append = TRUE,
-    srt_list = NULL,
-    assay = NULL,
-    integration_method = "Uncorrected",
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_source = "separate",
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF_min_intersection = 1,
-    HVF = NULL,
-    do_scaling = TRUE,
-    vars_to_regress = NULL,
-    regression_model = "linear",
-    scale_within_batch = FALSE,
-    linear_reduction = "pca",
-    linear_reduction_dims = 50,
-    linear_reduction_dims_use = NULL,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = "umap",
-    nonlinear_reduction_dims = c(2, 3),
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    neighbor_metric = "euclidean",
-    neighbor_k = 20L,
-    cluster_algorithm = "louvain",
-    cluster_resolution = 0.6,
-    seed = 11,
-    ...) {
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "Neither 'srt_list' nor 'srt_merge' was found.",
-      message_type = "error"
-    )
-  }
-  methods <- c(
-    "Uncorrected",
-    "Seurat",
-    "scVI",
-    "MNN",
-    "fastMNN",
-    "Harmony",
-    "Scanorama",
-    "BBKNN",
-    "CSS",
-    "LIGER",
-    "Conos",
-    "ComBat"
-  )
-  if (length(integration_method) == 1 && integration_method %in% methods) {
-    args <- as.list(match.call())[-1]
-    new_env <- new.env(parent = parent.frame())
-    args <- lapply(args, function(x) eval(x, envir = new_env))
-
-    formals <- mget(names(formals()))
-    formals <- formals[names(formals) != "..."]
-
-    args <- utils::modifyList(formals, args)
-
-    time_start <- Sys.time()
-    log_message(
-      paste0("Start ", integration_method, "_integrate")
-    )
-    srtIntegrated <- invoke_fun(
-      .fn = paste0(integration_method, "_integrate"),
-      .args = args[
-        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
-      ]
-    )
-    time_end <- Sys.time()
-    log_message(
-      paste0(integration_method, "_integrate done")
-    )
-    log_message(
-      paste0("Elapsed time: ", format(round(difftime(time_end, time_start), 2), format = "%Y-%m-%d %H:%M:%S"))
-    )
-
-    return(srtIntegrated)
-  } else {
-    log_message(
-      paste(integration_method, "is not a supported integration method!"),
-      message_type = "error"
-    )
   }
 }

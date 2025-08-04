@@ -16118,15 +16118,15 @@
     },
     "thisutils": {
       "Package": "thisutils",
-      "Version": "0.0.5",
-      "Source": "Repository",
+      "Version": "0.0.7",
+      "Source": "GitHub",
       "Type": "Package",
       "Title": "Collection of Utility Functions for Data Analysis and Computing",
-      "Date": "2025-07-03",
+      "Date": "2025-07-19",
       "Authors@R": "person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\"))",
       "Maintainer": "Meng Xu <mengxu98@qq.com>",
-      "Description": "Provides a collection of utility functions commonly used in data analysis and scientific computing. Includes functions for parallel processing, matrix operations, correlation calculations, and other computational tasks to streamline R workflows.",
-      "License": "MIT + file LICENSE",
+      "Description": "Provides utility functions for data analysis and scientific computing. Includes functions for parallel processing, and other computational tasks to streamline workflows.",
+      "License": "MIT+ file LICENSE",
       "URL": "https://mengxu98.github.io/thisutils/",
       "BugReports": "https://github.com/mengxu98/thisutils/issues",
       "Depends": [
@@ -16146,19 +16146,28 @@
         "rlang",
         "stats"
       ],
+      "Suggests": [
+        "httr2"
+      ],
       "LinkingTo": [
         "Rcpp",
         "RcppArmadillo",
         "RcppParallel"
       ],
-      "Config/Needs/website": "mengxu98/mxtemplate",
+      "Config/Needs/website": "mengxu98/thistemplate",
       "Config/testthat/edition": "3",
       "Encoding": "UTF-8",
       "RoxygenNote": "7.3.2",
       "Language": "en-US",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "thisutils",
+      "RemoteUsername": "mengxu98",
+      "RemotePkgRef": "mengxu98/thisutils",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "d8b6551b36341f6ff920c50f2eacef1ed01022f5",
       "NeedsCompilation": "yes",
-      "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>)",
-      "Repository": "CRAN"
+      "Author": "Meng Xu [aut, cre] (ORCID: <https://orcid.org/0000-0002-8300-1054>)"
     },
     "tibble": {
       "Package": "tibble",

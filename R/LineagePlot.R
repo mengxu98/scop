@@ -30,7 +30,7 @@
 #' @param return_layer A logical value indicating whether to return the plot as a layer.
 #' @param seed An optional integer specifying the random seed for reproducibility.
 #'
-#' @seealso \code{\link{RunSlingshot}} \code{\link{CellDimPlot}}
+#' @seealso \link{RunSlingshot}, \link{CellDimPlot}
 #'
 #' @export
 #'

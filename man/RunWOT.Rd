@@ -114,5 +114,5 @@ pancreas_sub <- RunWOT(
 }
 }
 \seealso{
-\code{\link{srt_to_adata}}
+\link{srt_to_adata}
 }

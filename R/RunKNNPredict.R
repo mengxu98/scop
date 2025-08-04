@@ -224,7 +224,7 @@ RunKNNPredict <- function(
   } else {
     use_reduction <- TRUE
   }
-  if (!isTRUE(use_reduction)) {
+  if (isFALSE(use_reduction)) {
     if (length(features) == 0) {
       if (features_type == "HVF" && feature_source %in% c("both", "query")) {
         if (length(SeuratObject::VariableFeatures(srt_query, assay = query_assay)) == 0) {
@@ -386,7 +386,7 @@ RunKNNPredict <- function(
     } else {
       if (length(features) == 0) {
         if (features_type == "HVF" && feature_source %in% c("both", "ref")) {
-          log_message("Use the HVF to calculate distance metric.")
+          log_message("Use the HVF to calculate distance metric")
           if (length(SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
             srt_ref <- Seurat::FindVariableFeatures(
               srt_ref,
@@ -537,7 +537,7 @@ RunKNNPredict <- function(
       )
     }
   }
-  if (!isTRUE(use_reduction)) {
+  if (isFALSE(use_reduction)) {
     query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
     if (isTRUE(query_collapsing)) {
       if (is.null(query_group)) {
@@ -567,7 +567,7 @@ RunKNNPredict <- function(
     }
   }
 
-  if (!isTRUE(use_reduction)) {
+  if (isFALSE(use_reduction)) {
     status_dat <- check_data_type(data = query)
     log_message("Detected query data type: ", status_dat)
     status_ref <- check_data_type(data = ref)
@@ -592,7 +592,7 @@ RunKNNPredict <- function(
       nn_method <- "raw"
     }
   }
-  log_message("Use '", nn_method, "' method to find neighbors.")
+  log_message("Use {.val {nn_method}} method to find neighbors")
   if (!nn_method %in% c("raw", "annoy", "rann")) {
     log_message("nn_method must be one of raw, rann and annoy",
       message_type = "error"
@@ -614,7 +614,7 @@ RunKNNPredict <- function(
     )
     return_full_distance_matrix <- FALSE
   }
-  simil_method <- c(
+  simil_methods <- c(
     "cosine",
     "pearson",
     "spearman",
@@ -627,7 +627,7 @@ RunKNNPredict <- function(
     "simple matching",
     "faith"
   )
-  dist_method <- c(
+  dist_methods <- c(
     "euclidean",
     "chisquared",
     "kullback",
@@ -637,9 +637,9 @@ RunKNNPredict <- function(
     "minkowski",
     "hamming"
   )
-  if (!distance_metric %in% c(simil_method, dist_method)) {
+  if (!(distance_metric %in% c(simil_methods, dist_methods))) {
     log_message(
-      distance_metric, " method is invalid.",
+      "{.val {distance_metric}} method is invalid.",
       message_type = "error"
     )
   }
@@ -662,7 +662,7 @@ RunKNNPredict <- function(
     if (requireNamespace("RcppParallel", quietly = TRUE)) {
       RcppParallel::setThreadOptions()
     }
-    if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
+    if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
           ref <- Matrix::t(apply(ref, 1, rank))
@@ -677,7 +677,7 @@ RunKNNPredict <- function(
           method = distance_metric,
           use_nan = TRUE
         )
-    } else if (distance_metric %in% dist_method) {
+    } else if (distance_metric %in% dist_methods) {
       d <- proxyC::dist(
         x = SeuratObject::as.sparse(ref),
         y = SeuratObject::as.sparse(query),
@@ -822,7 +822,7 @@ RunKNNPredict <- function(
     srt_query[[paste0(prefix, "_prob")]] <- prob
   } else {
     distance <- match_k_distance[, 1]
-    if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
+    if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
       if (isTRUE(query_collapsing)) {
         simil <- unlist(lapply(names(match_best), function(ct) {
           rep((1 - distance)[ct], length(cell_type_to_id[[ct]]))

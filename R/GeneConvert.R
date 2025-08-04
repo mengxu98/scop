@@ -27,13 +27,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' res <- GeneConvert(
 #'   geneID = c("CDK1", "MKI67", "TOP2A", "AURKA", "CTCF"),
-#'   geneID_from_IDtype = "symbol",
-#'   geneID_to_IDtype = "entrez_id",
 #'   species_from = "Homo_sapiens",
-#'   species_to = "Mus_musculus",
-#'   Ensembl_version = 103
+#'   species_to = "Mus_musculus"
 #' )
 #' str(res)
 #'
@@ -50,26 +48,7 @@
 #'   geneID_from_IDtype = "symbol",
 #'   geneID_to_IDtype = "symbol",
 #'   species_from = "Mus_musculus",
-#'   species_to = "Homo_sapiens",
-#'   Ensembl_version = 103
-#' )
-#' # Check the number of input and converted gene IDs
-#' input_genes <- length(rownames(counts))
-#' db_genes <- length(unique(res$geneID_res$from_geneID))
-#' converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
-#' converted_genes_output <- length(unique(res$geneID_expand$symbol))
-#' thisutils::log_message(
-#'   "Number of input gene IDs:", input_genes
-#' )
-#' thisutils::log_message(
-#'   "Number of gene IDs mapped in the database:", db_genes
-#' )
-#' thisutils::log_message(
-#'   "Number of input gene IDs that were successfully converted:",
-#'   converted_genes_input
-#' )
-#' thisutils::log_message(
-#'   "Number of converted gene IDs:", converted_genes_output
+#'   species_to = "Homo_sapiens"
 #' )
 #'
 #' homologs_counts <- stats::aggregate(
@@ -81,22 +60,26 @@
 #'   Matrix::as.matrix(homologs_counts[, -1]),
 #'   "dgCMatrix"
 #' )
-#' homologs_counts
+#' homologs_counts[1:5, 1:5]
+#' }
 GeneConvert <- function(
     geneID,
     geneID_from_IDtype = "symbol",
     geneID_to_IDtype = "entrez_id",
     species_from = "Homo_sapiens",
     species_to = NULL,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     biomart = NULL,
     mirror = NULL,
-    max_tries = 5) {
+    max_tries = 5,
+    verbose = TRUE) {
   if (requireNamespace("httr", quietly = TRUE)) {
-    httr::set_config(httr::config(
-      ssl_verifypeer = FALSE,
-      ssl_verifyhost = FALSE
-    ))
+    httr::set_config(
+      httr::config(
+        ssl_verifypeer = FALSE,
+        ssl_verifyhost = FALSE
+      )
+    )
   }
 
   if (missing(geneID)) {
@@ -164,10 +147,7 @@ GeneConvert <- function(
     }
   )
 
-  if (
-    species_from != species_to &&
-      all(geneID_to_IDtype %in% c("symbol", "ensembl_id"))
-  ) {
+  if (species_from != species_to && all(geneID_to_IDtype %in% c("symbol", "ensembl_id"))) {
     to_IDtype <- sapply(to_IDtype, function(x) {
       switch(x,
         "external_gene_name" = "associated_gene_name",
@@ -181,8 +161,9 @@ GeneConvert <- function(
     names(to_attr) <- geneID_to_IDtype
   }
 
+  check_r("biomaRt")
   if (is.null(biomart)) {
-    log_message("Connect to the Ensembl archives...")
+    log_message("Connect to the Ensembl archives...", verbose = verbose)
     archives <- try_get(
       expr = {
         biomaRt::listEnsemblArchives()
@@ -197,30 +178,23 @@ GeneConvert <- function(
         which(archives$current_release == "*"),
         "version"
       ])
-      log_message(
-        "Using the ",
-        Ensembl_version,
-        "(",
-        version,
-        ")",
-        " version of biomart..."
-      )
     } else if (Ensembl_version %in% archives$version) {
       url <- archives[which(archives$version == Ensembl_version), "url"]
-      version <- as.character(archives[
-        which(archives$version == Ensembl_version),
-        "version"
-      ])
-      log_message("Using the ", version, " version of biomart...")
+      version <- as.character(
+        archives[which(archives$version == Ensembl_version), "version"]
+      )
     } else {
       log_message(
-        "Ensembl_version is invalid. Must be one of current_release,",
-        message_type = "error",
-        paste0(archives$version, collapse = ",")
+        "Ensembl_version is invalid. Must be one of {.val {archives$version}}",
+        message_type = "error"
       )
     }
-
-    log_message("Connecting to the biomart...")
+    log_message(
+      "Using the {.val {version}} version of biomart...\n",
+      "Downloading the biomart from {.val {url}}...",
+      multiline_indent = TRUE,
+      verbose = verbose
+    )
     mart <- try_get(
       expr = {
         if (!is.null(mirror)) {
@@ -253,7 +227,7 @@ GeneConvert <- function(
       ),
       nm = c("ensembl", "protists_mart", "fungi_mart", "plants_mart")
     )
-    log_message("Connecting to the biomart(", biomart, ")...")
+    log_message("Connecting to the biomart...", verbose = verbose)
     if (length(biomart) == 1) {
       mart <- try_get(
         expr = {
@@ -303,7 +277,10 @@ GeneConvert <- function(
     }
   }
 
-  log_message("Searching the dataset ", species_from_simp, " ...")
+  log_message(
+    "Searching the dataset {.val {species_from_simp}} ...",
+    verbose = verbose
+  )
   Datasets <- try_get(
     expr = {
       biomaRt::listDatasets(mart_from)
@@ -332,17 +309,22 @@ GeneConvert <- function(
       ),
       message_type = "warning"
     )
-    return(list(
-      geneID_res = NULL,
-      geneID_collapse = NULL,
-      geneID_expand = NULL,
-      Ensembl_version = version,
-      Datasets = Datasets,
-      Attributes = NULL
-    ))
+    return(
+      list(
+        geneID_res = NULL,
+        geneID_collapse = NULL,
+        geneID_expand = NULL,
+        Ensembl_version = version,
+        Datasets = Datasets,
+        Attributes = NULL
+      )
+    )
   }
 
-  log_message("Connecting to the dataset ", dataset, " ...")
+  log_message(
+    "Connecting to the dataset {.val {dataset}} ...",
+    verbose = verbose
+  )
   mart1 <- try_get(
     expr = {
       biomaRt::useDataset(
@@ -362,7 +344,10 @@ GeneConvert <- function(
     species_from != species_to &&
       any(!geneID_to_IDtype %in% c("symbol", "ensembl_id"))
   ) {
-    log_message("Searching the dataset ", species_to_simp, " ...")
+    log_message(
+      "Searching the dataset {.val {species_to_simp}} ...",
+      verbose = verbose
+    )
     Datasets2 <- try_get(
       expr = {
         biomaRt::listDatasets(mart_to)
@@ -403,7 +388,10 @@ GeneConvert <- function(
       )
     }
 
-    log_message("Connecting to the dataset ", dataset2, " ...")
+    log_message(
+      "Connecting to the dataset {.val {dataset2}} ...",
+      verbose = verbose
+    )
     mart2 <- try_get(
       expr = {
         biomaRt::useDataset(
@@ -439,9 +427,7 @@ GeneConvert <- function(
     )
     if (length(to_attr) == 0) {
       log_message(
-        "No attribute found for the species ",
-        species_from,
-        ". Please check the 'Attributes' in the result.",
+        "No attribute found for the species {.val {species_from}}. Please check the 'Attributes' in the result.",
         message_type = "warning"
       )
       return(
@@ -457,7 +443,7 @@ GeneConvert <- function(
     }
   }
 
-  log_message("Converting the geneIDs...")
+  log_message("Converting the geneIDs...", verbose = verbose)
   if (species_from != species_to) {
     for (from_attr in from_IDtype) {
       if (length(geneID) > 0) {
@@ -627,7 +613,7 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        log_message(paste(sum(ismap), "genes mapped with", from_name))
+        log_message("{.val {sum(ismap)}} genes mapped with {.val {from_name}}", verbose = verbose)
         geneID <- geneID[!ismap]
       }
     }
@@ -701,23 +687,17 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        log_message(paste(sum(ismap), "genes mapped with", from_name))
+        log_message("{.val {sum(ismap)}} genes mapped with {.val {from_name}}", verbose = verbose)
         geneID <- geneID[!ismap]
       }
     }
   }
   log_message(
-    paste0(
-      paste0(rep("=", 30), collapse = ""),
-      "\n",
-      total - length(geneID),
-      " genes mapped\n",
-      length(geneID),
-      " genes unmapped"
-    ),
-    "\n",
-    paste0(rep("=", 30), collapse = ""),
-    "\n"
+    strrep("=", 30), "\n",
+    cli::col_green(total - length(geneID), " genes mapped"), "\n",
+    cli::col_red(length(geneID), " genes unmapped"), "\n",
+    strrep("=", 30),
+    verbose = verbose
   )
   geneID_res <- unique(do.call(rbind, geneID_res_list))
   rownames(geneID_res) <- NULL
@@ -728,8 +708,9 @@ GeneConvert <- function(
       all(is.na(geneID_res[["to_geneID"]]))
   ) {
     log_message(
-      paste0("None of the gene IDs were converted"),
-      message_type = "warning"
+      "None of the gene IDs were converted",
+      message_type = "warning",
+      verbose = verbose
     )
     return(
       list(

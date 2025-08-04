@@ -27,7 +27,7 @@ Harmony_integrate(
   linear_reduction_dims_use = NULL,
   linear_reduction_params = list(),
   force_linear_reduction = FALSE,
-  Harmony_dims_use = NULL,
+  harmony_dims_use = NULL,
   nonlinear_reduction = "umap",
   nonlinear_reduction_dims = c(2, 3),
   nonlinear_reduction_params = list(),
@@ -45,7 +45,8 @@ Harmony_integrate(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
+\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+Default is \code{TRUE}.}
 
 \item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
@@ -74,7 +75,8 @@ Harmony_integrate(
 \item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
 
 \item{scale_within_batch}{Whether to scale data within each batch.
-Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
+Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
+\code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
 \item{linear_reduction}{The linear dimensionality reduction method to use. Options are "pca", "svd", "ica", "nmf", "mds", or "glmpca" (default is "pca").}
 
@@ -86,7 +88,7 @@ Only valid when the \code{integration_method} is one of \code{"Uncorrected"}, \c
 
 \item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{Harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{harmony_dims_use}{A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}

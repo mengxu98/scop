@@ -32,16 +32,18 @@
 #' @param separate_annotation_params A list of other parameters to be passed to the HeatmapAnnotation function when creating the separate annotation blocks.
 #' @param reverse_ht A logical indicating whether to reverse the heatmap. Default is NULL.
 #'
-#' @seealso \code{\link{RunDynamicFeatures}} \code{\link{RunDynamicEnrichment}}
+#' @seealso \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
+#'
+#' # "CSPA" and "TF" have been restored in pancreas_sub
 #' # pancreas_sub <- AnnotateFeatures(
 #' #   srt = pancreas_sub,
 #' #   species = "Mus_musculus",
-#' #   db = c("TF", "CSPA")
+#' #   db = c("CSPA", "TF")
 #' # )
 #'
 #' pancreas_sub <- RunSlingshot(
@@ -1391,7 +1393,7 @@ DynamicHeatmap <- function(
   ha_left <- NULL
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
-      if (!isTRUE(cluster_rows)) {
+      if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(
           Matrix::t(mat_split),
           row_split_raw

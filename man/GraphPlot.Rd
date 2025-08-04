@@ -186,5 +186,5 @@ GraphPlot(
 A function to plot a graph with nodes and edges.
 }
 \seealso{
-\code{\link{CellDimPlot}}
+\link{CellDimPlot}
 }

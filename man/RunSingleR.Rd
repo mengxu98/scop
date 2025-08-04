@@ -39,9 +39,9 @@ Defaults to the default assay of the `srt_query` object.}
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data.
 Defaults to the default assay of the `srt_ref` object.}
 
-\item{genes}{"genes" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{genes}{"genes" parameter in \link[SingleR]{SingleR} function.}
 
-\item{de.method}{"de.method" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{de.method}{"de.method" parameter in \link[SingleR]{SingleR} function.}
 
 \item{sd.thresh}{Deprecated and ignored.}
 
@@ -52,13 +52,13 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 
 \item{aggr.ref, aggr.args}{Arguments controlling the aggregation of the references prior to annotation, see \code{\link[SingleR]{trainSingleR}}.}
 
-\item{quantile}{"quantile" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{quantile}{"quantile" parameter in \link[SingleR]{SingleR} function.}
 
-\item{fine.tune}{"fine.tune" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{fine.tune}{"fine.tune" parameter in \link[SingleR]{SingleR} function.}
 
-\item{tune.thresh}{"tune.thresh" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{tune.thresh}{"tune.thresh" parameter in \link[SingleR]{SingleR} function.}
 
-\item{prune}{"prune" parameter in \code{\link[SingleR]{SingleR}} function.}
+\item{prune}{"prune" parameter in \link[SingleR]{SingleR} function.}
 
 \item{BPPARAM}{A \link[BiocParallel]{BiocParallelParam} object specifying how parallelization should be performed in other steps,
 see \code{?\link[SingleR]{trainSingleR}} and \code{?\link[SingleR]{classifySingleR}} for more details.}

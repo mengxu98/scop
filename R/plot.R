@@ -831,3 +831,103 @@ adjustlayout <- function(
   }
   return(layout)
 }
+
+heatmap_fixsize <- function(
+    width,
+    width_sum,
+    height,
+    height_sum,
+    units,
+    ht_list,
+    legend_list) {
+  ht <- ComplexHeatmap::draw(
+    ht_list,
+    annotation_legend_list = legend_list
+  )
+  ht_width <- ComplexHeatmap:::width(ht)
+  ht_height <- ComplexHeatmap:::height(ht)
+
+  if (grid::unitType(ht_width) == "npc") {
+    ht_width <- grid::unit(width_sum, units = units)
+  }
+  if (grid::unitType(ht_height) == "npc") {
+    ht_height <- grid::unit(height_sum, units = units)
+  }
+  if (is.null(width)) {
+    ht_width <- max(
+      grid::convertWidth(
+        ht@layout$max_left_component_width,
+        units,
+        valueOnly = TRUE
+      ) +
+        grid::convertWidth(
+          ht@layout$max_right_component_width,
+          units,
+          valueOnly = TRUE
+        ) +
+        grid::convertWidth(
+          sum(ht@layout$max_title_component_width),
+          units,
+          valueOnly = TRUE
+        ) +
+        grid::convertWidth(
+          ht@annotation_legend_param$size[1],
+          units,
+          valueOnly = TRUE
+        ) +
+        grid::convertWidth(
+          grid::unit(1, "in"),
+          units,
+          valueOnly = TRUE
+        ),
+      grid::convertWidth(
+        grid::unit(0.95, "npc"),
+        units,
+        valueOnly = TRUE
+      )
+    )
+    ht_width <- grid::unit(ht_width, units)
+  }
+  if (is.null(height)) {
+    ht_height <- max(
+      grid::convertHeight(
+        ht@layout$max_top_component_height,
+        units,
+        valueOnly = TRUE
+      ) +
+        grid::convertHeight(
+          ht@layout$max_bottom_component_height,
+          units,
+          valueOnly = TRUE
+        ) +
+        grid::convertHeight(
+          sum(ht@layout$max_title_component_height),
+          units,
+          valueOnly = TRUE
+        ) +
+        grid::convertHeight(
+          grid::unit(1, "in"),
+          units,
+          valueOnly = TRUE
+        ),
+      grid::convertHeight(
+        ht@annotation_legend_param$size[2],
+        units,
+        valueOnly = TRUE
+      ),
+      grid::convertHeight(
+        grid::unit(0.95, "npc"),
+        units,
+        valueOnly = TRUE
+      )
+    )
+    ht_height <- grid::unit(ht_height, units)
+  }
+  ht_width <- grid::convertUnit(ht_width, unitTo = units)
+  ht_height <- grid::convertUnit(ht_height, unitTo = units)
+
+  list(
+    ht_width = ht_width,
+    ht_height = ht_height
+  )
+}
