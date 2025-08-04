@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{RunSCExplorer}
 \alias{RunSCExplorer}
-\title{RunSCExplorer}
+\title{Run SCExplorer}
 \usage{
 RunSCExplorer(
   base_dir = "SCExplorer",
@@ -23,65 +23,65 @@ RunSCExplorer(
   initial_ncol = 3,
   initial_arrange = NULL,
   initial_raster = NULL,
-  session_workers = 2,
-  plotting_workers = 8,
   create_script = TRUE,
   style_script = requireNamespace("styler", quietly = TRUE),
-  overwrite = FALSE,
+  overwrite = TRUE,
   return_app = TRUE
 )
 }
 \arguments{
-\item{base_dir}{A string. The base directory of the SCExplorer app. Default is "SCExplorer".}
+\item{base_dir}{The base directory of the SCExplorer app.
+Default is \code{"SCExplorer"}.}
 
-\item{DataFile}{A string. The name of the HDF5 file that stores data matrices for each dataset. Default is "Data.hdf5".}
+\item{DataFile}{The name of the HDF5 file that stores data matrices for each dataset. Default is \code{"Data.hdf5"}.}
 
-\item{MetaFile}{A string. The name of the HDF5 file that stores metadata for each dataset. Default is "Meta.hdf5".}
+\item{MetaFile}{The name of the HDF5 file that stores metadata for each dataset. Default is \code{"Meta.hdf5"}.}
 
-\item{title}{A string. The title of the SCExplorer app. Default is "SCExplorer".}
+\item{title}{The title of the SCExplorer app. Default is \code{"SCExplorer"}.}
 
-\item{initial_dataset}{A string. The initial dataset to be loaded into the app. Default is NULL.}
+\item{initial_dataset}{The initial dataset to be loaded into the app. Default is \code{NULL}.}
 
-\item{initial_reduction}{A string. The initial dimensional reduction method to be loaded into the app. Default is NULL.}
+\item{initial_reduction}{The initial dimensional reduction method to be loaded into the app. Default is \code{NULL}.}
 
-\item{initial_group}{A string. The initial variable to group cells in the app. Default is NULL.}
+\item{initial_group}{The initial variable to group cells in the app. Default is \code{NULL}.}
 
-\item{initial_feature}{A string. The initial feature to be loaded into the app. Default is NULL.}
+\item{initial_feature}{The initial feature to be loaded into the app. Default is \code{NULL}.}
 
-\item{initial_assay}{A string. The initial assay to be loaded into the app. Default is NULL.}
+\item{initial_assay}{The initial assay to be loaded into the app. Default is \code{NULL}.}
 
-\item{initial_slot}{A string. The initial layer to be loaded into the app. Default is NULL.}
+\item{initial_slot}{The initial layer to be loaded into the app. Default is \code{NULL}.}
 
-\item{initial_label}{A string. Whether to add labels in the initial plot. Default is FALSE.}
+\item{initial_label}{Whether to add labels in the initial plot. Default is \code{FALSE}.}
 
-\item{initial_cell_palette}{A string. The initial color palette for cells. Default is "Paired".}
+\item{initial_cell_palette}{The initial color palette for cells. Default is \code{"Paired"}.}
 
-\item{initial_feature_palette}{A string. The initial color palette for features. Default is "Spectral".}
+\item{initial_feature_palette}{The initial color palette for features. Default is \code{"Spectral"}.}
 
-\item{initial_theme}{A string. The initial theme for plots. Default is "theme_scop".}
+\item{initial_theme}{The initial theme for plots. Default is \code{"theme_scop"}.}
 
-\item{initial_size}{A numeric. The initial size of plots. Default is 4.}
+\item{initial_size}{The initial size of plots. Default is 4.}
 
-\item{initial_ncol}{A numeric. The initial number of columns for arranging plots. Default is 3.}
+\item{initial_ncol}{The initial number of columns for arranging plots. Default is 3.}
 
-\item{initial_arrange}{A logical. Whether to use "Row" as the initial arrangement. Default is TRUE.}
+\item{initial_arrange}{Whether to use "Row" as the initial arrangement. Default is \code{TRUE}.}
 
-\item{initial_raster}{A logical. Whether to perform rasterization in the initial plot. By default, it is set to automatic, meaning it will be TRUE if the number of cells in the initial datasets exceeds 100,000.}
+\item{initial_raster}{Whether to perform rasterization in the initial plot.
+By default, it is set to automatic, meaning it will be \code{TRUE} if the number of cells in the initial datasets exceeds 100,000.}
 
-\item{session_workers}{A numeric. The number of workers for concurrent execution in an asynchronous programming session. Default is 2.}
+\item{create_script}{Whether to create the SCExplorer app script.
+Default is \code{TRUE}.}
 
-\item{plotting_workers}{A numeric. The number of threads per worker for parallel plotting. Default is 8.}
+\item{style_script}{Whether to style the SCExplorer app script.
+Default is \code{TRUE}.}
 
-\item{create_script}{A logical. Whether to create the SCExplorer app script. Default is TRUE.}
+\item{overwrite}{Whether to overwrite existing files.
+Default is \code{TRUE}.}
 
-\item{style_script}{A logical. Whether to style the SCExplorer app script. Default is TRUE.}
-
-\item{overwrite}{A logical. Whether to overwrite existing files. Default is FALSE.}
-
-\item{return_app}{A logical. Whether to return the SCExplorer app. Default is TRUE.}
+\item{return_app}{Whether to return the SCExplorer app.
+Default is \code{TRUE}.}
 }
 \description{
-RunSCExplorer
+Run SCExplorer
 }
 \examples{
 \dontrun{
@@ -99,8 +99,7 @@ PrepareSCExplorer(
     mouse_pancreas = pancreas_sub,
     human_pancreas = panc8_sub
   ),
-  base_dir = "./SCExplorer",
-  overwrite = TRUE
+  base_dir = "./SCExplorer"
 )
 
 # Create the app.R script
@@ -108,9 +107,7 @@ app <- RunSCExplorer(
   base_dir = "./SCExplorer",
   initial_dataset = "mouse_pancreas",
   initial_group = "CellType",
-  initial_feature = "Ncoa2",
-  session_workers = 2,
-  overwrite = TRUE
+  initial_feature = "Ncoa2"
 )
 # This directory can be used as site directory for Shiny Server.
 list.files("./SCExplorer")
@@ -137,9 +134,9 @@ if (interactive()) {
 # install.packages("rsconnect")
 # library(rsconnect)
 # setAccountInfo(
-# name = "<NAME>",
-# token = "<TOKEN>",
-# secret = "<SECRET>"
+#   name = "<NAME>",
+#   token = "<TOKEN>",
+#   secret = "<SECRET>"
 # )
 
 ### step3: deploy the app
