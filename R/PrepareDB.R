@@ -47,7 +47,7 @@
 #'     \item \code{semData:} semantic similarity data for gene sets (only for Gene Ontology terms).
 #'     }
 #'
-#' @seealso \code{\link{ListDB}}
+#' @seealso \link{ListDB}
 #'
 #' @export
 #'
@@ -118,7 +118,7 @@
 #' )
 #'
 #' # You can also build a custom database based on the gene sets you have
-#' ccgenes <- CC_GenePrefetch("Homo_sapiens")
+#' ccgenes <- CycGenePrefetch("Homo_sapiens")
 #' custom_TERM2GENE <- rbind(
 #'   data.frame(
 #'     term = "S_genes",
@@ -2853,7 +2853,7 @@ PrepareDB <- function(
 #' @param species The species for which to retrieve database information. Default is "Homo_sapiens".
 #' @param db The pattern to match against the database names. Default is NULL, which matches all databases.
 #'
-#' @seealso \code{\link{PrepareDB}}
+#' @seealso \link{PrepareDB}
 #'
 #' @export
 #' @examples

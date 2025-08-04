@@ -203,5 +203,5 @@ EnrichmentPlot(
 }
 }
 \seealso{
-\code{\link{PrepareDB}} \code{\link{ListDB}} \code{\link{EnrichmentPlot}} \code{\link{RunGSEA}} \code{\link{GSEAPlot}}
+\link{PrepareDB}, \link{ListDB}, \link{EnrichmentPlot}, \link{RunGSEA}, \link{GSEAPlot}
 }

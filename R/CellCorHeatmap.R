@@ -1,85 +1,197 @@
-#' CellCorHeatmap
+#' @title The Cell Correlation Heatmap
 #'
-#' This function generates a heatmap to visualize the similarity between different cell types or conditions. It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
+#' @description
+#' This function generates a heatmap to visualize the similarity between different cell types or conditions.
+#' It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 #'
-#' @param srt_query A Seurat object or count matrix representing the query dataset. This dataset will be used to calculate the similarities between cells.
-#' @param srt_ref A Seurat object or count matrix representing the reference dataset. If provided, the similarities will be calculated between cells from the query and reference datasets. If not provided, the similarities will be calculated within the query dataset.
-#' @param bulk_ref A count matrix representing bulk data. If provided, the similarities will be calculated between cells from the query dataset and bulk data.
-#' @param query_group The grouping variable in the query dataset. This variable will be used to group cells in the heatmap rows. If not provided, all cells will be treated as one group.
-#' @param ref_group The grouping variable in the reference dataset. This variable will be used to group cells in the heatmap columns. If not provided, all cells will be treated as one group.
-#' @param query_assay The assay to use for the query dataset. If not provided, the default assay of the query dataset will be used.
-#' @param ref_assay The assay to use for the reference dataset. If not provided, the default assay of the reference dataset will be used.
-#' @param query_reduction The dimensionality reduction method to use for the query dataset. If not provided, no dimensionality reduction will be applied to the query dataset.
-#' @param ref_reduction The dimensionality reduction method to use for the reference dataset. If not provided, no dimensionality reduction will be applied to the reference dataset.
-#' @param query_dims The dimensions to use for the query dataset. If not provided, the first 30 dimensions will be used.
-#' @param ref_dims The dimensions to use for the reference dataset. If not provided, the first 30 dimensions will be used.
-#' @param query_collapsing Whether to collapse cells within each query group before calculating similarities. If set to TRUE, the similarities will be calculated between query groups rather than individual cells.
-#' @param ref_collapsing Whether to collapse cells within each reference group before calculating similarities. If set to TRUE, the similarities will be calculated between reference groups rather than individual cells.
-#' @param features A vector of feature names to include in the heatmap. If not provided, a default set of highly variable features (HVF) will be used.
-#' @param features_type The type of features to use. Options are "HVF" for highly variable features, "DE" for differentially expressed features between query and reference groups.
-#' @param feature_source The source of features to use. Options are "query" to use only features from the query dataset, "ref" to use only features from the reference dataset, or "both" to use features from both datasets. If not provided or set to "both", features will be selected from both datasets.
-#' @param nfeatures The maximum number of features to include in the heatmap. If not provided, the default is 2000.
-#' @param DEtest_param The parameters to use for differential expression testing. This should be a list with two elements: "max.cells.per.ident" specifying the maximum number of cells per group for differential expression testing, and "test.use" specifying the statistical test to use for differential expression testing. If not provided, the default parameters will be used.
-#' @param DE_threshold The threshold for differential expression. Only features with adjusted p-values below this threshold will be considered differentially expressed.
-#' @param distance_metric The distance metric to use for calculating similarities between cells. This can be any of the following: "cosine", "pearson", "spearman", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", or "faith". If not provided, the default is "cosine".
-#' @param k The number of nearest neighbors to use for calculating similarities. If not provided, the default is 30.
-#' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features. Features with a frequency below this threshold will be excluded from the heatmap. If not provided, the default is 0.
-#' @param prefix The prefix to use for the KNNPredict tool layer in the query dataset. This can be used to avoid conflicts with other tools in the Seurat object. If not provided, the default is "KNNPredict".
-#' @param exp_legend_title The title for the color legend in the heatmap. If not provided, a default title based on the similarity metric will be used.
-#' @param border Whether to add a border around each heatmap cell. If not provided, the default is TRUE.
-#' @param flip Whether to flip the orientation of the heatmap. If set to TRUE, the rows and columns of the heatmap will be swapped. This can be useful for visualizing large datasets in a more compact form. If not provided, the default is FALSE.
-#' @param limits The limits for the color scale in the heatmap. If not provided, the default is to use the range of similarity values.
-#' @param cluster_rows Whether to cluster the rows of the heatmap. If set to TRUE, the rows will be rearranged based on hierarchical clustering. If not provided, the default is FALSE.
-#' @param cluster_columns Whether to cluster the columns of the heatmap. If set to TRUE, the columns will be rearranged based on hierarchical clustering. If not provided, the default is FALSE.
-#' @param show_row_names Whether to show the row names in the heatmap. If not provided, the default is FALSE.
-#' @param show_column_names Whether to show the column names in the heatmap. If not provided, the default is FALSE.
-#' @param row_names_side The side of the heatmap to show the row names. Options are "left" or "right". If not provided, the default is "left".
-#' @param column_names_side The side of the heatmap to show the column names. Options are "top" or "bottom". If not provided, the default is "top".
-#' @param row_names_rot The rotation angle of the row names. If not provided, the default is 0 degrees.
-#' @param column_names_rot The rotation angle of the column names. If not provided, the default is 90 degrees.
-#' @param row_title The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.
-#' @param column_title The title for the column names in the heatmap. If not provided, the default is to use the reference grouping variable.
-#' @param row_title_side The side of the heatmap to show the row title. Options are "top" or "bottom". If not provided, the default is "left".
-#' @param column_title_side The side of the heatmap to show the column title. Options are "left" or "right". If not provided, the default is "top".
-#' @param row_title_rot The rotation angle of the row title. If not provided, the default is 90 degrees.
-#' @param column_title_rot The rotation angle of the column title. If not provided, the default is 0 degrees.
-#' @param nlabel The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps. If not provided, the default is 0.
-#' @param label_cutoff The similarity cutoff for showing labels. Only cells with similarity values above this cutoff will have labels. If not provided, the default is 0.
-#' @param label_by The dimension to use for labeling cells. Options are "row" to label cells by row, "column" to label cells by column, or "both" to label cells by both row and column. If not provided, the default is "row".
-#' @param label_size The size of the labels in points. If not provided, the default is 10.
-#' @param heatmap_palette The color palette to use for the heatmap. This can be any of the palettes available in the circlize package. If not provided, the default is "RdBu".
-#' @param heatmap_palcolor The specific colors to use for the heatmap palette. This should be a vector of color names or RGB values. If not provided, the default is NULL.
-#' @param query_group_palette The color palette to use for the query group legend. This can be any of the palettes available in the circlize package. If not provided, the default is "Paired".
-#' @param query_group_palcolor The specific colors to use for the query group palette. This should be a vector of color names or RGB values. If not provided, the default is NULL.
-#' @param ref_group_palette The color palette to use for the reference group legend. This can be any of the palettes available in the circlize package. If not provided, the default is "simspec".
-#' @param ref_group_palcolor The specific colors to use for the reference group palette. This should be a vector of color names or RGB values. If not provided, the default is NULL.
-#' @param query_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap. Each element of the vector will create a separate cell annotation track in the heatmap. If not provided, no cell annotations will be shown.
-#' @param query_cell_annotation_palette The color palette to use for the query cell annotation tracks. This can be any of the palettes available in the circlize package. If a single color palette is provided, it will be used for all cell annotation tracks. If multiple color palettes are provided, each track will be assigned a separate palette. If not provided, the default is "Paired".
-#' @param query_cell_annotation_palcolor The specific colors to use for the query cell annotation palettes. This should be a list of vectors, where each vector contains the colors for a specific cell annotation track. If a single color vector is provided, it will be used for all cell annotation tracks. If multiple color vectors are provided, each track will be assigned a separate color vector. If not provided, the default is NULL.
-#' @param query_cell_annotation_params Additional parameters for customizing the appearance of the query cell annotation tracks. This should be a list with named elements, where the names correspond to parameter names in the heatmaps_annotation() function from the ComplexHeatmap package. If not provided, the default parameters will be used.
-#' @param ref_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap. Each element of the vector will create a separate cell annotation track in the heatmap. If not provided, no cell annotations will be shown.
-#' @param ref_cell_annotation_palette The color palette to use for the reference cell annotation tracks. This can be any of the palettes available in the circlize package. If a single color palette is provided, it will be used for all cell annotation tracks. If multiple color palettes are provided, each track will be assigned a separate palette. If not provided, the default is "Paired".
-#' @param ref_cell_annotation_palcolor The specific colors to use for the reference cell annotation palettes. This should be a list of vectors, where each vector contains the colors for a specific cell annotation track. If a single color vector is provided, it will be used for all cell annotation tracks. If multiple color vectors are provided, each track will be assigned a separate color vector. If not provided, the default is NULL.
-#' @param ref_cell_annotation_params Additional parameters for customizing the appearance of the reference cell annotation tracks. This should be a list with named elements, where the names correspond to parameter names in the heatmaps_annotation() function from the ComplexHeatmap package. If not provided, the default parameters will be used.
-#' @param use_raster Whether to use raster images for rendering the heatmap. If set to TRUE, the heatmap will be rendered as a raster image using the raster_device argument. If not provided, the default is determined based on the number of rows and columns in the heatmap.
-#' @param raster_device The raster device to use for rendering the heatmap. This should be a character string specifying the device name, such as "png", "jpeg", or "pdf". If not provided, the default is "png".
-#' @param raster_by_magick Whether to use the magick package for rendering rasters. If set to TRUE, the magick package will be used instead of the raster package. This can be useful for rendering large heatmaps more efficiently. If the magick package is not installed, this argument will be ignored.
-#' @param width The width of the heatmap in the specified units. If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.
-#' @param height The height of the heatmap in the specified units. If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
-#' @param units The units to use for the width and height of the heatmap. Options are "mm", "cm", or "inch". If not provided, the default is "inch".
-#' @param seed The random seed to use for reproducible results. If not provided, the default is 11.
-#' @param ht_params Additional parameters to customize the appearance of the heatmap. This should be a list with named elements, where the names correspond to parameter names in the Heatmap() function from the ComplexHeatmap package. Any conflicting parameters will override the defaults set by this function.
+#' @param srt_query A Seurat object or count matrix representing the query dataset.
+#' This dataset will be used to calculate the similarities between cells.
+#' @param srt_ref A Seurat object or count matrix representing the reference dataset.
+#' If provided, the similarities will be calculated between cells from the query and reference datasets.
+#' If not provided, the similarities will be calculated within the query dataset.
+#' @param bulk_ref A count matrix representing bulk data.
+#' If provided, the similarities will be calculated between cells from the query dataset and bulk data.
+#' @param query_group The grouping variable in the query dataset.
+#' This variable will be used to group cells in the heatmap rows.
+#' If not provided, all cells will be treated as one group.
+#' @param ref_group The grouping variable in the reference dataset.
+#' This variable will be used to group cells in the heatmap columns. If not provided, all cells will be treated as one group.
+#' @param query_assay The assay to use for the query dataset.
+#' If not provided, the default assay of the query dataset will be used.
+#' @param ref_assay The assay to use for the reference dataset.
+#' If not provided, the default assay of the reference dataset will be used.
+#' @param query_reduction The dimensionality reduction method to use for the query dataset.
+#' If not provided, no dimensionality reduction will be applied to the query dataset.
+#' @param ref_reduction The dimensionality reduction method to use for the reference dataset.
+#' If not provided, no dimensionality reduction will be applied to the reference dataset.
+#' @param query_dims The dimensions to use for the query dataset.
+#' If not provided, the first 30 dimensions will be used.
+#' @param ref_dims The dimensions to use for the reference dataset.
+#' If not provided, the first 30 dimensions will be used.
+#' @param query_collapsing Whether to collapse cells within each query group before calculating similarities.
+#' If set to TRUE, the similarities will be calculated between query groups rather than individual cells.
+#' @param ref_collapsing Whether to collapse cells within each reference group before calculating similarities.
+#' If set to TRUE, the similarities will be calculated between reference groups rather than individual cells.
+#' @param features A vector of feature names to include in the heatmap.
+#' If not provided, a default set of highly variable features (HVF) will be used.
+#' @param features_type The type of features to use.
+#' Options are "HVF" for highly variable features,
+#' "DE" for differentially expressed features between query and reference groups.
+#' @param feature_source The source of features to use.
+#' Options are "query" to use only features from the query dataset,
+#' "ref" to use only features from the reference dataset, or "both" to use features from both datasets.
+#' If not provided or set to "both", features will be selected from both datasets.
+#' @param nfeatures The maximum number of features to include in the heatmap.
+#' Default is 2000.
+#' @param DEtest_param The parameters to use for differential expression testing.
+#' This should be a list with two elements:
+#' "max.cells.per.ident" specifying the maximum number of cells per group for differential expression testing,
+#' and "test.use" specifying the statistical test to use for differential expression testing.
+#' If not provided, the default parameters will be used.
+#' @param DE_threshold The threshold for differential expression.
+#' Only features with adjusted p-values below this threshold will be considered differentially expressed.
+#' @param distance_metric The distance metric to use for calculating similarities between cells.
+#' This can be any of the following: "cosine", "pearson", "spearman", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", or "faith".
+#' If not provided, the default is "cosine".
+#' @param k The number of nearest neighbors to use for calculating similarities.
+#' Default is 30.
+#' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features.
+#' Features with a frequency below this threshold will be excluded from the heatmap.
+#' If not provided, the default is 0.
+#' @param prefix The prefix to use for the KNNPredict tool layer in the query dataset.
+#' This can be used to avoid conflicts with other tools in the Seurat object.
+#' If not provided, the default is "KNNPredict".
+#' @param exp_legend_title The title for the color legend in the heatmap.
+#' If not provided, a default title based on the similarity metric will be used.
+#' @param border Whether to add a border around each heatmap cell.
+#' If not provided, the default is TRUE.
+#' @param flip Whether to flip the orientation of the heatmap.
+#' If set to TRUE, the rows and columns of the heatmap will be swapped.
+#' This can be useful for visualizing large datasets in a more compact form.
+#' If not provided, the default is FALSE.
+#' @param limits The limits for the color scale in the heatmap.
+#' If not provided, the default is to use the range of similarity values.
+#' @param cluster_rows Whether to cluster the rows of the heatmap.
+#' If set to TRUE, the rows will be rearranged based on hierarchical clustering.
+#' If not provided, the default is FALSE.
+#' @param cluster_columns Whether to cluster the columns of the heatmap.
+#' If set to TRUE, the columns will be rearranged based on hierarchical clustering.
+#' If not provided, the default is FALSE.
+#' @param show_row_names Whether to show the row names in the heatmap.
+#' If not provided, the default is FALSE.
+#' @param show_column_names Whether to show the column names in the heatmap.
+#' If not provided, the default is FALSE.
+#' @param row_names_side The side of the heatmap to show the row names.
+#' Options are "left" or "right".
+#' If not provided, the default is "left".
+#' @param column_names_side The side of the heatmap to show the column names.
+#' Options are "top" or "bottom".
+#' If not provided, the default is "top".
+#' @param row_names_rot The rotation angle of the row names.
+#' If not provided, the default is 0 degrees.
+#' @param column_names_rot The rotation angle of the column names.
+#' If not provided, the default is 90 degrees.
+#' @param row_title The title for the row names in the heatmap.
+#' If not provided, the default is to use the query grouping variable.
+#' @param column_title The title for the column names in the heatmap.
+#' If not provided, the default is to use the reference grouping variable.
+#' @param row_title_side The side of the heatmap to show the row title.
+#' Options are "top" or "bottom".
+#' If not provided, the default is "left".
+#' @param column_title_side The side of the heatmap to show the column title.
+#' Options are "left" or "right".
+#' If not provided, the default is "top".
+#' @param row_title_rot The rotation angle of the row title.
+#' If not provided, the default is 90 degrees.
+#' @param column_title_rot The rotation angle of the column title.
+#' If not provided, the default is 0 degrees.
+#' @param nlabel The maximum number of labels to show on each side of the heatmap.
+#' If set to 0, no labels will be shown.
+#' This can be useful for reducing clutter in large heatmaps.
+#' If not provided, the default is 0.
+#' @param label_cutoff The similarity cutoff for showing labels.
+#' Only cells with similarity values above this cutoff will have labels.
+#' If not provided, the default is 0.
+#' @param label_by The dimension to use for labeling cells.
+#' Options are "row" to label cells by row, "column" to label cells by column, or "both" to label cells by both row and column.
+#' If not provided, the default is "row".
+#' @param heatmap_palette The color palette to use for the heatmap.
+#' This can be any of the palettes available in the circlize package.
+#' If not provided, the default is "RdBu".
+#' @param heatmap_palcolor The specific colors to use for the heatmap palette.
+#' This should be a vector of color names or RGB values.
+#' If not provided, the default is NULL.
+#' @param query_group_palette The color palette to use for the query group legend.
+#' This can be any of the palettes available in the circlize package.
+#' If not provided, the default is "Paired".
+#' @param query_group_palcolor The specific colors to use for the query group palette.
+#' This should be a vector of color names or RGB values.
+#' If not provided, the default is NULL.
+#' @param ref_group_palette The color palette to use for the reference group legend.
+#' This can be any of the palettes available in the circlize package.
+#' If not provided, the default is "simspec".
+#' @param ref_group_palcolor The specific colors to use for the reference group palette.
+#' This should be a vector of color names or RGB values.
+#' If not provided, the default is NULL.
+#' @param query_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+#' Each element of the vector will create a separate cell annotation track in the heatmap.
+#' If not provided, no cell annotations will be shown.
+#' @param query_cell_annotation_palette The color palette to use for the query cell annotation tracks.
+#' This can be any of the palettes available in the circlize package.
+#' If a single color palette is provided, it will be used for all cell annotation tracks.
+#' If multiple color palettes are provided, each track will be assigned a separate palette.
+#' If not provided, the default is "Paired".
+#' @param query_cell_annotation_palcolor The specific colors to use for the query cell annotation palettes.
+#' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
+#' If a single color vector is provided, it will be used for all cell annotation tracks.
+#' If not provided, the default is NULL.
+#' @param ref_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+#' Each element of the vector will create a separate cell annotation track in the heatmap.
+#' If not provided, no cell annotations will be shown.
+#' @param ref_cell_annotation_palette The color palette to use for the reference cell annotation tracks.
+#' This can be any of the palettes available in the circlize package.
+#' If a single color palette is provided, it will be used for all cell annotation tracks.
+#' If multiple color palettes are provided, each track will be assigned a separate palette.
+#' If not provided, the default is "Paired".
+#' @param ref_cell_annotation_palcolor The specific colors to use for the reference cell annotation palettes.
+#' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
+#' If a single color vector is provided, it will be used for all cell annotation tracks.
+#' If multiple color vectors are provided, each track will be assigned a separate color vector.
+#' If not provided, the default is NULL.
+#' @param use_raster Whether to use raster images for rendering the heatmap.
+#' If set to TRUE, the heatmap will be rendered as a raster image using the raster_device argument.
+#' If not provided, the default is determined based on the number of rows and columns in the heatmap.
+#' @param raster_device The raster device to use for rendering the heatmap.
+#' This should be a character string specifying the device name, such as "png", "jpeg", or "pdf".
+#' If not provided, the default is "png".
+#' @param raster_by_magick Whether to use the magick package for rendering rasters.
+#' If set to TRUE, the magick package will be used instead of the raster package.
+#' This can be useful for rendering large heatmaps more efficiently.
+#' If the magick package is not installed, this argument will be ignored.
+#' @param width The width of the heatmap in the specified units.
+#' If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.
+#' @param height The height of the heatmap in the specified units.
+#' If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
+#' @param units The units to use for the width and height of the heatmap.
+#' Default is "inch", Options are "mm", "cm", or "inch".
+#' @param seed The random seed to use for reproducible results.
+#' Default is 11.
+#' @param ht_params Additional parameters to customize the appearance of the heatmap.
+#' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
+#' Any conflicting parameters will override the defaults set by this function.
 #'
-#' @return A list with the following elements:
-#'   \itemize{
-#'     \item \code{plot:} The heatmap plot as a ggplot object.
-#'     \item \code{features:} The features used in the heatmap.
-#'     \item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
-#'     \item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
-#'     \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
-#'   }
+#' @return
+#' A list with the following elements:
+#' \itemize{
+#'   \item \code{plot:} The heatmap plot as a ggplot object.
+#'   \item \code{features:} The features used in the heatmap.
+#'   \item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
+#'   \item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
+#'   \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
+#' }
 #'
-#' @seealso \code{\link{RunKNNMap}} \code{\link{RunKNNPredict}}
+#' @seealso
+#' \link{RunKNNMap}, \link{RunKNNPredict}
 #'
 #' @export
 #'
@@ -237,29 +349,6 @@ CellCorHeatmap <- function(
   }
 
   ref_legend <- TRUE
-  simil_method <- c(
-    "cosine",
-    "pearson",
-    "spearman",
-    "correlation",
-    "jaccard",
-    "ejaccard",
-    "dice",
-    "edice",
-    "hamman",
-    "simple matching",
-    "faith"
-  )
-  dist_method <- c(
-    "euclidean",
-    "chisquared",
-    "kullback",
-    "manhattan",
-    "maximum",
-    "canberra",
-    "minkowski",
-    "hamming"
-  )
   if (is.null(srt_ref) && is.null(bulk_ref)) {
     srt_ref <- srt_query
     ref_group <- query_group
@@ -300,15 +389,8 @@ CellCorHeatmap <- function(
     ref_collapsing = ref_collapsing
   )
 
-  if (
-    is.null(srt_query@tools[[paste0(prefix, "_classification")]][[
-      "distance_matrix"
-    ]]) ||
-      !identical(
-        other_params,
-        srt_query@tools[[paste0(prefix, "_classification")]][["other_params"]]
-      )
-  ) {
+  srt_query_tools <- srt_query@tools[[paste0(prefix, "_classification")]]
+  if (is.null(srt_query_tools[["distance_matrix"]]) || !identical(other_params, srt_query_tools[["other_params"]])) {
     srt_query <- RunKNNPredict(
       srt_query = srt_query,
       srt_ref = srt_ref,
@@ -336,19 +418,39 @@ CellCorHeatmap <- function(
       return_full_distance_matrix = TRUE
     )
   }
-  distance_matrix <- srt_query@tools[[paste0(prefix, "_classification")]][[
-    "distance_matrix"
-  ]]
-  distance_metric <- srt_query@tools[[paste0(prefix, "_classification")]][[
-    "distance_metric"
-  ]]
 
-  if (distance_metric %in% simil_method) {
+  srt_query_tools <- srt_query@tools[[paste0(prefix, "_classification")]]
+  distance_matrix <- srt_query_tools[["distance_matrix"]]
+  distance_metric <- srt_query_tools[["distance_metric"]]
+  simil_methods <- c(
+    "cosine",
+    "pearson",
+    "spearman",
+    "correlation",
+    "jaccard",
+    "ejaccard",
+    "dice",
+    "edice",
+    "hamman",
+    "simple matching",
+    "faith"
+  )
+  dist_methods <- c(
+    "euclidean",
+    "chisquared",
+    "kullback",
+    "manhattan",
+    "maximum",
+    "canberra",
+    "minkowski",
+    "hamming"
+  )
+  if (distance_metric %in% simil_methods) {
     simil_matrix <- Matrix::t(
       Matrix::as.matrix(1 - distance_matrix)
     )
     simil_name <- paste0(capitalize(distance_metric), " similarity")
-  } else if (distance_metric %in% dist_method) {
+  } else if (distance_metric %in% dist_methods) {
     simil_matrix <- Matrix::t(
       Matrix::as.matrix(
         1 - distance_matrix / max(distance_matrix, na.rm = TRUE)
@@ -394,8 +496,10 @@ CellCorHeatmap <- function(
         cells_sub <- colnames(srt_query)[which(
           srt_query[[query_group, drop = TRUE]] == x
         )]
-        out <- stats::setNames(object = rep(x, length(cells_sub)), nm = cells_sub)
-        return(out)
+        stats::setNames(
+          object = rep(x, length(cells_sub)),
+          nm = cells_sub
+        )
       }
     ),
     use.names = TRUE
@@ -418,8 +522,10 @@ CellCorHeatmap <- function(
       cells_sub <- colnames(srt_ref)[which(
         srt_ref[[ref_group, drop = TRUE]] == x
       )]
-      out <- stats::setNames(object = rep(x, length(cells_sub)), nm = cells_sub)
-      return(out)
+      stats::setNames(
+        object = rep(x, length(cells_sub)),
+        nm = cells_sub
+      )
     }),
     use.names = TRUE
   )
@@ -490,12 +596,7 @@ CellCorHeatmap <- function(
         message_type = "error"
       )
     }
-    if (
-      any(
-        !query_cell_annotation %in%
-          c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]]))
-      )
-    ) {
+    if (any(!query_cell_annotation %in% c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]])))) {
       log_message(
         "query_cell_annotation: ",
         paste0(
@@ -1479,7 +1580,7 @@ CellCorHeatmap <- function(
     }
   }
 
-  if (!isTRUE(ref_legend)) {
+  if (isFALSE(ref_legend)) {
     lgd <- lgd[grep("Ref", names(lgd), invert = TRUE)]
   }
 

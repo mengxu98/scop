@@ -29,18 +29,18 @@ PrepareEnv <- function(
     ...) {
   log_message("{cli::col_blue('Preparing scop Python Environment')}")
   if (!is.null(envname)) {
-    options(scop_env_name = envname)
+    options(scop_envname = envname)
   }
 
   envname <- get_envname(envname)
-  log_message("Environment name: ", envname)
+  log_message("Environment name: {.val {envname}}")
 
   requirements <- env_requirements(version = version)
   python_version <- requirements[["python"]]
   packages <- requirements[["packages"]]
 
-  log_message("Python version: ", python_version)
-  log_message("Number of packages to install: ", length(packages))
+  log_message("Python version: {.val {python_version}}")
+  log_message("Number of packages to install: {.val {length(packages)}}")
 
   if (!is.null(conda)) {
     if (identical(conda, "auto")) {
@@ -73,7 +73,7 @@ PrepareEnv <- function(
     }
 
     if (isTRUE(env)) {
-      log_message("Using existing environment: ", paste0(envs_dir, "/", envname))
+      log_message("Using existing environment: {.val {paste0(envs_dir, '/', envname)}}")
     }
   }
 
@@ -159,15 +159,12 @@ PrepareEnv <- function(
       ...
     )
   }
-
   set_python_env(conda = conda, envname = envname)
-
-  env_info(conda, envname)
-
   log_message(
     "{cli::col_green('Python Environment Ready')}",
     message_type = "success"
   )
+  env_info(conda, envname)
 }
 
 set_python_env <- function(conda, envname, verbose = TRUE) {
@@ -313,13 +310,14 @@ env_requirements <- function(version = "3.10-1") {
 
   package_install_methods <- c(
     "leidenalg" = "conda",
+    "tbb" = "conda",
+    "python-igraph" = "conda",
     "matplotlib" = "pip",
     "numba" = "pip",
     "llvmlite" = "pip",
     "numpy" = "pip",
     "palantir" = "pip",
     "pandas" = "pip",
-    "python-igraph" = "conda",
     "scanpy" = "pip",
     "scikit-learn" = "pip",
     "scipy" = "pip",
@@ -330,19 +328,19 @@ env_requirements <- function(version = "3.10-1") {
     "phate" = "pip",
     "bbknn" = "pip",
     "scanorama" = "pip",
-    "scvi-tools" = "pip",
-    "tbb" = "conda"
+    "scvi-tools" = "pip"
   )
 
   package_versions <- c(
     "leidenalg" = "leidenalg",
+    "tbb" = "tbb",
+    "python-igraph" = "python-igraph",
     "matplotlib" = "matplotlib>=3.5,<3.11",
     "numba" = "numba>=0.59,<0.60.0",
     "llvmlite" = "llvmlite>=0.42,<0.43.0",
     "numpy" = "numpy>=1.24,<1.27.0",
     "palantir" = "palantir",
     "pandas" = "pandas>=2.0,<2.1",
-    "python-igraph" = "python-igraph",
     "scanpy" = "scanpy>=1.9,<1.12",
     "scikit-learn" = "scikit-learn",
     "scipy" = "scipy>=1.10",
@@ -353,8 +351,7 @@ env_requirements <- function(version = "3.10-1") {
     "phate" = "phate",
     "bbknn" = "bbknn",
     "scanorama" = "scanorama",
-    "scvi-tools" = "scvi-tools",
-    "tbb" = "tbb"
+    "scvi-tools" = "scvi-tools"
   )
 
   requirements <- list(
@@ -389,13 +386,13 @@ installed_python_pkgs <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "Cannot find the conda environment: ", envname,
+      "Cannot find the conda environment: {.val {envname}}",
       message_type = "error"
     )
   }
 
   log_message(
-    "Retrieving package list for environment: ", envname
+    "Retrieving package list for environment: {.val {envname}}"
   )
 
   tryCatch(
@@ -405,12 +402,12 @@ installed_python_pkgs <- function(
         envname = envname,
         no_pip = FALSE
       )
-      log_message("Found ", nrow(all_installed), " packages installed")
+      log_message("Found {.val {nrow(all_installed)}} packages installed")
       return(all_installed)
     },
     error = function(e) {
       log_message(
-        "Failed to retrieve package list: ", e$message,
+        "Failed to retrieve package list: {.val {e$message}}",
         message_type = "error"
       )
     }
@@ -441,13 +438,13 @@ exist_python_pkgs <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "Cannot find the conda environment: ", envname,
+      "Cannot find the conda environment: {.val {envname}}",
       message_type = "error"
     )
   }
 
   log_message(
-    "Checking ", length(packages), " packages in environment: ", envname
+    "Checking {.val {length(packages)}} packages in environment: {.val {envname}}"
   )
 
   all_installed <- tryCatch(
@@ -456,7 +453,7 @@ exist_python_pkgs <- function(
     },
     error = function(e) {
       log_message(
-        "Failed to get installed packages: ", e$message,
+        "Failed to get installed packages: {.val {e$message}}",
         message_type = "warning"
       )
     }
@@ -487,24 +484,30 @@ exist_python_pkgs <- function(
         installed_version <- all_installed$version[all_installed$package == pkg_name]
         packages_installed[pkg] <- installed_version == pkg_version
         if (packages_installed[pkg]) {
-          log_message(pkg_name, " ", pkg_version, message_type = "success")
+          log_message(
+            "{.val {pkg_name}} {.val {pkg_version}}",
+            message_type = "success"
+          )
         } else {
           log_message(
-            "! ", pkg_name, " found but version mismatch: installed=",
-            installed_version, ", required=", pkg_version
+            "{.val {pkg_name}} found but version mismatch: installed={.val {installed_version}}, required={.val {pkg_version}}",
+            message_type = "warning"
           )
         }
       } else {
         packages_installed[pkg] <- TRUE
         installed_version <- all_installed$version[all_installed$package == pkg_name]
         log_message(
-          "'", pkg_name, "' version: ", installed_version,
+          "{.val {pkg_name}} version: {.val {installed_version}}",
           message_type = "success"
         )
       }
     } else {
       packages_installed[pkg] <- FALSE
-      log_message(pkg_name, " not found", message_type = "warning")
+      log_message(
+        "{.val {pkg_name}} not found",
+        message_type = "warning"
+      )
     }
   }
 
@@ -536,7 +539,7 @@ env_exist <- function(
         },
         error = function(e) {
           log_message(
-            "Failed to get conda info: ", e$message,
+            "Failed to get conda info: {.val {e$message}}",
             message_type = "warning"
           )
           return(NULL)
@@ -557,7 +560,7 @@ env_exist <- function(
       conda_meta_path <- file.path(env_path, "conda-meta")
       if (!dir.exists(conda_meta_path)) {
         log_message(
-          "Environment directory exists but appears invalid: ", env_path,
+          "Environment directory exists but appears invalid: {.val {env_path}}",
           message_type = "warning"
         )
         return(FALSE)
@@ -574,7 +577,7 @@ get_envname <- function(envname = NULL) {
   if (is.character(envname)) {
     envname <- envname
   } else {
-    envname <- getOption("scop_env_name", default = "scop_env")
+    envname <- getOption("scop_envname", default = "scop_env")
   }
   return(envname)
 }
@@ -641,7 +644,10 @@ conda_install <- function(
         message_type = "error"
       )
     } else {
-      log_message("packages argument is required", message_type = "error")
+      log_message(
+        "{.arg packages} argument is required",
+        message_type = "error"
+      )
     }
   }
 
@@ -649,7 +655,7 @@ conda_install <- function(
   envname <- reticulate:::condaenv_resolve(envname)
 
   log_message(
-    "Installing ", length(packages), " packages into environment: ", envname
+    "Installing {.val {length(packages)}} packages into environment: {.val {envname}}"
   )
 
   python_package <- if (is.null(python_version)) {
@@ -666,7 +672,7 @@ conda_install <- function(
   )
 
   if (inherits(python, "error") || !file.exists(python)) {
-    log_message("Environment doesn't exist, creating: ", envname)
+    log_message("Environment doesn't exist, creating: {.val {envname}}")
     reticulate::conda_create(
       envname = envname,
       packages = python_package %||% "python",
@@ -675,11 +681,11 @@ conda_install <- function(
       conda = conda
     )
     python <- conda_python(envname = envname, conda = conda)
-    log_message("Environment created with Python: ", python)
+    log_message("Environment created with Python: {.val {python}}")
   }
 
   if (!is.null(python_version)) {
-    log_message("Updating Python to version: ", python_version)
+    log_message("Updating Python to version: {.val {python_version}}")
     args <- reticulate:::conda_args("install", envname, python_package)
     status <- reticulate:::system2t(conda, shQuote(args))
     if (status != 0L) {
@@ -709,7 +715,7 @@ conda_install <- function(
       },
       error = function(e) {
         log_message(
-          "{.pkg pip} installation failed: ", e$message,
+          "{.pkg pip} installation failed: {.val {e$message}}",
           message_type = "error"
         )
       }
@@ -735,18 +741,18 @@ conda_install <- function(
 
   for (ch in channels) {
     args <- c(args, "-c", ch)
-    log_message("Using channel: ", ch)
+    log_message("Using channel: {.val {ch}}")
   }
 
   args <- c(args, python_package, packages)
 
-  log_message("Installing ", length(packages), " packages...")
+  log_message("Installing {.val {length(packages)}} packages...")
 
   result <- reticulate:::system2t(conda, shQuote(args))
 
   if (result != 0L) {
     log_message(
-      "Conda installation failed with error code: ", result,
+      "Conda installation failed with error code: {.val {result}}",
       message_type = "warning"
     )
   } else {
@@ -774,9 +780,8 @@ conda_python <- function(
     if (file.exists(path)) {
       return(path)
     }
-    fmt <- "no conda environment exists at path '%s'"
     log_message(
-      sprintf(fmt, envname),
+      "no conda environment exists at path {.val {envname}}",
       message_type = "error"
     )
   }
@@ -795,7 +800,7 @@ conda_python <- function(
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
     log_message(
-      "conda environment \"", envname, "\" not found",
+      "{.val {envname}} environment not found",
       message_type = "error"
     )
   }
@@ -837,7 +842,7 @@ RemoveEnv <- function(
     force = FALSE) {
   envname <- get_envname(envname)
 
-  log_message("Removing conda environment: ", envname)
+  log_message("Removing conda environment: {.val {envname}}")
 
   if (identical(conda, "auto")) {
     conda <- find_conda()
@@ -854,7 +859,7 @@ RemoveEnv <- function(
   env_exists <- env_exist(envname = envname, conda = conda)
   if (isFALSE(env_exists)) {
     log_message(
-      "Environment '", envname, "' does not exist",
+      "{.val {envname}} environment does not exist",
       message_type = "warning"
     )
     return(invisible(FALSE))
@@ -864,43 +869,56 @@ RemoveEnv <- function(
   env_path <- file.path(envs_dir, envname)
 
   if (!force) {
-    log_message("Environment path: ", env_path)
+    log_message("Environment path: {.val {env_path}}")
     log_message("This will permanently delete the environment and all its packages.")
 
     if (interactive()) {
-      response <- readline(paste0("Are you sure you want to remove environment '", envname, "'? (y/N): "))
+      response <- readline(
+        paste0(
+          "Are you sure you want to remove environment: ", envname, "? (y/N): "
+        )
+      )
       if (!tolower(response) %in% c("y", "yes")) {
         log_message("Environment removal cancelled.")
         return(invisible(FALSE))
       }
     } else {
       log_message(
-        "Use force=TRUE to remove environment in non-interactive mode",
+        "Use {.arg force = TRUE} to remove environment in non-interactive mode",
         message_type = "warning"
       )
       return(invisible(FALSE))
     }
   }
 
-  log_message("Removing environment '", envname, "'...")
+  log_message("Removing {.val {envname}} environment...")
 
   result <- tryCatch(
     {
-      reticulate::conda_remove(envname = envname, packages = NULL, conda = conda)
+      reticulate::conda_remove(
+        envname = envname,
+        packages = NULL,
+        conda = conda
+      )
       log_message(
-        "Environment removed successfully using conda_remove",
+        "Environment removed successfully using {.fn reticulate::conda_remove}",
         message_type = "success"
       )
       TRUE
     },
     error = function(e) {
-      log_message("conda_remove failed: ", e$message, message_type = "warning")
+      log_message(
+        "{.fn reticulate::conda_remove} failed: {.val {e$message}}",
+        message_type = "warning"
+      )
       FALSE
     }
   )
 
   if (!result) {
-    log_message("Attempting direct removal of environment directory...")
+    log_message(
+      "Attempting direct removal of environment directory: {.val {env_path}}"
+    )
 
     result <- tryCatch(
       {
@@ -908,19 +926,31 @@ RemoveEnv <- function(
           unlink(env_path, recursive = TRUE, force = TRUE)
 
           if (!dir.exists(env_path)) {
-            log_message("Environment directory removed successfully", message_type = "success")
+            log_message(
+              "Environment directory {.val {env_path}} removed successfully",
+              message_type = "success"
+            )
             TRUE
           } else {
-            log_message("Failed to remove environment directory", message_type = "error")
+            log_message(
+              "Failed to remove environment directory: {.val {env_path}}",
+              message_type = "error"
+            )
             FALSE
           }
         } else {
-          log_message("Environment directory does not exist", message_type = "warning")
+          log_message(
+            "Environment directory does not exist: {.val {env_path}}",
+            message_type = "warning"
+          )
           TRUE
         }
       },
       error = function(e) {
-        log_message("Direct removal failed: ", e$message, message_type = "error")
+        log_message(
+          "Direct removal failed: {.val {e$message}}",
+          message_type = "error"
+        )
         FALSE
       }
     )
@@ -928,12 +958,12 @@ RemoveEnv <- function(
 
   if (result) {
     log_message(
-      "Environment '", envname, "' removed successfully",
+      "{.val {envname}} environment removed successfully",
       message_type = "success"
     )
   } else {
     log_message(
-      "Failed to remove environment '", envname, "'",
+      "Failed to remove {.val {envname}} environment",
       message_type = "error"
     )
   }

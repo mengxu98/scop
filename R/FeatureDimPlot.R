@@ -7,7 +7,7 @@
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' If not specified, will use the reduction returned by \link{DefaultReduction}.
 #' @param split.by Name of a column in meta.data to split plot by.
 #' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
@@ -90,7 +90,7 @@
 #' @param theme_args Other arguments passed to the \code{theme_use}.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \code{\link{CellDimPlot}}
+#' @seealso \link{CellDimPlot}
 #'
 #' @export
 #'
@@ -473,7 +473,7 @@ FeatureDimPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -628,13 +628,13 @@ FeatureDimPlot <- function(
   }
   dat_exp[, features][dat_exp[, features] <= bg_cutoff] <- NA
 
-  if (length(features) > 50 && !isTRUE(force)) {
+  if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }
@@ -1568,7 +1568,7 @@ FeatureDimPlot <- function(
               alpha = pt.alpha
             )
         }
-        if (!is.null(cells.highlight_use) && !isTRUE(hex)) {
+        if (!is.null(cells.highlight_use) && isFALSE(hex)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
             if (isTRUE(raster)) {
@@ -1780,7 +1780,7 @@ FeatureDimPlot <- function(
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
 #'
-#' @seealso \code{\link{FeatureDimPlot}} \code{\link{CellDimPlot3D}}
+#' @seealso \link{FeatureDimPlot}, \link{CellDimPlot3D}
 #'
 #' @export
 #'
@@ -1859,7 +1859,7 @@ FeatureDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -2033,13 +2033,13 @@ FeatureDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (length(features) > 50 && !isTRUE(force)) {
+  if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }

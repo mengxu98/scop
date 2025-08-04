@@ -23,7 +23,7 @@
 #' @param label.bg.r The radius of the rounding of the label's background.
 #' @param label.size The size of the labels.
 #'
-#' @seealso \code{\link{RunGSEA}}
+#' @seealso \link{RunGSEA}
 #'
 #' @export
 #'

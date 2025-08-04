@@ -224,9 +224,7 @@ srt_reorder <- function(
     "minkowski",
     "hamming"
   )
-  if (
-    !distance_metric %in% c(simil_method, dist_method, "pearson", "spearman")
-  ) {
+  if (!distance_metric %in% c(simil_method, dist_method, "pearson", "spearman")) {
     log_message(
       distance_metric, " method is invalid.",
       message_type = "error"
@@ -271,9 +269,11 @@ srt_reorder <- function(
   if (isTRUE(log)) {
     data_avg <- log1p(data_avg)
   }
-  mat <- Matrix::t(x = data_avg[features, , drop = FALSE])
+  mat <- Matrix::t(data_avg[features, , drop = FALSE])
   if (!inherits(mat, "dgCMatrix")) {
-    mat <- SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE])
+    mat <- SeuratObject::as.sparse(
+      mat[seq_len(nrow(mat)), , drop = FALSE]
+    )
   }
 
   if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
@@ -284,17 +284,21 @@ srt_reorder <- function(
       distance_metric <- "correlation"
     }
     d <- 1 - proxyC::simil(
-      SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE]),
+      SeuratObject::as.sparse(
+        mat[seq_len(nrow(mat)), , drop = FALSE]
+      ),
       method = distance_metric
     )
   } else if (distance_metric %in% dist_method) {
     d <- proxyC::dist(
-      SeuratObject::as.sparse(mat[1:nrow(mat), , drop = FALSE]),
+      SeuratObject::as.sparse(
+        mat[seq_len(nrow(mat)), , drop = FALSE]
+      ),
       method = distance_metric
     )
   }
-  data.dist <- stats::as.dist(d)
-  hc <- stats::hclust(d = data.dist)
+  data_dist <- stats::as.dist(d)
+  hc <- stats::hclust(d = data_dist)
   dd <- stats::as.dendrogram(hc)
   dd_ordered <- stats::reorder(
     dd,

@@ -1,16 +1,25 @@
-#' CreateDataFile
+#' @title Create data file
 #'
+#' @description
 #' Creates a data file in HDF5 format from a Seurat object.
 #'
+#' @md
 #' @param srt The Seurat object.
-#' @param DataFile Path to the output data file. If not provided, the file will be named "Data.hdf5" in the current directory.
-#' @param name Name of the dataset. If not provided, the name will default to the Seurat object's project name.
-#' @param assays Character vector specifying the assays to include in the data file. Default is "RNA".
-#' @param layers Character vector specifying the layers to include in the data file. Default is "data".
-#' @param compression_level Compression level for the HDF5 dataset. Default is 6.
-#' @param overwrite Logical value indicating whether to overwrite existing data in the data file. Default is FALSE.
+#' @param DataFile Path to the output data file.
+#' If not provided, the file will be named `"Data.hdf5"` in the current directory.
+#' @param name Name of the dataset.
+#' If not provided, the name will default to the Seurat object's project name.
+#' @param assays Character vector specifying the assays to include in the data file.
+#' Default is `"RNA"`.
+#' @param layers Character vector specifying the layers to include in the data file.
+#' Default is `"data"`.
+#' @param compression_level Compression level for the HDF5 dataset.
+#' Default is `6`.
+#' @param overwrite Logical value indicating whether to overwrite existing data in the data file.
+#' Default is `TRUE`.
 #'
-#' @seealso \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso
+#' \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 CreateDataFile <- function(
@@ -20,7 +29,7 @@ CreateDataFile <- function(
     assays = "RNA",
     layers = "data",
     compression_level = 6,
-    overwrite = FALSE) {
+    overwrite = TRUE) {
   if (missing(DataFile) || is.null(DataFile)) {
     DataFile <- "Data.hdf5"
   }
@@ -38,7 +47,7 @@ CreateDataFile <- function(
     rhdf5::h5createGroup(file = DataFile, group = name)
   }
 
-  log_message("Write the expression matrix to hdf5 file: ", DataFile)
+  log_message("Write the expression matrix to hdf5 file: {.val {DataFile}}")
   for (assay in assays) {
     for (layer in layers) {
       data <- Matrix::t(
@@ -48,65 +57,73 @@ CreateDataFile <- function(
           assay = assay
         )
       )
+      assay_layer_group <- paste0(name, "/", assay, "/", layer)
+      assay_group <- paste0(name, "/", assay)
       if (isTRUE(overwrite)) {
         try(
           rhdf5::h5delete(
             file = DataFile,
-            name = paste0(name, "/", assay, "/", layer)
+            name = assay_layer_group
           ),
           silent = TRUE
         )
       }
-      if (paste0(name, "/", assay, "/", layer) %in% rhdf5::h5ls(DataFile)$group) {
-        log_message("Group ", paste0(name, "/", assay, "/", layer), " already exists in the ", DataFile)
+      if (assay_layer_group %in% rhdf5::h5ls(DataFile)$group) {
+        log_message("Group {.val {assay_layer_group}} already exists in the {.arg DataFile}")
       } else {
-        if (!paste0(name, "/", assay) %in% rhdf5::h5ls(DataFile)$group) {
+        if (!assay_group %in% rhdf5::h5ls(DataFile)$group) {
           rhdf5::h5createGroup(
             file = DataFile,
-            group = paste0(name, "/", assay)
+            group = assay_group
           )
         }
         if (!inherits(data, "dgCMatrix")) {
-          data <- SeuratObject::as.sparse(data[1:nrow(data), ])
+          data <- SeuratObject::as.sparse(data[seq_len(nrow(data)), ])
         }
         HDF5Array::writeTENxMatrix(
-          x = data,
+          data,
           filepath = DataFile,
-          group = paste0(name, "/", assay, "/", layer),
+          group = assay_layer_group,
           level = compression_level
         )
       }
     }
   }
+
+  default_assay_group <- paste0(name, "/Default_assay")
   if (isTRUE(overwrite)) {
-    try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/Default_assay")), silent = TRUE)
+    try(rhdf5::h5delete(file = DataFile, name = default_assay_group), silent = TRUE)
   }
-  if (paste0(name, "/Default_assay") %in% rhdf5::h5ls(DataFile)$group) {
+  if (default_assay_group %in% rhdf5::h5ls(DataFile)$group) {
     log_message(
-      "Group ", paste0(name, "/Default_assay"), " already exists in the ", DataFile
+      "Group {.val {default_assay_group}} already exists in the {.arg DataFile}"
     )
   } else {
-    rhdf5::h5write(obj = DefaultAssay(srt), file = DataFile, name = paste0(name, "/Default_assay"), level = compression_level)
+    rhdf5::h5write(obj = DefaultAssay(srt), file = DataFile, name = default_assay_group, level = compression_level)
   }
+
+  cells_group <- paste0(name, "/cells")
   if (isTRUE(overwrite)) {
-    try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/cells")), silent = TRUE)
+    try(rhdf5::h5delete(file = DataFile, name = cells_group), silent = TRUE)
   }
-  if (paste0(name, "/cells") %in% rhdf5::h5ls(DataFile)$group) {
+  if (cells_group %in% rhdf5::h5ls(DataFile)$group) {
     log_message(
-      "Group ", paste0(name, "/cells"), " already exists in the ", DataFile
+      "Group {.val {cells_group}} already exists in the {.arg DataFile}"
     )
   } else {
-    rhdf5::h5write(obj = colnames(srt), file = DataFile, name = paste0(name, "/cells"), level = compression_level)
+    rhdf5::h5write(obj = colnames(srt), file = DataFile, name = cells_group, level = compression_level)
   }
+
+  features_group <- paste0(name, "/features")
   if (isTRUE(overwrite)) {
-    try(rhdf5::h5delete(file = DataFile, name = paste0(name, "/features")), silent = TRUE)
+    try(rhdf5::h5delete(file = DataFile, name = features_group), silent = TRUE)
   }
-  if (paste0(name, "/features") %in% rhdf5::h5ls(DataFile)$group) {
+  if (features_group %in% rhdf5::h5ls(DataFile)$group) {
     log_message(
-      "Group ", paste0(name, "/features"), " already exists in the ", DataFile
+      "Group {.val {features_group}} already exists in the {.arg DataFile}"
     )
   } else {
-    rhdf5::h5write(obj = unique(unlist(lapply(srt@assays, rownames))), file = DataFile, name = paste0(name, "/features"), level = compression_level)
+    rhdf5::h5write(obj = unique(unlist(lapply(srt@assays, rownames))), file = DataFile, name = features_group, level = compression_level)
   }
   return(invisible(NULL))
 }
@@ -124,7 +141,7 @@ CreateDataFile <- function(
 #' @param compression_level The level of compression for the meta file. Default is 6.
 #' @param overwrite A logical value indicating whether to overwrite existing metadata and reductions in the meta file. Default is FALSE.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateDataFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 CreateMetaFile <- function(
@@ -369,7 +386,7 @@ CreateMetaFile <- function(
 #' @param object A Seurat object or a list of Seurat objects.
 #' @param base_dir The base directory where the SCExplorer hdf5 files will be written. Default is "SCExplorer".
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{FetchH5}} \code{\link{RunSCExplorer}}
+#' @seealso \link{CreateDataFile}, \link{CreateMetaFile}, \link{FetchH5}, \link{RunSCExplorer}
 #'
 #' @export
 #' @examples
@@ -392,7 +409,7 @@ PrepareSCExplorer <- function(
     overwrite = FALSE) {
   base_dir <- normalizePath(base_dir, mustWork = FALSE)
   if (!dir.exists(base_dir)) {
-    log_message("Create SCExplorer base directory: ", base_dir)
+    log_message("Create SCExplorer base directory: {.file {base_dir}}")
     dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
   }
   DataFile_full <- paste0(base_dir, "/", DataFile)
@@ -421,22 +438,22 @@ PrepareSCExplorer <- function(
   for (i in seq_along(object)) {
     nm <- names(object)[i]
     srt <- object[[nm]]
-    log_message("Prepare data for object: ", nm)
+    log_message("Prepare data for object: {.val {nm}}")
     if (length(SeuratObject::Reductions(srt)) == 0) {
       log_message(
-        paste0("No reduction found in the Seurat object ", i),
+        "No reduction found in the Seurat object {.val {i}}",
         message_type = "error"
       )
     }
     if (!any(assays %in% SeuratObject::Assays(srt))) {
       log_message(
-        paste0("Assay:", assays[!assays %in% SeuratObject::Assays(srt)], " is not in the Seurat object ", i),
+        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in the Seurat object {.val {i}}",
         message_type = "warning"
       )
       assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
         log_message(
-          paste0("No assays found in the Seurat object ", i, ". Use the default assay to create data file."),
+          "No assays found in the Seurat object {.val {i}}. Use the default assay to create data file.",
           message_type = "warning"
         )
         assays <- SeuratObject::DefaultAssay(srt)
@@ -469,22 +486,30 @@ PrepareSCExplorer <- function(
   return(invisible(NULL))
 }
 
-#' Fetch data from the hdf5 file
+#' @title Fetch data from the hdf5 file
 #'
-#' This function fetches data from an hdf5 file. It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
+#' @description
+#' This function fetches data from an hdf5 file.
+#' It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
 #'
+#' @md
 #' @param DataFile The path to the hdf5 file containing the data.
 #' @param MetaFile The path to the hdf5 file containing the metadata.
-#' @param name The name of the dataset in the hdf5 file. If not specified, the function will attempt to find the shared group name in both files.
-#' @param features The names of the genes or features to fetch. If specified, only these features will be fetched.
-#' @param layer The layer for the counts in the hdf5 file. If not specified, the first layer will be used.
-#' @param assay The name of the assay to use. If not specified, the default assay in the hdf5 file will be used.
+#' @param assay The name of the assay to use.
+#' If not specified, the default assay in the hdf5 file will be used.
+#' @param layer The layer for the counts in the hdf5 file.
+#' If not specified, the first layer will be used.
+#' @param name The name of the dataset in the hdf5 file.
+#' If not specified, the function will attempt to find the shared group name in both files.
+#' @param features The names of the genes or features to fetch.
+#' If specified, only these features will be fetched.
 #' @param metanames The names of the metadata columns to fetch.
 #' @param reduction The name of the reduction to fetch.
 #'
 #' @return A Seurat object with the fetched data.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{RunSCExplorer}}
+#' @seealso
+#' \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
 #'
 #' @export
 #' @examples
@@ -534,15 +559,12 @@ FetchH5 <- function(
     group <- sapply(group, function(x) substr(x, 2, nchar(x)))
     if (length(group) == 0) {
       log_message(
-        "Can not find the shared group name in the DataFile and the MetaFile. They may not correspond to the same project.",
+        "Can not find the shared group name in the {.arg DataFile} and the {.arg MetaFile}. They may not correspond to the same project",
         message_type = "error"
       )
     } else if (length(group) > 1) {
       log_message(
-        length(group),
-        " possible dataset names were found: ",
-        paste(group, collapse = ", "),
-        "\nUse the first one."
+        "{.val {length(group)}} possible dataset names were found: {.val {group}}, use the first one"
       )
     }
     name <- group[1]
@@ -572,11 +594,7 @@ FetchH5 <- function(
 
   if (!is.null(features) && any(!features %in% c(all_features, meta_features_name))) {
     log_message(
-      paste0(
-        "Can not find the features: ",
-        paste0(features[!features %in% c(all_features, meta_features_name)], collapse = ","),
-        immediate. = TRUE
-      ),
+      "Can not find the features: {.val {features[!features %in% c(all_features, meta_features_name)]}}",
       message_type = "warning"
     )
   }
@@ -585,11 +603,7 @@ FetchH5 <- function(
 
   if (!is.null(metanames) && any(!metanames %in% c(meta_features_name, meta_groups_name))) {
     log_message(
-      paste0(
-        "Can not find the meta information: ",
-        paste0(metanames[!metanames %in% c(meta_features_name, meta_groups_name)], collapse = ","),
-        immediate. = TRUE
-      ),
+      "Can not find the meta information: {.val {metanames[!metanames %in% c(meta_features_name, meta_groups_name)]}}",
       message_type = "warning"
     )
   }
@@ -623,17 +637,16 @@ FetchH5 <- function(
       )
       layer <- ifelse("counts" %in% layers, "counts", layers[1])
     }
-    if (!paste0(name, "/", assay, "/", layer) %in% rhdf5::h5ls(DataFile)[["group"]]) {
+    assay_layer_group <- paste0(name, "/", assay, "/", layer)
+    if (!assay_layer_group %in% rhdf5::h5ls(DataFile)[["group"]]) {
       log_message(
-        paste0(
-          "There is no ", paste0(name, "/", assay, "/", layer), " in DataFile, please write it first using the PrepareSCExplorer function"
-        ),
+        "There is no {.val {assay_layer_group}} in {.arg DataFile}, please write it first using the {.fn PrepareSCExplorer} function",
         message_type = "error"
       )
     }
     data <- HDF5Array::TENxMatrix(
       filepath = DataFile,
-      group = paste0(name, "/", assay, "/", layer)
+      group = assay_layer_group
     )
     gene_features <- gene_features[gene_features %in% colnames(data)]
   }
@@ -694,7 +707,7 @@ FetchH5 <- function(
     reduction <- reduction_name[agrep(reduction, reduction_name)]
     if (length(reduction) == 0) {
       log_message(
-        paste0("Can not find the reduction: ", as.character(reduction)),
+        "Can not find the reduction: {.val {reduction}}",
         message_type = "error"
       )
     }
@@ -726,98 +739,104 @@ FetchH5 <- function(
 
 CreateSeuratObject2 <- function(
     counts,
-    project = "SeuratProject",
     assay = "RNA",
     names.field = 1,
     names.delim = "_",
     meta.data = NULL,
+    project = "SeuratProject",
     idents = "SeuratObject",
     ...) {
-  if (!is.null(x = meta.data)) {
-    if (is.null(x = rownames(x = meta.data))) {
+  if (!is.null(meta.data)) {
+    if (is.null(rownames(meta.data))) {
       log_message(
         "Row names not set in metadata. Please ensure that rownames of metadata match column names of data matrix",
         message_type = "error"
       )
     }
-    if (length(x = setdiff(
-      x = rownames(x = meta.data),
-      y = colnames(x = counts)
-    ))) {
+    if (length(setdiff(rownames(meta.data), colnames(counts)))) {
       log_message(
         "Some cells in meta.data not present in provided counts matrix.",
         message_type = "warning"
       )
-      meta.data <- meta.data[intersect(x = rownames(x = meta.data), y = colnames(x = counts)), , drop = FALSE]
+      meta.data <- meta.data[intersect(rownames(meta.data), colnames(counts)), , drop = FALSE]
     }
-    if (is.data.frame(x = meta.data)) {
-      new.meta.data <- data.frame(row.names = colnames(x = counts))
-      for (ii in 1:ncol(x = meta.data)) {
-        new.meta.data[rownames(x = meta.data), colnames(x = meta.data)[ii]] <- meta.data[, ii, drop = FALSE]
+    if (is.data.frame(meta.data)) {
+      new.meta.data <- data.frame(row.names = colnames(counts))
+      for (ii in seq_len(ncol(meta.data))) {
+        new.meta.data[rownames(meta.data), colnames(meta.data)[ii]] <- meta.data[, ii, drop = FALSE]
       }
       meta.data <- new.meta.data
     }
   }
-  if (!length(x = SeuratObject::Key(object = counts)) || !nchar(x = SeuratObject::Key(object = counts))) {
-    SeuratObject::Key(object = counts) <- tolower(x = assay)
+  if (!length(SeuratObject::Key(object = counts)) || !nchar(SeuratObject::Key(object = counts))) {
+    SeuratObject::Key(object = counts) <- tolower(assay)
   }
   assay.list <- list(counts)
-  names(x = assay.list) <- assay
-  if (any(is.na(x = idents))) {
+  names(assay.list) <- assay
+  if (any(is.na(idents))) {
     log_message(
       "Input parameters result in NA values for initial cell identities. Setting all initial idents to the project name",
       message_type = "warning"
     )
   }
-  ident.levels <- length(x = unique(x = idents))
-  if (ident.levels > 100 || ident.levels == 0 || ident.levels == length(x = idents)) {
-    idents <- rep.int(x = factor(x = project), times = ncol(x = counts))
+  ident.levels <- length(unique(idents))
+  if (ident.levels > 100 || ident.levels == 0 || ident.levels == length(idents)) {
+    idents <- rep.int(factor(project), times = ncol(counts))
   }
-  names(x = idents) <- colnames(x = counts)
+  names(idents) <- colnames(counts)
   object <- methods::new(
     Class = "Seurat",
     assays = assay.list,
-    meta.data = data.frame(row.names = colnames(x = counts)),
+    meta.data = data.frame(row.names = colnames(counts)),
     active.assay = assay,
     active.ident = idents,
     project.name = project,
     version = utils::packageVersion(pkg = "SeuratObject")
   )
   object@meta.data[["orig.ident"]] <- idents
-  if (!is.null(x = meta.data)) {
-    object <- SeuratObject::AddMetaData(object = object, metadata = meta.data)
+  if (!is.null(meta.data)) {
+    object <- SeuratObject::AddMetaData(
+      object = object,
+      metadata = meta.data
+    )
   }
   return(object)
 }
 
-#' RunSCExplorer
+#' @title Run SCExplorer
 #'
-#' @param base_dir A string. The base directory of the SCExplorer app. Default is "SCExplorer".
-#' @param DataFile A string. The name of the HDF5 file that stores data matrices for each dataset. Default is "Data.hdf5".
-#' @param MetaFile A string. The name of the HDF5 file that stores metadata for each dataset. Default is "Meta.hdf5".
-#' @param title A string. The title of the SCExplorer app. Default is "SCExplorer".
-#' @param initial_dataset A string. The initial dataset to be loaded into the app. Default is NULL.
-#' @param initial_reduction A string. The initial dimensional reduction method to be loaded into the app. Default is NULL.
-#' @param initial_group A string. The initial variable to group cells in the app. Default is NULL.
-#' @param initial_feature A string. The initial feature to be loaded into the app. Default is NULL.
-#' @param initial_assay A string. The initial assay to be loaded into the app. Default is NULL.
-#' @param initial_slot A string. The initial layer to be loaded into the app. Default is NULL.
-#' @param initial_label A string. Whether to add labels in the initial plot. Default is FALSE.
-#' @param initial_cell_palette A string. The initial color palette for cells. Default is "Paired".
-#' @param initial_feature_palette A string. The initial color palette for features. Default is "Spectral".
-#' @param initial_theme A string. The initial theme for plots. Default is "theme_scop".
-#' @param initial_size A numeric. The initial size of plots. Default is 4.
-#' @param initial_ncol A numeric. The initial number of columns for arranging plots. Default is 3.
-#' @param initial_arrange A logical. Whether to use "Row" as the initial arrangement. Default is TRUE.
-#' @param initial_raster A logical. Whether to perform rasterization in the initial plot. By default, it is set to automatic, meaning it will be TRUE if the number of cells in the initial datasets exceeds 100,000.
-#' @param session_workers A numeric. The number of workers for concurrent execution in an asynchronous programming session. Default is 2.
-#' @param plotting_workers A numeric. The number of threads per worker for parallel plotting. Default is 8.
-#' @param create_script A logical. Whether to create the SCExplorer app script. Default is TRUE.
-#' @param style_script A logical. Whether to style the SCExplorer app script. Default is TRUE.
-#' @param overwrite A logical. Whether to overwrite existing files. Default is FALSE.
-#' @param return_app A logical. Whether to return the SCExplorer app. Default is TRUE.
+#' @md
+#' @param base_dir The base directory of the SCExplorer app.
+#' Default is `"SCExplorer"`.
+#' @param DataFile The name of the HDF5 file that stores data matrices for each dataset. Default is `"Data.hdf5"`.
+#' @param MetaFile The name of the HDF5 file that stores metadata for each dataset. Default is `"Meta.hdf5"`.
+#' @param title The title of the SCExplorer app. Default is `"SCExplorer"`.
+#' @param initial_dataset The initial dataset to be loaded into the app. Default is `NULL`.
+#' @param initial_reduction The initial dimensional reduction method to be loaded into the app. Default is `NULL`.
+#' @param initial_group The initial variable to group cells in the app. Default is `NULL`.
+#' @param initial_feature The initial feature to be loaded into the app. Default is `NULL`.
+#' @param initial_assay The initial assay to be loaded into the app. Default is `NULL`.
+#' @param initial_slot The initial layer to be loaded into the app. Default is `NULL`.
+#' @param initial_label Whether to add labels in the initial plot. Default is `FALSE`.
+#' @param initial_cell_palette The initial color palette for cells. Default is `"Paired"`.
+#' @param initial_feature_palette The initial color palette for features. Default is `"Spectral"`.
+#' @param initial_theme The initial theme for plots. Default is `"theme_scop"`.
+#' @param initial_size The initial size of plots. Default is 4.
+#' @param initial_ncol The initial number of columns for arranging plots. Default is 3.
+#' @param initial_arrange Whether to use "Row" as the initial arrangement. Default is `TRUE`.
+#' @param initial_raster Whether to perform rasterization in the initial plot.
+#' By default, it is set to automatic, meaning it will be `TRUE` if the number of cells in the initial datasets exceeds 100,000.
+#' @param create_script Whether to create the SCExplorer app script.
+#' Default is `TRUE`.
+#' @param style_script Whether to style the SCExplorer app script.
+#' Default is `TRUE`.
+#' @param overwrite Whether to overwrite existing files.
+#' Default is `TRUE`.
+#' @param return_app Whether to return the SCExplorer app.
+#' Default is `TRUE`.
 #'
-#' @seealso \code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{FetchH5}}
+#' @seealso
+#' \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}
 #'
 #' @export
 #'
@@ -837,8 +856,7 @@ CreateSeuratObject2 <- function(
 #'     mouse_pancreas = pancreas_sub,
 #'     human_pancreas = panc8_sub
 #'   ),
-#'   base_dir = "./SCExplorer",
-#'   overwrite = TRUE
+#'   base_dir = "./SCExplorer"
 #' )
 #'
 #' # Create the app.R script
@@ -846,9 +864,7 @@ CreateSeuratObject2 <- function(
 #'   base_dir = "./SCExplorer",
 #'   initial_dataset = "mouse_pancreas",
 #'   initial_group = "CellType",
-#'   initial_feature = "Ncoa2",
-#'   session_workers = 2,
-#'   overwrite = TRUE
+#'   initial_feature = "Ncoa2"
 #' )
 #' # This directory can be used as site directory for Shiny Server.
 #' list.files("./SCExplorer")
@@ -875,9 +891,9 @@ CreateSeuratObject2 <- function(
 #' # install.packages("rsconnect")
 #' # library(rsconnect)
 #' # setAccountInfo(
-#' # name = "<NAME>",
-#' # token = "<TOKEN>",
-#' # secret = "<SECRET>"
+#' #   name = "<NAME>",
+#' #   token = "<TOKEN>",
+#' #   secret = "<SECRET>"
 #' # )
 #'
 #' ### step3: deploy the app
@@ -902,11 +918,9 @@ RunSCExplorer <- function(
     initial_ncol = 3,
     initial_arrange = NULL,
     initial_raster = NULL,
-    session_workers = 2,
-    plotting_workers = 8,
     create_script = TRUE,
     style_script = requireNamespace("styler", quietly = TRUE),
-    overwrite = FALSE,
+    overwrite = TRUE,
     return_app = TRUE) {
   check_r(
     c(
@@ -927,22 +941,19 @@ RunSCExplorer <- function(
   MetaFile_full <- paste0(base_dir, "/", MetaFile)
   if (!file.exists(DataFile_full) || !file.exists(MetaFile_full)) {
     log_message(
-      "Please create the DataFile and MetaFile using PrepareSCExplorer function first!",
+      "Please create the {.file {DataFile}} and {.file {MetaFile}} using {.fn PrepareSCExplorer} function first",
       message_type = "error"
     )
   }
 
   main_code <- '
-if (!file.exists("Rplots.pdf")) {
-  file.create("Rplots.pdf")
-}
 data_group <- rhdf5::h5ls(DataFile)$group
 meta_group <- rhdf5::h5ls(MetaFile)$group
 group <- intersect(data_group, meta_group)
 group <- group[group != "/"]
 group <- as.character(sapply(group, function(x) substr(x, 2, nchar(x))))
 if (length(group) == 0) {
-  stop("Can not find the shared group names in the DataFile and the MetaFile. They may not correspond to the same project.")
+  stop("Can not find the shared group names in the DataFile and the MetaFile. They may not correspond to the same project")
 }
 if (is.null(initial_dataset)) {
   initial_dataset <- group[1]
@@ -968,16 +979,32 @@ if (!initial_assay %in% assays) {
 if (!initial_slot %in% layers) {
   stop("initial_slot is not in the dataset ", initial_slot, " in the DataFile")
 }
-all_cells <- rhdf5::h5read(DataFile, name = paste0("/", initial_dataset, "/cells"))
+all_cells <- rhdf5::h5read(
+  DataFile, name = paste0("/", initial_dataset, "/cells")
+)
 
-data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", initial_dataset, "/", initial_assay, "/", initial_slot))
+data <- HDF5Array::TENxMatrix(
+  filepath = DataFile,
+  group = paste0("/", initial_dataset, "/", initial_assay, "/", initial_slot)
+)
 all_features <- colnames(data)
 
 meta_struc <- rhdf5::h5ls(MetaFile)
-meta_features_name <- rhdf5::h5read(MetaFile, name = paste0("/", initial_dataset, "/metadata.stat/asfeatures"))
-meta_groups_name <- rhdf5::h5read(MetaFile, name = paste0("/", initial_dataset, "/metadata.stat/asgroups"))
+meta_features_name <- rhdf5::h5read(
+  MetaFile,
+  name = paste0("/", initial_dataset, "/metadata.stat/asfeatures")
+)
+meta_groups_name <- rhdf5::h5read(
+  MetaFile,
+  name = paste0("/", initial_dataset, "/metadata.stat/asgroups")
+)
 reduction_name <- meta_struc[meta_struc$group == paste0("/", initial_dataset, "/reductions"), "name"]
-default_reduction <- as.character(rhdf5::h5read(MetaFile, name = paste0("/", initial_dataset, "/reductions.stat/Default_reduction")))
+default_reduction <- as.character(
+  rhdf5::h5read(
+    MetaFile,
+    name = paste0("/", initial_dataset, "/reductions.stat/Default_reduction")
+  )
+)
 
 if (is.null(initial_reduction)) {
   initial_reduction <- default_reduction
@@ -998,16 +1025,21 @@ if (is.null(initial_raster)) {
 palette_list <- scop::palette_list
 theme_list <- list(
   scop = c("theme_scop", "theme_blank"),
-  ggplot2 = c("theme_classic", "theme_linedraw", "theme_minimal", "theme_void", "theme_grey", "theme_dark", "theme_light")
+  ggplot2 = c(
+    "theme_classic", "theme_linedraw", "theme_minimal",
+    "theme_void", "theme_grey", "theme_dark", "theme_light"
+  )
 )
-themes <- stats::setNames(rep(names(theme_list), sapply(theme_list, length)), unlist(theme_list))
+themes <- stats::setNames(
+  rep(names(theme_list), sapply(theme_list, length)), unlist(theme_list)
+)
 panel_raster <- FALSE
 
 ui <- fluidPage(
   theme = page_theme,
   navbarPage(
     title = title,
-    # 1. Cell dimensional reduction plot ----------------------------------------------------------------------
+    # ---------- 1. Cell dimensional reduction plot ----------
     tabPanel(
       title = "Cell dimensional reduction plot",
       sidebarLayout(
@@ -1122,12 +1154,25 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
-              actionButton(inputId = "submit1", label = "Submit", icon("play"), class = "btn-info", width = "150px")
+              width = 6,
+              align = "center",
+              actionButton(
+                inputId = "submit1",
+                label = "Submit",
+                icon = icon("play"),
+                class = "btn-info",
+                width = "150px"
+              )
             ),
             column(
-              width = 6, align = "center",
-              downloadButton(outputId = "download1", label = "Download", class = "btn-warning", width = "150px")
+              width = 6,
+              align = "center",
+              downloadButton(
+                outputId = "download1",
+                label = "Download",
+                class = "btn-warning",
+                width = "150px"
+              )
             )
           )
         ),
@@ -1151,7 +1196,9 @@ ui <- fluidPage(
                   width = 12, offset = 0, style = "padding:0px;margin:0%",
                   div(
                     style = "overflow-x: auto;",
-                    plotly::plotlyOutput("plot1_3d", height = "100%", width = "100%")
+                    plotly::plotlyOutput(
+                      "plot1_3d", height = "100%", width = "100%"
+                    )
                   )
                 )
               )
@@ -1160,7 +1207,7 @@ ui <- fluidPage(
         )
       )
     ),
-    # 2. Feature dimensional reduction plot ----------------------------------------------------------------------
+    # ---------- 2. Feature dimensional reduction plot ----------
     tabPanel(
       title = "Feature dimensional reduction plot",
       sidebarLayout(
@@ -1232,7 +1279,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 4, align = "center",
+              width = 4,
+              align = "center",
               radioButtons(
                 inputId = "coExp2",
                 label = "Co-expression",
@@ -1242,7 +1290,8 @@ ui <- fluidPage(
               ),
             ),
             column(
-              width = 4, align = "center",
+              width = 4,
+              align = "center",
               radioButtons(
                 inputId = "scale2",
                 label = "Color scale",
@@ -1252,7 +1301,8 @@ ui <- fluidPage(
               ),
             ),
             column(
-              width = 4, align = "center",
+              width = 4,
+              align = "center",
               radioButtons(
                 inputId = "raster2",
                 label = "Raster",
@@ -1264,7 +1314,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "pt_size2",
                 label = "Point size",
@@ -1276,7 +1327,8 @@ ui <- fluidPage(
               )
             ),
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "size2",
                 label = "Panel size",
@@ -1290,7 +1342,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "ncol2",
                 label = "Number of columns",
@@ -1313,12 +1366,24 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
-              actionButton(inputId = "submit2", label = "Submit", icon("play"), class = "btn-info", width = "150px")
+              width = 6,
+              align = "center",
+              actionButton(
+                inputId = "submit2",
+                label = "Submit",
+                icon = icon("play"),
+                class = "btn-info",
+                width = "150px"
+              )
             ),
             column(
               width = 6, align = "center",
-              downloadButton(outputId = "download2", label = "Download", class = "btn-warning", width = "150px")
+              downloadButton(
+                outputId = "download2",
+                label = "Download",
+                class = "btn-warning",
+                width = "150px"
+              )
             )
           )
         ),
@@ -1328,7 +1393,9 @@ ui <- fluidPage(
             tabPanel(
               title = "2D plot",
               column(
-                width = 12, offset = 0, style = "padding:0px;margin:0%",
+                width = 12,
+                offset = 0,
+                style = "padding:0px;margin:0%",
                 div(
                   style = "overflow-x: auto;",
                   uiOutput("plot2")
@@ -1338,10 +1405,14 @@ ui <- fluidPage(
             tabPanel(
               title = "3D plot",
               column(
-                width = 12, offset = 0, style = "padding:0px;margin:0%",
+                width = 12,
+                offset = 0,
+                style = "padding:0px;margin:0%",
                 div(
                   style = "overflow-x: auto;",
-                  plotly::plotlyOutput("plot2_3d", height = "100%", width = "100%")
+                  plotly::plotlyOutput(
+                    "plot2_3d", height = "100%", width = "100%"
+                  )
                 )
               )
             )
@@ -1349,7 +1420,7 @@ ui <- fluidPage(
         )
       )
     ),
-    # 3. Cell statistical plot ----------------------------------------------------------------------
+    # ---------- 3. Cell statistical plot ----------
     tabPanel(
       title = "Cell statistical plot",
       sidebarLayout(
@@ -1392,7 +1463,10 @@ ui <- fluidPage(
               selectInput(
                 inputId = "plottype3",
                 label = "Plot type",
-                choices = c("bar", "rose", "ring", "pie", "trend", "area", "dot"),
+                choices = c(
+                  "bar", "rose", "ring", "pie",
+                  "trend", "area", "dot"
+                ),
                 selected = "bar"
               )
             ),
@@ -1417,7 +1491,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               radioButtons(
                 inputId = "label3",
                 label = "Label",
@@ -1427,7 +1502,8 @@ ui <- fluidPage(
               )
             ),
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               radioButtons(
                 inputId = "flip3",
                 label = "Flip",
@@ -1451,7 +1527,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               radioButtons(
                 inputId = "aspectratio3",
                 label = "Aspect ratio",
@@ -1460,7 +1537,8 @@ ui <- fluidPage(
               )
             ),
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               conditionalPanel(
                 condition = "input.aspectratio3 == \'custom\'",
                 numericInput(
@@ -1477,7 +1555,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "labelsize3",
                 label = "Label size",
@@ -1489,7 +1568,8 @@ ui <- fluidPage(
               )
             ),
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "size3",
                 label = "Panel size",
@@ -1503,7 +1583,8 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               numericInput(
                 inputId = "ncol3",
                 label = "Number of columns",
@@ -1515,7 +1596,8 @@ ui <- fluidPage(
               )
             ),
             column(
-              width = 6, align = "center",
+              width = 6,
+              align = "center",
               radioButtons(
                 inputId = "arrange3",
                 label = "Arrange by",
@@ -1526,12 +1608,25 @@ ui <- fluidPage(
           ),
           fluidRow(
             column(
-              width = 6, align = "center",
-              actionButton(inputId = "submit3", label = "Submit", icon("play"), class = "btn-info", width = "150px")
+              width = 6,
+              align = "center",
+              actionButton(
+                inputId = "submit3",
+                label = "Submit",
+                icon = icon("play"),
+                class = "btn-info",
+                width = "150px"
+              )
             ),
             column(
-              width = 6, align = "center",
-              downloadButton(outputId = "download3", label = "Download", class = "btn-warning", width = "150px")
+              width = 6,
+              align = "center",
+              downloadButton(
+                outputId = "download3",
+                label = "Download",
+                class = "btn-warning",
+                width = "150px"
+              )
             )
           )
         ),
@@ -1554,7 +1649,7 @@ ui <- fluidPage(
         )
       )
     ),
-    # 4. Feature statistical plot ----------------------------------------------------------------------
+    # ---------- 4. Feature statistical plot ----------
     tabPanel(
       title = "Feature statistical plot",
       sidebarLayout(
@@ -1830,7 +1925,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  # Initial  ----------------------------------------------------------------
+  # ---------- Initial ----------
   promisedData <- reactiveValues()
 
   get_attr <- function(x, attr, verbose = FALSE) {
@@ -1859,7 +1954,7 @@ server <- function(input, output, session) {
     }
   }
 
-  # change dataset  ----------------------------------------------------------------
+  # ---------- change dataset ----------
   observe({
     meta_groups_name <- rhdf5::h5read(MetaFile, name = paste0("/", input$dataset1, "/metadata.stat/asgroups"))
     reduction_name <- meta_struc[meta_struc$group == paste0("/", input$dataset1, "/reductions"), "name"]
@@ -1950,7 +2045,7 @@ server <- function(input, output, session) {
     }
   }) %>% bindEvent(input$group4, ignoreNULL = TRUE, ignoreInit = FALSE)
 
-  # submit1  ----------------------------------------------------------------
+  # ---------- submit1 ----------
   r1 <- reactive({
     dataset1 <- input$dataset1
     reduction1 <- input$reduction1
@@ -1969,36 +2064,24 @@ server <- function(input, output, session) {
     ncol1 <- input$ncol1
     byrow1 <- input$arrange1
 
-    # lapply(grep("1$",names(input),value = TRUE), function(x)print(paste0(x,":",input[[x]])))
-
     promisedData[["p1_dim"]] <- NULL
     promisedData[["p1_3d"]] <- NULL
     promises::future_promise(
       {
-        # print("******************************** New task ********************************")
-        # print(">>> fetch data:")
-        # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset1,
           metanames = unique(c(group1, split1)), reduction = reduction1
         )
-        # ))
 
         theme1 <- get(theme1, envir = asNamespace(themes[theme1]))
 
-        # print(">>> plot:")
-        # print(system.time(
         p1_dim <- scop::CellDimPlot(srt_tmp,
           group.by = group1, split.by = split1, reduction = reduction1, raster = raster1, pt.size = pt_size1,
           label = label1, palette = palette1, theme_use = theme1,
           ncol = ncol1, byrow = byrow1, force = TRUE
         )
-        # ))
 
-        # print(">>> panel_fix:")
-        # print(system.time(
-        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
-        # ))
+        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p1_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2029,8 +2112,6 @@ server <- function(input, output, session) {
       dpi <- get_attr(x[[1]], "dpi")
 
       prog$set(value = 8, message = "Render plot...", detail = "[Cell dimensional reduction plot]")
-      # print("renderPlot:")
-      # print(system.time(
       output$plot1 <- renderUI({
         renderPlot(
           {
@@ -2041,14 +2122,10 @@ server <- function(input, output, session) {
           res = 96
         )
       })
-      # ))
 
-      # print("renderPlotly:")
-      # print(system.time(
       output$plot1_3d <- plotly::renderPlotly({
         x[[2]]
       })
-      # ))
     }) %>%
       finally(~ {
         prog$set(value = 10, message = "Done.", detail = "[Cell dimensional reduction plot]")
@@ -2087,7 +2164,7 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # submit2  ----------------------------------------------------------------
+  # ---------- submit2 ----------
   r2 <- reactive({
     dataset2 <- input$dataset2
     reduction2 <- input$reduction2
@@ -2110,13 +2187,11 @@ server <- function(input, output, session) {
     ncol2 <- input$ncol2
     byrow2 <- input$arrange2
 
-    # lapply(grep("2$",names(input),value = TRUE), function(x)print(paste0(x,":",input[[x]])))
-
     data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", dataset2, "/", assays2, "/", slots2))
     all_features <- colnames(data)
     meta_features_name <- rhdf5::h5read(MetaFile, name = paste0("/", dataset2, "/metadata.stat/asfeatures"))
 
-    feature_area2 <- gsub(x = unlist(strsplit(feature_area2, "(\\r)|(\\n)", perl = TRUE)), pattern = " ", replacement = "")
+    feature_area2 <- gsub(unlist(strsplit(feature_area2, "(\\r)|(\\n)", perl = TRUE)), pattern = " ", replacement = "")
     features2 <- c(as.character(features2), as.character(feature_area2))
     features2 <- unique(features2[features2 %in% c(all_features, meta_features_name)])
     if (length(features2) == 0) {
@@ -2127,31 +2202,21 @@ server <- function(input, output, session) {
     promisedData[["p2_3d"]] <- NULL
     promises::future_promise(
       {
-        # print("******************************** New task ********************************")
-        # print(">>> fetch data:")
-        # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset2,
           features = features2, layer = slots2, assay = assays2,
           metanames = split2, reduction = reduction2
         )
-        # ))
 
         theme2 <- get(theme2, envir = asNamespace(themes[theme2]))
 
-        # print(">>> plot:")
-        # print(system.time(
         p2_dim <- scop::FeatureDimPlot(
           srt = srt_tmp, features = features2, split.by = split2, reduction = reduction2, layer = "data", raster = raster2, pt.size = pt_size2,
           calculate_coexp = coExp2, keep_scale = scale2, palette = palette2, theme_use = theme2,
           ncol = ncol2, byrow = byrow2, force = TRUE
         )
-        # ))
 
-        # print(">>> panel_fix:")
-        # print(system.time(
-        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
-        # ))
+        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p2_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2217,8 +2282,6 @@ server <- function(input, output, session) {
       dpi <- get_attr(x[[1]], "dpi")
 
       prog$set(value = 8, message = "Render plot...", detail = "[Feature dimensional reduction plot]")
-      # print("renderPlot:")
-      # print(system.time(
       output$plot2 <- renderUI({
         renderPlot(
           {
@@ -2229,14 +2292,10 @@ server <- function(input, output, session) {
           res = 96
         )
       })
-      # ))
 
-      # print("renderPlotly:")
-      # print(system.time(
       output$plot2_3d <- plotly::renderPlotly({
         x[[2]]
       })
-      # ))
     }) %>%
       finally(~ {
         prog$set(value = 10, message = "Done.", detail = "[Feature dimensional reduction plot]")
@@ -2244,7 +2303,7 @@ server <- function(input, output, session) {
       })
   }) %>% bindEvent(input$submit2, ignoreNULL = FALSE, ignoreInit = FALSE)
 
-  # submit3  ----------------------------------------------------------------
+  # ---------- submit3 ----------
   r3 <- reactive({
     dataset3 <- input$dataset3
     plottype3 <- input$plottype3
@@ -2277,19 +2336,13 @@ server <- function(input, output, session) {
       aspect.ratio <- input$aspectratio_value3
     }
 
-    # lapply(grep("3$",names(input),value = TRUE), function(x)print(paste0(x,":",input[[x]])))
-
     promisedData[["p3"]] <- NULL
     promises::future_promise(
       {
-        # print("******************************** New task ********************************")
-        # print(">>> fetch data:")
-        # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset3,
           metanames = unique(c(stat3, group3, split3))
         )
-        # ))
 
         theme3 <- get(theme3, envir = asNamespace(themes[theme3]))
 
@@ -2306,8 +2359,6 @@ server <- function(input, output, session) {
           aspect.ratio <- ifelse(is.null(group3), 5, 5 / max(length(unique(srt_tmp@meta.data[cells, group3])), 1))
         }
 
-        # print(">>> plot:")
-        # print(system.time(
         p3 <- scop::CellStatPlot(
           srt = srt_tmp, stat.by = stat3, group.by = group3, split.by = split3, cells = cells,
           plot_type = plottype3, stat_type = stattype3, position = position3,
@@ -2315,16 +2366,12 @@ server <- function(input, output, session) {
           aspect.ratio = as.numeric(aspect.ratio), # must be class of numeric instead of integer
           ncol = ncol3, byrow = byrow3, force = TRUE
         )
-        # ))
 
-        # print(">>> panel_fix:")
-        # print(system.time(
         if (flip3) {
-          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
         }
-        # ))
         attr(p3, "dpi") <- 300
         return(p3)
       },
@@ -2350,8 +2397,6 @@ server <- function(input, output, session) {
       dpi <- get_attr(x, "dpi")
 
       prog$set(value = 8, message = "Render plot...", detail = "[Cell statistical plot]")
-      # print("renderPlot:")
-      # print(system.time(
       output$plot3 <- renderUI({
         renderPlot(
           {
@@ -2362,7 +2407,6 @@ server <- function(input, output, session) {
           res = 96
         )
       })
-      # ))
     }) %>%
       finally(~ {
         prog$set(value = 10, message = "Done.", detail = "[Cell statistical plot]")
@@ -2390,7 +2434,7 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # submit4  ----------------------------------------------------------------
+  # ---------- submit4 ----------
   r4 <- reactive({
     dataset4 <- input$dataset4
     group4 <- input$group4
@@ -2430,13 +2474,11 @@ server <- function(input, output, session) {
       aspect.ratio <- input$aspectratio_value4
     }
 
-    # lapply(grep("4$",names(input),value = TRUE), function(x)print(paste0(x,":",input[[x]])))
-
     data <- HDF5Array::TENxMatrix(filepath = DataFile, group = paste0("/", dataset4, "/", assays4, "/", slots4))
     all_features <- colnames(data)
     meta_features_name <- rhdf5::h5read(MetaFile, name = paste0("/", dataset4, "/metadata.stat/asfeatures"))
 
-    feature_area4 <- gsub(x = unlist(strsplit(feature_area4, "(\\r)|(\\n)", perl = TRUE)), pattern = " ", replacement = "")
+    feature_area4 <- gsub(unlist(strsplit(feature_area4, "(\\r)|(\\n)", perl = TRUE)), pattern = " ", replacement = "")
     features4 <- c(as.character(features4), as.character(feature_area4))
     features4 <- unique(features4[features4 %in% c(all_features, meta_features_name)])
     if (length(features4) == 0) {
@@ -2446,15 +2488,11 @@ server <- function(input, output, session) {
     promisedData[["p4"]] <- NULL
     promises::future_promise(
       {
-        # print("******************************** New task ********************************")
-        # print(">>> fetch data:")
-        # print(system.time(
         srt_tmp <- scop::FetchH5(
           DataFile = DataFile, MetaFile = MetaFile, name = dataset4,
           features = features4, layer = slots4, assay = assays4,
           metanames = unique(c(group4, split4))
         )
-        # ))
 
         theme4 <- get(theme4, envir = asNamespace(themes[theme4]))
 
@@ -2471,8 +2509,6 @@ server <- function(input, output, session) {
           aspect.ratio <- ifelse(is.null(group4), 5, 5 / max(length(unique(srt_tmp@meta.data[cells, group4])), 1))
         }
 
-        # print(">>> plot:")
-        # print(system.time(
         p4 <- scop::FeatureStatPlot(
           srt = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, layer = "data", plot_type = plottype4,
           calculate_coexp = coExp4, stack = stack4, flip = flip4,
@@ -2481,17 +2517,13 @@ server <- function(input, output, session) {
           aspect.ratio = as.numeric(aspect.ratio), # must be class of numeric instead of integer
           ncol = ncol4, byrow = byrow4, force = TRUE
         )
-        # ))
 
-        # print(">>> panel_fix:")
-        # print(system.time(
         if (flip4) {
-          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, BPPARAM = BPPARAM, verbose = FALSE)
+          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
         }
 
-        # ))
         attr(p4, "dpi") <- 300
         return(p4)
       },
@@ -2520,8 +2552,6 @@ server <- function(input, output, session) {
       dpi <- get_attr(x, "dpi")
 
       prog$set(value = 8, message = "Render plot...", detail = "[Feature statistical plot]")
-      # print("renderPlot:")
-      # print(system.time(
       output$plot4 <- renderUI({
         renderPlot(
           {
@@ -2532,7 +2562,6 @@ server <- function(input, output, session) {
           res = 96
         )
       })
-      # ))
     }) %>%
       finally(~ {
         prog$set(value = 10, message = "Done.", detail = "[Feature statistical plot]")
@@ -2575,11 +2604,7 @@ server <- function(input, output, session) {
       if (!requireNamespace('pak', quietly = TRUE)) {install.packages('pak')}
       pak::pak('mengxu98/scop')
     }",
-    "options(scop_virtualenv_init = FALSE)",
-    paste0("app_scop_version <- package_version('", as.character(utils::packageVersion("scop")), "')"),
-    paste0("if (utils::packageVersion('scop') < app_scop_version) {
-      stop(paste0('SCExplorer requires scop >= ", as.character(utils::packageVersion("scop")), "'))
-    }"),
+    "options(scop_env_init = FALSE)",
     "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
     "library(shiny)",
     "library(bslib)",
@@ -2589,12 +2614,6 @@ server <- function(input, output, session) {
     "library(ggplot2)",
     "library(rlang)",
     args_code,
-    "plan(multisession, workers = session_workers)",
-    "if (.Platform$OS.type == 'windows') {
-      BPPARAM = SerialParam()
-    } else {
-      BPPARAM = MulticoreParam(workers = plotting_workers)
-    }",
     "page_theme <- bs_theme(bootswatch = 'zephyr')",
     main_code,
     "shinyApp(ui = ui, server = server)"
@@ -2604,7 +2623,9 @@ server <- function(input, output, session) {
   if (isTRUE(create_script)) {
     app_file <- paste0(base_dir, "/app.R")
     if (!file.exists(app_file) || isTRUE(overwrite)) {
-      log_message("Create the SCExplorer app script: ", app_file)
+      log_message(
+        "Create the SCExplorer app script: {.file {app_file}}"
+      )
       suppressWarnings(file.remove(app_file))
       file.copy(from = temp, to = app_file, overwrite = TRUE)
       if (isTRUE(style_script)) {
@@ -2616,7 +2637,10 @@ server <- function(input, output, session) {
         )
       }
     } else {
-      log_message("app.R already exists. You may regenerate it with 'overwrite = TRUE'.")
+      log_message(
+        "{.file app.R} already exists. Regenerate it with {.arg overwrite = TRUE}",
+        message_type = "warning"
+      )
     }
   }
   unlink(temp)
