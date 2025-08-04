@@ -328,5 +328,5 @@ ht7$plot
 }
 }
 \seealso{
-\code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
+\link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
 }

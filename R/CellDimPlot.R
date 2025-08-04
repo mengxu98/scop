@@ -6,7 +6,7 @@
 #' @param srt A Seurat object.
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.
+#' If not specified, will use the reduction returned by \link{DefaultReduction}.
 #' @param split.by Name of a column in meta.data column to split plot by.
 #' @param palette Name of a color palette name collected in scop. Default is "Paired".
 #' @param palcolor Custom colors used to create a color palette.
@@ -135,7 +135,7 @@
 #' @param theme_args Other arguments passed to the \code{theme_use}.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \code{\link{FeatureDimPlot}}
+#' @seealso \link{FeatureDimPlot}
 #'
 #' @export
 #'
@@ -677,7 +677,7 @@ CellDimPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -696,7 +696,7 @@ CellDimPlot <- function(
   dat_meta <- srt@meta.data[, unique(c(group.by, split.by)), drop = FALSE]
   nlev <- sapply(dat_meta, nlevels)
   nlev <- nlev[nlev > 100]
-  if (length(nlev) > 0 && !isTRUE(force)) {
+  if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
       paste0(
         "The following variables have more than 100 levels: ",
@@ -705,7 +705,7 @@ CellDimPlot <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }
@@ -1158,7 +1158,7 @@ CellDimPlot <- function(
           )
       }
 
-      if (!is.null(cells.highlight_use) && !isTRUE(hex)) {
+      if (!is.null(cells.highlight_use) && isFALSE(hex)) {
         cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
         if (nrow(cell_df) > 0) {
           if (isTRUE(raster)) {
@@ -1337,7 +1337,7 @@ CellDimPlot <- function(
         )
         colnames(label_df)[1] <- "label"
         label_df <- label_df[!is.na(label_df[, "label"]), , drop = FALSE]
-        if (!isTRUE(label_insitu)) {
+        if (isFALSE(label_insitu)) {
           label_df[, "label"] <- seq_len(nrow(label_df))
         }
         if (isTRUE(label_repel)) {
@@ -1439,7 +1439,7 @@ CellDimPlot <- function(
 #' @param width Width in pixels, defaults to automatic sizing.
 #' @param height Height in pixels, defaults to automatic sizing.
 #' @param save The name of the file to save the plot to. Must end in ".html".
-#' @seealso \code{\link{CellDimPlot}} \code{\link{FeatureDimPlot3D}}
+#' @seealso \link{CellDimPlot}, \link{FeatureDimPlot3D}
 #'
 #' @export
 #'
@@ -1529,7 +1529,7 @@ CellDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -1573,7 +1573,7 @@ CellDimPlot3D <- function(
   )
   nlev <- sapply(dat_use[, group.by, drop = FALSE], nlevels)
   nlev <- nlev[nlev > 100]
-  if (length(nlev) > 0 && !isTRUE(force)) {
+  if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
       paste0(
         "The following variables have more than 100 levels: ",
@@ -1582,7 +1582,7 @@ CellDimPlot3D <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }

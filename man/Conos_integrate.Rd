@@ -42,7 +42,8 @@ Conos_integrate(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{Logical, if TRUE, the integrated data will be appended to the original Seurat object (srt_merge).}
+\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+Default is \code{TRUE}.}
 
 \item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
 
@@ -92,9 +93,11 @@ Conos_integrate(
 
 \item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
 
-\item{buildGraph_params}{A list of parameters for the buildGraph function, default is an empty list.}
+\item{buildGraph_params}{A list of parameters for the buildGraph function.
+Default is an empty list.}
 
-\item{num_threads}{An integer setting the number of threads for Conos, default is 2.}
+\item{num_threads}{An integer setting the number of threads for Conos.
+Default is 2.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 }

@@ -59,7 +59,7 @@
 #' @param byrow A logical value indicating whether to arrange the plots by row in the combined plot.
 #' Default is `TRUE`.
 #'
-#' @seealso \code{\link{RunDEtest}}
+#' @seealso \link{RunDEtest}
 #'
 #' @export
 #'

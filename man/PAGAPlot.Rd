@@ -270,5 +270,5 @@ PAGAPlot(
 }
 }
 \seealso{
-\code{\link{RunPAGA}} \code{\link{CellDimPlot}}
+\link{RunPAGA}, \link{CellDimPlot}
 }

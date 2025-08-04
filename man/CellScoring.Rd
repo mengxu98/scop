@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellScoring.R
 \name{CellScoring}
 \alias{CellScoring}
-\title{CellScoring}
+\title{Cell scoring}
 \usage{
 CellScoring(
   srt,
@@ -17,7 +17,7 @@ CellScoring(
   db_update = FALSE,
   db_version = "latest",
   convert_species = TRUE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -27,13 +27,15 @@ CellScoring(
   new_assay = FALSE,
   BPPARAM = BiocParallel::bpparam(),
   seed = 11,
+  cores = 1,
+  verbose = TRUE,
   ...
 )
 }
 \arguments{
-\item{srt}{A Seurat object}
+\item{srt}{A Seurat object.}
 
-\item{features}{A named list of feature lists for scoring. If NULLL, \code{db} will be used to create features sets.}
+\item{features}{A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.}
 
 \item{layer}{The layer of the Seurat object to use for scoring. Defaults to "data".}
 
@@ -71,9 +73,13 @@ CellScoring(
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Defaults to FALSE.}
 
-\item{BPPARAM}{The BiocParallel parameter object. Defaults to \code{\link[BiocParallel:register]{BiocParallel::bpparam()}}.}
+\item{BPPARAM}{The BiocParallel parameter object. Defaults to \link[BiocParallel:register]{BiocParallel::bpparam}.}
 
 \item{seed}{The random seed for reproducibility. Defaults to 11.}
+
+\item{cores}{The number of cores to use for \link[thisutils:parallelize_fun]{thisutils::parallelize_fun}. Defaults to 1.}
+
+\item{verbose}{Whether to print verbose output. Defaults to TRUE.}
 
 \item{...}{Additional arguments to be passed to the scoring methods.}
 }
@@ -83,15 +89,19 @@ It calculates scores for a given set of features and adds the scores as metadata
 }
 \examples{
 data(pancreas_sub)
-ccgenes <- CC_GenePrefetch("Mus_musculus")
+features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
-  srt = pancreas_sub,
-  features = list(S = ccgenes$S, G2M = ccgenes$G2M),
+  pancreas_sub,
+  features = list(
+    A = features_all[1:100],
+    B = features_all[101:200]
+  ),
   method = "Seurat",
-  name = "CC"
+  name = "test"
 )
-CellDimPlot(pancreas_sub, "CC_classification")
-FeatureDimPlot(pancreas_sub, "CC_G2M")
+CellDimPlot(pancreas_sub, "test_classification")
+
+FeatureDimPlot(pancreas_sub, "test_A")
 
 \dontrun{
 data(panc8_sub)
@@ -103,10 +113,10 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype")
- )
+)
 
 panc8_sub <- CellScoring(
-  srt = panc8_sub,
+  panc8_sub,
   layer = "data",
   assay = "RNA",
   db = "GO_BP",
@@ -127,10 +137,10 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype")
- )
+)
 
 pancreas_sub <- CellScoring(
-  srt = pancreas_sub,
+  pancreas_sub,
   layer = "data",
   assay = "RNA",
   db = "GO_BP",
@@ -143,7 +153,7 @@ pancreas_sub <- CellScoring(
 pancreas_sub <- standard_scop(
   pancreas_sub,
   assay = "GO"
- )
+)
 CellDimPlot(pancreas_sub, "SubCellType")
 
 pancreas_sub[["tech"]] <- "Mouse"
@@ -165,7 +175,7 @@ genenames <- make.unique(
 )
 names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
-  srt = panc8_sub,
+  panc8_sub,
   newnames = genenames,
   assay = "RNA"
 )
@@ -182,5 +192,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\code{\link{PrepareDB}} \code{\link{ListDB}}
+\link{PrepareDB}, \link{ListDB}
 }

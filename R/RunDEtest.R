@@ -217,7 +217,8 @@ WilcoxDETest <- function(
 #'
 #' @export
 #'
-#' @seealso \code{\link{RunEnrichment}} \code{\link{RunGSEA}} \code{\link{GroupHeatmap}}
+#' @seealso
+#' \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
