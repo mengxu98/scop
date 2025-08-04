@@ -236,7 +236,7 @@ GraphPlot <- function(
     }
   }
 
-  if (isTRUE(label) && !isTRUE(label_insitu)) {
+  if (isTRUE(label) && isFALSE(label_insitu)) {
     label_use <- paste0(
       1:nlevels(node[["node_group"]]),
       ": ",

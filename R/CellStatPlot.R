@@ -673,7 +673,7 @@ StatPlot <- function(
   ]
   nlev <- sapply(dat_all, nlevels)
   nlev <- nlev[nlev > 100]
-  if (length(nlev) > 0 && !isTRUE(force)) {
+  if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
       paste0(
         "The following variables have more than 100 levels: ",
@@ -682,7 +682,7 @@ StatPlot <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }

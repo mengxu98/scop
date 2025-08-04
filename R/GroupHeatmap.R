@@ -1175,7 +1175,7 @@ GroupHeatmap <- function(
       )
     }
     if (isTRUE(cluster_column_slices) && !is.null(split.by)) {
-      if (!isTRUE(cluster_columns)) {
+      if (isFALSE(cluster_columns)) {
         if (nlevels(column_split_list[[cell_group]]) == 1) {
           log_message(
             "cluster_column_slices=TRUE can not be used when there is only one group.",
@@ -1679,7 +1679,7 @@ GroupHeatmap <- function(
   ha_left <- NULL
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
-      if (!isTRUE(cluster_rows)) {
+      if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(
           Matrix::t(mat_split), row_split_raw
         )

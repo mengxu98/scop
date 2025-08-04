@@ -4,7 +4,7 @@
 \name{scop-package}
 \alias{scop}
 \alias{scop-package}
-\title{scop Single-Cell Omics analysis Pipeline}
+\title{Single-Cell Omics analysis Pipeline}
 \source{
 \url{https://github.com/mengxu98/scop}
 }

@@ -194,7 +194,7 @@ RunDimReduction <- function(
   }
 
   if (!is.null(linear_reduction)) {
-    if (!isTRUE(force_linear_reduction)) {
+    if (isFALSE(force_linear_reduction)) {
       if (linear_reduction %in% SeuratObject::Reductions(srt)) {
         if (srt[[linear_reduction]]@assay.used == assay) {
           log_message(
@@ -347,7 +347,7 @@ RunDimReduction <- function(
     ]] <- dims_estimate
     srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
   } else if (!is.null(nonlinear_reduction)) {
-    if (!isTRUE(force_nonlinear_reduction)) {
+    if (isFALSE(force_nonlinear_reduction)) {
       if (nonlinear_reduction %in% SeuratObject::Reductions(srt)) {
         if (srt[[nonlinear_reduction]]@assay.used == assay) {
           log_message(

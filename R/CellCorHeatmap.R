@@ -349,29 +349,6 @@ CellCorHeatmap <- function(
   }
 
   ref_legend <- TRUE
-  simil_method <- c(
-    "cosine",
-    "pearson",
-    "spearman",
-    "correlation",
-    "jaccard",
-    "ejaccard",
-    "dice",
-    "edice",
-    "hamman",
-    "simple matching",
-    "faith"
-  )
-  dist_method <- c(
-    "euclidean",
-    "chisquared",
-    "kullback",
-    "manhattan",
-    "maximum",
-    "canberra",
-    "minkowski",
-    "hamming"
-  )
   if (is.null(srt_ref) && is.null(bulk_ref)) {
     srt_ref <- srt_query
     ref_group <- query_group
@@ -441,15 +418,39 @@ CellCorHeatmap <- function(
       return_full_distance_matrix = TRUE
     )
   }
+
+  srt_query_tools <- srt_query@tools[[paste0(prefix, "_classification")]]
   distance_matrix <- srt_query_tools[["distance_matrix"]]
   distance_metric <- srt_query_tools[["distance_metric"]]
-
-  if (distance_metric %in% simil_method) {
+  simil_methods <- c(
+    "cosine",
+    "pearson",
+    "spearman",
+    "correlation",
+    "jaccard",
+    "ejaccard",
+    "dice",
+    "edice",
+    "hamman",
+    "simple matching",
+    "faith"
+  )
+  dist_methods <- c(
+    "euclidean",
+    "chisquared",
+    "kullback",
+    "manhattan",
+    "maximum",
+    "canberra",
+    "minkowski",
+    "hamming"
+  )
+  if (distance_metric %in% simil_methods) {
     simil_matrix <- Matrix::t(
       Matrix::as.matrix(1 - distance_matrix)
     )
     simil_name <- paste0(capitalize(distance_metric), " similarity")
-  } else if (distance_metric %in% dist_method) {
+  } else if (distance_metric %in% dist_methods) {
     simil_matrix <- Matrix::t(
       Matrix::as.matrix(
         1 - distance_matrix / max(distance_matrix, na.rm = TRUE)

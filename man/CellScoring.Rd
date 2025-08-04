@@ -17,7 +17,7 @@ CellScoring(
   db_update = FALSE,
   db_version = "latest",
   convert_species = TRUE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -27,6 +27,8 @@ CellScoring(
   new_assay = FALSE,
   BPPARAM = BiocParallel::bpparam(),
   seed = 11,
+  cores = 1,
+  verbose = TRUE,
   ...
 )
 }
@@ -75,6 +77,10 @@ CellScoring(
 
 \item{seed}{The random seed for reproducibility. Defaults to 11.}
 
+\item{cores}{The number of cores to use for \link[thisutils:parallelize_fun]{thisutils::parallelize_fun}. Defaults to 1.}
+
+\item{verbose}{Whether to print verbose output. Defaults to TRUE.}
+
 \item{...}{Additional arguments to be passed to the scoring methods.}
 }
 \description{
@@ -82,19 +88,22 @@ This function performs cell scoring on a Seurat object.
 It calculates scores for a given set of features and adds the scores as metadata to the Seurat object.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
-ccgenes <- CycGenePrefetch("Mus_musculus")
+features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
-  srt = pancreas_sub,
-  features = list(S = ccgenes$S, G2M = ccgenes$G2M),
+  pancreas_sub,
+  features = list(
+    A = features_all[1:100],
+    B = features_all[101:200]
+  ),
   method = "Seurat",
-  name = "CC"
+  name = "test"
 )
-CellDimPlot(pancreas_sub, "CC_classification")
+CellDimPlot(pancreas_sub, "test_classification")
 
-FeatureDimPlot(pancreas_sub, "CC_G2M")
+FeatureDimPlot(pancreas_sub, "test_A")
 
+\dontrun{
 data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
@@ -107,7 +116,7 @@ CellDimPlot(
 )
 
 panc8_sub <- CellScoring(
-  srt = panc8_sub,
+  panc8_sub,
   layer = "data",
   assay = "RNA",
   db = "GO_BP",
@@ -131,7 +140,7 @@ CellDimPlot(
 )
 
 pancreas_sub <- CellScoring(
-  srt = pancreas_sub,
+  pancreas_sub,
   layer = "data",
   assay = "RNA",
   db = "GO_BP",
@@ -166,7 +175,7 @@ genenames <- make.unique(
 )
 names(genenames) <- rownames(panc8_sub)
 panc8_sub <- RenameFeatures(
-  srt = panc8_sub,
+  panc8_sub,
   newnames = genenames,
   assay = "RNA"
 )

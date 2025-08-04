@@ -715,7 +715,7 @@ Seurat_integrate <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
@@ -3541,7 +3541,7 @@ LIGER_integrate <- function(
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
@@ -3896,7 +3896,7 @@ Conos_integrate <- function(
       "Are you sure to continue?",
       default = FALSE
     )
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(srt_merge)
     }
   }
