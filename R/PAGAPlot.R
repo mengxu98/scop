@@ -259,7 +259,7 @@ PAGAPlot <- function(
   if (!is.null(transition)) {
     colnames(transition) <- rownames(transition) <- rownames(dat)
   }
-  if (!isTRUE(show_transition)) {
+  if (isFALSE(show_transition)) {
     transition <- NULL
   } else if (isTRUE(show_transition) && is.null(transition)) {
     log_message(
