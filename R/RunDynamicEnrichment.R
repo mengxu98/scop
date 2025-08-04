@@ -8,7 +8,8 @@
 #' @inheritParams CellScoring
 #' @param score_method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".
 #'
-#' @seealso \code{\link{RunDynamicFeatures}} \code{\link{DynamicHeatmap}}
+#' @seealso
+#' \link{RunDynamicFeatures}, \link{DynamicHeatmap}
 #'
 #' @export
 #' @examples

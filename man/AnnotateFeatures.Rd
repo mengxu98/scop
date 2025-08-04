@@ -68,6 +68,7 @@ Default is FALSE.}
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- AnnotateFeatures(
   srt = pancreas_sub,
@@ -88,7 +89,6 @@ head(
   )
 )
 
-\dontrun{
 # Annotate features using a GTF file
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
@@ -103,5 +103,5 @@ head(
 }
 }
 \seealso{
-\code{\link{PrepareDB}} \code{\link{ListDB}}
+\link{PrepareDB}, \link{ListDB}
 }

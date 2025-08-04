@@ -6,7 +6,7 @@
 #' @param cell_order A vector of cell names defining the order of cells.
 #' Default is NULL.
 #'
-#' @seealso \code{\link{RunDEtest}}
+#' @seealso \link{RunDEtest}
 #'
 #' @export
 #'
@@ -16,10 +16,11 @@
 #' #  pancreas_sub,
 #' #   group_by = "CellType"
 #' # )
+#' # "CSPA" and "TF" have been restored in pancreas_sub
 #' # pancreas_sub <- AnnotateFeatures(
 #' #   srt = pancreas_sub,
 #' #   species = "Mus_musculus",
-#' #   db = c("TF", "CSPA")
+#' #   db = c("CSPA", "TF")
 #' # )
 #' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -753,7 +754,7 @@ FeatureHeatmap <- function(
     cluster_columns_list[[cell_group]] <- cluster_columns
     column_split_list[[cell_group]] <- cell_groups[[cell_group]]
     if (isTRUE(cluster_column_slices)) {
-      if (!isTRUE(cluster_columns)) {
+      if (isFALSE(cluster_columns)) {
         if (nlevels(column_split_list[[cell_group]]) == 1) {
           log_message(
             "cluster_column_slices=TRUE can not be used when there is only one group.",
@@ -1154,7 +1155,7 @@ FeatureHeatmap <- function(
   ha_left <- NULL
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
-      if (!isTRUE(cluster_rows)) {
+      if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(Matrix::t(mat_split), row_split_raw)
         cluster_rows <- dend
         row_split <- length(unique(row_split_raw))
@@ -1552,7 +1553,7 @@ FeatureHeatmap <- function(
         NULL
       }
     )
-    if (!is.null(split.by) && !isTRUE(cluster_column_slices)) {
+    if (!is.null(split.by) && isFALSE(cluster_column_slices)) {
       groups_order <- sapply(
         strsplit(levels(column_split_list[[cell_group]]), " : "),
         function(x) x[[1]]
@@ -1729,108 +1730,6 @@ FeatureHeatmap <- function(
       cell_metadata = cell_metadata,
       feature_metadata = feature_metadata,
       enrichment = res
-    )
-  )
-}
-
-heatmap_fixsize <- function(
-    width,
-    width_sum,
-    height,
-    height_sum,
-    units,
-    ht_list,
-    legend_list) {
-  ht <- ComplexHeatmap::draw(
-    ht_list,
-    annotation_legend_list = legend_list
-  )
-  ht_width <- ComplexHeatmap:::width(ht)
-  ht_height <- ComplexHeatmap:::height(ht)
-
-  if (grid::unitType(ht_width) == "npc") {
-    ht_width <- grid::unit(width_sum, units = units)
-  }
-  if (grid::unitType(ht_height) == "npc") {
-    ht_height <- grid::unit(height_sum, units = units)
-  }
-  if (is.null(width)) {
-    ht_width <- max(
-      grid::convertWidth(
-        ht@layout$max_left_component_width,
-        units,
-        valueOnly = TRUE
-      ) +
-        grid::convertWidth(
-          ht@layout$max_right_component_width,
-          units,
-          valueOnly = TRUE
-        ) +
-        grid::convertWidth(
-          sum(ht@layout$max_title_component_width),
-          units,
-          valueOnly = TRUE
-        ) +
-        grid::convertWidth(
-          ht@annotation_legend_param$size[1],
-          units,
-          valueOnly = TRUE
-        ) +
-        grid::convertWidth(
-          grid::unit(1, "in"),
-          units,
-          valueOnly = TRUE
-        ),
-      grid::convertWidth(
-        grid::unit(0.95, "npc"),
-        units,
-        valueOnly = TRUE
-      )
-    )
-    ht_width <- grid::unit(ht_width, units)
-  }
-  if (is.null(height)) {
-    ht_height <- max(
-      grid::convertHeight(
-        ht@layout$max_top_component_height,
-        units,
-        valueOnly = TRUE
-      ) +
-        grid::convertHeight(
-          ht@layout$max_bottom_component_height,
-          units,
-          valueOnly = TRUE
-        ) +
-        grid::convertHeight(
-          sum(ht@layout$max_title_component_height),
-          units,
-          valueOnly = TRUE
-        ) +
-        grid::convertHeight(
-          grid::unit(1, "in"),
-          units,
-          valueOnly = TRUE
-        ),
-      grid::convertHeight(
-        ht@annotation_legend_param$size[2],
-        units,
-        valueOnly = TRUE
-      ),
-      grid::convertHeight(
-        grid::unit(0.95, "npc"),
-        units,
-        valueOnly = TRUE
-      )
-    )
-    ht_height <- grid::unit(ht_height, units)
-  }
-  ht_width <- grid::convertUnit(ht_width, unitTo = units)
-  ht_height <- grid::convertUnit(ht_height, unitTo = units)
-
-  return(
-    list(
-      ht_width = ht_width,
-      ht_height = ht_height
     )
   )
 }

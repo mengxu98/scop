@@ -10,10 +10,11 @@ GeneConvert(
   geneID_to_IDtype = "entrez_id",
   species_from = "Homo_sapiens",
   species_to = NULL,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   biomart = NULL,
   mirror = NULL,
-  max_tries = 5
+  max_tries = 5,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -52,13 +53,11 @@ A list with the following elements:
 This function can convert different gene ID types within one species or between two species using the biomart service.
 }
 \examples{
+\dontrun{
 res <- GeneConvert(
   geneID = c("CDK1", "MKI67", "TOP2A", "AURKA", "CTCF"),
-  geneID_from_IDtype = "symbol",
-  geneID_to_IDtype = "entrez_id",
   species_from = "Homo_sapiens",
-  species_to = "Mus_musculus",
-  Ensembl_version = 103
+  species_to = "Mus_musculus"
 )
 str(res)
 
@@ -75,26 +74,7 @@ res <- GeneConvert(
   geneID_from_IDtype = "symbol",
   geneID_to_IDtype = "symbol",
   species_from = "Mus_musculus",
-  species_to = "Homo_sapiens",
-  Ensembl_version = 103
-)
-# Check the number of input and converted gene IDs
-input_genes <- length(rownames(counts))
-db_genes <- length(unique(res$geneID_res$from_geneID))
-converted_genes_input <- length(unique(res$geneID_collapse$from_geneID))
-converted_genes_output <- length(unique(res$geneID_expand$symbol))
-thisutils::log_message(
-  "Number of input gene IDs:", input_genes
-)
-thisutils::log_message(
-  "Number of gene IDs mapped in the database:", db_genes
-)
-thisutils::log_message(
-  "Number of input gene IDs that were successfully converted:",
-  converted_genes_input
-)
-thisutils::log_message(
-  "Number of converted gene IDs:", converted_genes_output
+  species_to = "Homo_sapiens"
 )
 
 homologs_counts <- stats::aggregate(
@@ -106,5 +86,6 @@ homologs_counts <- methods::as(
   Matrix::as.matrix(homologs_counts[, -1]),
   "dgCMatrix"
 )
-homologs_counts
+homologs_counts[1:5, 1:5]
+}
 }

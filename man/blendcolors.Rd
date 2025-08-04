@@ -53,5 +53,5 @@ show_palettes(
 )
 }
 \seealso{
-\code{\link{FeatureDimPlot}}
+\link{FeatureDimPlot}
 }

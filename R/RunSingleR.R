@@ -3,12 +3,12 @@
 #' @inheritParams RunKNNPredict
 #' @inheritParams SingleR::SingleR
 #' @inheritParams SingleR::trainSingleR
-#' @param genes "genes" parameter in \code{\link[SingleR]{SingleR}} function.
-#' @param de.method "de.method" parameter in \code{\link[SingleR]{SingleR}} function.
-#' @param quantile "quantile" parameter in \code{\link[SingleR]{SingleR}} function.
-#' @param fine.tune "fine.tune" parameter in \code{\link[SingleR]{SingleR}} function.
-#' @param tune.thresh "tune.thresh" parameter in \code{\link[SingleR]{SingleR}} function.
-#' @param prune "prune" parameter in \code{\link[SingleR]{SingleR}} function.
+#' @param genes "genes" parameter in \link[SingleR]{SingleR} function.
+#' @param de.method "de.method" parameter in \link[SingleR]{SingleR} function.
+#' @param quantile "quantile" parameter in \link[SingleR]{SingleR} function.
+#' @param fine.tune "fine.tune" parameter in \link[SingleR]{SingleR} function.
+#' @param tune.thresh "tune.thresh" parameter in \link[SingleR]{SingleR} function.
+#' @param prune "prune" parameter in \link[SingleR]{SingleR} function.
 #'
 #' @export
 #'

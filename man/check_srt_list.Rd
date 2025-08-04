@@ -51,5 +51,9 @@ check_srt_list(
 A list containing the preprocessed seurat objects, the highly variable features, the assay name, and the type of assay (e.g., "RNA" or "Chromatin").
 }
 \description{
-This function checks and preprocesses a list of seurat objects. It performs various checks on the input, including verification of input types, assay type consistency, feature name consistency, and batch column consistency. It also performs data normalization and variable feature finding based on the specified parameters. Finally, it prepares the data for integration analysis based on the highly variable features.
+This function checks and preprocesses a list of seurat objects.
+It performs various checks on the input, including verification of input types,
+assay type consistency, feature name consistency, and batch column consistency.
+It also performs data normalization and variable feature finding based on the specified parameters.
+Finally, it prepares the data for integration analysis based on the highly variable features.
 }

@@ -21,13 +21,13 @@ theme_blank(
 
 \item{ylen_npc}{The length of the y-axis arrow in "npc".}
 
-\item{xlab}{x-axis label.}
+\item{xlab}{The label of the x-axis.}
 
-\item{ylab}{y-axis label.}
+\item{ylab}{The label of the y-axis.}
 
-\item{lab_size}{Label size.}
+\item{lab_size}{The size of the axis labels.}
 
-\item{...}{Arguments passed to the \code{\link[ggplot2]{theme}}.}
+\item{...}{Arguments passed to the \link[ggplot2:theme]{ggplot2::theme}.}
 }
 \description{
 This function creates a theme with all elements blank except for axis lines and labels.

@@ -33,7 +33,7 @@ CellDimPlot3D(
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
 
 \item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \code{\link{DefaultReduction}}.}
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{dims}{Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions}
 
@@ -98,5 +98,5 @@ CellDimPlot3D(
 }
 }
 \seealso{
-\code{\link{CellDimPlot}} \code{\link{FeatureDimPlot3D}}
+\link{CellDimPlot}, \link{FeatureDimPlot3D}
 }

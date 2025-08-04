@@ -20,13 +20,17 @@ FetchH5(
 
 \item{MetaFile}{The path to the hdf5 file containing the metadata.}
 
-\item{name}{The name of the dataset in the hdf5 file. If not specified, the function will attempt to find the shared group name in both files.}
+\item{name}{The name of the dataset in the hdf5 file.
+If not specified, the function will attempt to find the shared group name in both files.}
 
-\item{features}{The names of the genes or features to fetch. If specified, only these features will be fetched.}
+\item{features}{The names of the genes or features to fetch.
+If specified, only these features will be fetched.}
 
-\item{layer}{The layer for the counts in the hdf5 file. If not specified, the first layer will be used.}
+\item{layer}{The layer for the counts in the hdf5 file.
+If not specified, the first layer will be used.}
 
-\item{assay}{The name of the assay to use. If not specified, the default assay in the hdf5 file will be used.}
+\item{assay}{The name of the assay to use.
+If not specified, the default assay in the hdf5 file will be used.}
 
 \item{metanames}{The names of the metadata columns to fetch.}
 
@@ -36,7 +40,8 @@ FetchH5(
 A Seurat object with the fetched data.
 }
 \description{
-This function fetches data from an hdf5 file. It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
+This function fetches data from an hdf5 file.
+It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
 }
 \examples{
 \dontrun{
@@ -63,5 +68,5 @@ FeatureDimPlot(
 }
 }
 \seealso{
-\code{\link{CreateDataFile}} \code{\link{CreateMetaFile}} \code{\link{PrepareSCExplorer}} \code{\link{RunSCExplorer}}
+\link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
 }

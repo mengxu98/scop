@@ -16,7 +16,6 @@ panel_fix(
   units = "in",
   raster = FALSE,
   dpi = 300,
-  BPPARAM = BiocParallel::SerialParam(),
   return_grob = FALSE,
   bg_color = "white",
   save = NULL,
@@ -34,7 +33,6 @@ panel_fix_overall(
   units = "in",
   raster = FALSE,
   dpi = 300,
-  BPPARAM = BiocParallel::SerialParam(),
   return_grob = FALSE,
   bg_color = "white",
   save = NULL,
@@ -56,19 +54,18 @@ panel_fix_overall(
 
 \item{padding}{The padding to add around each panel, in inches. The default is 0 inches.}
 
-\item{units}{The units in which \code{height}, \code{width} and \code{margin} are given. Can be \code{mm}, \code{cm}, \code{in}, etc. See \link[grid:unit]{grid::unit}.}
+\item{units}{The units in which \code{height}, \code{width} and \code{margin} are given.
+Can be \code{mm}, \code{cm}, \verb{in}, etc. See \link[grid:unit]{grid::unit}.}
 
 \item{raster}{Whether to rasterize the panel.}
 
 \item{dpi}{Plot resolution.}
 
-\item{BPPARAM}{An \link[BiocParallel:BiocParallelParam-class]{BiocParallel::BiocParallelParam} instance determining the parallel back-end to be used during building the object made by patchwork package.}
-
 \item{return_grob}{If \code{TRUE} then return a grob object instead of a wrapped \code{patchwork} object.}
 
-\item{bg_color}{Plot background color.}
+\item{bg_color}{The background color of the plot.}
 
-\item{save}{NULL or the file name used to save the plot.}
+\item{save}{\code{NULL} or the file name used to save the plot.}
 
 \item{verbose}{Whether to print messages.}
 

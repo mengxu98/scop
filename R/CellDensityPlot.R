@@ -187,13 +187,13 @@ CellDensityPlot <- function(
       message_type = "error"
     )
   }
-  if (length(features) > 50 && !isTRUE(force)) {
+  if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }

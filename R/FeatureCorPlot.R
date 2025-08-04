@@ -156,7 +156,7 @@ FeatureCorPlot <- function(
       )
     }
   }
-  if (!is.null(cells.highlight) & !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) & isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message("No cells in 'cells.highlight' found in srt.",
         message_type = "error"
@@ -271,13 +271,13 @@ FeatureCorPlot <- function(
       Matrix::as.matrix(dat_exp)
     )
   }
-  if (length(features) > 10 && !isTRUE(force)) {
+  if (length(features) > 10 && isFALSE(force)) {
     log_message(
       "More than 10 features to be paired compared which will generate more than 50 plots.",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }

@@ -5,7 +5,7 @@
 \alias{GetAssayData5.Seurat}
 \alias{GetAssayData5.Assay5}
 \alias{GetAssayData5.Assay}
-\title{GetAssayData5}
+\title{Get expression data from Assay5 or Seurat object}
 \usage{
 GetAssayData5(object, ...)
 
@@ -19,7 +19,7 @@ GetAssayData5(object, ...)
   ...
 )
 
-\method{GetAssayData5}{Assay}(object, layer = "counts", assay = NULL, verbose = TRUE, ...)
+\method{GetAssayData5}{Assay}(object, layer = "counts", ...)
 }
 \arguments{
 \item{object}{An object}
@@ -39,7 +39,7 @@ defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 A matrix or data frame containing the assay data.
 }
 \description{
-A re-implementation of the GetAssayData function to compatible with Assay5 objects.
+A re-implementation of the \link[SeuratObject:AssayData]{SeuratObject::GetAssayData} function to compatible with Assay5 objects.
 }
 \examples{
 data(pancreas_sub)

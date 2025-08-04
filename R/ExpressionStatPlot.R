@@ -176,7 +176,7 @@ ExpressionStatPlot <- function(
       bg_map[[g]] <- stats::setNames(levels(meta.data[[g]]), levels(meta.data[[g]]))
     }
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% allcells)) {
       log_message(
         "No cells in 'cells.highlight' found.",
@@ -322,14 +322,14 @@ ExpressionStatPlot <- function(
 
   nlev <- sapply(dat_group, nlevels)
   nlev <- nlev[nlev > 100]
-  if (length(nlev) > 0 && !isTRUE(force)) {
+  if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
       paste(names(nlev), sep = ","),
       " have more than 100 levels.",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }
@@ -1047,7 +1047,7 @@ ExpressionStatPlot <- function(
     if (nrow(dat) == 0) {
       p <- p + facet_null()
     } else {
-      if (isTRUE(stack) && !isTRUE(flip)) {
+      if (isTRUE(stack) && isFALSE(flip)) {
         p <- p +
           facet_grid(features ~ .) +
           theme(strip.text.y = element_text(angle = 0))
