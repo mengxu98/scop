@@ -410,7 +410,7 @@ palette_scop <- function(
   if (isTRUE(reverse)) {
     color <- rev(color)
   }
-  if (!isTRUE(NA_keep)) {
+  if (isFALSE(NA_keep)) {
     color <- color[names(color) != "NA"]
   }
   return(color)
