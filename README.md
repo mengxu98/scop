@@ -2,15 +2,15 @@
 
 <!-- badges: start -->
 
-[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop)
+[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
 
 <!-- badges: end -->
 
 ## Overview
-The [*`scop`*](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.
+The [scop](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.
 
 ## Introduction
-The [*`scop`*](https://github.com/mengxu98/scop) package includes the following facilities:
+The [scop](https://github.com/mengxu98/scop) package includes the following facilities:
 
 -   Integrated single-cell quality control methods.
 -   Pipelines embedded with multiple methods for normalization, feature reduction, and cell population identification (standard Seurat workflow).
@@ -22,17 +22,44 @@ The [*`scop`*](https://github.com/mengxu98/scop) package includes the following 
 
 The functions in the scop package are all developed around the [Seurat object](https://github.com/mojaveazure/seurat-object) and are compatible with other Seurat functions.
 
+## Quick Start
+
+- [scop: Single-Cell Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
+  - [Overview](#overview)
+  - [Introduction](#introduction)
+  - [Quick Start](#quick-start)
+  - [Credits](#credits)
+  - [Installation](#installation)
+    - [R version requirement](#r-version-requirement)
+      - [Prepare python environment](#prepare-python-environment)
+    - [Data exploration](#data-exploration)
+    - [CellQC](#cellqc)
+    - [Standard pipeline](#standard-pipeline)
+    - [Integration pipeline](#integration-pipeline)
+    - [Cell projection between single-cell datasets](#cell-projection-between-single-cell-datasets)
+    - [Cell annotation using bulk RNA-seq datasets](#cell-annotation-using-bulk-rna-seq-datasets)
+    - [Cell annotation using single-cell datasets](#cell-annotation-using-single-cell-datasets)
+    - [PAGA analysis](#paga-analysis)
+    - [Velocity analysis](#velocity-analysis)
+    - [Differential expression analysis](#differential-expression-analysis)
+    - [Enrichment analysis(over-representation)](#enrichment-analysisover-representation)
+    - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
+    - [Trajectory inference](#trajectory-inference)
+    - [Dynamic features](#dynamic-features)
+    - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
+    - [Other visualization examples](#other-visualization-examples)
+
 ## Credits
 
-The [*`scop`*](https://github.com/mengxu98/scop) package is developed based on the [*`SCP`*](https://github.com/zhanghao-njmu/SCP) package, making it compatible with Seurat V5 and adding support for multiple omics data.
+The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, making it compatible with [Seurat](https://github.com/mojaveazure/seurat) V5 and adding support for multiple omics data.
 
-## R version requirement
+## Installation
+
+### R version requirement
 
 -   R \>= 4.1.0
 
-## Installation in the global R environment
-
-You can install the latest version of scop from [GitHub](https://github.com/mengxu98/scop) with:
+You can install the latest version of [scop](https://github.com/mengxu98/scop) with [pak](https://github.com/r-lib/pak) from [GitHub](https://github.com/mengxu98/scop) with:
 
 ``` r
 if (!require("pak", quietly = TRUE)) {
@@ -41,9 +68,9 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-#### Create a python environment for scop
+#### Prepare python environment
 
-To run functions such as `RunPAGA` or `RunSCVELO`, scop requires [conda](https://docs.conda.io/en/latest/miniconda.html) to create a separate python environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_env_name="new_name")`
+To run functions such as `RunPAGA` or `RunSCVELO`, [scop](https://github.com/mengxu98/scop) requires [conda](https://docs.conda.io/en/latest/miniconda.html) to create a separate python environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_envname = "new_name")`.
 
 Now, you can run `PrepareEnv()` to create the python environment for scop. If the conda binary is not found, it will automatically download and install miniconda.
 
@@ -51,7 +78,7 @@ Now, you can run `PrepareEnv()` to create the python environment for scop. If th
 scop::PrepareEnv()
 ```
 
-To force scop to use a specific conda binary, it is recommended to set `reticulate.conda_binary` R option:
+To force [scop](https://github.com/mengxu98/scop) to use a specific conda binary, it is recommended to set `reticulate.conda_binary` R option:
 
 ``` r
 options(reticulate.conda_binary = "/path/to/conda")
@@ -103,112 +130,20 @@ Available PyPI mirrors:
 
 -   <https://mirrors.hit.edu.cn/pypi/web/simple>
 
-## Installation in an isolated R environment using renv
-
-If you do not want to change your current R environment or require reproducibility, you can use the [renv](https://rstudio.github.io/renv/) package to install scop into an isolated R environment.
-
-#### Create an isolated R environment
-
-``` r
-if (!require("renv", quietly = TRUE)) {
-  install.packages("renv")
-}
-dir.create("~/scop_env", recursive = TRUE) # It cannot be the home directory "~" !
-renv::init(project = "~/scop_env", bare = TRUE, restart = TRUE)
-```
-
-Option 1: Install scop from GitHub and create scop python environment
-
-``` r
-renv::activate(project = "~/scop_env")
-renv::install("BiocManager")
-renv::install("mengxu98/scop", repos = BiocManager::repositories())
-scop::PrepareEnv()
-```
-
-Option 2: If scop is already installed in the global environment, copy scop from the local library
-
-``` r
-renv::activate(project = "~/scop_env")
-renv::hydrate("scop")
-scop::PrepareEnv()
-```
-
-#### Activate scop environment first before use
-
-``` r
-renv::activate(project = "~/scop_env")
-
-library(scop)
-data(pancreas_sub)
-pancreas_sub <- RunPAGA(
-  srt = pancreas_sub,
-  group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
-)
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "draw_graph_fr"
-)
-```
-
-#### Save and restore the state of scop environment
-
-``` r
-renv::snapshot(project = "~/scop_env")
-renv::restore(project = "~/scop_env")
-```
-
-## Quick Start
-
-- [scop: Single-Cell Omics analysis Pipeline](#scop-single-cell-omics-analysis-pipeline)
-  - [Overview](#overview)
-  - [Introduction](#introduction)
-  - [Credits](#credits)
-  - [R version requirement](#r-version-requirement)
-  - [Installation in the global R environment](#installation-in-the-global-r-environment)
-      - [Create a python environment for scop](#create-a-python-environment-for-scop)
-  - [Installation in an isolated R environment using renv](#installation-in-an-isolated-r-environment-using-renv)
-      - [Create an isolated R environment](#create-an-isolated-r-environment)
-      - [Activate scop environment first before use](#activate-scop-environment-first-before-use)
-      - [Save and restore the state of scop environment](#save-and-restore-the-state-of-scop-environment)
-  - [Quick Start](#quick-start)
-    - [Data exploration](#data-exploration)
-    - [CellQC](#cellqc)
-    - [Standard pipeline](#standard-pipeline)
-    - [Integration pipeline](#integration-pipeline)
-    - [Cell projection between single-cell datasets](#cell-projection-between-single-cell-datasets)
-    - [Cell annotation using bulk RNA-seq datasets](#cell-annotation-using-bulk-rna-seq-datasets)
-    - [Cell annotation using single-cell datasets](#cell-annotation-using-single-cell-datasets)
-    - [PAGA analysis](#paga-analysis)
-    - [Velocity analysis](#velocity-analysis)
-    - [Differential expression analysis](#differential-expression-analysis)
-    - [Enrichment analysis(over-representation)](#enrichment-analysisover-representation)
-    - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
-    - [Trajectory inference](#trajectory-inference)
-    - [Dynamic features](#dynamic-features)
-    - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
-    - [Other visualization examples](#other-visualization-examples)
-
 ### Data exploration
 
 The analysis is based on a subsetted version of [mouse pancreas data](https://doi.org/10.1242/dev.173849).
 
 ``` r
 library(scop)
-library(BiocParallel)
-register(MulticoreParam(workers = 8, progressbar = TRUE))
-
 data(pancreas_sub)
 print(pancreas_sub)
 #> An object of class Seurat
-#> 15000 features across 1000 samples within 3 assays
-#> Active assay: RNA (5000 features, 623 variable features)
-#> 3 layers present: counts, data, scale.data
-#> 2 other assays present: spliced, unspliced
-#> 3 dimensional reductions calculated: pca, umap, tsne
+#> 47886 features across 1000 samples within 3 assays
+#> Active assay: RNA (15962 features, 2000 variable features)
+#>  3 layers present: counts, data, scale.data
+#>  2 other assays present: spliced, unspliced
+#>  2 dimensional reductions calculated: pca, umap
 ```
 
 ``` r
@@ -370,14 +305,16 @@ UMAP embeddings based on different integration methods in scop:
 ### Cell projection between single-cell datasets
 
 ``` r
+genenames <- make.unique(
+  thisutils::capitalize(
+    rownames(panc8_sub[["RNA"]]
+  ),
+  force_tolower = TRUE)
+)
+names(genenames) <- rownames(panc8_sub)
 panc8_rename <- RenameFeatures(
   srt = panc8_sub,
-  newnames = make.unique(
-    thisutils::capitalize(
-      rownames(panc8_sub[["RNA"]]
-    ),
-    force_tolower = TRUE)
-  ),
+  newnames = genenames,
   assays = "RNA"
 )
 srt_query <- RunKNNMap(
@@ -433,7 +370,6 @@ CellDimPlot(
 <img src="man/figures/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   srt_ref = panc8_rename,
@@ -452,7 +388,6 @@ CellDimPlot(
 <img src="man/figures/RunKNNPredict-scrna-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-
 ht <- CellCorHeatmap(
   srt_query = pancreas_sub,
   srt_ref = panc8_rename,
@@ -471,6 +406,7 @@ print(ht$plot)
 ### PAGA analysis
 
 ``` r
+PrepareEnv()
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
   group_by = "SubCellType",
@@ -490,7 +426,7 @@ PAGAPlot(
 
 ### Velocity analysis
 
-> To estimate RNA velocity, you need to have both “spliced” and “unspliced” assays in your Seurat object. You can generate these matrices using [velocyto](http://velocyto.org/velocyto.py/index.html), [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
+To estimate RNA velocity, both “spliced” and “unspliced” assays in Seurat object. You can generate these matrices using [velocyto](http://velocyto.org/velocyto.py/index.html), [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
 
 ``` r
 pancreas_sub <- RunSCVELO(
@@ -617,7 +553,7 @@ EnrichmentPlot(
 
 <img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
 
-> To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
+To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
 
 ``` r
 EnrichmentPlot(
@@ -811,6 +747,8 @@ if (interactive()) {
 
 ### Other visualization examples
 
-[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.jpg) [**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg) [**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg) [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)
+
+![Example1](man/figures/Example-1.jpg) [**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg) [**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg) [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
 
 You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunMonocle3](https://mengxu98.github.io/scop/reference/RunMonocle3.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
