@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#' @title scop Single-Cell Omics analysis Pipeline
+#' @title Single-Cell Omics analysis Pipeline
 #'
 #' @description
 #' An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
@@ -77,8 +77,6 @@ print.scop_logo <- function(x, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
-  options(memory.limit = Inf)
-
   scop_env_init <- getOption("scop_env_init", default = FALSE)
   version <- utils::packageDescription(pkgname, fields = "Version")
   msg <- paste0(
@@ -87,22 +85,22 @@ print.scop_logo <- function(x, ...) {
     cli::col_blue(pkgname, " version ", version),
     "\n"
   )
-  if (!isTRUE(scop_env_init)) {
+  if (isFALSE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
-      cli::col_grey("Python environment initialization is disabled."),
+      cli::col_grey("Python environment initialization is disabled"),
       "\n",
       cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
       "\n"
     )
   }
   suppress_msg <- paste0(
-    cli::col_grey("This message can be suppressed by: "),
+    cli::col_grey("The message can be suppressed by: "),
     "\n",
     cli::col_grey("  suppressPackageStartupMessages(library(scop))")
   )
-  if (!isTRUE(scop_env_init)) {
+  if (isFALSE(scop_env_init)) {
     msg <- paste0(
       msg,
       "\n",
@@ -135,7 +133,7 @@ print.scop_logo <- function(x, ...) {
           envs_dir = envs_dir
         )
 
-        if (!isTRUE(env)) {
+        if (isFALSE(env)) {
           packageStartupMessage(
             cli::col_grey(
               "Python environment not found. Run: PrepareEnv() to create the environment"

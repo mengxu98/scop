@@ -121,7 +121,8 @@ FeatureHeatmap(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{The features to include in the heatmap.}
+\item{features}{The features to include in the heatmap.
+Default is NULL.}
 
 \item{cells}{A character vector specifying the cells to include in the heatmap.
 Default is NULL.}
@@ -425,10 +426,11 @@ data(pancreas_sub)
 #  pancreas_sub,
 #   group_by = "CellType"
 # )
+# "CSPA" and "TF" have been restored in pancreas_sub
 # pancreas_sub <- AnnotateFeatures(
 #   srt = pancreas_sub,
 #   species = "Mus_musculus",
-#   db = c("TF", "CSPA")
+#   db = c("CSPA", "TF")
 # )
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -524,5 +526,5 @@ ht6 <- FeatureHeatmap(
 ht6$plot
 }
 \seealso{
-\code{\link{RunDEtest}}
+\link{RunDEtest}
 }

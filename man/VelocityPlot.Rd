@@ -173,5 +173,5 @@ VelocityPlot(
 }
 }
 \seealso{
-\code{\link{RunSCVELO}} \code{\link{CellDimPlot}}
+\link{RunSCVELO}, \link{CellDimPlot}
 }

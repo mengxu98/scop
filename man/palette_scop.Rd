@@ -38,7 +38,7 @@ The default is "auto", which automatically detects if \code{x} is a numeric valu
 \item{NA_color}{Color assigned to NA if NA_keep is \code{TRUE}.}
 }
 \description{
-Color palettes collected in scop.
+This function creates a color palette for a given vector of values.
 }
 \examples{
 x <- c(1:3, NA, 3:5)
@@ -80,5 +80,5 @@ all_palettes <- show_palettes(return_palettes = TRUE)
 names(all_palettes)
 }
 \seealso{
-\code{\link{show_palettes}} \code{\link{palette_list}}
+\link{show_palettes} \link{palette_list}
 }

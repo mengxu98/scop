@@ -109,7 +109,7 @@ Default is "term".}
 \item{word_size}{The size range for words in wordcloud. Default is c(2, 8).}
 
 \item{words_excluded}{Words to be excluded from the wordcloud.
-The default value is NULL, which means that the built-in words (\code{\link{words_excluded}}) will be used.}
+The default value is NULL, which means that the built-in words (\link{words_excluded}) will be used.}
 
 \item{network_layout}{The layout algorithm to use for network plot.
 Options are "fr", "kk","random", "circle", "tree", "grid", or other algorithm from 'igraph' package.
@@ -460,5 +460,5 @@ EnrichmentPlot(
 )
 }
 \seealso{
-\code{\link{RunEnrichment}}
+\link{RunEnrichment}
 }

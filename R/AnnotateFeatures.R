@@ -30,11 +30,12 @@
 #' @param overwrite Logical value indicating whether to overwrite existing metadata.
 #' Default is FALSE.
 #'
-#' @seealso \code{\link{PrepareDB}} \code{\link{ListDB}}
+#' @seealso \link{PrepareDB}, \link{ListDB}
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
 #'   srt = pancreas_sub,
@@ -55,7 +56,6 @@
 #'   )
 #' )
 #'
-#' \dontrun{
 #' # Annotate features using a GTF file
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
