@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{CreateDataFile}
 \alias{CreateDataFile}
-\title{CreateDataFile}
+\title{Create data file}
 \usage{
 CreateDataFile(
   srt,
@@ -11,23 +11,29 @@ CreateDataFile(
   assays = "RNA",
   layers = "data",
   compression_level = 6,
-  overwrite = FALSE
+  overwrite = TRUE
 )
 }
 \arguments{
 \item{srt}{The Seurat object.}
 
-\item{DataFile}{Path to the output data file. If not provided, the file will be named "Data.hdf5" in the current directory.}
+\item{DataFile}{Path to the output data file.
+If not provided, the file will be named \code{"Data.hdf5"} in the current directory.}
 
-\item{name}{Name of the dataset. If not provided, the name will default to the Seurat object's project name.}
+\item{name}{Name of the dataset.
+If not provided, the name will default to the Seurat object's project name.}
 
-\item{assays}{Character vector specifying the assays to include in the data file. Default is "RNA".}
+\item{assays}{Character vector specifying the assays to include in the data file.
+Default is \code{"RNA"}.}
 
-\item{layers}{Character vector specifying the layers to include in the data file. Default is "data".}
+\item{layers}{Character vector specifying the layers to include in the data file.
+Default is \code{"data"}.}
 
-\item{compression_level}{Compression level for the HDF5 dataset. Default is 6.}
+\item{compression_level}{Compression level for the HDF5 dataset.
+Default is \code{6}.}
 
-\item{overwrite}{Logical value indicating whether to overwrite existing data in the data file. Default is FALSE.}
+\item{overwrite}{Logical value indicating whether to overwrite existing data in the data file.
+Default is \code{TRUE}.}
 }
 \description{
 Creates a data file in HDF5 format from a Seurat object.
