@@ -473,7 +473,7 @@ FeatureDimPlot <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -628,13 +628,13 @@ FeatureDimPlot <- function(
   }
   dat_exp[, features][dat_exp[, features] <= bg_cutoff] <- NA
 
-  if (length(features) > 50 && !isTRUE(force)) {
+  if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }
@@ -1568,7 +1568,7 @@ FeatureDimPlot <- function(
               alpha = pt.alpha
             )
         }
-        if (!is.null(cells.highlight_use) && !isTRUE(hex)) {
+        if (!is.null(cells.highlight_use) && isFALSE(hex)) {
           cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
           if (nrow(cell_df) > 0) {
             if (isTRUE(raster)) {
@@ -1859,7 +1859,7 @@ FeatureDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (!is.null(cells.highlight) && !isTRUE(cells.highlight)) {
+  if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
         "No cells in 'cells.highlight' found in srt.",
@@ -2033,13 +2033,13 @@ FeatureDimPlot3D <- function(
       message_type = "error"
     )
   }
-  if (length(features) > 50 && !isTRUE(force)) {
+  if (length(features) > 50 && isFALSE(force)) {
     log_message(
       "More than 50 features to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (!isTRUE(answer)) {
+    if (isFALSE(answer)) {
       return(invisible(NULL))
     }
   }
