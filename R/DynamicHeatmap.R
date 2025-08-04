@@ -1393,7 +1393,7 @@ DynamicHeatmap <- function(
   ha_left <- NULL
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
-      if (!isTRUE(cluster_rows)) {
+      if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(
           Matrix::t(mat_split),
           row_split_raw

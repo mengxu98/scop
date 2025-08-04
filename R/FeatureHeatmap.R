@@ -754,7 +754,7 @@ FeatureHeatmap <- function(
     cluster_columns_list[[cell_group]] <- cluster_columns
     column_split_list[[cell_group]] <- cell_groups[[cell_group]]
     if (isTRUE(cluster_column_slices)) {
-      if (!isTRUE(cluster_columns)) {
+      if (isFALSE(cluster_columns)) {
         if (nlevels(column_split_list[[cell_group]]) == 1) {
           log_message(
             "cluster_column_slices=TRUE can not be used when there is only one group.",
@@ -1155,7 +1155,7 @@ FeatureHeatmap <- function(
   ha_left <- NULL
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
-      if (!isTRUE(cluster_rows)) {
+      if (isFALSE(cluster_rows)) {
         dend <- ComplexHeatmap::cluster_within_group(Matrix::t(mat_split), row_split_raw)
         cluster_rows <- dend
         row_split <- length(unique(row_split_raw))
@@ -1553,7 +1553,7 @@ FeatureHeatmap <- function(
         NULL
       }
     )
-    if (!is.null(split.by) && !isTRUE(cluster_column_slices)) {
+    if (!is.null(split.by) && isFALSE(cluster_column_slices)) {
       groups_order <- sapply(
         strsplit(levels(column_split_list[[cell_group]]), " : "),
         function(x) x[[1]]

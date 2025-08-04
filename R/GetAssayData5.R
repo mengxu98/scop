@@ -1,6 +1,7 @@
-#' @title GetAssayData5
+#' @title Get expression data from Assay5 or Seurat object
 #'
-#' @description A re-implementation of the GetAssayData function to compatible with Assay5 objects.
+#' @description
+#' A re-implementation of the [SeuratObject::GetAssayData] function to compatible with Assay5 objects.
 #'
 #' @md
 #' @inheritParams SeuratObject::GetAssayData
@@ -75,14 +76,13 @@ GetAssayData5.Assay5 <- function(
     warning_interval <- getOption("scop.warning_interval", 28800)
     if (current_time - last_warning_time > warning_interval) {
       log_message(
-        "The input data is a 'Assay5' object. The 'SeuratObject::JoinLayers' function will be used to combine the layers",
-        message_type = "warning"
-      )
-      log_message(
+        "The input data is a {.cls Assay5} object\n",
+        "{.fn SeuratObject::JoinLayers} will be used to combine the layers\n",
         cli::col_grey(
-          "This warning will be shown only once every ",
-          warning_interval / 3600,
-          " hours. To change this interval, set the 'scop.warning_interval' option"
+          "This warning will be shown only once every {warning_interval / 3600} hours"
+        ), "\n",
+        cli::col_grey(
+          "To change this interval, set the scop.warning_interval option"
         ),
         message_type = "warning"
       )
@@ -112,8 +112,6 @@ GetAssayData5.Assay5 <- function(
 GetAssayData5.Assay <- function(
     object,
     layer = "counts",
-    assay = NULL,
-    verbose = TRUE,
     ...) {
   data <- SeuratObject::GetAssayData(
     object,

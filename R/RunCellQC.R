@@ -515,7 +515,7 @@ RunCellQC <- function(
       message_type = "error"
     )
   }
-  if (!isTRUE(assay %in% SeuratObject::Assays(srt))) {
+  if (isFALSE(assay %in% SeuratObject::Assays(srt))) {
     log_message(
       "srt does not contain '", assay, "' assay.",
       message_type = "error"

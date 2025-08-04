@@ -20,5 +20,6 @@ A string indicating the type of data.
 Possible values are: "raw_counts", "log_normalized_counts", "raw_normalized_counts", or "unknown".
 }
 \description{
-This function checks the type of data and returns a string indicating the type of data. It checks for the presence of infinite values, negative values, and whether the values are floats or integers.
+This function checks the type of data and returns a string indicating the type of data.
+It checks for the presence of infinite values, negative values, and whether the values are floats or integers.
 }

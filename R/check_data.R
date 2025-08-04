@@ -1,6 +1,8 @@
-#' Check and report the type of data
+#' @title Check and report the type of data
 #'
-#' This function checks the type of data and returns a string indicating the type of data. It checks for the presence of infinite values, negative values, and whether the values are floats or integers.
+#' @description
+#' This function checks the type of data and returns a string indicating the type of data.
+#' It checks for the presence of infinite values, negative values, and whether the values are floats or integers.
 #'
 #' @param srt An object of class 'Seurat'.
 #' @param data The input data. If not provided, it will be extracted from the the 'srt' object.
@@ -21,7 +23,8 @@ check_data_type <- function(
     data <- GetAssayData5(
       srt,
       layer = layer,
-      assay = assay
+      assay = assay,
+      verbose = FALSE
     )
   }
   isfinite <- all(is.finite(range(data, na.rm = TRUE)))
@@ -36,7 +39,7 @@ check_data_type <- function(
   islog <- is.finite(expm1(x = max(data, na.rm = TRUE)))
   isnegative <- any(data < 0)
 
-  if (!isTRUE(isfinite)) {
+  if (isFALSE(isfinite)) {
     log_message(
       "Infinite values detected!",
       message_type = "warning"
@@ -50,22 +53,40 @@ check_data_type <- function(
     return("unknown")
   } else {
     if (!isfloat) {
+      log_message(
+        "Data is raw counts"
+      )
       return("raw_counts")
     } else if (isfloat && islog) {
+      log_message(
+        "Data is log-normalized"
+      )
       return("log_normalized_counts")
     } else if (isfloat && !islog) {
       if (isFALSE(isnegative)) {
+        log_message(
+          "Data is normalized without log transformation"
+        )
         return("raw_normalized_counts")
       } else {
+        log_message(
+          "Can not determine whether data is log-normalized",
+          message_type = "warning"
+        )
         return("unknown")
       }
     }
   }
 }
 
-#' Check and preprocess a list of seurat objects
+#' @title Check and preprocess a list of seurat objects
 #'
-#' This function checks and preprocesses a list of seurat objects. It performs various checks on the input, including verification of input types, assay type consistency, feature name consistency, and batch column consistency. It also performs data normalization and variable feature finding based on the specified parameters. Finally, it prepares the data for integration analysis based on the highly variable features.
+#' @description
+#' This function checks and preprocesses a list of seurat objects.
+#' It performs various checks on the input, including verification of input types,
+#' assay type consistency, feature name consistency, and batch column consistency.
+#' It also performs data normalization and variable feature finding based on the specified parameters.
+#' Finally, it prepares the data for integration analysis based on the highly variable features.
 #'
 #' @param srt_list A list of Seurat objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
@@ -84,7 +105,6 @@ check_data_type <- function(
 #' @return A list containing the preprocessed seurat objects, the highly variable features, the assay name, and the type of assay (e.g., "RNA" or "Chromatin").
 #'
 #' @export
-#'
 check_srt_list <- function(
     srt_list,
     batch,
@@ -538,7 +558,8 @@ check_srt_list <- function(
           GetAssayData5(
             srt,
             layer = "counts",
-            assay = SeuratObject::DefaultAssay(srt)
+            assay = SeuratObject::DefaultAssay(srt),
+            verbose = FALSE
           )
         )
       })
@@ -554,7 +575,8 @@ check_srt_list <- function(
       GetAssayData5(
         srt,
         layer = "counts",
-        assay = SeuratObject::DefaultAssay(srt)
+        assay = SeuratObject::DefaultAssay(srt),
+        verbose = FALSE
       )[
         HVF, ,
         drop = FALSE
