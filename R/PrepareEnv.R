@@ -27,20 +27,28 @@ PrepareEnv <- function(
     version = "3.10-1",
     force = FALSE,
     ...) {
-  log_message("{cli::col_blue('Preparing scop Python Environment')}")
+  log_message(
+    "{cli::col_blue('Preparing scop Python Environment')}"
+  )
   if (!is.null(envname)) {
     options(scop_envname = envname)
   }
 
   envname <- get_envname(envname)
-  log_message("Environment name: {.val {envname}}")
+  log_message(
+    "Environment name: {.val {envname}}"
+  )
 
   requirements <- env_requirements(version = version)
   python_version <- requirements[["python"]]
   packages <- requirements[["packages"]]
 
-  log_message("Python version: {.val {python_version}}")
-  log_message("Number of packages to install: {.val {length(packages)}}")
+  log_message(
+    "Python version: {.val {python_version}}"
+  )
+  log_message(
+    "Number of packages to install: {.val {length(packages)}}"
+  )
 
   if (!is.null(conda)) {
     if (identical(conda, "auto")) {
@@ -73,7 +81,9 @@ PrepareEnv <- function(
     }
 
     if (isTRUE(env)) {
-      log_message("Using existing environment: {.val {paste0(envs_dir, '/', envname)}}")
+      log_message(
+        "Using existing environment: {.val {paste0(envs_dir, '/', envname)}}"
+      )
     }
   }
 
@@ -112,14 +122,14 @@ PrepareEnv <- function(
       print(reticulate:::conda_info(conda = conda))
       print(reticulate::conda_list(conda = conda))
       log_message(
-        "Unable to find scop environment under the expected path: ", env_path, "\n",
-        "conda: ", conda, "\n",
-        "scop python: ", python_path,
+        "Unable to find scop environment under the expected path: {.val {env_path}}\n",
+        "conda: {.val {conda}}\n",
+        "scop python: {.val {python_path}}",
         message_type = "error"
       )
     } else {
       log_message(
-        "Environment created successfully: ", env_path,
+        "Environment created successfully: {.val {env_path}}",
         message_type = "success"
       )
     }

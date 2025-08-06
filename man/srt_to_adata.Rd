@@ -2,7 +2,7 @@
 % Please edit documentation in R/srt_to_adata.R
 \name{srt_to_adata}
 \alias{srt_to_adata}
-\title{Convert a seurat object to an anndata object using reticulate}
+\title{Convert a Seurat object to an AnnData object}
 \usage{
 srt_to_adata(
   srt,
@@ -30,11 +30,11 @@ Defaults to all features in assay_x.}
 
 \item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{convert_tools}{Logical indicating whether to convert the tool-specific data.}
+\item{convert_tools}{Whether to convert the tool-specific data. Default is \code{FALSE}.}
 
-\item{convert_misc}{Logical indicating whether to convert the miscellaneous data.}
+\item{convert_misc}{Whether to convert the miscellaneous data. Default is \code{FALSE}.}
 
-\item{verbose}{Logical indicating whether to print verbose messages during the conversion process.}
+\item{verbose}{Whether to print verbose messages during the conversion process. Default is \code{TRUE}.}
 }
 \value{
 A \code{anndata} object.
@@ -48,7 +48,7 @@ data(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata
 
-## Or save as an h5ad file or a loom file
+## Or save as a h5ad/loom file
 # adata$write_h5ad(
 #   "pancreas_sub.h5ad"
 # )

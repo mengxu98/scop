@@ -404,7 +404,9 @@ ht4 <- CellCorHeatmap(
   ),
   ref_cell_annotation = c(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
-  )
+  ),
+  height = 2.5,
+  width = 3.5
 )
 ht4$plot
 }
