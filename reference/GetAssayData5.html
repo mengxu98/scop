@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get expression data from Assay5 or Seurat object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/GetAssayData5.R" class="external-link"><code>R/GetAssayData5.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/GetAssayData5.R" class="external-link"><code>R/GetAssayData5.R</code></a></small>
       <div class="d-none name"><code>GetAssayData5.Rd</code></div>
     </div>
 
@@ -59,7 +59,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'Assay'</span></span>
-<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -84,11 +84,11 @@ defaults to the <a href="https://satijalab.github.io/seurat-object/reference/Def
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Logical, whether to print messages.</p></dd>
+<dd><p>Whether to print messages. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-join-layers">join_layers<a class="anchor" aria-label="anchor" href="#arg-join-layers"></a></dt>
-<dd><p>Logical value, whether to join layers if the object is an Assay5 object.</p></dd>
+<dd><p>Whether to join layers if the object is an Assay5 object. Default is `TRUE`.</p></dd>
 
 </dl></div>
     <div class="section level2">

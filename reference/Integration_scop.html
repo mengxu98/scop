@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>The integration_scop function</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
       <div class="d-none name"><code>Integration_scop.Rd</code></div>
     </div>
 
@@ -251,46 +251,46 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:10] Run Uncorrected_integrate...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:10] Spliting `srt_merge` into `srt_list` by column tech...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:11] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:11] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:11] Data 1/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:11] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data 2/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data 3/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Data 4/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:12] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:13] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:13] Data 5/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:13] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:13] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:14] Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:14] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:16] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:18] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:19] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:19] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:48] Run Uncorrected_integrate...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:48] Spliting `srt_merge` into `srt_list` by column tech...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:49] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data 1/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data 2/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Data 3/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:50] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:51] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:51] Data 4/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:51] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Data 5/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:52] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:55] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:57] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:57] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:57] Linear_reduction(pca) is already existed. Skip calculation.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following arguments are not used: features</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>multiple layers are identified by counts.1.1.1.1 counts.2.1 counts.2.1.1 counts.2.1.1.1 data.1.1.1.1 scale.data.1.1.1.1 data.2.1.1.1 scale.data.2.1.1.1 data.2.1.1 scale.data.2.1.1 data.2.1 scale.data.2.1</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  only the first layer is used</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:19] Error: Not compatible with requested type: [type=S4; target=double].</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:19] Error when performing FindClusters. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:19] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:39:57] Error: Not compatible with requested type: [type=S4; target=double].</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:39:57] Error when performing FindClusters. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:57] Perform nonlinear dimension reduction (umap) on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:19] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:19] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:39:57] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:39:57] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #BBBB00;">!</span> ‘Uncorrected_SNN’ not found in this Seurat object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                        </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:19] Error when performing nonlinear dimension reduction. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-04 06:12:21] Run Uncorrected_integrate done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:21] Elapsed time: 10.65 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:39:57] Error when performing nonlinear dimension reduction. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-06 11:40:00] Run Uncorrected_integrate done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:00] Elapsed time: 11.88 secs</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -307,46 +307,46 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span>,</span></span>
 <span class="r-in"><span>  HVF_min_intersection <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:21] Run Uncorrected_integrate...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:21] Spliting `srt_merge` into `srt_list` by column tech...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:22] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:22] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:22] Data 1/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:22] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Data 2/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Data 3/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:23] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Data 4/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Data 5/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:24] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:25] Number of available HVF: 259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:25] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:28] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:29] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:29] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:29] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:01] Run Uncorrected_integrate...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:01] Spliting `srt_merge` into `srt_list` by column tech...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Data 1/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Data 2/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:02] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Data 3/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Data 4/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:03] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:04] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:04] Data 5/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:04] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:04] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:04] Number of available HVF: 259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:05] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:08] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:09] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:09] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:09] Linear_reduction(pca) is already existed. Skip calculation.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following arguments are not used: features</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>multiple layers are identified by counts.1.1.1.1 counts.2.1 counts.2.1.1 counts.2.1.1.1 data.1.1.1.1 scale.data.1.1.1.1 data.2.1.1.1 scale.data.2.1.1.1 data.2.1.1 scale.data.2.1.1 data.2.1 scale.data.2.1</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  only the first layer is used</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:29] Error: Not compatible with requested type: [type=S4; target=double].</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:29] Error when performing FindClusters. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:29] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:09] Error: Not compatible with requested type: [type=S4; target=double].</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:09] Error when performing FindClusters. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:09] Perform nonlinear dimension reduction (umap) on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:29] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:29] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:09] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:09] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #BBBB00;">!</span> ‘Uncorrected_SNN’ not found in this Seurat object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                        </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:29] Error when performing nonlinear dimension reduction. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-04 06:12:32] Run Uncorrected_integrate done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:32] Elapsed time: 11.12 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:09] Error when performing nonlinear dimension reduction. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-06 11:40:12] Run Uncorrected_integrate done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:12] Elapsed time: 10.94 secs</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -364,46 +364,46 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <span class="r-in"><span>  HVF_min_intersection <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  scale_within_batch <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:32] Run Uncorrected_integrate...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:32] Spliting `srt_merge` into `srt_list` by column tech...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Data 1/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Data 2/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:34] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:35] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:35] Data 3/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:35] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:35] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:35] Data 4/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:36] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Data 5/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Number of available HVF: 259</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:37] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:40] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:41] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:41] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:41] Linear_reduction(pca) is already existed. Skip calculation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:12] Run Uncorrected_integrate...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:12] Spliting `srt_merge` into `srt_list` by column tech...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:13] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:13] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:13] Data 1/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:13] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Data 2/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Data 3/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:14] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Data 4/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Data 5/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:15] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:16] Number of available HVF: 259</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:16] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:18] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:20] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:20] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:20] Linear_reduction(pca) is already existed. Skip calculation.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following arguments are not used: features</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>multiple layers are identified by counts.1.1.1.1 counts.2.1 counts.2.1.1 counts.2.1.1.1 data.1.1.1.1 scale.data.1.1.1.1 data.2.1.1.1 scale.data.2.1.1.1 data.2.1.1 scale.data.2.1.1 data.2.1 scale.data.2.1</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  only the first layer is used</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:41] Error: Not compatible with requested type: [type=S4; target=double].</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:41] Error when performing FindClusters. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:41] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:20] Error: Not compatible with requested type: [type=S4; target=double].</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:20] Error when performing FindClusters. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:20] Perform nonlinear dimension reduction (umap) on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:41] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:41] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:20] Non-linear dimensionality reduction(umap) using Reduction(Uncorrectedpca, dims:Inf--Inf) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:20] <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `object[[graph]]`:</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #BBBB00;">!</span> ‘Uncorrected_SNN’ not found in this Seurat object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                        </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-04 06:12:41] Error when performing nonlinear dimension reduction. Skip this step...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-04 06:12:43] Run Uncorrected_integrate done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:43] Elapsed time: 10.15 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-06 11:40:20] Error when performing nonlinear dimension reduction. Skip this step...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-06 11:40:22] Run Uncorrected_integrate done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:22] Elapsed time: 9.91 secs</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -419,28 +419,28 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Seurat"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:43] Run Seurat_integrate...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:43] Spliting `srt_merge` into `srt_list` by column tech...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:45] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:45] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:45] Data 1/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:45] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Data 2/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Data 3/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:46] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Data 4/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Data is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Data 5/5 of the srt_list has been log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:47] Use the separate HVF from srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:48] Number of available HVF: 2000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:48] Finished checking.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:12:50] Perform FindIntegrationAnchors on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:22] Run Seurat_integrate...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:22] Spliting `srt_merge` into `srt_list` by column tech...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:23] Checking srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data 1/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Perform FindVariableFeatures on the data 1/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data 2/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Perform FindVariableFeatures on the data 2/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Data 3/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:24] Perform FindVariableFeatures on the data 3/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Data 4/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Perform FindVariableFeatures on the data 4/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Data 5/5 of the srt_list has been log-normalized.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:25] Perform FindVariableFeatures on the data 5/5 of the srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:26] Use the separate HVF from srt_list...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:26] Number of available HVF: 2000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:26] Finished checking.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:40:28] Perform FindIntegrationAnchors on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
@@ -454,24 +454,24 @@ Only valid when the <code>integration_method</code> is one of <code>"Uncorrected
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use the `layer` argument instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">Seurat</span> package.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/satijalab/seurat/issues&gt;</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:25] Perform integration(Seurat) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:02] Perform integration(Seurat) on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following arguments are not used: verbose</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:37] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:38] Perform linear dimension reduction (pca) on the data...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following arguments are not used: verbose</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:39] Perform FindClusters (louvain) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:39] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:39] Using 'Seurat::AverageExpression()' to calculate pseudo-bulk data for 'Assay'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:39] Perform nonlinear dimension reduction (umap) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:39] Non-linear dimensionality reduction(umap) using Reduction(Seuratpca, dims:1-12) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:43] Non-linear dimensionality reduction(umap) using Reduction(Seuratpca, dims:1-12) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-04 06:13:49] Run Seurat_integrate done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-04 06:13:49] Elapsed time: 1.1 mins</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:14] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:14] Perform ScaleData on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:14] Perform linear dimension reduction (pca) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:14] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:15] Perform FindClusters (louvain) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:15] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:15] Using 'Seurat::AverageExpression()' to calculate pseudo-bulk data for 'Assay'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:15] Perform nonlinear dimension reduction (umap) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:15] Non-linear dimensionality reduction(umap) using Reduction(Seuratpca, dims:1-12) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:19] Non-linear dimensionality reduction(umap) using Reduction(Seuratpca, dims:1-12) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-06 11:41:26] Run Seurat_integrate done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-06 11:41:26] Elapsed time: 1.06 mins</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">panc8_sub</span>, group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>

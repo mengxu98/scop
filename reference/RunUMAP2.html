@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run UMAP (Uniform Manifold Approximation and Projection)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunUMAP2.R" class="external-link"><code>R/RunUMAP2.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunUMAP2.R" class="external-link"><code>R/RunUMAP2.R</code></a></small>
       <div class="d-none name"><code>RunUMAP2.Rd</code></div>
     </div>
 
@@ -241,10 +241,10 @@
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 UMAP embedding parameters a = 0.9922 b = 1.112</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 Read 1000 rows and found 2000 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 Using Annoy for neighbor search, n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 Read 1000 rows and found 2000 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 Building Annoy index with metric = cosine, n_trees = 50</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
@@ -298,15 +298,15 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 Writing NN index file to temp file /tmp/RtmpChf7ml/file2440193e19cb</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:07 Searching Annoy index using 2 threads, search_k = 3000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:08 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:09 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 Writing NN index file to temp file /tmp/Rtmp0GmLGv/file2491654305fa</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:01 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:02 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:04 Commencing smooth kNN distance calibration using 2 threads</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:12 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:12 Commencing optimization for 200 epochs, with 46184 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:12 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:26:13 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:06 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:06 Commencing optimization for 200 epochs, with 46184 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:06 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 11:54:08 Optimization finished</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
