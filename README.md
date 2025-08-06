@@ -31,7 +31,7 @@ The functions in the scop package are all developed around the [Seurat object](h
   - [Credits](#credits)
   - [Installation](#installation)
     - [R version requirement](#r-version-requirement)
-      - [Prepare python environment](#prepare-python-environment)
+    - [Prepare python environment](#prepare-python-environment)
     - [Data exploration](#data-exploration)
     - [CellQC](#cellqc)
     - [Standard pipeline](#standard-pipeline)
@@ -68,7 +68,7 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-#### Prepare python environment
+### Prepare python environment
 
 To run functions such as `RunPAGA` or `RunSCVELO`, [scop](https://github.com/mengxu98/scop) requires [conda](https://docs.conda.io/en/latest/miniconda.html) to create a separate python environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_envname = "new_name")`.
 
