@@ -36,15 +36,13 @@ adata_to_srt <- function(
     )
   }
   log_message(
-    "Converting anndata object to Seurat object...",
+    "Converting {.cls AnnData} object to {.cls Seurat} object...",
     verbose = verbose
   )
 
   x <- Matrix::t(py_to_r2(adata$X))
   if (!inherits(x, "dgCMatrix")) {
-    x <- SeuratObject::as.sparse(
-      x[seq_len(nrow(x)), , drop = FALSE]
-    )
+    x <- SeuratObject::as.sparse(x)
   }
   rownames(x) <- py_to_r2(adata$var_names$values)
   colnames(x) <- py_to_r2(adata$obs_names$values)
@@ -81,9 +79,7 @@ adata_to_srt <- function(
       }
       layer <- Matrix::t(layer)
       if (!inherits(layer, "dgCMatrix")) {
-        layer <- SeuratObject::as.sparse(
-          layer[seq_len(nrow(layer)), , drop = FALSE]
-        )
+        layer <- SeuratObject::as.sparse(layer)
       }
       rownames(layer) <- py_to_r2(adata$var_names$values)
       colnames(layer) <- py_to_r2(adata$obs_names$values)
@@ -97,25 +93,33 @@ adata_to_srt <- function(
     keys <- names(adata$obsm)
   }
   if (length(keys) > 0) {
+    processed_reductions <- character(0)
     for (k in keys) {
+      k_clean <- gsub(pattern = "^X_", replacement = "", x = py_to_r2(k))
+
+      if (k_clean %in% processed_reductions) {
+        next
+      }
+
+      processed_reductions <- c(processed_reductions, k_clean)
       obsm <- tryCatch(py_to_r2(adata$obsm[[k]]), error = identity)
       if (inherits(obsm, "error")) {
         log_message(
           "{.val obsm}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
       if (!inherits(obsm, "matrix")) {
         obsm <- Matrix::as.matrix(obsm)
       }
-      k <- gsub(pattern = "^X_", replacement = "", x = py_to_r2(k))
-      colnames(obsm) <- paste0(k, "_", seq_len(ncol(obsm)))
+      colnames(obsm) <- paste0(k_clean, "_", seq_len(ncol(obsm)))
       rownames(obsm) <- py_to_r2(adata$obs_names$values)
       srt[[py_to_r2(k)]] <- Seurat::CreateDimReducObject(
         embeddings = obsm,
         assay = "RNA",
-        key = paste0(gsub(pattern = "_", replacement = "", x = k), "_")
+        key = paste0(gsub(pattern = "_", replacement = "", x = k_clean), "_")
       )
     }
   }
@@ -131,19 +135,18 @@ adata_to_srt <- function(
       if (inherits(obsp, "error")) {
         log_message(
           "{.val obsp}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
       if (!inherits(obsp, "dgCMatrix")) {
-        obsp <- SeuratObject::as.sparse(
-          obsp[seq_len(nrow(obsp)), , drop = FALSE]
-        )
+        obsp <- SeuratObject::as.sparse(obsp)
       }
       colnames(obsp) <- py_to_r2(adata$obs_names$values)
       rownames(obsp) <- py_to_r2(adata$obs_names$values)
-      obsp <- SeuratObject::as.Graph(obsp[seq_len(nrow(obsp)), , drop = FALSE])
-      DefaultAssay(object = obsp) <- "RNA"
+      obsp <- SeuratObject::as.Graph(obsp)
+      SeuratObject::DefaultAssay(obsp) <- "RNA"
       srt[[py_to_r2(k)]] <- obsp
     }
   }
@@ -166,7 +169,8 @@ adata_to_srt <- function(
       if (inherits(varm, "error")) {
         log_message(
           "{.val varm}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
@@ -190,7 +194,8 @@ adata_to_srt <- function(
       if (inherits(varp, "error")) {
         log_message(
           "{.val varp}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
@@ -214,7 +219,8 @@ adata_to_srt <- function(
       if (inherits(uns, "error")) {
         log_message(
           "{.val uns}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
@@ -222,7 +228,8 @@ adata_to_srt <- function(
       if (inherits(uns, "error")) {
         log_message(
           "{.val uns}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
@@ -231,16 +238,17 @@ adata_to_srt <- function(
       } else {
         log_message(
           "{.val uns}: {.val {k}} will not be converted.",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         next
       }
     }
   }
   log_message(
-    "Conversion completed",
-    verbose = verbose,
-    message_type = "success"
+    "Convert {.cls AnnData} object to {.cls Seurat} object completed",
+    message_type = "success",
+    verbose = verbose
   )
   return(srt)
 }
