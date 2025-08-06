@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams SeuratObject::GetAssayData
-#' @param verbose Logical, whether to print messages.
+#' @param verbose Whether to print messages. Default is `TRUE`.
 #' @param ... Additional arguments passed to [SeuratObject::GetAssayData].
 #'
 #' @return A matrix or data frame containing the assay data.
@@ -54,7 +54,7 @@ GetAssayData5.Seurat <- function(
   return(data)
 }
 
-#' @param join_layers Logical value, whether to join layers if the object is an Assay5 object.
+#' @param join_layers Whether to join layers if the object is an Assay5 object. Default is `TRUE`.
 #' @rdname GetAssayData5
 #' @method GetAssayData5 Assay5
 #' @export
@@ -112,11 +112,15 @@ GetAssayData5.Assay5 <- function(
 GetAssayData5.Assay <- function(
     object,
     layer = "counts",
+    verbose = TRUE,
     ...) {
-  data <- SeuratObject::GetAssayData(
+  log_message(
+    "Get expression data from {.cls Assay} object",
+    verbose = verbose
+  )
+  SeuratObject::GetAssayData(
     object,
     layer = layer,
     ...
   )
-  return(data)
 }

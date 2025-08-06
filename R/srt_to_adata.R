@@ -1,19 +1,21 @@
-#' Convert a seurat object to an anndata object using reticulate
+#' @title Convert a Seurat object to an AnnData object
 #'
+#' @description
 #' This function takes a Seurat object and converts it to an anndata object using the reticulate package.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param assay_x Assay to convert as the main data matrix (X) in the anndata object.
 #' @param layer_x Layer name for assay_x in the Seurat object.
 #' @param assay_y Assays to convert as layers in the anndata object.
 #' @param layer_y Layer names for the assay_y in the Seurat object.
-#' @param convert_tools Logical indicating whether to convert the tool-specific data.
-#' @param convert_misc Logical indicating whether to convert the miscellaneous data.
+#' @param convert_tools Whether to convert the tool-specific data. Default is `FALSE`.
+#' @param convert_misc Whether to convert the miscellaneous data. Default is `FALSE`.
 #' @param features Optional vector of features to include in the anndata object.
 #' Defaults to all features in assay_x.
-#' @param verbose Logical indicating whether to print verbose messages during the conversion process.
+#' @param verbose Whether to print verbose messages during the conversion process. Default is `TRUE`.
 #'
-#' @return A \code{anndata} object.
+#' @return A `anndata` object.
 #'
 #' @export
 #'
@@ -23,7 +25,7 @@
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
-#' ## Or save as an h5ad file or a loom file
+#' ## Or save as a h5ad/loom file
 #' # adata$write_h5ad(
 #' #   "pancreas_sub.h5ad"
 #' # )
@@ -46,10 +48,14 @@ srt_to_adata <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a Seurat object",
       message_type = "error"
     )
   }
+  log_message(
+    "Converting {.cls Seurat} object to {.cls AnnData} object...",
+    verbose = verbose
+  )
 
   if (is.null(features)) {
     features <- rownames(srt[[assay_x]])
@@ -59,7 +65,7 @@ srt_to_adata <- function(
     names(layer_y) <- assay_y
   } else if (length(layer_y) != length(assay_y)) {
     log_message(
-      "layer_y must be one character or the same length of the assay_y",
+      "{.arg layer_y} must be one character or the same length of the {.arg assay_y}",
       message_type = "error"
     )
   }
@@ -104,7 +110,8 @@ srt_to_adata <- function(
     GetAssayData5(
       srt,
       assay = assay_x,
-      layer = layer_x
+      layer = layer_x,
+      verbose = FALSE
     )[features, , drop = FALSE]
   )
   adata <- sc$AnnData(
@@ -124,32 +131,26 @@ srt_to_adata <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer_y[assay]
+          layer = layer_y[assay],
+          verbose = FALSE
         )
       )
       if (!identical(dim(layer), dim(X))) {
         if (all(colnames(X) %in% colnames(layer))) {
           layer <- layer[, colnames(X)]
         } else {
+          features_null <- colnames(X)[!colnames(X) %in% colnames(layer)]
           log_message(
-            "The following features in the '",
-            assay_x,
-            "' assay can not be found in the '",
-            assay,
-            "' assay:\n  ",
-            paste0(
-              utils::head(colnames(X)[!colnames(X) %in% colnames(layer)], 10),
-              collapse = ","
-            ),
-            "...",
-            message_type = "warning"
+            "The following features in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {features_null}}",
+            message_type = "warning",
+            verbose = verbose
           )
         }
       }
       layer_list[[assay]] <- layer
     } else {
       log_message(
-        paste0("Assay '", assay, "' is in the srt object but not converted."),
+        "{.val {assay}} is in the srt object but not converted",
         message_type = "warning",
         verbose = verbose
       )
@@ -188,7 +189,7 @@ srt_to_adata <- function(
     }
   } else {
     log_message(
-      "'misc' slot is not converted.",
+      "{.val misc} slot is not converted",
       message_type = "warning",
       verbose = verbose
     )
@@ -201,7 +202,7 @@ srt_to_adata <- function(
     }
   } else {
     log_message(
-      "'tools' slot is not converted.",
+      "{.val tools} slot is not converted",
       message_type = "warning",
       verbose = verbose
     )
@@ -209,6 +210,11 @@ srt_to_adata <- function(
   if (length(uns_list) > 0) {
     adata$uns <- uns_list
   }
+  log_message(
+    "Convert {.cls Seurat} object to {.cls AnnData} object completed",
+    message_type = "success",
+    verbose = verbose
+  )
 
   return(adata)
 }

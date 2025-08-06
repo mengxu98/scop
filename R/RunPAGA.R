@@ -123,13 +123,13 @@ RunPAGA <- function(
   check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of {.val srt} or {.val adata} must be provided.",
+      "One of {.arg srt} or {.arg adata} must be provided",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "{.val group_by} must be provided.",
+      "{.arg group_by} must be provided",
       message_type = "error"
     )
   }
@@ -141,7 +141,7 @@ RunPAGA <- function(
     }
     if (!linear_reduction %in% names(srt@reductions)) {
       log_message(
-        "{.val linear_reduction} is not in the srt reduction names.",
+        "{.arg linear_reduction} is not in the srt reduction names",
         message_type = "error"
       )
     }
@@ -153,7 +153,7 @@ RunPAGA <- function(
     }
     if (!nonlinear_reduction %in% names(srt@reductions)) {
       log_message(
-        "{.val nonlinear_reduction} is not in the srt reduction names.",
+        "{.arg nonlinear_reduction} is not in the srt reduction names",
         message_type = "error"
       )
     }
@@ -174,19 +174,21 @@ RunPAGA <- function(
       } else {
         y <- x
       }
-      return(y)
+      y
     }
   )
   call_envir <- parent.frame(1)
-  args <- lapply(args, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
+  args <- lapply(
+    args, function(arg) {
+      if (is.symbol(arg)) {
+        eval(arg, envir = call_envir)
+      } else if (is.call(arg)) {
+        eval(arg, envir = call_envir)
+      } else {
+        arg
+      }
     }
-  })
+  )
   params <- c(
     "srt",
     "assay_x",
