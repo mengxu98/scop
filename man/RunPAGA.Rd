@@ -42,37 +42,44 @@ RunPAGA(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (X) in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.}
+\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
 \item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
 \item{adata}{An anndata object.}
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 
-\item{linear_reduction}{Linear reduction method to use, e.g., "PCA".}
+\item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
 
-\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., "UMAP".}
+\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., \code{"UMAP"}.}
 
-\item{basis}{The basis to use for reduction, e.g., "UMAP".}
+\item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
-\item{n_pcs}{Number of principal components to use for linear reduction. Default is 30.}
+\item{n_pcs}{Number of principal components to use for linear reduction.
+Default is \code{30}.}
 
-\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph. Default is 30.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
+Default is \code{30}.}
 
-\item{use_rna_velocity}{Whether to use RNA velocity for PAGA analysis. Default is FALSE.}
+\item{use_rna_velocity}{Whether to use RNA velocity for PAGA analysis.
+Default is \code{FALSE}.}
 
-\item{vkey}{The name of the RNA velocity data to use if \code{use_rna_velocity} is TRUE. Default is "stochastic".}
+\item{vkey}{The name of the RNA velocity data to use if \code{use_rna_velocity} is \code{TRUE}.
+Default is \code{"stochastic"}.}
 
-\item{embedded_with_PAGA}{Whether to embed data using PAGA layout. Default is FALSE.}
+\item{embedded_with_PAGA}{Whether to embed data using PAGA layout.
+Default is \code{FALSE}.}
 
-\item{paga_layout}{The layout for plotting PAGA graph. See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in scanpy.pl.paga function.}
+\item{paga_layout}{The layout for plotting PAGA graph.
+See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in \code{scanpy.pl.paga} function.}
 
-\item{threshold}{The threshold for plotting PAGA graph. Edges for weights below this threshold will not draw.}
+\item{threshold}{The threshold for plotting PAGA graph.
+Edges for weights below this threshold will not be drawn.}
 
 \item{point_size}{The point size for plotting.}
 
@@ -82,7 +89,7 @@ RunPAGA(
 
 \item{root_cell}{The cell to use as the root for pseudotime inference.}
 
-\item{n_dcs}{TThe number of diffusion components to use for pseudotime inference.}
+\item{n_dcs}{The number of diffusion components to use for pseudotime inference.}
 
 \item{n_branchings}{Number of branchings to detect.}
 
@@ -102,7 +109,8 @@ RunPAGA(
 
 \item{fileprefix}{The file prefix to use for the plots.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
 }
 \description{
 PAGA is a graph-based method used to infer cellular trajectories.
@@ -156,5 +164,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\link{srt_to_adata} \link{PAGAPlot} \link{CellDimPlot} \link{RunSCVELO}
+\link{srt_to_adata}, \link{PAGAPlot}, \link{CellDimPlot}, \link{RunSCVELO}
 }

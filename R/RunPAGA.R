@@ -1,31 +1,39 @@
-#' Run PAGA analysis
+#' @title Run PAGA analysis
 #'
+#' @description
 #' PAGA is a graph-based method used to infer cellular trajectories.
 #' This function runs the PAGA analysis on a Seurat object.
 #'
 #' @md
 #' @param srt A Seurat object.
-#' @param assay_x Assay to convert as the main data matrix (X) in the anndata object.
-#' @param layer_x Layer name for assay_x in the Seurat object.
+#' @param assay_x Assay to convert as the main data matrix (`X`) in the anndata object.
+#' @param layer_x Layer name for `assay_x` in the Seurat object.
 #' @param assay_y Assays to convert as layers in the anndata object.
-#' @param layer_y Layer names for the assay_y in the Seurat object.
+#' @param layer_y Layer names for the `assay_y` in the Seurat object.
 #' @param adata An anndata object.
 #' @param group_by Variable to use for grouping cells in the Seurat object.
-#' @param linear_reduction Linear reduction method to use, e.g., "PCA".
-#' @param nonlinear_reduction Non-linear reduction method to use, e.g., "UMAP".
-#' @param basis The basis to use for reduction, e.g., "UMAP".
-#' @param n_pcs Number of principal components to use for linear reduction. Default is 30.
-#' @param n_neighbors Number of neighbors to use for constructing the KNN graph. Default is 30.
-#' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis. Default is FALSE.
-#' @param vkey The name of the RNA velocity data to use if \code{use_rna_velocity} is TRUE. Default is "stochastic".
-#' @param embedded_with_PAGA Whether to embed data using PAGA layout. Default is FALSE.
-#' @param paga_layout The layout for plotting PAGA graph. See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in scanpy.pl.paga function.
-#' @param threshold The threshold for plotting PAGA graph. Edges for weights below this threshold will not draw.
+#' @param linear_reduction Linear reduction method to use, e.g., `"PCA"`.
+#' @param nonlinear_reduction Non-linear reduction method to use, e.g., `"UMAP"`.
+#' @param basis The basis to use for reduction, e.g., `"UMAP"`.
+#' @param n_pcs Number of principal components to use for linear reduction.
+#' Default is `30`.
+#' @param n_neighbors Number of neighbors to use for constructing the KNN graph.
+#' Default is `30`.
+#' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
+#' Default is `FALSE`.
+#' @param vkey The name of the RNA velocity data to use if `use_rna_velocity` is `TRUE`.
+#' Default is `"stochastic"`.
+#' @param embedded_with_PAGA Whether to embed data using PAGA layout.
+#' Default is `FALSE`.
+#' @param paga_layout The layout for plotting PAGA graph.
+#' See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in `scanpy.pl.paga` function.
+#' @param threshold The threshold for plotting PAGA graph.
+#' Edges for weights below this threshold will not be drawn.
 #' @param point_size The point size for plotting.
 #' @param infer_pseudotime Whether to infer pseudotime.
 #' @param root_group The group to use as the root for pseudotime inference.
 #' @param root_cell The cell to use as the root for pseudotime inference.
-#' @param n_dcs TThe number of diffusion components to use for pseudotime inference.
+#' @param n_dcs The number of diffusion components to use for pseudotime inference.
 #' @param n_branchings Number of branchings to detect.
 #' @param min_group_size The minimum size of a group (as a fraction of the total number of cells) to consider it as a potential branching point.
 #' @param palette The palette to use for coloring cells.
@@ -35,9 +43,11 @@
 #' @param save Whether to save the plots.
 #' @param dirpath The directory to save the plots.
 #' @param fileprefix The file prefix to use for the plots.
-#' @param return_seurat Whether to return a Seurat object instead of an anndata object. Default is TRUE.
+#' @param return_seurat Whether to return a Seurat object instead of an anndata object.
+#' Default is `TRUE`.
 #'
-#' @seealso [srt_to_adata] [PAGAPlot] [CellDimPlot] [RunSCVELO]
+#' @seealso
+#' [srt_to_adata], [PAGAPlot], [CellDimPlot], [RunSCVELO]
 #'
 #' @export
 #'
@@ -123,13 +133,13 @@ RunPAGA <- function(
   check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of {.val srt} or {.val adata} must be provided.",
+      "One of {.arg srt} or {.arg adata} must be provided",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "{.val group_by} must be provided.",
+      "{.arg group_by} must be provided",
       message_type = "error"
     )
   }
@@ -141,7 +151,7 @@ RunPAGA <- function(
     }
     if (!linear_reduction %in% names(srt@reductions)) {
       log_message(
-        "{.val linear_reduction} is not in the srt reduction names.",
+        "{.arg linear_reduction} is not in the srt reduction names",
         message_type = "error"
       )
     }
@@ -153,7 +163,7 @@ RunPAGA <- function(
     }
     if (!nonlinear_reduction %in% names(srt@reductions)) {
       log_message(
-        "{.val nonlinear_reduction} is not in the srt reduction names.",
+        "{.arg nonlinear_reduction} is not in the srt reduction names",
         message_type = "error"
       )
     }
@@ -174,19 +184,21 @@ RunPAGA <- function(
       } else {
         y <- x
       }
-      return(y)
+      y
     }
   )
   call_envir <- parent.frame(1)
-  args <- lapply(args, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call_envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call_envir)
-    } else {
-      arg
+  args <- lapply(
+    args, function(arg) {
+      if (is.symbol(arg)) {
+        eval(arg, envir = call_envir)
+      } else if (is.call(arg)) {
+        eval(arg, envir = call_envir)
+      } else {
+        arg
+      }
     }
-  })
+  )
   params <- c(
     "srt",
     "assay_x",
