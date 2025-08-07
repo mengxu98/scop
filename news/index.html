@@ -38,6 +38,11 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="scop-020">scop 0.2.0<a class="anchor" aria-label="anchor" href="#scop-020"></a></h2>
+<ul><li><p><strong>New Functionality</strong>: Added <code><a href="../reference/RemovePackages.html">RemovePackages()</a></code> function for easy remove Python packages.</p></li>
+<li><p><strong>Bug Fixes</strong>: Corrected an issue in <code>py_to_r2()</code> function (intrinsic function), which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.9" id="scop-019">scop 0.1.9<a class="anchor" aria-label="anchor" href="#scop-019"></a></h2>
 <ul><li>
 <strong>Enhancements</strong>: Update <code><a href="../reference/CellScoring.html">CellScoring()</a></code> and <code>AddModuleScore2()</code> functions. Now, new parameters <code>cores</code> and <code>verbose</code> have been added. The <code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">parallelize_fun</a>, and the <code>cores</code> parameter is used to control the number of cores in <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">parallelize_fun</a>.</li>

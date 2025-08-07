@@ -92,11 +92,11 @@ This function runs the PAGA analysis on a Seurat object.</p>
 
 
 <dt id="arg-assay-x">assay_x<a class="anchor" aria-label="anchor" href="#arg-assay-x"></a></dt>
-<dd><p>Assay to convert as the main data matrix (X) in the anndata object.</p></dd>
+<dd><p>Assay to convert as the main data matrix (<code>X</code>) in the anndata object.</p></dd>
 
 
 <dt id="arg-layer-x">layer_x<a class="anchor" aria-label="anchor" href="#arg-layer-x"></a></dt>
-<dd><p>Layer name for assay_x in the Seurat object.</p></dd>
+<dd><p>Layer name for <code>assay_x</code> in the Seurat object.</p></dd>
 
 
 <dt id="arg-assay-y">assay_y<a class="anchor" aria-label="anchor" href="#arg-assay-y"></a></dt>
@@ -104,7 +104,7 @@ This function runs the PAGA analysis on a Seurat object.</p>
 
 
 <dt id="arg-layer-y">layer_y<a class="anchor" aria-label="anchor" href="#arg-layer-y"></a></dt>
-<dd><p>Layer names for the assay_y in the Seurat object.</p></dd>
+<dd><p>Layer names for the <code>assay_y</code> in the Seurat object.</p></dd>
 
 
 <dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
@@ -116,43 +116,50 @@ This function runs the PAGA analysis on a Seurat object.</p>
 
 
 <dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
-<dd><p>Linear reduction method to use, e.g., "PCA".</p></dd>
+<dd><p>Linear reduction method to use, e.g., <code>"PCA"</code>.</p></dd>
 
 
 <dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
-<dd><p>Non-linear reduction method to use, e.g., "UMAP".</p></dd>
+<dd><p>Non-linear reduction method to use, e.g., <code>"UMAP"</code>.</p></dd>
 
 
 <dt id="arg-basis">basis<a class="anchor" aria-label="anchor" href="#arg-basis"></a></dt>
-<dd><p>The basis to use for reduction, e.g., "UMAP".</p></dd>
+<dd><p>The basis to use for reduction, e.g., <code>"UMAP"</code>.</p></dd>
 
 
 <dt id="arg-n-pcs">n_pcs<a class="anchor" aria-label="anchor" href="#arg-n-pcs"></a></dt>
-<dd><p>Number of principal components to use for linear reduction. Default is 30.</p></dd>
+<dd><p>Number of principal components to use for linear reduction.
+Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
-<dd><p>Number of neighbors to use for constructing the KNN graph. Default is 30.</p></dd>
+<dd><p>Number of neighbors to use for constructing the KNN graph.
+Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-use-rna-velocity">use_rna_velocity<a class="anchor" aria-label="anchor" href="#arg-use-rna-velocity"></a></dt>
-<dd><p>Whether to use RNA velocity for PAGA analysis. Default is FALSE.</p></dd>
+<dd><p>Whether to use RNA velocity for PAGA analysis.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-vkey">vkey<a class="anchor" aria-label="anchor" href="#arg-vkey"></a></dt>
-<dd><p>The name of the RNA velocity data to use if <code>use_rna_velocity</code> is TRUE. Default is "stochastic".</p></dd>
+<dd><p>The name of the RNA velocity data to use if <code>use_rna_velocity</code> is <code>TRUE</code>.
+Default is <code>"stochastic"</code>.</p></dd>
 
 
 <dt id="arg-embedded-with-paga">embedded_with_PAGA<a class="anchor" aria-label="anchor" href="#arg-embedded-with-paga"></a></dt>
-<dd><p>Whether to embed data using PAGA layout. Default is FALSE.</p></dd>
+<dd><p>Whether to embed data using PAGA layout.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-paga-layout">paga_layout<a class="anchor" aria-label="anchor" href="#arg-paga-layout"></a></dt>
-<dd><p>The layout for plotting PAGA graph. See <a href="https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html" class="external-link">layout</a> param in scanpy.pl.paga function.</p></dd>
+<dd><p>The layout for plotting PAGA graph.
+See <a href="https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html" class="external-link">layout</a> param in <code>scanpy.pl.paga</code> function.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
-<dd><p>The threshold for plotting PAGA graph. Edges for weights below this threshold will not draw.</p></dd>
+<dd><p>The threshold for plotting PAGA graph.
+Edges for weights below this threshold will not be drawn.</p></dd>
 
 
 <dt id="arg-point-size">point_size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
@@ -172,7 +179,7 @@ This function runs the PAGA analysis on a Seurat object.</p>
 
 
 <dt id="arg-n-dcs">n_dcs<a class="anchor" aria-label="anchor" href="#arg-n-dcs"></a></dt>
-<dd><p>TThe number of diffusion components to use for pseudotime inference.</p></dd>
+<dd><p>The number of diffusion components to use for pseudotime inference.</p></dd>
 
 
 <dt id="arg-n-branchings">n_branchings<a class="anchor" aria-label="anchor" href="#arg-n-branchings"></a></dt>
@@ -212,12 +219,13 @@ This function runs the PAGA analysis on a Seurat object.</p>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
-<dd><p>Whether to return a Seurat object instead of an anndata object. Default is TRUE.</p></dd>
+<dd><p>Whether to return a Seurat object instead of an anndata object.
+Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a> <a href="PAGAPlot.html">PAGAPlot</a> <a href="CellDimPlot.html">CellDimPlot</a> <a href="RunSCVELO.html">RunSCVELO</a></p></div>
+    <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a>, <a href="PAGAPlot.html">PAGAPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="RunSCVELO.html">RunSCVELO</a></p></div>
     </div>
 
     <div class="section level2">
