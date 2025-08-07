@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Prefetch cell cycle genes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
       <div class="d-none name"><code>CycGenePrefetch.Rd</code></div>
     </div>
 
@@ -94,8 +94,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:05] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-07 03:08:05] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:42] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-07 04:07:42] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res: NULL</span>
@@ -103,20 +103,20 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:05] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:06] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:07] Using the <span style="color: #0000BB;">"114"</span> version of biomart...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:07] Downloading the biomart from <span style="color: #0000BB;">"https://may2025.archive.ensembl.org"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:09] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:09] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:10] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:12] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:12] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:42] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:43] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:44] Using the <span style="color: #0000BB;">"114"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:44] Downloading the biomart from <span style="color: #0000BB;">"https://may2025.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:47] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:47] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:49] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:51] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:51] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 03:08:12] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-07 03:08:12] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-07 04:07:51] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-07 04:07:51] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res:List of 7</span>
