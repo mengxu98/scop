@@ -1,16 +1,18 @@
-#' Run scVelo workflow
+#' @title Run scVelo workflow
 #'
+#' @description
 #' scVelo is a scalable toolkit for RNA velocity analysis in single cells.
-#' This function runs an enhanced scVelo workflow on a Seurat object with improved
-#' error handling, version compatibility, and modular design.
+#' This function runs an enhanced scVelo workflow on a Seurat object with improved error handling,
+#' version compatibility, and modular design.
 #'
 #' @md
 #' @inheritParams RunPAGA
-#' @param mode Velocity estimation models to use. Can be a vector containing "deterministic", "stochastic", and/or "dynamical".
+#' @param mode Velocity estimation models to use.
+#' Can be a vector containing `"deterministic"`, `"stochastic"`, and/or `"dynamical"`.
 #' @param fitting_by Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".
 #' @param magic_impute Flag indicating whether to perform magic imputation.
-#' @param knn The number of nearest neighbors for magic.MAGIC.
-#' @param t power to which the diffusion operator is powered for magic.MAGIC.
+#' @param knn The number of nearest neighbors for `magic.MAGIC`.
+#' @param t power to which the diffusion operator is powered for `magic.MAGIC`.
 #' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
 #' @param n_pcs Number of principal components (PCs) used for velocity estimation.
 #' @param n_neighbors Number of nearest neighbors used for velocity estimation.
@@ -41,7 +43,8 @@
 #' @param top_n The number of top features to plot.
 #' @param n_jobs The number of parallel jobs to run.
 #'
-#' @seealso [srt_to_adata] [VelocityPlot] [CellDimPlot] [RunPAGA]
+#' @seealso
+#' [srt_to_adata], [VelocityPlot], [CellDimPlot], [RunPAGA]
 #'
 #' @export
 #' @examples

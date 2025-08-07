@@ -45,27 +45,29 @@ RunPalantir(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (X) in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.}
+\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
 \item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
 \item{adata}{An anndata object.}
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 
-\item{linear_reduction}{Linear reduction method to use, e.g., "PCA".}
+\item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
 
-\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., "UMAP".}
+\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., \code{"UMAP"}.}
 
-\item{basis}{The basis to use for reduction, e.g., "UMAP".}
+\item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
-\item{n_pcs}{Number of principal components to use for linear reduction. Default is 30.}
+\item{n_pcs}{Number of principal components to use for linear reduction.
+Default is \code{30}.}
 
-\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph. Default is 30.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
+Default is \code{30}.}
 
 \item{dm_n_components}{The number of diffusion components to calculate.}
 
@@ -111,7 +113,8 @@ RunPalantir(
 
 \item{fileprefix}{The file prefix to use for the plots.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
 }
 \description{
 Run Palantir analysis

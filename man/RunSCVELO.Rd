@@ -59,33 +59,34 @@ RunSCVELO(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (X) in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.}
+\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
 \item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
 \item{adata}{An anndata object.}
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 
-\item{linear_reduction}{Linear reduction method to use, e.g., "PCA".}
+\item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
 
-\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., "UMAP".}
+\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., \code{"UMAP"}.}
 
-\item{basis}{The basis to use for reduction, e.g., "UMAP".}
+\item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
-\item{mode}{Velocity estimation models to use. Can be a vector containing "deterministic", "stochastic", and/or "dynamical".}
+\item{mode}{Velocity estimation models to use.
+Can be a vector containing \code{"deterministic"}, \code{"stochastic"}, and/or \code{"dynamical"}.}
 
 \item{fitting_by}{Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".}
 
 \item{magic_impute}{Flag indicating whether to perform magic imputation.}
 
-\item{knn}{The number of nearest neighbors for magic.MAGIC.}
+\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.}
 
-\item{t}{power to which the diffusion operator is powered for magic.MAGIC.}
+\item{t}{power to which the diffusion operator is powered for \code{magic.MAGIC}.}
 
 \item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.}
 
@@ -156,12 +157,13 @@ Each cell in the grid can have, at most, one traversing streamline.}
 
 \item{fileprefix}{The file prefix to use for the plots.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
 }
 \description{
 scVelo is a scalable toolkit for RNA velocity analysis in single cells.
-This function runs an enhanced scVelo workflow on a Seurat object with improved
-error handling, version compatibility, and modular design.
+This function runs an enhanced scVelo workflow on a Seurat object with improved error handling,
+version compatibility, and modular design.
 }
 \examples{
 \dontrun{
@@ -214,5 +216,5 @@ pancreas_sub <- RunSCVELO(
 }
 }
 \seealso{
-\link{srt_to_adata} \link{VelocityPlot} \link{CellDimPlot} \link{RunPAGA}
+\link{srt_to_adata}, \link{VelocityPlot}, \link{CellDimPlot}, \link{RunPAGA}
 }
