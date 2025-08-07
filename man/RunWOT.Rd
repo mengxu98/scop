@@ -32,13 +32,13 @@ RunWOT(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (X) in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.}
+\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
 \item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
 \item{adata}{An anndata object.}
 
@@ -72,7 +72,8 @@ RunWOT(
 
 \item{fileprefix}{The file prefix to use for the plots.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object. Default is TRUE.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
 }
 \description{
 Run WOT analysis
