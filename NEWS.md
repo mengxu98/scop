@@ -1,5 +1,11 @@
 # scop
 
+# scop 0.2.0
+
+* **New Functionality**: Added `RemovePackages()` function for easy remove Python packages.
+
+* **Bug Fixes**: Corrected an issue in `py_to_r2()` function (intrinsic function), which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
+
 # scop 0.1.9
 
 * **Enhancements**: Update `CellScoring()` and `AddModuleScore2()` functions. Now, new parameters `cores` and `verbose` have been added. The `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but [parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html), and the `cores` parameter is used to control the number of cores in [parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
