@@ -43,6 +43,7 @@ reference:
   - PrepareEnv
   - ListEnv
   - RemoveEnv
+  - RemovePackages
   - conda_install
   - conda_python
   - find_conda
