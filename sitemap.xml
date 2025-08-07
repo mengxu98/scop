@@ -23,7 +23,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/EnrichmentPlot.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/Env_requirements.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureCorPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureDimPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FeatureDimPlot3D.html</loc></url>
@@ -40,7 +39,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/GraphPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony_integrate.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/Integration_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/LIGER_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/LineagePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ListDB.html</loc></url>
@@ -53,6 +51,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/ProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RecoverCounts.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RemovePackages.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameClusters.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCSSMap.html</loc></url>
@@ -116,7 +115,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/drop_data.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_exist.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_info.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/exist_Python_pkgs.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/env_requirements.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/exist_python_pkgs.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/fastMNN_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/find_conda.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/geom_alluvial.html</loc></url>
@@ -128,7 +128,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/ifnb_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/install_miniconda2.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/installed_Python_pkgs.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/installed_python_pkgs.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/integration_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/is_outlier.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/lifemap_cell.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/make_long.html</loc></url>
