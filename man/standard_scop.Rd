@@ -2,7 +2,7 @@
 % Please edit documentation in R/standard_scop.R
 \name{standard_scop}
 \alias{standard_scop}
-\title{Standard scop}
+\title{Standard workflow for scop}
 \usage{
 standard_scop(
   srt,
@@ -36,55 +36,86 @@ standard_scop(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{prefix}{A prefix to add to the names of intermediate objects created by the function (default is "Standard").}
+\item{prefix}{A prefix to add to the names of intermediate objects created by the function.
+Default is \code{"Standard"}.}
 
-\item{assay}{The name of the assay to use for the analysis. If NULL, the default assay of the Seurat object will be used.}
+\item{assay}{The name of the assay to use for the analysis.
+If NULL, the default assay of the Seurat object will be used.}
 
-\item{do_normalization}{A logical value indicating whether to perform normalization. If NULL, normalization will be performed if the specified assay does not have scaled data.}
+\item{do_normalization}{A logical value indicating whether to perform normalization.
+If NULL, normalization will be performed if the specified assay does not have scaled data.}
 
-\item{normalization_method}{The method to use for normalization. Options are "LogNormalize", "SCT", or "TFIDF" (default is "LogNormalize").}
+\item{normalization_method}{The method to use for normalization.
+Options are \code{"LogNormalize"}, \code{"SCT"}, or \code{"TFIDF"}.
+Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{A logical value indicating whether to perform high variable feature finding. If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+\item{do_HVF_finding}{A logical value indicating whether to perform high variable feature finding.
+If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.}
 
-\item{HVF_method}{The method to use for finding highly variable features. Options are "vst", "mvp" or "disp" (default is "vst").}
+\item{HVF_method}{The method to use for finding highly variable features.
+Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
+Default is \code{"vst"}.}
 
-\item{nHVF}{The number of highly variable features to select. If NULL, all highly variable features will be used.}
+\item{nHVF}{The number of highly variable features to select.
+If NULL, all highly variable features will be used.}
 
-\item{HVF}{A vector of feature names to use as highly variable features. If NULL, the function will use the highly variable features identified by the HVF method.}
+\item{HVF}{A vector of feature names to use as highly variable features.
+If NULL, the function will use the highly variable features identified by the HVF method.}
 
-\item{do_scaling}{A logical value indicating whether to perform scaling. If TRUE, the function will force to scale the data using the ScaleData function.}
+\item{do_scaling}{A logical value indicating whether to perform scaling.
+If TRUE, the function will force to scale the data using the ScaleData function.}
 
-\item{vars_to_regress}{A vector of feature names to use as regressors in the scaling step. If NULL, no regressors will be used.}
+\item{vars_to_regress}{A vector of feature names to use as regressors in the scaling step.
+If NULL, no regressors will be used.}
 
-\item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
+\item{regression_model}{The regression model to use for scaling.
+Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
+Default is \code{"linear"}.}
 
-\item{linear_reduction}{The linear dimensionality reduction method to use. Options are "pca", "svd", "ica", "nmf", "mds", or "glmpca" (default is "pca").}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
-\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction (default is 50).}
+\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction.
+Default is \code{50}.}
 
-\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis. If NULL, all dimensions will be used.}
+\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
+If NULL, all dimensions will be used.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
-\item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
+\item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction. If a vector is provided, different numbers of dimensions can be specified for each method (default is c(2, 3)).}
+\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
+If a vector is provided, different numbers of dimensions can be specified for each method.
+Default is \code{c(2, 3)}.}
 
 \item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
 
-\item{force_nonlinear_reduction}{A logical value indicating whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
+\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
+Default is \code{TRUE}.}
 
-\item{neighbor_metric}{The distance metric to use for finding neighbors. Options are "euclidean", "cosine", "manhattan", or "hamming" (default is "euclidean").}
+\item{neighbor_metric}{The distance metric to use for finding neighbors.
+Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
+Default is \code{"euclidean"}.}
 
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors (default is 20).}
+\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
+Default is \code{20}.}
 
-\item{cluster_algorithm}{The clustering algorithm to use. Options are "louvain", "slm", or "leiden" (default is "louvain").}
+\item{cluster_algorithm}{The clustering algorithm to use.
+Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
+Default is \code{"louvain"}.}
 
-\item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
+\item{cluster_resolution}{The resolution parameter to use for clustering.
+Larger values result in fewer clusters.
+Default is \code{0.6}.}
 
-\item{seed}{The random seed to use for reproducibility (default is 11).}
+\item{seed}{The random seed to use for reproducibility.
+Default is \code{11}.}
 }
 \value{
 A \code{Seurat} object.
