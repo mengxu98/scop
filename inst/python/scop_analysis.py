@@ -742,16 +742,38 @@ def PAGA(
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
 
+        # Choose representation key and make n_pcs safe for its dimensionality
+        rep_key = linear_reduction
+        try:
+            obsm_keys = set(adata.obsm_keys())
+            cand_keys = [
+                linear_reduction,
+                (f"X_{linear_reduction}" if linear_reduction is not None and not str(linear_reduction).startswith("X_") else None),
+            ]
+            rep_key = next((k for k in cand_keys if k is not None and k in obsm_keys), linear_reduction)
+
+            neighbors_n_pcs = n_pcs
+            if rep_key in obsm_keys:
+                rep_dims = adata.obsm[rep_key].shape[1]
+                if neighbors_n_pcs is not None and isinstance(neighbors_n_pcs, (int, float)):
+                    # If the representation has fewer dims than requested PCs, let Scanpy use full dims
+                    if rep_dims < int(neighbors_n_pcs):
+                        neighbors_n_pcs = None
+            else:
+                neighbors_n_pcs = n_pcs
+        except Exception:
+            neighbors_n_pcs = n_pcs
+
         if "X_diffmap" in adata.obsm_keys():
             X_diffmap = adata.obsm["X_diffmap"]
             del adata.obsm["X_diffmap"]
             sc.pp.neighbors(
-                adata, n_pcs=n_pcs, use_rep=linear_reduction, n_neighbors=n_neighbors
+                adata, n_pcs=neighbors_n_pcs, use_rep=rep_key, n_neighbors=n_neighbors
             )
             adata.obsm["X_diffmap"] = X_diffmap
         else:
             sc.pp.neighbors(
-                adata, n_pcs=n_pcs, use_rep=linear_reduction, n_neighbors=n_neighbors
+                adata, n_pcs=neighbors_n_pcs, use_rep=rep_key, n_neighbors=n_neighbors
             )
 
         sc.tl.paga(adata, groups=group_by, use_rna_velocity=use_rna_velocity)

@@ -22,7 +22,7 @@ By default, the package name is extracted according to the \code{packages} param
 \item{lib}{The location of the library directories where to install the packages.}
 
 \item{force}{Whether to force the installation of packages.
-Default is \code{FALSE}.}
+Default is FALSE.}
 }
 \description{
 Check and install R packages
