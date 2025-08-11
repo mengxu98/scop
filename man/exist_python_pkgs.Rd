@@ -8,7 +8,7 @@ exist_python_pkgs(packages, envname = NULL, conda = "auto")
 }
 \arguments{
 \item{packages}{A character vector, indicating package names which should be installed or removed.
-Use \code{<package>==<version>} to request the installation of a specific version of a package.}
+Use \code{"<package>==<version>"} to request the installation of a specific version of a package.}
 
 \item{envname}{The name of a conda environment.}
 

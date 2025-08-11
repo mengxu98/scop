@@ -198,12 +198,12 @@ srt_reorder <- function(
   }
   if (length(unique(srt[[reorder_by, drop = TRUE]])) == 1) {
     log_message(
-      "Only one cluter found.",
+      "Only one cluster found",
       message_type = "warning"
     )
     return(srt)
   }
-  simil_method <- c(
+  simil_methods <- c(
     "cosine",
     "correlation",
     "jaccard",
@@ -214,7 +214,7 @@ srt_reorder <- function(
     "simple matching",
     "faith"
   )
-  dist_method <- c(
+  dist_methods <- c(
     "euclidean",
     "chisquared",
     "kullback",
@@ -224,9 +224,9 @@ srt_reorder <- function(
     "minkowski",
     "hamming"
   )
-  if (!distance_metric %in% c(simil_method, dist_method, "pearson", "spearman")) {
+  if (!distance_metric %in% c(simil_methods, dist_methods, "pearson", "spearman")) {
     log_message(
-      distance_metric, " method is invalid.",
+      "{.pkg {distance_metric}} method is invalid",
       message_type = "error"
     )
   }
@@ -237,7 +237,7 @@ srt_reorder <- function(
   )
   if (inherits(assay_obj, "Assay")) {
     log_message(
-      "Using 'Seurat::AverageExpression()' to calculate pseudo-bulk data for 'Assay'."
+      "Using {.fn Seurat::AverageExpression} to calculate pseudo-bulk data for {.cls Assay}"
     )
     data_avg <- Seurat::AverageExpression(
       object = srt,
@@ -249,7 +249,7 @@ srt_reorder <- function(
     )[[1]][features, , drop = FALSE]
   } else if (inherits(assay_obj, "Assay5")) {
     log_message(
-      "Using 'Seurat::AggregateExpression()' to calculate pseudo-bulk data for 'Assay5'.",
+      "Using {.fn Seurat::AggregateExpression} to calculate pseudo-bulk data for {.cls Assay5}",
       message_type = "warning"
     )
     data_avg <- Seurat::AggregateExpression(
@@ -276,7 +276,7 @@ srt_reorder <- function(
     )
   }
 
-  if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
+  if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
     if (distance_metric %in% c("pearson", "spearman")) {
       if (distance_metric == "spearman") {
         mat <- Matrix::t(apply(mat, 1, rank))
@@ -289,7 +289,7 @@ srt_reorder <- function(
       ),
       method = distance_metric
     )
-  } else if (distance_metric %in% dist_method) {
+  } else if (distance_metric %in% dist_methods) {
     d <- proxyC::dist(
       SeuratObject::as.sparse(
         mat[seq_len(nrow(mat)), , drop = FALSE]
@@ -334,7 +334,7 @@ srt_append <- function(
     verbose = TRUE) {
   if (!inherits(srt_raw, "Seurat") || !inherits(srt_append, "Seurat")) {
     log_message(
-      "'srt_raw' or 'srt_append' is not a Seurat object.",
+      "{.arg srt_raw} or {.arg srt_append} is not a Seurat object",
       message_type = "error"
     )
   }
@@ -343,7 +343,7 @@ srt_append <- function(
   for (slot_nm in methods::slotNames(srt_append)) {
     if (!slot_nm %in% slots) {
       log_message(
-        "Slot ", slot_nm, " is not appended.",
+        "Slot {.val {slot_nm}} is not appended",
         verbose = verbose
       )
       next
@@ -367,14 +367,12 @@ srt_append <- function(
       }
       if (!grepl(pattern = pattern, x = info)) {
         log_message(
-          paste0(info, " in slot ", slot_nm, " is not appended."),
+          "{.val {info}} in slot {.val {slot_nm}} is not appended",
           verbose = verbose
         )
         next
       }
-      if (
-        !info %in% names(methods::slot(srt_raw, name = slot_nm)) || isTRUE(overwrite)
-      ) {
+      if (!info %in% names(methods::slot(srt_raw, name = slot_nm)) || isTRUE(overwrite)) {
         if (
           slot_nm %in%
             c("assays", "graphs", "neighbors", "reductions", "images")

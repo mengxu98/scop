@@ -73,41 +73,60 @@ Default is \code{"Uncorrected"}.}
 
 \item{HVF}{A vector of highly variable features. Default is NULL.}
 
-\item{do_scaling}{A logical value indicating whether to perform scaling. If TRUE, the function will force to scale the data using the ScaleData function.}
+\item{do_scaling}{A logical value indicating whether to perform scaling.
+If TRUE, the function will force to scale the data using the ScaleData function.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables. Default is NULL.}
 
-\item{regression_model}{The regression model to use for scaling. Options are "linear", "poisson", or "negativebinomial" (default is "linear").}
+\item{regression_model}{The regression model to use for scaling.
+Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
+Default is \code{"linear"}.}
 
 \item{scale_within_batch}{Whether to scale data within each batch.
 Only valid when the \code{integration_method} is one of \code{"Uncorrected"},
 \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
-\item{linear_reduction}{The linear dimensionality reduction method to use. Options are "pca", "svd", "ica", "nmf", "mds", or "glmpca" (default is "pca").}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
-\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction (default is 50).}
+\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction.
+Default is \code{50}.}
 
-\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis. If NULL, all dimensions will be used.}
+\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
+If NULL, all dimensions will be used.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
-\item{force_linear_reduction}{A logical value indicating whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
+\item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction. If a vector is provided, different numbers of dimensions can be specified for each method (default is c(2, 3)).}
+\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
+If a vector is provided, different numbers of dimensions can be specified for each method.
+Default is \code{c(2, 3)}.}
 
 \item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
 
-\item{force_nonlinear_reduction}{A logical value indicating whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
+\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
+Default is \code{TRUE}.}
 
-\item{neighbor_metric}{The distance metric to use for finding neighbors. Options are "euclidean", "cosine", "manhattan", or "hamming" (default is "euclidean").}
+\item{neighbor_metric}{The distance metric to use for finding neighbors.
+Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
+Default is \code{"euclidean"}.}
 
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors (default is 20).}
+\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
+Default is \code{20}.}
 
-\item{cluster_algorithm}{The clustering algorithm to use. Options are "louvain", "slm", or "leiden" (default is "louvain").}
+\item{cluster_algorithm}{The clustering algorithm to use.
+Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
+Default is \code{"louvain"}.}
 
-\item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
+\item{cluster_resolution}{The resolution parameter to use for clustering.
+Larger values result in fewer clusters.
+Default is \code{0.6}.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
 

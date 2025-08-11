@@ -124,36 +124,32 @@ check_srt_list <- function(
   )
   set.seed(seed)
 
-  if (
-    !inherits(srt_list, "list") ||
-      any(sapply(srt_list, function(x) !inherits(x, "Seurat")))
-  ) {
+  if (!inherits(srt_list, "list") || any(sapply(srt_list, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "'srt_list' is not a list of Seurat object.",
+      "{.arg srt_list} is not a list of Seurat object",
       message_type = "error"
     )
   }
-  if (!normalization_method %in% c("LogNormalize", "SCT", "TFIDF")) {
+  normalization_methods <- c("LogNormalize", "SCT", "TFIDF")
+  if (!normalization_method %in% normalization_methods) {
     log_message(
-      "'normalization_method' must be one of: 'LogNormalize', 'SCT', 'TFIDF'",
+      "{.arg normalization_method} must be one of: {.val {normalization_methods}}",
       message_type = "error"
     )
   }
-  if (normalization_method %in% c("SCT")) {
+  if (normalization_method == "SCT") {
     check_r("glmGamPoi")
   }
-  if (!HVF_source %in% c("global", "separate")) {
+  hvf_sources <- c("global", "separate")
+  if (!HVF_source %in% hvf_sources) {
     log_message(
-      "'HVF_source' must be one of: 'global', 'separate'",
+      "{.arg HVF_source} must be one of: {.val {hvf_sources}}",
       message_type = "error"
     )
   }
   if (any(sapply(srt_list, ncol) < 2)) {
     log_message(
-      paste0(
-        "Seurat objects in srt_list contain less than 2 cells. srt_list index: ",
-        paste0(which(sapply(srt_list, ncol) < 2), collapse = ",")
-      ),
+      "Seurat objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which(sapply(srt_list, ncol) < 2)}}",
       message_type = "error"
     )
   }
@@ -162,7 +158,7 @@ check_srt_list <- function(
     default_assay <- unique(sapply(srt_list, SeuratObject::DefaultAssay))
     if (length(default_assay) != 1) {
       log_message(
-        "The default assay name of the Seurat object in the srt_list is inconsistent.",
+        "The default assay name of the Seurat object in the {.arg srt_list} is inconsistent",
         message_type = "error"
       )
     } else {
@@ -184,7 +180,7 @@ check_srt_list <- function(
   )
   if (length(assay_type) != 1) {
     log_message(
-      "The assay type of the Seurat object in the srt_list is inconsistent.",
+      "The assay type of the Seurat object in the {.arg srt_list} is inconsistent",
       message_type = "error"
     )
   } else {
@@ -212,9 +208,7 @@ check_srt_list <- function(
   if (length(unique(features_list)) != 1) {
     if (type == "Chromatin") {
       log_message(
-        "The peaks in assay ",
-        assay,
-        " is different between batches. Creating a common set of peaks and may take a long time...",
+        "The peaks in assay {.val {assay}} is different between batches. Creating a common set of peaks and may take a long time...",
         message_type = "warning"
       )
       srt_merge <- Reduce(merge, srt_list)
@@ -237,11 +231,7 @@ check_srt_list <- function(
       )
     )
     log_message(
-      paste0(
-        "'srt_list' have different feature names! Will subset the common features(",
-        length(cf),
-        ") for downstream analysis!"
-      ),
+      "{.arg srt_list} have different feature names! Will subset the common features ({.val {length(cf)}}) for downstream analysis",
       message_type = "warning"
     )
     for (i in seq_along(srt_list)) {
@@ -252,14 +242,14 @@ check_srt_list <- function(
   celllist <- unlist(lapply(srt_list, colnames))
   if (length(celllist) != length(unique(celllist))) {
     log_message(
-      "'srt_list' have duplicated cell names!",
+      "{.arg srt_list} have duplicated cell names",
       message_type = "error"
     )
   }
 
   if (length(batch) != 1 && length(batch) != length(srt_list)) {
     log_message(
-      "'batch' must be a character to specify the batch column in the meta.data or a vector of the same length of the srt_list!",
+      "{.arg batch} must be a character to specify the batch column in the meta.data or a vector of the same length of the {.arg srt_list}",
       message_type = "error"
     )
   }
@@ -276,11 +266,7 @@ check_srt_list <- function(
       }))
     ) {
       log_message(
-        paste0(
-          "batch column('",
-          batch,
-          "') was not found in one or more object of the srt_list!"
-        ),
+        "batch column ({.val {batch}}) was not found in one or more object of the {.arg srt_list}",
         message_type = "error"
       )
     }
@@ -314,9 +300,7 @@ check_srt_list <- function(
   for (i in seq_along(srt_list)) {
     if (!assay %in% SeuratObject::Assays(srt_list[[i]])) {
       log_message(
-        paste0(
-          "srt_list ", i, " does not contain '", assay, "' assay."
-        ),
+        "{.arg srt_list} {.val {i}} does not contain {.val {assay}} assay",
         message_type = "error"
       )
     }
@@ -324,11 +308,7 @@ check_srt_list <- function(
     if (isTRUE(do_normalization)) {
       if (normalization_method == "LogNormalize") {
         log_message(
-          "Perform NormalizeData(LogNormalize) on the data ",
-          i,
-          "/",
-          length(srt_list),
-          " of the srt_list..."
+          "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
         )
         srt_list[[i]] <- NormalizeData(
           object = srt_list[[i]],
@@ -339,11 +319,7 @@ check_srt_list <- function(
       }
       if (normalization_method == "TFIDF") {
         log_message(
-          "Perform RunTFIDF on the data ",
-          i,
-          "/",
-          length(srt_list),
-          " of the srt_list..."
+          "Perform {.fn RunTFIDF} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
         )
         srt_list[[i]] <- Signac::RunTFIDF(
           object = srt_list[[i]],
@@ -359,23 +335,13 @@ check_srt_list <- function(
       )
       if (status == "log_normalized_counts") {
         log_message(
-          "Data ",
-          i,
-          "/",
-          length(srt_list),
-          " of the srt_list has been log-normalized."
+          "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} has been log-normalized"
         )
       }
       if (status %in% c("raw_counts", "raw_normalized_counts")) {
         if (normalization_method == "LogNormalize") {
           log_message(
-            "Data ",
-            i,
-            "/",
-            length(srt_list),
-            " of the srt_list is ",
-            status,
-            ". Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
+            "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} is {.val {status}}. Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
           )
           srt_list[[i]] <- Seurat::NormalizeData(
             object = srt_list[[i]],
@@ -386,13 +352,7 @@ check_srt_list <- function(
         }
         if (normalization_method == "TFIDF") {
           log_message(
-            "Data ",
-            i,
-            "/",
-            length(srt_list),
-            " of the srt_list is ",
-            status,
-            ". Perform {.fn RunTFIDF} on the data..."
+            "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} is {.val {status}}. Perform {.fn RunTFIDF} on the data..."
           )
           srt_list[[i]] <- Signac::RunTFIDF(
             object = srt_list[[i]],
@@ -403,9 +363,7 @@ check_srt_list <- function(
       }
       if (status == "unknown") {
         log_message(
-          "Can not determine whether data ",
-          i,
-          " is log-normalized...",
+          "Can not determine whether data {.val {i}} of the {.arg srt_list} is log-normalized",
           message_type = "warning"
         )
       }
@@ -418,11 +376,7 @@ check_srt_list <- function(
       ) {
         # if (type == "RNA") {
         log_message(
-          "Perform FindVariableFeatures on the data ",
-          i,
-          "/",
-          length(srt_list),
-          " of the srt_list..."
+          "Perform {.fn Seurat::FindVariableFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
         )
         srt_list[[i]] <- Seurat::FindVariableFeatures(
           srt_list[[i]],
@@ -446,7 +400,7 @@ check_srt_list <- function(
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
         log_message(
-          "Perform SCTransform on the data", i, "of the srt_list..."
+          "Perform {.fn Seurat::SCTransform} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
         )
         srt_list[[i]] <- Seurat::SCTransform(
           object = srt_list[[i]],
@@ -503,7 +457,7 @@ check_srt_list <- function(
   if (is.null(HVF)) {
     if (HVF_source == "global") {
       log_message(
-        "Use the global HVF from merged dataset..."
+        "Use the global HVF from merged dataset"
       )
       srt_merge <- Reduce(merge, srt_list)
       # if (type == "RNA") {
@@ -522,7 +476,7 @@ check_srt_list <- function(
     }
     if (HVF_source == "separate") {
       log_message(
-        "Use the separate HVF from srt_list..."
+        "Use the separate HVF from srt_list"
       )
       # if (type == "RNA") {
       HVF <- Seurat::SelectIntegrationFeatures(
@@ -545,7 +499,7 @@ check_srt_list <- function(
       # }
       if (length(HVF) == 0) {
         log_message(
-          "No HVF available.",
+          "No HVF available",
           message_type = "error"
         )
       }
@@ -567,7 +521,7 @@ check_srt_list <- function(
     HVF <- HVF[HVF %in% cf]
   }
   log_message(
-    "Number of available HVF: ", length(HVF)
+    "Number of available HVF: {.val {length(HVF)}}"
   )
 
   hvf_sum <- lapply(srt_list, function(srt) {
@@ -587,8 +541,7 @@ check_srt_list <- function(
   cell_abnormal <- names(cell_all)[cell_all == 0]
   if (length(cell_abnormal) > 0) {
     log_message(
-      "Some cells do not express any of the highly variable features: ",
-      paste(cell_abnormal, collapse = ","),
+      "Some cells do not express any of the highly variable features: {.val {cell_abnormal}}",
       message_type = "warning"
     )
   }
@@ -642,7 +595,7 @@ check_srt_merge <- function(
     seed = 11) {
   if (!inherits(srt_merge, "Seurat")) {
     log_message(
-      "'srt_merge' is not a Seurat object.",
+      "{.arg srt_merge} is not a Seurat object",
       message_type = "error"
     )
   }
@@ -668,9 +621,7 @@ check_srt_merge <- function(
   srt_merge_raw <- srt_merge
 
   log_message(
-    "Spliting {.arg srt_merge} into {.arg srt_list} by column ",
-    batch,
-    "..."
+    "Spliting {.arg srt_merge} into {.arg srt_list} by column {.val {batch}}..."
   )
   srt_list <- Seurat::SplitObject(
     object = srt_merge_raw,
