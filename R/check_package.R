@@ -1,15 +1,15 @@
-#' Check and install python packages
+#' @title Check and install python packages
 #'
 #' @md
 #' @param packages A character vector, indicating package names which should be installed or removed.
-#' Use \code{<package>==<version>} to request the installation of a specific version of a package.
+#' Use `"<package>==<version>"` to request the installation of a specific version of a package.
 #' @param envname The name of a conda environment.
-#' @param conda The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.
-#' @param force Whether to force package installation. Default is \code{FALSE}.
+#' @param conda The path to a conda executable. Use `"auto"` to allow scop to automatically find an appropriate conda binary.
+#' @param force Whether to force package installation. Default is FALSE.
 #' @param pip Whether to use pip for package installation.
-#' Default is \code{TRUE}, packages are installed from the active conda channels.
-#' @param pip_options An optional character vector of additional command line arguments to be passed to \code{pip}.
-#' Only relevant when \code{pip = TRUE}.
+#' Default is TRUE, packages are installed from the active conda channels.
+#' @param pip_options An optional character vector of additional command line arguments to be passed to `pip`.
+#' Only relevant when `pip = TRUE`.
 #' @param ... Other arguments passed to [reticulate::conda_install]
 #'
 #' @export
@@ -43,8 +43,7 @@ check_python <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "{.arg envname}: ", envname,
-      " python environment does not exist. Create it with {.fn PrepareEnv} function...",
+      "{.arg envname}: {.val {envname}} python environment does not exist. Create it with {.fn PrepareEnv}",
       message_type = "warning"
     )
     PrepareEnv()
@@ -67,7 +66,7 @@ check_python <- function(
   if (sum(!pkg_installed) > 0) {
     pkgs_to_install <- names(pkg_installed)[!pkg_installed]
     log_message(
-      "Try to install ", paste0(pkgs_to_install, collapse = ",")
+      "Try to install: {.pkg {pkgs_to_install}}"
     )
     if (isTRUE(pip)) {
       pkgs_to_install <- c("pip", pkgs_to_install)
@@ -94,12 +93,9 @@ check_python <- function(
   }
 
   if (sum(!pkg_installed) > 0) {
+    failed_pkgs <- names(pkg_installed)[!pkg_installed]
     log_message(
-      "Failed to install the package(s): ",
-      paste0(names(pkg_installed)[!pkg_installed], collapse = ","),
-      " into the environment \"",
-      envname,
-      "\". Please install manually.",
+      "Failed to install: {.pkg {failed_pkgs}} into the environment {.file {envname}}. Please install manually",
       message_type = "warning"
     )
   } else {
@@ -107,15 +103,16 @@ check_python <- function(
   }
 }
 
-#' Check and install R packages
+#' @title Check and install R packages
 #'
+#' @md
 #' @param packages Package to be installed.
 #' Package source can be CRAN, Bioconductor or Github.
-#' By default, the package name is extracted according to the \code{packages} parameter.
+#' By default, the package name is extracted according to the `packages` parameter.
 #' @param install_methods Functions used to install R packages.
 #' @param lib The location of the library directories where to install the packages.
 #' @param force Whether to force the installation of packages.
-#' Default is \code{FALSE}.
+#' Default is FALSE.
 #'
 #' @export
 check_r <- function(
@@ -158,7 +155,7 @@ check_r <- function(
         isTRUE(force_update)
     ) {
       log_message(
-        "Install package: \"", pkg_name, "\" ..."
+        "Install package: {.pkg {pkg_name}} ..."
       )
       status_list[[pkg]] <- FALSE
       i <- 1
@@ -254,9 +251,7 @@ check_r <- function(
   out <- out[!out]
   if (length(out) > 0) {
     log_message(
-      "Failed to install the package(s): ",
-      paste0(names(out), collapse = ","),
-      ". Please install manually.",
+      "Failed to install: {.pkg {names(out)}}. Please install manually",
       message_type = "error"
     )
   }
