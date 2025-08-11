@@ -65,21 +65,33 @@ Default is \code{TRUE}.}
 \item{scVI_dims_use}{A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and non-linear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use. Options are "umap","umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", or "fr" (default is "umap").}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction. If a vector is provided, different numbers of dimensions can be specified for each method (default is c(2, 3)).}
+\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
+If a vector is provided, different numbers of dimensions can be specified for each method.
+Default is \code{c(2, 3)}.}
 
 \item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
 
-\item{force_nonlinear_reduction}{A logical value indicating whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
+\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
+Default is \code{TRUE}.}
 
-\item{neighbor_metric}{The distance metric to use for finding neighbors. Options are "euclidean", "cosine", "manhattan", or "hamming" (default is "euclidean").}
+\item{neighbor_metric}{The distance metric to use for finding neighbors.
+Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
+Default is \code{"euclidean"}.}
 
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors (default is 20).}
+\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
+Default is \code{20}.}
 
-\item{cluster_algorithm}{The clustering algorithm to use. Options are "louvain", "slm", or "leiden" (default is "louvain").}
+\item{cluster_algorithm}{The clustering algorithm to use.
+Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
+Default is \code{"louvain"}.}
 
-\item{cluster_resolution}{The resolution parameter to use for clustering. Larger values result in fewer clusters (default is 0.6).}
+\item{cluster_resolution}{The resolution parameter to use for clustering.
+Larger values result in fewer clusters.
+Default is \code{0.6}.}
 
 \item{model}{A string indicating the scVI model to be used.
 Options are "SCVI" and "PEAKVI".
