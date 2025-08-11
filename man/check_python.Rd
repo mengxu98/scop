@@ -16,16 +16,16 @@ check_python(
 }
 \arguments{
 \item{packages}{A character vector, indicating package names which should be installed or removed.
-Use \code{<package>==<version>} to request the installation of a specific version of a package.}
+Use \code{"<package>==<version>"} to request the installation of a specific version of a package.}
 
 \item{envname}{The name of a conda environment.}
 
 \item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
-\item{force}{Whether to force package installation. Default is \code{FALSE}.}
+\item{force}{Whether to force package installation. Default is FALSE.}
 
 \item{pip}{Whether to use pip for package installation.
-Default is \code{TRUE}, packages are installed from the active conda channels.}
+Default is TRUE, packages are installed from the active conda channels.}
 
 \item{pip_options}{An optional character vector of additional command line arguments to be passed to \code{pip}.
 Only relevant when \code{pip = TRUE}.}

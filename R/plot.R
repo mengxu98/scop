@@ -67,7 +67,7 @@ segements_df <- function(
   data$y <- data$y + data$px * offset
   data$yend <- data$yend + data$px * offset
 
-  return(data)
+  data
 }
 
 fc_matrix <- function(matrix) {
