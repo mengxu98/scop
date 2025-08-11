@@ -342,26 +342,26 @@ env_requirements <- function(version = "3.10-1") {
   )
 
   package_versions <- c(
-    "leidenalg" = "leidenalg",
-    "tbb" = "tbb",
-    "python-igraph" = "python-igraph",
-    "matplotlib" = "matplotlib>=3.5,<3.11",
-    "numba" = "numba>=0.59,<0.60.0",
-    "llvmlite" = "llvmlite>=0.42,<0.43.0",
-    "numpy" = "numpy>=1.24,<1.27.0",
-    "palantir" = "palantir",
-    "pandas" = "pandas>=2.0,<2.1",
-    "scanpy" = "scanpy>=1.9,<1.12",
-    "scikit-learn" = "scikit-learn",
-    "scipy" = "scipy>=1.10",
-    "scvelo" = "scvelo",
-    "wot" = "wot",
-    "trimap" = "trimap",
-    "pacmap" = "pacmap",
-    "phate" = "phate",
-    "bbknn" = "bbknn",
-    "scanorama" = "scanorama",
-    "scvi-tools" = "scvi-tools"
+    "leidenalg" = "leidenalg==0.10.2",
+    "tbb" = "tbb==2022.2.0",
+    "python-igraph" = "python-igraph==0.11.9",
+    "matplotlib" = "matplotlib==3.10.3",
+    "numba" = "numba==0.59.1",
+    "llvmlite" = "llvmlite==0.42.0",
+    "numpy" = "numpy==1.26.4",
+    "palantir" = "palantir==1.4.1",
+    "pandas" = "pandas==2.0.3",
+    "scanpy" = "scanpy==1.11.3",
+    "scikit-learn" = "scikit-learn==1.7.0",
+    "scipy" = "scipy==1.15.3",
+    "scvelo" = "scvelo==0.3.3",
+    "wot" = "wot==1.0.8.post2",
+    "trimap" = "trimap==1.1.4",
+    "pacmap" = "pacmap==0.8.0",
+    "phate" = "phate==1.0.11",
+    "bbknn" = "bbknn==1.6.0",
+    "scanorama" = "scanorama==1.7.4",
+    "scvi-tools" = "scvi-tools==1.2.1"
   )
 
   requirements <- list(
