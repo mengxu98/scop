@@ -1,4 +1,4 @@
-#' @import ggplot2 BiocParallel Seurat thisutils
+#' @import ggplot2 Seurat thisutils
 #' @importFrom ggplot2 %+replace%
 #' @importFrom ComplexHeatmap %v%
 #' @importFrom grDevices palette

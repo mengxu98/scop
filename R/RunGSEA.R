@@ -1,8 +1,14 @@
-#' Perform the enrichment analysis (GSEA) on the genes
+#' @title Perform the enrichment analysis (GSEA) on the genes
 #'
+#' @md
 #' @inheritParams RunEnrichment
-#' @param geneScore A numeric vector that specifies the gene scores, for example, the log2(fold change) values of gene expression.
-#' @param scoreType This parameter defines the GSEA score type. Possible options are "std", "pos", "neg". By default ("std") the enrichment score is computed as in the original GSEA. The "pos" and "neg" score types are intended to be used for one-tailed tests (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
+#' @param geneScore A numeric vector that specifies the gene scores,
+#' for example, the log2(fold change) values of gene expression.
+#' @param scoreType This parameter defines the GSEA score type.
+#' Possible options are "std", "pos", "neg".
+#' By default ("std") the enrichment score is computed as in the original GSEA.
+#' The "pos" and "neg" score types are intended to be used for one-tailed tests
+#' (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
 #' @returns
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
 #'
@@ -18,7 +24,7 @@
 #' }
 #'
 #' @seealso
-#' \link{PrepareDB}, \link{ListDB}, \link{GSEAPlot}, \link{RunEnrichment}, \link{EnrichmentPlot}
+#' [PrepareDB], [ListDB], [GSEAPlot], [RunEnrichment], [EnrichmentPlot]
 #'
 #' @export
 #'
@@ -139,13 +145,9 @@ RunGSEA <- function(
     GO_simplify_cutoff = "p.adjust < 0.05",
     simplify_method = "Wang",
     simplify_similarityCutoff = 0.7,
-    BPPARAM = BiocParallel::bpparam(),
-    seed = 11) {
-  bpprogressbar(BPPARAM) <- TRUE
-  bpRNGseed(BPPARAM) <- seed
-  time_start <- Sys.time()
-  log_message("Start GSEA")
-  log_message("Workers: ", bpworkers(BPPARAM))
+    cores = 1,
+    verbose = TRUE) {
+  log_message("Start {.pkg GSEA} analysis", verbose = verbose)
 
   use_srt <- FALSE
   if (is.null(geneID)) {
@@ -170,7 +172,7 @@ RunGSEA <- function(
     )[1]
     if (is.na(index)) {
       log_message(
-        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.",
+        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result",
         message_type = "error"
       )
     }
@@ -339,9 +341,9 @@ RunGSEA <- function(
     stringsAsFactors = FALSE
   )
 
-  res_list <- BiocParallel::bplapply(
+  res_list <- parallelize_fun(
     seq_len(nrow(comb)),
-    function(i, id) {
+    function(i) {
       group <- comb[i, "group"]
       term <- comb[i, "term"]
       geneList <- input[input$geneID_groups == group, "geneScore"]
@@ -433,14 +435,12 @@ RunGSEA <- function(
               drop = FALSE
             ]
             semData <- db_list[[species]][[term]][["semData"]]
-            BiocParallel::ipclock(id)
             sim_res <- clusterProfiler::simplify(
               sim_res,
               measure = simplify_method,
               cutoff = simplify_similarityCutoff,
               semData = semData
             )
-            BiocParallel::ipcunlock(id)
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
@@ -460,10 +460,10 @@ RunGSEA <- function(
       } else {
         enrich_res <- NULL
       }
-      return(enrich_res)
+      enrich_res
     },
-    BPPARAM = BPPARAM,
-    id = BiocParallel::ipcid()
+    cores = cores,
+    verbose = verbose
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")
@@ -477,14 +477,9 @@ RunGSEA <- function(
   enrichment <- do.call(rbind, lapply(results, function(x) x@result))
   rownames(enrichment) <- NULL
 
-  time_end <- Sys.time()
-  log_message("GSEA done")
   log_message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    )
+    "{.pkg GSEA} analysis done",
+    message_type = "success", verbose = verbose
   )
 
   res <- list(

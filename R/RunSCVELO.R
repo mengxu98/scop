@@ -146,7 +146,6 @@ RunSCVELO <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-
   check_python("scvelo")
   if (isTRUE(magic_impute)) {
     check_python("magic-impute")
@@ -154,13 +153,13 @@ RunSCVELO <- function(
 
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of 'srt', 'adata' must be provided.",
+      "One of {.arg srt} or {.arg adata} must be provided",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "'group_by' must be provided.",
+      "{.arg group_by} must be provided",
       message_type = "error"
     )
   }
@@ -172,7 +171,7 @@ RunSCVELO <- function(
   }
   if (!linear_reduction %in% names(srt@reductions)) {
     log_message(
-      paste0(linear_reduction, " is not in the srt reduction names."),
+      "{.val {linear_reduction}} is not in the srt reduction names",
       message_type = "error"
     )
   }
@@ -184,7 +183,7 @@ RunSCVELO <- function(
   }
   if (!nonlinear_reduction %in% names(srt@reductions)) {
     log_message(
-      paste0(nonlinear_reduction, " is not in the srt reduction names."),
+      "{.val {nonlinear_reduction}} is not in the srt reduction names",
       message_type = "error"
     )
   }
@@ -245,6 +244,7 @@ RunSCVELO <- function(
     palcolor = palcolor
   )
 
+  log_message("Running {.pkg scVelo} analysis...")
   scop_analysis <- reticulate::import_from_path(
     "scop_analysis",
     path = system.file("python", package = "scop", mustWork = TRUE),
@@ -252,7 +252,10 @@ RunSCVELO <- function(
   )
 
   adata <- do.call(scop_analysis$SCVELO, args)
-
+  log_message(
+    "{.pkg scVelo} analysis completed",
+    message_type = "success"
+  )
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
