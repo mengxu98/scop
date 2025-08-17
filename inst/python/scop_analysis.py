@@ -452,8 +452,6 @@ def CellRank(
     arrow_size=5,
     arrow_length=5,
     arrow_density=0.5,
-    s_genes=None,
-    g2m_genes=None,
     calculate_velocity_genes=False,
     denoise=False,
     kinetics=False,
@@ -569,8 +567,6 @@ def CellRank(
                 denoise=denoise,
                 kinetics=kinetics,
                 calculate_velocity_genes=calculate_velocity_genes,
-                s_genes=s_genes,
-                g2m_genes=g2m_genes,
                 show_plot=show_plot,
                 dpi=dpi,
                 save=save,
@@ -586,9 +582,22 @@ def CellRank(
         cr.pl.lineages(adata, same_plot=False)
         cr.pl.lineages(adata, same_plot=True)
 
-        scv.tl.recover_latent_time(
-            adata, root_key="initial_states_probs", end_key="terminal_states_probs"
-        )
+        # Check if dynamical mode was used, if not, run recover_dynamics for latent time
+        if "dynamical" not in mode:
+            print("Running recover_dynamics for latent time computation...")
+            try:
+                scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
+            except Exception as e:
+                print(f"Warning: recover_dynamics failed ({e}), skipping latent time computation...")
+                pass
+            else:
+                scv.tl.recover_latent_time(
+                    adata, root_key="initial_states_probs", end_key="terminal_states_probs"
+                )
+        else:
+            scv.tl.recover_latent_time(
+                adata, root_key="initial_states_probs", end_key="terminal_states_probs"
+            )
         scv.tl.paga(
             adata,
             groups=group_by,
@@ -748,14 +757,24 @@ def PAGA(
             obsm_keys = set(adata.obsm_keys())
             cand_keys = [
                 linear_reduction,
-                (f"X_{linear_reduction}" if linear_reduction is not None and not str(linear_reduction).startswith("X_") else None),
+                (
+                    f"X_{linear_reduction}"
+                    if linear_reduction is not None
+                    and not str(linear_reduction).startswith("X_")
+                    else None
+                ),
             ]
-            rep_key = next((k for k in cand_keys if k is not None and k in obsm_keys), linear_reduction)
+            rep_key = next(
+                (k for k in cand_keys if k is not None and k in obsm_keys),
+                linear_reduction,
+            )
 
             neighbors_n_pcs = n_pcs
             if rep_key in obsm_keys:
                 rep_dims = adata.obsm[rep_key].shape[1]
-                if neighbors_n_pcs is not None and isinstance(neighbors_n_pcs, (int, float)):
+                if neighbors_n_pcs is not None and isinstance(
+                    neighbors_n_pcs, (int, float)
+                ):
                     # If the representation has fewer dims than requested PCs, let Scanpy use full dims
                     if rep_dims < int(neighbors_n_pcs):
                         neighbors_n_pcs = None

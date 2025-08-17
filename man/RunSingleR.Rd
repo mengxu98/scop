@@ -21,7 +21,8 @@ RunSingleR(
   fine.tune = TRUE,
   tune.thresh = 0.05,
   prune = TRUE,
-  BPPARAM = BiocParallel::bpparam()
+  cores = 1,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -59,15 +60,11 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 \item{tune.thresh}{"tune.thresh" parameter in \link[SingleR]{SingleR} function.}
 
 \item{prune}{"prune" parameter in \link[SingleR]{SingleR} function.}
-
-\item{BPPARAM}{A \link[BiocParallel]{BiocParallelParam} object specifying how parallelization should be performed in other steps,
-see \code{?\link[SingleR]{trainSingleR}} and \code{?\link[SingleR]{classifySingleR}} for more details.}
 }
 \description{
 Annotate single cells using SingleR
 }
 \examples{
-\dontrun{
 data(panc8_sub)
 # Simply convert genes from human to mouse and preprocess the data
 genenames <- make.unique(
@@ -89,18 +86,18 @@ panc8_sub <- check_srt_merge(
 # Annotation
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunSingleR( # bug
+pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
-  query_group = "Standardclusters",
+  query_group = "Standardpca_SNN_res.0.6",
   ref_group = "celltype"
 )
 CellDimPlot(
   pancreas_sub,
-  group.by = "singler_annotation"
+  group.by = c("singler_annotation", "CellType")
 )
 
-pancreas_sub <- RunSingleR( # bug
+pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = NULL,
@@ -108,7 +105,6 @@ pancreas_sub <- RunSingleR( # bug
 )
 CellDimPlot(
   pancreas_sub,
-  group.by = "singler_annotation"
+  group.by = c("singler_annotation", "CellType")
 )
-}
 }

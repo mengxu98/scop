@@ -16,13 +16,12 @@
 #' @param classification Whether to perform classification based on the scores. Defaults to TRUE.
 #' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.
 #' @param new_assay Whether to create a new assay for storing the scores. Defaults to FALSE.
-#' @param BPPARAM The BiocParallel parameter object. Defaults to [BiocParallel::bpparam].
 #' @param seed The random seed for reproducibility. Defaults to 11.
-#' @param cores The number of cores to use for [thisutils::parallelize_fun]. Defaults to 1.
-#' @param verbose Whether to print verbose output. Defaults to TRUE.
+#' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'
-#' @seealso \link{PrepareDB}, \link{ListDB}
+#' @seealso
+#' [PrepareDB], [ListDB], [RunDynamicFeatures]
 #'
 #' @export
 #'
@@ -150,12 +149,14 @@ CellScoring <- function(
     classification = TRUE,
     name = "",
     new_assay = FALSE,
-    BPPARAM = BiocParallel::bpparam(),
     seed = 11,
     cores = 1,
     verbose = TRUE,
     ...) {
-  log_message("Start CellScoring", verbose = verbose)
+  log_message(
+    "Start cell scoring",
+    verbose = verbose
+  )
   set.seed(seed)
 
   score_methods <- c("Seurat", "AUCell", "UCell")
@@ -334,7 +335,6 @@ CellScoring <- function(
         name = name,
         slot = layer,
         assay = assay,
-        BPPARAM = BPPARAM,
         ...
       )
       filtered <- names(features)[
@@ -361,7 +361,6 @@ CellScoring <- function(
             verbose = FALSE
           )
         ),
-        BPPARAM = BPPARAM,
         plotStats = FALSE
       )
       cells_auc <- AUCell::AUCell_calcAUC(
@@ -449,7 +448,7 @@ CellScoring <- function(
   }
 
   log_message(
-    "CellScoring done",
+    "Cell scoring completed",
     message_type = "success",
     verbose = verbose
   )
@@ -607,13 +606,11 @@ AddModuleScore2 <- function(
 check_length <- function(
     values,
     cutoff = 0) {
-  return(
-    vapply(
-      X = values,
-      FUN = function(x) {
-        return(length(x) > cutoff)
-      },
-      FUN.VALUE = logical(1)
-    )
+  vapply(
+    X = values,
+    FUN = function(x) {
+      length(x) > cutoff
+    },
+    FUN.VALUE = logical(1)
   )
 }

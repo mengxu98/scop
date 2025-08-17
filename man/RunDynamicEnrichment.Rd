@@ -26,7 +26,8 @@ RunDynamicEnrichment(
   TERM2NAME = NULL,
   minGSSize = 10,
   maxGSSize = 500,
-  BPPARAM = BiocParallel::bpparam(),
+  cores = 1,
+  verbose = TRUE,
   seed = 11
 )
 }
@@ -53,33 +54,46 @@ Default is NULL.}
 
 \item{padjust}{A numeric value specifying the p-value adjustment threshold. Default is 0.05.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument. This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
+\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{species}{A character vector specifying the species for which the analysis is performed.}
 
 \item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.}
+\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
+Default is FALSE.}
 
-\item{db_version}{A character vector specifying the version of the database to be used. This argument is ignored if \code{db_update} is \code{TRUE}. Default is "latest".}
+\item{db_version}{A character vector specifying the version of the database to be used.
+This argument is ignored if \code{db_update} is \code{TRUE}.
+Default is "latest".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.}
+\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
 
-\item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database. The first column should contain the term IDs, and the second column should contain the gene IDs.}
+\item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
+The first column should contain the term IDs, and the second column should contain the gene IDs.}
 
-\item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database. The first column should contain the term IDs, and the second column should contain the corresponding term names.}
+\item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database.
+The first column should contain the term IDs, and the second column should contain the corresponding term names.}
 
 \item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
 
 \item{maxGSSize}{A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{BPPARAM}{A BiocParallelParam object specifying the parallel back-end to be used for parallel computation. Defaults to BiocParallel::bpparam().}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
-\item{seed}{The random seed for reproducibility. Defaults to 11.}
+\item{verbose}{Whether to print progress messages.
+Default is \code{TRUE}.}
+
+\item{seed}{The random seed for reproducibility.
+Defaults to \code{11}.}
 }
 \description{
 This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).
