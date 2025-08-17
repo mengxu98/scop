@@ -155,7 +155,7 @@ check_r <- function(
         isTRUE(force_update)
     ) {
       log_message(
-        "Install package: {.pkg {pkg_name}} ..."
+        "Installing package: {.pkg {pkg_name}}..."
       )
       status_list[[pkg]] <- FALSE
       i <- 1

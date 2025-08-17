@@ -15,7 +15,8 @@ RunDynamicFeatures(
   layer = "counts",
   assay = NULL,
   libsize = NULL,
-  BPPARAM = BiocParallel::bpparam(),
+  cores = 1,
+  verbose = TRUE,
   seed = 11
 )
 }
@@ -31,10 +32,10 @@ If NULL, n_candidates must be provided.}
 Defaults to the lineage names.}
 
 \item{n_candidates}{An integer specifying the number of candidate features to select when features is NULL.
-Defaults to 1000.}
+Defaults to \code{1000}.}
 
 \item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded. Defaults to 5.}
+Features with a frequency less than minfreq will be excluded. Defaults to \code{5}.}
 
 \item{family}{A character or character vector specifying the family of distributions to use for the generalized additive models (GAMs).
 If family is set to NULL, the appropriate family will be automatically determined based on the data.
@@ -42,21 +43,24 @@ If length(family) is 1, the same family will be used for all features.
 Otherwise, family must have the same length as features.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
-Default is "counts".}
+Default is \code{"counts"}.}
 
 \item{assay}{A character vector specifying the assay in the Seurat object to use.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{libsize}{A numeric or numeric vector specifying the library size correction factors for each cell.
 If NULL, the library size correction factors will be calculated based on the expression matrix.
 If length(libsize) is 1, the same value will be used for all cells.
 Otherwise, libsize must have the same length as the number of cells in srt.
-Defaults to NULL.}
+Defaults to \code{NULL}.}
 
-\item{BPPARAM}{A BiocParallelParam object specifying the parallelization parameters for computing dynamic features.
-Defaults to \link[BiocParallel:register]{BiocParallel::bpparam}.}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
-\item{seed}{An integer specifying the seed for random number generation. Defaults to 11.}
+\item{verbose}{Whether to print progress messages.
+Default is \code{TRUE}.}
+
+\item{seed}{An integer specifying the seed for random number generation. Defaults to \code{11}.}
 }
 \value{
 Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
@@ -71,11 +75,13 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
+
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
+
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
 )
