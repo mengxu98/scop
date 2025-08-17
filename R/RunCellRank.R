@@ -18,18 +18,16 @@ RunCellRank <- function(
     min_shared_counts = 30,
     n_pcs = 30,
     n_neighbors = 30,
-    approx = TRUE,
     stream_smooth = NULL,
     stream_density = 2,
     arrow_size = 5,
     arrow_length = 5,
     arrow_density = 0.5,
-    s_genes = NULL,
-    g2m_genes = NULL,
     calculate_velocity_genes = FALSE,
     denoise = FALSE,
     kinetics = FALSE,
-    axis = "equal",
+    palette = "Paired",
+    palcolor = NULL,
     show_plot = TRUE,
     save = FALSE,
     dpi = 300,
@@ -42,23 +40,45 @@ RunCellRank <- function(
   }
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of 'srt', 'adata' must be provided.",
+      "One of {.arg srt} or {.arg adata} must be provided",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "'group_by' must be provided.",
+      "{.arg group_by} must be provided",
       message_type = "error"
     )
   }
-  if (is.null(linear_reduction) && is.null(nonlinear_reduction)) {
+
+  if (is.null(linear_reduction)) {
+    linear_reduction <- DefaultReduction(srt)
+  } else {
+    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+  }
+  if (!linear_reduction %in% names(srt@reductions)) {
     log_message(
-      "'linear_reduction' or 'nonlinear_reduction' must be provided at least one.",
+      "{.val {linear_reduction}} is not in the srt reduction names",
       message_type = "error"
     )
   }
-  mode <- as.list(mode)
+
+  if (is.null(nonlinear_reduction)) {
+    nonlinear_reduction <- DefaultReduction(srt)
+  } else {
+    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+  }
+  if (!nonlinear_reduction %in% names(srt@reductions)) {
+    log_message(
+      "{.val {nonlinear_reduction}} is not in the srt reduction names",
+      message_type = "error"
+    )
+  }
+
+  if (is.character(mode) && length(mode) == 1) {
+    mode <- list(mode)
+  }
+
   args <- mget(names(formals()))
   args <- lapply(args, function(x) {
     if (is.numeric(x)) {
@@ -108,13 +128,17 @@ RunCellRank <- function(
     palcolor = palcolor
   )
 
+  log_message("Running {.pkg CellRank} analysis...")
   scop_analysis <- reticulate::import_from_path(
     "scop_analysis",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
   adata <- do.call(scop_analysis$CellRank, args)
-
+  log_message(
+    "{.pkg CellRank} analysis completed",
+    message_type = "success"
+  )
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {

@@ -258,7 +258,7 @@ install_miniconda2 <- function(miniconda_repo) {
     unlink(miniconda_path, recursive = TRUE)
   }
 
-  log_message("Downloading and installing miniconda from: ", url)
+  log_message("Downloading and installing miniconda from: {.url {url}}")
   reticulate::install_miniconda(
     path = miniconda_path,
     force = TRUE,
@@ -266,9 +266,9 @@ install_miniconda2 <- function(miniconda_repo) {
   )
 
   conda <- reticulate:::miniconda_conda(miniconda_path)
-  log_message("Miniconda installed at: ", miniconda_path)
+  log_message("Miniconda installed at: {.file {miniconda_path}}")
 
-  return(conda)
+  conda
 }
 
 #' Print environment information
@@ -318,10 +318,60 @@ env_requirements <- function(version = "3.10-1") {
     choices = c("3.8-1", "3.8-2", "3.9-1", "3.10-1", "3.11-1")
   )
 
+  if (version %in% c("3.8-1", "3.8-2")) {
+    package_versions <- c(
+      "leidenalg" = "leidenalg==0.10.2",
+      "tbb" = "tbb==2022.2.0",
+      "igraph" = "igraph==0.11.8",
+      "matplotlib" = "matplotlib==3.5.3",
+      "numba" = "numba==0.56.4",
+      "llvmlite" = "llvmlite==0.39.1",
+      "numpy" = "numpy==1.21.6",
+      "palantir" = "palantir==1.3.6",
+      "pandas" = "pandas==1.5.3",
+      "scanpy" = "scanpy==1.9.3",
+      "scikit-learn" = "scikit-learn==1.1.3",
+      "scipy" = "scipy==1.9.3",
+      "scvelo" = "scvelo==0.2.5",
+      "wot" = "wot==1.0.8",
+      "trimap" = "trimap==1.1.4",
+      "pacmap" = "pacmap==0.7.0",
+      "phate" = "phate==1.0.8",
+      "bbknn" = "bbknn==1.5.1",
+      "scanorama" = "scanorama==1.7.2",
+      "scvi-tools" = "scvi-tools==0.20.3",
+      "cellrank" = "cellrank==1.5.0"
+    )
+  } else if (version %in% c("3.9-1", "3.10-1", "3.11-1")) {
+    package_versions <- c(
+      "leidenalg" = "leidenalg==0.10.2",
+      "tbb" = "tbb==2022.2.0",
+      "igraph" = "igraph==0.11.9",
+      "matplotlib" = "matplotlib==3.10.3",
+      "numba" = "numba==0.59.1",
+      "llvmlite" = "llvmlite==0.42.0",
+      "numpy" = "numpy==1.26.4",
+      "palantir" = "palantir==1.4.1",
+      "pandas" = "pandas==2.0.3",
+      "scanpy" = "scanpy==1.11.3",
+      "scikit-learn" = "scikit-learn==1.7.0",
+      "scipy" = "scipy==1.15.3",
+      "scvelo" = "scvelo==0.3.3",
+      "wot" = "wot==1.0.8.post2",
+      "trimap" = "trimap==1.1.4",
+      "pacmap" = "pacmap==0.8.0",
+      "phate" = "phate==1.0.11",
+      "bbknn" = "bbknn==1.6.0",
+      "scanorama" = "scanorama==1.7.4",
+      "scvi-tools" = "scvi-tools==1.2.1",
+      "cellrank" = "cellrank==2.0.7"
+    )
+  }
+
   package_install_methods <- c(
     "leidenalg" = "conda",
     "tbb" = "conda",
-    "python-igraph" = "conda",
+    "igraph" = "pip",
     "matplotlib" = "pip",
     "numba" = "pip",
     "llvmlite" = "pip",
@@ -338,30 +388,8 @@ env_requirements <- function(version = "3.10-1") {
     "phate" = "pip",
     "bbknn" = "pip",
     "scanorama" = "pip",
-    "scvi-tools" = "pip"
-  )
-
-  package_versions <- c(
-    "leidenalg" = "leidenalg==0.10.2",
-    "tbb" = "tbb==2022.2.0",
-    "python-igraph" = "python-igraph==0.11.9",
-    "matplotlib" = "matplotlib==3.10.3",
-    "numba" = "numba==0.59.1",
-    "llvmlite" = "llvmlite==0.42.0",
-    "numpy" = "numpy==1.26.4",
-    "palantir" = "palantir==1.4.1",
-    "pandas" = "pandas==2.0.3",
-    "scanpy" = "scanpy==1.11.3",
-    "scikit-learn" = "scikit-learn==1.7.0",
-    "scipy" = "scipy==1.15.3",
-    "scvelo" = "scvelo==0.3.3",
-    "wot" = "wot==1.0.8.post2",
-    "trimap" = "trimap==1.1.4",
-    "pacmap" = "pacmap==0.8.0",
-    "phate" = "phate==1.0.11",
-    "bbknn" = "bbknn==1.6.0",
-    "scanorama" = "scanorama==1.7.4",
-    "scvi-tools" = "scvi-tools==1.2.1"
+    "scvi-tools" = "pip",
+    "cellrank" = "pip"
   )
 
   requirements <- list(
@@ -500,7 +528,7 @@ exist_python_pkgs <- function(
           )
         } else {
           log_message(
-            "{.pkg {pkg_name}} found but version mismatch: installed={.pkg {installed_version}}, required={.pkg {pkg_version}}",
+            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
             message_type = "warning"
           )
         }

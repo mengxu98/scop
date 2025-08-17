@@ -207,12 +207,9 @@ WilcoxDETest <- function(
 #' Default is "LogNormalize".
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
 #' Default is "bonferroni".
-#' @param BPPARAM A BiocParallelParam object specifying the parallelization parameters for the differential test.
-#' Default is [BiocParallel::bpparam()].
 #' @param seed An integer value specifying the seed.
 #' Default is 11.
-#' @param verbose A logical value indicating whether to display progress messages during the differential test.
-#' Default is TRUE.
+#' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
@@ -220,7 +217,6 @@ WilcoxDETest <- function(
 #' @seealso
 #' \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   srt = pancreas_sub,
@@ -370,7 +366,6 @@ WilcoxDETest <- function(
 #'   numerator = "smartseq2"
 #' )
 #' ht7$plot
-#' }
 RunDEtest <- function(
     srt,
     group_by = NULL,
@@ -410,11 +405,12 @@ RunDEtest <- function(
     p.adjust.method = "bonferroni",
     layer = "data",
     assay = NULL,
-    BPPARAM = BiocParallel::bpparam(),
     seed = 11,
     verbose = TRUE,
+    cores = 1,
     ...) {
   set.seed(seed)
+  check_r("immunogenomics/presto")
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
   if (markers_type %in% c("conserved", "disturbed")) {
@@ -463,21 +459,17 @@ RunDEtest <- function(
     }
     if (status == "unknown") {
       log_message(
-        "Data in the 'data' layer is unknown. Please check the data type.",
+        "Data in the 'data' layer is unknown. Please check the data type",
         message_type = "warning",
         verbose = verbose
       )
     }
   }
-  BiocParallel::bpprogressbar(BPPARAM) <- FALSE
-  BiocParallel::bpRNGseed(BPPARAM) <- seed
 
-  time_start <- Sys.time()
-
-  log_message("Start DEtest", verbose = verbose)
-  log_message("Workers: ", bpworkers(BPPARAM), verbose = verbose)
-
-
+  log_message(
+    "Start differential expression test",
+    verbose = verbose
+  )
   if (fc.threshold < 1) {
     log_message(
       "fc.threshold must be greater than or equal to 1",
@@ -572,11 +564,11 @@ RunDEtest <- function(
         markers[, "test_group_number"] <- as.integer(
           table(markers[["gene"]])[markers[, "gene"]]
         )
-        MarkersMatrix <- as.data.frame.matrix(
+        markers_matrix <- as.data.frame.matrix(
           table(markers[, c("gene", "group1")])
         )
-        markers[, "test_group"] <- apply(MarkersMatrix, 1, function(x) {
-          paste0(colnames(MarkersMatrix)[x > 0], collapse = ";")
+        markers[, "test_group"] <- apply(markers_matrix, 1, function(x) {
+          paste0(colnames(markers_matrix)[x > 0], collapse = ";")
         })[markers[, "gene"]]
         srt@tools[["DEtest_custom"]][[paste0(
           "AllMarkers_",
@@ -637,11 +629,11 @@ RunDEtest <- function(
         markers[, "test_group_number"] <- as.integer(
           table(markers[["gene"]])[markers[, "gene"]]
         )
-        MarkersMatrix <- as.data.frame.matrix(
+        markers_matrix <- as.data.frame.matrix(
           table(markers[, c("gene", "group1")])
         )
-        markers[, "test_group"] <- apply(MarkersMatrix, 1, function(x) {
-          paste0(colnames(MarkersMatrix)[x > 0], collapse = ";")
+        markers[, "test_group"] <- apply(markers_matrix, 1, function(x) {
+          paste0(colnames(markers_matrix)[x > 0], collapse = ";")
         })[markers[, "gene"]]
         srt@tools[["DEtest_custom"]][[paste0(
           "ConservedMarkers_",
@@ -663,7 +655,6 @@ RunDEtest <- function(
         colnames(srt_tmp),
         cells1
       )] <- NA
-      bpprogressbar(BPPARAM) <- FALSE
       srt_tmp <- RunDEtest(
         srt = srt_tmp,
         assay = assay,
@@ -685,7 +676,7 @@ RunDEtest <- function(
         p.adjust.method = p.adjust.method,
         pseudocount.use = pseudocount.use,
         mean.fxn = mean.fxn,
-        BPPARAM = BPPARAM,
+        cores = cores,
         seed = seed,
         verbose = FALSE,
         ...
@@ -704,7 +695,7 @@ RunDEtest <- function(
         srt@tools[["DEtest_custom"]][["cells1"]] <- cells1
       } else {
         log_message(
-          "No markers found.",
+          "No markers found",
           message_type = "warning",
           verbose = verbose
         )
@@ -770,9 +761,9 @@ RunDEtest <- function(
     )
 
     if (markers_type == "all") {
-      AllMarkers <- BiocParallel::bplapply(
+      AllMarkers <- parallelize_fun(
         levels(cell_group),
-        FUN = function(group) {
+        function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
           cells.2 <- names(cell_group)[which(cell_group != group)]
           if (length(cells.1) < 3 || length(cells.2) < 3) {
@@ -797,7 +788,8 @@ RunDEtest <- function(
             }
           }
         },
-        BPPARAM = BPPARAM
+        cores = cores,
+        verbose = verbose
       )
       AllMarkers <- do.call(rbind.data.frame, AllMarkers)
       if (!is.null(AllMarkers) && nrow(AllMarkers) > 0) {
@@ -834,7 +826,7 @@ RunDEtest <- function(
     if (markers_type == "paired") {
       pair <- expand.grid(x = levels(cell_group), y = levels(cell_group))
       pair <- pair[pair[, 1] != pair[, 2], , drop = FALSE]
-      PairedMarkers <- BiocParallel::bplapply(
+      PairedMarkers <- parallelize_fun(
         seq_len(nrow(pair)),
         function(i) {
           cells.1 <- names(cell_group)[which(cell_group == pair[i, 1])]
@@ -861,7 +853,8 @@ RunDEtest <- function(
             }
           }
         },
-        BPPARAM = BPPARAM
+        cores = cores,
+        verbose = verbose
       )
       PairedMarkers <- do.call(rbind.data.frame, PairedMarkers)
       if (!is.null(PairedMarkers) && nrow(PairedMarkers) > 0) {
@@ -895,7 +888,7 @@ RunDEtest <- function(
         )]] <- PairedMarkersMatrix
       } else {
         log_message(
-          "No markers found.",
+          "No markers found",
           message_type = "warning",
           verbose = verbose
         )
@@ -911,9 +904,9 @@ RunDEtest <- function(
     }
 
     if (markers_type == "conserved") {
-      ConservedMarkers <- BiocParallel::bplapply(
+      ConservedMarkers <- parallelize_fun(
         levels(cell_group),
-        FUN = function(group) {
+        function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
           cells.2 <- names(cell_group)[which(cell_group != group)]
           if (length(cells.1) < 3 || length(cells.2) < 3) {
@@ -942,7 +935,8 @@ RunDEtest <- function(
             }
           }
         },
-        BPPARAM = BPPARAM
+        cores = cores,
+        verbose = verbose
       )
       ConservedMarkers <- do.call(
         rbind.data.frame,
@@ -1006,7 +1000,7 @@ RunDEtest <- function(
         )]] <- ConservedMarkers
       } else {
         log_message(
-          "No markers found.",
+          "No markers found",
           message_type = "warning",
           verbose = verbose
         )
@@ -1018,11 +1012,9 @@ RunDEtest <- function(
     }
 
     if (markers_type == "disturbed") {
-      sub_BPPARAM <- BiocParallel::SerialParam()
-      BiocParallel::bpprogressbar(sub_BPPARAM) <- FALSE
-      DisturbedMarkers <- BiocParallel::bplapply(
+      DisturbedMarkers <- parallelize_fun(
         levels(cell_group),
-        FUN = function(group) {
+        function(group) {
           cells.1 <- names(cell_group)[which(cell_group == group)]
           srt_tmp <- srt
           srt_tmp[[grouping.var, drop = TRUE]][setdiff(
@@ -1055,7 +1047,7 @@ RunDEtest <- function(
               p.adjust.method = p.adjust.method,
               pseudocount.use = pseudocount.use,
               mean.fxn = mean.fxn,
-              BPPARAM = sub_BPPARAM,
+              cores = cores,
               seed = seed,
               verbose = FALSE,
               ...
@@ -1073,7 +1065,8 @@ RunDEtest <- function(
             }
           }
         },
-        BPPARAM = BPPARAM
+        cores = cores,
+        verbose = verbose
       )
 
       DisturbedMarkers <- do.call(rbind.data.frame, DisturbedMarkers)
@@ -1117,15 +1110,10 @@ RunDEtest <- function(
       }
     }
   }
-  time_end <- Sys.time()
 
-  log_message("DEtest done", verbose = verbose)
   log_message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    ),
+    "Differential expression test completed",
+    message_type = "success",
     verbose = verbose
   )
 

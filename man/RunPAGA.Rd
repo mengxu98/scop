@@ -42,11 +42,11 @@ RunPAGA(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
+\item{assay_x}{Assay to convert in the anndata object.}
 
 \item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.}
+\item{assay_y}{Assay to convert in the anndata object.}
 
 \item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
@@ -117,7 +117,7 @@ PAGA is a graph-based method used to infer cellular trajectories.
 This function runs the PAGA analysis on a Seurat object.
 }
 \examples{
-\dontrun{
+PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
@@ -131,7 +131,9 @@ CellDimPlot(
   group.by = "SubCellType",
   reduction = "draw_graph_fr"
 )
+
 PAGAPlot(pancreas_sub, reduction = "UMAP")
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -154,14 +156,15 @@ FeatureDimPlot(
   features = "dpt_pseudotime",
   reduction = "PAGAUMAP2D"
 )
+
 PAGAPlot(pancreas_sub, reduction = "PAGAUMAP2D")
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "PAGAUMAP2D",
   paga = pancreas_sub@misc$paga
 )
-}
 }
 \seealso{
 \link{srt_to_adata}, \link{PAGAPlot}, \link{CellDimPlot}, \link{RunSCVELO}

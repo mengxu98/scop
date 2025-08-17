@@ -70,16 +70,11 @@ RunDynamicEnrichment <- function(
     TERM2NAME = NULL,
     minGSSize = 10,
     maxGSSize = 500,
-    BPPARAM = BiocParallel::bpparam(),
+    cores = 1,
+    verbose = TRUE,
     seed = 11) {
   set.seed(seed)
-  bpprogressbar(BPPARAM) <- TRUE
-  bpRNGseed(BPPARAM) <- seed
   assay <- assay %||% DefaultAssay(srt)
-
-  time_start <- Sys.time()
-  log_message("Start RunDynamicFeatures")
-  log_message("Workers: ", bpworkers(BPPARAM))
 
   feature_union <- c()
   cell_union <- c()
@@ -87,9 +82,9 @@ RunDynamicEnrichment <- function(
   for (l in lineages) {
     if (!paste0("DynamicFeatures_", l) %in% names(srt@tools)) {
       log_message(
-        l,
-        " info not found in the srt object. Should perform RunDynamicFeatures first!",
-        message_type = "error"
+        "{.val {l}} info not found in the srt object. Should perform {.fn RunDynamicFeatures} first",
+        message_type = "error",
+        verbose = verbose
       )
     }
     DynamicFeatures <- srt@tools[[paste0("DynamicFeatures_", l)]][[
@@ -182,7 +177,8 @@ RunDynamicEnrichment <- function(
       assay = assay,
       name = term,
       new_assay = TRUE,
-      BPPARAM = BPPARAM
+      cores = cores,
+      verbose = verbose
     )
     srt <- RunDynamicFeatures(
       srt = srt,
@@ -199,14 +195,10 @@ RunDynamicEnrichment <- function(
     )
   }
 
-  time_end <- Sys.time()
-  log_message("RunDynamicEnrichment done")
   log_message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    )
+    "Dynamic enrichment analysis completed",
+    message_type = "success",
+    verbose = verbose
   )
 
   return(srt)

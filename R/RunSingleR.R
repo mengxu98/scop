@@ -13,7 +13,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(panc8_sub)
 #' # Simply convert genes from human to mouse and preprocess the data
 #' genenames <- make.unique(
@@ -35,18 +34,18 @@
 #' # Annotation
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunSingleR( # bug
+#' pancreas_sub <- RunSingleR(
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
-#'   query_group = "Standardclusters",
+#'   query_group = "Standardpca_SNN_res.0.6",
 #'   ref_group = "celltype"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
-#'   group.by = "singler_annotation"
+#'   group.by = c("singler_annotation", "CellType")
 #' )
 #'
-#' pancreas_sub <- RunSingleR( # bug
+#' pancreas_sub <- RunSingleR(
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
 #'   query_group = NULL,
@@ -54,9 +53,8 @@
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
-#'   group.by = "singler_annotation"
+#'   group.by = c("singler_annotation", "CellType")
 #' )
-#' }
 RunSingleR <- function(
     srt_query,
     srt_ref,
@@ -74,33 +72,39 @@ RunSingleR <- function(
     fine.tune = TRUE,
     tune.thresh = 0.05,
     prune = TRUE,
-    BPPARAM = BiocParallel::bpparam()) {
-  check_r("SingleR")
-  if (!is.null(ref_group)) {
-    if (length(ref_group) == ncol(srt_ref)) {
-      srt_ref[["ref_group"]] <- ref_group
-    } else if (length(ref_group) == 1) {
-      if (!ref_group %in% colnames(srt_ref@meta.data)) {
-        log_message(
-          "ref_group must be one of the column names in the meta.data",
-          message_type = "error"
-        )
-      } else {
-        srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
-      }
-    } else {
+    cores = 1,
+    verbose = TRUE) {
+  log_message(
+    "Start {.pkg SingleR} annotation",
+    verbose = verbose
+  )
+  check_r(c("SingleR", "scrapper"))
+  if (is.null(ref_group)) {
+    log_message(
+      "'ref_group' must be provided",
+      message_type = "error",
+      verbose = verbose
+    )
+  }
+  if (length(ref_group) == ncol(srt_ref)) {
+    srt_ref[["ref_group"]] <- ref_group
+  } else if (length(ref_group) == 1) {
+    if (!ref_group %in% colnames(srt_ref@meta.data)) {
       log_message(
-        "Length of ref_group must be one or length of srt_ref.",
+        "ref_group must be one of the column names in the meta.data",
         message_type = "error"
       )
+    } else {
+      srt_ref[["ref_group"]] <- srt_ref[[ref_group]]
     }
-    ref_group <- "ref_group"
   } else {
     log_message(
-      "'ref_group' must be provided.",
+      "Length of ref_group must be one or length of srt_ref.",
       message_type = "error"
     )
   }
+  ref_group <- "ref_group"
+
   if (!is.null(query_group)) {
     if (length(query_group) == ncol(srt_query)) {
       srt_query[["query_group"]] <- query_group
@@ -129,25 +133,25 @@ RunSingleR <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay
+      assay = query_assay,
+      verbose = FALSE
     )
   )
-  log_message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: {.val {status_query}}")
   status_ref <- check_data_type(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay
+      assay = ref_assay,
+      verbose = FALSE
     )
   )
-  log_message("Detected srt_ref data type: ", status_ref)
-  if (
-    status_ref != status_query ||
-      any(status_query == "unknown", status_ref == "unknown")
-  ) {
+  log_message("Detected srt_ref data type: {.val {status_ref}}")
+  if (status_ref != status_query || any(status_query == "unknown", status_ref == "unknown")) {
     log_message(
-      "Data type is unknown or different between query and ref.",
-      message_type = "warning"
+      "Data type is unknown or different between query and ref",
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -155,12 +159,14 @@ RunSingleR <- function(
     counts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
-      layer = "counts"
+      layer = "counts",
+      verbose = FALSE
     ),
     logcounts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
-      layer = "data"
+      layer = "data",
+      verbose = FALSE
     )
   )
   sce_query <- methods::as(
@@ -178,12 +184,14 @@ RunSingleR <- function(
     counts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
-      layer = "counts"
+      layer = "counts",
+      verbose = FALSE
     ),
     logcounts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
-      layer = "data"
+      layer = "data",
+      verbose = FALSE
     )
   )
   sce_ref <- methods::as(
@@ -197,15 +205,20 @@ RunSingleR <- function(
     metadata_ref
   )
 
+  log_message(
+    "Perform {.val {method}} on the data...",
+    verbose = verbose
+  )
   if (method == "SingleRCluster") {
-    log_message("Perform ", method, " on the data...")
-    SingleRCluster_results <- SingleR::SingleR(
+    cluster_results <- SingleR::SingleR(
       test = sce_query,
       ref = sce_ref,
-      labels = factor(SummarizedExperiment::colData(sce_ref)[[ref_group]]),
-      clusters = factor(SummarizedExperiment::colData(sce_query)[[
-        query_group
-      ]]),
+      labels = factor(
+        SummarizedExperiment::colData(sce_ref)[[ref_group]]
+      ),
+      clusters = factor(
+        SummarizedExperiment::colData(sce_query)[[query_group]]
+      ),
       de.method = de.method,
       genes = genes,
       sd.thresh = sd.thresh,
@@ -216,45 +229,56 @@ RunSingleR <- function(
       fine.tune = fine.tune,
       tune.thresh = tune.thresh,
       prune = prune,
-      BPPARAM = BPPARAM
+      num.threads = cores
     )
-    names(
-      SingleRCluster_results$labels
-    ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
-    rownames(
-      SingleRCluster_results$scores
-    ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[query_group]]))
+    names(cluster_results$labels) <- levels(
+      factor(
+        SummarizedExperiment::colData(sce_query)[[query_group]]
+      )
+    )
+    rownames(cluster_results$scores) <- levels(
+      factor(
+        SummarizedExperiment::colData(sce_query)[[query_group]]
+      )
+    )
     if (isTRUE(prune)) {
-      names(
-        SingleRCluster_results$pruned.labels
-      ) <- levels(factor(SummarizedExperiment::colData(sce_query)[[
-        query_group
-      ]]))
+      names(cluster_results$pruned.labels) <- levels(
+        factor(
+          SummarizedExperiment::colData(sce_query)[[query_group]]
+        )
+      )
     }
-    srt_query$singler_annotation <- if (isTRUE(prune)) {
-      SingleRCluster_results$pruned.labels[as.character(srt_query$query_group)]
+
+    if (isTRUE(prune)) {
+      cluster_labels <- cluster_results$pruned.labels
     } else {
-      SingleRCluster_results$labels[as.character(srt_query$query_group)]
+      cluster_labels <- cluster_results$labels
     }
-    srt_query$singler_score <- sapply(
-      as.character(unique(srt_query$query_group)),
-      FUN = function(x) {
-        if (isTRUE(prune)) {
-          y <- SingleRCluster_results$pruned.labels[x]
-        } else {
-          y <- SingleRCluster_results$labels[x]
-        }
-        if (is.na(y)) {
-          out <- NA
-        } else {
-          out <- SingleRCluster_results$scores[x, y]
-        }
-        return(out)
+
+    sce_cluster_ids <- SummarizedExperiment::colData(sce_query)[[query_group]]
+    cluster_to_cells <- split(seq_along(sce_cluster_ids), sce_cluster_ids)
+
+    cell_annotations <- character(length(sce_cluster_ids))
+    for (cluster_id in names(cluster_to_cells)) {
+      if (cluster_id %in% names(cluster_labels)) {
+        cell_annotations[cluster_to_cells[[cluster_id]]] <- cluster_labels[cluster_id]
       }
-    )[as.character(srt_query$query_group)]
+    }
+
+    srt_query$singler_annotation <- cell_annotations
+    cell_scores <- numeric(length(sce_cluster_ids))
+    for (cluster_id in names(cluster_to_cells)) {
+      if (cluster_id %in% names(cluster_labels)) {
+        annotation <- cluster_labels[cluster_id]
+        if (!is.na(annotation) && annotation %in% colnames(cluster_results$scores)) {
+          score <- cluster_results$scores[cluster_id, annotation]
+          cell_scores[cluster_to_cells[[cluster_id]]] <- score
+        }
+      }
+    }
+    srt_query$singler_score <- cell_scores
   } else if (method == "SingleRCell") {
-    log_message("Perform ", method, " on the data...")
-    SingleRCell_results <- SingleR::SingleR(
+    cell_results <- SingleR::SingleR(
       test = sce_query,
       ref = sce_ref,
       labels = factor(SummarizedExperiment::colData(sce_ref)[[ref_group]]),
@@ -269,29 +293,35 @@ RunSingleR <- function(
       fine.tune = fine.tune,
       tune.thresh = tune.thresh,
       prune = prune,
-      BPPARAM = BPPARAM
+      num.threads = cores
     )
-    srt_query$singler_annotation <- if (isTRUE(prune)) {
-      SingleRCell_results$pruned.labels
+    if (isTRUE(prune)) {
+      srt_query$singler_annotation <- cell_results$pruned.labels
     } else {
-      SingleRCell_results$labels
+      srt_query$singler_annotation <- cell_results$labels
     }
-    srt_query$singler_score <- sapply(
-      seq_len(ncol(srt_query)),
-      FUN = function(x) {
-        if (isTRUE(prune)) {
-          y <- SingleRCell_results$pruned.labels[x]
-        } else {
-          y <- SingleRCell_results$labels[x]
-        }
-        if (is.na(y)) {
-          out <- NA
-        } else {
-          out <- SingleRCell_results$scores[x, y]
-        }
-        return(out)
+
+    cell_scores <- numeric(ncol(srt_query))
+    for (i in seq_len(ncol(srt_query))) {
+      if (isTRUE(prune)) {
+        annotation <- cell_results$pruned.labels[i]
+      } else {
+        annotation <- cell_results$labels[i]
       }
-    )
+
+      if (!is.na(annotation) && annotation %in% colnames(cell_results$scores)) {
+        cell_scores[i] <- cell_results$scores[i, annotation]
+      } else {
+        cell_scores[i] <- NA
+      }
+    }
+    srt_query$singler_score <- cell_scores
   }
+
+  log_message(
+    "{.pkg SingleR} annotation completed",
+    message_type = "success",
+    verbose = verbose
+  )
   return(srt_query)
 }
