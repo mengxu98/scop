@@ -1,34 +1,53 @@
-#' Perform the enrichment analysis (over-representation) on the genes
+#' @title Perform the enrichment analysis (over-representation) on the genes
 #'
+#' @md
 #' @inheritParams GeneConvert
 #' @param srt A Seurat object containing the results of differential expression analysis (RunDEtest).
 #' If specified, the genes and groups will be extracted from the Seurat object automatically.
 #' If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.
-#' @param group_by A character vector specifying the grouping variable in the Seurat object. This argument is only used if \code{srt} is specified.
-#' @param test.use A character vector specifying the test to be used in differential expression analysis. This argument is only used if \code{srt} is specified.
-#' @param DE_threshold A character vector specifying the filter condition for differential expression analysis. This argument is only used if \code{srt} is specified.
+#' @param group_by A character vector specifying the grouping variable in the Seurat object.
+#' This argument is only used if \code{srt} is specified.
+#' @param test.use A character vector specifying the test to be used in differential expression analysis.
+#' This argument is only used if \code{srt} is specified.
+#' @param DE_threshold A character vector specifying the filter condition for differential expression analysis.
+#' This argument is only used if \code{srt} is specified.
 #' @param geneID A character vector specifying the gene IDs.
 #' @param geneID_groups A factor vector specifying the group labels for each gene.
 #' @param geneID_exclude A character vector specifying the gene IDs to be excluded from the analysis.
-#' @param IDtype A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument. This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.
-#' @param result_IDtype A character vector specifying the desired type of gene ID to be used in the output. This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.
+#' @param IDtype A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+#' This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.
+#' @param result_IDtype A character vector specifying the desired type of gene ID to be used in the output.
+#' This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.
 #' @param species A character vector specifying the species for which the analysis is performed.
 #' @param db A character vector specifying the name of the database to be used for enrichment analysis.
-#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.
-#' @param db_version A character vector specifying the version of the database to be used. This argument is ignored if \code{db_update} is \code{TRUE}. Default is "latest".
-#' @param db_combine A logical value indicating whether to combine multiple databases into one. If TRUE, all database specified by \code{db} will be combined as one named "Combined".
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.
-#' @param TERM2GENE A data frame specifying the gene-term mapping for a custom database. The first column should contain the term IDs, and the second column should contain the gene IDs.
-#' @param TERM2NAME A data frame specifying the term-name mapping for a custom database. The first column should contain the term IDs, and the second column should contain the corresponding term names.
+#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated.
+#' If set to FALSE, the function will attempt to load the cached databases instead.
+#' Default is FALSE.
+#' @param db_version A character vector specifying the version of the database to be used.
+#' This argument is ignored if \code{db_update} is \code{TRUE}.
+#' Default is "latest".
+#' @param db_combine A logical value indicating whether to combine multiple databases into one.
+#' If TRUE, all database specified by \code{db} will be combined as one named "Combined".
+#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' The default value is TRUE.
+#' @param TERM2GENE A data frame specifying the gene-term mapping for a custom database.
+#' The first column should contain the term IDs, and the second column should contain the gene IDs.
+#' @param TERM2NAME A data frame specifying the term-name mapping for a custom database.
+#' The first column should contain the term IDs, and the second column should contain the corresponding term names.
 #' @param minGSSize A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.
 #' @param maxGSSize A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.
 #' @param unlimited_db A character vector specifying the names of databases that do not have size restrictions.
-#' @param GO_simplify A logical value indicating whether to simplify the GO terms. If \code{TRUE}, additional results with simplified GO terms will be returned.
-#' @param GO_simplify_cutoff A character vector specifying the filter condition for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param simplify_method A character vector specifying the method to be used for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param BPPARAM A BiocParallelParam object specifying the parallel back-end to be used for parallel computation. Defaults to BiocParallel::bpparam().
-#' @param seed The random seed for reproducibility. Defaults to 11.
+#' @param GO_simplify A logical value indicating whether to simplify the GO terms.
+#' If \code{TRUE}, additional results with simplified GO terms will be returned.
+#' @param GO_simplify_cutoff A character vector specifying the filter condition for simplification of GO terms.
+#' This argument is only used if \code{GO_simplify} is \code{TRUE}.
+#' @param simplify_method A character vector specifying the method to be used for simplification of GO terms.
+#' This argument is only used if \code{GO_simplify} is \code{TRUE}.
+#' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for simplification of GO terms.
+#' This argument is only used if \code{GO_simplify} is \code{TRUE}.
+#' @param seed The random seed for reproducibility.
+#' Defaults to `11`.
+#' @inheritParams thisutils::parallelize_fun
 #'
 #' @returns
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -45,7 +64,7 @@
 #' }
 #'
 #' @seealso
-#' \link{PrepareDB}, \link{ListDB}, \link{EnrichmentPlot}, \link{RunGSEA}, \link{GSEAPlot}
+#' [PrepareDB], [ListDB], [EnrichmentPlot], [RunGSEA], [GSEAPlot]
 #'
 #' @export
 #'
@@ -166,14 +185,10 @@ RunEnrichment <- function(
     GO_simplify_cutoff = "p.adjust < 0.05",
     simplify_method = "Wang",
     simplify_similarityCutoff = 0.7,
-    BPPARAM = BiocParallel::bpparam(),
-    seed = 11) {
-  bpprogressbar(BPPARAM) <- TRUE
-  bpRNGseed(BPPARAM) <- seed
-  time_start <- Sys.time()
-  log_message("Start Enrichment")
-  log_message("Workers: ", bpworkers(BPPARAM))
-
+    cores = 1,
+    verbose = TRUE) {
+  log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
+  check_r("clusterProfiler")
   use_srt <- FALSE
   if (is.null(geneID)) {
     if (is.null(group_by)) {
@@ -318,9 +333,9 @@ RunEnrichment <- function(
     stringsAsFactors = FALSE
   )
 
-  res_list <- bplapply(
+  res_list <- parallelize_fun(
     seq_len(nrow(comb)),
-    function(i, id) {
+    function(i) {
       group <- comb[i, "group"]
       term <- comb[i, "term"]
       gene <- input[input$geneID_groups == group, IDtype]
@@ -409,14 +424,12 @@ RunEnrichment <- function(
               drop = FALSE
             ]
             semData <- db_list[[species]][[term]][["semData"]]
-            ipclock(id)
             sim_res <- clusterProfiler::simplify(
               sim_res,
               measure = simplify_method,
               cutoff = simplify_similarityCutoff,
               semData = semData
             )
-            ipcunlock(id)
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
@@ -436,10 +449,10 @@ RunEnrichment <- function(
       } else {
         enrich_res <- NULL
       }
-      return(enrich_res)
+      enrich_res
     },
-    BPPARAM = BPPARAM,
-    id = ipcid()
+    cores = cores,
+    verbose = verbose
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")
@@ -453,14 +466,9 @@ RunEnrichment <- function(
   enrichment <- do.call(rbind, lapply(results, function(x) x@result))
   rownames(enrichment) <- NULL
 
-  time_end <- Sys.time()
-  log_message("Enrichment done")
   log_message(
-    "Elapsed time:",
-    format(
-      round(difftime(time_end, time_start), 2),
-      format = "%Y-%m-%d %H:%M:%S"
-    )
+    "{.pkg Enrichment} analysis done",
+    message_type = "success", verbose = verbose
   )
 
   res <- list(
