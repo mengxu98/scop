@@ -64,29 +64,31 @@ GetAssayData5.Assay5 <- function(
     join_layers = TRUE,
     verbose = TRUE,
     ...) {
-  if (verbose && join_layers) {
-    warning_key <- "assay5_join_layers_warning"
-    last_warning_time <- if (exists(warning_key, envir = .scop_env)) {
-      get(warning_key, envir = .scop_env)
-    } else {
-      as.numeric(Sys.time()) - 30000
-    }
+  if (join_layers) {
+    if (verbose) {
+      warning_key <- "assay5_join_layers_warning"
+      last_warning_time <- if (exists(warning_key, envir = .scop_env)) {
+        get(warning_key, envir = .scop_env)
+      } else {
+        as.numeric(Sys.time()) - 30000
+      }
 
-    current_time <- as.numeric(Sys.time())
-    warning_interval <- getOption("scop.warning_interval", 28800)
-    if (current_time - last_warning_time > warning_interval) {
-      log_message(
-        "The input data is a {.cls Assay5} object\n",
-        "{.fn SeuratObject::JoinLayers} will be used to combine the layers\n",
-        cli::col_grey(
-          "This warning will be shown only once every {warning_interval / 3600} hours"
-        ), "\n",
-        cli::col_grey(
-          "To change this interval, set the scop.warning_interval option"
-        ),
-        message_type = "warning"
-      )
-      assign(warning_key, current_time, envir = .scop_env)
+      current_time <- as.numeric(Sys.time())
+      warning_interval <- getOption("scop.warning_interval", 28800)
+      if (current_time - last_warning_time > warning_interval) {
+        log_message(
+          "The input data is a {.cls Assay5} object\n",
+          "{.fn SeuratObject::JoinLayers} will be used to combine the layers\n",
+          cli::col_grey(
+            "This warning will be shown only once every {warning_interval / 3600} hours"
+          ), "\n",
+          cli::col_grey(
+            "To change this interval, set the scop.warning_interval option"
+          ),
+          message_type = "warning"
+        )
+        assign(warning_key, current_time, envir = .scop_env)
+      }
     }
 
     object <- SeuratObject::JoinLayers(object)
