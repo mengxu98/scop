@@ -32,11 +32,11 @@ RunWOT(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay_x}{Assay to convert as the main data matrix (\code{X}) in the anndata object.}
+\item{assay_x}{Assay to convert in the anndata object.}
 
 \item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.}
+\item{assay_y}{Assay to convert in the anndata object.}
 
 \item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 

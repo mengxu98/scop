@@ -31,8 +31,8 @@ RunEnrichment(
   GO_simplify_cutoff = "p.adjust < 0.05",
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
-  BPPARAM = BiocParallel::bpparam(),
-  seed = 11
+  cores = 1,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -40,11 +40,14 @@ RunEnrichment(
 If specified, the genes and groups will be extracted from the Seurat object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{group_by}{A character vector specifying the grouping variable in the Seurat object. This argument is only used if \code{srt} is specified.}
+\item{group_by}{A character vector specifying the grouping variable in the Seurat object.
+This argument is only used if \code{srt} is specified.}
 
-\item{test.use}{A character vector specifying the test to be used in differential expression analysis. This argument is only used if \code{srt} is specified.}
+\item{test.use}{A character vector specifying the test to be used in differential expression analysis.
+This argument is only used if \code{srt} is specified.}
 
-\item{DE_threshold}{A character vector specifying the filter condition for differential expression analysis. This argument is only used if \code{srt} is specified.}
+\item{DE_threshold}{A character vector specifying the filter condition for differential expression analysis.
+This argument is only used if \code{srt} is specified.}
 
 \item{geneID}{A character vector specifying the gene IDs.}
 
@@ -52,29 +55,39 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{geneID_exclude}{A character vector specifying the gene IDs to be excluded from the analysis.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument. This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
+\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{result_IDtype}{A character vector specifying the desired type of gene ID to be used in the output. This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
+\item{result_IDtype}{A character vector specifying the desired type of gene ID to be used in the output.
+This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
 
 \item{species}{A character vector specifying the species for which the analysis is performed.}
 
 \item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.}
+\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
+Default is FALSE.}
 
-\item{db_version}{A character vector specifying the version of the database to be used. This argument is ignored if \code{db_update} is \code{TRUE}. Default is "latest".}
+\item{db_version}{A character vector specifying the version of the database to be used.
+This argument is ignored if \code{db_update} is \code{TRUE}.
+Default is "latest".}
 
-\item{db_combine}{A logical value indicating whether to combine multiple databases into one. If TRUE, all database specified by \code{db} will be combined as one named "Combined".}
+\item{db_combine}{A logical value indicating whether to combine multiple databases into one.
+If TRUE, all database specified by \code{db} will be combined as one named "Combined".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.}
+\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
 
-\item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database. The first column should contain the term IDs, and the second column should contain the gene IDs.}
+\item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
+The first column should contain the term IDs, and the second column should contain the gene IDs.}
 
-\item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database. The first column should contain the term IDs, and the second column should contain the corresponding term names.}
+\item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database.
+The first column should contain the term IDs, and the second column should contain the corresponding term names.}
 
 \item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
 
@@ -82,17 +95,26 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{unlimited_db}{A character vector specifying the names of databases that do not have size restrictions.}
 
-\item{GO_simplify}{A logical value indicating whether to simplify the GO terms. If \code{TRUE}, additional results with simplified GO terms will be returned.}
+\item{GO_simplify}{A logical value indicating whether to simplify the GO terms.
+If \code{TRUE}, additional results with simplified GO terms will be returned.}
 
-\item{GO_simplify_cutoff}{A character vector specifying the filter condition for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.}
+\item{GO_simplify_cutoff}{A character vector specifying the filter condition for simplification of GO terms.
+This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{simplify_method}{A character vector specifying the method to be used for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.}
+\item{simplify_method}{A character vector specifying the method to be used for simplification of GO terms.
+This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{simplify_similarityCutoff}{A numeric value specifying the similarity cutoff for simplification of GO terms. This argument is only used if \code{GO_simplify} is \code{TRUE}.}
+\item{simplify_similarityCutoff}{A numeric value specifying the similarity cutoff for simplification of GO terms.
+This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{BPPARAM}{A BiocParallelParam object specifying the parallel back-end to be used for parallel computation. Defaults to BiocParallel::bpparam().}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
-\item{seed}{The random seed for reproducibility. Defaults to 11.}
+\item{verbose}{Whether to print progress messages.
+Default is \code{TRUE}.}
+
+\item{seed}{The random seed for reproducibility.
+Defaults to \code{11}.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -101,11 +123,11 @@ If input is a geneID vector with or without geneID_groups, return the enrichment
 
 Enrichment result is a list with the following component:
 \itemize{
- \item \code{enrichment}: A data.frame containing all enrichment results.
- \item \code{results}: A list of \code{enrichResult} objects from the DOSE package.
- \item \code{geneMap}: A data.frame containing the ID mapping table for input gene IDs.
- \item \code{input}: A data.frame containing the input gene IDs and gene ID groups.
- \item \code{DE_threshold}: A specific threshold for differential expression analysis (only returned if input is a Seurat object).
+\item \code{enrichment}: A data.frame containing all enrichment results.
+\item \code{results}: A list of \code{enrichResult} objects from the DOSE package.
+\item \code{geneMap}: A data.frame containing the ID mapping table for input gene IDs.
+\item \code{input}: A data.frame containing the input gene IDs and gene ID groups.
+\item \code{DE_threshold}: A specific threshold for differential expression analysis (only returned if input is a Seurat object).
 }
 }
 \description{
