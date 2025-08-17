@@ -1,5 +1,11 @@
 # scop
 
+# scop 0.2.2
+
+* **func**: Import!!! Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
+
+* **bugs**: Fix bugs in `RunSingleR()`.
+
 # scop 0.2.0
 
 * **func**: Added `RemovePackages()` function for easy remove Python packages.
