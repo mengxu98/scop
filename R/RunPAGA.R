@@ -6,9 +6,9 @@
 #'
 #' @md
 #' @param srt A Seurat object.
-#' @param assay_x Assay to convert as the main data matrix (`X`) in the anndata object.
+#' @param assay_x Assay to convert in the anndata object.
 #' @param layer_x Layer name for `assay_x` in the Seurat object.
-#' @param assay_y Assays to convert as layers in the anndata object.
+#' @param assay_y Assay to convert in the anndata object.
 #' @param layer_y Layer names for the `assay_y` in the Seurat object.
 #' @param adata An anndata object.
 #' @param group_by Variable to use for grouping cells in the Seurat object.
@@ -52,7 +52,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
 #'   srt = pancreas_sub,
@@ -66,7 +66,9 @@
 #'   group.by = "SubCellType",
 #'   reduction = "draw_graph_fr"
 #' )
+#'
 #' PAGAPlot(pancreas_sub, reduction = "UMAP")
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -89,14 +91,15 @@
 #'   features = "dpt_pseudotime",
 #'   reduction = "PAGAUMAP2D"
 #' )
+#'
 #' PAGAPlot(pancreas_sub, reduction = "PAGAUMAP2D")
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "PAGAUMAP2D",
 #'   paga = pancreas_sub@misc$paga
 #' )
-#' }
 RunPAGA <- function(
     srt = NULL,
     assay_x = "RNA",
@@ -130,7 +133,6 @@ RunPAGA <- function(
     dirpath = "./",
     fileprefix = "",
     return_seurat = !is.null(srt)) {
-  check_python("scanpy")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "One of {.arg srt} or {.arg adata} must be provided",
@@ -149,22 +151,13 @@ RunPAGA <- function(
     } else {
       linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
     }
-    if (!linear_reduction %in% names(srt@reductions)) {
-      log_message(
-        "{.arg linear_reduction} is not in the srt reduction names",
-        message_type = "error"
-      )
-    }
 
     if (is.null(nonlinear_reduction)) {
       nonlinear_reduction <- DefaultReduction(srt)
     } else {
-      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
-    }
-    if (!nonlinear_reduction %in% names(srt@reductions)) {
-      log_message(
-        "{.arg nonlinear_reduction} is not in the srt reduction names",
-        message_type = "error"
+      nonlinear_reduction <- DefaultReduction(
+        srt,
+        pattern = nonlinear_reduction
       )
     }
   }
@@ -232,10 +225,10 @@ RunPAGA <- function(
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  log_message("Running PAGA analysis...")
+  log_message("Running {.pkg PAGA} analysis...")
   adata <- do.call(scop_analysis$PAGA, args)
   log_message(
-    "PAGA analysis completed",
+    "{.pkg PAGA} analysis completed",
     message_type = "success"
   )
 
