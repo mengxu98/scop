@@ -25,7 +25,6 @@ CellScoring(
   classification = TRUE,
   name = "",
   new_assay = FALSE,
-  BPPARAM = BiocParallel::bpparam(),
   seed = 11,
   cores = 1,
   verbose = TRUE,
@@ -43,7 +42,8 @@ CellScoring(
 
 \item{split.by}{A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Defaults to NULL.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument. This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
+\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{species}{A character vector specifying the species for which the analysis is performed.}
 
@@ -51,11 +51,16 @@ CellScoring(
 
 \item{termnames}{A vector of term names to be used from the database. Defaults to NULL, in which case all features from the database are used.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated. If set to FALSE, the function will attempt to load the cached databases instead. Default is FALSE.}
+\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
+Default is FALSE.}
 
-\item{db_version}{A character vector specifying the version of the database to be used. This argument is ignored if \code{db_update} is \code{TRUE}. Default is "latest".}
+\item{db_version}{A character vector specifying the version of the database to be used.
+This argument is ignored if \code{db_update} is \code{TRUE}.
+Default is "latest".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species. The default value is TRUE.}
+\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
@@ -73,13 +78,13 @@ CellScoring(
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Defaults to FALSE.}
 
-\item{BPPARAM}{The BiocParallel parameter object. Defaults to \link[BiocParallel:register]{BiocParallel::bpparam}.}
-
 \item{seed}{The random seed for reproducibility. Defaults to 11.}
 
-\item{cores}{The number of cores to use for \link[thisutils:parallelize_fun]{thisutils::parallelize_fun}. Defaults to 1.}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
-\item{verbose}{Whether to print verbose output. Defaults to TRUE.}
+\item{verbose}{Whether to print progress messages.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments to be passed to the scoring methods.}
 }
@@ -192,5 +197,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\link{PrepareDB}, \link{ListDB}
+\link{PrepareDB}, \link{ListDB}, \link{RunDynamicFeatures}
 }
