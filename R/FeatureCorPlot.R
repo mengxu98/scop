@@ -247,7 +247,7 @@ FeatureCorPlot <- function(
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- Matrix::as.matrix(srt@meta.data[, features_meta, drop = FALSE])
+    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
   } else {
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
@@ -268,7 +268,7 @@ FeatureCorPlot <- function(
   }
   if (!inherits(dat_exp, "dgCMatrix")) {
     dat_exp <- SeuratObject::as.sparse(
-      Matrix::as.matrix(dat_exp)
+      as_matrix(dat_exp)
     )
   }
   if (length(features) > 10 && isFALSE(force)) {

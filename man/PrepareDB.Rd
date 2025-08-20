@@ -28,26 +28,23 @@ PrepareDB(
 }
 \arguments{
 \item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Default is c("Homo_sapiens", "Mus_musculus").}
+Default is \code{c("Homo_sapiens", "Mus_musculus")}.}
 
 \item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
-"CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
-"TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
-"CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF").}
+Default is \code{c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF")}.}
 
 \item{db_IDtypes}{A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
-Default is c("symbol", "entrez_id", "ensembl_id").}
+Default is \code{c("symbol", "entrez_id", "ensembl_id")}.}
 
 \item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.}
+The default value is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
@@ -59,22 +56,22 @@ Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_m
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
 \item{custom_TERM2GENE}{A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{custom_TERM2NAME}{A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{custom_species}{A character vector specifying the species name to be used in a custom database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{custom_IDtype}{A character vector specifying the ID type to be used in a custom database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{custom_version}{A character vector specifying the version to be used in a custom database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{verbose}{A logical value indicating whether to print verbose messages.
-Default is TRUE.}
+Default is \code{TRUE}.}
 }
 \value{
 A list containing the prepared gene annotation databases:

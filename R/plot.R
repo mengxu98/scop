@@ -70,54 +70,12 @@ segements_df <- function(
   data
 }
 
-fc_matrix <- function(matrix) {
-  matrix / rowMeans(matrix)
-}
-
-zscore_matrix <- function(matrix, ...) {
-  Matrix::t(scale(Matrix::t(matrix), ...))
-}
-
-log2fc_matrix <- function(matrix) {
-  log2(matrix / rowMeans(matrix))
-}
-
-log1p_matrix <- function(matrix) {
-  log1p(matrix)
-}
-
-matrix_process <- function(
-    matrix,
-    method = c("raw", "zscore", "fc", "log2fc", "log1p"),
-    ...) {
-  if (is.function(method)) {
-    matrix_processed <- method(matrix, ...)
-  } else if (method == "raw") {
-    matrix_processed <- matrix
-  } else if (method == "fc") {
-    matrix_processed <- fc_matrix(matrix)
-  } else if (method == "zscore") {
-    matrix_processed <- zscore_matrix(matrix, ...)
-  } else if (method == "log2fc") {
-    matrix_processed <- log2fc_matrix(matrix)
-  } else if (method == "log1p") {
-    matrix_processed <- log1p_matrix(matrix)
-  }
-  if (!identical(dim(matrix_processed), dim(matrix))) {
-    log_message(
-      "The dimensions of the matrix are changed after processing",
-      message_type = "error"
-    )
-  }
-  return(matrix_processed)
-}
-
 extractgrobs <- function(vlnplots, x_nm, y_nm, x, y) {
   grobs <- vlnplots[paste0(x_nm[x], ":", y_nm[y])]
   if (length(grobs) == 1) {
     grobs <- grobs[[1]]
   }
-  return(grobs)
+  grobs
 }
 
 grid_draw <- function(groblist, x, y, width, height) {
@@ -193,7 +151,7 @@ cluster_within_group2 <- function(mat, factor) {
   stats::order.dendrogram(dend) <- unlist(
     order_list[stats::order.dendrogram(parent)]
   )
-  return(dend)
+  dend
 }
 
 heatmap_enrichment <- function(
@@ -593,7 +551,7 @@ heatmap_enrichment <- function(
       }
     }
   }
-  return(list(ha_right = ha_right, res = res))
+  list(ha_right = ha_right, res = res)
 }
 
 heatmap_rendersize <- function(
@@ -743,7 +701,7 @@ heatmap_rendersize <- function(
 
 standardise <- function(data) {
   data[] <- t(apply(data, 1, scale))
-  return(data)
+  data
 }
 
 mestimate <- function(data) {
@@ -753,7 +711,7 @@ mestimate <- function(data) {
     (1418 / N + 22.05) * D^(-2) +
     (12.33 / N + 0.243) *
       D^(-0.0406 * log(N) - 0.1134)
-  return(m.sj)
+  m.sj
 }
 
 adjustlayout <- function(
@@ -796,7 +754,7 @@ adjustlayout <- function(
   }
 
   for (i in seq_len(iter)) {
-    dist_matrix <- Matrix::as.matrix(
+    dist_matrix <- as_matrix(
       proxyC::dist(layout)
     )
     nearest_neighbors <- apply(

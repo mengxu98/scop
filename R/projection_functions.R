@@ -204,11 +204,11 @@ mapQuery <- function(
     )
   }
   Zq_corr <- symphony:::moe_correct_ref(
-    Zq = as.matrix(Z_pca_query),
-    Xq = as.matrix(Xq),
-    Rq = as.matrix(R_query),
-    Nr = as.matrix(ref_obj$cache[[1]]),
-    RrZtr = as.matrix(ref_obj$cache[[2]])
+    Zq = as_matrix(Z_pca_query),
+    Xq = as_matrix(Xq),
+    Rq = as_matrix(R_query),
+    Nr = as_matrix(ref_obj$cache[[1]]),
+    RrZtr = as_matrix(ref_obj$cache[[2]])
   )
   colnames(Z_pca_query) <- row.names(metadata_query)
   rownames(Z_pca_query) <- paste0("PC_", seq_len(nrow(Zq_corr)))

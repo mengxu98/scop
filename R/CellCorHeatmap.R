@@ -449,12 +449,12 @@ CellCorHeatmap <- function(
   )
   if (distance_metric %in% simil_methods) {
     simil_matrix <- Matrix::t(
-      Matrix::as.matrix(1 - distance_matrix)
+      as_matrix(1 - distance_matrix)
     )
     simil_name <- paste0(capitalize(distance_metric), " similarity")
   } else if (distance_metric %in% dist_methods) {
     simil_matrix <- Matrix::t(
-      Matrix::as.matrix(
+      as_matrix(
         1 - distance_matrix / max(distance_matrix, na.rm = TRUE)
       )
     )
