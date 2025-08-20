@@ -188,7 +188,6 @@ reference:
   - adata_to_srt
   - AnnotateFeatures
   - compute_velocity_on_grid
-  - download
   - drop_data
   - get_vars
   - GeneConvert
