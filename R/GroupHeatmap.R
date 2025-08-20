@@ -939,7 +939,7 @@ GroupHeatmap <- function(
   gene_unique <- features_unique[features %in% rownames(assay_use)]
   meta <- features[features %in% colnames(srt@meta.data)]
 
-  mat_raw <- Matrix::as.matrix(
+  mat_raw <- as_matrix(
     rbind(
       GetAssayData5(
         srt,

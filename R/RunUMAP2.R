@@ -99,7 +99,7 @@ RunUMAP2.Seurat <- function(
   }
   if (!is.null(x = features)) {
     assay <- assay %||% DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,
@@ -119,7 +119,7 @@ RunUMAP2.Seurat <- function(
       )
     }
   } else if (!is.null(x = dims)) {
-    data.use <- Matrix::as.matrix(Embeddings(object[[reduction]])[, dims])
+    data.use <- as_matrix(Embeddings(object[[reduction]])[, dims])
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(x = dims) < n.components) {
       log_message(
@@ -341,7 +341,7 @@ RunUMAP2.default <- function(
       } else {
         obs_sample <- 1:ncol(object)
       }
-      if (!isSymmetric(Matrix::as.matrix(object[obs_sample, obs_sample]))) {
+      if (!isSymmetric(as_matrix(object[obs_sample, obs_sample]))) {
         log_message(
           "Graph must be a symmetric matrix.",
           message_type = "error"
@@ -496,7 +496,7 @@ RunUMAP2.default <- function(
       } else {
         obs_sample <- 1:ncol(object)
       }
-      if (!isSymmetric(Matrix::as.matrix(object[obs_sample, obs_sample]))) {
+      if (!isSymmetric(as_matrix(object[obs_sample, obs_sample]))) {
         log_message(
           "Graph must be a symmetric matrix.",
           message_type = "error"
@@ -682,12 +682,12 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      match_k <- Matrix::t(Matrix::as.matrix(apply(
+      match_k <- Matrix::t(as_matrix(apply(
         object,
         2,
         function(x) order(x, decreasing = TRUE)[1:n.neighbors]
       )))
-      match_k_connectivity <- Matrix::t(Matrix::as.matrix(apply(
+      match_k_connectivity <- Matrix::t(as_matrix(apply(
         object,
         2,
         function(x) x[order(x, decreasing = TRUE)[1:n.neighbors]]

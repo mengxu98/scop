@@ -192,13 +192,13 @@ RunGLMPCA.default <- function(
     ...) {
   check_r("glmpca")
   if (inherits(object, "dgCMatrix")) {
-    object <- Matrix::as.matrix(object)
+    object <- as_matrix(object)
   }
   fam <- match.arg(fam)
   glmpca_results <- glmpca::glmpca(Y = object, L = L, fam = fam, ...)
   glmpca_dimnames <- paste0(reduction.key, seq_len(L))
-  factors <- Matrix::as.matrix(glmpca_results$factors)
-  loadings <- Matrix::as.matrix(glmpca_results$loadings)
+  factors <- as_matrix(glmpca_results$factors)
+  loadings <- as_matrix(glmpca_results$loadings)
   colnames(x = factors) <- glmpca_dimnames
   colnames(x = loadings) <- glmpca_dimnames
   factors_l2_norm <- sqrt(Matrix::colSums(factors^2))

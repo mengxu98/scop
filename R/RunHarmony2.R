@@ -86,7 +86,7 @@ RunHarmony2.Seurat <- function(
     ...
   )
 
-  harmonyEmbed <- Matrix::t(Matrix::as.matrix(harmonyObject$Z_corr))
+  harmonyEmbed <- Matrix::t(as_matrix(harmonyObject$Z_corr))
   rownames(harmonyEmbed) <- row.names(data.use)
   colnames(harmonyEmbed) <- paste0(
     reduction.name,

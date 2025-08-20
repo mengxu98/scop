@@ -245,16 +245,16 @@ DynamicPlot <- function(
         ]
       )
     }
-    raw_matrix_list[[l]] <- Matrix::as.matrix(
+    raw_matrix_list[[l]] <- as_matrix(
       raw_matrix[, features, drop = FALSE]
     )
-    fitted_matrix_list[[l]] <- Matrix::as.matrix(
+    fitted_matrix_list[[l]] <- as_matrix(
       fitted_matrix[, features, drop = FALSE]
     )
-    upr_matrix_list[[l]] <- Matrix::as.matrix(
+    upr_matrix_list[[l]] <- as_matrix(
       upr_matrix[, features, drop = FALSE]
     )
-    lwr_matrix_list[[l]] <- Matrix::as.matrix(
+    lwr_matrix_list[[l]] <- as_matrix(
       lwr_matrix[, features, drop = FALSE]
     )
     cell_union <- unique(c(cell_union, rownames(raw_matrix)))

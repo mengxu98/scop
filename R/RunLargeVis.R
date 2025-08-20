@@ -96,7 +96,7 @@ RunLargeVis.Seurat <- function(
   }
   if (!is.null(x = features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,

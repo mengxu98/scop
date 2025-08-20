@@ -216,7 +216,7 @@ RunNMF.default <- function(
   if (nmf.method == "NMF") {
     check_r("NMF")
     nmf_results <- NMF::nmf(
-      x = Matrix::as.matrix(
+      x = as_matrix(
         Matrix::t(object)
       ),
       rank = nbes

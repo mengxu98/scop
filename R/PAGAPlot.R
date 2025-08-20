@@ -277,7 +277,7 @@ PAGAPlot <- function(
 
   out <- GraphPlot(
     node = dat,
-    edge = Matrix::as.matrix(connectivities),
+    edge = as_matrix(connectivities),
     node_coord = paste0(reduction_key, dims),
     node_group = groups,
     node_palette = node_palette,

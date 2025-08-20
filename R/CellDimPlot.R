@@ -1006,7 +1006,7 @@ CellDimPlot <- function(
       }
 
       if (!is.null(graph)) {
-        net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
+        net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
         net_mat[net_mat == 0] <- NA
         net_mat[upper.tri(net_mat)] <- NA
         net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
