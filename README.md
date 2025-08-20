@@ -18,9 +18,11 @@ The [scop](https://github.com/mengxu98/scop) package includes the following faci
 -   Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, [PAGA](https://github.com/theislab/paga), [RNA velocity](https://github.com/theislab/scvelo), [Palantir](https://github.com/dpeerlab/Palantir), [Monocle2](http://cole-trapnell-lab.github.io/monocle-release), [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
 -   Multiple methods for automatic annotation of single-cell data and methods for projection between single-cell datasets.
 -   High-quality data visualization methods.
--   Fast deployment of single-cell data into SCExplorer, a [shiny app](https://shiny.rstudio.com/) that provides an interactive visualization interface.
+-   Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 
-The functions in the scop package are all developed around the [Seurat object](https://github.com/mojaveazure/seurat-object) and are compatible with other Seurat functions.
+The functions in the scop package are all developed around the [Seurat](https://github.com/satijalab/seurat-object) object and are compatible with other Seurat functions.
+
+![Alt](https://repobeats.axiom.co/api/embed/50b02e5560fcd3026225693045281f750fd1b70e.svg "Repobeats analytics image")
 
 ## Quick Start
 
