@@ -38,7 +38,7 @@ The list contains the annotation data for each specified annotation source."></h
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Prepare the gene annotation databases</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PrepareDB.R" class="external-link"><code>R/PrepareDB.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/PrepareDB.R" class="external-link"><code>R/PrepareDB.R</code></a></small>
       <div class="d-none name"><code>PrepareDB.Rd</code></div>
     </div>
 
@@ -79,36 +79,33 @@ The list contains the annotation data for each specified annotation source.</p>
 
 <dl><dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
 <dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
-Default is c("Homo_sapiens", "Mus_musculus").</p></dd>
+Default is <code>c("Homo_sapiens", "Mus_musculus")</code>.</p></dd>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
 <dd><p>A character vector specifying the annotation sources to be included in the gene annotation databases.
-Default is c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
-"CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
-"TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
-"CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF").</p></dd>
+Default is <code>c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF")</code>.</p></dd>
 
 
 <dt id="arg-db-idtypes">db_IDtypes<a class="anchor" aria-label="anchor" href="#arg-db-idtypes"></a></dt>
 <dd><p>A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
-Default is c("symbol", "entrez_id", "ensembl_id").</p></dd>
+Default is <code>c("symbol", "entrez_id", "ensembl_id")</code>.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
 <dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is "latest".</p></dd>
+Default is <code>"latest"</code>.</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
 <dd><p>A logical value indicating whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.</p></dd>
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
 <dd><p>A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.</p></dd>
+The default value is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
@@ -130,32 +127,32 @@ Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_m
 
 <dt id="arg-custom-term-gene">custom_TERM2GENE<a class="anchor" aria-label="anchor" href="#arg-custom-term-gene"></a></dt>
 <dd><p>A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
-Default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-custom-term-name">custom_TERM2NAME<a class="anchor" aria-label="anchor" href="#arg-custom-term-name"></a></dt>
 <dd><p>A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
-Default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-custom-species">custom_species<a class="anchor" aria-label="anchor" href="#arg-custom-species"></a></dt>
 <dd><p>A character vector specifying the species name to be used in a custom database.
-Default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-custom-idtype">custom_IDtype<a class="anchor" aria-label="anchor" href="#arg-custom-idtype"></a></dt>
 <dd><p>A character vector specifying the ID type to be used in a custom database.
-Default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-custom-version">custom_version<a class="anchor" aria-label="anchor" href="#arg-custom-version"></a></dt>
 <dd><p>A character vector specifying the version to be used in a custom database.
-Default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>A logical value indicating whether to print verbose messages.
-Default is TRUE.</p></dd>
+Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

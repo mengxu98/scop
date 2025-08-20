@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Gene ID conversion function using biomart</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/GeneConvert.R" class="external-link"><code>R/GeneConvert.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/GeneConvert.R" class="external-link"><code>R/GeneConvert.R</code></a></small>
       <div class="d-none name"><code>GeneConvert.Rd</code></div>
     </div>
 
@@ -142,7 +142,7 @@ Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_m
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">homologs_counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">homologs_counts</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">homologs_counts</span> <span class="op">&lt;-</span> <span class="fu">methods</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">Matrix</span><span class="fu">::</span><span class="fu">as.matrix</span><span class="op">(</span><span class="va">homologs_counts</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/as_matrix.html" class="external-link">as_matrix</a></span><span class="op">(</span><span class="va">homologs_counts</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"dgCMatrix"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">homologs_counts</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
