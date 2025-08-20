@@ -270,8 +270,8 @@ orderCells <- function(
       num_paths <- 1
     }
     adjusted_s <- Matrix::t(cds@reducedDimS)
-    dp <- Matrix::as.matrix(stats::dist(adjusted_s))
-    monocle::cellPairwiseDistances(cds) <- Matrix::as.matrix(stats::dist(adjusted_s))
+    dp <- as_matrix(stats::dist(adjusted_s))
+    monocle::cellPairwiseDistances(cds) <- as_matrix(stats::dist(adjusted_s))
     gp <- igraph::graph.adjacency(dp, mode = "undirected", weighted = TRUE)
     dp_mst <- igraph::minimum.spanning.tree(gp)
     monocle::minSpanningTree(cds) <- dp_mst
@@ -403,7 +403,7 @@ project2MST <- function(cds, Projection_Method) {
     "DDRTree"
   ]]$pr_graph_cell_proj_closest_vertex
   closest_vertex_names <- colnames(Y)[closest_vertex]
-  closest_vertex_df <- Matrix::as.matrix(closest_vertex)
+  closest_vertex_df <- as_matrix(closest_vertex)
   row.names(closest_vertex_df) <- row.names(closest_vertex)
   tip_leaves <- names(which(igraph::degree(dp_mst) == 1))
   if (!is.function(Projection_Method)) {
@@ -437,13 +437,13 @@ project2MST <- function(cds, Projection_Method) {
         distance <- c(distance, stats::dist(rbind(Z_i, tmp)))
       }
       if (!inherits(projection, "matrix")) {
-        projection <- Matrix::as.matrix(projection)
+        projection <- as_matrix(projection)
       }
       P[, i] <- projection[which(distance == min(distance))[1], ]
     }
   }
   colnames(P) <- colnames(Z)
-  dp <- Matrix::as.matrix(stats::dist(Matrix::t(P)))
+  dp <- as_matrix(stats::dist(Matrix::t(P)))
   min_dist <- min(dp[dp != 0])
   dp <- dp + min_dist
   diag(dp) <- 0

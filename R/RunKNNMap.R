@@ -331,38 +331,38 @@ RunKNNMap <- function(
       )
     }
     if (k == 1) {
-      match_k <- as.matrix(apply(
+      match_k <- as_matrix(apply(
         d,
         2,
         function(x) order(x, decreasing = FALSE)[1]
       ))
-      match_k_cell <- as.matrix(apply(
+      match_k_cell <- as_matrix(apply(
         d,
         2,
         function(x) names(x)[order(x, decreasing = FALSE)[1]]
       ))
-      match_k_distance <- as.matrix(apply(
+      match_k_distance <- as_matrix(apply(
         d,
         2,
         function(x) x[order(x, decreasing = FALSE)[1]]
       ))
     } else {
       match_k <- Matrix::t(
-        Matrix::as.matrix(apply(
+        as_matrix(apply(
           d,
           2,
           function(x) order(x, decreasing = FALSE)[1:k]
         ))
       )
       match_k_cell <- Matrix::t(
-        Matrix::as.matrix(apply(
+        as_matrix(apply(
           d,
           2,
           function(x) names(x)[order(x, decreasing = FALSE)[1:k]]
         ))
       )
       match_k_distance <- Matrix::t(
-        Matrix::as.matrix(apply(
+        as_matrix(apply(
           d,
           2,
           function(x) x[order(x, decreasing = FALSE)[1:k]]
@@ -399,7 +399,7 @@ RunKNNMap <- function(
     rownames(refumap) <- refumap[, 1]
     refumap[, 1] <- NULL
     colnames(refumap) <- paste0("Dim_", seq_len(ncol(refumap)))
-    refumap <- as.matrix(refumap)
+    refumap <- as_matrix(refumap)
     srt_query[["ref.embeddings"]] <- SeuratObject::CreateDimReducObject(
       embeddings = refumap,
       key = "Dim_",
@@ -438,7 +438,7 @@ RunKNNMap <- function(
         }
       ) %>%
         dplyr::bind_rows()
-      match_prob <- Matrix::as.matrix(match_prob)
+      match_prob <- as_matrix(match_prob)
       rownames(match_prob) <- names(match_freq)
       match_best <- apply(
         match_prob,
