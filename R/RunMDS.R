@@ -184,7 +184,7 @@ RunMDS.default <- function(
   }
   nmds <- min(nmds, nrow(x = object) - 1)
   x <- Matrix::t(
-    Matrix::as.matrix(object)
+    as_matrix(object)
   )
   cell_dist <- stats::as.dist(
     proxyC::dist(x = x, method = dist.method)
