@@ -48,8 +48,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
+#' PrepareEnv()
 #' pancreas_sub <- RunSCVELO(
 #'   srt = pancreas_sub,
 #'   group_by = "SubCellType",
@@ -61,27 +61,32 @@
 #'   pancreas_sub,
 #'   reduction = "UMAP"
 #' )
+#'
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
 #'   group_by = "SubCellType"
 #' )
+#'
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
 #'   plot_type = "grid"
 #' )
+#'
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
 #'   plot_type = "stream"
 #' )
+#'
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
 #'   plot_type = "stream",
 #'   streamline_color = "black"
 #' )
+#'
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
@@ -89,7 +94,6 @@
 #'   streamline_color = "black",
 #'   arrow_color = "red"
 #' )
-#' }
 VelocityPlot <- function(
     srt,
     reduction,
@@ -142,14 +146,14 @@ VelocityPlot <- function(
 
   if (!reduction %in% names(srt@reductions)) {
     log_message(
-      reduction, " is not in the srt reduction names.",
+      "{.val {reduction}} is not in the srt reduction names",
       message_type = "error"
     )
   }
   v_reduction <- paste0(velocity, "_", reduction)
   if (!v_reduction %in% names(srt@reductions)) {
     log_message(
-      "Cannot find the velocity embedding ", v_reduction, ".",
+      "Cannot find the velocity embedding {.val {v_reduction}}",
       message_type = "error"
     )
   }
@@ -420,12 +424,14 @@ VelocityPlot <- function(
     }
   }
 
-  lab_layer <- list(labs(
-    title = title,
-    subtitle = subtitle,
-    x = xlab,
-    y = ylab
-  ))
+  lab_layer <- list(
+    labs(
+      title = title,
+      subtitle = subtitle,
+      x = xlab,
+      y = ylab
+    )
+  )
   theme_layer <- list(
     do.call(theme_use, theme_args) +
       theme(
@@ -498,7 +504,7 @@ compute_velocity_on_grid <- function(
     gr <- seq(m, M, length.out = ceiling(50 * density))
     grs <- c(grs, list(gr))
   }
-  x_grid <- Matrix::as.matrix(expand.grid(grs))
+  x_grid <- as_matrix(expand.grid(grs))
 
   d <- proxyC::dist(
     x = SeuratObject::as.sparse(x_emb),
@@ -506,12 +512,12 @@ compute_velocity_on_grid <- function(
     method = "euclidean",
     use_nan = TRUE
   )
-  neighbors <- Matrix::t(Matrix::as.matrix(apply(
+  neighbors <- Matrix::t(as_matrix(apply(
     d,
     2,
     function(x) order(x, decreasing = FALSE)[1:n_neighbors]
   )))
-  dists <- Matrix::t(Matrix::as.matrix(apply(
+  dists <- Matrix::t(as_matrix(apply(
     d,
     2,
     function(x) x[order(x, decreasing = FALSE)[1:n_neighbors]]

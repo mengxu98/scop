@@ -60,7 +60,7 @@ PerformDE <- function(
     c(cells.1, cells.2),
     drop = FALSE
   ]
-  data.use <- Matrix::as.matrix(data.use)
+  data.use <- as_matrix(data.use)
 
   de.results <- switch(
     EXPR = test.use,

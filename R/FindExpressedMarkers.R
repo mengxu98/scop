@@ -88,7 +88,7 @@ FindExpressedMarkers <- function(
   )
 
   data.use <- data.use[Matrix::rowSums(data.use) > 0, ]
-  data.use <- Matrix::as.matrix(data.use)
+  data.use <- as_matrix(data.use)
   data.use[data.use <= min.expression] <- NA
   counts <- switch(
     EXPR = data_layer,

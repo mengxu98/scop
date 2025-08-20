@@ -153,7 +153,7 @@ db_Scrublet <- function(
   check_python("scrublet")
   scr <- reticulate::import("scrublet")
   raw_counts <- Matrix::t(
-    Matrix::as.matrix(
+    as_matrix(
       GetAssayData5(
         object = srt,
         assay = assay,

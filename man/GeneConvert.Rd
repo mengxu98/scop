@@ -83,7 +83,7 @@ homologs_counts <- stats::aggregate(
 )
 rownames(homologs_counts) <- homologs_counts[, 1]
 homologs_counts <- methods::as(
-  Matrix::as.matrix(homologs_counts[, -1]),
+  thisutils::as_matrix(homologs_counts[, -1]),
   "dgCMatrix"
 )
 homologs_counts[1:5, 1:5]

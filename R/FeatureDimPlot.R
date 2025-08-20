@@ -575,7 +575,7 @@ FeatureDimPlot <- function(
   if (length(features_gene) > 0) {
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           GetAssayData5(
             srt,
             assay = assay,
@@ -585,7 +585,7 @@ FeatureDimPlot <- function(
       )
     } else {
       dat_gene <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           GetAssayData5(
             srt,
             assay = assay,
@@ -598,12 +598,12 @@ FeatureDimPlot <- function(
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- Matrix::as.matrix(srt@meta.data[, features_meta, drop = FALSE])
+    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
   } else {
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_embedding) > 0) {
-    dat_embedding <- Matrix::as.matrix(
+    dat_embedding <- as_matrix(
       SeuratObject::FetchData(
         srt,
         vars = features_embedding
@@ -612,7 +612,7 @@ FeatureDimPlot <- function(
   } else {
     dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
-  dat_exp <- Matrix::as.matrix(do.call(
+  dat_exp <- as_matrix(do.call(
     cbind,
     list(dat_gene, dat_meta, dat_embedding)
   ))
@@ -871,7 +871,7 @@ FeatureDimPlot <- function(
           cells.highlight_use <- rownames(dat)[dat[["color_blend"]] != bg_color]
         }
         if (!is.null(graph)) {
-          net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
+          net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
           net_mat[net_mat == 0] <- NA
           net_mat[upper.tri(net_mat)] <- NA
           net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
@@ -1376,7 +1376,7 @@ FeatureDimPlot <- function(
               )
             }
             if (keep_scale == "all") {
-              all_values <- Matrix::as.matrix(dat_exp[, features])
+              all_values <- as_matrix(dat_exp[, features])
               colors_value <- seq(
                 lower_cutoff %||%
                   stats::quantile(
@@ -1401,7 +1401,7 @@ FeatureDimPlot <- function(
           "value"
         ] <- min(colors_value, na.rm = TRUE)
         if (!is.null(graph)) {
-          net_mat <- Matrix::as.matrix(graph)[rownames(dat), rownames(dat)]
+          net_mat <- as_matrix(graph)[rownames(dat), rownames(dat)]
           net_mat[net_mat == 0] <- NA
           net_mat[upper.tri(net_mat)] <- NA
           net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
@@ -1982,7 +1982,7 @@ FeatureDimPlot3D <- function(
   if (length(features_gene) > 0) {
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           GetAssayData5(
             srt,
             assay = assay,
@@ -1992,7 +1992,7 @@ FeatureDimPlot3D <- function(
       )
     } else {
       dat_gene <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           GetAssayData5(
             srt,
             assay = assay,
@@ -2005,12 +2005,12 @@ FeatureDimPlot3D <- function(
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- Matrix::as.matrix(srt@meta.data[, features_meta, drop = FALSE])
+    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
   } else {
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_embedding) > 0) {
-    dat_embedding <- Matrix::as.matrix(
+    dat_embedding <- as_matrix(
       SeuratObject::FetchData(
         srt,
         vars = features_embedding
@@ -2019,7 +2019,7 @@ FeatureDimPlot3D <- function(
   } else {
     dat_embedding <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
-  dat_exp <- Matrix::as.matrix(do.call(
+  dat_exp <- as_matrix(do.call(
     cbind,
     list(dat_gene, dat_meta, dat_embedding)
   ))

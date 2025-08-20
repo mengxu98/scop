@@ -334,7 +334,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(obsm, "matrix")) {
-        obsm <- Matrix::as.matrix(obsm)
+        obsm <- as_matrix(obsm)
       }
       colnames(obsm) <- paste0(k_clean, "_", seq_len(ncol(obsm)))
       rownames(obsm) <- py_to_r2(adata$obs_names$values)
@@ -397,7 +397,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(varm, "matrix")) {
-        varm <- Matrix::as.matrix(varm)
+        varm <- as_matrix(varm)
       }
       colnames(varm) <- paste0(py_to_r2(k), "_", seq_len(ncol(varm)))
       rownames(varm) <- py_to_r2(adata$var_names$values)
@@ -422,7 +422,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(varp, "matrix")) {
-        varp <- Matrix::as.matrix(varp)
+        varp <- as_matrix(varp)
       }
       colnames(varp) <- py_to_r2(adata$var_names$values)
       rownames(varp) <- py_to_r2(adata$var_names$values)
