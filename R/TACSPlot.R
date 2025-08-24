@@ -496,7 +496,7 @@ GetSimilarFeatures <- function(
   gene_vars <- squares / ncol(data_use) - gene_averages^2
   gene_sds <- sqrt(gene_vars)
 
-  query <- as.matrix(Seurat::FetchData(srt, features))
+  query <- as_matrix(Seurat::FetchData(srt, features))
   covariances_all <- data_use %*% query - gene_averages %o% colSums(query)
   correlations_all <- Matrix::Diagonal(x = 1 / gene_sds) %*% covariances_all
 
@@ -506,8 +506,8 @@ GetSimilarFeatures <- function(
     correlation <- switch(
       EXPR = aggregator,
       "sum" = Matrix::rowSums(correlations_all),
-      "min" = apply(as.matrix(correlations_all), 1, min),
-      "max" = apply(as.matrix(correlations_all), 1, max),
+      "min" = apply(as_matrix(correlations_all), 1, min),
+      "max" = apply(as_matrix(correlations_all), 1, max),
       "mean" = Matrix::rowMeans(correlations_all),
       log_message(
         "{.arg aggregator} must be one of: 'sum', 'min', 'max', 'mean'",

@@ -289,7 +289,7 @@
 #'   object = pancreas_sub,
 #'   layer = "scale.data",
 #'   assay = "RNA",
-#'   new.data = Matrix::as.matrix(data / rowMeans(data))
+#'   new.data = thisutils::as_matrix(data / rowMeans(data))
 #' )
 #' FeatureStatPlot(
 #'   pancreas_sub,

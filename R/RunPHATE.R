@@ -29,7 +29,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPHATE(
 #'   object = pancreas_sub,
@@ -40,7 +39,6 @@
 #'   group.by = "CellType",
 #'   reduction = "phate"
 #' )
-#' }
 RunPHATE <- function(object, ...) {
   UseMethod(generic = "RunPHATE", object = object)
 }
@@ -81,7 +79,7 @@ RunPHATE.Seurat <- function(
   }
   if (!is.null(x = features)) {
     assay <- assay %||% DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,

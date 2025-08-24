@@ -55,7 +55,7 @@ RunDM.Seurat <- function(
     ...) {
   if (!is.null(x = features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,
@@ -132,7 +132,7 @@ RunDM.default <- function(
   }
 
   dm.results <- destiny::DiffusionMap(
-    data = Matrix::as.matrix(object),
+    data = as_matrix(object),
     n_eigs = ndcs,
     sigma = sigma,
     k = k,

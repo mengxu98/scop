@@ -31,7 +31,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunLargeVis(
 #'   object = pancreas_sub,
@@ -42,7 +41,6 @@
 #'   group.by = "CellType",
 #'   reduction = "largevis"
 #' )
-#' }
 RunLargeVis <- function(object, ...) {
   UseMethod(generic = "RunLargeVis", object = object)
 }
@@ -96,7 +94,7 @@ RunLargeVis.Seurat <- function(
   }
   if (!is.null(x = features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,

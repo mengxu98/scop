@@ -1,5 +1,6 @@
-#' Single-cell reference mapping with Symphony method
+#' @title Single-cell reference mapping with Symphony method
 #'
+#' @md
 #' @inheritParams RunKNNMap
 #' @param ref_pca A character string specifying the name of the PCA reduction in the reference object to use for calculating the distance metric.
 #' @param ref_harmony A character string specifying the name of the Harmony reduction in the reference object to use for calculating the distance metric.
@@ -56,7 +57,7 @@ RunSymphonyMap <- function(
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
         log_message(
-          "ref_group must be one of the column names in the meta.data",
+          "{.arg ref_group} must be one of the column names in the meta.data",
           message_type = "error"
         )
       } else {
@@ -64,7 +65,7 @@ RunSymphonyMap <- function(
       }
     } else {
       log_message(
-        "Length of ref_group must be one or length of srt_ref.",
+        "Length of {.arg ref_group} must be one or length of {.arg srt_ref}.",
         message_type = "error"
       )
     }
@@ -80,11 +81,11 @@ RunSymphonyMap <- function(
     )[1]
     if (length(ref_pca) == 0) {
       log_message(
-        "Cannot find PCA reduction in the srt_ref",
+        "Cannot find PCA reduction in the {.arg srt_ref}",
         message_type = "error"
       )
     } else {
-      log_message("Set ref_pca to ", ref_pca)
+      log_message("Set ref_pca to {.val {ref_pca}}")
     }
   }
   if (is.null(ref_harmony)) {
@@ -97,11 +98,11 @@ RunSymphonyMap <- function(
     )[1]
     if (length(ref_harmony) == 0) {
       log_message(
-        "Cannot find Harmony reduction in the srt_ref",
+        "Cannot find Harmony reduction in the {.arg srt_ref}",
         message_type = "error"
       )
     } else {
-      log_message("Set ref_harmony to ", ref_harmony)
+      log_message("Set ref_harmony to {.val {ref_harmony}}")
     }
   }
   if (is.null(ref_umap)) {
@@ -114,11 +115,11 @@ RunSymphonyMap <- function(
     )[1]
     if (length(ref_umap) == 0) {
       log_message(
-        "Cannot find UMAP reduction in the srt_ref",
+        "Cannot find UMAP reduction in the {.arg srt_ref}",
         message_type = "error"
       )
     } else {
-      log_message("Set ref_umap to ", ref_umap)
+      log_message("Set ref_umap to {.val {ref_umap}}")
     }
   }
   ref_pca_dims <- srt_ref[[ref_harmony]]@misc$reduction_dims
@@ -151,7 +152,7 @@ RunSymphonyMap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected srt_query data type: ", status_query)
+  log_message("Detected srt_query data type: {.val {status_query}}")
   status_ref <- check_data_type(
     data = GetAssayData5(
       srt_ref,
@@ -159,13 +160,13 @@ RunSymphonyMap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected srt_ref data type: {.val {status_ref}}")
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")
   ) {
     log_message(
-      "Data type is unknown or different between srt_query and srt_ref.",
+      "Data type is unknown or different between {.arg srt_query} and {.arg srt_ref}.",
       message_type = "warning"
     )
   }
