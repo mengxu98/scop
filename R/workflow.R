@@ -1,4 +1,4 @@
-#' Attempt to recover raw counts from the normalized matrix.
+#' @title Attempt to recover raw counts from the normalized matrix
 #'
 #' @param srt A Seurat object.
 #' @param assay Name of assay to recover counts.
@@ -152,7 +152,7 @@ RecoverCounts <- function(
   return(srt)
 }
 
-#' Reorder idents by the gene expression
+#' @title Reorder idents by the gene expression
 #'
 #' @param srt A Seurat object.
 #' @param features Features used to reorder idents.
@@ -314,7 +314,7 @@ srt_reorder <- function(
   return(srt)
 }
 
-#' Append a Seurat object to another
+#' @title Append a Seurat object to another
 #'
 #' @param srt_raw A Seurat object to be appended.
 #' @param srt_append New Seurat object to append.
@@ -450,12 +450,16 @@ srt_append <- function(
   return(srt_raw)
 }
 
-#' Find the default reduction name in a Seurat object.
+#' @title Find the default reduction name in a Seurat object
 #'
 #' @param srt A Seurat object.
 #' @param pattern Character string containing a regular expression to search for.
 #' @param min_dim Minimum dimension threshold.
 #' @param max_distance Maximum distance allowed for a match.
+#'
+#' @return Default reduction name.
+#'
+#' @export
 #'
 #' @examples
 #' data(pancreas_sub)
@@ -467,10 +471,6 @@ srt_append <- function(
 #'
 #' # Searches for approximate matches to "pc"
 #' DefaultReduction(pancreas_sub, pattern = "pc")
-#'
-#' @return Default reduction name.
-#'
-#' @export
 DefaultReduction <- function(
     srt,
     pattern = NULL,
