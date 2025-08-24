@@ -2,14 +2,19 @@
 % Please edit documentation in R/PrepareDB.R
 \name{ListDB}
 \alias{ListDB}
-\title{ListDB}
+\title{List cached databases}
 \usage{
 ListDB(species = "Homo_sapiens", db = NULL)
 }
 \arguments{
-\item{species}{The species for which to retrieve database information. Default is "Homo_sapiens".}
+\item{species}{The species for which to retrieve database information.
+Default is \code{"Homo_sapiens"}.}
 
-\item{db}{The pattern to match against the database names. Default is NULL, which matches all databases.}
+\item{db}{The pattern to match against the database names.
+Default is \code{NULL}, which matches all databases.}
+}
+\value{
+A data frame containing information about the databases.
 }
 \description{
 Retrieves information about databases based on a given species and database name.

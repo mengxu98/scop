@@ -201,7 +201,6 @@ FeatureDimPlot(
   features = "KNNPredict_simil"
 )
 
-\dontrun{
 # Annotate with DE gene instead of HVF
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
@@ -210,11 +209,13 @@ pancreas_sub <- RunKNNPredict(
   features_type = "DE",
   feature_source = "ref"
 )
+
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
   label = TRUE
 )
+
 FeatureDimPlot(
   pancreas_sub,
   features = "KNNPredict_simil"
@@ -228,14 +229,15 @@ pancreas_sub <- RunKNNPredict(
   features_type = "DE",
   feature_source = "both"
 )
+
 CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
   label = TRUE
 )
+
 FeatureDimPlot(
   pancreas_sub,
   features = "KNNPredict_simil"
 )
-}
 }

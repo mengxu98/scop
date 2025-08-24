@@ -20,20 +20,18 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
-#' ## Or save as a h5ad/loom file
-#' # adata$write_h5ad(
-#' #   "pancreas_sub.h5ad"
-#' # )
-#' # adata$write_loom(
-#' #   "pancreas_sub.loom",
-#' #   write_obsm_varm = TRUE
-#' # )
-#' }
+#' # Or save as a h5ad/loom file
+#' adata$write_h5ad(
+#'   "pancreas_sub.h5ad"
+#' )
+#' adata$write_loom(
+#'   "pancreas_sub.loom",
+#'   write_obsm_varm = TRUE
+#' )
 srt_to_adata <- function(
     srt,
     features = NULL,
@@ -228,7 +226,6 @@ srt_to_adata <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
@@ -240,14 +237,13 @@ srt_to_adata <- function(
 #' srt <- adata_to_srt(adata)
 #' srt
 #'
-#' ## Or convert a h5ad file to Seurat object
-#' # library(reticulate)
-#' # check_python("scanpy")
-#' # sc <- import("scanpy")
-#' # adata <- sc$read_h5ad("pancreas.h5ad")
-#' # srt <- adata_to_srt(adata)
-#' # srt
-#' }
+#' # Or convert a h5ad file to Seurat object
+#' library(reticulate)
+#' check_python("scanpy")
+#' sc <- import("scanpy")
+#' adata <- sc$read_h5ad("pancreas.h5ad")
+#' srt <- adata_to_srt(adata)
+#' srt
 adata_to_srt <- function(
     adata,
     verbose = TRUE) {
@@ -334,7 +330,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(obsm, "matrix")) {
-        obsm <- Matrix::as.matrix(obsm)
+        obsm <- as_matrix(obsm)
       }
       colnames(obsm) <- paste0(k_clean, "_", seq_len(ncol(obsm)))
       rownames(obsm) <- py_to_r2(adata$obs_names$values)
@@ -397,7 +393,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(varm, "matrix")) {
-        varm <- Matrix::as.matrix(varm)
+        varm <- as_matrix(varm)
       }
       colnames(varm) <- paste0(py_to_r2(k), "_", seq_len(ncol(varm)))
       rownames(varm) <- py_to_r2(adata$var_names$values)
@@ -422,7 +418,7 @@ adata_to_srt <- function(
         next
       }
       if (!inherits(varp, "matrix")) {
-        varp <- Matrix::as.matrix(varp)
+        varp <- as_matrix(varp)
       }
       colnames(varp) <- py_to_r2(adata$var_names$values)
       rownames(varp) <- py_to_r2(adata$var_names$values)

@@ -174,7 +174,7 @@ CellDensityPlot <- function(
     dat_gene <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- Matrix::as.matrix(srt@meta.data[, features_meta, drop = FALSE])
+    dat_meta <- as_matrix(srt@meta.data[, features_meta, drop = FALSE])
   } else {
     dat_meta <- matrix(nrow = ncol(srt@assays[[1]]), ncol = 0)
   }
@@ -208,19 +208,19 @@ CellDensityPlot <- function(
 
   if (isTRUE(same.y.lims) && is.null(y.max)) {
     y.max <- max(
-      Matrix::as.matrix(dat_exp[
+      as_matrix(dat_exp[
         ,
         features
-      ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
+      ])[is.finite(as_matrix(dat_exp[, features]))],
       na.rm = TRUE
     )
   }
   if (isTRUE(same.y.lims) && is.null(y.min)) {
     y.min <- min(
-      Matrix::as.matrix(dat_exp[
+      as_matrix(dat_exp[
         ,
         features
-      ])[is.finite(Matrix::as.matrix(dat_exp[, features]))],
+      ])[is.finite(as_matrix(dat_exp[, features]))],
       na.rm = TRUE
     )
   }

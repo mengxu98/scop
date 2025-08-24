@@ -396,7 +396,7 @@ GraphPlot <- function(
   }
 
   if (!is.null(transition)) {
-    trans2 <- trans1 <- Matrix::as.matrix(transition)
+    trans2 <- trans1 <- as_matrix(transition)
     trans1[lower.tri(trans1)] <- 0
     trans2[upper.tri(trans2)] <- 0
     trans <- Matrix::t(trans1) - trans2

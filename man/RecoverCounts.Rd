@@ -2,7 +2,7 @@
 % Please edit documentation in R/workflow.R
 \name{RecoverCounts}
 \alias{RecoverCounts}
-\title{Attempt to recover raw counts from the normalized matrix.}
+\title{Attempt to recover raw counts from the normalized matrix}
 \usage{
 RecoverCounts(
   srt,
@@ -33,7 +33,7 @@ The tolerance is its difference from the integer. Default is 0.1}
 \item{verbose}{Whether to show messages.}
 }
 \description{
-Attempt to recover raw counts from the normalized matrix.
+Attempt to recover raw counts from the normalized matrix
 }
 \examples{
 data(pancreas_sub)

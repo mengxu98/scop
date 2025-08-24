@@ -2,7 +2,7 @@
 % Please edit documentation in R/workflow.R
 \name{DefaultReduction}
 \alias{DefaultReduction}
-\title{Find the default reduction name in a Seurat object.}
+\title{Find the default reduction name in a Seurat object}
 \usage{
 DefaultReduction(srt, pattern = NULL, min_dim = 2, max_distance = 0.1)
 }
@@ -19,7 +19,7 @@ DefaultReduction(srt, pattern = NULL, min_dim = 2, max_distance = 0.1)
 Default reduction name.
 }
 \description{
-Find the default reduction name in a Seurat object.
+Find the default reduction name in a Seurat object
 }
 \examples{
 data(pancreas_sub)
@@ -31,5 +31,4 @@ DefaultReduction(pancreas_sub, pattern = "pca")
 
 # Searches for approximate matches to "pc"
 DefaultReduction(pancreas_sub, pattern = "pc")
-
 }

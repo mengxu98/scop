@@ -3,14 +3,15 @@
 #' @description
 #' Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 #'
+#' @md
 #' @inheritParams GeneConvert
-#' @param species Latin names for animals,i.e., "Homo_sapiens", "Mus_musculus"
+#' @param species Latin names for animals,i.e., `"Homo_sapiens"`, `"Mus_musculus"`
 #' @param use_cached_gene Whether to use previously cached cell cycle gene conversion results for the species.
 #' @param verbose Whether to print messages.
 #'
 #' @return A list of S-phase and G2M-phase genes.
 #'
-#' @seealso \link{GeneConvert}
+#' @seealso [GeneConvert]
 #'
 #' @export
 #'

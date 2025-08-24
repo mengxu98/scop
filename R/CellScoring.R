@@ -353,7 +353,7 @@ CellScoring <- function(
     } else if (method == "AUCell") {
       check_r("AUCell")
       cell_rank <- AUCell::AUCell_buildRankings(
-        Matrix::as.matrix(
+        as_matrix(
           GetAssayData5(
             srt_sp,
             layer = layer,
@@ -410,7 +410,7 @@ CellScoring <- function(
   if (isTRUE(new_assay)) {
     srt[[name]] <- Seurat::CreateAssayObject(
       counts = Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           scores_mat[colnames(srt), , drop = FALSE]
         )
       )

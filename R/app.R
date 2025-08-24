@@ -712,7 +712,7 @@ FetchH5 <- function(
       )
     }
     for (i in reduction) {
-      reduction <- as.matrix(
+      reduction <- as_matrix(
         rhdf5::h5read(
           MetaFile,
           name = paste0(name, "/reductions/", i)
