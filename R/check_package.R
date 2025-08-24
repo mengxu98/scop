@@ -15,10 +15,11 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' check_python(
 #'   packages = c("numpy", "pandas")
 #' )
+#'
+#' \dontrun{
 #' check_python(
 #'   packages = "numpy==1.26.4",
 #'   envname = "scop_env",

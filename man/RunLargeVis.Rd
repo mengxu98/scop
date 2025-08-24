@@ -440,7 +440,6 @@ Default is TRUE.}
 Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
 }
 \examples{
-\dontrun{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
@@ -451,5 +450,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "largevis"
 )
-}
 }

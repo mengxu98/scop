@@ -1208,7 +1208,7 @@ scVI_integrate <- function(
     srtIntegrated <- srt_merge
     srt_merge <- NULL
     corrected <- Matrix::t(
-      Matrix::as.matrix(
+      as_matrix(
         model$get_normalized_expression()
       )
     )
@@ -1232,7 +1232,7 @@ scVI_integrate <- function(
     srt_merge <- NULL
   }
 
-  latent <- Matrix::as.matrix(model$get_latent_representation())
+  latent <- as_matrix(model$get_latent_representation())
   rownames(latent) <- colnames(srtIntegrated)
   colnames(latent) <- paste0("scVI_", seq_len(ncol(latent)))
   srtIntegrated[["scVI"]] <- CreateDimReducObject(
@@ -1524,7 +1524,7 @@ MNN_integrate <- function(
         )
       )
       if (inherits(sce@assays@data$logcounts, "dgCMatrix")) {
-        sce@assays@data$logcounts <- Matrix::as.matrix(
+        sce@assays@data$logcounts <- as_matrix(
           sce@assays@data$logcounts
         )
       }
@@ -1841,7 +1841,7 @@ fastMNN_integrate <- function(
       )
     )
     if (inherits(sce@assays@data$logcounts, "dgCMatrix")) {
-      sce@assays@data$logcounts <- Matrix::as.matrix(sce@assays@data$logcounts)
+      sce@assays@data$logcounts <- as_matrix(sce@assays@data$logcounts)
     }
     return(sce)
   })
@@ -1861,7 +1861,7 @@ fastMNN_integrate <- function(
   srtIntegrated <- srt_merge
   srt_merge <- NULL
   srtIntegrated[["fastMNNcorrected"]] <- CreateAssayObject(
-    counts = Matrix::as.matrix(out@assays@data$reconstructed)
+    counts = as_matrix(out@assays@data$reconstructed)
   )
   SeuratObject::DefaultAssay(srtIntegrated) <- "fastMNNcorrected"
   SeuratObject::VariableFeatures(srtIntegrated[["fastMNNcorrected"]]) <- HVF
@@ -2477,7 +2477,7 @@ Scanorama_integrate <- function(
   genelist <- list()
   for (i in seq_along(srt_list)) {
     assaylist[[i]] <- Matrix::t(
-      Matrix::as.matrix(
+      as_matrix(
         GetAssayData5(
           object = srt_list[[i]],
           layer = "data",
