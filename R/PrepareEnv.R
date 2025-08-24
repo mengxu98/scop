@@ -1,25 +1,29 @@
-#' @title Prepare virtual Python environment
+#' @title Prepare the virtual environment
+#'
 #' @description Prepare the virtual environment by installing the required dependencies and setting up the environment.
 #' This function prepares the virtual environment by checking if conda is installed,
 #' creating a new conda environment if needed, installing the required packages,
 #' and setting up the Python environment for use with scop.
 #' In order to create the environment, this function requires the path to the conda binary.
-#' If \code{conda} is set to \code{"auto"}, it will attempt to automatically find the conda binary.
-#' If a conda environment with the specified name already exists and \code{force} is set to \code{FALSE},
+#' If `conda` is set to `"auto"`, it will attempt to automatically find the conda binary.
+#' If a conda environment with the specified name already exists and `force` is set to `FALSE`,
 #' the function will use the existing environment.
-#' If \code{force} set to \code{TRUE}, the existing environment will be recreated.
+#' If `force` set to `TRUE`, the existing environment will be recreated.
 #' Note that recreating the environment will remove any existing data in the environment.
-#' The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter.
+#' The function also checks if the package versions in the environment meet the requirements specified by the `version` parameter.
 #'
+#' @md
 #' @inheritParams check_python
 #' @param miniconda_repo Repositories for miniconda.
 #' Default is \url{https://repo.anaconda.com/miniconda}.
 #' @param force Whether to force a new environment to be created.
-#' If \code{TRUE}, the existing environment will be recreated.
-#' Default is \code{FALSE}.
+#' If `TRUE`, the existing environment will be recreated.
+#' Default is `FALSE`.
 #' @param version A character vector specifying the version of the environment.
-#' Default is "3.10-1".
+#' Default is `"3.10-1"`.
 #' @export
+#' @examples
+#' PrepareEnv()
 PrepareEnv <- function(
     conda = "auto",
     miniconda_repo = "https://repo.anaconda.com/miniconda",

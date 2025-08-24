@@ -154,12 +154,14 @@
 #'   raster = TRUE,
 #'   dpi = 30
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
 #'   theme_use = "theme_blank"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -177,6 +179,7 @@
 #'     pancreas_sub
 #'   )[pancreas_sub$SubCellType == "Epsilon"]
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -194,6 +197,7 @@
 #'   reduction = "UMAP",
 #'   label = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -203,6 +207,7 @@
 #'   label.bg = "red",
 #'   label.size = 5
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -210,6 +215,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -227,6 +233,7 @@
 #'   reduction = "UMAP",
 #'   add_mark = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -234,6 +241,7 @@
 #'   add_mark = TRUE,
 #'   mark_expand = grid::unit(1, "mm")
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -241,6 +249,7 @@
 #'   add_mark = TRUE,
 #'   mark_alpha = 0.3
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -248,6 +257,7 @@
 #'   add_mark = TRUE,
 #'   mark_linetype = 2
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -255,6 +265,7 @@
 #'   add_mark = TRUE,
 #'   mark_type = "ellipse"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -262,6 +273,7 @@
 #'   add_mark = TRUE,
 #'   mark_type = "rect"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -277,6 +289,7 @@
 #'   reduction = "UMAP",
 #'   add_density = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -284,6 +297,7 @@
 #'   add_density = TRUE,
 #'   density_filled = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -301,6 +315,7 @@
 #'   reduction = "UMAP",
 #'   stat.by = "Phase"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -310,6 +325,7 @@
 #'   stat_plot_label = TRUE,
 #'   stat_plot_size = 0.15
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -327,6 +343,7 @@
 #'   reduction = "UMAP",
 #'   hex = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -334,6 +351,7 @@
 #'   hex = TRUE,
 #'   hex.bins = 20
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -350,6 +368,7 @@
 #'   reduction = "UMAP",
 #'   graph = "Standardpca_SNN"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -365,17 +384,20 @@
 #'   reduction = "UMAP",
 #'   show_plot = FALSE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = paste0("Lineage", 1:2),
 #'   reduction = "UMAP"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
 #'   lineages = paste0("Lineage", 1:2)
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -383,6 +405,7 @@
 #'   lineages = paste0("Lineage", 1:2),
 #'   lineages_whiskers = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -391,7 +414,6 @@
 #'   lineages_span = 0.1
 #' )
 #'
-#' \dontrun{
 #' # Show PAGA results on the plot
 #' pancreas_sub <- RunPAGA(
 #'   srt = pancreas_sub,
@@ -400,12 +422,14 @@
 #'   nonlinear_reduction = "UMAP",
 #'   return_seurat = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
 #'   paga = pancreas_sub@misc$paga
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -413,6 +437,7 @@
 #'   paga = pancreas_sub@misc$paga,
 #'   paga_type = "connectivities_tree"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -440,6 +465,7 @@
 #'   mode = "stochastic",
 #'   return_seurat = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -447,6 +473,7 @@
 #'   paga = pancreas_sub@misc$paga,
 #'   paga_show_transition = TRUE
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -454,6 +481,7 @@
 #'   pt.size = NA,
 #'   velocity = "stochastic"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -463,6 +491,7 @@
 #'   velocity = "stochastic",
 #'   velocity_plot_type = "grid"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -473,6 +502,7 @@
 #'   velocity_plot_type = "grid",
 #'   velocity_scale = 1.5
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -482,6 +512,7 @@
 #'   velocity = "stochastic",
 #'   velocity_plot_type = "stream"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -500,7 +531,6 @@
 #'   legend.position = "none",
 #'   theme_use = "theme_blank"
 #' )
-#' }
 CellDimPlot <- function(
     srt,
     group.by,
@@ -1444,7 +1474,6 @@ CellDimPlot <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot3D(
@@ -1465,7 +1494,6 @@ CellDimPlot <- function(
 #'   reduction = "StandardpcaUMAP3D",
 #'   lineages = "Lineage1"
 #' )
-#' }
 CellDimPlot3D <- function(
     srt,
     group.by,

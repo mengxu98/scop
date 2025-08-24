@@ -5,7 +5,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(panc8_sub)
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
@@ -29,7 +28,6 @@
 #'   query_group = "celltype",
 #'   ref_group = "celltype"
 #' )
-#' }
 RunCSSMap <- function(
     srt_query,
     srt_ref,

@@ -74,7 +74,6 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot3D(
@@ -95,7 +94,6 @@ CellDimPlot3D(
   reduction = "StandardpcaUMAP3D",
   lineages = "Lineage1"
 )
-}
 }
 \seealso{
 \link{CellDimPlot}, \link{FeatureDimPlot3D}

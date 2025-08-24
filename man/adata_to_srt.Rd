@@ -15,7 +15,6 @@ adata_to_srt(adata, verbose = TRUE)
 Convert an anndata object to a seurat object using reticulate
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata <- RunPAGA(
@@ -27,12 +26,11 @@ adata <- RunPAGA(
 srt <- adata_to_srt(adata)
 srt
 
-## Or convert a h5ad file to Seurat object
-# library(reticulate)
-# check_python("scanpy")
-# sc <- import("scanpy")
-# adata <- sc$read_h5ad("pancreas.h5ad")
-# srt <- adata_to_srt(adata)
-# srt
-}
+# Or convert a h5ad file to Seurat object
+library(reticulate)
+check_python("scanpy")
+sc <- import("scanpy")
+adata <- sc$read_h5ad("pancreas.h5ad")
+srt <- adata_to_srt(adata)
+srt
 }
