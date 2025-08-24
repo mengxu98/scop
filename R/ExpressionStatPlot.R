@@ -284,7 +284,7 @@ ExpressionStatPlot <- function(
     dat_gene <- matrix(nrow = length(allcells), ncol = 0)
   }
   if (length(features_meta) > 0) {
-    dat_meta <- Matrix::as.matrix(meta.data[, features_meta, drop = FALSE])
+    dat_meta <- as_matrix(meta.data[, features_meta, drop = FALSE])
   } else {
     dat_meta <- matrix(nrow = length(allcells), ncol = 0)
   }
@@ -335,10 +335,10 @@ ExpressionStatPlot <- function(
   }
 
   if (isTRUE(same.y.lims)) {
-    valus <- Matrix::as.matrix(dat_use[,
+    valus <- as_matrix(dat_use[,
       stat.by,
       drop = FALSE
-    ])[is.finite(Matrix::as.matrix(dat_use[, stat.by, drop = FALSE]))]
+    ])[is.finite(as_matrix(dat_use[, stat.by, drop = FALSE]))]
     if (is.null(y.max)) {
       y.max <- max(valus, na.rm = TRUE)
     } else if (is.character(y.max)) {

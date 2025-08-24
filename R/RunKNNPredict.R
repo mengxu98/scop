@@ -145,7 +145,6 @@
 #'   features = "KNNPredict_simil"
 #' )
 #'
-#' \dontrun{
 #' # Annotate with DE gene instead of HVF
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
@@ -154,11 +153,13 @@
 #'   features_type = "DE",
 #'   feature_source = "ref"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "KNNPredict_classification",
 #'   label = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
@@ -172,16 +173,17 @@
 #'   features_type = "DE",
 #'   feature_source = "both"
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "KNNPredict_classification",
 #'   label = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
 #' )
-#' }
 RunKNNPredict <- function(
     srt_query,
     srt_ref = NULL,
@@ -514,7 +516,7 @@ RunKNNPredict <- function(
   }
 
   if (!inherits(ref, "matrix")) {
-    ref <- Matrix::as.matrix(ref)
+    ref <- as_matrix(ref)
   }
   k <- min(c(k, nrow(ref)))
 
@@ -686,22 +688,22 @@ RunKNNPredict <- function(
       )
     }
     if (k == 1) {
-      match_k_cell <- Matrix::as.matrix(
+      match_k_cell <- as_matrix(
         apply(d, 2, function(x) {
           names(x)[order(x, decreasing = FALSE)[1]]
         })
       )
-      match_k_distance <- Matrix::as.matrix(
+      match_k_distance <- as_matrix(
         apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1]])
       )
     } else {
       match_k_cell <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           apply(d, 2, function(x) names(x)[order(x, decreasing = FALSE)[1:k]])
         )
       )
       match_k_distance <- Matrix::t(
-        Matrix::as.matrix(
+        as_matrix(
           apply(d, 2, function(x) x[order(x, decreasing = FALSE)[1:k]])
         )
       )
@@ -746,7 +748,7 @@ RunKNNPredict <- function(
           return(x)
         })
       )
-      match_prob <- Matrix::as.matrix(match_prob)
+      match_prob <- as_matrix(match_prob)
       rownames(match_prob) <- names(match_freq)
       match_best <- apply(
         match_prob,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/DynamicPlot.R
 \name{DynamicPlot}
 \alias{DynamicPlot}
-\title{DynamicPlot}
+\title{Plot dynamic features across pseudotime}
 \usage{
 DynamicPlot(
   srt,
@@ -121,10 +121,9 @@ Otherwise, it is set to FALSE.}
 \item{seed}{A numeric specifying the random seed. Default is 11.}
 }
 \description{
-Plot dynamic features across pseudotime.
+Plot dynamic features across pseudotime
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -165,7 +164,6 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-}
 }
 \seealso{
 \link{RunDynamicFeatures}

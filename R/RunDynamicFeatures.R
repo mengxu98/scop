@@ -253,11 +253,11 @@ RunDynamicFeatures <- function(
     t <- srt_sub[[l, drop = TRUE]]
     t <- t[is.finite(t)]
     t_ordered <- t[order(t)]
-    y_ordered <- Matrix::as.matrix(
+    y_ordered <- as_matrix(
       y_mat[features, names(t_ordered), drop = FALSE]
     )
     l_libsize <- y_libsize[names(t_ordered)]
-    raw_matrix <- Matrix::as.matrix(
+    raw_matrix <- as_matrix(
       cbind(
         data.frame(pseudotime = t_ordered),
         Matrix::t(y_ordered)

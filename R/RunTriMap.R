@@ -1,5 +1,6 @@
-#' Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
+#' @title Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
 #'
+#' @md
 #' @param object An object. This can be a Seurat object or a matrix-like object.
 #' @param reduction A character string specifying the reduction to be used. Default is "pca".
 #' @param dims An integer vector specifying the dimensions to be used. Default is NULL.
@@ -21,8 +22,10 @@
 #' @param seed.use An integer specifying the random seed to be used. Default is 11.
 #' @param ... Additional arguments to be passed to the trimap.TRIMAP function.
 #'
+#' @rdname RunTriMap
+#' @export
+#'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunTriMap(
 #'   object = pancreas_sub,
@@ -33,9 +36,6 @@
 #'   group.by = "CellType",
 #'   reduction = "trimap"
 #' )
-#' }
-#' @rdname RunTriMap
-#' @export
 RunTriMap <- function(object, ...) {
   UseMethod(generic = "RunTriMap", object = object)
 }
@@ -72,7 +72,7 @@ RunTriMap.Seurat <- function(
   }
   if (!is.null(x = features)) {
     assay <- assay %||% DefaultAssay(object = object)
-    data.use <- Matrix::as.matrix(
+    data.use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,

@@ -1,6 +1,4 @@
-#' DynamicPlot
-#'
-#' Plot dynamic features across pseudotime.
+#' @title Plot dynamic features across pseudotime
 #'
 #' @md
 #' @param srt A Seurat object.
@@ -44,12 +42,11 @@
 #' @param byrow A boolean specifying whether to fill plots by row in the combined plot. Default is TRUE.
 #' @param seed A numeric specifying the random seed. Default is 11.
 #'
-#' @seealso \link{RunDynamicFeatures}
+#' @seealso [RunDynamicFeatures]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -90,7 +87,6 @@
 #'   compare_lineages = FALSE,
 #'   compare_features = FALSE
 #' )
-#' }
 DynamicPlot <- function(
     srt,
     lineages,
@@ -245,16 +241,16 @@ DynamicPlot <- function(
         ]
       )
     }
-    raw_matrix_list[[l]] <- Matrix::as.matrix(
+    raw_matrix_list[[l]] <- as_matrix(
       raw_matrix[, features, drop = FALSE]
     )
-    fitted_matrix_list[[l]] <- Matrix::as.matrix(
+    fitted_matrix_list[[l]] <- as_matrix(
       fitted_matrix[, features, drop = FALSE]
     )
-    upr_matrix_list[[l]] <- Matrix::as.matrix(
+    upr_matrix_list[[l]] <- as_matrix(
       upr_matrix[, features, drop = FALSE]
     )
-    lwr_matrix_list[[l]] <- Matrix::as.matrix(
+    lwr_matrix_list[[l]] <- as_matrix(
       lwr_matrix[, features, drop = FALSE]
     )
     cell_union <- unique(c(cell_union, rownames(raw_matrix)))
