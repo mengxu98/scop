@@ -2,7 +2,7 @@
 % Please edit documentation in R/VolcanoPlot.R
 \name{VolcanoPlot}
 \alias{VolcanoPlot}
-\title{VolcanoPlot}
+\title{Volcano Plot}
 \usage{
 VolcanoPlot(
   srt,
@@ -42,55 +42,55 @@ VolcanoPlot(
 Default is \code{NULL}.}
 
 \item{test.use}{A character string specifying the type of statistical test to use.
-Default is "wilcox".}
+Default is \code{"wilcox"}.}
 
 \item{DE_threshold}{A character string specifying the threshold for differential expression.
-Default is "avg_log2FC > 0 & p_val_adj < 0.05".}
+Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
 
 \item{x_metric}{A character string specifying the metric to use for the x-axis.
-Default is "diff_pct".}
+Default is \code{"diff_pct"}.}
 
 \item{palette}{A character string specifying the color palette to use for the plot.
-Default is "RdBu".}
+Default is \code{"RdBu"}.}
 
 \item{palcolor}{A character string specifying the color for the palette.
 Default is \code{NULL}.}
 
 \item{pt.size}{A numeric value specifying the size of the points.
-Default is 1.}
+Default is \code{1}.}
 
 \item{pt.alpha}{A numeric value specifying the transparency of the points.
-Default is 1.}
+Default is \code{1}.}
 
 \item{cols.highlight}{A character string specifying the color for highlighted points.
-Default is "black".}
+Default is \code{"black"}.}
 
 \item{sizes.highlight}{A numeric value specifying the size of the highlighted points.
-Default is 1.}
+Default is \code{1}.}
 
 \item{alpha.highlight}{A numeric value specifying the transparency of the highlighted points.
-Default is 1.}
+Default is \code{1}.}
 
 \item{stroke.highlight}{A numeric value specifying the stroke width for the highlighted points.
-Default is 0.5.}
+Default is \code{0.5}.}
 
 \item{nlabel}{An integer value specifying the number of labeled points per group.
-Default is 5.}
+Default is \code{5}.}
 
 \item{features_label}{A character vector specifying the feature labels to plot.
 Default is \code{NULL}.}
 
 \item{label.fg}{A character string specifying the color for the labels' foreground.
-Default is "black".}
+Default is \code{"black"}.}
 
 \item{label.bg}{A character string specifying the color for the labels' background.
-Default is "white".}
+Default is \code{"white"}.}
 
 \item{label.bg.r}{A numeric value specifying the radius of the rounding of the labels' background.
 Default is 0.1.}
 
 \item{label.size}{A numeric value specifying the size of the labels.
-Default is 4.}
+Default is \code{4}.}
 
 \item{aspect.ratio}{A numeric value specifying the aspect ratio of the plot.
 Default is \code{NULL}.}
@@ -99,10 +99,10 @@ Default is \code{NULL}.}
 Default is the value of \code{x_metric}.}
 
 \item{ylab}{A character string specifying the y-axis label.
-Default is "-log10(p-adjust)".}
+Default is \code{"-log10(p-adjust)"}.}
 
 \item{theme_use}{A character string specifying the theme to use for the plot.
-Default is "theme_scop".}
+Default is \code{"theme_scop"}.}
 
 \item{theme_args}{A list of theme arguments to pass to the \code{theme_use} function.
 Default is an empty list.}
@@ -124,21 +124,23 @@ Generate a volcano plot based on differential expression analysis results.
 }
 \examples{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#  group_by = "CellType"
-# )
+pancreas_sub <- RunDEtest(
+ pancreas_sub,
+ group_by = "CellType"
+)
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",
   ncol = 2
 )
+
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
+
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",

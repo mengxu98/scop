@@ -2,7 +2,7 @@
 % Please edit documentation in R/PrepareEnv.R
 \name{PrepareEnv}
 \alias{PrepareEnv}
-\title{Prepare virtual Python environment}
+\title{Prepare the virtual environment}
 \usage{
 PrepareEnv(
   conda = "auto",
@@ -22,7 +22,7 @@ Default is \url{https://repo.anaconda.com/miniconda}.}
 \item{envname}{The name of a conda environment.}
 
 \item{version}{A character vector specifying the version of the environment.
-Default is "3.10-1".}
+Default is \code{"3.10-1"}.}
 
 \item{force}{Whether to force a new environment to be created.
 If \code{TRUE}, the existing environment will be recreated.
@@ -42,4 +42,7 @@ the function will use the existing environment.
 If \code{force} set to \code{TRUE}, the existing environment will be recreated.
 Note that recreating the environment will remove any existing data in the environment.
 The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter.
+}
+\examples{
+PrepareEnv()
 }

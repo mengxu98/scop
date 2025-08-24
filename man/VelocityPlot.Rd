@@ -53,80 +53,81 @@ VelocityPlot(
 
 \item{dims}{Indices of the dimensions to use for plotting.}
 
-\item{cells}{Cells to include in the plot. If NULL, all cells will be included.}
+\item{cells}{Cells to include in the plot. If `NULL`, all cells will be included.}
 
-\item{velocity}{Name of the velocity to use for plotting.}
+\item{velocity}{Name of the velocity to use for plotting. Default is `"stochastic"`.}
 
-\item{plot_type}{Type of plot to create. Can be "raw", "grid", or "stream".}
+\item{plot_type}{Type of plot to create. Can be `"raw"`, `"grid"`, or `"stream"`.}
 
-\item{group_by}{Name of the column in the Seurat object metadata to group the cells by. Defaults to NULL.}
+\item{group_by}{Name of the column in the Seurat object metadata to group the cells by. Defaults is `NULL`.}
 
-\item{group_palette}{Name of the palette to use for coloring the groups. Defaults to "Paired".}
+\item{group_palette}{Name of the palette to use for coloring the groups. Defaults is `"Paired"`.}
 
-\item{group_palcolor}{Colors to use for coloring the groups. Defaults to NULL.}
+\item{group_palcolor}{Colors to use for coloring the groups. Defaults is `NULL`.}
 
-\item{n_neighbors}{Number of neighbors to include for the density estimation. Defaults to ceiling(ncol(srt@assays[[1]]) / 50).}
+\item{n_neighbors}{Number of neighbors to include for the density estimation. Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.}
 
-\item{density}{Propotion of cells to plot. Defaults to 1 (plot all cells).}
+\item{density}{Propotion of cells to plot. Defaults is `1` (plot all cells).}
 
-\item{smooth}{Smoothing parameter for density estimation. Defaults to 0.5.}
+\item{smooth}{Smoothing parameter for density estimation. Defaults is `0.5`.}
 
-\item{scale}{Scaling factor for the velocity vectors. Defaults to 1.}
+\item{scale}{Scaling factor for the velocity vectors. Defaults is `1`.}
 
-\item{min_mass}{Minimum mass value for the density-based cutoff. Defaults to 1.}
+\item{min_mass}{Minimum mass value for the density-based cutoff. Defaults is `1`.}
 
-\item{cutoff_perc}{Percentile value for the density-based cutoff. Defaults to 5.}
+\item{cutoff_perc}{Percentile value for the density-based cutoff. Defaults is `5`.}
 
-\item{arrow_angle}{Angle of the arrowheads. Defaults to 20.}
+\item{arrow_angle}{Angle of the arrowheads. Defaults is `20`.}
 
-\item{arrow_color}{Color of the arrowheads. Defaults to "black".}
+\item{arrow_color}{Color of the arrowheads. Defaults is `"black"`.}
 
-\item{streamline_L}{Length of the streamlines. Defaults to 5.}
+\item{streamline_L}{Length of the streamlines. Defaults is `5`.}
 
-\item{streamline_minL}{Minimum length of the streamlines. Defaults to 1.}
+\item{streamline_minL}{Minimum length of the streamlines. Defaults is `1`.}
 
-\item{streamline_res}{Resolution of the streamlines. Defaults to 1.}
+\item{streamline_res}{Resolution of the streamlines. Defaults is `1`.}
 
-\item{streamline_n}{Number of streamlines to plot. Defaults to 15.}
+\item{streamline_n}{Number of streamlines to plot. Defaults is `15`.}
 
-\item{streamline_width}{Width of the streamlines. Defaults to c(0, 0.8).}
+\item{streamline_width}{Width of the streamlines. Defaults is `c(0, 0.8)`.}
 
-\item{streamline_alpha}{Alpha transparency of the streamlines. Defaults to 1.}
+\item{streamline_alpha}{Alpha transparency of the streamlines. Defaults is `1`.}
 
-\item{streamline_color}{Color of the streamlines. Defaults to NULL.}
+\item{streamline_color}{Color of the streamlines. Defaults is `NULL`.}
 
-\item{streamline_palette}{Name of the palette to use for coloring the streamlines. Defaults to "RdYlBu".}
+\item{streamline_palette}{Name of the palette to use for coloring the streamlines. Defaults is `"RdYlBu"`.}
 
-\item{streamline_palcolor}{Colors to use for coloring the streamlines. Defaults to NULL.}
+\item{streamline_palcolor}{Colors to use for coloring the streamlines. Defaults is `NULL`.}
 
-\item{streamline_bg_color}{Background color of the streamlines. Defaults to "white".}
+\item{streamline_bg_color}{Background color of the streamlines. Defaults is `"white"`.}
 
-\item{streamline_bg_stroke}{Stroke width of the streamlines background. Defaults to 0.5.}
+\item{streamline_bg_stroke}{Stroke width of the streamlines background. Defaults is `0.5`.}
 
-\item{aspect.ratio}{Aspect ratio of the plot. Defaults to 1.}
+\item{aspect.ratio}{Aspect ratio of the plot. Defaults is 1.}
 
-\item{title}{Title of the plot. Defaults to "Cell velocity".}
+\item{title}{Title of the plot. Defaults is `"Cell velocity"`.}
 
-\item{subtitle}{Subtitle of the plot. Defaults to NULL.}
+\item{subtitle}{Subtitle of the plot. Defaults is NULL.}
 
-\item{xlab}{x-axis label. Defaults to NULL.}
+\item{xlab}{x-axis label. Defaults is NULL.}
 
-\item{ylab}{y-axis label. Defaults to NULL.}
+\item{ylab}{y-axis label. Defaults is NULL.}
 
-\item{legend.position}{Position of the legend. Defaults to "right".}
+\item{legend.position}{Position of the legend. Defaults is `"right"`.}
 
-\item{legend.direction}{Direction of the legend. Defaults to "vertical".}
+\item{legend.direction}{Direction of the legend. Defaults is `"vertical"`.}
 
-\item{theme_use}{Name of the theme to use for plotting. Defaults to "theme_scop".}
+\item{theme_use}{Name of the theme to use for plotting. Defaults is `"theme_scop"`.}
 
-\item{theme_args}{List of theme arguments for customization. Defaults to list().}
+\item{theme_args}{List of theme arguments for customization. Defaults is `list()`.}
 
-\item{return_layer}{Whether to return the plot layers as a list. Defaults to FALSE.}
+\item{return_layer}{Whether to return the plot layers as a list. Defaults is `FALSE`.}
 
-\item{seed}{Random seed for reproducibility. Defaults to 11.}
+\item{seed}{Random seed for reproducibility. Defaults is `11`.}
 }
 \description{
-This function creates a velocity plot for a given Seurat object. The plot shows the velocity vectors of the cells in a specified reduction space.
+This function creates a velocity plot for a given Seurat object.
+The plot shows the velocity vectors of the cells in a specified reduction space.
 }
 \examples{
 data(pancreas_sub)
@@ -177,5 +178,5 @@ VelocityPlot(
 )
 }
 \seealso{
-\link{RunSCVELO}, \link{CellDimPlot}
+[RunSCVELO], [CellDimPlot]
 }

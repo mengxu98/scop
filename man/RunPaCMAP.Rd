@@ -94,7 +94,6 @@ RunPaCMAP(object, ...)
 Run PaCMAP (Pairwise Controlled Manifold Approximation)
 }
 \examples{
-\dontrun{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 pancreas_sub <- RunPaCMAP(
   object = pancreas_sub,
@@ -105,5 +104,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "pacmap"
 )
-}
 }

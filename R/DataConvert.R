@@ -20,20 +20,18 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
-#' ## Or save as a h5ad/loom file
-#' # adata$write_h5ad(
-#' #   "pancreas_sub.h5ad"
-#' # )
-#' # adata$write_loom(
-#' #   "pancreas_sub.loom",
-#' #   write_obsm_varm = TRUE
-#' # )
-#' }
+#' # Or save as a h5ad/loom file
+#' adata$write_h5ad(
+#'   "pancreas_sub.h5ad"
+#' )
+#' adata$write_loom(
+#'   "pancreas_sub.loom",
+#'   write_obsm_varm = TRUE
+#' )
 srt_to_adata <- function(
     srt,
     features = NULL,
@@ -228,7 +226,6 @@ srt_to_adata <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
@@ -240,14 +237,13 @@ srt_to_adata <- function(
 #' srt <- adata_to_srt(adata)
 #' srt
 #'
-#' ## Or convert a h5ad file to Seurat object
-#' # library(reticulate)
-#' # check_python("scanpy")
-#' # sc <- import("scanpy")
-#' # adata <- sc$read_h5ad("pancreas.h5ad")
-#' # srt <- adata_to_srt(adata)
-#' # srt
-#' }
+#' # Or convert a h5ad file to Seurat object
+#' library(reticulate)
+#' check_python("scanpy")
+#' sc <- import("scanpy")
+#' adata <- sc$read_h5ad("pancreas.h5ad")
+#' srt <- adata_to_srt(adata)
+#' srt
 adata_to_srt <- function(
     adata,
     verbose = TRUE) {

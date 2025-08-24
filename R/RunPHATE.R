@@ -29,7 +29,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPHATE(
 #'   object = pancreas_sub,
@@ -40,7 +39,6 @@
 #'   group.by = "CellType",
 #'   reduction = "phate"
 #' )
-#' }
 RunPHATE <- function(object, ...) {
   UseMethod(generic = "RunPHATE", object = object)
 }

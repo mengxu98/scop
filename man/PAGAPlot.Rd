@@ -189,7 +189,7 @@ PAGAPlot(
 This function generates a PAGA plot based on the given Seurat object and PAGA result.
 }
 \examples{
-\dontrun{
+PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- RunPAGA(
   srt = pancreas_sub,
@@ -198,50 +198,62 @@ pancreas_sub <- RunPAGA(
   nonlinear_reduction = "UMAP",
   return_seurat = TRUE
 )
+
 PAGAPlot(pancreas_sub)
+
 PAGAPlot(
   pancreas_sub,
   type = "connectivities_tree"
 )
+
 PAGAPlot(
   pancreas_sub,
   reduction = "PCA"
 )
+
 PAGAPlot(
   pancreas_sub,
   reduction = "PAGAUMAP2D"
 )
+
 PAGAPlot(
   pancreas_sub,
   edge_shorten = 0.05
 )
+
 PAGAPlot(
   pancreas_sub,
   label = TRUE
 )
+
 PAGAPlot(
   pancreas_sub,
   label = TRUE,
   label_insitu = TRUE
 )
+
 PAGAPlot(
   pancreas_sub,
   label = TRUE,
   label_insitu = TRUE,
   label_repel = TRUE
 )
+
 PAGAPlot(
   pancreas_sub,
   edge_line = "curved"
 )
+
 PAGAPlot(
   pancreas_sub,
   node_size = "GroupSize"
 )
+
 PAGAPlot(
   pancreas_sub,
   node_highlight = "Ductal"
 )
+
 PAGAPlot(
   pancreas_sub,
   edge_highlight = paste(
@@ -258,16 +270,17 @@ pancreas_sub <- RunSCVELO(
   nonlinear_reduction = "UMAP",
   return_seurat = TRUE
 )
+
 PAGAPlot(
   pancreas_sub,
   show_transition = TRUE
 )
+
 PAGAPlot(
   pancreas_sub,
   show_transition = TRUE,
   transition_offset = 0.02
 )
-}
 }
 \seealso{
 \link{RunPAGA}, \link{CellDimPlot}
