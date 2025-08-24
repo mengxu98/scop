@@ -1,6 +1,4 @@
-#' DynamicPlot
-#'
-#' Plot dynamic features across pseudotime.
+#' @title Plot dynamic features across pseudotime
 #'
 #' @md
 #' @param srt A Seurat object.
@@ -44,12 +42,11 @@
 #' @param byrow A boolean specifying whether to fill plots by row in the combined plot. Default is TRUE.
 #' @param seed A numeric specifying the random seed. Default is 11.
 #'
-#' @seealso \link{RunDynamicFeatures}
+#' @seealso [RunDynamicFeatures]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -90,7 +87,6 @@
 #'   compare_lineages = FALSE,
 #'   compare_features = FALSE
 #' )
-#' }
 DynamicPlot <- function(
     srt,
     lineages,
