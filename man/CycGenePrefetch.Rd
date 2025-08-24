@@ -14,7 +14,7 @@ CycGenePrefetch(
 )
 }
 \arguments{
-\item{species}{Latin names for animals,i.e., "Homo_sapiens", "Mus_musculus"}
+\item{species}{Latin names for animals,i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 

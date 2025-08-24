@@ -1,5 +1,6 @@
 #' @title Run Palantir analysis
 #'
+#' @md
 #' @inheritParams RunPAGA
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
@@ -16,12 +17,12 @@
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param n_jobs The number of parallel jobs to run.
 #'
-#' @seealso \link{srt_to_adata}
+#' @seealso [srt_to_adata]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPalantir(
 #'   srt = pancreas_sub,
@@ -44,7 +45,6 @@
 #'     "_diff_potential"
 #'   )
 #' )
-#' }
 RunPalantir <- function(
     srt = NULL,
     assay_x = "RNA",

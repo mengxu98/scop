@@ -94,7 +94,6 @@ RunTriMap(object, ...)
 Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
 }
 \examples{
-\dontrun{
 pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 pancreas_sub <- RunTriMap(
   object = pancreas_sub,
@@ -105,5 +104,4 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "trimap"
 )
-}
 }

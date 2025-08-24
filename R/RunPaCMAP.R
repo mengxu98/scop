@@ -1,4 +1,4 @@
-#' Run PaCMAP (Pairwise Controlled Manifold Approximation)
+#' @title Run PaCMAP (Pairwise Controlled Manifold Approximation)
 #'
 #' @param object An object. This can be a Seurat object or a matrix-like object.
 #' @param reduction A character string specifying the reduction to be used. Default is "pca".
@@ -25,7 +25,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPaCMAP(
 #'   object = pancreas_sub,
@@ -36,7 +35,6 @@
 #'   group.by = "CellType",
 #'   reduction = "pacmap"
 #' )
-#' }
 RunPaCMAP <- function(object, ...) {
   UseMethod(generic = "RunPaCMAP", object = object)
 }

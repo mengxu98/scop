@@ -31,7 +31,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunLargeVis(
 #'   object = pancreas_sub,
@@ -42,7 +41,6 @@
 #'   group.by = "CellType",
 #'   reduction = "largevis"
 #' )
-#' }
 RunLargeVis <- function(object, ...) {
   UseMethod(generic = "RunLargeVis", object = object)
 }
