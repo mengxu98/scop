@@ -827,7 +827,7 @@ DynamicHeatmap <- function(
 
     for (l in lineages) {
       cells <- gsub(pattern = l, replacement = "", x = cell_order_list[[l]])
-      mat_tmp <- Matrix::as.matrix(
+      mat_tmp <- as_matrix(
         rbind(
           GetAssayData5(
             srt,

@@ -589,7 +589,7 @@ FeatureHeatmap <- function(
   ))]
   meta <- features[features %in% colnames(srt@meta.data)]
   all_cells <- unique(unlist(lapply(cell_groups, names)))
-  mat_raw <- Matrix::as.matrix(
+  mat_raw <- as_matrix(
     rbind(
       GetAssayData5(
         srt,

@@ -7,20 +7,20 @@
 <!-- badges: end -->
 
 ## Overview
-The [scop](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell sequencing data processing and downstream analysis.
+The [scop](https://github.com/mengxu98/scop) package provides a comprehensive set of tools for single-cell omics data processing and downstream analysis.
 
 ## Introduction
 The [scop](https://github.com/mengxu98/scop) package includes the following facilities:
 
--   Integrated single-cell quality control methods.
--   Pipelines embedded with multiple methods for normalization, feature reduction, and cell population identification (standard Seurat workflow).
--   Pipelines embedded with multiple integration methods for scRNA-seq or scATAC-seq data, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
--   Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, [PAGA](https://github.com/theislab/paga), [RNA velocity](https://github.com/theislab/scvelo), [Palantir](https://github.com/dpeerlab/Palantir), [Monocle2](http://cole-trapnell-lab.github.io/monocle-release), [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
--   Multiple methods for automatic annotation of single-cell data and methods for projection between single-cell datasets.
--   High-quality data visualization methods.
--   Fast deployment of single-cell data into SCExplorer, a [shiny app](https://shiny.rstudio.com/) that provides an interactive visualization interface.
+- Integrated single-cell quality control methods.
+- Pipelines embedded with multiple methods for normalization, feature reduction, and cell population identification (standard Seurat workflow).
+- Pipelines embedded with multiple integration methods for scRNA-seq or scATAC-seq data, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
+- Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, [PAGA](https://github.com/theislab/paga), [RNA velocity](https://github.com/theislab/scvelo), [Palantir](https://github.com/dpeerlab/Palantir), [Monocle2](http://cole-trapnell-lab.github.io/monocle-release), [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
+- Multiple methods for automatic annotation of single-cell data and methods for projection between single-cell datasets.
+- High-quality data visualization methods.
+- Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 
-The functions in the scop package are all developed around the [Seurat object](https://github.com/mojaveazure/seurat-object) and are compatible with other Seurat functions.
+The functions in the scop package are all developed around the [Seurat](https://github.com/satijalab/seurat-object) object and are compatible with other Seurat functions.
 
 ## Quick Start
 
@@ -51,7 +51,7 @@ The functions in the scop package are all developed around the [Seurat object](h
 
 ## Credits
 
-The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, making it compatible with [Seurat](https://github.com/mojaveazure/seurat) V5 and adding support for multiple omics data.
+The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, making it compatible with [Seurat](https://github.com/mojaveazure/seurat) V5 and adding support for single-cell omics data.
 
 ## Installation
 
