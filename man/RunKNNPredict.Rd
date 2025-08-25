@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunKNNPredict.R
 \name{RunKNNPredict}
 \alias{RunKNNPredict}
-\title{RunKNNPredict}
+\title{Run KNN prediction}
 \usage{
 RunKNNPredict(
   srt_query,
@@ -97,9 +97,10 @@ If TRUE, the function will return the distance matrix used for the KNN predictio
 This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 }
 \examples{
+\dontrun{
 # Annotate cells using bulk RNA-seq data
 data(pancreas_sub)
-data("ref_scMCA")
+data(ref_scMCA)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
@@ -240,4 +241,5 @@ FeatureDimPlot(
   pancreas_sub,
   features = "KNNPredict_simil"
 )
+}
 }
