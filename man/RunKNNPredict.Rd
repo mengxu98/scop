@@ -102,6 +102,12 @@ This function performs KNN prediction to annotate cell types based on reference 
 data(pancreas_sub)
 data(ref_scMCA)
 pancreas_sub <- standard_scop(pancreas_sub)
+
+# Set the number of threads for RcppParallel
+# details see: ?RcppParallel::setThreadOptions
+if (requireNamespace("RcppParallel", quietly = TRUE)) {
+  RcppParallel::setThreadOptions()
+}
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA

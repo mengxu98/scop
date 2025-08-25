@@ -47,6 +47,12 @@
 #' data(pancreas_sub)
 #' data(ref_scMCA)
 #' pancreas_sub <- standard_scop(pancreas_sub)
+#'
+#' # Set the number of threads for RcppParallel
+#' # details see: ?RcppParallel::setThreadOptions
+#' if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#'   RcppParallel::setThreadOptions()
+#' }
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   bulk_ref = ref_scMCA
@@ -664,9 +670,6 @@ RunKNNPredict <- function(
     match_k_distance <- query.neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
   } else {
-    if (requireNamespace("RcppParallel", quietly = TRUE)) {
-      RcppParallel::setThreadOptions()
-    }
     if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {

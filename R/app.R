@@ -932,9 +932,7 @@ RunSCExplorer <- function(
       "htmlwidgets",
       "plotly",
       "bslib",
-      "future",
-      "promises",
-      "BiocParallel"
+      "promises"
     )
   )
   DataFile_full <- paste0(base_dir, "/", DataFile)
@@ -2605,12 +2603,10 @@ server <- function(input, output, session) {
       pak::pak('mengxu98/scop')
     }",
     "options(scop_env_init = FALSE)",
-    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'future', 'promises', 'BiocParallel'))",
+    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'promises'))",
     "library(shiny)",
     "library(bslib)",
-    "library(future)",
     "library(promises)",
-    "library(BiocParallel)",
     "library(ggplot2)",
     "library(rlang)",
     args_code,
