@@ -1,5 +1,6 @@
-#' RunKNNPredict
+#' @title Run KNN prediction
 #'
+#' @description
 #' This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 #'
 #' @param srt_query An object of class Seurat to be annotated with cell types.
@@ -41,9 +42,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Annotate cells using bulk RNA-seq data
 #' data(pancreas_sub)
-#' data("ref_scMCA")
+#' data(ref_scMCA)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
@@ -184,6 +186,7 @@
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
 #' )
+#' }
 RunKNNPredict <- function(
     srt_query,
     srt_ref = NULL,
