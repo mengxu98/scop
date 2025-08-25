@@ -9,11 +9,14 @@
 #' @param layer_x Layer name for assay_x in the Seurat object.
 #' @param assay_y Assays to convert as layers in the anndata object.
 #' @param layer_y Layer names for the assay_y in the Seurat object.
-#' @param convert_tools Whether to convert the tool-specific data. Default is `FALSE`.
-#' @param convert_misc Whether to convert the miscellaneous data. Default is `FALSE`.
+#' @param convert_tools Whether to convert the tool-specific data.
+#' Default is `FALSE`.
+#' @param convert_misc Whether to convert the miscellaneous data.
+#' Default is `FALSE`.
 #' @param features Optional vector of features to include in the anndata object.
 #' Defaults to all features in assay_x.
-#' @param verbose Whether to print verbose messages during the conversion process. Default is `TRUE`.
+#' @param verbose Whether to print verbose messages during the conversion process.
+#' Default is `TRUE`.
 #'
 #' @return A `anndata` object.
 #'
@@ -24,6 +27,7 @@
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
+#' \dontrun{
 #' # Or save as a h5ad/loom file
 #' adata$write_h5ad(
 #'   "pancreas_sub.h5ad"
@@ -32,6 +36,7 @@
 #'   "pancreas_sub.loom",
 #'   write_obsm_varm = TRUE
 #' )
+#' }
 srt_to_adata <- function(
     srt,
     features = NULL,
