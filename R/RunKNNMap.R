@@ -36,6 +36,11 @@
 #'   group.by = c("celltype", "tech")
 #' )
 #'
+#' # Set the number of threads for RcppParallel
+#' # details see: ?RcppParallel::setThreadOptions
+#' if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#'   RcppParallel::setThreadOptions()
+#' }
 #' # Projection
 #' srt_query <- RunKNNMap(
 #'   srt_query = srt_query,
@@ -304,9 +309,6 @@ RunKNNMap <- function(
     refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[knn_cells, ]
     group <- rep(query.neighbor@cell.names, ncol(query.neighbor@nn.idx))
   } else {
-    if (requireNamespace("RcppParallel", quietly = TRUE)) {
-      RcppParallel::setThreadOptions()
-    }
     if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {
