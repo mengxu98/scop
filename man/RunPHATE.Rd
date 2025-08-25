@@ -58,62 +58,91 @@ RunPHATE(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object or a matrix-like object.}
+\item{object}{A Seurat object or a matrix-like object.}
 
 \item{...}{Additional arguments to be passed to the phate.PHATE function.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is "pca".}
+\item{reduction}{A character string specifying the reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is NULL.}
+\item{dims}{An integer vector specifying the dimensions to be used.
+Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{A character vector specifying the features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{A character string specifying the assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used.
+Default is \code{"data"}.}
 
-\item{n_components}{An integer specifying the number of PHATE components. Default is 2.}
+\item{n_components}{An integer specifying the number of PHATE components.
+Default is \code{2}.}
 
-\item{knn}{An integer specifying the number of nearest neighbors on which to build kernel. Default is 5.}
+\item{knn}{An integer specifying the number of nearest neighbors on which to build kernel.
+Default is \code{5}.}
 
 \item{decay}{An integer specifying the sets decay rate of kernel tails. Default is 40.}
 
-\item{n_landmark}{An integer specifying the number of landmarks to use in fast PHATE. Default is 2000.}
+\item{n_landmark}{An integer specifying the number of landmarks to use in fast PHATE.
+Default is \code{2000}.}
 
-\item{t}{A character string specifying the power to which the diffusion operator is powered. This sets the level of diffusion. If ‘auto’, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator. Default is "auto".}
+\item{t}{A character string specifying the power to which the diffusion operator is powered.
+This sets the level of diffusion. If \code{"auto"}, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
+Default is \code{"auto"}.}
 
-\item{gamma}{A numeric value specifying the informational distance constant between -1 and 1. gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential. Default is 1.}
+\item{gamma}{A numeric value specifying the informational distance constant between -1 and 1.
+gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential.
+Default is \code{1}.}
 
-\item{n_pca}{An integer specifying the number of principal components to use for calculating neighborhoods. For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time. Default is 100.}
+\item{n_pca}{An integer specifying the number of principal components to use for calculating neighborhoods.
+For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time.
+Default is \code{100}.}
 
-\item{knn_dist}{A character string specifying the distance metric for k-nearest neighbors. Recommended values: "euclidean, "cosine, "precomputed". Default is "euclidean".}
+\item{knn_dist}{A character string specifying the distance metric for k-nearest neighbors.
+Recommended values: \code{"euclidean"}, \code{"cosine"}, \code{"precomputed"}.
+Default is \code{"euclidean"}.}
 
-\item{knn_max}{An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point. For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly. Default is NULL.}
+\item{knn_max}{An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point.
+For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly.
+Default is \code{NULL}.}
 
-\item{t_max}{An integer specifying the maximum \code{t} to test. Default is 100.}
+\item{t_max}{An integer specifying the maximum \code{t} to test. Default is \code{100}.}
 
-\item{do_cluster}{A logical value indicating whether to perform clustering on the PHATE embeddings. Default is FALSE.}
+\item{do_cluster}{A logical value indicating whether to perform clustering on the PHATE embeddings.
+Default is \code{FALSE}.}
 
-\item{n_clusters}{An integer specifying the number of clusters to be identified. Default is "auto".}
+\item{n_clusters}{An integer specifying the number of clusters to be identified.
+Default is \code{"auto"}.}
 
-\item{max_clusters}{An integer specifying the maximum number of clusters to test. Default is 100.}
+\item{max_clusters}{An integer specifying the maximum number of clusters to test.
+Default is \code{100}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "phate".}
+\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
+Default is \code{"phate"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the PHATE embeddings. Default is "PHATE_".}
+\item{reduction.key}{A character string specifying the prefix for the column names of the PHATE embeddings.
+Default is \code{"PHATE_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{A logical value indicating whether to print verbose output.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{An integer specifying the random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 }
 \examples{
-pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
+pancreas_sub <- Seurat::FindVariableFeatures(
+  pancreas_sub,
+  verbose = FALSE
+)
+features <- SeuratObject::VariableFeatures(pancreas_sub)
 pancreas_sub <- RunPHATE(
-  object = pancreas_sub,
-  features = SeuratObject::VariableFeatures(pancreas_sub)
+  pancreas_sub,
+  features = features
 )
 CellDimPlot(
   pancreas_sub,
