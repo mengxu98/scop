@@ -30,10 +30,10 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' # pancreas_sub <- RunDEtest(
-#' #  pancreas_sub,
-#' #  group_by = "CellType"
-#' # )
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
 #'   group_by = "CellType",
@@ -65,7 +65,6 @@
 #'   )
 #' )
 #'
-#' \dontrun{
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunGSEA(
 #'   srt = pancreas_sub,
@@ -99,6 +98,7 @@
 #'   db = "GO_BP",
 #'   plot_type = "comparison"
 #' )
+#'
 #' # Use a combined database
 #' pancreas_sub <- RunGSEA(
 #'   srt = pancreas_sub,
@@ -115,7 +115,6 @@
 #'   group_by = "CellType",
 #'   plot_type = "comparison"
 #' )
-#' }
 RunGSEA <- function(
     srt = NULL,
     group_by = NULL,
