@@ -1,5 +1,6 @@
-#' EnrichmentPlot
+#' @title Enrichment Plot
 #'
+#' @description
 #' This function generates various types of plots for enrichment (over-representation) analysis.
 #'
 #' @param srt A Seurat object containing the results of RunDEtest and RunEnrichment.
@@ -105,11 +106,12 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
-#' # pancreas_sub <- RunDEtest(
-#' #   pancreas_sub,
-#' #   group_by = "CellType"
-#' # )
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
 #'
 #' pancreas_sub <- RunEnrichment(
 #'   srt = pancreas_sub,
@@ -361,6 +363,7 @@
 #'   group_use = "Ductal",
 #'   ncol = 1
 #' )
+#' }
 EnrichmentPlot <- function(
     srt,
     db = "GO_BP",
