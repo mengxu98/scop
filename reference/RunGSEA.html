@@ -246,10 +246,19 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># pancreas_sub &lt;- RunDEtest(</span></span></span>
-<span class="r-in"><span><span class="co">#  pancreas_sub,</span></span></span>
-<span class="r-in"><span><span class="co">#  group_by = "CellType"</span></span></span>
-<span class="r-in"><span><span class="co"># )</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:48] Data is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:48] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:48] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:48] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-26 04:11:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:11:48] Completed <span style="color: #0000BB;">5</span> tasks in 874ms</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:49] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:11:49] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGSEA</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -258,20 +267,20 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:31:56] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-25 06:31:57] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:31:57] Species: Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:31:57] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-08-25 04:01:29.64534</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:31:58] Permform GSEA...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:31:58] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-25 06:31:58] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-08-25 06:31:58] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-25 06:31:58] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-25 06:31:58] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 26s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:31:58] Completed <span style="color: #0000BB;">5</span> tasks in 2m 12.3s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:49] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:11:49] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:49] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:49] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-08-26 03:46:49.922049</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:50] Permform GSEA...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:11:50] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-26 04:11:50] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-08-26 04:11:50] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-26 04:11:50] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-26 04:11:50] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 27s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:11:50] Completed <span style="color: #0000BB;">5</span> tasks in 2m 12s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:34:10] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:34:10] <span style="color: #0000BB;">GSEA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:02] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:14:02] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -302,7 +311,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunGSEA-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Remove redundant GO terms</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGSEA</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -311,12 +319,31 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  GO_simplify <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:04] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:14:04] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:04] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:04] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-08-26 03:46:49.922049</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:05] Permform GSEA...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:14:05] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  3m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:16:01] Pre-endocrine|GO_BP has no term to simplify.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 29s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:16:26] Ngn3-high-EP|GO_BP has no term to simplify.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-26 04:14:05] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 29s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:14:05] Completed <span style="color: #0000BB;">5</span> tasks in 2m 20.2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:26] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:16:26] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP_sim"</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSEAPlot(pancreas_sub, db = "GO_BP_sim", group_by = "CellType",     plot_type = "comparison"):</span> GO_BP_sim is not in the enrichment result.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or use "geneID", "geneScore" and</span></span></span>
 <span class="r-in"><span><span class="co"># "geneID_groups" as input to run GSEA</span></span></span>
@@ -331,11 +358,31 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:26] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:16:26] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:26] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:26] Loading cached db: GO_BP version:3.21.0 nterm:15445 created:2025-08-26 03:46:49.922049</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:27] Permform GSEA...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:16:27] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-26 04:16:27] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-08-26 04:16:27] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-26 04:16:27] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-26 04:16:27] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 28s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:16:27] Completed <span style="color: #0000BB;">5</span> tasks in 2m 14.6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:18:42] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:18:42] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">gsea_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Vectorized input to `element_text()` is not officially supported.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Results may be unexpected or may change in future versions of ggplot2.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">alpha</span> values.</span>
+<span class="r-plt img"><img src="RunGSEA-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use a combined database</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGSEA</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -346,13 +393,84 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  db_combine <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:18:42] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:18:42] All values in the geneScore are greater than zero. Set scoreType = 'pos'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:18:42] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:18:42] Preparing database: KEGG</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:18:57] Preparing database: WikiPathway</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:01] Preparing database: Reactome</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:05] Preparing database: MP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:21] Preparing database: PFAM</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:23] Convert ID types for the database: KEGG</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:23] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:23] Using the <span style="color: #0000BB;">"103"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:23] Downloading the biomart from <span style="color: #0000BB;">"https://feb2021.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:47] Searching the dataset <span style="color: #0000BB;">"mmusculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:47] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:19:48] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:46] <span style="color: #0000BB;">10341</span> genes mapped with <span style="color: #0000BB;">"entrez_id"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:46] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">10341 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">226 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:50] Convert ID types for the database: WikiPathway</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:50] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:51] Using the <span style="color: #0000BB;">"103"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:51] Downloading the biomart from <span style="color: #0000BB;">"https://feb2021.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:51] Searching the dataset <span style="color: #0000BB;">"mmusculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:52] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:52] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:54] <span style="color: #0000BB;">4827</span> genes mapped with <span style="color: #0000BB;">"entrez_id"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:54] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">4827 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:56] Convert ID types for the database: Reactome</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:56] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:57] Using the <span style="color: #0000BB;">"103"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:57] Downloading the biomart from <span style="color: #0000BB;">"https://feb2021.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:57] Searching the dataset <span style="color: #0000BB;">"mmusculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:57] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:20:58] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:21] <span style="color: #0000BB;">8728</span> genes mapped with <span style="color: #0000BB;">"entrez_id"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:21] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">8728 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">5 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:25] Convert ID types for the database: PFAM</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:25] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:25] Using the <span style="color: #0000BB;">"103"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:25] Downloading the biomart from <span style="color: #0000BB;">"https://feb2021.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:26] Searching the dataset <span style="color: #0000BB;">"mmusculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:26] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:26] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:56] <span style="color: #0000BB;">19500</span> genes mapped with <span style="color: #0000BB;">"entrez_id"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:21:56] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">19500 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">72 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:22:05] Create 'Combined' database ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:22:06] Permform GSEA...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:22:06] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-08-26 04:22:06] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-08-26 04:22:06] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA: 34s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-08-26 04:22:06] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA: 18s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-08-26 04:22:06] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  8s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:22:06] Completed <span style="color: #0000BB;">5</span> tasks in 35.3s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:22:41] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:22:41] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"Combined"</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Vectorized input to `element_text()` is not officially supported.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Results may be unexpected or may change in future versions of ggplot2.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">alpha</span> values.</span>
+<span class="r-plt img"><img src="RunGSEA-5.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
