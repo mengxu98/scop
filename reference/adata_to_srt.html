@@ -64,27 +64,27 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="srt_to_adata.html">srt_to_adata</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:26] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:27] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:29] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:29] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:29] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:30] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-25 06:54:31] <span style="color: #0000BB;">"misc"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-25 06:54:31] <span style="color: #0000BB;">"tools"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:31] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:28] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:29] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:31] Found <span style="color: #0000BB;">194</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:31] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:31] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:32] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:43:32] <span style="color: #0000BB;">"misc"</span> slot is not converted</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-08-26 04:43:32] <span style="color: #0000BB;">"tools"</span> slot is not converted</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:32] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object completed</span>
 <span class="r-in"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  adata <span class="op">=</span> <span class="va">adata</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"PCA"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:31] Running <span style="color: #0000BB;">PAGA</span> analysis...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:32] Running <span style="color: #0000BB;">PAGA</span> analysis...</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in py_call_impl(callable, call_args$unnamed, call_args$named):</span> ValueError: Did not find PCA in `.obsm.keys()`. You need to compute it first.</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> Run `reticulate::py_last_error()` for details.</span>
 <span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">adata_to_srt</span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:31] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:31] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:32] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:33] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
 <span class="r-in"><span><span class="va">srt</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class Seurat </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 47886 features across 1000 samples within 3 assays </span>
@@ -96,17 +96,17 @@
 <span class="r-in"><span><span class="co"># Or convert a h5ad file to Seurat object</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="check_python.html">check_python</a></span><span class="op">(</span><span class="st">"scanpy"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:33] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:33] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:35] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:35] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:34] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:35] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:37] Found <span style="color: #0000BB;">194</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:37] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
 <span class="r-in"><span><span class="va">sc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"scanpy"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">sc</span><span class="op">$</span><span class="fu">read_h5ad</span><span class="op">(</span><span class="st">"pancreas.h5ad"</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in py_call_impl(callable, call_args$unnamed, call_args$named):</span> FileNotFoundError: [Errno 2] Unable to synchronously open file (unable to open file: name = 'pancreas.h5ad', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> Run `reticulate::py_last_error()` for details.</span>
 <span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">adata_to_srt</span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-25 06:54:35] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-25 06:54:36] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 04:43:37] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 04:43:38] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
 <span class="r-in"><span><span class="va">srt</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class Seurat </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 47886 features across 1000 samples within 3 assays </span>
