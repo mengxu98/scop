@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,8 +94,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:43:57] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 03:43:57] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:53] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-03 13:42:53] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res: NULL</span>
@@ -103,31 +103,31 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:43:57] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:43:57] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:43:59] Using the <span style="color: #0000BB;">"114"</span> version of biomart...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:43:59] Downloading the biomart from <span style="color: #0000BB;">"https://may2025.archive.ensembl.org"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:00] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:00] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:01] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:03] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:03] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:53] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:54] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:55] Using the <span style="color: #0000BB;">"115"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:55] Downloading the biomart from <span style="color: #0000BB;">"https://sep2025.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:57] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:58] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:42:59] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:43:01] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:43:01] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-08-26 03:44:03] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-08-26 03:44:03] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 13:43:02] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-03 13:43:02] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res:List of 7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_res     :'data.frame':	99 obs. of  4 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_IDtype: chr [1:99] "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:99] "NCAPD2" "ANLN" "UBR7" "TACC3" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ to_IDtype  : chr [1:99] "symbol" "symbol" "symbol" "symbol" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ to_geneID  : chr [1:99] "Ncapd2" "Anln" "Ubr7" "Tacc3" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_collapse:'data.frame':	95 obs. of  2 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:95] "ANLN" "ANP32E" "ATAD2" "AURKA" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ symbol     :List of 95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_res     :'data.frame':	100 obs. of  4 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_IDtype: chr [1:100] "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" "ensembl_symbol" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:100] "NCAPD2" "ANLN" "UBR7" "TACC3" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ to_IDtype  : chr [1:100] "symbol" "symbol" "symbol" "symbol" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ to_geneID  : chr [1:100] "Ncapd2" "Anln" "Ubr7" "Tacc3" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_collapse:'data.frame':	96 obs. of  2 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:96] "ANLN" "ANP32E" "ATAD2" "AURKA" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ symbol     :List of 96</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Anln"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Anp32e"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Atad2"</span>
@@ -157,7 +157,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ckap2"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ckap2l"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ckap5"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Cks1brt"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr [1:2] "Cks1brt" "Cks1b"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Cks2"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Clspn"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ctcf"</span>
@@ -218,27 +218,28 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ttk"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Tubb4b"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Tyms"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ube2c"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ubr7"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Uhrf1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Ung"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Usp1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ : chr "Wdr76"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "class")= chr "AsIs"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_expand  :'data.frame':	95 obs. of  2 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:95] "ANLN" "ANP32E" "ATAD2" "AURKA" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ symbol     : chr [1:95] "Anln" "Anp32e" "Atad2" "Aurka" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ Ensembl_version: chr "114"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ Datasets       :'data.frame':	214 obs. of  3 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ dataset    : 'AsIs' chr [1:214] "abrachyrhynchus_gene_ensembl" "acalliptera_gene_ensembl" "acarolinensis_gene_ensembl" "acchrysaetos_gene_ensembl" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ description: 'AsIs' chr [1:214] "Pink-footed goose genes (ASM259213v1)" "Eastern happy genes (fAstCal1.3)" "Green anole genes (AnoCar2.0v2)" "Golden eagle genes (bAquChr1.2)" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ version    : 'AsIs' chr [1:214] "ASM259213v1" "fAstCal1.3" "AnoCar2.0v2" "bAquChr1.2" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_expand  :'data.frame':	97 obs. of  2 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ from_geneID: chr [1:97] "ANLN" "ANP32E" "ATAD2" "AURKA" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ symbol     : chr [1:97] "Anln" "Anp32e" "Atad2" "Aurka" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ Ensembl_version: chr "115"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ Datasets       :'data.frame':	213 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ dataset    : 'AsIs' chr [1:213] "abrachyrhynchus_gene_ensembl" "acalliptera_gene_ensembl" "acarolinensis_gene_ensembl" "acchrysaetos_gene_ensembl" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ description: 'AsIs' chr [1:213] "Pink-footed goose genes (ASM259213v1)" "Eastern happy genes (fAstCal1.3)" "Green anole genes (AnoCar2.0v2)" "Golden eagle genes (bAquChr1.2)" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ version    : 'AsIs' chr [1:213] "ASM259213v1" "fAstCal1.3" "AnoCar2.0v2" "bAquChr1.2" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ Attributes     :'data.frame':	3170 obs. of  3 variables:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ name       : chr [1:3170] "ensembl_gene_id" "ensembl_gene_id_version" "ensembl_transcript_id" "ensembl_transcript_id_version" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ description: chr [1:3170] "Gene stable ID" "Gene stable ID version" "Transcript stable ID" "Transcript stable ID version" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ page       : chr [1:3170] "feature_page" "feature_page" "feature_page" "feature_page" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ geneID_unmapped: chr(0) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ S  : chr [1:42] "Mcm5" "Pcna" "Tyms" "Fen1" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M: chr [1:53] "Hmgb2" "Cdk1" "Nusap1" "Birc5" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M: chr [1:55] "Hmgb2" "Cdk1" "Nusap1" "Ube2c" ...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

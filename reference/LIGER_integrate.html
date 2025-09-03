@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-srt-list">srt_list<a class="anchor" aria-label="anchor" href="#arg-srt-list"></a></dt>
-<dd><p>A list of Seurat objects to be checked and preprocessed.</p></dd>
+<dd><p>A list of <code>Seurat</code> objects to be checked and preprocessed.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
@@ -106,31 +106,40 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-normalization-method">normalization_method<a class="anchor" aria-label="anchor" href="#arg-normalization-method"></a></dt>
-<dd><p>The normalization method to be used. Possible values are "LogNormalize", "SCT", and "TFIDF". Default is "LogNormalize".</p></dd>
+<dd><p>The normalization method to be used.
+Possible values are <code>"LogNormalize"</code>, <code>"SCT"</code>, and <code>"TFIDF"</code>.
+Default is <code>"LogNormalize"</code>.</p></dd>
 
 
 <dt id="arg-do-hvf-finding">do_HVF_finding<a class="anchor" aria-label="anchor" href="#arg-do-hvf-finding"></a></dt>
-<dd><p>A logical value indicating whether highly variable feature (HVF) finding should be performed. Default is TRUE.</p></dd>
+<dd><p>A logical value indicating whether highly variable feature (HVF) finding should be performed.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-hvf-source">HVF_source<a class="anchor" aria-label="anchor" href="#arg-hvf-source"></a></dt>
-<dd><p>The source of highly variable features. Possible values are "global" and "separate". Default is "separate".</p></dd>
+<dd><p>The source of highly variable features.
+Possible values are <code>"global"</code> and <code>"separate"</code>.
+Default is <code>"separate"</code>.</p></dd>
 
 
 <dt id="arg-hvf-method">HVF_method<a class="anchor" aria-label="anchor" href="#arg-hvf-method"></a></dt>
-<dd><p>The method for selecting highly variable features. Default is "vst".</p></dd>
+<dd><p>The method for selecting highly variable features.
+Default is <code>"vst"</code>.</p></dd>
 
 
 <dt id="arg-nhvf">nHVF<a class="anchor" aria-label="anchor" href="#arg-nhvf"></a></dt>
-<dd><p>The number of highly variable features to select. Default is 2000.</p></dd>
+<dd><p>The number of highly variable features to select.
+Default is <code>2000</code>.</p></dd>
 
 
 <dt id="arg-hvf-min-intersection">HVF_min_intersection<a class="anchor" aria-label="anchor" href="#arg-hvf-min-intersection"></a></dt>
-<dd><p>The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable. The default value is 1.</p></dd>
+<dd><p>The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
+The default value is <code>1</code>.</p></dd>
 
 
 <dt id="arg-hvf">HVF<a class="anchor" aria-label="anchor" href="#arg-hvf"></a></dt>
-<dd><p>A vector of highly variable features. Default is NULL.</p></dd>
+<dd><p>A vector of highly variable features.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-do-scaling">do_scaling<a class="anchor" aria-label="anchor" href="#arg-do-scaling"></a></dt>
@@ -139,7 +148,8 @@ If TRUE, the function will force to scale the data using the ScaleData function.
 
 
 <dt id="arg-vars-to-regress">vars_to_regress<a class="anchor" aria-label="anchor" href="#arg-vars-to-regress"></a></dt>
-<dd><p>A vector of variable names to include as additional regression variables. Default is NULL.</p></dd>
+<dd><p>A vector of variable names to include as additional regression variables.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-regression-model">regression_model<a class="anchor" aria-label="anchor" href="#arg-regression-model"></a></dt>
@@ -208,7 +218,8 @@ Default is an empty list.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>An integer specifying the random seed for reproducibility. Default is 11.</p></dd>
+<dd><p>An integer specifying the random seed for reproducibility.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 
