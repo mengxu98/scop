@@ -14,6 +14,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CellDimPlot3D.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellScoring.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellStatPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CheckDataList.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CheckDataMerge.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CheckDataType.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ComBat_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Conos_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CreateDataFile.html</loc></url>
@@ -99,11 +102,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/adata_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/adjcolors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/blendcolors.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/check_data_type.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_python.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_r.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/check_srt_list.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/check_srt_merge.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/compute_velocity_on_grid.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/conda_install.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/conda_python.html</loc></url>
