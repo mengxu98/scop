@@ -65,9 +65,9 @@ reference:
   - db_Scrublet
   - db_scDblFinder
   - db_scds
-  - check_data_type
-  - check_srt_list
-  - check_srt_merge
+  - CheckDataType
+  - CheckDataList
+  - CheckDataMerge
   - AddFeaturesData
   - GetFeaturesData
   - GetSimilarFeatures

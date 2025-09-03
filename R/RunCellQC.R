@@ -32,7 +32,7 @@ db_scDblFinder <- function(
       message_type = "error"
     )
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
@@ -82,7 +82,7 @@ db_scds <- function(
       message_type = "error"
     )
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
@@ -143,7 +143,7 @@ db_Scrublet <- function(
       message_type = "error"
     )
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
@@ -214,7 +214,7 @@ db_DoubletDetection <- function(
       message_type = "error"
     )
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
@@ -292,7 +292,7 @@ RunDoubletCalling <- function(
       message_type = "error"
     )
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
@@ -530,7 +530,7 @@ RunCellQC <- function(
   if (length(species) == 0) {
     species <- species_gene_prefix <- NULL
   }
-  status <- check_data_type(srt, layer = "counts", assay = assay)
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts!",
