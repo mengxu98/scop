@@ -101,7 +101,7 @@
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srt_merge(
+#' panc8_sub <- CheckDataMerge(
 #'   panc8_sub,
 #'   batch = "tech"
 #' )[["srt_merge"]]
@@ -579,9 +579,9 @@ RunKNNPredict <- function(
   }
 
   if (isFALSE(use_reduction)) {
-    status_dat <- check_data_type(data = query)
+    status_dat <- CheckDataType(data = query)
     log_message("Detected query data type: ", status_dat)
-    status_ref <- check_data_type(data = ref)
+    status_ref <- CheckDataType(data = ref)
     log_message("Detected reference data type: ", status_ref)
     if (
       status_ref != status_dat ||

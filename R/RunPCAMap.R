@@ -121,7 +121,7 @@ RunPCAMap <- function(
   }
 
   pca.out <- srt_ref[[ref_pca]]
-  status_query <- check_data_type(
+  status_query <- CheckDataType(
     data = GetAssayData5(
       srt_query,
       layer = "data",
@@ -129,7 +129,7 @@ RunPCAMap <- function(
     )
   )
   log_message("Detected srt_query data type: ", status_query)
-  status_ref <- check_data_type(
+  status_ref <- CheckDataType(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
