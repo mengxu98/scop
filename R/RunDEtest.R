@@ -417,7 +417,7 @@ RunDEtest <- function(
   }
   assay <- assay %||% DefaultAssay(srt)
 
-  status <- check_data_type(srt, layer = layer, assay = assay)
+  status <- CheckDataType(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
     log_message(
       "Data in the 'counts' layer is not raw counts.",

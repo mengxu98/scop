@@ -169,7 +169,7 @@ CellScoring <- function(
   }
   assay <- assay %||% DefaultAssay(srt)
   if (layer == "counts") {
-    status <- check_data_type(srt, layer = "counts", assay = assay)
+    status <- CheckDataType(srt, layer = "counts", assay = assay)
     if (status != "raw_counts") {
       log_message(
         "Data is not raw counts",
@@ -179,7 +179,7 @@ CellScoring <- function(
     }
   }
   if (layer == "data") {
-    status <- check_data_type(srt, layer = "data", assay = assay)
+    status <- CheckDataType(srt, layer = "data", assay = assay)
     if (status == "raw_counts") {
       log_message(
         "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data"
