@@ -129,7 +129,7 @@ RunDynamicFeatures <- function(
     verbose = FALSE
   )
   if (is.null(libsize)) {
-    status <- check_data_type(
+    status <- CheckDataType(
       srt,
       assay = assay,
       layer = "counts"
@@ -223,9 +223,9 @@ RunDynamicFeatures <- function(
   if (layer == "counts") {
     gene_status <- status
   }
-  gene_status <- status <- check_data_type(srt, assay = assay, layer = layer)
+  gene_status <- status <- CheckDataType(srt, assay = assay, layer = layer)
   meta_status <- sapply(meta, function(x) {
-    check_data_type(data = srt[[x]])
+    CheckDataType(data = srt[[x]])
   })
   if (is.null(family)) {
     family <- rep("gaussian", length(features))

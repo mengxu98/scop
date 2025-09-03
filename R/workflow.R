@@ -64,7 +64,7 @@ RecoverCounts <- function(
     )
   }
 
-  status <- check_data_type(data = counts)
+  status <- CheckDataType(data = counts)
   if (status == "raw_counts") {
     log_message(
       "The data is already raw counts.",

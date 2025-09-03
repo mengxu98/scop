@@ -1,32 +1,37 @@
-#' @title Check and report the type of data
+#' @title Check and report the type of data in `Seurat` object
 #'
 #' @description
-#' This function checks the type of data and returns a string indicating the type of data.
-#' It checks for the presence of infinite values, negative values, and whether the values are floats or integers.
+#' This function checks and returns a string indicating the type of data.
+#' It checks for the presence of infinite values, negative values,
+#' and whether the values are floats or integers.
 #'
-#' @param srt An object of class 'Seurat'.
-#' @param data The input data. If not provided, it will be extracted from the the 'srt' object.
-#' @param layer The layer in the 'srt' object from which to extract the data. Default is "data".
-#' @param assay The assay to extract the data from. If not provided, the default assay will be used.
+#' @md
+#' @param srt A `Seurat` object.
+#' @param layer The layer in the `srt` object from which to extract the data.
+#' Default is `"data"`.
+#' @param assay The assay to extract the data from.
+#' If not provided, the default assay will be used.
 #'
-#' @return A string indicating the type of data.
-#' Possible values are: "raw_counts", "log_normalized_counts", "raw_normalized_counts", or "unknown".
+#' @return
+#' A string indicating the type of data.
+#' Possible values are:
+#' `"raw_counts"`, `"log_normalized_counts"`, `"raw_normalized_counts"`, or `"unknown"`.
 #'
 #' @export
-check_data_type <- function(
+#'
+#' @examples
+#' CheckDataType(pancreas_sub)
+CheckDataType <- function(
     srt,
-    data = NULL,
     layer = "data",
     assay = NULL) {
-  if (is.null(data)) {
-    assay <- assay %||% SeuratObject::DefaultAssay(srt)
-    data <- GetAssayData5(
-      srt,
-      layer = layer,
-      assay = assay,
-      verbose = FALSE
-    )
-  }
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  data <- GetAssayData5(
+    srt,
+    layer = layer,
+    assay = assay,
+    verbose = FALSE
+  )
   isfinite <- all(is.finite(range(data, na.rm = TRUE)))
   if (inherits(data, "dgCMatrix")) {
     isfloat <- any(data@x %% 1 != 0, na.rm = TRUE)
@@ -41,36 +46,36 @@ check_data_type <- function(
 
   if (isFALSE(isfinite)) {
     log_message(
-      "Infinite values detected!",
+      "Infinite values detected",
       message_type = "warning"
     )
     return("unknown")
   } else if (isTRUE(isnegative)) {
     log_message(
-      "Negative values detected!",
+      "Negative values detected",
       message_type = "warning"
     )
     return("unknown")
   } else {
     if (!isfloat) {
       log_message(
-        "Data is raw counts"
+        "Data type is raw counts"
       )
       return("raw_counts")
     } else if (isfloat && islog) {
       log_message(
-        "Data is log-normalized"
+        "Data type is log-normalized"
       )
       return("log_normalized_counts")
     } else if (isfloat && !islog) {
       if (isFALSE(isnegative)) {
         log_message(
-          "Data is normalized without log transformation"
+          "Data type is normalized without log transformation"
         )
         return("raw_normalized_counts")
       } else {
         log_message(
-          "Can not determine whether data is log-normalized",
+          "Can not determine whether data type is log-normalized",
           message_type = "warning"
         )
         return("unknown")
@@ -79,33 +84,48 @@ check_data_type <- function(
   }
 }
 
-#' @title Check and preprocess a list of seurat objects
+#' @title Check and preprocess a list of `Seurat` objects
 #'
 #' @description
-#' This function checks and preprocesses a list of seurat objects.
+#' This function checks and preprocesses a list of `Seurat` objects.
 #' It performs various checks on the input, including verification of input types,
 #' assay type consistency, feature name consistency, and batch column consistency.
 #' It also performs data normalization and variable feature finding based on the specified parameters.
 #' Finally, it prepares the data for integration analysis based on the highly variable features.
 #'
-#' @param srt_list A list of Seurat objects to be checked and preprocessed.
+#' @md
+#' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
 #' @param assay The name of the assay to be used for downstream analysis.
 #' @param do_normalization A logical value indicating whether data normalization should be performed.
-#' @param normalization_method The normalization method to be used. Possible values are "LogNormalize", "SCT", and "TFIDF". Default is "LogNormalize".
-#' @param do_HVF_finding A logical value indicating whether highly variable feature (HVF) finding should be performed. Default is TRUE.
-#' @param HVF_source The source of highly variable features. Possible values are "global" and "separate". Default is "separate".
-#' @param HVF_method The method for selecting highly variable features. Default is "vst".
-#' @param nHVF The number of highly variable features to select. Default is 2000.
-#' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable. The default value is 1.
-#' @param HVF A vector of highly variable features. Default is NULL.
-#' @param vars_to_regress A vector of variable names to include as additional regression variables. Default is NULL.
-#' @param seed An integer specifying the random seed for reproducibility. Default is 11.
+#' @param normalization_method The normalization method to be used.
+#' Possible values are `"LogNormalize"`, `"SCT"`, and `"TFIDF"`.
+#' Default is `"LogNormalize"`.
+#' @param do_HVF_finding A logical value indicating whether highly variable feature (HVF) finding should be performed.
+#' Default is `TRUE`.
+#' @param HVF_source The source of highly variable features.
+#' Possible values are `"global"` and `"separate"`.
+#' Default is `"separate"`.
+#' @param HVF_method The method for selecting highly variable features.
+#' Default is `"vst"`.
+#' @param nHVF The number of highly variable features to select.
+#' Default is `2000`.
+#' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
+#' The default value is `1`.
+#' @param HVF A vector of highly variable features.
+#' Default is `NULL`.
+#' @param vars_to_regress A vector of variable names to include as additional regression variables.
+#' Default is `NULL`.
+#' @param seed An integer specifying the random seed for reproducibility.
+#' Default is `11`.
 #'
-#' @return A list containing the preprocessed seurat objects, the highly variable features, the assay name, and the type of assay (e.g., "RNA" or "Chromatin").
+#' @return
+#' A list containing the preprocessed `Seurat` objects,
+#' the highly variable features, the assay name,
+#' and the type of assay.
 #'
 #' @export
-check_srt_list <- function(
+CheckDataList <- function(
     srt_list,
     batch,
     assay = NULL,
@@ -328,7 +348,7 @@ check_srt_list <- function(
         )
       }
     } else if (is.null(do_normalization)) {
-      status <- check_data_type(
+      status <- CheckDataType(
         srt_list[[i]],
         layer = "data",
         assay = assay
@@ -572,14 +592,14 @@ check_srt_list <- function(
 #'
 #' This function checks and preprocesses a merged seurat object.
 #'
-#' @inheritParams check_srt_list
+#' @inheritParams CheckDataList
 #' @inheritParams integration_scop
 #' @param srt_merge A merged Seurat object that includes the batch information.
 #'
-#' @seealso \link{check_srt_list}
+#' @seealso \link{CheckDataList}
 #'
 #' @export
-check_srt_merge <- function(
+CheckDataMerge <- function(
     srt_merge,
     batch = NULL,
     assay = NULL,
@@ -628,7 +648,7 @@ check_srt_merge <- function(
     split.by = batch
   )
 
-  checked <- check_srt_list(
+  checked <- CheckDataList(
     srt_list = srt_list,
     batch = batch,
     assay = assay,
