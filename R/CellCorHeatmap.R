@@ -216,7 +216,7 @@
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srt_merge(
+#' panc8_sub <- CheckDataMerge(
 #'   panc8_sub,
 #'   batch = "tech"
 #' )[["srt_merge"]]

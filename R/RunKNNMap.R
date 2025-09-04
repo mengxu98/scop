@@ -36,6 +36,11 @@
 #'   group.by = c("celltype", "tech")
 #' )
 #'
+#' # Set the number of threads for RcppParallel
+#' # details see: ?RcppParallel::setThreadOptions
+#' if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#'   RcppParallel::setThreadOptions()
+#' }
 #' # Projection
 #' srt_query <- RunKNNMap(
 #'   srt_query = srt_query,
@@ -105,19 +110,14 @@ RunKNNMap <- function(
     }
   }
   projection_method <- match.arg(projection_method)
-  if (
-    projection_method == "model" &&
-      !"model" %in% names(srt_ref[[ref_umap]]@misc)
-  ) {
+  if (projection_method == "model" && !"model" %in% names(srt_ref[[ref_umap]]@misc)) {
     log_message("No UMAP model detected. Set the projection_method to 'knn'")
     projection_method <- "knn"
   }
-  if (
-    projection_method == "model" &&
-      !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
-  ) {
+  distance_metrics <- c("euclidean", "cosine", "manhattan", "hamming")
+  if (projection_method == "model" && !distance_metric %in% distance_metrics) {
     log_message(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when projection_method='model'",
+      "{.arg distance_metric} must be one of {.val {distance_metrics}} when projection_method = 'model'",
       message_type = "error"
     )
   }
@@ -146,7 +146,7 @@ RunKNNMap <- function(
   )
   if (!distance_metric %in% c(simil_method, dist_method)) {
     log_message(
-      paste0(distance_metric, " method is invalid."),
+      "{.arg distance_metric} must be one of {.val {c(simil_method, dist_method)}}",
       message_type = "error"
     )
   }
@@ -155,47 +155,56 @@ RunKNNMap <- function(
     if ("layout" %in% names(model)) {
       if (k != model$config$n_neighbors) {
         k <- model$config$n_neighbors
-        log_message("Set k to ", k, " which is used in the umap model")
+        log_message("Set k to {.val k} which is used in the umap model")
       }
     } else if ("embedding" %in% names(model)) {
       if (k != model$n_neighbors) {
         k <- model$n_neighbors
-        log_message("Set k to ", k, " which is used in the umap model")
+        log_message("Set k to {.val k} which is used in the umap model")
       }
     }
   }
 
   if (!is.null(query_reduction) && !is.null(ref_reduction)) {
-    log_message("Use the reduction to calculate distance metric.")
-    if (
-      !is.null(query_dims) &&
-        !is.null(ref_dims) &&
-        length(query_dims) == length(ref_dims)
-    ) {
-      query <- Seurat::Embeddings(srt_query, reduction = query_reduction)[, query_dims]
-      ref <- Seurat::Embeddings(srt_ref, reduction = ref_reduction)[, ref_dims]
+    log_message("Use the reduction to calculate distance metric")
+    if (!is.null(query_dims) && !is.null(ref_dims) && length(query_dims) == length(ref_dims)) {
+      query <- Seurat::Embeddings(srt_query, reduction = query_reduction)
+      query <- query[, query_dims]
+      ref <- Seurat::Embeddings(srt_ref, reduction = ref_reduction)
+      ref <- ref[, ref_dims]
     } else {
       log_message(
-        "query_dims and ref_dims must be provided with the same length.",
+        "{.arg query_dims} and {.arg ref_dims} must be provided with the same length",
         message_type = "error"
       )
     }
   } else {
-    log_message("Use the features to calculate distance metric.")
-    status_query <- check_data_type(
-      data = GetAssayData5(srt_query, layer = "data", assay = query_assay)
+    log_message("Use the features to calculate distance metric")
+    status_query <- CheckDataType(
+      data = GetAssayData5(
+        srt_query,
+        layer = "data",
+        assay = query_assay,
+        verbose = FALSE
+      )
     )
-    log_message("Detected srt_query data type: ", status_query)
-    status_ref <- check_data_type(
-      data = GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+    status_ref <- CheckDataType(
+      data = GetAssayData5(
+        srt_ref,
+        layer = "data",
+        assay = ref_assay,
+        verbose = FALSE
+      )
     )
-    log_message("Detected srt_ref data type: ", status_ref)
-    if (
-      status_ref != status_query ||
-        any(status_query == "unknown", status_ref == "unknown")
-    ) {
+    if (status_ref != status_query) {
       log_message(
-        "Data type is unknown or different between srt_query and srt_ref.",
+        "Data type is different between {.arg srt_query} and {.arg srt_ref}",
+        message_type = "warning"
+      )
+    }
+    if (any(status_query == "unknown", status_ref == "unknown")) {
+      log_message(
+        "Data type is unknown in {.arg srt_query} or {.arg srt_ref}",
         message_type = "warning"
       )
     }
@@ -304,9 +313,6 @@ RunKNNMap <- function(
     refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[knn_cells, ]
     group <- rep(query.neighbor@cell.names, ncol(query.neighbor@nn.idx))
   } else {
-    if (requireNamespace("RcppParallel", quietly = TRUE)) {
-      RcppParallel::setThreadOptions()
-    }
     if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {

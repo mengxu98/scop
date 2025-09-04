@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.2.3
-Date: 2025-08-24
+Version: 0.2.4
+Date: 2025-09-03
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -58,8 +58,6 @@ Suggests:
     devtools,
     DDRTree,
     e1071,
-    future,
-    future.apply,
     ggpubr,
     ggridges,
     ggsignif,
@@ -89,7 +87,6 @@ Suggests:
     org.Mm.eg.db,
     pak,
     patchwork,
-    pbapply,
     promises,
     purrr,
     PFAM.db,
@@ -98,8 +95,6 @@ Suggests:
     proxyC,
     ragg,
     reactome.db,
-    renv,
-    RcppParallel,
     RcppML,
     R.cache,
     R.utils,
@@ -122,13 +117,10 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SummarizedExperiment,
-    testthat,
     tidyr,
     umap,
     UCell,
     withr
-Remotes:
-    mengxu98/thisutils
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3

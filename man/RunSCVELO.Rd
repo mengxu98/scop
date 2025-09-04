@@ -199,6 +199,7 @@ CellDimPlot(
   velocity = "stochastic"
 )
 
+data(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",

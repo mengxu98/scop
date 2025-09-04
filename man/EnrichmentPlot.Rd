@@ -2,7 +2,7 @@
 % Please edit documentation in R/EnrichmentPlot.R
 \name{EnrichmentPlot}
 \alias{EnrichmentPlot}
-\title{EnrichmentPlot}
+\title{Enrichment Plot}
 \usage{
 EnrichmentPlot(
   srt,
@@ -202,11 +202,12 @@ Default is TRUE.}
 This function generates various types of plots for enrichment (over-representation) analysis.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#   pancreas_sub,
-#   group_by = "CellType"
-# )
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
 
 pancreas_sub <- RunEnrichment(
   srt = pancreas_sub,
@@ -458,6 +459,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   ncol = 1
 )
+}
 }
 \seealso{
 \link{RunEnrichment}
