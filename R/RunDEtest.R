@@ -134,7 +134,7 @@ PerformDE <- function(
       message_type = "error"
     )
   )
-  return(de.results)
+  de.results
 }
 
 WilcoxDETest <- function(
@@ -144,34 +144,28 @@ WilcoxDETest <- function(
     verbose = TRUE,
     ...) {
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
-  j <- seq_len(length.out = length(x = cells.1))
-  my.sapply <- ifelse(
-    test = verbose && future::nbrOfWorkers() == 1,
-    yes = pbapply::pbsapply,
-    no = future.apply::future_sapply
-  )
   check_r("limma")
-  p_val <- my.sapply(
-    X = 1:nrow(x = data.use),
-    FUN = function(x) {
+  p_val <- parallelize_fun(
+    seq_len(nrow(data.use)),
+    fun = function(x) {
       keep <- colnames(data.use)[!is.na(data.use[x, ])]
-      j <- seq_len(length.out = length(x = intersect(cells.1, keep)))
+      j <- seq_len(length.out = length(intersect(cells.1, keep)))
       statistics <- data.use[x, keep]
-      return(
-        min(
-          2 * min(
-            limma::rankSumTestWithCorrelation(
-              index = j,
-              statistics = statistics
-            )
-          ),
-          1
-        )
+      min(
+        2 * min(
+          limma::rankSumTestWithCorrelation(
+            index = j,
+            statistics = statistics
+          )
+        ),
+        1
       )
     }
+  ) |> purrr::list_c()
+  data.frame(
+    p_val,
+    row.names = rownames(data.use)
   )
-
-  return(data.frame(p_val, row.names = rownames(x = data.use)))
 }
 
 
@@ -423,7 +417,7 @@ RunDEtest <- function(
   }
   assay <- assay %||% DefaultAssay(srt)
 
-  status <- check_data_type(srt, layer = layer, assay = assay)
+  status <- CheckDataType(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
     log_message(
       "Data in the 'counts' layer is not raw counts.",

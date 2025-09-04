@@ -288,16 +288,16 @@ env_info <- function(conda, envname) {
       "conda environment: "
     ),
     cli::col_grey(
-      paste0("  conda:          ", conda)
+      "  conda:          ", conda
     ),
     cli::col_grey(
-      paste0("  environment:    ", paste0(envs_dir, "/", get_envname()))
+      "  environment:    ", envs_dir, "/", get_envname()
     ),
     cli::col_blue(
       "python config: "
     ),
     cli::col_grey(
-      paste0("  ", py_info)
+      "  ", py_info
     )
   )
   invisible(lapply(py_info_mesg, packageStartupMessage))
@@ -350,7 +350,7 @@ env_requirements <- function(version = "3.10-1") {
     package_versions <- c(
       "leidenalg" = "leidenalg==0.10.2",
       "tbb" = "tbb==2022.2.0",
-      "igraph" = "igraph==0.11.9",
+      "igraph" = "igraph==0.10.16",
       "matplotlib" = "matplotlib==3.10.3",
       "numba" = "numba==0.59.1",
       "llvmlite" = "llvmlite==0.42.0",
@@ -1080,7 +1080,7 @@ RemovePackages <- function(
   envname <- get_envname(envname)
 
   log_message(
-    "Removing {.val {length(packages)}} package(s) from environment: {.file {envname}}"
+    "Removing {.pkg {packages}} from environment: {.file {envname}}"
   )
 
   if (identical(conda, "auto")) {
@@ -1105,8 +1105,6 @@ RemovePackages <- function(
   }
 
   if (!force) {
-    log_message("Packages to remove: {.pkg {packages}}")
-
     if (interactive()) {
       response <- readline(
         paste0(
@@ -1115,12 +1113,12 @@ RemovePackages <- function(
         )
       )
       if (!tolower(response) %in% c("y", "yes")) {
-        log_message("Package removal cancelled")
+        log_message("{.pkg {packages}} removal cancelled")
         return(invisible(FALSE))
       }
     } else {
       log_message(
-        "Automatically remove packages in non-interactive mode",
+        "Automatically remove {.pkg {packages}} in non-interactive mode",
         message_type = "warning"
       )
     }
@@ -1132,7 +1130,7 @@ RemovePackages <- function(
     },
     error = function(e) {
       log_message(
-        "Failed to get Python path: {.file {e$message}}",
+        "Failed to get Python path: {.val {e$message}}",
         message_type = "error"
       )
       NULL
@@ -1144,12 +1142,12 @@ RemovePackages <- function(
   }
 
   if (pip) {
-    log_message("Removing packages via {.pkg pip}...")
+    log_message("Removing {.pkg {packages}} via {.pkg pip}...")
 
     result <- tryCatch(
       {
         for (pkg in packages) {
-          log_message("Removing package: {.pkg {pkg}}")
+          log_message("Removing {.pkg {pkg}}")
 
           args <- c(
             "-m", "pip", "uninstall", "-y", pkg
@@ -1159,12 +1157,12 @@ RemovePackages <- function(
 
           if (status != 0L) {
             log_message(
-              "Failed to remove package {.pkg {pkg}} via pip [error code {.val {status}}]",
+              "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
               message_type = "warning"
             )
           } else {
             log_message(
-              "Package {.pkg {pkg}} removed successfully via pip",
+              "Package {.pkg {pkg}} removed successfully via {.pkg pip}",
               message_type = "success"
             )
           }
@@ -1180,7 +1178,7 @@ RemovePackages <- function(
       }
     )
   } else {
-    log_message("Removing packages via {.pkg conda}...")
+    log_message("Removing {.pkg {packages}} via {.pkg conda}...")
 
     result <- tryCatch(
       {
@@ -1191,13 +1189,13 @@ RemovePackages <- function(
 
         if (status != 0L) {
           log_message(
-            "Conda removal failed with error code: {.val {status}}",
+            "{.pkg {packages}} removal failed via {.pkg conda} with error code: {.val {status}}",
             message_type = "warning"
           )
           FALSE
         } else {
           log_message(
-            "Packages removed successfully via conda",
+            "{.pkg {packages}} removed successfully via {.pkg conda}",
             message_type = "success"
           )
           TRUE
@@ -1214,14 +1212,14 @@ RemovePackages <- function(
 
     if (!result && !pip) {
       log_message(
-        "Conda removal failed, trying pip as fallback...",
+        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg pip} as fallback...",
         message_type = "info"
       )
 
       result <- tryCatch(
         {
           for (pkg in packages) {
-            log_message("Removing package via pip: {.pkg {pkg}}")
+            log_message("Removing {.pkg {pkg}}")
 
             args <- c(
               "-m", "pip", "uninstall", "-y", pkg
@@ -1231,12 +1229,12 @@ RemovePackages <- function(
 
             if (status != 0L) {
               log_message(
-                "Failed to remove package {.pkg {pkg}} via pip [error code {.val {status}}]",
+                "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
                 message_type = "warning"
               )
             } else {
               log_message(
-                "Package {.pkg {pkg}} removed successfully via pip",
+                "{.pkg {pkg}} removed successfully via {.pkg pip}",
                 message_type = "success"
               )
             }
@@ -1245,7 +1243,7 @@ RemovePackages <- function(
         },
         error = function(e) {
           log_message(
-            "Pip fallback also failed: {.val {e$message}}",
+            "{.pkg {packages}} removal failed via {.pkg pip} as fallback: {.val {e$message}}",
             message_type = "error"
           )
           FALSE
@@ -1256,12 +1254,12 @@ RemovePackages <- function(
 
   if (result) {
     log_message(
-      "Package removal completed successfully",
+      "{.pkg {packages}} removal completed successfully",
       message_type = "success"
     )
   } else {
     log_message(
-      "Package removal failed",
+      "{.pkg {packages}} removal failed",
       message_type = "error"
     )
   }
