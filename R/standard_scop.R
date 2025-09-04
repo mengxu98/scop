@@ -209,7 +209,7 @@ standard_scop <- function(
 
   log_message("Start scop standard workflow...")
 
-  checked <- check_srt_list(
+  checked <- CheckDataList(
     srt_list = list(srt),
     batch = "",
     assay = assay,

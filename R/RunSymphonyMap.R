@@ -145,7 +145,7 @@ RunSymphonyMap <- function(
     )
   }
 
-  status_query <- check_data_type(
+  status_query <- CheckDataType(
     data = GetAssayData5(
       srt_query,
       layer = "data",
@@ -153,7 +153,7 @@ RunSymphonyMap <- function(
     )
   )
   log_message("Detected srt_query data type: {.val {status_query}}")
-  status_ref <- check_data_type(
+  status_ref <- CheckDataType(
     data = GetAssayData5(
       srt_ref,
       layer = "data",

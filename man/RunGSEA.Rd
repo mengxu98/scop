@@ -143,10 +143,10 @@ Perform the enrichment analysis (GSEA) on the genes
 }
 \examples{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#  group_by = "CellType"
-# )
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group_by = "CellType",
@@ -178,7 +178,6 @@ GSEAPlot(
   )
 )
 
-\dontrun{
 # Remove redundant GO terms
 pancreas_sub <- RunGSEA(
   srt = pancreas_sub,
@@ -212,6 +211,7 @@ GSEAPlot(
   db = "GO_BP",
   plot_type = "comparison"
 )
+
 # Use a combined database
 pancreas_sub <- RunGSEA(
   srt = pancreas_sub,
@@ -228,7 +228,6 @@ GSEAPlot(
   group_by = "CellType",
   plot_type = "comparison"
 )
-}
 }
 \seealso{
 \link{PrepareDB}, \link{ListDB}, \link{GSEAPlot}, \link{RunEnrichment}, \link{EnrichmentPlot}

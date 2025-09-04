@@ -1,5 +1,6 @@
-#' RunKNNPredict
+#' @title Run KNN prediction
 #'
+#' @description
 #' This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 #'
 #' @param srt_query An object of class Seurat to be annotated with cell types.
@@ -41,10 +42,17 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Annotate cells using bulk RNA-seq data
 #' data(pancreas_sub)
-#' data("ref_scMCA")
+#' data(ref_scMCA)
 #' pancreas_sub <- standard_scop(pancreas_sub)
+#'
+#' # Set the number of threads for RcppParallel
+#' # details see: ?RcppParallel::setThreadOptions
+#' if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#'   RcppParallel::setThreadOptions()
+#' }
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   bulk_ref = ref_scMCA
@@ -93,7 +101,7 @@
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srt_merge(
+#' panc8_sub <- CheckDataMerge(
 #'   panc8_sub,
 #'   batch = "tech"
 #' )[["srt_merge"]]
@@ -184,6 +192,7 @@
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
 #' )
+#' }
 RunKNNPredict <- function(
     srt_query,
     srt_ref = NULL,
@@ -570,9 +579,9 @@ RunKNNPredict <- function(
   }
 
   if (isFALSE(use_reduction)) {
-    status_dat <- check_data_type(data = query)
+    status_dat <- CheckDataType(data = query)
     log_message("Detected query data type: ", status_dat)
-    status_ref <- check_data_type(data = ref)
+    status_ref <- CheckDataType(data = ref)
     log_message("Detected reference data type: ", status_ref)
     if (
       status_ref != status_dat ||
@@ -661,9 +670,6 @@ RunKNNPredict <- function(
     match_k_distance <- query.neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
   } else {
-    if (requireNamespace("RcppParallel", quietly = TRUE)) {
-      RcppParallel::setThreadOptions()
-    }
     if (distance_metric %in% c(simil_methods, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
         if (distance_metric == "spearman") {

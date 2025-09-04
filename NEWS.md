@@ -1,5 +1,9 @@
 # scop
 
+# scop 0.2.4
+
+* **func**: Rename functions: `check_srt_merge()` to `CheckDataMerge`, `check_srt_list()` to `CheckDataList` and `check_data_type()` to `CheckDataType`.
+
 # scop 0.2.2
 
 * **func**: Import!!! Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.

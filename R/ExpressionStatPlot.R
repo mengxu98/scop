@@ -249,7 +249,7 @@ ExpressionStatPlot <- function(
         message_type = "warning"
       )
     }
-    status <- check_data_type(data = exp.data)
+    status <- CheckDataType(data = exp.data)
     log_message(
       "Data type: ", status
     )
