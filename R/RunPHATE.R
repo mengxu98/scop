@@ -1,38 +1,68 @@
-#' Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
+#' @title Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 #'
-#' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used. Default is "pca".
-#' @param dims An integer vector specifying the dimensions to be used. Default is NULL.
-#' @param features A character vector specifying the features to be used. Default is NULL.
-#' @param assay A character string specifying the assay to be used. Default is NULL.
-#' @param layer A character string specifying the layer to be used. Default is "data".
-#' @param n_components An integer specifying the number of PHATE components. Default is 2.
-#' @param knn An integer specifying the number of nearest neighbors on which to build kernel. Default is 5.
+#' @md
+#' @param object A Seurat object or a matrix-like object.
+#' @param reduction A character string specifying the reduction to be used.
+#' Default is `"pca"`.
+#' @param dims An integer vector specifying the dimensions to be used.
+#' Default is `NULL`.
+#' @param features A character vector specifying the features to be used.
+#' Default is `NULL`.
+#' @param assay A character string specifying the assay to be used.
+#' Default is `NULL`.
+#' @param layer A character string specifying the layer to be used.
+#' Default is `"data"`.
+#' @param n_components An integer specifying the number of PHATE components.
+#' Default is `2`.
+#' @param knn An integer specifying the number of nearest neighbors on which to build kernel.
+#' Default is `5`.
 #' @param decay An integer specifying the sets decay rate of kernel tails. Default is 40.
-#' @param n_landmark An integer specifying the number of landmarks to use in fast PHATE. Default is 2000.
-#' @param t A character string specifying the power to which the diffusion operator is powered. This sets the level of diffusion. If ‘auto’, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator. Default is "auto".
-#' @param gamma A numeric value specifying the informational distance constant between -1 and 1. gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential. Default is 1.
-#' @param n_pca An integer specifying the number of principal components to use for calculating neighborhoods. For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time. Default is 100.
-#' @param knn_dist A character string specifying the distance metric for k-nearest neighbors. Recommended values: "euclidean, "cosine, "precomputed". Default is "euclidean".
-#' @param knn_max An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point. For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly. Default is NULL.
-#' @param t_max An integer specifying the maximum \code{t} to test. Default is 100.
-#' @param do_cluster A logical value indicating whether to perform clustering on the PHATE embeddings. Default is FALSE.
-#' @param n_clusters An integer specifying the number of clusters to be identified. Default is "auto".
-#' @param max_clusters An integer specifying the maximum number of clusters to test. Default is 100.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "phate".
-#' @param reduction.key A character string specifying the prefix for the column names of the PHATE embeddings. Default is "PHATE_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
+#' @param n_landmark An integer specifying the number of landmarks to use in fast PHATE.
+#' Default is `2000`.
+#' @param t A character string specifying the power to which the diffusion operator is powered.
+#' This sets the level of diffusion. If `"auto"`, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
+#' Default is `"auto"`.
+#' @param gamma A numeric value specifying the informational distance constant between -1 and 1.
+#' gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential.
+#' Default is `1`.
+#' @param n_pca An integer specifying the number of principal components to use for calculating neighborhoods.
+#' For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time.
+#' Default is `100`.
+#' @param knn_dist A character string specifying the distance metric for k-nearest neighbors.
+#' Recommended values: `"euclidean"`, `"cosine"`, `"precomputed"`.
+#' Default is `"euclidean"`.
+#' @param knn_max An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point.
+#' For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly.
+#' Default is `NULL`.
+#' @param t_max An integer specifying the maximum \code{t} to test. Default is `100`.
+#' @param do_cluster A logical value indicating whether to perform clustering on the PHATE embeddings.
+#' Default is `FALSE`.
+#' @param n_clusters An integer specifying the number of clusters to be identified.
+#' Default is `"auto"`.
+#' @param max_clusters An integer specifying the maximum number of clusters to test.
+#' Default is `100`.
+#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
+#' Default is `"phate"`.
+#' @param reduction.key A character string specifying the prefix for the column names of the PHATE embeddings.
+#' Default is `"PHATE_"`.
+#' @param verbose A logical value indicating whether to print verbose output.
+#' Default is `TRUE`.
+#' @param seed.use An integer specifying the random seed to be used.
+#' Default is `11`.
 #' @param ... Additional arguments to be passed to the phate.PHATE function.
 #'
 #' @rdname RunPHATE
 #' @export
 #'
 #' @examples
-#' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
+#' pancreas_sub <- Seurat::FindVariableFeatures(
+#'   pancreas_sub,
+#'   verbose = FALSE
+#' )
+#' features <- SeuratObject::VariableFeatures(pancreas_sub)
 #' pancreas_sub <- RunPHATE(
-#'   object = pancreas_sub,
-#'   features = SeuratObject::VariableFeatures(pancreas_sub)
+#'   pancreas_sub,
+#'   features = features
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -71,40 +101,41 @@ RunPHATE.Seurat <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (sum(c(is.null(x = dims), is.null(x = features))) == 2) {
+  if (sum(c(is.null(dims), is.null(features))) == 2) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
       message_type = "error"
     )
   }
-  if (!is.null(x = features)) {
+  if (!is.null(features)) {
     assay <- assay %||% DefaultAssay(object = object)
-    data.use <- as_matrix(
+    data_use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay
+          assay = assay,
+          verbose = FALSE
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < n_components) {
+    if (ncol(data_use) < n_components) {
       log_message(
         "Please provide as many or more features than n_components: ",
-        length(x = features),
+        length(features),
         " features provided, ",
         n_components,
         " PHATE components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
-    data.use <- Embeddings(object[[reduction]])[, dims]
+  } else if (!is.null(dims)) {
+    data_use <- Embeddings(object[[reduction]])[, dims]
     assay <- DefaultAssay(object = object[[reduction]])
-    if (length(x = dims) < n_components) {
+    if (length(dims) < n_components) {
       log_message(
         "Please provide as many or more dims than n_components: ",
-        length(x = dims),
+        length(dims),
         " dims provided, ",
         n_components,
         " PHATE components requested",
@@ -118,7 +149,7 @@ RunPHATE.Seurat <- function(
     )
   }
   object[[reduction.name]] <- RunPHATE(
-    object = data.use,
+    object = data_use,
     assay = assay,
     n_components = n_components,
     knn = knn,
@@ -164,9 +195,7 @@ RunPHATE.default <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (!is.null(x = seed.use)) {
-    set.seed(seed = seed.use)
-  }
+  set.seed(seed = seed.use)
   check_python("phate")
   phate <- reticulate::import("phate")
 
@@ -190,8 +219,8 @@ RunPHATE.default <- function(
     ...
   )
   embedding <- operator$fit_transform(object, t_max = as.integer(t_max))
-  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(x = embedding)))
-  rownames(x = embedding) <- rownames(object)
+  colnames(embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
+  rownames(embedding) <- rownames(object)
 
   reduction <- Seurat::CreateDimReducObject(
     embeddings = embedding,

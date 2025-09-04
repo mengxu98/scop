@@ -26,7 +26,7 @@
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- check_srt_merge(
+#' panc8_sub <- CheckDataMerge(
 #'   panc8_sub,
 #'   batch = "tech"
 #' )[["srt_merge"]]
@@ -91,7 +91,7 @@ RunScmap <- function(
     )
   }
 
-  status_query <- check_data_type(
+  status_query <- CheckDataType(
     data = GetAssayData5(
       srt_query,
       layer = "data",
@@ -99,7 +99,7 @@ RunScmap <- function(
     )
   )
   log_message("Detected srt_query data type: ", status_query)
-  status_ref <- check_data_type(
+  status_ref <- CheckDataType(
     data = GetAssayData5(
       srt_ref,
       layer = "data",

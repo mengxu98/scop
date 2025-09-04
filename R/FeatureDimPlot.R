@@ -538,7 +538,7 @@ FeatureDimPlot <- function(
         message_type = "warning"
       )
     }
-    status <- check_data_type(srt, layer = layer, assay = assay)
+    status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(
@@ -1945,7 +1945,7 @@ FeatureDimPlot3D <- function(
         message_type = "warning"
       )
     }
-    status <- check_data_type(srt, layer = layer, assay = assay)
+    status <- CheckDataType(srt, layer = layer, assay = assay)
     log_message("Data type detected in ", layer, " layer: ", status)
     if (status %in% c("raw_counts", "raw_normalized_counts")) {
       srt@meta.data[["CoExp"]] <- apply(

@@ -43,30 +43,40 @@ Scanorama_integrate(
 \item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
 Default is \code{TRUE}.}
 
-\item{srt_list}{A list of Seurat objects to be checked and preprocessed.}
+\item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 
 \item{do_normalization}{A logical value indicating whether data normalization should be performed.}
 
-\item{normalization_method}{The normalization method to be used. Possible values are "LogNormalize", "SCT", and "TFIDF". Default is "LogNormalize".}
+\item{normalization_method}{The normalization method to be used.
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
+Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{A logical value indicating whether highly variable feature (HVF) finding should be performed. Default is TRUE.}
+\item{do_HVF_finding}{A logical value indicating whether highly variable feature (HVF) finding should be performed.
+Default is \code{TRUE}.}
 
-\item{HVF_source}{The source of highly variable features. Possible values are "global" and "separate". Default is "separate".}
+\item{HVF_source}{The source of highly variable features.
+Possible values are \code{"global"} and \code{"separate"}.
+Default is \code{"separate"}.}
 
-\item{HVF_method}{The method for selecting highly variable features. Default is "vst".}
+\item{HVF_method}{The method for selecting highly variable features.
+Default is \code{"vst"}.}
 
-\item{nHVF}{The number of highly variable features to select. Default is 2000.}
+\item{nHVF}{The number of highly variable features to select.
+Default is \code{2000}.}
 
-\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable. The default value is 1.}
+\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
+The default value is \code{1}.}
 
-\item{HVF}{A vector of highly variable features. Default is NULL.}
+\item{HVF}{A vector of highly variable features.
+Default is \code{NULL}.}
 
 \item{do_scaling}{A logical value indicating whether to perform scaling.
 If TRUE, the function will force to scale the data using the ScaleData function.}
 
-\item{vars_to_regress}{A vector of variable names to include as additional regression variables. Default is NULL.}
+\item{vars_to_regress}{A vector of variable names to include as additional regression variables.
+Default is \code{NULL}.}
 
 \item{regression_model}{The regression model to use for scaling.
 Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
@@ -109,7 +119,8 @@ Default is FALSE.}
 \item{Scanorama_params}{A list of parameters for the scanorama.correct function.
 Default is an empty list.}
 
-\item{seed}{An integer specifying the random seed for reproducibility. Default is 11.}
+\item{seed}{An integer specifying the random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 Scanorama_integrate

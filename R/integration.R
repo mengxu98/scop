@@ -3,8 +3,8 @@
 #' Integrate single-cell RNA-seq data using various integration methods.
 #'
 #' @md
-#' @inheritParams check_srt_list
-#' @inheritParams check_srt_merge
+#' @inheritParams CheckDataList
+#' @inheritParams CheckDataMerge
 #' @inheritParams standard_scop
 #' @param scale_within_batch  Whether to scale data within each batch.
 #' Only valid when the \code{integration_method} is one of `"Uncorrected"`,
@@ -333,7 +333,7 @@ Uncorrected_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -356,7 +356,7 @@ Uncorrected_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -661,7 +661,7 @@ Seurat_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -686,7 +686,7 @@ Seurat_integrate <- function(
     }
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -1144,7 +1144,7 @@ scVI_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -1166,7 +1166,7 @@ scVI_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -1461,7 +1461,7 @@ MNN_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -1483,7 +1483,7 @@ MNN_integrate <- function(
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
     srt_list <- SplitObject(object = srt_merge, split.by = batch)
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -1789,7 +1789,7 @@ fastMNN_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -1810,7 +1810,7 @@ fastMNN_integrate <- function(
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
     srt_list <- SplitObject(object = srt_merge, split.by = batch)
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -2097,7 +2097,7 @@ Harmony_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -2120,7 +2120,7 @@ Harmony_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -2428,7 +2428,7 @@ Scanorama_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -2450,7 +2450,7 @@ Scanorama_integrate <- function(
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
     srt_list <- SplitObject(object = srt_merge, split.by = batch)
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -2751,7 +2751,7 @@ BBKNN_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -2774,7 +2774,7 @@ BBKNN_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -3146,7 +3146,7 @@ CSS_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -3169,7 +3169,7 @@ CSS_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -3476,7 +3476,7 @@ LIGER_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -3499,7 +3499,7 @@ LIGER_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -3832,7 +3832,7 @@ Conos_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -3855,7 +3855,7 @@ Conos_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
@@ -4208,7 +4208,7 @@ ComBat_integrate <- function(
     srt_merge_raw <- NULL
   }
   if (!is.null(srt_list)) {
-    checked <- check_srt_list(
+    checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
       assay = assay,
@@ -4231,7 +4231,7 @@ ComBat_integrate <- function(
     SeuratObject::VariableFeatures(srt_merge) <- HVF
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- check_srt_merge(
+    checked <- CheckDataMerge(
       srt_merge = srt_merge,
       batch = batch,
       assay = assay,
