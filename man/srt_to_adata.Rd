@@ -30,11 +30,14 @@ Defaults to all features in assay_x.}
 
 \item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{convert_tools}{Whether to convert the tool-specific data. Default is \code{FALSE}.}
+\item{convert_tools}{Whether to convert the tool-specific data.
+Default is \code{FALSE}.}
 
-\item{convert_misc}{Whether to convert the miscellaneous data. Default is \code{FALSE}.}
+\item{convert_misc}{Whether to convert the miscellaneous data.
+Default is \code{FALSE}.}
 
-\item{verbose}{Whether to print verbose messages during the conversion process. Default is \code{TRUE}.}
+\item{verbose}{Whether to print verbose messages during the conversion process.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{anndata} object.
@@ -47,6 +50,7 @@ data(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata
 
+\dontrun{
 # Or save as a h5ad/loom file
 adata$write_h5ad(
   "pancreas_sub.h5ad"
@@ -55,4 +59,5 @@ adata$write_loom(
   "pancreas_sub.loom",
   write_obsm_varm = TRUE
 )
+}
 }
