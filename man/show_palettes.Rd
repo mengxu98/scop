@@ -62,5 +62,5 @@ show_palettes(
 )
 }
 \seealso{
-\link{palette_scop} \link{palette_list}
+\link{palette_colors}, \link{palette_list}
 }

@@ -191,7 +191,7 @@ TACSPlot <- function(
   facet_levels <- FetchData(srt, group.by)[[1]] |>
     factor() |>
     levels()
-  colors <- palette_scop(
+  colors <- palette_colors(
     facet_levels,
     palette = palette
   )
