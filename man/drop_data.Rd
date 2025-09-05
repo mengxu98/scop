@@ -5,7 +5,7 @@
 \alias{drop_data.ggplot}
 \alias{drop_data.patchwork}
 \alias{drop_data.default}
-\title{Drop all data in the plot (only one observation is kept)}
+\title{Drop unused data in the plot}
 \usage{
 drop_data(p)
 
@@ -16,10 +16,10 @@ drop_data(p)
 \method{drop_data}{default}(p)
 }
 \arguments{
-\item{p}{A \code{patchwork} object.}
+\item{p}{A \code{ggplot} object or a \code{patchwork} object.}
 }
 \description{
-Drop all data in the plot (only one observation is kept)
+Drop unused data in the plot
 }
 \examples{
 library(ggplot2)
