@@ -753,7 +753,7 @@ FeatureDimPlot <- function(
         dat[, "split.by"] <- s
         dat[, "features"] <- paste(features, collapse = "|")
         subtitle_use <- paste0(subtitle, collapse = "|") %||% s
-        colors <- palette_scop(
+        colors <- palette_colors(
           features,
           type = "discrete",
           palette = palette,
@@ -765,7 +765,7 @@ FeatureDimPlot <- function(
         temp_geom <- list()
         legend_list <- list()
         for (i in seq_along(colors)) {
-          colors_list[[i]] <- palette_scop(
+          colors_list[[i]] <- palette_colors(
             dat[, names(colors)[i]],
             type = "continuous",
             NA_color = NA,
@@ -773,7 +773,7 @@ FeatureDimPlot <- function(
             matched = TRUE,
             palcolor = c(adjcolors(colors[i], 0.1), colors[i])
           )
-          pal_list[[i]] <- palette_scop(
+          pal_list[[i]] <- palette_colors(
             dat[, names(colors)[i]],
             type = "continuous",
             NA_color = NA,
@@ -904,7 +904,7 @@ FeatureDimPlot <- function(
 
         if (isTRUE(add_density)) {
           if (isTRUE(density_filled)) {
-            filled_color <- palette_scop(
+            filled_color <- palette_colors(
               palette = density_filled_palette,
               palcolor = density_filled_palcolor
             )
@@ -1282,7 +1282,7 @@ FeatureDimPlot <- function(
       dat_exp[row.names(dat_use), features, drop = FALSE]
     )
     dat_split <- split.data.frame(dat_all, dat_all[[split.by]])
-    colors <- palette_scop(
+    colors <- palette_colors(
       type = "continuous",
       palette = palette,
       palcolor = palcolor
@@ -1433,7 +1433,7 @@ FeatureDimPlot <- function(
         }
         if (isTRUE(add_density)) {
           if (isTRUE(density_filled)) {
-            filled_color <- palette_scop(
+            filled_color <- palette_colors(
               palette = density_filled_palette,
               palcolor = density_filled_palcolor
             )

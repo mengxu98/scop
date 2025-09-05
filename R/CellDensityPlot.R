@@ -228,7 +228,7 @@ CellDensityPlot <- function(
   plist <- list()
   for (f in features) {
     for (g in group.by) {
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(dat_use[[g]]),
         palette = palette,
         palcolor = palcolor

@@ -304,12 +304,12 @@ FeatureCorPlot <- function(
   }
 
   plist <- list()
-  colors <- palette_scop(
+  colors <- palette_colors(
     levels(dat_use[[group.by]]),
     palette = palette,
     palcolor = palcolor
   )
-  cor_colors <- palette_scop(
+  cor_colors <- palette_colors(
     x = seq(cor_range[1], cor_range[2], length.out = 200),
     palette = cor_palette,
     palcolor = cor_palcolor

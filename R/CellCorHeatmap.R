@@ -674,12 +674,12 @@ CellCorHeatmap <- function(
         max(simil_matrix, na.rm = TRUE),
         length = 100
       ),
-      palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
+      palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
     )
   } else {
     colors <- circlize::colorRamp2(
       seq(limits[1], limits[2], length = 100),
-      palette_scop(palette = heatmap_palette, palcolor = heatmap_palcolor)
+      palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
     )
   }
 
@@ -772,7 +772,7 @@ CellCorHeatmap <- function(
     } else {
       funbody <- paste0(
         "
-        grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
         paste0(
           "c('",
           paste0(
@@ -841,7 +841,7 @@ CellCorHeatmap <- function(
         title = paste0(c("Query", query_group), collapse = ":"),
         labels = levels(srt_query[[query_group, drop = TRUE]]),
         legend_gp = grid::gpar(
-          fill = palette_scop(
+          fill = palette_colors(
             levels(srt_query[[query_group, drop = TRUE]]),
             palette = query_group_palette,
             palcolor = query_group_palcolor
@@ -871,7 +871,7 @@ CellCorHeatmap <- function(
     } else {
       funbody <- paste0(
         "
-        grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
         paste0(
           "c('",
           paste0(levels(srt_ref[[ref_group, drop = TRUE]]), collapse = "','"),
@@ -938,7 +938,7 @@ CellCorHeatmap <- function(
         title = paste0(c("Ref", ref_group), collapse = ":"),
         labels = levels(srt_ref[[ref_group, drop = TRUE]]),
         legend_gp = grid::gpar(
-          fill = palette_scop(
+          fill = palette_colors(
             levels(srt_ref[[ref_group, drop = TRUE]]),
             palette = ref_group_palette,
             palcolor = ref_group_palcolor
@@ -1067,7 +1067,7 @@ CellCorHeatmap <- function(
               "query_",
               names(cell_groups[["query_group"]])
             )]),
-            col = palette_scop(
+            col = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1114,7 +1114,7 @@ CellCorHeatmap <- function(
           title = paste0(c("Query", cellan), collapse = ":"),
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1229,7 +1229,7 @@ CellCorHeatmap <- function(
               max(cell_anno, na.rm = TRUE),
               length = 100
             ),
-            colors = palette_scop(palette = palette, palcolor = palcolor)
+            colors = palette_colors(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
@@ -1394,7 +1394,7 @@ CellCorHeatmap <- function(
               "ref_",
               names(cell_groups[["ref_group"]])
             )]),
-            col = palette_scop(
+            col = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1432,7 +1432,7 @@ CellCorHeatmap <- function(
           title = paste0(c("Ref", cellan), collapse = ":"),
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1538,7 +1538,7 @@ CellCorHeatmap <- function(
               max(cell_anno, na.rm = TRUE),
               length = 100
             ),
-            colors = palette_scop(palette = palette, palcolor = palcolor)
+            colors = palette_colors(palette = palette, palcolor = palcolor)
           )
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
