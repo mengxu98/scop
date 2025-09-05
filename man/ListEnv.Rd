@@ -7,8 +7,8 @@
 ListEnv(conda = "auto")
 }
 \arguments{
-\item{conda}{The path to a conda executable. Use "auto" to allow
-reticulate to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow reticulate to automatically find an appropriate conda binary.}
 }
 \value{
 A data frame of conda environments.

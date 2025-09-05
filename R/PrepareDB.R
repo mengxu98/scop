@@ -235,13 +235,13 @@ PrepareDB <- function(
     if (!is.null(custom_TERM2GENE)) {
       if (length(db) > 1) {
         log_message(
-          "When building a custom database, the length of 'db' must be 1.",
+          "When building a custom database, the length of {.arg db} must be 1",
           message_type = "error"
         )
       }
       if (is.null(custom_IDtype) || is.null(custom_species) || is.null(custom_version)) {
         log_message(
-          "When building a custom database, 'custom_IDtype', 'custom_species' and 'custom_version' must be provided.",
+          "When building a custom database, {.arg custom_IDtype}, {.arg custom_species} and {.arg custom_version} must be provided",
           message_type = "error"
         )
       }
@@ -270,7 +270,7 @@ PrepareDB <- function(
               log_message(
                 "There is no ",
                 db_version,
-                " version of the database. Use the latest version.",
+                " version of the database. Use the latest version",
                 message_type = "warning"
               )
               pathname <- dbinfo[
@@ -282,13 +282,9 @@ PrepareDB <- function(
           if (!is.na(pathname)) {
             header <- R.cache::readCacheHeader(pathname)
             cached_version <- strsplit(header[["comment"]], "\\|")[[1]][1]
+            timestamp <- format(header[["timestamp"]], "%Y-%m-%d %H:%M:%S")
             log_message(
-              "Loading cached db: ",
-              term,
-              " version:",
-              cached_version,
-              " created:",
-              header[["timestamp"]]
+              "Loading cached: {.pkg {term}} version: {.pkg {cached_version}} created: {.val {timestamp}}"
             )
             db_loaded <- R.cache::loadCache(pathname = pathname)
             Sys.sleep(0.5)
@@ -349,24 +345,20 @@ PrepareDB <- function(
         )
         if (inherits(status, "error")) {
           log_message(
-            "Annotation package ",
-            org_sp,
-            " does not exist.",
+            "Annotation package {.pkg {org_sp}} does not exist",
             message_type = "warning"
           )
           if (isTRUE(convert_species)) {
+            db_to_convert <- intersect(db, orgdb_dependent)
             log_message(
-              "Use the human annotation to create the ",
-              paste0(intersect(db, orgdb_dependent), collapse = ","),
-              " database for ",
-              sps,
+              "Use the human annotation to create the {.pkg {db_to_convert}} database for {.val {sps}}",
               message_type = "warning"
             )
             org_sp <- "org.Hs.eg.db"
-            db_species[intersect(db, orgdb_dependent)] <- "Homo_sapiens"
+            db_species[db_to_convert] <- "Homo_sapiens"
           } else {
             log_message(
-              "Stop the preparation.",
+              "Stop the preparation",
               message_type = "error"
             )
           }
@@ -419,7 +411,7 @@ PrepareDB <- function(
             all.x = TRUE
           )
           for (subterm in terms) {
-            log_message("Preparing database: ", subterm)
+            log_message("Preparing database: {.pkg {subterm}}")
             if (subterm == "GO") {
               TERM2GENE <- bg[, c("GOALL", org_key)]
               TERM2NAME <- bg[, c("GOALL", "TERM")]
@@ -486,17 +478,14 @@ PrepareDB <- function(
             2
           ]
           if (length(kegg_sp) == 0) {
+            db_species_name <- db_species["KEGG"]
             log_message(
-              "Failed to prepare the KEGG database for ",
-              db_species["KEGG"],
+              "Failed to prepare the KEGG database for {.val {db_species_name}}",
               message_type = "warning"
             )
-            if (
-              isTRUE(convert_species) && db_species["KEGG"] != "Homo_sapiens"
-            ) {
+            if (isTRUE(convert_species) && db_species_name != "Homo_sapiens") {
               log_message(
-                "Use the human annotation to create the KEGG database for ",
-                sps,
+                "Use the human annotation to create the KEGG database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["KEGG"] <- "Homo_sapiens"
@@ -504,7 +493,7 @@ PrepareDB <- function(
               return(NULL)
             } else {
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -639,18 +628,14 @@ PrepareDB <- function(
           wiki_sp <- sps
           gmtfile <- gmtfiles[grep(wiki_sp, gmtfiles, fixed = TRUE)]
           if (length(gmtfile) == 0) {
+            db_species_name <- db_species["WikiPathway"]
             log_message(
-              "Failed to prepare the WikiPathway database for ",
-              db_species["WikiPathway"],
+              "Failed to prepare the WikiPathway database for {.val {db_species_name}}",
               message_type = "warning"
             )
-            if (
-              isTRUE(convert_species) &&
-                db_species["WikiPathway"] != "Homo_sapiens"
-            ) {
+            if (isTRUE(convert_species) && db_species_name != "Homo_sapiens") {
               log_message(
-                "Use the human annotation to create the WikiPathway database for ",
-                sps,
+                "Use the human annotation to create the WikiPathway database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["WikiPathway"] <- "Homo_sapiens"
@@ -658,7 +643,7 @@ PrepareDB <- function(
               gmtfile <- gmtfiles[grep(wiki_sp, gmtfiles, fixed = TRUE)]
             } else {
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -722,7 +707,7 @@ PrepareDB <- function(
 
         ## Reactome -----------------
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: Reactome")
+          log_message("Preparing database: {.pkg Reactome}")
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
           df_all <- suppressMessages(
             AnnotationDbi::select(
@@ -744,8 +729,7 @@ PrepareDB <- function(
                 db_species["Reactome"] != "Homo_sapiens"
             ) {
               log_message(
-                "Use the human annotation to create the Reactome database for ",
-                sps,
+                "Use the human annotation to create the Reactome database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["Reactome"] <- "Homo_sapiens"
@@ -763,7 +747,7 @@ PrepareDB <- function(
               ]
             } else {
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -816,8 +800,7 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the CORUM database for ",
-                sps,
+                "Use the human annotation to create the CORUM database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["CORUM"] <- "Homo_sapiens"
@@ -827,7 +810,7 @@ PrepareDB <- function(
                 message_type = "warning"
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }

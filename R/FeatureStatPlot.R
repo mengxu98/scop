@@ -279,11 +279,11 @@
 #'   stack = TRUE
 #' )
 #'
-#' library(Matrix)
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data"
+#'   layer = "data",
+#'   verbose = FALSE
 #' )
 #' pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
