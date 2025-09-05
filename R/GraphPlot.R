@@ -624,7 +624,7 @@ GraphPlot <- function(
     list(
       scale_color_manual(
         name = node_group,
-        values = palette_scop(
+        values = palette_colors(
           node[["node_group"]],
           palette = node_palette,
           palcolor = node_palcolor

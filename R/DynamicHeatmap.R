@@ -882,7 +882,7 @@ DynamicHeatmap <- function(
         2
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
-        palette_scop(
+        palette_colors(
           palette = heatmap_palette,
           palcolor = heatmap_palcolor
         )
@@ -891,7 +891,7 @@ DynamicHeatmap <- function(
       b <- stats::quantile(mat, c(0.01, 0.99), na.rm = TRUE)
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
-        palette_scop(
+        palette_colors(
           palette = heatmap_palette,
           palcolor = heatmap_palcolor
         )
@@ -900,7 +900,7 @@ DynamicHeatmap <- function(
   } else {
     colors <- circlize::colorRamp2(
       seq(limits[1], limits[2], length = 100),
-      palette_scop(
+      palette_colors(
         palette = heatmap_palette,
         palcolor = heatmap_palcolor
       )
@@ -922,7 +922,7 @@ DynamicHeatmap <- function(
       max(pseudotime, na.rm = TRUE),
       length = 100
     ),
-    colors = palette_scop(
+    colors = palette_colors(
       palette = pseudotime_palette,
       palcolor = pseudotime_palcolor
     )
@@ -974,7 +974,7 @@ DynamicHeatmap <- function(
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
             x = as.character(cell_anno[lineage_cells]),
-            col = palette_scop(
+            col = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1007,7 +1007,7 @@ DynamicHeatmap <- function(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1022,7 +1022,7 @@ DynamicHeatmap <- function(
             max(cell_anno, na.rm = TRUE),
             length = 100
           ),
-          colors = palette_scop(palette = palette, palcolor = palcolor)
+          colors = palette_colors(palette = palette, palcolor = palcolor)
         )
         for (l in lineages) {
           lineage_cells <- gsub(
@@ -1161,7 +1161,7 @@ DynamicHeatmap <- function(
           title = paste0(cellan, "\n(separate)"),
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -1257,7 +1257,7 @@ DynamicHeatmap <- function(
           title = "Features\n(separate)",
           labels = cellan,
           legend_gp = grid::gpar(
-            fill = palette_scop(cellan, palette = palette, palcolor = palcolor)
+            fill = palette_colors(cellan, palette = palette, palcolor = palcolor)
           ),
           border = TRUE
         )
@@ -1404,7 +1404,7 @@ DynamicHeatmap <- function(
     }
     funbody <- paste0(
       "
-      grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
       paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"),
       ",palette = '",
       feature_split_palette,
@@ -1450,7 +1450,7 @@ DynamicHeatmap <- function(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
       legend_gp = grid::gpar(
-        fill = palette_scop(
+        fill = palette_colors(
           intersect(levels(row_split_raw), row_split_raw),
           type = "discrete",
           palette = feature_split_palette,
@@ -1612,7 +1612,7 @@ DynamicHeatmap <- function(
         ha_feature <- list()
         ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
           x = as.character(featan_values),
-          col = palette_scop(
+          col = palette_colors(
             featan_values,
             palette = palette,
             palcolor = palcolor
@@ -1648,7 +1648,7 @@ DynamicHeatmap <- function(
           title = featan,
           labels = levels(featan_values),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               featan_values,
               palette = palette,
               palcolor = palcolor
@@ -1663,7 +1663,7 @@ DynamicHeatmap <- function(
             max(featan_values, na.rm = TRUE),
             length = 100
           ),
-          colors = palette_scop(
+          colors = palette_colors(
             palette = palette, palcolor = palcolor
           )
         )

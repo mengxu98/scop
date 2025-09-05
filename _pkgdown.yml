@@ -172,7 +172,7 @@ reference:
   - geom_sankey
   - geom_sankey_bump
   - geom_sankey_label
-  - palette_scop
+  - palette_colors
   - show_palettes
   - theme_blank
   - theme_scop

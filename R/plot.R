@@ -209,7 +209,7 @@ heatmap_enrichment <- function(
     if (!is.factor(geneID_groups)) {
       geneID_groups <- factor(geneID_groups, levels = unique(geneID_groups))
     }
-    fill_split <- palette_scop(
+    fill_split <- palette_colors(
       levels(geneID_groups),
       type = "discrete",
       palette = feature_split_palette,
@@ -308,7 +308,7 @@ heatmap_enrichment <- function(
                 terms <- capitalize(terms)
               }
               df_out <- data.frame(keyword = terms)
-              df_out[["col"]] <- palette_scop(
+              df_out[["col"]] <- palette_colors(
                 -log10(utils::head(df[, metric], topTerm)),
                 type = "continuous",
                 palette = "Spectral",
@@ -425,7 +425,7 @@ heatmap_enrichment <- function(
                 ]
               }
               if (isTRUE(nrow(df) > 0)) {
-                df[["col"]] <- palette_scop(
+                df[["col"]] <- palette_colors(
                   df[, "score"],
                   type = "continuous",
                   palette = "Spectral",
@@ -497,7 +497,7 @@ heatmap_enrichment <- function(
                 utils::head(order(df[["score"]], decreasing = TRUE), topWord), ,
                 drop = FALSE
               ]
-              df[["col"]] <- palette_scop(
+              df[["col"]] <- palette_colors(
                 df[, "score"],
                 type = "continuous",
                 palette = "Spectral",

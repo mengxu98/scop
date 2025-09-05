@@ -661,7 +661,7 @@ EnrichmentPlot <- function(
         name = paste0(metric),
         limits = c(0, min(metric_value, 1)),
         n.breaks = 3,
-        colors = palette_scop(
+        colors = palette_colors(
           palette = palette,
           palcolor = palcolor,
           reverse = TRUE
@@ -749,7 +749,7 @@ EnrichmentPlot <- function(
         geom_text(hjust = -0.5, size = 3.5) +
         labs(x = "", y = paste0("-log10(", metric, ")")) +
         scale_fill_manual(
-          values = palette_scop(
+          values = palette_colors(
             levels(df[[color_by]]),
             palette = palette,
             palcolor = palcolor
@@ -837,7 +837,7 @@ EnrichmentPlot <- function(
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_scop(palette = palette, palcolor = palcolor),
+          colors = palette_colors(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(
             frame.colour = "black",
@@ -955,7 +955,7 @@ EnrichmentPlot <- function(
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_scop(palette = palette, palcolor = palcolor),
+          colors = palette_colors(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(
             frame.colour = "black",
@@ -1065,7 +1065,7 @@ EnrichmentPlot <- function(
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(df[["Description"]]),
         palette = palette,
         palcolor = palcolor
@@ -1434,7 +1434,7 @@ EnrichmentPlot <- function(
             "term" = "Feature:",
             "feature" = "Term:"
           ),
-          values = palette_scop(
+          values = palette_colors(
             levels(df_nodes[["clusters"]]),
             palette = palette,
             palcolor = palcolor
@@ -1573,7 +1573,7 @@ EnrichmentPlot <- function(
           drop = FALSE
         ]
       }
-      colors <- palette_scop(
+      colors <- palette_colors(
         df[["score"]],
         type = "continuous",
         palette = palette,

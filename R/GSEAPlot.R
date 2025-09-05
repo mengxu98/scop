@@ -422,7 +422,7 @@ GSEAPlot <- function(
           -max(abs(enrichment_sub[["NES"]])),
           max(abs(enrichment_sub[["NES"]]))
         ),
-        colors = palette_scop(palette = palette, palcolor = palcolor),
+        colors = palette_colors(palette = palette, palcolor = palcolor),
         guide = guide_colorbar(
           frame.colour = "black",
           ticks.colour = "black",
@@ -876,7 +876,7 @@ GSEAPlot <- function(
         p1 <- p1 + ggtitle(gsdata$Description[1], subtitle = subtitle_use)
       }
       if (length(line_color) != length(geneSetID_use)) {
-        color_use <- palette_scop(
+        color_use <- palette_colors(
           levels(gsdata$DescriptionP),
           palette = palette,
           palcolor = palcolor
@@ -1045,7 +1045,7 @@ GSEAPlot <- function(
           )
         ) +
         scale_fill_manual(
-          values = palette_scop(
+          values = palette_colors(
             x = rev(levels(stat[["Direction"]])),
             palette = palette,
             palcolor = rev(palcolor)
@@ -1208,7 +1208,7 @@ GSEAPlot <- function(
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(df[["Description"]]),
         palette = palette,
         palcolor = palcolor
@@ -1620,7 +1620,7 @@ GSEAPlot <- function(
             "term" = "Feature:",
             "feature" = "Term:"
           ),
-          values = palette_scop(
+          values = palette_colors(
             levels(df_nodes[["clusters"]]),
             palette = palette,
             palcolor = palcolor
@@ -1796,7 +1796,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
       }
-      colors <- palette_scop(
+      colors <- palette_colors(
         df[["score"]],
         type = "continuous",
         palette = palette,

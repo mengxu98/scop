@@ -238,7 +238,7 @@ RunSCVELO <- function(
   }
 
   groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scop(
+  args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,
     palcolor = palcolor

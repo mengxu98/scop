@@ -935,7 +935,7 @@ CellDimPlot <- function(
     stats::setNames(rownames(comb), rownames(comb)), function(i) {
       g <- comb[i, "group"]
       s <- comb[i, "split"]
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(dat_use[[g]]),
         palette = palette,
         palcolor = palcolor,
@@ -1071,7 +1071,7 @@ CellDimPlot <- function(
 
       if (isTRUE(add_density)) {
         if (isTRUE(density_filled)) {
-          filled_color <- palette_scop(
+          filled_color <- palette_colors(
             palette = density_filled_palette,
             palcolor = density_filled_palcolor
           )
@@ -1631,7 +1631,7 @@ CellDimPlot3D <- function(
   }
 
   dat_use[["color"]] <- dat_use[[group.by]]
-  colors <- palette_scop(
+  colors <- palette_colors(
     dat_use[["group.by"]],
     palette = palette,
     palcolor = palcolor,
@@ -1806,7 +1806,7 @@ CellDimPlot3D <- function(
         mode = "lines",
         line = list(
           width = 6,
-          color = palette_scop(x = lineages, palette = lineages_palette)[l],
+          color = palette_colors(x = lineages, palette = lineages_palette)[l],
           reverscale = FALSE
         ),
         name = l,

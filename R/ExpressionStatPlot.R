@@ -413,17 +413,17 @@ ExpressionStatPlot <- function(
       theme_args[["ylab"]] <- ylab
     }
     if (fill.by == "feature") {
-      colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
+      colors <- palette_colors(stat.by, palette = palette, palcolor = palcolor)
     }
     if (fill.by == "group") {
       if (split.by != "All.groups") {
-        colors <- palette_scop(
+        colors <- palette_colors(
           levels(dat_use[[split.by]]),
           palette = palette,
           palcolor = palcolor
         )
       } else {
-        colors <- palette_scop(
+        colors <- palette_colors(
           levels(dat_use[[g]]),
           palette = palette,
           palcolor = palcolor
@@ -441,7 +441,7 @@ ExpressionStatPlot <- function(
         "-",
         median_values[, 2]
       )
-      colors <- palette_scop(
+      colors <- palette_colors(
         unlist(median_values[, stat.by]),
         type = "continuous",
         palette = palette,
@@ -460,14 +460,14 @@ ExpressionStatPlot <- function(
     )
     if (!is.null(bg.by)) {
       bg <- bg.by
-      bg_color <- palette_scop(
+      bg_color <- palette_colors(
         levels(dat[[bg]]),
         palette = bg_palette,
         palcolor = bg_palcolor
       )
     } else {
       bg <- g
-      bg_color <- palette_scop(
+      bg_color <- palette_colors(
         levels(dat[[bg]]),
         palcolor = bg_palcolor %||%
           rep(c("transparent", "grey85"), nlevels(dat[[bg]]))
