@@ -214,7 +214,7 @@ VelocityPlot <- function(
         ),
         scale_color_manual(
           name = group_by,
-          values = palette_scop(
+          values = palette_colors(
             df_field[["group_by"]],
             palette = group_palette,
             palcolor = group_palcolor
@@ -410,7 +410,7 @@ VelocityPlot <- function(
         ),
         scale_color_gradientn(
           name = "Velocity",
-          colors = palette_scop(
+          colors = palette_colors(
             palette = streamline_palette,
             palcolor = streamline_palcolor
           ),

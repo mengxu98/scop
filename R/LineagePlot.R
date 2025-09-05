@@ -111,7 +111,7 @@ LineagePlot <- function(
     theme_args[["ylab"]] <- ylab
   }
 
-  colors <- palette_scop(lineages, palette = palette, palcolor = palcolor)
+  colors <- palette_colors(lineages, palette = palette, palcolor = palcolor)
   axes <- paste0(reduction_key, dims)
   fitted_list <- lapply(lineages, function(l) {
     trim_pass <- dat[[l]] > stats::quantile(dat[[l]], trim[1], na.rm = TRUE) &

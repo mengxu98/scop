@@ -222,7 +222,7 @@ theme_blank <- function(
   }
 }
 
-#' @title Color palettes collected in scop.
+#' @title Color palettes collected
 #'
 #' @description This function creates a color palette for a given vector of values.
 #'
@@ -230,46 +230,51 @@ theme_blank <- function(
 #' @param x A vector of character/factor or numeric values.
 #' If missing, numeric values 1:n will be used as x.
 #' @param n The number of colors to return for numeric values.
-#' @param palette Palette name. All available palette names can be queried with \code{show_palettes()}.
+#' @param palette Palette name. All available palette names can be queried with [show_palettes].
 #' @param palcolor Custom colors used to create a color palette.
-#' @param type Type of `x`. Can be one of "auto", "discrete" or "continuous".
-#' The default is "auto", which automatically detects if `x` is a numeric value.
-#' @param matched If `TRUE`, will return a color vector of the same length as `x`.
+#' @param type Type of `x`.
+#' Can be one of `"auto"`, `"discrete"` or `"continuous"`.
+#' The default is `"auto"`, which automatically detects if `x` is a numeric value.
+#' @param matched Whether to return a color vector of the same length as `x`.
+#' Default is `FALSE`.
 #' @param reverse Whether to invert the colors.
+#' Default is `FALSE`.
 #' @param NA_keep Whether to keep the color assignment to NA in `x`.
-#' @param NA_color Color assigned to NA if NA_keep is `TRUE`.
+#' Default is `FALSE`.
+#' @param NA_color Color assigned to NA if `NA_keep` is `TRUE`.
+#' Default is `"grey80"`.
 #'
-#' @seealso \link{show_palettes} \link{palette_list}
+#' @seealso [show_palettes], [palette_list]
 #'
 #' @export
 #'
 #' @examples
 #' x <- c(1:3, NA, 3:5)
-#' (pal1 <- palette_scop(
+#' (pal1 <- palette_colors(
 #'   x,
 #'   palette = "Spectral"
 #' ))
-#' (pal2 <- palette_scop(
+#' (pal2 <- palette_colors(
 #'   x,
 #'   palcolor = c("red", "white", "blue")
 #' ))
-#' (pal3 <- palette_scop(
+#' (pal3 <- palette_colors(
 #'   x,
 #'   palette = "Spectral",
 #'   n = 10
 #' ))
-#' (pal4 <- palette_scop(
+#' (pal4 <- palette_colors(
 #'   x,
 #'   palette = "Spectral",
 #'   n = 10,
 #'   reverse = TRUE
 #' ))
-#' (pal5 <- palette_scop(
+#' (pal5 <- palette_colors(
 #'   x,
 #'   palette = "Spectral",
 #'   matched = TRUE
 #' ))
-#' (pal6 <- palette_scop(
+#' (pal6 <- palette_colors(
 #'   x,
 #'   palette = "Spectral",
 #'   matched = TRUE,
@@ -281,8 +286,9 @@ theme_blank <- function(
 #'
 #' all_palettes <- show_palettes(return_palettes = TRUE)
 #' names(all_palettes)
-palette_scop <- function(
-    x, n = 100,
+palette_colors <- function(
+    x,
+    n = 100,
     palette = "Paired",
     palcolor = NULL,
     type = "auto",
@@ -297,7 +303,7 @@ palette_scop <- function(
   }
   if (!palette %in% names(palette_list)) {
     log_message(
-      "The palette name (", palette, ") is invalid! You can check the available palette names with 'show_palettes()'. Or pass palette colors via the 'palcolor' parameter.",
+      "The palette ({.val {palette}}) is invalid! Check the available palette names with {.fn show_palettes}. Or pass palette colors via the {.arg palcolor} parameter",
       message_type = "error"
     )
   }
@@ -434,7 +440,7 @@ palette_scop <- function(
 #' @param return_palettes A logical value indicating whether to return the colors of selected palettes.
 #' Default is `FALSE`.
 #'
-#' @seealso \link{palette_scop} \link{palette_list}
+#' @seealso [palette_colors], [palette_list]
 #'
 #' @export
 #'
@@ -487,8 +493,9 @@ show_palettes <- function(
     palette_names <- palette_names %||% names(palette_list)
   }
   if (any(!palette_names %in% names(palette_list))) {
+    palette_not_found <- palette_names[!palette_names %in% names(palette_list)]
     log_message(
-      paste("Can not find the palettes: ", paste0(palette_names[!palette_names %in% names(palette_list)], collapse = ",")),
+      "Can not find the palettes: {.val {palette_not_found}}",
       message_type = "error"
     )
   }
@@ -525,29 +532,35 @@ show_palettes <- function(
   }
 }
 
-#' @title Set the panel width/height of a plot object to a fixed value.
+#' @title Set the panel width/height of a plot to a fixed value
 #'
-#' @description The ggplot object, when stored, can only specify the height and width of the entire plot, not the panel.
+#' @description
+#' The ggplot object, when stored, can only specify the height and width of the entire plot, not the panel.
 #' The latter is obviously more important to control the final result of a plot.
 #' This function can set the panel width/height of plot to a fixed value and rasterize it.
 #'
 #' @md
 #' @param x A ggplot object, a grob object, or a combined plot made by patchwork or cowplot package.
-#' @param panel_index Specify the panel to be fixed. If NULL, will fix all panels.
-#' @param respect If a logical, this indicates whether row heights and column widths should respect each other.
+#' @param panel_index Specify the panel to be fixed.
+#' If `NULL`, will fix all panels.
+#' @param respect Whether row heights and column widths should respect each other.
 #' @param width The desired width of the fixed panels.
 #' @param height The desired height of the fixed panels.
-#' @param margin The margin to add around each panel, in inches. The default is 1 inch.
-#' @param padding The padding to add around each panel, in inches. The default is 0 inches.
+#' @param margin The margin to add around each panel, in inches.
+#' Default is `1`.
+#' @param padding The padding to add around each panel, in inches.
+#' Default is `0`.
 #' @param units The units in which `height`, `width` and `margin` are given.
 #' Can be `mm`, `cm`, `in`, etc. See [grid::unit].
 #' @param raster Whether to rasterize the panel.
 #' @param dpi Plot resolution.
-#' @param return_grob If `TRUE` then return a grob object instead of a wrapped `patchwork` object.
+#' @param return_grob Whether to return a grob object instead of a wrapped `patchwork` object.
+#' Default is `FALSE`.
 #' @param save `NULL` or the file name used to save the plot.
 #' @param bg_color The background color of the plot.
 #' @param verbose Whether to print messages.
-#' @param ... Unused.
+#' Default is `FALSE`.
+#' @param ... Additional arguments passed to other functions.
 #'
 #' @export
 #'
@@ -696,7 +709,7 @@ panel_fix <- function(
       },
       error = function(error) {
         log_message(
-          error, "\nCannot convert the x to a gtable object.",
+          error, "\nCannot convert the x to a gtable object",
           message_type = "error"
         )
       }
@@ -733,7 +746,7 @@ panel_fix <- function(
     )
     if (length(geom_index) > 0) {
       log_message(
-        "panel ", i, " is detected as generated by plot_grid.",
+        "panel {.val {i}} is detected as generated by plot_grid",
         verbose = verbose
       )
       for (j in geom_index) {
@@ -789,7 +802,7 @@ panel_fix <- function(
       )
     } else if (gtable$grobs[[i]]$name == "layout" || inherits(x, "patchwork")) {
       log_message(
-        paste0("panel ", i, " is detected as generated by patchwork."),
+        "panel {.val {i}} is detected as generated by patchwork",
         verbose = verbose
       )
       # if (i == panel_index[1] && length(panel_index) > 1 && isTRUE(verbose)) {
@@ -938,13 +951,13 @@ panel_fix <- function(
     if (!is.null(save) && is.character(save) && nchar(save) > 0) {
       if (units == "null") {
         log_message(
-          "units can not be 'null' if want to save the plot.",
+          "{.arg units} can not be 'null' if want to save the plot",
           message_type = "error"
         )
       }
       filename <- normalizePath(save)
       log_message(
-        paste0("Save the plot to the file: ", filename),
+        "Save the plot to the file: {.file {filename}}",
         verbose = verbose
       )
       if (!dir.exists(dirname(filename))) {
@@ -1249,13 +1262,13 @@ panel_fix_overall <- function(
     if (!is.null(save) && is.character(save) && nchar(save) > 0) {
       if (units == "null") {
         log_message(
-          "units can not be 'null' if want to save the plot.",
+          "{.arg units} can not be 'null' if want to save the plot",
           message_type = "error"
         )
       }
       filename <- normalizePath(save)
       log_message(
-        paste0("Save the plot to the file: ", filename),
+        "Save the plot to the file: {.file {filename}}",
         verbose = verbose
       )
       if (!dir.exists(dirname(filename))) {
@@ -1275,9 +1288,10 @@ panel_fix_overall <- function(
   }
 }
 
-#' Drop all data in the plot (only one observation is kept)
+#' @title Drop unused data in the plot
 #'
-#' @param p A \code{ggplot} object or a \code{patchwork} object.
+#' @md
+#' @param p A `ggplot` object or a `patchwork` object.
 #'
 #' @export
 #'
@@ -1298,7 +1312,6 @@ drop_data <- function(p) {
   UseMethod(generic = "drop_data", object = p)
 }
 
-#' @param p A \code{ggplot} object.
 #' @export
 #' @rdname drop_data
 #' @method drop_data ggplot
@@ -1357,7 +1370,6 @@ drop_data.ggplot <- function(p) {
   return(p)
 }
 
-#' @param p A \code{patchwork} object.
 #' @export
 #' @rdname drop_data
 #' @method drop_data patchwork
@@ -1365,18 +1377,17 @@ drop_data.patchwork <- function(p) {
   for (i in seq_along(p$patches$plots)) {
     p$patches$plots[[i]] <- drop_data(p$patches$plots[[i]])
   }
-  p <- drop_data.ggplot(p)
-  return(p)
+  drop_data.ggplot(p)
 }
 
 #' @export
 #' @rdname drop_data
 #' @method drop_data default
 drop_data.default <- function(p) {
-  return(p)
+  p
 }
 
-#' Drop unused data from the plot to reduce the object size
+#' @title Slim unused data in the plot
 #'
 #' @md
 #' @param p A `ggplot` object or a `patchwork` object.
@@ -1396,7 +1407,6 @@ slim_data <- function(p) {
   UseMethod(generic = "slim_data", object = p)
 }
 
-#' @param p A \code{ggplot} object.
 #' @export
 #' @rdname slim_data
 #' @method slim_data ggplot
@@ -1413,7 +1423,6 @@ slim_data.ggplot <- function(p) {
   return(p)
 }
 
-#' @param p A \code{patchwork} object.
 #' @export
 #' @rdname slim_data
 #' @method slim_data patchwork
@@ -1479,13 +1488,11 @@ get_vars <- function(p, reverse, verbose = FALSE) {
   return(vars_used)
 }
 
-#' Convert a color with arbitrary transparency to a fixed color
+#' @title Convert a color with specified alpha level
 #'
-#' This function takes a vector of colors and an alpha level and converts the colors
-#' to fixed colors with the specified alpha level.
-#'
+#' @md
 #' @param colors Color vectors.
-#' @param alpha Alpha level in [0,1]
+#' @param alpha Alpha level in `[0,1]`.
 #'
 #' @export
 #'
@@ -1505,23 +1512,24 @@ adjcolors <- function(colors, alpha) {
   color_df <- as.data.frame(
     grDevices::col2rgb(colors) / 255
   )
-  colors_out <- sapply(color_df, function(color) {
-    color_rgb <- RGBA2RGB(list(color, alpha))
-    return(grDevices::rgb(color_rgb[1], color_rgb[2], color_rgb[3]))
-  })
-  return(colors_out)
+  colors_out <- sapply(
+    color_df, function(color) {
+      color_rgb <- RGBA2RGB(list(color, alpha))
+      grDevices::rgb(color_rgb[1], color_rgb[2], color_rgb[3])
+    }
+  )
+  colors_out
 }
 
-#' Blend colors
+#' @title Blends a list of colors using the specified blend mode
 #'
-#' This function blends a list of colors using the specified blend mode.
-#'
+#' @md
 #' @param colors Color vectors.
-#' @param mode Blend mode. One of "blend", "average", "screen", or "multiply".
-#'
-#' @seealso \link{FeatureDimPlot}
+#' @param mode Blend mode.
+#' One of `"blend"`, `"average"`, `"screen"`, or `"multiply"`.
 #'
 #' @export
+#'
 #' @examples
 #' blend <- c(
 #'   "red",
@@ -1649,7 +1657,11 @@ BlendRGBList <- function(
 
 build_patchwork <- function(
     x,
-    guides = "auto") {
+    guides = "auto",
+    table_rows = 18,
+    table_cols = 15,
+    panel_row = 10,
+    panel_col = 8) {
   x$layout <- utils::modifyList(
     patchwork:::default_layout,
     x$layout[!vapply(x$layout, is.null, logical(1))]
@@ -1701,14 +1713,9 @@ build_patchwork <- function(
     )
   }
 
-  TABLE_COLS <- patchwork:::TABLE_COLS
-  TABLE_ROWS <- patchwork:::TABLE_ROWS
-  PANEL_ROW <- patchwork:::PANEL_ROW
-  PANEL_COL <- patchwork:::PANEL_COL
-
   gt_new <- gtable::gtable(
-    grid::unit(rep(0, TABLE_COLS * dims[2]), "null"),
-    grid::unit(rep(0, TABLE_ROWS * dims[1]), "null")
+    grid::unit(rep(0, table_cols * dims[2]), "null"),
+    grid::unit(rep(0, table_rows * dims[1]), "null")
   )
   design <- as.data.frame(unclass(x$layout$design))
   if (nrow(design) < length(gt)) {
@@ -1736,24 +1743,24 @@ build_patchwork <- function(
         lay$name <- paste0(lay$name, "-", i)
         lay$t <- lay$t +
           ifelse(
-            lay$t <= PANEL_ROW, (loc$t - 1) * TABLE_ROWS,
-            (loc$b - 1) * TABLE_ROWS
+            lay$t <= panel_row, (loc$t - 1) * table_rows,
+            (loc$b - 1) * table_rows
           )
         lay$l <- lay$l +
           ifelse(
-            lay$l <= PANEL_COL,
-            (loc$l - 1) * TABLE_COLS,
-            (loc$r - 1) * TABLE_COLS
+            lay$l <= panel_col,
+            (loc$l - 1) * table_cols,
+            (loc$r - 1) * table_cols
           )
         lay$b <- lay$b +
-          ifelse(lay$b < PANEL_ROW,
-            (loc$t - 1) * TABLE_ROWS,
-            (loc$b - 1) * TABLE_ROWS
+          ifelse(lay$b < panel_row,
+            (loc$t - 1) * table_rows,
+            (loc$b - 1) * table_rows
           )
         lay$r <- lay$r +
-          ifelse(lay$r < PANEL_COL,
-            (loc$l - 1) * TABLE_COLS,
-            (loc$r - 1) * TABLE_COLS
+          ifelse(lay$r < panel_col,
+            (loc$l - 1) * table_cols,
+            (loc$r - 1) * table_cols
           )
         lay$z <- lay$z + max_z[i]
         lay
