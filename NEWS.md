@@ -1,8 +1,12 @@
 # scop
 
+# scop 0.2.5
+
+* **func**: Rename function: `palette_scop()` to `palette_colors()`.
+
 # scop 0.2.4
 
-* **func**: Rename functions: `check_srt_merge()` to `CheckDataMerge`, `check_srt_list()` to `CheckDataList` and `check_data_type()` to `CheckDataType`.
+* **func**: Rename functions: `check_srt_merge()` to `CheckDataMerge()`, `check_srt_list()` to `CheckDataList` and `check_data_type()` to `CheckDataType`.
 
 # scop 0.2.2
 
