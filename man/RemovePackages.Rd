@@ -15,25 +15,23 @@ RemovePackages(
 \arguments{
 \item{packages}{A character vector of package names to remove.}
 
-\item{envname}{The name of the conda environment. If NULL, uses the default scop environment name.}
+\item{envname}{The name of the conda environment.
+If \code{NULL}, uses the default scop environment name.}
 
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow
-reticulate to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow reticulate to automatically find an appropriate conda binary.}
 
-\item{pip}{Whether to use pip for package removal. Default is \code{FALSE} (use conda).}
+\item{pip}{Whether to use pip for package removal.
+Default is \code{FALSE} (use conda).}
 
-\item{force}{Whether to force removal without confirmation. Default is \code{FALSE}.}
+\item{force}{Whether to force removal without confirmation.
+Default is \code{FALSE}.}
 }
 \value{
 Invisibly value.
 }
 \description{
 Remove Python packages from conda environment
-}
-\details{
-This function removes specified Python packages from a conda environment.
-It can use either conda or pip for package removal depending on the \code{pip} parameter.
-If the environment doesn't exist, an error will be thrown.
 }
 \examples{
 \dontrun{

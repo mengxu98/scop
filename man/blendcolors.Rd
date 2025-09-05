@@ -2,17 +2,18 @@
 % Please edit documentation in R/themes.R
 \name{blendcolors}
 \alias{blendcolors}
-\title{Blend colors}
+\title{Blends a list of colors using the specified blend mode}
 \usage{
 blendcolors(colors, mode = c("blend", "average", "screen", "multiply"))
 }
 \arguments{
 \item{colors}{Color vectors.}
 
-\item{mode}{Blend mode. One of "blend", "average", "screen", or "multiply".}
+\item{mode}{Blend mode.
+One of \code{"blend"}, \code{"average"}, \code{"screen"}, or \code{"multiply"}.}
 }
 \description{
-This function blends a list of colors using the specified blend mode.
+Blends a list of colors using the specified blend mode
 }
 \examples{
 blend <- c(
@@ -51,7 +52,4 @@ show_palettes(
     "multiply" = multiply
   )
 )
-}
-\seealso{
-\link{FeatureDimPlot}
 }

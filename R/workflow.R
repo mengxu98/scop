@@ -18,7 +18,8 @@
 #' raw_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "counts"
+#'   layer = "counts",
+#'   verbose = FALSE
 #' )
 #'
 #' # Normalized the data
@@ -28,7 +29,8 @@
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data"
+#'   layer = "data",
+#'   verbose = FALSE
 #' )
 #' new_pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
@@ -41,7 +43,8 @@
 #' new_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "counts"
+#'   layer = "counts",
+#'   verbose = FALSE
 #' )
 #' identical(raw_counts, new_counts)
 RecoverCounts <- function(
@@ -144,7 +147,7 @@ RecoverCounts <- function(
     srt[[paste0("nCount_", assay)]] <- nCount
   } else {
     log_message(
-      "Scale factor is not unique. No changes to be made.",
+      "Scale factor is not unique. No changes to be made",
       message_type = "warning"
     )
   }
@@ -261,7 +264,7 @@ srt_reorder <- function(
     )[[1]][features, , drop = FALSE]
   } else {
     log_message(
-      "Input data in not a Seurat object.",
+      "Input data in not a Seurat object",
       message_type = "error"
     )
   }
@@ -478,7 +481,7 @@ DefaultReduction <- function(
     max_distance = 0.1) {
   if (length(srt@reductions) == 0) {
     log_message(
-      "Unable to find any reductions.",
+      "Unable to find any reductions",
       message_type = "error"
     )
   }
@@ -505,7 +508,7 @@ DefaultReduction <- function(
   }))]
   if (length(reduc_all) == 0) {
     log_message(
-      "No dimensional reduction found in the srt object.",
+      "No dimensional reduction found in the srt object",
       message_type = "error"
     )
   }
