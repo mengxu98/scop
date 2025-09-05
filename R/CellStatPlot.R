@@ -699,7 +699,7 @@ StatPlot <- function(
         theme_args[["add_coord"]] <- FALSE
       }
     }
-    colors <- palette_scop(
+    colors <- palette_colors(
       dat_all[[stat.by]],
       palette = palette,
       palcolor = palcolor,
@@ -808,14 +808,14 @@ StatPlot <- function(
         dat <- dat[!is.na(dat[["value"]]), , drop = FALSE]
         if (!is.null(bg.by)) {
           bg <- bg.by
-          bg_color <- palette_scop(
+          bg_color <- palette_colors(
             levels(dat_all[[bg]]),
             palette = bg_palette,
             palcolor = bg_palcolor
           )
         } else {
           bg <- g
-          bg_color <- palette_scop(
+          bg_color <- palette_colors(
             levels(dat_all[[bg]]),
             palcolor = bg_palcolor %||%
               rep(c("transparent", "grey85"), nlevels(dat_all[[bg]]))
@@ -1103,7 +1103,7 @@ StatPlot <- function(
       }
     )
   } else if (plot_type %in% c("chord", "sankey", "venn", "upset")) {
-    colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
+    colors <- palette_colors(stat.by, palette = palette, palcolor = palcolor)
     if (plot_type == "chord" && isTRUE(combine)) {
       temp <- tempfile(fileext = "png")
       grDevices::png(temp)
@@ -1267,7 +1267,7 @@ StatPlot <- function(
           ) +
           ggupset::scale_x_upset(sets = stat.by, n_intersections = 20) +
           scale_fill_gradientn(
-            colors = palette_scop(palette = "material-indigo")
+            colors = palette_colors(palette = "material-indigo")
           ) +
           theme_scop(
             aspect.ratio = 0.6,
@@ -1281,7 +1281,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "sankey") {
-        colors <- palette_scop(
+        colors <- palette_colors(
           c(
             unique(
               unlist(
@@ -1380,7 +1380,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "chord") {
-        colors <- palette_scop(
+        colors <- palette_colors(
           c(
             unique(
               unlist(
