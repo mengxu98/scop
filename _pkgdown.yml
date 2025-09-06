@@ -38,49 +38,83 @@ reference:
   - scop-package
   - scop_logo
 
-- subtitle: "Package Setup"
+- subtitle: "Package Management"
 - contents:
-  - PrepareEnv
-  - ListEnv
-  - RemoveEnv
-  - RemovePackages
-  - conda_install
-  - conda_python
-  - find_conda
-  - env_requirements
   - check_python
   - check_r
+  - conda_install
+  - conda_python
   - env_exist
   - env_info
+  - env_requirements
   - exist_python_pkgs
+  - find_conda
   - install_miniconda2
   - installed_python_pkgs
+  - ListEnv
+  - PrepareEnv
+  - remove_python
+  - remove_r
+  - RemoveEnv
 
-- subtitle: "Data Processing and Quality Control"
+- subtitle: "scop pipeline"
 - contents:
+  - integration_scop
   - standard_scop
-  - RunCellQC
-  - RunDoubletCalling
-  - db_DoubletDetection
-  - db_Scrublet
-  - db_scDblFinder
-  - db_scds
+
+- subtitle: "Data Processing"
+- contents:
+  - adata_to_srt
+  - CellScoring
   - CheckDataType
   - CheckDataList
   - CheckDataMerge
-  - AddFeaturesData
-  - GetFeaturesData
-  - GetSimilarFeatures
-  - RecoverCounts
-  - CellScoring
   - CycGenePrefetch
-  - is_outlier
   - DefaultReduction
   - FetchDataZero
+  - GeneConvert
+  - GetAssayData5
+  - is_outlier
+  - RecoverCounts
+  - RenameClusters
+  - srt_append
+  - srt_to_adata
+  - srt_reorder
+
+- subtitle: "Feature Processing"
+- contents:
+  - AddFeaturesData
+  - AnnotateFeatures
+  - GetFeaturesData
+  - GetSimilarFeatures
+  - RenameFeatures
+
+- subtitle: "Quality Control"
+- contents:
+  - db_DoubletDetection
+  - db_scDblFinder
+  - db_scds
+  - db_Scrublet
+  - RunCellQC
+  - RunDoubletCalling
+
+- subtitle: "Dimensionality Reduction and Clustering"
+- contents:
+  - RunDimReduction
+  - RunDM
+  - RunFR
+  - RunGLMPCA
+  - RunMDS
+  - RunNMF
+  - RunUMAP2
+  - RunPaCMAP
+  - RunTriMap
+  - RunPHATE
+  - RunLargeVis
+  - RunKNNPredict
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
-  - integration_scop
   - RunCSSMap
   - RunHarmony2
   - RunKNNMap
@@ -102,21 +136,6 @@ reference:
   - Uncorrected_integrate
   - fastMNN_integrate
 
-- subtitle: "Dimensionality Reduction and Clustering"
-- contents:
-  - RunDimReduction
-  - RunGLMPCA
-  - RunMDS
-  - RunNMF
-  - RunUMAP2
-  - RunPaCMAP
-  - RunTriMap
-  - RunPHATE
-  - RunDM
-  - RunFR
-  - RunLargeVis
-  - RunKNNPredict
-
 - subtitle: "Differential Analysis and Enrichment"
 - contents:
   - FindExpressedMarkers
@@ -125,7 +144,7 @@ reference:
   - RunEnrichment
   - RunDynamicEnrichment
 
-- subtitle: "Trajectory Analysis and Dynamic Processes"
+- subtitle: "Trajectory Analysis"
 - contents:
   - RunMonocle2
   - RunMonocle3
@@ -151,66 +170,54 @@ reference:
   - FeatureHeatmap
   - FeatureCorPlot
   - FeatureStatPlot
-  - LineagePlot
   - GraphPlot
   - GroupHeatmap
   - GSEAPlot
+  - LineagePlot
   - PAGAPlot
-  - panel_fix
   - ProjectionPlot
   - StatPlot
   - TACSPlot
   - VelocityPlot
   - VolcanoPlot
 
-- subtitle: "Themes"
+- subtitle: "Plotting Functions"
 - contents:
   - adjcolors
   - blendcolors
+  - compute_velocity_on_grid
+  - drop_data
+  - get_vars
   - geom_alluvial
   - geom_alluvial_label
   - geom_sankey
   - geom_sankey_bump
   - geom_sankey_label
+  - make_long
   - palette_colors
+  - panel_fix
+  - print.scop_logo
+  - segements_df
+  - slim_data
   - show_palettes
   - theme_blank
   - theme_scop
   - theme_sankey
 
-- subtitle: "Web SCExplorer"
-- contents:
-  - PrepareSCExplorer
-  - RunSCExplorer
-
-- subtitle: "Utility Functions"
-- contents:
-  - adata_to_srt
-  - AnnotateFeatures
-  - compute_velocity_on_grid
-  - drop_data
-  - get_vars
-  - GeneConvert
-  - GetAssayData5
-  - make_long
-  - print.scop_logo
-  - RenameClusters
-  - RenameFeatures
-  - segements_df
-  - slim_data
-  - srt_append
-  - srt_to_adata
-  - srt_reorder
-
-- subtitle: "Database Operations"
+- subtitle: "SCExplorer"
 - contents:
   - CreateDataFile
   - CreateMetaFile
   - FetchH5
+  - PrepareSCExplorer
+  - RunSCExplorer
+
+- subtitle: "Database Operations"
+- contents:
   - ListDB
   - PrepareDB
 
-- subtitle: "Example Data"
+- subtitle: "Data"
 - contents:
   - ifnb_sub
   - lifemap_cell
