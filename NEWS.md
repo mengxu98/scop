@@ -1,5 +1,16 @@
 # scop
 
+# scop 0.2.6
+
+* **func**:
+  * Added `remove_r()` function for easy remove *R* packages.
+  * Rename function: `RemovePackages()` to `remove_python()`.
+  * Removed other methods of installing *R* packages from the `check_r()` function, only retaining [pak::pak](https://pak.r-lib.org/reference/pak.html). 
+  * Delete useless import packages: `BBmisc`, `BiocManager`, `covr`, `devtools`, `promises` and `withr`.
+  * Optimized the function structure in the `_pkgdown.yml` file.
+
+* **docs**: Updated documentation for some functions.
+
 # scop 0.2.5
 
 * **func**: Rename function: `palette_scop()` to `palette_colors()`.
@@ -10,19 +21,21 @@
 
 # scop 0.2.2
 
-* **func**: Import!!! Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
+* **func**: ***Import!!!*** Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
 
 * **bugs**: Fix bugs in `RunSingleR()`.
 
 # scop 0.2.0
 
-* **func**: Added `RemovePackages()` function for easy remove Python packages.
+* **func**: Added `remove_python()` function for easy remove *Python* packages.
 
 * **bugs**: Corrected an issue in `py_to_r2()` function (intrinsic function), which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
 
 # scop 0.1.9
 
-* **func**: Update `CellScoring()` and `AddModuleScore2()` functions. Now, new parameters `cores` and `verbose` have been added. The `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but [parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html), and the `cores` parameter is used to control the number of cores in [parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
+* **func**:
+  * Update `CellScoring()` and `AddModuleScore2()` functions. Now, new parameters `cores` and `verbose` have been added.
+  * `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html), and the `cores` parameter is used to control the number of cores in [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
 
 # scop 0.1.5
 
@@ -30,9 +43,10 @@
 
 # scop 0.1.4
 
-* **func**: Update `.onAttach()`, now `.onAttach()` will print more information about conda and Python.
-* **func**: Update `PrepareEnv()` function for easy add or update a conda environments and install Python packages.
-* **func**: Added `ListEnv()` and `RemoveEnv()` functions for easy management of conda environment and Python packages.
+* **func**:
+  * Update `.onAttach()`, now `.onAttach()` will print more information about *conda* and *Python*.
+  * Update `PrepareEnv()` function for easy add or update a conda environments and install *Python* packages.
+  * Added `ListEnv()` and `RemoveEnv()` functions for easy management of *conda* environment and *Python* packages.
 
 # scop 0.1.3
 
@@ -40,12 +54,13 @@
 
 # scop 0.0.9
 
-* **bugs**: Corrected an issue in `PrepareEnv()` function. The default Python version is now set to `3.10`, which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
+* **bugs**: Corrected an issue in `PrepareEnv()` function. The default *Python* version is now set to `3.10-1`, which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
 
 # scop 0.0.6
 
-* **func**: Add `GetAssayData5()` function, a reimplementation of `GetAssayData()`, for compatibility with Seurat v5 `Assay` objects.
-* **func**: Updated `GetFeaturesData()` and `AddFeaturesData()` function to support retrieving and adding feature metadata.
+* **func**:
+  * Add `GetAssayData5()` function, a reimplementation of `GetAssayData()`, for compatibility with Seurat v5 `Assay` objects.
+  * Updated `GetFeaturesData()` and `AddFeaturesData()` function to support retrieving and adding feature metadata.
 
 # scop 0.0.5
 
