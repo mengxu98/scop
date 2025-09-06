@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.2.5
-Date: 2025-09-05
+Version: 0.2.6
+Date: 2025-09-06
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -40,10 +40,8 @@ Suggests:
     AnnotationDbi,
     AUCell,
     batchelor,
-    BBmisc,
     Biobase,
     BiocGenerics,
-    BiocManager,
     data.table,
     biomaRt,
     circlize,
@@ -51,11 +49,9 @@ Suggests:
     clusterProfiler,
     concaveman,
     conos,
-    covr,
     cowplot,
     dendextend,
     destiny,
-    devtools,
     DDRTree,
     e1071,
     ggpubr,
@@ -87,7 +83,6 @@ Suggests:
     org.Mm.eg.db,
     pak,
     patchwork,
-    promises,
     purrr,
     PFAM.db,
     plotly,
@@ -119,8 +114,7 @@ Suggests:
     SummarizedExperiment,
     tidyr,
     umap,
-    UCell,
-    withr
+    UCell
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
