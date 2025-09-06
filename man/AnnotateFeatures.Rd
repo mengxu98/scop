@@ -2,7 +2,7 @@
 % Please edit documentation in R/AnnotateFeatures.R
 \name{AnnotateFeatures}
 \alias{AnnotateFeatures}
-\title{AnnotateFeatures}
+\title{Annotate Features}
 \usage{
 AnnotateFeatures(
   srt,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{CreateMetaFile}
 \alias{CreateMetaFile}
-\title{CreateMetaFile}
+\title{Create Meta File}
 \usage{
 CreateMetaFile(
   srt,

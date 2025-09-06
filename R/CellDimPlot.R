@@ -6,7 +6,7 @@
 #' @param srt A Seurat object.
 #' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \link{DefaultReduction}.
+#' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data column to split plot by.
 #' @param palette Name of a color palette name collected in scop. Default is "Paired".
 #' @param palcolor Custom colors used to create a color palette.
@@ -20,18 +20,18 @@
 #' @param stroke.highlight Border width of highlighted cell points.
 #' @param legend.position The position of legends ("none", "left", "right", "bottom", "top").
 #' @param legend.direction Layout of items in legends ("horizontal" or "vertical")
-#' @param combine Combine plots into a single \code{patchwork} object.
-#' If \code{FALSE}, return a list of ggplot objects.
+#' @param combine Combine plots into a single `patchwork` object.
+#' If `FALSE`, return a list of ggplot objects.
 #' @param nrow Number of rows in the combined plot.
 #' @param ncol Number of columns in the combined plot.
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions
 #' @param show_na Whether to assign a color from the color palette to NA group.
-#' If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.
+#' If `FALSE`, cell points with NA level will colored by `bg_color`.
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param label Whether to label the cell groups.
 #' @param label_insitu Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
-#' Default is \code{FALSE}, which using numbers instead of raw labels.
+#' Default is `FALSE`, which using numbers instead of raw labels.
 #' @param label.size Size of labels.
 #' @param label.fg Foreground color of label.
 #' @param label.bg Background color of label.
@@ -46,11 +46,11 @@
 #' @param density_filled Whether to add filled contour bands instead of contour lines.
 #' @param density_filled_palette Color palette used to fill contour bands.
 #' @param density_filled_palcolor Custom colors used to fill contour bands.
-#' @param add_mark Whether to add marks around cell groups. Default is \code{FALSE}.
+#' @param add_mark Whether to add marks around cell groups. Default is `FALSE`.
 #' @param mark_type Type of mark to add around cell groups.
 #' One of "hull", "ellipse", "rect", or "circle". Default is "hull".
 #' @param mark_expand Expansion of the mark around the cell group.
-#' Default is \code{grid::unit(3, "mm")}.
+#' Default is `grid::unit(3, "mm")`.
 #' @param mark_alpha Transparency of the mark.
 #' Default is 0.1.
 #' @param mark_linetype Line type of the mark border.
@@ -124,7 +124,7 @@
 #' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
 #' Default is c(512, 512).
 #' @param theme_use Theme used. Can be a character string or a theme function.
-#' For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.
+#' For example, `"theme_blank"` or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.
 #' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
@@ -132,10 +132,10 @@
 #' @param ylab y-axis label.
 #' @param force Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
 #' @param cells Subset cells to plot.
-#' @param theme_args Other arguments passed to the \code{theme_use}.
+#' @param theme_args Other arguments passed to the `theme_use`.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \link{FeatureDimPlot}
+#' @seealso [FeatureDimPlot]
 #'
 #' @export
 #'
@@ -1459,19 +1459,24 @@ CellDimPlot <- function(
   }
 }
 
-#' 3D-Dimensional reduction plot for cell classification visualization.
+#' @title 3D-Dimensional reduction plot for cell classification visualization.
 #'
+#' @description
 #' Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.
 #'
+#' @md
 #' @inheritParams CellDimPlot
 #' @param dims Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions
 #' @param axis_labs A character vector of length 3 indicating the labels for the axes.
 #' @param span A numeric value specifying the span of the loess smoother for lineages line.
-#' @param shape.highlight Shape of the cell to highlight. See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}
+#' @param shape.highlight Shape of the cell to highlight.
+#' See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}
 #' @param width Width in pixels, defaults to automatic sizing.
 #' @param height Height in pixels, defaults to automatic sizing.
 #' @param save The name of the file to save the plot to. Must end in ".html".
-#' @seealso \link{CellDimPlot}, \link{FeatureDimPlot3D}
+#'
+#' @seealso
+#' [CellDimPlot], [FeatureDimPlot3D]
 #'
 #' @export
 #'

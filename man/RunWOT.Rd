@@ -44,19 +44,23 @@ RunWOT(
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 
-\item{time_field}{A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.}
+\item{time_field}{A character string specifying the column name in \code{adata.obs} or \code{srt@meta.data} that contains the time information.}
 
-\item{growth_iters}{An integer specifying the number of growth iterations to perform during the OT Model computation. Default is 3.}
+\item{growth_iters}{An integer specifying the number of growth iterations to perform during the OT Model computation.
+Default is 3.}
 
 \item{tmap_out}{A character string specifying the path to store the computed transport maps.}
 
 \item{time_from}{A numeric value specifying the starting time point for trajectory and fate analysis.}
 
-\item{time_to}{A numeric value specifying the ending time point for trajectory and fate analysis. If not provided, only trajectory and fate analysis for the specified `time_from` will be performed.}
+\item{time_to}{A numeric value specifying the ending time point for trajectory and fate analysis.
+If not provided, only trajectory and fate analysis for the specified \code{time_from} will be performed.}
 
-\item{get_coupling}{A logical value indicating whether to compute and store the coupling matrix between the specified `time_from` and `time_to`. Default is FALSE.}
+\item{get_coupling}{A logical value indicating whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.
+Default is FALSE.}
 
-\item{recalculate}{A logical value indicating whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location. Default is FALSE.}
+\item{recalculate}{A logical value indicating whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
+Default is FALSE.}
 
 \item{palette}{The palette to use for coloring cells.}
 

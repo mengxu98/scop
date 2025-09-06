@@ -225,7 +225,7 @@ RunDynamicFeatures <- function(
   }
   gene_status <- status <- CheckDataType(srt, assay = assay, layer = layer)
   meta_status <- sapply(meta, function(x) {
-    CheckDataType(data = srt[[x]])
+    CheckDataType(srt[[x]])
   })
   if (is.null(family)) {
     family <- rep("gaussian", length(features))

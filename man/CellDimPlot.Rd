@@ -362,7 +362,7 @@ Default is c(512, 512).}
 \item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
-For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.}
+For example, \code{"theme_blank"} or \link[ggplot2:ggtheme]{ggplot2::theme_classic}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
 

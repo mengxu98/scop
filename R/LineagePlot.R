@@ -1,7 +1,9 @@
-#' LineagePlot
+#' @title Lineage Plot
 #'
+#' @description
 #' Generate a lineage plot based on the pseudotime.
 #'
+#' @md
 #' @param srt An object of class Seurat.
 #' @param lineages A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.
 #' @param reduction An optional string specifying the dimensionality reduction method to use.
@@ -30,7 +32,7 @@
 #' @param return_layer A logical value indicating whether to return the plot as a layer.
 #' @param seed An optional integer specifying the random seed for reproducibility.
 #'
-#' @seealso \link{RunSlingshot}, \link{CellDimPlot}
+#' @seealso [RunSlingshot], [CellDimPlot]
 #'
 #' @export
 #'
