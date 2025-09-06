@@ -14,25 +14,34 @@
 #' @param r.sq A numeric value specifying the R-squared threshold. Default is 0.2.
 #' @param dev.expl A numeric value specifying the deviance explained threshold. Default is 0.2.
 #' @param padjust A numeric value specifying the p-value adjustment threshold. Default is 0.05.
-#' @param num_intersections This parameter is a numeric vector used to determine the number of intersections among lineages. It helps in selecting which dynamic features will be used. By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.
-#' @param cell_density A numeric value is used to define the cell density within each cell bin. By default, this parameter is set to 1, which means that all cells will be included within each cell bin.
+#' @param num_intersections This parameter is a numeric vector used to determine the number of intersections among lineages.
+#' It helps in selecting which dynamic features will be used.
+#' By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.
+#' @param cell_density A numeric value is used to define the cell density within each cell bin.
+#' By default, this parameter is set to 1, which means that all cells will be included within each cell bin.
 #' @param cell_bins A numeric value specifying the number of cell bins. Default is 100.
-#' @param order_by A character vector specifying the order of the heatmap. Default is "peaktime".
-#' @param family A character specifying the model used to calculate the dynamic features if needed. By default, this parameter is set to NULL, and the appropriate family will be automatically determined.
-#' @param cluster_features_by A character vector specifying which lineage to use when clustering features. By default, this parameter is set to NULL, which means that all lineages will be used.
+#' @param order_by A character vector specifying the order of the heatmap. Default is `"peaktime"`.
+#' @param family A character specifying the model used to calculate the dynamic features if needed.
+#' By default, this parameter is set to NULL, and the appropriate family will be automatically determined.
+#' @param cluster_features_by A character vector specifying which lineage to use when clustering features.
+#' By default, this parameter is set to NULL, which means that all lineages will be used.
 #' @param pseudotime_label A numeric vector specifying the pseudotime label. Default is NULL.
-#' @param pseudotime_label_color A character string specifying the pseudotime label color. Default is "black".
+#' @param pseudotime_label_color A character string specifying the pseudotime label color.
+#' Default is `"black"`.
 #' @param pseudotime_label_linetype A numeric value specifying the pseudotime label line type. Default is 2.
 #' @param pseudotime_label_linewidth A numeric value specifying the pseudotime label line width. Default is 3.
 #' @param pseudotime_palette A character vector specifying the color palette to use for pseudotime.
 #' @param pseudotime_palcolor A list specifying the colors to use for the pseudotime in the heatmap.
-#' @param separate_annotation A character vector of names of annotations to be displayed in separate annotation blocks. Each name should match a column name in the metadata of the Seurat object.
+#' @param separate_annotation A character vector of names of annotations to be displayed in separate annotation blocks.
+#' Each name should match a column name in the metadata of the `Seurat` object.
 #' @param separate_annotation_palette A character vector specifying the color palette to use for separate annotations.
 #' @param separate_annotation_palcolor A list specifying the colors to use for each level of the separate annotations.
-#' @param separate_annotation_params A list of other parameters to be passed to the HeatmapAnnotation function when creating the separate annotation blocks.
-#' @param reverse_ht A logical indicating whether to reverse the heatmap. Default is NULL.
+#' @param separate_annotation_params A list of other parameters to be passed to the [ComplexHeatmap::HeatmapAnnotation] function when creating the separate annotation blocks.
+#' @param reverse_ht A logical indicating whether to reverse the heatmap.
+#' Default is `NULL`.
 #'
-#' @seealso \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
+#' @seealso
+#' [RunDynamicFeatures], [RunDynamicEnrichment]
 #'
 #' @export
 #'

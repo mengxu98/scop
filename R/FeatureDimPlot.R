@@ -1,5 +1,6 @@
-#' Visualize feature values on a 2-dimensional reduction plot
+#' @title Visualize feature values on a 2-dimensional reduction plot
 #'
+#' @description
 #' Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
 #'
 #' @md
@@ -7,7 +8,7 @@
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \link{DefaultReduction}.
+#' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data to split plot by.
 #' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
@@ -87,10 +88,10 @@
 #' @param ylab y-axis label.
 #' @param force Whether to force drawing regardless of the number of features greater than 100.
 #' @param cells Subset cells to plot.
-#' @param theme_args Other arguments passed to the \code{theme_use}.
+#' @param theme_args Other arguments passed to the `theme_use`.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \link{CellDimPlot}
+#' @seealso [CellDimPlot]
 #'
 #' @export
 #'
@@ -1774,13 +1775,16 @@ FeatureDimPlot <- function(
   }
 }
 
-#' 3D-Dimensional reduction plot for gene expression visualization.
+#' @title 3D-Dimensional reduction plot for gene expression visualization.
 #'
+#' @description
 #' Plotting cell points on a reduced 3D space and coloring according to the gene expression in the cells.
+#'
+#' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
 #'
-#' @seealso \link{FeatureDimPlot}, \link{CellDimPlot3D}
+#' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'
 #' @export
 #'

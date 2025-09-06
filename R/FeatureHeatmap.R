@@ -1,12 +1,13 @@
-#' FeatureHeatmap
+#' @title Feature Heatmap
 #'
+#' @md
 #' @inheritParams GroupHeatmap
 #' @param max_cells An integer, maximum number of cells to sample per group.
 #' Default is 100.
 #' @param cell_order A vector of cell names defining the order of cells.
 #' Default is NULL.
 #'
-#' @seealso \link{RunDEtest}
+#' @seealso [RunDEtest]
 #'
 #' @export
 #'

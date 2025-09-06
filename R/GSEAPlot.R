@@ -1,7 +1,9 @@
-#' GSEA Plot
+#' @title GSEA Plot
 #'
+#' @description
 #' This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 #'
+#' @md
 #' @inheritParams EnrichmentPlot
 #' @param srt A Seurat object containing the results of RunDEtest and RunGSEA.
 #' If specified, GSEA results will be extracted from the Seurat object automatically.
@@ -23,7 +25,7 @@
 #' @param label.bg.r The radius of the rounding of the label's background.
 #' @param label.size The size of the labels.
 #'
-#' @seealso \link{RunGSEA}
+#' @seealso [RunGSEA]
 #'
 #' @export
 #'

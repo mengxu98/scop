@@ -579,9 +579,9 @@ RunKNNPredict <- function(
   }
 
   if (isFALSE(use_reduction)) {
-    status_dat <- CheckDataType(data = query)
+    status_dat <- CheckDataType(query)
     log_message("Detected query data type: ", status_dat)
-    status_ref <- CheckDataType(data = ref)
+    status_ref <- CheckDataType(ref)
     log_message("Detected reference data type: ", status_ref)
     if (
       status_ref != status_dat ||
