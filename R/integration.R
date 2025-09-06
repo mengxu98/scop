@@ -1,5 +1,6 @@
-#' The integration_scop function
+#' @title The integration_scop function
 #'
+#' @description
 #' Integrate single-cell RNA-seq data using various integration methods.
 #'
 #' @md
@@ -7,7 +8,7 @@
 #' @inheritParams CheckDataMerge
 #' @inheritParams standard_scop
 #' @param scale_within_batch  Whether to scale data within each batch.
-#' Only valid when the \code{integration_method} is one of `"Uncorrected"`,
+#' Only valid when the `integration_method` is one of `"Uncorrected"`,
 #' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
 #' @param integration_method  A character string specifying the integration method to use.
 #' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"scVI"`, `"MNN"`, `"fastMNN"`,
@@ -20,18 +21,18 @@
 #' @return A `Seurat` object.
 #'
 #' @seealso
-#' \link{Seurat_integrate},
-#' \link{scVI_integrate},
-#' \link{MNN_integrate},
-#' \link{fastMNN_integrate},
-#' \link{Harmony_integrate},
-#' \link{Scanorama_integrate},
-#' \link{BBKNN_integrate},
-#' \link{CSS_integrate},
-#' \link{LIGER_integrate},
-#' \link{Conos_integrate},
-#' \link{ComBat_integrate},
-#' \link{standard_scop}
+#' [Seurat_integrate],
+#' [scVI_integrate],
+#' [MNN_integrate],
+#' [fastMNN_integrate],
+#' [Harmony_integrate],
+#' [Scanorama_integrate],
+#' [BBKNN_integrate],
+#' [CSS_integrate],
+#' [LIGER_integrate],
+#' [Conos_integrate],
+#' [ComBat_integrate],
+#' [standard_scop]
 #'
 #' @export
 #' @examples

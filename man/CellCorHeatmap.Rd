@@ -100,7 +100,8 @@ This variable will be used to group cells in the heatmap rows.
 If not provided, all cells will be treated as one group.}
 
 \item{ref_group}{The grouping variable in the reference dataset.
-This variable will be used to group cells in the heatmap columns. If not provided, all cells will be treated as one group.}
+This variable will be used to group cells in the heatmap columns.
+If not provided, all cells will be treated as one group.}
 
 \item{query_assay}{The assay to use for the query dataset.
 If not provided, the default assay of the query dataset will be used.}
@@ -321,17 +322,17 @@ Default is "inch", Options are "mm", "cm", or "inch".}
 Default is 11.}
 
 \item{ht_params}{Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
+This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Any conflicting parameters will override the defaults set by this function.}
 }
 \value{
 A list with the following elements:
 \itemize{
-  \item \code{plot:} The heatmap plot as a ggplot object.
-  \item \code{features:} The features used in the heatmap.
-  \item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
-  \item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
-  \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
+\item \code{plot:} The heatmap plot as a ggplot object.
+\item \code{features:} The features used in the heatmap.
+\item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
+\item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
+\item \code{cell_metadata:} The cell metadata used to generate the heatmap.
 }
 }
 \description{
