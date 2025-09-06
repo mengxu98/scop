@@ -104,156 +104,372 @@ check_python <- function(
   }
 }
 
+#' @title Remove Python packages from conda environment
+#'
+#' @md
+#' @param packages A character vector of package names to remove.
+#' @param envname The name of the conda environment.
+#' If `NULL`, uses the default scop environment name.
+#' @param conda The path to a conda executable.
+#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
+#' @param pip Whether to use pip for package removal.
+#' Default is `FALSE` (use conda).
+#' @param force Whether to force removal without confirmation.
+#' Default is `FALSE`.
+#'
+#' @return Invisibly value.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Remove a single package using conda
+#' remove_python("numpy")
+#'
+#' # Remove multiple packages using conda
+#' remove_python(c("numpy", "pandas"))
+#'
+#' # Remove packages using pip
+#' remove_python("numpy", pip = TRUE)
+#'
+#' # Force removal without confirmation
+#' remove_python("numpy", force = TRUE)
+#'
+#' # Remove packages from a specific environment
+#' remove_python("numpy", envname = "env")
+#' }
+remove_python <- function(
+    packages,
+    envname = NULL,
+    conda = "auto",
+    pip = FALSE,
+    force = FALSE) {
+  envname <- get_envname(envname)
+
+  log_message(
+    "Removing {.pkg {packages}} from environment: {.file {envname}}"
+  )
+
+  if (identical(conda, "auto")) {
+    conda <- find_conda()
+  } else {
+    options(reticulate.conda_binary = conda)
+    conda <- find_conda()
+  }
+
+  if (is.null(conda)) {
+    log_message("Conda not found", message_type = "error")
+    return(invisible(FALSE))
+  }
+
+  env_exists <- env_exist(envname = envname, conda = conda)
+  if (isFALSE(env_exists)) {
+    log_message(
+      "Cannot find the conda environment: {.file {envname}}",
+      message_type = "error"
+    )
+    return(invisible(FALSE))
+  }
+
+  if (!force) {
+    if (interactive()) {
+      response <- readline(
+        paste0(
+          "Are you sure you want to remove these packages from environment '",
+          envname, "'? (y/N): "
+        )
+      )
+      if (!tolower(response) %in% c("y", "yes")) {
+        log_message("{.pkg {packages}} removal cancelled")
+        return(invisible(FALSE))
+      }
+    } else {
+      log_message(
+        "Automatically remove {.pkg {packages}} in non-interactive mode",
+        message_type = "warning"
+      )
+    }
+  }
+
+  python <- tryCatch(
+    {
+      conda_python(envname = envname, conda = conda)
+    },
+    error = function(e) {
+      log_message(
+        "Failed to get Python path: {.val {e$message}}",
+        message_type = "error"
+      )
+      NULL
+    }
+  )
+
+  if (is.null(python)) {
+    return(invisible(FALSE))
+  }
+
+  if (pip) {
+    log_message("Removing {.pkg {packages}} via {.pkg pip}...")
+
+    result <- tryCatch(
+      {
+        for (pkg in packages) {
+          log_message("Removing {.pkg {pkg}}")
+
+          args <- c(
+            "-m", "pip", "uninstall", "-y", pkg
+          )
+
+          status <- reticulate:::system2t(python, shQuote(args))
+
+          if (status != 0L) {
+            log_message(
+              "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
+              message_type = "warning"
+            )
+          } else {
+            log_message(
+              "Package {.pkg {pkg}} removed successfully via {.pkg pip}",
+              message_type = "success"
+            )
+          }
+        }
+        TRUE
+      },
+      error = function(e) {
+        log_message(
+          "Pip removal failed: {.val {e$message}}",
+          message_type = "error"
+        )
+        FALSE
+      }
+    )
+  } else {
+    log_message("Removing {.pkg {packages}} via {.pkg conda}...")
+
+    result <- tryCatch(
+      {
+        args <- reticulate:::conda_args("remove", envname)
+        args <- c(args, packages)
+
+        status <- reticulate:::system2t(conda, shQuote(args))
+
+        if (status != 0L) {
+          log_message(
+            "{.pkg {packages}} removal failed via {.pkg conda} with error code: {.val {status}}",
+            message_type = "warning"
+          )
+          FALSE
+        } else {
+          log_message(
+            "{.pkg {packages}} removed successfully via {.pkg conda}",
+            message_type = "success"
+          )
+          TRUE
+        }
+      },
+      error = function(e) {
+        log_message(
+          "Conda removal failed: {.val {e$message}}",
+          message_type = "warning"
+        )
+        FALSE
+      }
+    )
+
+    if (!result && !pip) {
+      log_message(
+        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg pip} as fallback...",
+        message_type = "info"
+      )
+
+      result <- tryCatch(
+        {
+          for (pkg in packages) {
+            log_message("Removing {.pkg {pkg}}")
+
+            args <- c(
+              "-m", "pip", "uninstall", "-y", pkg
+            )
+
+            status <- reticulate:::system2t(python, shQuote(args))
+
+            if (status != 0L) {
+              log_message(
+                "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
+                message_type = "warning"
+              )
+            } else {
+              log_message(
+                "{.pkg {pkg}} removed successfully via {.pkg pip}",
+                message_type = "success"
+              )
+            }
+          }
+          TRUE
+        },
+        error = function(e) {
+          log_message(
+            "{.pkg {packages}} removal failed via {.pkg pip} as fallback: {.val {e$message}}",
+            message_type = "error"
+          )
+          FALSE
+        }
+      )
+    }
+  }
+
+  if (result) {
+    log_message(
+      "{.pkg {packages}} removal completed successfully",
+      message_type = "success"
+    )
+  } else {
+    log_message(
+      "{.pkg {packages}} removal failed",
+      message_type = "error"
+    )
+  }
+
+  return(invisible(result))
+}
+
 #' @title Check and install R packages
 #'
 #' @md
 #' @param packages Package to be installed.
 #' Package source can be CRAN, Bioconductor or Github.
 #' By default, the package name is extracted according to the `packages` parameter.
-#' @param install_methods Functions used to install R packages.
 #' @param lib The location of the library directories where to install the packages.
 #' @param force Whether to force the installation of packages.
-#' Default is FALSE.
+#' Default is `TRUE`.
 #'
 #' @export
 check_r <- function(
     packages,
-    install_methods = c(
-      "pak::pak",
-      "BiocManager::install",
-      "install.packages",
-      "devtools::install_github"
-    ),
     lib = .libPaths()[1],
-    force = FALSE) {
+    force = TRUE) {
   status_list <- list()
   for (pkg in packages) {
     version <- NULL
     if (grepl("/", pkg)) {
       pkg_name <- strsplit(pkg, split = "/|@|==", perl = TRUE)[[1]][[2]]
     } else {
-      pkg_name <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]][[1]]
-      if (length(strsplit(pkg, split = "@|==", perl = TRUE)[[1]]) > 1) {
-        version <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]][[2]]
+      pkg_info <- strsplit(pkg, split = "@|==", perl = TRUE)[[1]]
+      pkg_name <- pkg_info[[1]]
+      if (length(pkg_info) > 1) {
+        version <- pkg_info[[2]]
       }
     }
     dest <- gsub("@.*|==.*|>=.*", "", pkg)
-    if (is.null(version)) {
-      force_update <- isTRUE(force)
-    } else {
-      force_update <- isTRUE(
-        utils::packageVersion(pkg_name) < package_version(version)
-      ) ||
-        isTRUE(force)
+
+    check_pkg <- .check_pkg_status(pkg_name)
+
+    force_update <- FALSE
+    if (check_pkg && !is.null(version)) {
+      current_version <- utils::packageVersion(pkg_name)
+      force_update <- current_version < package_version(version)
     }
-    if (
-      !suppressPackageStartupMessages(
-        requireNamespace(
-          pkg_name,
-          quietly = TRUE
-        )
-      ) ||
-        isTRUE(force_update)
-    ) {
+    force_update <- force_update || isTRUE(force)
+
+    if (!check_pkg || force_update) {
       log_message(
         "Installing package: {.pkg {pkg_name}}..."
       )
       status_list[[pkg]] <- FALSE
-      i <- 1
-      while (isFALSE(status_list[[pkg]])) {
-        tryCatch(
-          expr = {
-            if (grepl("pak::pak", install_methods[i])) {
-              if (!requireNamespace("pak", quietly = TRUE)) {
-                utils::install.packages("pak", lib = lib)
-              }
-              if (!requireNamespace("withr", quietly = TRUE)) {
-                utils::install.packages("withr", lib = lib)
-              }
-              eval(
-                str2lang(
-                  paste0(
-                    "withr::with_libpaths(new = \"",
-                    lib,
-                    "\", ",
-                    install_methods[i],
-                    "(\"",
-                    dest,
-                    "\", ask = FALSE))"
-                  )
-                )
-              )
-            } else if (grepl("BiocManager", install_methods[i])) {
-              if (!requireNamespace("BiocManager", quietly = TRUE)) {
-                utils::install.packages("BiocManager", lib = lib)
-              }
-              eval(
-                str2lang(
-                  paste0(
-                    install_methods[i],
-                    "(\"",
-                    dest,
-                    "\", lib=\"",
-                    lib,
-                    "\", update = FALSE, upgrade = \"never\", ask = FALSE, force = TRUE)"
-                  )
-                )
-              )
-            } else if (grepl("devtools", install_methods[i])) {
-              if (!requireNamespace("devtools", quietly = TRUE)) {
-                utils::install.packages("devtools", lib = lib)
-              }
-              if (!requireNamespace("withr", quietly = TRUE)) {
-                utils::install.packages("withr", lib = lib)
-              }
-              eval(
-                str2lang(
-                  paste0(
-                    "withr::with_libpaths(new = \"",
-                    lib,
-                    "\", ",
-                    install_methods[i],
-                    "(\"",
-                    dest,
-                    "\", upgrade = \"never\", force = TRUE))"
-                  )
-                )
-              )
-            } else {
-              eval(
-                str2lang(
-                  paste0(
-                    install_methods[i],
-                    "(\"",
-                    dest,
-                    "\", lib=\"",
-                    lib,
-                    "\", force = TRUE)"
-                  )
-                )
-              )
-            }
-          },
-          error = function(e) {
-            status_list[[pkg]] <- FALSE
-          }
-        )
-        status_list[[pkg]] <- requireNamespace(pkg_name, quietly = TRUE)
-        i <- i + 1
-        if (i > length(install_methods)) {
-          break
+      tryCatch(
+        expr = {
+          old_lib_paths <- .libPaths()
+          .libPaths(lib)
+          pak::pak(dest)
+          .libPaths(old_lib_paths)
+        },
+        error = function(e) {
+          status_list[[pkg]] <- FALSE
+          log_message(
+            "Failed to install package: {.pkg {pkg_name}}. Error: {.val {e$message}}",
+            message_type = "warning"
+          )
         }
-      }
+      )
+      status_list[[pkg]] <- .check_pkg_status(pkg_name)
     } else {
       status_list[[pkg]] <- TRUE
     }
   }
-  out <- sapply(status_list, isTRUE)
-  out <- out[!out]
-  if (length(out) > 0) {
+
+  success <- sapply(status_list, isTRUE)
+  failed <- names(status_list)[!success]
+
+  if (length(failed) > 0) {
     log_message(
-      "Failed to install: {.pkg {names(out)}}. Please install manually",
-      message_type = "error"
+      "Failed to install: {.pkg {failed}}. Please install manually",
+      message_type = "warning"
+    )
+  } else {
+    log_message(
+      "All packages installed successfully"
     )
   }
+
+  return(invisible(status_list))
+}
+
+#' @title Check and remove R packages
+#'
+#' @md
+#' @param packages Package to be removed.
+#' @param lib The location of the library directories where to remove the packages.
+#'
+#' @export
+remove_r <- function(
+    packages,
+    lib = .libPaths()[1]) {
+  status_list <- list()
+  for (pkg in packages) {
+    pkg_installed <- .check_pkg_status(pkg)
+
+    if (pkg_installed) {
+      log_message(
+        "Removing package: {.pkg {pkg}}..."
+      )
+      status_list[[pkg]] <- FALSE
+      tryCatch(
+        expr = {
+          old_lib_paths <- .libPaths()
+          .libPaths(lib)
+          pak::pkg_remove(pkg)
+          .libPaths(old_lib_paths)
+        },
+        error = function(e) {
+          log_message(
+            "Warning during removal: {.pkg {pkg}}. Error: {.val {e$message}}",
+            message_type = "warning"
+          )
+        }
+      )
+      status_list[[pkg]] <- !.check_pkg_status(pkg)
+    } else {
+      log_message(
+        "Package {.pkg {pkg}} is not installed, skipping removal"
+      )
+      status_list[[pkg]] <- TRUE
+    }
+  }
+
+  success <- sapply(status_list, isTRUE)
+  failed <- names(status_list)[!success]
+
+  if (length(failed) > 0) {
+    log_message(
+      "Failed to remove: {.pkg {failed}}. Please remove manually",
+      message_type = "warning"
+    )
+  } else {
+    log_message(
+      "All packages removed successfully"
+    )
+  }
+
+  return(invisible(status_list))
 }
