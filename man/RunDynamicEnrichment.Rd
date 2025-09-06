@@ -38,7 +38,9 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{lineages}{A character vector specifying the lineages to plot.}
 
-\item{score_method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".}
+\item{score_method}{The method to use for scoring.
+Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.
+Defaults to \code{"Seurat"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
 Default is "counts".}

@@ -1,15 +1,19 @@
-#' RunDynamicEnrichment
+#' @title RunDynamicEnrichment
 #'
-#' This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).
+#' @description
+#' This function calculates gene-set scores from the specified database (`db`) for each lineage using the specified scoring method (`score_method`).
 #' It then treats these scores as expression values and uses them as input to the RunDynamicFeatures function to identify dynamically enriched terms along the lineage.
 #'
+#' @md
 #' @inheritParams RunEnrichment
 #' @inheritParams DynamicHeatmap
 #' @inheritParams CellScoring
-#' @param score_method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".
+#' @param score_method The method to use for scoring.
+#' Can be `"Seurat"`, `"AUCell"`, or `"UCell"`.
+#' Defaults to `"Seurat"`.
 #'
 #' @seealso
-#' \link{RunDynamicFeatures}, \link{DynamicHeatmap}
+#' [RunDynamicFeatures], [DynamicHeatmap]
 #'
 #' @export
 #' @examples

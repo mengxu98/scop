@@ -4,6 +4,7 @@
 #' This function generates a heatmap to visualize the similarity between different cell types or conditions.
 #' It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 #'
+#' @md
 #' @param srt_query A Seurat object or count matrix representing the query dataset.
 #' This dataset will be used to calculate the similarities between cells.
 #' @param srt_ref A Seurat object or count matrix representing the reference dataset.
@@ -15,7 +16,8 @@
 #' This variable will be used to group cells in the heatmap rows.
 #' If not provided, all cells will be treated as one group.
 #' @param ref_group The grouping variable in the reference dataset.
-#' This variable will be used to group cells in the heatmap columns. If not provided, all cells will be treated as one group.
+#' This variable will be used to group cells in the heatmap columns.
+#' If not provided, all cells will be treated as one group.
 #' @param query_assay The assay to use for the query dataset.
 #' If not provided, the default assay of the query dataset will be used.
 #' @param ref_assay The assay to use for the reference dataset.
@@ -191,7 +193,7 @@
 #' }
 #'
 #' @seealso
-#' \link{RunKNNMap}, \link{RunKNNPredict}
+#' [RunKNNMap], [RunKNNPredict]
 #'
 #' @export
 #'

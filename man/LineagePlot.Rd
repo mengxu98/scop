@@ -2,7 +2,7 @@
 % Please edit documentation in R/LineagePlot.R
 \name{LineagePlot}
 \alias{LineagePlot}
-\title{LineagePlot}
+\title{Lineage Plot}
 \usage{
 LineagePlot(
   srt,

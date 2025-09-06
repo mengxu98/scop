@@ -21,7 +21,7 @@ CheckDataMerge(
 )
 }
 \arguments{
-\item{srt_merge}{A merged Seurat object that includes the batch information.}
+\item{srt_merge}{A merged `Seurat` object that includes the batch information.}
 
 \item{batch}{A character string specifying the batch variable name.}
 
@@ -62,5 +62,5 @@ Default is \code{11}.}
 This function checks and preprocesses a merged seurat object.
 }
 \seealso{
-\link{CheckDataList}
+[CheckDataList]
 }

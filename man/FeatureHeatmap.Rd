@@ -2,7 +2,7 @@
 % Please edit documentation in R/FeatureHeatmap.R
 \name{FeatureHeatmap}
 \alias{FeatureHeatmap}
-\title{FeatureHeatmap}
+\title{Feature Heatmap}
 \usage{
 FeatureHeatmap(
   srt,
@@ -418,7 +418,7 @@ Default is "inch".}
 Default is an empty list.}
 }
 \description{
-FeatureHeatmap
+Feature Heatmap
 }
 \examples{
 data(pancreas_sub)

@@ -1,15 +1,20 @@
-#' Run WOT analysis
+#' @title Run WOT analysis
 #'
+#' @md
 #' @inheritParams RunPAGA
 #' @param time_field A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.
-#' @param growth_iters An integer specifying the number of growth iterations to perform during the OT Model computation. Default is 3.
+#' @param growth_iters An integer specifying the number of growth iterations to perform during the OT Model computation.
+#' Default is 3.
 #' @param tmap_out A character string specifying the path to store the computed transport maps.
 #' @param time_from A numeric value specifying the starting time point for trajectory and fate analysis.
-#' @param time_to A numeric value specifying the ending time point for trajectory and fate analysis. If not provided, only trajectory and fate analysis for the specified `time_from` will be performed.
-#' @param get_coupling A logical value indicating whether to compute and store the coupling matrix between the specified `time_from` and `time_to`. Default is FALSE.
-#' @param recalculate A logical value indicating whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location. Default is FALSE.
+#' @param time_to A numeric value specifying the ending time point for trajectory and fate analysis.
+#' If not provided, only trajectory and fate analysis for the specified `time_from` will be performed.
+#' @param get_coupling A logical value indicating whether to compute and store the coupling matrix between the specified `time_from` and `time_to`.
+#' Default is FALSE.
+#' @param recalculate A logical value indicating whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location.
+#' Default is FALSE.
 #'
-#' @seealso \link{srt_to_adata}
+#' @seealso [srt_to_adata]
 #' @export
 #'
 #' @examples

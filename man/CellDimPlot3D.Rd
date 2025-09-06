@@ -51,7 +51,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
-\item{shape.highlight}{Shape of the cell to highlight. See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
+\item{shape.highlight}{Shape of the cell to highlight.
+See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
 
 \item{sizes.highlight}{Size of highlighted cell points.}
 

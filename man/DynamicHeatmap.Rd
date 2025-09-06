@@ -158,13 +158,16 @@ By default, this parameter is set to NULL, and the dynamic features will be dete
 
 \item{padjust}{A numeric value specifying the p-value adjustment threshold. Default is 0.05.}
 
-\item{num_intersections}{This parameter is a numeric vector used to determine the number of intersections among lineages. It helps in selecting which dynamic features will be used. By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.}
+\item{num_intersections}{This parameter is a numeric vector used to determine the number of intersections among lineages.
+It helps in selecting which dynamic features will be used.
+By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.}
 
-\item{cell_density}{A numeric value is used to define the cell density within each cell bin. By default, this parameter is set to 1, which means that all cells will be included within each cell bin.}
+\item{cell_density}{A numeric value is used to define the cell density within each cell bin.
+By default, this parameter is set to 1, which means that all cells will be included within each cell bin.}
 
 \item{cell_bins}{A numeric value specifying the number of cell bins. Default is 100.}
 
-\item{order_by}{A character vector specifying the order of the heatmap. Default is "peaktime".}
+\item{order_by}{A character vector specifying the order of the heatmap. Default is \code{"peaktime"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
 Default is "counts".}
@@ -186,9 +189,11 @@ Default is NULL.}
 \item{libsize}{A numeric vector specifying the library size for each cell.
 Default is NULL.}
 
-\item{family}{A character specifying the model used to calculate the dynamic features if needed. By default, this parameter is set to NULL, and the appropriate family will be automatically determined.}
+\item{family}{A character specifying the model used to calculate the dynamic features if needed.
+By default, this parameter is set to NULL, and the appropriate family will be automatically determined.}
 
-\item{cluster_features_by}{A character vector specifying which lineage to use when clustering features. By default, this parameter is set to NULL, which means that all lineages will be used.}
+\item{cluster_features_by}{A character vector specifying which lineage to use when clustering features.
+By default, this parameter is set to NULL, which means that all lineages will be used.}
 
 \item{cluster_rows}{A logical value indicating whether to cluster rows in the heatmap.
 Default is FALSE.}
@@ -365,7 +370,8 @@ Default is "black".}
 
 \item{pseudotime_label}{A numeric vector specifying the pseudotime label. Default is NULL.}
 
-\item{pseudotime_label_color}{A character string specifying the pseudotime label color. Default is "black".}
+\item{pseudotime_label_color}{A character string specifying the pseudotime label color.
+Default is \code{"black"}.}
 
 \item{pseudotime_label_linetype}{A numeric value specifying the pseudotime label line type. Default is 2.}
 
@@ -413,15 +419,17 @@ Default is NULL.}
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
 Default is an empty list.}
 
-\item{separate_annotation}{A character vector of names of annotations to be displayed in separate annotation blocks. Each name should match a column name in the metadata of the Seurat object.}
+\item{separate_annotation}{A character vector of names of annotations to be displayed in separate annotation blocks.
+Each name should match a column name in the metadata of the \code{Seurat} object.}
 
 \item{separate_annotation_palette}{A character vector specifying the color palette to use for separate annotations.}
 
 \item{separate_annotation_palcolor}{A list specifying the colors to use for each level of the separate annotations.}
 
-\item{separate_annotation_params}{A list of other parameters to be passed to the HeatmapAnnotation function when creating the separate annotation blocks.}
+\item{separate_annotation_params}{A list of other parameters to be passed to the \link[ComplexHeatmap:HeatmapAnnotation]{ComplexHeatmap::HeatmapAnnotation} function when creating the separate annotation blocks.}
 
-\item{reverse_ht}{A logical indicating whether to reverse the heatmap. Default is NULL.}
+\item{reverse_ht}{A logical indicating whether to reverse the heatmap.
+Default is \code{NULL}.}
 
 \item{use_raster}{A logical value indicating whether to use a raster device for plotting.
 Default is NULL.}

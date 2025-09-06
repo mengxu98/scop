@@ -125,12 +125,7 @@ if (interactive()) {
 # Or deploy the app on the website
 # (https://www.shinyapps.io) for free:
 
-# step1: set the repository URL for Bioconductor packages
-# and update them to the latest version
-# options(repos = BiocManager::repositories())
-# BiocManager::install(ask = FALSE)
-
-# step2: install "rsconnect" package and authorize your account
+# step1: install "rsconnect" package and authorize your account
 # install.packages("rsconnect")
 # library(rsconnect)
 # setAccountInfo(
@@ -139,7 +134,7 @@ if (interactive()) {
 #   secret = "<SECRET>"
 # )
 
-### step3: deploy the app
+### step2: deploy the app
 # deployApp("./SCExplorer")
 }
 }

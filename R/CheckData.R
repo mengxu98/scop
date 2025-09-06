@@ -588,15 +588,16 @@ CheckDataList <- function(
   )
 }
 
-#' Check and preprocess a merged seurat object
+#' @title Check and preprocess a merged seurat object
 #'
+#' @description
 #' This function checks and preprocesses a merged seurat object.
 #'
 #' @inheritParams CheckDataList
 #' @inheritParams integration_scop
-#' @param srt_merge A merged Seurat object that includes the batch information.
+#' @param srt_merge A merged `Seurat` object that includes the batch information.
 #'
-#' @seealso \link{CheckDataList}
+#' @seealso [CheckDataList]
 #'
 #' @export
 CheckDataMerge <- function(

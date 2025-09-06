@@ -169,8 +169,9 @@ WilcoxDETest <- function(
 }
 
 
-#' Differential gene test
+#' @title Differential gene test
 #'
+#' @description
 #' This function utilizes the Seurat package to perform a differential expression (DE) test on gene expression data.
 #' Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
 #'
@@ -209,7 +210,8 @@ WilcoxDETest <- function(
 #' @export
 #'
 #' @seealso
-#' \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
+#' [RunEnrichment], [RunGSEA], [GroupHeatmap]
+#'
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
