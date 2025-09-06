@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
         <dd>scop logo</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="package-setup">Package Setup<a class="anchor" aria-label="anchor" href="#package-setup"></a></h3>
+      <h3 id="package-management">Package Management<a class="anchor" aria-label="anchor" href="#package-management"></a></h3>
 
 
 
@@ -72,28 +72,16 @@
 
       <dl><dt>
 
-          <code><a href="PrepareEnv.html">PrepareEnv()</a></code>
+          <code><a href="check_python.html">check_python()</a></code>
 
         </dt>
-        <dd>Prepare the virtual environment</dd>
+        <dd>Check and install python packages</dd>
       </dl><dl><dt>
 
-          <code><a href="ListEnv.html">ListEnv()</a></code>
+          <code><a href="check_r.html">check_r()</a></code>
 
         </dt>
-        <dd>List conda environments</dd>
-      </dl><dl><dt>
-
-          <code><a href="RemoveEnv.html">RemoveEnv()</a></code>
-
-        </dt>
-        <dd>Remove a conda environment</dd>
-      </dl><dl><dt>
-
-          <code><a href="RemovePackages.html">RemovePackages()</a></code>
-
-        </dt>
-        <dd>Remove Python packages from conda environment</dd>
+        <dd>Check and install R packages</dd>
       </dl><dl><dt>
 
           <code><a href="conda_install.html">conda_install()</a></code>
@@ -108,30 +96,6 @@
         <dd>Find the path to Python associated with a conda environment</dd>
       </dl><dl><dt>
 
-          <code><a href="find_conda.html">find_conda()</a></code>
-
-        </dt>
-        <dd>Find an appropriate conda binary</dd>
-      </dl><dl><dt>
-
-          <code><a href="env_requirements.html">env_requirements()</a></code>
-
-        </dt>
-        <dd>env_requirements function</dd>
-      </dl><dl><dt>
-
-          <code><a href="check_python.html">check_python()</a></code>
-
-        </dt>
-        <dd>Check and install python packages</dd>
-      </dl><dl><dt>
-
-          <code><a href="check_r.html">check_r()</a></code>
-
-        </dt>
-        <dd>Check and install R packages</dd>
-      </dl><dl><dt>
-
           <code><a href="env_exist.html">env_exist()</a></code>
 
         </dt>
@@ -144,10 +108,22 @@
         <dd>Print environment information</dd>
       </dl><dl><dt>
 
+          <code><a href="env_requirements.html">env_requirements()</a></code>
+
+        </dt>
+        <dd>Python environment requirements</dd>
+      </dl><dl><dt>
+
           <code><a href="exist_python_pkgs.html">exist_python_pkgs()</a></code>
 
         </dt>
         <dd>Check if the python package exists in the environment</dd>
+      </dl><dl><dt>
+
+          <code><a href="find_conda.html">find_conda()</a></code>
+
+        </dt>
+        <dd>Find an appropriate conda binary</dd>
       </dl><dl><dt>
 
           <code><a href="install_miniconda2.html">install_miniconda2()</a></code>
@@ -160,9 +136,39 @@
 
         </dt>
         <dd>Show all the python packages in the environment</dd>
+      </dl><dl><dt>
+
+          <code><a href="ListEnv.html">ListEnv()</a></code>
+
+        </dt>
+        <dd>List conda environments</dd>
+      </dl><dl><dt>
+
+          <code><a href="PrepareEnv.html">PrepareEnv()</a></code>
+
+        </dt>
+        <dd>Prepare the virtual environment</dd>
+      </dl><dl><dt>
+
+          <code><a href="remove_python.html">remove_python()</a></code>
+
+        </dt>
+        <dd>Remove Python packages from conda environment</dd>
+      </dl><dl><dt>
+
+          <code><a href="remove_r.html">remove_r()</a></code>
+
+        </dt>
+        <dd>Check and remove R packages</dd>
+      </dl><dl><dt>
+
+          <code><a href="RemoveEnv.html">RemoveEnv()</a></code>
+
+        </dt>
+        <dd>Remove a conda environment</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="data-processing-and-quality-control">Data Processing and Quality Control<a class="anchor" aria-label="anchor" href="#data-processing-and-quality-control"></a></h3>
+      <h3 id="scop-pipeline">scop pipeline<a class="anchor" aria-label="anchor" href="#scop-pipeline"></a></h3>
 
 
 
@@ -173,46 +179,39 @@
 
       <dl><dt>
 
+          <code><a href="integration_scop.html">integration_scop()</a></code>
+
+        </dt>
+        <dd>The integration_scop function</dd>
+      </dl><dl><dt>
+
           <code><a href="standard_scop.html">standard_scop()</a></code>
 
         </dt>
         <dd>Standard workflow for scop</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
 
-          <code><a href="RunCellQC.html">RunCellQC()</a></code>
+      <h3 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h3>
 
-        </dt>
-        <dd>Run cell-level quality control for single cell RNA-seq data.</dd>
-      </dl><dl><dt>
 
-          <code><a href="RunDoubletCalling.html">RunDoubletCalling()</a></code>
 
-        </dt>
-        <dd>Run doublet-calling for single cell RNA-seq data.</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="db_DoubletDetection.html">db_DoubletDetection()</a></code>
 
-        </dt>
-        <dd>Run doublet-calling with DoubletDetection</dd>
-      </dl><dl><dt>
 
-          <code><a href="db_Scrublet.html">db_Scrublet()</a></code>
+
+      <dl><dt>
+
+          <code><a href="adata_to_srt.html">adata_to_srt()</a></code>
 
         </dt>
-        <dd>Run doublet-calling with Scrublet</dd>
+        <dd>Convert an anndata object to a seurat object using reticulate</dd>
       </dl><dl><dt>
 
-          <code><a href="db_scDblFinder.html">db_scDblFinder()</a></code>
+          <code><a href="CellScoring.html">CellScoring()</a></code>
 
         </dt>
-        <dd>Run doublet-calling with scDblFinder</dd>
-      </dl><dl><dt>
-
-          <code><a href="db_scds.html">db_scds()</a></code>
-
-        </dt>
-        <dd>Run doublet-calling with scds</dd>
+        <dd>Cell scoring</dd>
       </dl><dl><dt>
 
           <code><a href="CheckDataType.html">CheckDataType()</a></code>
@@ -233,10 +232,93 @@
         <dd>Check and preprocess a merged seurat object</dd>
       </dl><dl><dt>
 
+          <code><a href="CycGenePrefetch.html">CycGenePrefetch()</a></code>
+
+        </dt>
+        <dd>Prefetch cell cycle genes</dd>
+      </dl><dl><dt>
+
+          <code><a href="DefaultReduction.html">DefaultReduction()</a></code>
+
+        </dt>
+        <dd>Find the default reduction name in a Seurat object</dd>
+      </dl><dl><dt>
+
+          <code><a href="FetchDataZero.html">FetchDataZero()</a></code>
+
+        </dt>
+        <dd>FetchData but with zeroes for unavailable genes</dd>
+      </dl><dl><dt>
+
+          <code><a href="GeneConvert.html">GeneConvert()</a></code>
+
+        </dt>
+        <dd>Gene ID conversion function using biomart</dd>
+      </dl><dl><dt>
+
+          <code><a href="GetAssayData5.html">GetAssayData5()</a></code>
+
+        </dt>
+        <dd>Get expression data from Assay5 or Seurat object</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_outlier.html">is_outlier()</a></code>
+
+        </dt>
+        <dd>Detect outliers using MAD(Median Absolute Deviation) method</dd>
+      </dl><dl><dt>
+
+          <code><a href="RecoverCounts.html">RecoverCounts()</a></code>
+
+        </dt>
+        <dd>Attempt to recover raw counts from the normalized matrix</dd>
+      </dl><dl><dt>
+
+          <code><a href="RenameClusters.html">RenameClusters()</a></code>
+
+        </dt>
+        <dd>Rename clusters for the Seurat object</dd>
+      </dl><dl><dt>
+
+          <code><a href="srt_append.html">srt_append()</a></code>
+
+        </dt>
+        <dd>Append a Seurat object to another</dd>
+      </dl><dl><dt>
+
+          <code><a href="srt_to_adata.html">srt_to_adata()</a></code>
+
+        </dt>
+        <dd>Convert a Seurat object to an AnnData object</dd>
+      </dl><dl><dt>
+
+          <code><a href="srt_reorder.html">srt_reorder()</a></code>
+
+        </dt>
+        <dd>Reorder idents by the gene expression</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="feature-processing">Feature Processing<a class="anchor" aria-label="anchor" href="#feature-processing"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
           <code><a href="AddFeaturesData.html">AddFeaturesData()</a></code>
 
         </dt>
         <dd>AddFeaturesData</dd>
+      </dl><dl><dt>
+
+          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
+
+        </dt>
+        <dd>Annotate Features</dd>
       </dl><dl><dt>
 
           <code><a href="GetFeaturesData.html">GetFeaturesData()</a></code>
@@ -251,40 +333,140 @@
         <dd>Find genes with expression patterns similar to the genes you've specified.</dd>
       </dl><dl><dt>
 
-          <code><a href="RecoverCounts.html">RecoverCounts()</a></code>
+          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
 
         </dt>
-        <dd>Attempt to recover raw counts from the normalized matrix</dd>
+        <dd>Rename features for the Seurat object</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="quality-control">Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="db_DoubletDetection.html">db_DoubletDetection()</a></code>
+
+        </dt>
+        <dd>Run doublet-calling with DoubletDetection</dd>
       </dl><dl><dt>
 
-          <code><a href="CellScoring.html">CellScoring()</a></code>
+          <code><a href="db_scDblFinder.html">db_scDblFinder()</a></code>
 
         </dt>
-        <dd>Cell scoring</dd>
+        <dd>Run doublet-calling with scDblFinder</dd>
       </dl><dl><dt>
 
-          <code><a href="CycGenePrefetch.html">CycGenePrefetch()</a></code>
+          <code><a href="db_scds.html">db_scds()</a></code>
 
         </dt>
-        <dd>Prefetch cell cycle genes</dd>
+        <dd>Run doublet-calling with scds</dd>
       </dl><dl><dt>
 
-          <code><a href="is_outlier.html">is_outlier()</a></code>
+          <code><a href="db_Scrublet.html">db_Scrublet()</a></code>
 
         </dt>
-        <dd>Detect outliers using MAD(Median Absolute Deviation) method</dd>
+        <dd>Run doublet-calling with Scrublet</dd>
       </dl><dl><dt>
 
-          <code><a href="DefaultReduction.html">DefaultReduction()</a></code>
+          <code><a href="RunCellQC.html">RunCellQC()</a></code>
 
         </dt>
-        <dd>Find the default reduction name in a Seurat object</dd>
+        <dd>Run cell-level quality control for single cell RNA-seq data.</dd>
       </dl><dl><dt>
 
-          <code><a href="FetchDataZero.html">FetchDataZero()</a></code>
+          <code><a href="RunDoubletCalling.html">RunDoubletCalling()</a></code>
 
         </dt>
-        <dd>FetchData but with zeroes for unavailable genes</dd>
+        <dd>Run doublet-calling for single cell RNA-seq data.</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="dimensionality-reduction-and-clustering">Dimensionality Reduction and Clustering<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-and-clustering"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="RunDimReduction.html">RunDimReduction()</a></code>
+
+        </dt>
+        <dd>Run dimensionality reduction</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunDM.html">RunDM()</a></code>
+
+        </dt>
+        <dd>Run DM (diffusion map)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunFR.html">RunFR()</a></code>
+
+        </dt>
+        <dd>Run Force-Directed Layout (Fruchterman-Reingold algorithm)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunGLMPCA.html">RunGLMPCA()</a></code>
+
+        </dt>
+        <dd>Run GLMPCA (generalized version of principal components analysis)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunMDS.html">RunMDS()</a></code>
+
+        </dt>
+        <dd>Run MDS (multi-dimensional scaling)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunNMF.html">RunNMF()</a></code>
+
+        </dt>
+        <dd>Run NMF (non-negative matrix factorization)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunUMAP2.html">RunUMAP2()</a></code>
+
+        </dt>
+        <dd>Run UMAP (Uniform Manifold Approximation and Projection)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunPaCMAP.html">RunPaCMAP()</a></code>
+
+        </dt>
+        <dd>Run PaCMAP (Pairwise Controlled Manifold Approximation)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunTriMap.html">RunTriMap()</a></code>
+
+        </dt>
+        <dd>Run TriMap (Large-scale Dimensionality Reduction Using Triplets)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunPHATE.html">RunPHATE()</a></code>
+
+        </dt>
+        <dd>Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunLargeVis.html">RunLargeVis()</a></code>
+
+        </dt>
+        <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
+
+        </dt>
+        <dd>Run KNN prediction</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
@@ -297,12 +479,6 @@
 
 
       <dl><dt>
-
-          <code><a href="integration_scop.html">integration_scop()</a></code>
-
-        </dt>
-        <dd>The integration_scop function</dd>
-      </dl><dl><dt>
 
           <code><a href="RunCSSMap.html">RunCSSMap()</a></code>
 
@@ -424,89 +600,6 @@
         <dd>fastMNN_integrate</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="dimensionality-reduction-and-clustering">Dimensionality Reduction and Clustering<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-and-clustering"></a></h3>
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="RunDimReduction.html">RunDimReduction()</a></code>
-
-        </dt>
-        <dd>Run dimensionality reduction</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunGLMPCA.html">RunGLMPCA()</a></code>
-
-        </dt>
-        <dd>Run GLMPCA (generalized version of principal components analysis)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunMDS.html">RunMDS()</a></code>
-
-        </dt>
-        <dd>Run MDS (multi-dimensional scaling)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunNMF.html">RunNMF()</a></code>
-
-        </dt>
-        <dd>Run NMF (non-negative matrix factorization)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunUMAP2.html">RunUMAP2()</a></code>
-
-        </dt>
-        <dd>Run UMAP (Uniform Manifold Approximation and Projection)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunPaCMAP.html">RunPaCMAP()</a></code>
-
-        </dt>
-        <dd>Run PaCMAP (Pairwise Controlled Manifold Approximation)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunTriMap.html">RunTriMap()</a></code>
-
-        </dt>
-        <dd>Run TriMap (Large-scale Dimensionality Reduction Using Triplets)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunPHATE.html">RunPHATE()</a></code>
-
-        </dt>
-        <dd>Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunDM.html">RunDM()</a></code>
-
-        </dt>
-        <dd>Run DM (diffusion map)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunFR.html">RunFR()</a></code>
-
-        </dt>
-        <dd>Run Force-Directed Layout (Fruchterman-Reingold algorithm)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunLargeVis.html">RunLargeVis()</a></code>
-
-        </dt>
-        <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
-
-        </dt>
-        <dd>Run KNN prediction</dd>
-      </dl></div><div class="section level2">
-
       <h3 id="differential-analysis-and-enrichment">Differential Analysis and Enrichment<a class="anchor" aria-label="anchor" href="#differential-analysis-and-enrichment"></a></h3>
 
 
@@ -548,7 +641,7 @@
         <dd>RunDynamicEnrichment</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="trajectory-analysis-and-dynamic-processes">Trajectory Analysis and Dynamic Processes<a class="anchor" aria-label="anchor" href="#trajectory-analysis-and-dynamic-processes"></a></h3>
+      <h3 id="trajectory-analysis">Trajectory Analysis<a class="anchor" aria-label="anchor" href="#trajectory-analysis"></a></h3>
 
 
 
@@ -681,7 +774,7 @@
           <code><a href="FeatureHeatmap.html">FeatureHeatmap()</a></code>
 
         </dt>
-        <dd>FeatureHeatmap</dd>
+        <dd>Feature Heatmap</dd>
       </dl><dl><dt>
 
           <code><a href="FeatureCorPlot.html">FeatureCorPlot()</a></code>
@@ -696,16 +789,10 @@
         <dd>Statistical plot of features</dd>
       </dl><dl><dt>
 
-          <code><a href="LineagePlot.html">LineagePlot()</a></code>
-
-        </dt>
-        <dd>LineagePlot</dd>
-      </dl><dl><dt>
-
           <code><a href="GraphPlot.html">GraphPlot()</a></code>
 
         </dt>
-        <dd>GraphPlot</dd>
+        <dd>Graph Plot</dd>
       </dl><dl><dt>
 
           <code><a href="GroupHeatmap.html">GroupHeatmap()</a></code>
@@ -720,16 +807,16 @@
         <dd>GSEA Plot</dd>
       </dl><dl><dt>
 
+          <code><a href="LineagePlot.html">LineagePlot()</a></code>
+
+        </dt>
+        <dd>Lineage Plot</dd>
+      </dl><dl><dt>
+
           <code><a href="PAGAPlot.html">PAGAPlot()</a></code>
 
         </dt>
         <dd>PAGA plot</dd>
-      </dl><dl><dt>
-
-          <code><a href="panel_fix.html">panel_fix()</a></code> <code><a href="panel_fix.html">panel_fix_overall()</a></code>
-
-        </dt>
-        <dd>Set the panel width/height of a plot object to a fixed value.</dd>
       </dl><dl><dt>
 
           <code><a href="ProjectionPlot.html">ProjectionPlot()</a></code>
@@ -762,7 +849,7 @@
         <dd>Volcano Plot</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="themes">Themes<a class="anchor" aria-label="anchor" href="#themes"></a></h3>
+      <h3 id="plotting-functions">Plotting Functions<a class="anchor" aria-label="anchor" href="#plotting-functions"></a></h3>
 
 
 
@@ -776,13 +863,31 @@
           <code><a href="adjcolors.html">adjcolors()</a></code>
 
         </dt>
-        <dd>Convert a color with arbitrary transparency to a fixed color</dd>
+        <dd>Convert a color with specified alpha level</dd>
       </dl><dl><dt>
 
           <code><a href="blendcolors.html">blendcolors()</a></code>
 
         </dt>
-        <dd>Blend colors</dd>
+        <dd>Blends a list of colors using the specified blend mode</dd>
+      </dl><dl><dt>
+
+          <code><a href="compute_velocity_on_grid.html">compute_velocity_on_grid()</a></code>
+
+        </dt>
+        <dd>Compute velocity on grid</dd>
+      </dl><dl><dt>
+
+          <code><a href="drop_data.html">drop_data()</a></code>
+
+        </dt>
+        <dd>Drop unused data in the plot</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_vars.html">get_vars()</a></code>
+
+        </dt>
+        <dd>Get used vars in a ggplot object</dd>
       </dl><dl><dt>
 
           <code><a href="geom_alluvial.html">geom_alluvial()</a></code>
@@ -815,10 +920,40 @@
         <dd>geom_sankey_label</dd>
       </dl><dl><dt>
 
-          <code><a href="palette_scop.html">palette_scop()</a></code>
+          <code><a href="make_long.html">make_long()</a></code>
 
         </dt>
-        <dd>Color palettes collected in scop.</dd>
+        <dd>make_long</dd>
+      </dl><dl><dt>
+
+          <code><a href="palette_colors.html">palette_colors()</a></code>
+
+        </dt>
+        <dd>Color palettes collected</dd>
+      </dl><dl><dt>
+
+          <code><a href="panel_fix.html">panel_fix()</a></code> <code><a href="panel_fix.html">panel_fix_overall()</a></code>
+
+        </dt>
+        <dd>Set the panel width/height of a plot to a fixed value</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.scop_logo.html">print(<i>&lt;scop_logo&gt;</i>)</a></code>
+
+        </dt>
+        <dd>print scop logo</dd>
+      </dl><dl><dt>
+
+          <code><a href="segements_df.html">segements_df()</a></code>
+
+        </dt>
+        <dd>Shorten and offset the segment</dd>
+      </dl><dl><dt>
+
+          <code><a href="slim_data.html">slim_data()</a></code>
+
+        </dt>
+        <dd>Slim unused data in the plot</dd>
       </dl><dl><dt>
 
           <code><a href="show_palettes.html">show_palettes()</a></code>
@@ -845,137 +980,7 @@
         <dd>sankey_themes</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="web-scexplorer">Web SCExplorer<a class="anchor" aria-label="anchor" href="#web-scexplorer"></a></h3>
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="PrepareSCExplorer.html">PrepareSCExplorer()</a></code>
-
-        </dt>
-        <dd>Prepare Seurat objects for the SCExplorer</dd>
-      </dl><dl><dt>
-
-          <code><a href="RunSCExplorer.html">RunSCExplorer()</a></code>
-
-        </dt>
-        <dd>Run SCExplorer</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="utility-functions">Utility Functions<a class="anchor" aria-label="anchor" href="#utility-functions"></a></h3>
-
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="adata_to_srt.html">adata_to_srt()</a></code>
-
-        </dt>
-        <dd>Convert an anndata object to a seurat object using reticulate</dd>
-      </dl><dl><dt>
-
-          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
-
-        </dt>
-        <dd>AnnotateFeatures</dd>
-      </dl><dl><dt>
-
-          <code><a href="compute_velocity_on_grid.html">compute_velocity_on_grid()</a></code>
-
-        </dt>
-        <dd>Compute velocity on grid</dd>
-      </dl><dl><dt>
-
-          <code><a href="drop_data.html">drop_data()</a></code>
-
-        </dt>
-        <dd>Drop all data in the plot (only one observation is kept)</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_vars.html">get_vars()</a></code>
-
-        </dt>
-        <dd>Get used vars in a ggplot object</dd>
-      </dl><dl><dt>
-
-          <code><a href="GeneConvert.html">GeneConvert()</a></code>
-
-        </dt>
-        <dd>Gene ID conversion function using biomart</dd>
-      </dl><dl><dt>
-
-          <code><a href="GetAssayData5.html">GetAssayData5()</a></code>
-
-        </dt>
-        <dd>Get expression data from Assay5 or Seurat object</dd>
-      </dl><dl><dt>
-
-          <code><a href="make_long.html">make_long()</a></code>
-
-        </dt>
-        <dd>make_long</dd>
-      </dl><dl><dt>
-
-          <code><a href="print.scop_logo.html">print(<i>&lt;scop_logo&gt;</i>)</a></code>
-
-        </dt>
-        <dd>print scop logo</dd>
-      </dl><dl><dt>
-
-          <code><a href="RenameClusters.html">RenameClusters()</a></code>
-
-        </dt>
-        <dd>Rename clusters for the Seurat object</dd>
-      </dl><dl><dt>
-
-          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
-
-        </dt>
-        <dd>Rename features for the Seurat object</dd>
-      </dl><dl><dt>
-
-          <code><a href="segements_df.html">segements_df()</a></code>
-
-        </dt>
-        <dd>Shorten and offset the segment</dd>
-      </dl><dl><dt>
-
-          <code><a href="slim_data.html">slim_data()</a></code>
-
-        </dt>
-        <dd>Drop unused data from the plot to reduce the object size</dd>
-      </dl><dl><dt>
-
-          <code><a href="srt_append.html">srt_append()</a></code>
-
-        </dt>
-        <dd>Append a Seurat object to another</dd>
-      </dl><dl><dt>
-
-          <code><a href="srt_to_adata.html">srt_to_adata()</a></code>
-
-        </dt>
-        <dd>Convert a Seurat object to an AnnData object</dd>
-      </dl><dl><dt>
-
-          <code><a href="srt_reorder.html">srt_reorder()</a></code>
-
-        </dt>
-        <dd>Reorder idents by the gene expression</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="database-operations">Database Operations<a class="anchor" aria-label="anchor" href="#database-operations"></a></h3>
+      <h3 id="scexplorer">SCExplorer<a class="anchor" aria-label="anchor" href="#scexplorer"></a></h3>
 
 
 
@@ -995,7 +1000,7 @@
           <code><a href="CreateMetaFile.html">CreateMetaFile()</a></code>
 
         </dt>
-        <dd>CreateMetaFile</dd>
+        <dd>Create Meta File</dd>
       </dl><dl><dt>
 
           <code><a href="FetchH5.html">FetchH5()</a></code>
@@ -1003,6 +1008,29 @@
         </dt>
         <dd>Fetch data from the hdf5 file</dd>
       </dl><dl><dt>
+
+          <code><a href="PrepareSCExplorer.html">PrepareSCExplorer()</a></code>
+
+        </dt>
+        <dd>Prepare Seurat objects for the SCExplorer</dd>
+      </dl><dl><dt>
+
+          <code><a href="RunSCExplorer.html">RunSCExplorer()</a></code>
+
+        </dt>
+        <dd>Run SCExplorer</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="database-operations">Database Operations<a class="anchor" aria-label="anchor" href="#database-operations"></a></h3>
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="ListDB.html">ListDB()</a></code>
 
@@ -1016,7 +1044,7 @@
         <dd>Prepare the gene annotation databases</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a></h3>
+      <h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h3>
 
 
 

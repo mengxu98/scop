@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -192,41 +192,7 @@ Default is 11.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGLMPCA</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-03 14:12:04] GLMPC_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Positive:  Sparcl1, Crabp1, Col1a1, Col5a1, Colec12, Xkr5, Islr, Pmp22, Col1a2, Platr22 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Plscr2, Ugt2b5, Trabd2b, Slc26a3, Nat8l, Tmem119, Gm6878, Spaca7, Gm7854, Ctgf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Wnt5a, Ptgfr, Tpm2, Spp2, Hhip, Gm20649, Nkain4, Slc25a48, Hist1h2an, Wdr72 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Negative:  RP23-477O13.1, Npy1r, Areg, Slc6a19, RP23-428N8.3, Gast, Nkx6-3, Myl7, Unc13d, Rbm11 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Wif1, Xkr6, Bcas1os1, Tnfaip8l3, Col14a1, March11, Pyy, Oxtr, Slc25a43, Otc </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Pnoc, Ccl28, Sez6l, Smim18, Pcdh8, Ptprt, Asb4, Msx1, Ppp2r2c, Skap1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       GLMPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Positive:  Calca, Gast, Pnoc, Col19a1, Gm12689, Mstn, P2ry12, Gm13075, Rpp25, Ins1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Rasl11a, A630076J17Rik, Meikin, Nrcam, Gpr179, Car3, Mb, Cbln4, Gcg, Pgr </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Nat8l, Plscr2, Foxd3, Ngf, Ptgfr, Ctgf, Gm43948, Slc25a48, Pmp22, Xkr5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Negative:  Unc13d, Adra2c, 4932438H23Rik, Bhlhe22, Pdcd1, Slc4a1, Snai1, Cmklr1, Ppp1r16b, Pou3f1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Fam71b, Notum, Wnt3, Tgm7, Necab3, 1700128E19Rik, Eya2, Fgf18, Aldob, Siglece </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Tmem114, Myl2, Sftpc, 1520401A03Rik, Jakmip3, Epb42, Sema3g, Neurod2, Krt15, Megf11 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       GLMPC_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Positive:  Wnt6, Gcg, Calcr, Agmo, Cxcl15, Sprr1a, Gm13075, 1700028P14Rik, Il17b, Oasl2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Car3, Pou6f2, Col19a1, Dpep2, Necab3, Crabp1, Hoxb2, RP23-477O13.1, Cd36, Lrrn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Gpr179, Nrl, Rgs4, Spp2, Ppp1r3b, Vipr1, Fmod, Irx1, Calb1, Fut1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Negative:  Thsd7a, Gm12689, Npy, Hvcn1, Htr1d, Ins2, Syndig1l, Mxd3, Pif1, Esco2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Gip, Tmem215, Rpp25, Kif11, Esyt3, Chrna3, Msx1, Ugt2b5, Casc5, Cd177 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Hist1h1b, Areg, Derl3, Aurkb, Nnat, Neil3, Ncapg, Kif14, Cdkn2c, Ndc80 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       GLMPC_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Positive:  Dpep2, Cxcl15, Lrrk1, Rasl11a, Gm13375, Cxcl10, Vsig8, Cxcl16, Ptpn5, Ccl20 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Adm2, Slc1a4, Akr1c18, Dab2, Pgr, Fhl1, Gm13075, Thbs1, Cypt3, Clca3a2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Krt23, Tnf, Hs6st2, Creb5, Trpc4, Arhgap22, Nrarp, AU021092, Nrcam, Samd4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Negative:  Sparcl1, Sst, Col19a1, Vipr1, 1700028P14Rik, Islr, Col1a2, Col1a1, Crabp1, Tmem119 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Oxtr, Gm7854, Hhip, Il17b, Ppp1r27, Col6a1, Nkain4, Col5a1, Pgc, Cntn1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Hist1h2an, Abcc9, Slc4a1, Colec12, Gm6878, Ugt2b5, Gsg1l, Gm11789, Gcg, Ajap1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       GLMPC_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Positive:  Ghrl, Foxd3, Cbln4, Ngf, Tmem119, Irs4, Abcc9, R3hdml, Wnt6, Lrrtm3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Cym, Zcchc12, Arhgap22, Mboat4, Guca2a, Nkx6-3, Car3, Ugt2b5, Fam111a, Tox2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Elfn1, Thsd7a, Pgc, Clspn, Gm12689, St8sia2, 1700028P14Rik, Slfn9, Mcm10, Fam124a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Negative:  3830403N18Rik, Pappa, Sprr1a, Hhip, Fndc1, Nrl, Gm26652, Aldob, Dpep2, Tmem252 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Abhd11os, 2410021H03Rik, Iapp, Bcas3os2, Col19a1, Unc13d, Gp9, Oprk1, Gm11789, Zfp433 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       	   Lyve1, Slc30a8, C2cd4a, Lce6a, Ppp1r27, P2ry12, Crhr2, Elfn2, D7Ertd443e, Gm2694 </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .check_pkg_status(pkg_name):</span> could not find function ".check_pkg_status"</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>

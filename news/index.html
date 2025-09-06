@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,24 +38,46 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.6" id="scop-026">scop 0.2.6<a class="anchor" aria-label="anchor" href="#scop-026"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>Added <code><a href="../reference/remove_r.html">remove_r()</a></code> function for easy remove <em>R</em> packages.</li>
+<li>Rename function: <code>RemovePackages()</code> to <code><a href="../reference/remove_python.html">remove_python()</a></code>.</li>
+<li>Removed other methods of installing <em>R</em> packages from the <code><a href="../reference/check_r.html">check_r()</a></code> function, only retaining <a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak</a>.</li>
+<li>Delete useless import packages: <code>BBmisc</code>, <code>BiocManager</code>, <code>covr</code>, <code>devtools</code>, <code>promises</code> and <code>withr</code>.</li>
+<li>Optimized the function structure in the <code>_pkgdown.yml</code> file.</li>
+</ul></li>
+<li>
+<strong>docs</strong>: Updated documentation for some functions.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.5" id="scop-025">scop 0.2.5<a class="anchor" aria-label="anchor" href="#scop-025"></a></h2>
+<ul><li>
+<strong>func</strong>: Rename function: <code>palette_scop()</code> to <code><a href="../reference/palette_colors.html">palette_colors()</a></code>.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.4" id="scop-024">scop 0.2.4<a class="anchor" aria-label="anchor" href="#scop-024"></a></h2>
 <ul><li>
-<strong>func</strong>: Rename functions: <code>check_srt_merge()</code> to <code>CheckDataMerge</code>, <code>check_srt_list()</code> to <code>CheckDataList</code> and <code>check_data_type()</code> to <code>CheckDataType</code>.</li>
+<strong>func</strong>: Rename functions: <code>check_srt_merge()</code> to <code><a href="../reference/CheckDataMerge.html">CheckDataMerge()</a></code>, <code>check_srt_list()</code> to <code>CheckDataList</code> and <code>check_data_type()</code> to <code>CheckDataType</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="scop-022">scop 0.2.2<a class="anchor" aria-label="anchor" href="#scop-022"></a></h2>
-<ul><li><p><strong>func</strong>: Import!!! Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</p></li>
+<ul><li><p><strong>func</strong>: <strong><em>Import!!!</em></strong> Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</p></li>
 <li><p><strong>bugs</strong>: Fix bugs in <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="scop-020">scop 0.2.0<a class="anchor" aria-label="anchor" href="#scop-020"></a></h2>
-<ul><li><p><strong>func</strong>: Added <code><a href="../reference/RemovePackages.html">RemovePackages()</a></code> function for easy remove Python packages.</p></li>
+<ul><li><p><strong>func</strong>: Added <code><a href="../reference/remove_python.html">remove_python()</a></code> function for easy remove <em>Python</em> packages.</p></li>
 <li><p><strong>bugs</strong>: Corrected an issue in <code>py_to_r2()</code> function (intrinsic function), which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.9" id="scop-019">scop 0.1.9<a class="anchor" aria-label="anchor" href="#scop-019"></a></h2>
 <ul><li>
-<strong>func</strong>: Update <code><a href="../reference/CellScoring.html">CellScoring()</a></code> and <code>AddModuleScore2()</code> functions. Now, new parameters <code>cores</code> and <code>verbose</code> have been added. The <code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">parallelize_fun</a>, and the <code>cores</code> parameter is used to control the number of cores in <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">parallelize_fun</a>.</li>
+<strong>func</strong>:
+<ul><li>Update <code><a href="../reference/CellScoring.html">CellScoring()</a></code> and <code>AddModuleScore2()</code> functions. Now, new parameters <code>cores</code> and <code>verbose</code> have been added.</li>
+<li>
+<code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a>, and the <code>cores</code> parameter is used to control the number of cores in <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a>.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="scop-015">scop 0.1.5<a class="anchor" aria-label="anchor" href="#scop-015"></a></h2>
@@ -65,11 +87,11 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.4" id="scop-014">scop 0.1.4<a class="anchor" aria-label="anchor" href="#scop-014"></a></h2>
 <ul><li>
-<strong>func</strong>: Update <code>.onAttach()</code>, now <code>.onAttach()</code> will print more information about conda and Python.</li>
-<li>
-<strong>func</strong>: Update <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function for easy add or update a conda environments and install Python packages.</li>
-<li>
-<strong>func</strong>: Added <code><a href="../reference/ListEnv.html">ListEnv()</a></code> and <code><a href="../reference/RemoveEnv.html">RemoveEnv()</a></code> functions for easy management of conda environment and Python packages.</li>
+<strong>func</strong>:
+<ul><li>Update <code>.onAttach()</code>, now <code>.onAttach()</code> will print more information about <em>conda</em> and <em>Python</em>.</li>
+<li>Update <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function for easy add or update a conda environments and install <em>Python</em> packages.</li>
+<li>Added <code><a href="../reference/ListEnv.html">ListEnv()</a></code> and <code><a href="../reference/RemoveEnv.html">RemoveEnv()</a></code> functions for easy management of <em>conda</em> environment and <em>Python</em> packages.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="scop-013">scop 0.1.3<a class="anchor" aria-label="anchor" href="#scop-013"></a></h2>
@@ -79,14 +101,15 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="scop-009">scop 0.0.9<a class="anchor" aria-label="anchor" href="#scop-009"></a></h2>
 <ul><li>
-<strong>bugs</strong>: Corrected an issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function. The default Python version is now set to <code>3.10</code>, which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
+<strong>bugs</strong>: Corrected an issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function. The default <em>Python</em> version is now set to <code>3.10-1</code>, which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.6" id="scop-006">scop 0.0.6<a class="anchor" aria-label="anchor" href="#scop-006"></a></h2>
 <ul><li>
-<strong>func</strong>: Add <code><a href="../reference/GetAssayData5.html">GetAssayData5()</a></code> function, a reimplementation of <code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData()</a></code>, for compatibility with Seurat v5 <code>Assay</code> objects.</li>
-<li>
-<strong>func</strong>: Updated <code><a href="../reference/GetFeaturesData.html">GetFeaturesData()</a></code> and <code><a href="../reference/AddFeaturesData.html">AddFeaturesData()</a></code> function to support retrieving and adding feature metadata.</li>
+<strong>func</strong>:
+<ul><li>Add <code><a href="../reference/GetAssayData5.html">GetAssayData5()</a></code> function, a reimplementation of <code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData()</a></code>, for compatibility with Seurat v5 <code>Assay</code> objects.</li>
+<li>Updated <code><a href="../reference/GetFeaturesData.html">GetFeaturesData()</a></code> and <code><a href="../reference/AddFeaturesData.html">AddFeaturesData()</a></code> function to support retrieving and adding feature metadata.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="scop-005">scop 0.0.5<a class="anchor" aria-label="anchor" href="#scop-005"></a></h2>
