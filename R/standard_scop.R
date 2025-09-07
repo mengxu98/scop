@@ -60,6 +60,8 @@
 #' @param cluster_resolution The resolution parameter to use for clustering.
 #' Larger values result in fewer clusters.
 #' Default is `0.6`.
+#' @param verbose Whether to print messages.
+#' Default is `TRUE`.
 #' @param seed The random seed to use for reproducibility.
 #' Default is `11`.
 #'
@@ -155,10 +157,16 @@ standard_scop <- function(
     neighbor_k = 20L,
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
+    verbose = TRUE,
     seed = 11) {
+  log_message(
+    "Start standard scop workflow...",
+    verbose = verbose
+  )
+
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a Seurat object",
       message_type = "error"
     )
   }
@@ -170,7 +178,7 @@ standard_scop <- function(
   )
   if (any(!linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt)))) {
     log_message(
-      "'linear_reduction' must be one of: ", paste(linear_reductions, ""),
+      "{.arg linear_reduction} must be one of: {.val {linear_reductions}}",
       message_type = "error"
     )
   }
@@ -184,13 +192,14 @@ standard_scop <- function(
   )
   if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of: ", paste(nonlinear_reductions, ""),
+      "{.arg nonlinear_reduction} must be one of: {.val {nonlinear_reductions}}",
       message_type = "error"
     )
   }
-  if (!cluster_algorithm %in% c("louvain", "slm", "leiden")) {
+  cluster_algorithms <- c("louvain", "slm", "leiden")
+  if (!cluster_algorithm %in% cluster_algorithms) {
     log_message(
-      "'cluster_algorithm' must be one of 'louvain', 'slm', 'leiden'.",
+      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
   }
@@ -206,8 +215,6 @@ standard_scop <- function(
   )
 
   set.seed(seed)
-
-  log_message("Start scop standard workflow...")
 
   checked <- CheckDataList(
     srt_list = list(srt),
@@ -231,7 +238,7 @@ standard_scop <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "normalization_method is 'TFIDF'. Use 'lsi' workflow..."
+      "{.arg normalization_method} is 'TFIDF'. Use 'lsi' workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
