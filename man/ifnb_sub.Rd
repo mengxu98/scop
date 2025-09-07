@@ -21,7 +21,7 @@ if (interactive()) {
   library(SeuratData)
   library(Seurat)
   suppressWarnings(InstallData("ifnb"))
-  data("ifnb")
+  data(ifnb)
   set.seed(11)
   cells_sub <- unlist(
     lapply(
@@ -34,11 +34,12 @@ if (interactive()) {
     GetAssayData5(
       ifnb_sub,
       assay = "RNA",
-      layer = "counts"
+      layer = "counts",
+      verbose = FALSE
     )
   ) > 0, ]
   ifnb_sub <- UpdateSeuratObject(ifnb_sub)
-  # usethis::use_data(ifnb_sub, compress = "xz")
+  usethis::use_data(ifnb_sub, compress = "xz")
 }
 }
 }

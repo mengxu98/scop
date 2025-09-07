@@ -58,7 +58,7 @@
 #'   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 #' )
 #' ht <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   cell_annotation = "SubCellType",
 #'   n_split = 6,
@@ -67,7 +67,7 @@
 #' ht$plot
 #'
 #' DynamicPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   features = c("Arxes1", "Ncoa2"),
 #'   group.by = "SubCellType",

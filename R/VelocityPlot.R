@@ -53,7 +53,7 @@
 #' data(pancreas_sub)
 #' PrepareEnv()
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = "umap",
