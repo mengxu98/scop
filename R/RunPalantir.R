@@ -25,7 +25,7 @@
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPalantir(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",

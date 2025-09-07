@@ -82,7 +82,7 @@ if (interactive()) {
   data(pancreas_sub)
   # Use Monocle clusters to infer the trajectories
   pancreas_sub <- RunMonocle3(
-    srt = pancreas_sub,
+    pancreas_sub,
     reduction = "UMAP"
   )
   names(pancreas_sub@tools$Monocle3)
@@ -141,7 +141,7 @@ if (interactive()) {
     theme_use = "theme_blank"
   )
   pancreas_sub <- RunMonocle3(
-    srt = pancreas_sub,
+    pancreas_sub,
     clusters = "Standardclusters"
   )
   trajectory <- pancreas_sub@tools$Monocle3$trajectory
@@ -176,7 +176,7 @@ if (interactive()) {
     label = TRUE
   )
   pancreas_sub <- RunMonocle3(
-    srt = pancreas_sub,
+    pancreas_sub,
     clusters = "Standardclusters",
     graph = "Standardpca_SNN"
   )

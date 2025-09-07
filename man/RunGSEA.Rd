@@ -180,7 +180,7 @@ GSEAPlot(
 
 # Remove redundant GO terms
 pancreas_sub <- RunGSEA(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
@@ -214,7 +214,7 @@ GSEAPlot(
 
 # Use a combined database
 pancreas_sub <- RunGSEA(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"

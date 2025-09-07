@@ -51,7 +51,7 @@
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
