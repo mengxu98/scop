@@ -1,13 +1,15 @@
-#' A subsetted version of mouse 'pancreas' datasets
+#' @title A subsetted version of mouse 'pancreas' datasets
 #'
+#' @description
 #' Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}.
-#' A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
+#' A total of 1000 cells were downsampled to form the `pancreas_sub` dataset.
 #'
-#' @format A \code{Seurat} object.
+#' @md
+#' @format A `Seurat` object.
 #' @concept data
 #' @source
-#' \url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}
-#' \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
+#' \url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+#' \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -17,13 +19,14 @@
 #'   scv <- import("scvelo")
 #'   adata <- scv$datasets$pancreas()
 #'   pancreas <- adata_to_srt(adata)
-#'   set.seed(42)
+#'   set.seed(98)
 #'   cells <- sample(colnames(pancreas), size = 1000)
 #'   pancreas_sub <- pancreas[, cells]
 #'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
 #'     GetAssayData5(
 #'       pancreas_sub,
-#'       slot = "counts"
+#'       layer = "counts",
+#'       verbose = FALSE
 #'     )
 #'   ) > 0, ]
 #'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
@@ -47,20 +50,6 @@
 #'   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
 #'   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-#'   pancreas_sub <- NormalizeData(pancreas_sub)
-#'   pancreas_sub <- FindVariableFeatures(pancreas_sub)
-#'   pancreas_sub <- ScaleData(pancreas_sub)
-#'   pancreas_sub <- RunPCA(pancreas_sub)
-#'   pancreas_sub <- RunUMAP(pancreas_sub, dims = 1:20)
-#'   pancreas_sub <- RunDEtest(
-#'     pancreas_sub,
-#'     group_by = "CellType"
-#'   )
-#'   pancreas_sub <- AnnotateFeatures(
-#'     srt = pancreas_sub,
-#'     species = "Mus_musculus",
-#'     db = c("CSPA", "TF")
-#'   )
 #'   usethis::use_data(
 #'     pancreas_sub,
 #'     compress = "xz",
@@ -71,21 +60,22 @@
 #' @name pancreas_sub
 NULL
 
-#' A subsetted version of human 'panc8' datasets
+#' @title A subsetted version of human 'panc8' datasets
 #'
+#' @description
 #' Human pancreatic islet cell datasets produced across four technologies,
-#' CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469),
-#' and SMART-Seq2 (E-MTAB-5061) from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
-#' For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8_sub} dataset.
+#' SMART-Seq2 (E-MTAB-5061), CelSeq (GSE81076), CelSeq2 (GSE85241), and Fluidigm C1 (GSE86469),
+#' from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
+#' For each data set in `panc8`, 200 cells were downsampled to form the `panc8_sub` dataset.
 #'
-#' @format A \code{Seurat} object.
+#' @md
+#' @format A `Seurat` object.
 #' @concept data
 #' @source
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
-#' \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
+#' \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
+#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
+#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
+#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
 #' \dontrun{
@@ -96,10 +86,10 @@ NULL
 #'   }
 #'   library(SeuratData)
 #'   library(Seurat)
-#'   suppressWarnings(InstallData("panc8"))
-#'   data("panc8")
+#'   InstallData("panc8")
+#'   data(panc8)
 #'   panc8 <- UpdateSeuratObject(panc8)
-#'   set.seed(42)
+#'   set.seed(98)
 #'   cells_sub <- unlist(
 #'     lapply(
 #'       split(colnames(panc8), panc8$dataset),
@@ -109,7 +99,8 @@ NULL
 #'   panc8_sub <- subset(panc8, cells = cells_sub)
 #'   counts <- GetAssayData5(
 #'     panc8_sub,
-#'     slot = "counts"
+#'     layer = "counts",
+#'     verbose = FALSE
 #'   )
 #'   panc8_sub <- CreateSeuratObject(
 #'     counts = counts,
@@ -123,11 +114,6 @@ NULL
 #'   ), ]
 #'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
 #'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   panc8_sub <- NormalizeData(panc8_sub)
-#'   panc8_sub <- FindVariableFeatures(panc8_sub)
-#'   panc8_sub <- ScaleData(panc8_sub)
-#'   panc8_sub <- RunPCA(panc8_sub)
-#'   panc8_sub <- RunUMAP(panc8_sub, dims = 1:20)
 #'   usethis::use_data(
 #'     panc8_sub,
 #'     compress = "xz",
@@ -138,11 +124,13 @@ NULL
 #' @name panc8_sub
 NULL
 
-#' A subsetted version of 'ifnb' datasets
+#' @title A subsetted version of 'ifnb' datasets
 #'
+#' @description
 #' Human PBMC control/IFNB-stimulated dataset
 #'
-#' @format A \code{Seurat} object.
+#' @md
+#' @format A `Seurat` object.
 #' @concept data
 #' @source \url{https://www.nature.com/articles/nbt.4042}
 #' @examples
@@ -154,7 +142,7 @@ NULL
 #'   library(SeuratData)
 #'   library(Seurat)
 #'   suppressWarnings(InstallData("ifnb"))
-#'   data("ifnb")
+#'   data(ifnb)
 #'   set.seed(11)
 #'   cells_sub <- unlist(
 #'     lapply(
@@ -167,11 +155,12 @@ NULL
 #'     GetAssayData5(
 #'       ifnb_sub,
 #'       assay = "RNA",
-#'       layer = "counts"
+#'       layer = "counts",
+#'       verbose = FALSE
 #'     )
 #'   ) > 0, ]
 #'   ifnb_sub <- UpdateSeuratObject(ifnb_sub)
-#'   # usethis::use_data(ifnb_sub, compress = "xz")
+#'   usethis::use_data(ifnb_sub, compress = "xz")
 #' }
 #' }
 #' @name ifnb_sub
@@ -197,7 +186,7 @@ NULL
 #'     "regulation", "regulated", "positive", "negative",
 #'     "response", "process", "processing", "small", "large", "change"
 #'   )
-#'   # usethis::use_data(words_excluded)
+#'   usethis::use_data(words_excluded, compress = "xz")
 #' }
 #' }
 #' @name words_excluded
@@ -413,15 +402,4 @@ NULL
 #' @usage ref_scZCL
 #' @name ref_scHCL
 #' @aliases ref_scHCL ref_scMCA ref_scZCL
-NULL
-
-#' Embryonic Development Database from LifeMap Discovery
-#' @concept data
-#' @source
-#' \url{https://discovery.lifemapsc.com/in-vivo-development/cellular}
-#' @usage lifemap_cell
-#' @usage lifemap_compartment
-#' @usage lifemap_organ
-#' @name lifemap_cell
-#' @aliases lifemap_cell lifemap_compartment lifemap_organ
 NULL
