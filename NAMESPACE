@@ -3,6 +3,8 @@
 S3method(AddFeaturesData,Assay)
 S3method(AddFeaturesData,Assay5)
 S3method(AddFeaturesData,Seurat)
+S3method(CheckDataType,Seurat)
+S3method(CheckDataType,default)
 S3method(FoldChange,default)
 S3method(GetAssayData5,Assay)
 S3method(GetAssayData5,Assay5)

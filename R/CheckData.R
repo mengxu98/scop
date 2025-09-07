@@ -6,11 +6,8 @@
 #' and whether the values are floats or integers.
 #'
 #' @md
-#' @param srt A `Seurat` object.
-#' @param layer The layer in the `srt` object from which to extract the data.
-#' Default is `"data"`.
-#' @param assay The assay to extract the data from.
-#' If not provided, the default assay will be used.
+#' @inheritParams thisutils::log_message
+#' @param object A `Seurat` object or a matrix.
 #'
 #' @return
 #' A string indicating the type of data.
@@ -18,65 +15,98 @@
 #' `"raw_counts"`, `"log_normalized_counts"`, `"raw_normalized_counts"`, or `"unknown"`.
 #'
 #' @export
+CheckDataType <- function(object, ...) {
+  UseMethod(generic = "CheckDataType", object = object)
+}
+
+#' @md
+#' @param layer The layer in the `srt` object from which to extract the data.
+#' Default is `"data"`.
+#' @param assay The assay to extract the data from.
+#' If not provided, the default assay will be used.
+#'
+#' @rdname CheckDataType
+#' @method CheckDataType Seurat
+#' @export
 #'
 #' @examples
+#' data(pancreas_sub)
 #' CheckDataType(pancreas_sub)
-CheckDataType <- function(
-    srt,
+CheckDataType.Seurat <- function(
+    object,
     layer = "data",
-    assay = NULL) {
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+    assay = NULL,
+    verbose = TRUE,
+    ...) {
+  assay <- assay %||% SeuratObject::DefaultAssay(object)
   data <- GetAssayData5(
-    srt,
+    object,
     layer = layer,
     assay = assay,
-    verbose = FALSE
+    verbose = FALSE,
+    ...
   )
-  isfinite <- all(is.finite(range(data, na.rm = TRUE)))
-  if (inherits(data, "dgCMatrix")) {
-    isfloat <- any(data@x %% 1 != 0, na.rm = TRUE)
+  CheckDataType(data, verbose = verbose)
+}
+
+#' @rdname CheckDataType
+#' @method CheckDataType default
+#' @export
+CheckDataType.default <- function(
+    object,
+    verbose = TRUE,
+    ...) {
+  isfinite <- all(is.finite(range(object, na.rm = TRUE)))
+  if (inherits(object, "dgCMatrix")) {
+    isfloat <- any(object@x %% 1 != 0, na.rm = TRUE)
   } else {
     isfloat <- any(
-      data[, sample(seq_len(ncol(data)), min(ncol(data), 1000))] %% 1 != 0,
+      object[, sample(seq_len(ncol(object)), min(ncol(object), 1000))] %% 1 != 0,
       na.rm = TRUE
     )
   }
-  islog <- is.finite(expm1(x = max(data, na.rm = TRUE)))
-  isnegative <- any(data < 0)
+  islog <- is.finite(expm1(x = max(object, na.rm = TRUE)))
+  isnegative <- any(object < 0)
 
   if (isFALSE(isfinite)) {
     log_message(
       "Infinite values detected",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return("unknown")
   } else if (isTRUE(isnegative)) {
     log_message(
       "Negative values detected",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return("unknown")
   } else {
     if (!isfloat) {
       log_message(
-        "Data type is raw counts"
+        "Data type is raw counts",
+        verbose = verbose
       )
       return("raw_counts")
     } else if (isfloat && islog) {
       log_message(
-        "Data type is log-normalized"
+        "Data type is log-normalized",
+        verbose = verbose
       )
       return("log_normalized_counts")
     } else if (isfloat && !islog) {
       if (isFALSE(isnegative)) {
         log_message(
-          "Data type is normalized without log transformation"
+          "Data type is normalized without log transformation",
+          verbose = verbose
         )
         return("raw_normalized_counts")
       } else {
         log_message(
           "Can not determine whether data type is log-normalized",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         return("unknown")
       }
@@ -97,7 +127,8 @@ CheckDataType <- function(
 #' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
 #' @param assay The name of the assay to be used for downstream analysis.
-#' @param do_normalization A logical value indicating whether data normalization should be performed.
+#' @param do_normalization Whether data normalization should be performed.
+#' Default is `TRUE`.
 #' @param normalization_method The normalization method to be used.
 #' Possible values are `"LogNormalize"`, `"SCT"`, and `"TFIDF"`.
 #' Default is `"LogNormalize"`.
@@ -138,15 +169,17 @@ CheckDataList <- function(
     HVF_min_intersection = 1,
     HVF = NULL,
     vars_to_regress = NULL,
-    seed = 11) {
+    seed = 11,
+    verbose = TRUE) {
   log_message(
-    "Checking srt_list..."
+    "Checking a list of {.cls Seurat} objects...",
+    verbose = verbose
   )
   set.seed(seed)
 
   if (!inherits(srt_list, "list") || any(sapply(srt_list, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "{.arg srt_list} is not a list of Seurat object",
+      "{.arg srt_list} is not a list of {.cls Seurat} objects",
       message_type = "error"
     )
   }
@@ -169,7 +202,7 @@ CheckDataList <- function(
   }
   if (any(sapply(srt_list, ncol) < 2)) {
     log_message(
-      "Seurat objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which(sapply(srt_list, ncol) < 2)}}",
+      "{.cls Seurat} objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which(sapply(srt_list, ncol) < 2)}}",
       message_type = "error"
     )
   }
@@ -200,7 +233,7 @@ CheckDataList <- function(
   )
   if (length(assay_type) != 1) {
     log_message(
-      "The assay type of the Seurat object in the {.arg srt_list} is inconsistent",
+      "The assay type of the {.cls Seurat} object in the {.arg srt_list} is inconsistent",
       message_type = "error"
     )
   } else {
@@ -229,7 +262,8 @@ CheckDataList <- function(
     if (type == "Chromatin") {
       log_message(
         "The peaks in assay {.val {assay}} is different between batches. Creating a common set of peaks and may take a long time...",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       srt_merge <- Reduce(merge, srt_list)
       srt_list <- Seurat::SplitObject(
@@ -252,7 +286,8 @@ CheckDataList <- function(
     )
     log_message(
       "{.arg srt_list} have different feature names! Will subset the common features ({.val {length(cf)}}) for downstream analysis",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     for (i in seq_along(srt_list)) {
       srt_list[[i]][[assay]] <- subset(srt_list[[i]][[assay]], features = cf)
@@ -263,7 +298,8 @@ CheckDataList <- function(
   if (length(celllist) != length(unique(celllist))) {
     log_message(
       "{.arg srt_list} have duplicated cell names",
-      message_type = "error"
+      message_type = "error",
+      verbose = verbose
     )
   }
 
@@ -325,10 +361,32 @@ CheckDataList <- function(
       )
     }
     SeuratObject::DefaultAssay(srt_list[[i]]) <- assay
+    status <- suppressWarnings(
+      CheckDataType(
+        srt_list[[i]],
+        layer = "data",
+        assay = assay,
+        verbose = FALSE
+      )
+    )
+    if (status == "log_normalized_counts") {
+      log_message(
+        "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} has been log-normalized",
+        verbose = verbose
+      )
+    } else if (status %in% c("raw_counts", "raw_normalized_counts", "unknown")) {
+      log_message(
+        "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} is {.val {status}}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      do_normalization <- TRUE
+    }
     if (isTRUE(do_normalization)) {
       if (normalization_method == "LogNormalize") {
         log_message(
-          "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
+          "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          verbose = verbose
         )
         srt_list[[i]] <- NormalizeData(
           object = srt_list[[i]],
@@ -336,10 +394,16 @@ CheckDataList <- function(
           normalization.method = "LogNormalize",
           verbose = FALSE
         )
+        srt_list[[i]] <- ScaleData(
+          object = srt_list[[i]],
+          assay = assay,
+          verbose = FALSE
+        )
       }
       if (normalization_method == "TFIDF") {
         log_message(
-          "Perform {.fn RunTFIDF} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
+          "Perform {.fn RunTFIDF} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          verbose = verbose
         )
         srt_list[[i]] <- Signac::RunTFIDF(
           object = srt_list[[i]],
@@ -347,69 +411,39 @@ CheckDataList <- function(
           verbose = FALSE
         )
       }
-    } else if (is.null(do_normalization)) {
-      status <- CheckDataType(
-        srt_list[[i]],
-        layer = "data",
-        assay = assay
-      )
-      if (status == "log_normalized_counts") {
-        log_message(
-          "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} has been log-normalized"
-        )
-      }
-      if (status %in% c("raw_counts", "raw_normalized_counts")) {
-        if (normalization_method == "LogNormalize") {
-          log_message(
-            "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} is {.val {status}}. Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data..."
-          )
-          srt_list[[i]] <- Seurat::NormalizeData(
-            object = srt_list[[i]],
-            assay = assay,
-            normalization.method = "LogNormalize",
-            verbose = FALSE
-          )
-        }
-        if (normalization_method == "TFIDF") {
-          log_message(
-            "Data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list} is {.val {status}}. Perform {.fn RunTFIDF} on the data..."
-          )
-          srt_list[[i]] <- Signac::RunTFIDF(
-            object = srt_list[[i]],
-            assay = assay,
-            verbose = FALSE
-          )
-        }
-      }
-      if (status == "unknown") {
-        log_message(
-          "Can not determine whether data {.val {i}} of the {.arg srt_list} is log-normalized",
-          message_type = "warning"
-        )
-      }
     }
+
     if (is.null(HVF)) {
       if (
         isTRUE(do_HVF_finding) ||
           is.null(do_HVF_finding) ||
           length(SeuratObject::VariableFeatures(srt_list[[i]], assay = assay)) == 0
       ) {
-        # if (type == "RNA") {
-        log_message(
-          "Perform {.fn Seurat::FindVariableFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
-        )
-        srt_list[[i]] <- Seurat::FindVariableFeatures(
-          srt_list[[i]],
-          assay = assay,
-          nfeatures = nHVF,
-          selection.method = HVF_method,
-          verbose = FALSE
-        )
-        # }
-        # if (type == "Chromatin") {
-        #   log_message("Perform FindTopFeatures on the data ", i, "/", length(srt_list), " of the srt_list...")
-        #   srt_list[[i]] <- FindTopFeatures(srt_list[[i]], assay = assay, min.cutoff = HVF_min_cutoff, verbose = FALSE)
-        # }
+        if (type == "RNA") {
+          log_message(
+            "Perform {.fn Seurat::FindVariableFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+            verbose = verbose
+          )
+          srt_list[[i]] <- Seurat::FindVariableFeatures(
+            srt_list[[i]],
+            assay = assay,
+            nfeatures = nHVF,
+            selection.method = HVF_method,
+            verbose = FALSE
+          )
+        }
+        if (type == "Chromatin") {
+          log_message(
+            "Perform {.fn FindTopFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+            verbose = verbose
+          )
+          srt_list[[i]] <- Signac::FindTopFeatures(
+            srt_list[[i]],
+            assay = assay,
+            min.cutoff = "q5",
+            verbose = FALSE
+          )
+        }
       }
     }
 
@@ -420,7 +454,8 @@ CheckDataList <- function(
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
         log_message(
-          "Perform {.fn Seurat::SCTransform} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}..."
+          "Perform {.fn Seurat::SCTransform} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          verbose = verbose
         )
         srt_list[[i]] <- Seurat::SCTransform(
           object = srt_list[[i]],
@@ -477,7 +512,8 @@ CheckDataList <- function(
   if (is.null(HVF)) {
     if (HVF_source == "global") {
       log_message(
-        "Use the global HVF from merged dataset"
+        "Use the global HVF from merged dataset",
+        verbose = verbose
       )
       srt_merge <- Reduce(merge, srt_list)
       # if (type == "RNA") {
@@ -496,7 +532,8 @@ CheckDataList <- function(
     }
     if (HVF_source == "separate") {
       log_message(
-        "Use the separate HVF from srt_list"
+        "Use the separate HVF from srt_list",
+        verbose = verbose
       )
       # if (type == "RNA") {
       HVF <- Seurat::SelectIntegrationFeatures(
@@ -520,7 +557,8 @@ CheckDataList <- function(
       if (length(HVF) == 0) {
         log_message(
           "No HVF available",
-          message_type = "error"
+          message_type = "error",
+          verbose = verbose
         )
       }
     }
@@ -541,7 +579,8 @@ CheckDataList <- function(
     HVF <- HVF[HVF %in% cf]
   }
   log_message(
-    "Number of available HVF: {.val {length(HVF)}}"
+    "Number of available HVF: {.val {length(HVF)}}",
+    verbose = verbose
   )
 
   hvf_sum <- lapply(srt_list, function(srt) {
@@ -562,7 +601,8 @@ CheckDataList <- function(
   if (length(cell_abnormal) > 0) {
     log_message(
       "Some cells do not express any of the highly variable features: {.val {cell_abnormal}}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -575,7 +615,8 @@ CheckDataList <- function(
     )
   }
   log_message(
-    "Finished checking."
+    "Finished check",
+    verbose = verbose
   )
 
   return(
@@ -642,7 +683,8 @@ CheckDataMerge <- function(
   srt_merge_raw <- srt_merge
 
   log_message(
-    "Spliting {.arg srt_merge} into {.arg srt_list} by column {.val {batch}}..."
+    "Spliting {.arg srt_merge} into {.arg srt_list} by column {.val {batch}}...",
+    verbose = verbose
   )
   srt_list <- Seurat::SplitObject(
     object = srt_merge_raw,

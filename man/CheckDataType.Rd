@@ -2,18 +2,29 @@
 % Please edit documentation in R/CheckData.R
 \name{CheckDataType}
 \alias{CheckDataType}
+\alias{CheckDataType.Seurat}
+\alias{CheckDataType.default}
 \title{Check and report the type of data in \code{Seurat} object}
 \usage{
-CheckDataType(srt, layer = "data", assay = NULL)
+CheckDataType(object, ...)
+
+\method{CheckDataType}{Seurat}(object, layer = "data", assay = NULL, verbose = TRUE, ...)
+
+\method{CheckDataType}{default}(object, verbose = TRUE, ...)
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object or a matrix.}
+
+\item{...}{The message to print.}
 
 \item{layer}{The layer in the \code{srt} object from which to extract the data.
 Default is \code{"data"}.}
 
 \item{assay}{The assay to extract the data from.
 If not provided, the default assay will be used.}
+
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 }
 \value{
 A string indicating the type of data.
@@ -26,5 +37,6 @@ It checks for the presence of infinite values, negative values,
 and whether the values are floats or integers.
 }
 \examples{
+data(pancreas_sub)
 CheckDataType(pancreas_sub)
 }
