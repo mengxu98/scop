@@ -142,6 +142,7 @@ Statistical plot of cells
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",

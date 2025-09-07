@@ -80,6 +80,7 @@ Run Monocle3 analysis
 \examples{
 if (interactive()) {
   data(pancreas_sub)
+  pancreas_sub <- standard_scop(pancreas_sub)
   # Use Monocle clusters to infer the trajectories
   pancreas_sub <- RunMonocle3(
     pancreas_sub,

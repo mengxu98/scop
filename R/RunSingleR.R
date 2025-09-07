@@ -1,14 +1,16 @@
-#' Annotate single cells using SingleR
+#' @title Annotate single cells using SingleR
 #'
+#' @md
 #' @inheritParams RunKNNPredict
 #' @inheritParams SingleR::SingleR
 #' @inheritParams SingleR::trainSingleR
-#' @param genes "genes" parameter in \link[SingleR]{SingleR} function.
-#' @param de.method "de.method" parameter in \link[SingleR]{SingleR} function.
-#' @param quantile "quantile" parameter in \link[SingleR]{SingleR} function.
-#' @param fine.tune "fine.tune" parameter in \link[SingleR]{SingleR} function.
-#' @param tune.thresh "tune.thresh" parameter in \link[SingleR]{SingleR} function.
-#' @param prune "prune" parameter in \link[SingleR]{SingleR} function.
+#' @inheritParams thisutils::log_message
+#' @param genes `"genes"` parameter in [SingleR::SingleR] function.
+#' @param de.method `"de.method"` parameter in [SingleR::SingleR] function.
+#' @param quantile "quantile" parameter in [SingleR::SingleR] function.
+#' @param fine.tune `"fine.tune"` parameter in [SingleR::SingleR] function.
+#' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.
+#' @param prune `"prune"` parameter in [SingleR::SingleR] function.
 #'
 #' @export
 #'

@@ -78,9 +78,9 @@ CellDimPlot(
 
 # Set the number of threads for RcppParallel
 # details see: ?RcppParallel::setThreadOptions
-if (requireNamespace("RcppParallel", quietly = TRUE)) {
-  RcppParallel::setThreadOptions()
-}
+# if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#   RcppParallel::setThreadOptions()
+# }
 # Projection
 srt_query <- RunKNNMap(
   srt_query = srt_query,

@@ -97,18 +97,26 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score", reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP", bg_cutoff = -Inf
+#'   features = "G2M_score",
+#'   reduction = "UMAP",
+#'   bg_cutoff = -Inf
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP", theme_use = "theme_blank"
+#'   features = "G2M_score",
+#'   reduction = "UMAP",
+#'   theme_use = "theme_blank"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score",
@@ -116,16 +124,16 @@
 #'   theme_use = ggplot2::theme_classic,
 #'   theme_args = list(base_size = 16)
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP"
+#'   features = "G2M_score",
+#'   reduction = "UMAP"
 #' ) %>% panel_fix(
 #'   height = 2,
 #'   raster = TRUE,
 #'   dpi = 30
 #' )
-#'
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #'
 #' # Label and highlight cell points
 #' FeatureDimPlot(
@@ -137,6 +145,7 @@
 #'     pancreas_sub
 #'   )[pancreas_sub$SubCellType == "Delta"]
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -154,6 +163,7 @@
 #'   label = TRUE,
 #'   add_density = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -170,6 +180,7 @@
 #'   reduction = "UMAP",
 #'   hex = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -184,12 +195,14 @@
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
 #'   reduction = "UMAP",
 #'   lineages = "Lineage2"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
@@ -197,6 +210,7 @@
 #'   lineages = "Lineage2",
 #'   lineages_whiskers = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
@@ -239,6 +253,7 @@
 #'   endocrine_markers,
 #'   reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
@@ -246,6 +261,7 @@
 #'   lower_quantile = 0,
 #'   upper_quantile = 0.8
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
@@ -253,12 +269,14 @@
 #'   lower_cutoff = 1,
 #'   upper_cutoff = 4
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
 #'   reduction = "UMAP",
 #'   keep_scale = "all"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   c("Delta" = "Sst", "Epsilon" = "Ghrl"),
@@ -277,6 +295,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -288,6 +307,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -299,6 +319,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -310,6 +331,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),

@@ -95,6 +95,7 @@ This function handles multiple quality control methods for single-cell RNA-seq d
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellQC(pancreas_sub)
 CellStatPlot(
   pancreas_sub,
@@ -109,7 +110,7 @@ CellStatPlot(
 )
 table(pancreas_sub$CellQC)
 
-data("ifnb_sub")
+data(ifnb_sub)
 ifnb_sub <- RunCellQC(
   srt = ifnb_sub,
   split.by = "stim",
@@ -127,5 +128,6 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
+
 table(ifnb_sub$CellQC)
 }

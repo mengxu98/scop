@@ -37,6 +37,7 @@ Attempt to recover raw counts from the normalized matrix
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 raw_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",

@@ -124,19 +124,18 @@ If not provided, the first 30 dimensions will be used.}
 \item{query_collapsing}{Whether to collapse cells within each query group before calculating similarities.
 If set to TRUE, the similarities will be calculated between query groups rather than individual cells.}
 
-\item{ref_collapsing}{Whether to collapse cells within each reference group before calculating similarities.
-If set to TRUE, the similarities will be calculated between reference groups rather than individual cells.}
+\item{ref_collapsing}{Detail description of the \code{query_collapsing} argument.}
 
 \item{features}{A vector of feature names to include in the heatmap.
 If not provided, a default set of highly variable features (HVF) will be used.}
 
 \item{features_type}{The type of features to use.
-Options are "HVF" for highly variable features,
-"DE" for differentially expressed features between query and reference groups.}
+Options are \code{"HVF"} for highly variable features,
+\code{"DE"} for differentially expressed features between query and reference groups.}
 
 \item{feature_source}{The source of features to use.
-Options are "query" to use only features from the query dataset,
-"ref" to use only features from the reference dataset, or "both" to use features from both datasets.
+Options are \code{"query"} to use only features from the query dataset,
+\code{"ref"} to use only features from the reference dataset, or \code{"both"} to use features from both datasets.
 If not provided or set to "both", features will be selected from both datasets.}
 
 \item{nfeatures}{The maximum number of features to include in the heatmap.
@@ -144,66 +143,67 @@ Default is 2000.}
 
 \item{DEtest_param}{The parameters to use for differential expression testing.
 This should be a list with two elements:
-"max.cells.per.ident" specifying the maximum number of cells per group for differential expression testing,
-and "test.use" specifying the statistical test to use for differential expression testing.
-If not provided, the default parameters will be used.}
+\code{"max.cells.per.ident"} specifying the maximum number of cells per group for differential expression testing,
+and \code{"test.use"} specifying the statistical test to use for differential expression testing.
+Default parameters will be used.}
 
 \item{DE_threshold}{The threshold for differential expression.
 Only features with adjusted p-values below this threshold will be considered differentially expressed.}
 
 \item{distance_metric}{The distance metric to use for calculating similarities between cells.
-This can be any of the following: "cosine", "pearson", "spearman", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", or "faith".
-If not provided, the default is "cosine".}
+This can be any of the following:
+\code{"cosine"}, \code{"pearson"}, \code{"spearman"}, \code{"correlation"}, \code{"jaccard"}, \code{"ejaccard"}, \code{"dice"}, \code{"edice"}, \code{"hamman"}, \code{"simple matching"}, or \code{"faith"}.
+Dhe default is \code{"cosine"}.}
 
 \item{k}{The number of nearest neighbors to use for calculating similarities.
 Default is 30.}
 
 \item{filter_lowfreq}{The minimum frequency threshold for selecting query dataset features.
 Features with a frequency below this threshold will be excluded from the heatmap.
-If not provided, the default is 0.}
+Default is 0.}
 
 \item{prefix}{The prefix to use for the KNNPredict tool layer in the query dataset.
 This can be used to avoid conflicts with other tools in the Seurat object.
-If not provided, the default is "KNNPredict".}
+The default is \code{"KNNPredict"}.}
 
 \item{exp_legend_title}{The title for the color legend in the heatmap.
 If not provided, a default title based on the similarity metric will be used.}
 
 \item{border}{Whether to add a border around each heatmap cell.
-If not provided, the default is TRUE.}
+The default is \code{TRUE}.}
 
 \item{flip}{Whether to flip the orientation of the heatmap.
 If set to TRUE, the rows and columns of the heatmap will be swapped.
 This can be useful for visualizing large datasets in a more compact form.
-If not provided, the default is FALSE.}
+The default is \code{FALSE}.}
 
 \item{limits}{The limits for the color scale in the heatmap.
 If not provided, the default is to use the range of similarity values.}
 
 \item{cluster_rows}{Whether to cluster the rows of the heatmap.
 If set to TRUE, the rows will be rearranged based on hierarchical clustering.
-If not provided, the default is FALSE.}
+The default is \code{FALSE}.}
 
 \item{cluster_columns}{Whether to cluster the columns of the heatmap.
 If set to TRUE, the columns will be rearranged based on hierarchical clustering.
-If not provided, the default is FALSE.}
+The default is \code{FALSE}.}
 
 \item{show_row_names}{Whether to show the row names in the heatmap.
-If not provided, the default is FALSE.}
+The default is \code{FALSE}.}
 
 \item{show_column_names}{Whether to show the column names in the heatmap.
-If not provided, the default is FALSE.}
+The default is \code{FALSE}.}
 
 \item{row_names_side}{The side of the heatmap to show the row names.
-Options are "left" or "right".
-If not provided, the default is "left".}
+Options are \code{"left"} or \code{"right"}.
+Default is \code{"left"}.}
 
 \item{column_names_side}{The side of the heatmap to show the column names.
-Options are "top" or "bottom".
-If not provided, the default is "top".}
+Options are \code{"top"} or \code{"bottom"}.
+If not provided, Default is \code{"top"}.}
 
 \item{row_names_rot}{The rotation angle of the row names.
-If not provided, the default is 0 degrees.}
+If not provided, Default is \code{0} degrees.}
 
 \item{column_names_rot}{The rotation angle of the column names.
 If not provided, the default is 90 degrees.}
@@ -212,58 +212,61 @@ If not provided, the default is 90 degrees.}
 If not provided, the default is to use the query grouping variable.}
 
 \item{column_title}{The title for the column names in the heatmap.
-If not provided, the default is to use the reference grouping variable.}
+Default is to use the reference grouping variable.}
 
 \item{row_title_side}{The side of the heatmap to show the row title.
-Options are "top" or "bottom".
-If not provided, the default is "left".}
+Options are \code{"top"} or \code{"bottom"}.
+Default is \code{"left"}.}
 
 \item{column_title_side}{The side of the heatmap to show the column title.
-Options are "left" or "right".
-If not provided, the default is "top".}
+Options are \code{"left"} or \code{"right"}.
+Default is \code{"top"}.}
 
 \item{row_title_rot}{The rotation angle of the row title.
-If not provided, the default is 90 degrees.}
+Default is \code{90} degrees.}
 
 \item{column_title_rot}{The rotation angle of the column title.
-If not provided, the default is 0 degrees.}
+Default is \code{0} degrees.}
 
 \item{nlabel}{The maximum number of labels to show on each side of the heatmap.
 If set to 0, no labels will be shown.
 This can be useful for reducing clutter in large heatmaps.
-If not provided, the default is 0.}
+Default is 0.}
 
 \item{label_cutoff}{The similarity cutoff for showing labels.
 Only cells with similarity values above this cutoff will have labels.
-If not provided, the default is 0.}
+Default is 0.}
 
 \item{label_by}{The dimension to use for labeling cells.
-Options are "row" to label cells by row, "column" to label cells by column, or "both" to label cells by both row and column.
-If not provided, the default is "row".}
+Options are \code{"row"} to label cells by row, \code{"column"} to label cells by column, or \code{"both"} to label cells by both row and column.
+Default is \code{"row"}.}
+
+\item{label_size}{The size of the labels.
+Default is \code{10}.}
 
 \item{heatmap_palette}{The color palette to use for the heatmap.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "RdBu".}
+Default is \code{"RdBu"}.}
 
 \item{heatmap_palcolor}{The specific colors to use for the heatmap palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.}
+Default is \code{NULL}.}
 
 \item{query_group_palette}{The color palette to use for the query group legend.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "Paired".}
+Default is \code{"Paired"}.}
 
 \item{query_group_palcolor}{The specific colors to use for the query group palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.}
+Default is \code{NULL}.}
 
 \item{ref_group_palette}{The color palette to use for the reference group legend.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "simspec".}
+Default is \code{"simspec"}.}
 
 \item{ref_group_palcolor}{The specific colors to use for the reference group palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.}
+Default is \code{NULL}.}
 
 \item{query_cell_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
@@ -273,12 +276,16 @@ If not provided, no cell annotations will be shown.}
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-If not provided, the default is "Paired".}
+Default is \code{"Paired"}.}
 
 \item{query_cell_annotation_palcolor}{The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
-If not provided, the default is NULL.}
+Default is \code{NULL}.}
+
+\item{query_cell_annotation_params}{Additional parameters to customize the appearance of the query cell annotation tracks.
+This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
+Any conflicting parameters will override the defaults set by this function.}
 
 \item{ref_cell_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
@@ -288,24 +295,26 @@ If not provided, no cell annotations will be shown.}
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-If not provided, the default is "Paired".}
+Default is \code{"Paired"}.}
 
 \item{ref_cell_annotation_palcolor}{The specific colors to use for the reference cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
 If multiple color vectors are provided, each track will be assigned a separate color vector.
-If not provided, the default is NULL.}
+Default is \code{NULL}.}
+
+\item{ref_cell_annotation_params}{Detail description of the \code{query_cell_annotation_params} argument.}
 
 \item{use_raster}{Whether to use raster images for rendering the heatmap.
-If set to TRUE, the heatmap will be rendered as a raster image using the raster_device argument.
-If not provided, the default is determined based on the number of rows and columns in the heatmap.}
+If set to \code{TRUE}, the heatmap will be rendered as a raster image using the raster_device argument.
+Default is determined based on the number of rows and columns in the heatmap.}
 
 \item{raster_device}{The raster device to use for rendering the heatmap.
-This should be a character string specifying the device name, such as "png", "jpeg", or "pdf".
-If not provided, the default is "png".}
+This should be a character string specifying the device name, such as \code{"png"}, \code{"jpeg"}, or \code{"pdf"}.
+Default is \code{"png"}.}
 
 \item{raster_by_magick}{Whether to use the magick package for rendering rasters.
-If set to TRUE, the magick package will be used instead of the raster package.
+If set to \code{TRUE}, the magick package will be used instead of the raster package.
 This can be useful for rendering large heatmaps more efficiently.
 If the magick package is not installed, this argument will be ignored.}
 
@@ -316,10 +325,10 @@ If not provided, the height will be automatically determined based on the number
 If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
 \item{units}{The units to use for the width and height of the heatmap.
-Default is "inch", Options are "mm", "cm", or "inch".}
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
 \item{seed}{The random seed to use for reproducible results.
-Default is 11.}
+Default is \code{11}.}
 
 \item{ht_params}{Additional parameters to customize the appearance of the heatmap.
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
@@ -341,6 +350,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"

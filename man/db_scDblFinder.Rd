@@ -20,12 +20,14 @@ This function performs doublet-calling using the scDblFinder package on a Seurat
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- db_scDblFinder(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",
   group.by = "db.scDblFinder_class"
 )
+
 FeatureDimPlot(
   pancreas_sub,
   reduction = "umap",

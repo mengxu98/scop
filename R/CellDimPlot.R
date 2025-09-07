@@ -141,6 +141,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' p1 <- CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -416,6 +417,7 @@
 #'
 #' # Show PAGA results on the plot
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",
@@ -459,6 +461,7 @@
 #'
 #' # Show RNA velocity results on the plot
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",

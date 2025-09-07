@@ -30,6 +30,7 @@ standard_scop(
   neighbor_k = 20L,
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
+  verbose = TRUE,
   seed = 11
 )
 }
@@ -113,6 +114,9 @@ Default is \code{"louvain"}.}
 \item{cluster_resolution}{The resolution parameter to use for clustering.
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
+
+\item{verbose}{Whether to print messages.
+Default is \code{TRUE}.}
 
 \item{seed}{The random seed to use for reproducibility.
 Default is \code{11}.}

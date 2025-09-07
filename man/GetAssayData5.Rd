@@ -5,7 +5,7 @@
 \alias{GetAssayData5.Seurat}
 \alias{GetAssayData5.Assay5}
 \alias{GetAssayData5.Assay}
-\title{Get expression data from Assay5 or Seurat object}
+\title{Get expression data from \code{Assay5} or Seurat object}
 \usage{
 GetAssayData5(object, ...)
 
@@ -33,7 +33,8 @@ defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 
 \item{verbose}{Whether to print messages. Default is \code{TRUE}.}
 
-\item{join_layers}{Whether to join layers if the object is an Assay5 object. Default is `TRUE`.}
+\item{join_layers}{Whether to join layers if provided an `Assay5` object.
+Default is `TRUE`.}
 }
 \value{
 A matrix or data frame containing the assay data.

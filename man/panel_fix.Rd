@@ -143,6 +143,7 @@ object.size(
 
 # fix the panel of the plot combined by `patchwork`
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 p1 <- CellDimPlot(
   pancreas_sub,
   "Phase",

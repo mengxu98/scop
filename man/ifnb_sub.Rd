@@ -7,7 +7,7 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://www.nature.com/articles/nbt.4042}
+\href{https://www.nature.com/articles/nbt.4042}{paper_ifnb}
 }
 \description{
 Human PBMC control/IFNB-stimulated dataset
