@@ -47,27 +47,25 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#'
-#' # "CSPA" and "TF" have been restored in pancreas_sub
-#' # pancreas_sub <- AnnotateFeatures(
-#' #   srt = pancreas_sub,
-#' #   species = "Mus_musculus",
-#' #   db = c("CSPA", "TF")
-#' # )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
 #'
 #' pancreas_sub <- RunSlingshot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
 #' pancreas_sub <- RunDynamicFeatures(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   n_candidates = 200
 #' )
 #'
 #' ht1 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = "Lineage1",
 #'   n_split = 5,
 #'   split_method = "kmeans-peaktime",
@@ -78,7 +76,7 @@
 #' panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 #'
 #' ht2 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = "Lineage1",
 #'   features = c(
 #'     "Sox9",
@@ -100,7 +98,7 @@
 #' )
 #'
 #' ht3 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   n_split = 5,
 #'   split_method = "kmeans",
@@ -110,7 +108,7 @@
 #' ht3$plot
 #'
 #' ht4 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   use_fitted = TRUE,
@@ -143,7 +141,7 @@
 #' ht4$plot
 #'
 #' ht5 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   use_fitted = TRUE,
@@ -173,7 +171,7 @@
 #' ht5$plot
 #'
 #' ht6 <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   cell_annotation = "SubCellType",

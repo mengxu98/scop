@@ -72,7 +72,7 @@
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
@@ -144,7 +144,7 @@
 #' )
 #'
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",

@@ -176,7 +176,7 @@ Users have the flexibility to specify custom cell groups, marker types, and vari
 \examples{
 data(pancreas_sub)
 pancreas_sub <- RunDEtest(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "SubCellType"
 )
 AllMarkers <- dplyr::filter(
@@ -185,7 +185,7 @@ AllMarkers <- dplyr::filter(
 )
 table(AllMarkers$group1)
 ht1 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = AllMarkers$gene,
   feature_split = AllMarkers$group1,
   group.by = "SubCellType"
@@ -198,7 +198,7 @@ TopMarkers <- AllMarkers |>
   dplyr::group_by(group1) |>
   dplyr::top_n(3, avg_log2FC)
 ht2 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = TopMarkers$gene,
   feature_split = TopMarkers$group1,
   group.by = "SubCellType",
@@ -207,7 +207,7 @@ ht2 <- GroupHeatmap(
 ht2$plot
 
 pancreas_sub <- RunDEtest(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "SubCellType",
   markers_type = "paired"
 )
@@ -216,7 +216,7 @@ PairedMarkers <- dplyr::filter(
   p_val_adj < 0.05 & avg_log2FC > 1
 )
 ht3 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = PairedMarkers$gene,
   feature_split = PairedMarkers$group1,
   group.by = "SubCellType"

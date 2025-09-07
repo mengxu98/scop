@@ -116,7 +116,7 @@
 #' )
 #'
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   db = c("GO_BP", "GO_CC"),
 #'   group_by = "CellType",
 #'   species = "Mus_musculus"
@@ -351,7 +351,7 @@
 #' ) |> panel_fix(height = 4)
 #'
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   db = c("MP", "DO"),
 #'   group_by = "CellType",
 #'   convert_species = TRUE,

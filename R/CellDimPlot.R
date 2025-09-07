@@ -417,7 +417,7 @@
 #' # Show PAGA results on the plot
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
@@ -460,7 +460,7 @@
 #' # Show RNA velocity results on the plot
 #' data(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
@@ -1484,19 +1484,19 @@ CellDimPlot <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot3D(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D"
 #' )
 #'
 #' pancreas_sub <- RunSlingshot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D",
 #'   show_plot = FALSE
 #' )
 #' CellDimPlot3D(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "StandardpcaUMAP3D",
 #'   lineages = "Lineage1"

@@ -215,7 +215,7 @@ WilcoxDETest <- function(
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType"
 #' )
 #' AllMarkers <- dplyr::filter(
@@ -224,7 +224,7 @@ WilcoxDETest <- function(
 #' )
 #' table(AllMarkers$group1)
 #' ht1 <- GroupHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = AllMarkers$gene,
 #'   feature_split = AllMarkers$group1,
 #'   group.by = "SubCellType"
@@ -237,7 +237,7 @@ WilcoxDETest <- function(
 #'   dplyr::group_by(group1) |>
 #'   dplyr::top_n(3, avg_log2FC)
 #' ht2 <- GroupHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = TopMarkers$gene,
 #'   feature_split = TopMarkers$group1,
 #'   group.by = "SubCellType",
@@ -246,7 +246,7 @@ WilcoxDETest <- function(
 #' ht2$plot
 #'
 #' pancreas_sub <- RunDEtest(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   markers_type = "paired"
 #' )
@@ -255,7 +255,7 @@ WilcoxDETest <- function(
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
 #' ht3 <- GroupHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = PairedMarkers$gene,
 #'   feature_split = PairedMarkers$group1,
 #'   group.by = "SubCellType"

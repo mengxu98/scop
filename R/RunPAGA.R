@@ -55,7 +55,7 @@
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   assay_x = "RNA",
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
@@ -77,7 +77,7 @@
 #' )
 #'
 #' pancreas_sub <- RunPAGA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
