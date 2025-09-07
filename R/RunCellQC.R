@@ -11,12 +11,12 @@
 #' data(pancreas_sub)
 #' pancreas_sub <- db_scDblFinder(pancreas_sub)
 #' CellDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.scDblFinder_class"
 #' )
 #' FeatureDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   features = "db.scDblFinder_score"
 #' )
@@ -61,12 +61,12 @@ db_scDblFinder <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #' CellDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.scds_hybrid_class"
 #' )
 #' FeatureDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap", features = "db.scds_hybrid_score"
 #' )
 #' @export
@@ -122,12 +122,12 @@ db_scds <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.Scrublet_class"
 #' )
 #' FeatureDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
@@ -194,12 +194,12 @@ db_Scrublet <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.DoubletDetection_class"
 #' )
 #' FeatureDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap", features = "db.DoubletDetection_score"
 #' )
 #' }
@@ -267,16 +267,17 @@ db_DoubletDetection <- function(
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunDoubletCalling(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   db_method = "scDblFinder"
 #' )
 #' CellDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.scDblFinder_class"
 #' )
+#'
 #' FeatureDimPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   reduction = "umap",
 #'   features = "db.scDblFinder_score"
 #' )
@@ -433,7 +434,7 @@ is_outlier <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- RunCellQC(pancreas_sub)
 #' CellStatPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   stat.by = c(
 #'     "db_qc", "outlier_qc",
 #'     "umi_qc", "gene_qc",

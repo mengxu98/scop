@@ -70,12 +70,12 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' # pancreas_sub <- RunDEtest(
-#' #  pancreas_sub,
-#' #   group_by = "CellType"
-#' # )
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   DE_threshold = "p_val_adj < 0.05",
 #'   db = "GO_BP",
@@ -90,7 +90,7 @@
 #'
 #' \dontrun{
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   DE_threshold = "p_val_adj < 0.05",
 #'   db = c("MSigDB", "MSigDB_MH"),
@@ -111,7 +111,7 @@
 #'
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   db = "GO_BP",
 #'   GO_simplify = TRUE,
@@ -143,7 +143,7 @@
 #'
 #' # Use a combined database
 #' pancreas_sub <- RunEnrichment(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   db = c(
 #'     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"

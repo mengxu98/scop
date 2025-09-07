@@ -99,7 +99,7 @@ if (interactive()) {
   )
 
   pancreas_sub <- RunMonocle2(
-    srt = pancreas_sub,
+    pancreas_sub,
     feature_type = "Disp",
     disp_filter = "mean_expression >= 0.01 & dispersion_empirical >= 1 * dispersion_fit"
   )

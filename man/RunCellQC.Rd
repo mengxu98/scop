@@ -97,7 +97,7 @@ This function handles multiple quality control methods for single-cell RNA-seq d
 data(pancreas_sub)
 pancreas_sub <- RunCellQC(pancreas_sub)
 CellStatPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   stat.by = c(
     "db_qc", "outlier_qc",
     "umi_qc", "gene_qc",

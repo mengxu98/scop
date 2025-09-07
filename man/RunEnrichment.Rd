@@ -135,12 +135,12 @@ Perform the enrichment analysis (over-representation) on the genes
 }
 \examples{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#   group_by = "CellType"
-# )
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = "GO_BP",
@@ -155,7 +155,7 @@ EnrichmentPlot(
 
 \dontrun{
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = c("MSigDB", "MSigDB_MH"),
@@ -176,7 +176,7 @@ EnrichmentPlot(
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
@@ -208,7 +208,7 @@ EnrichmentPlot(
 
 # Use a combined database
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
