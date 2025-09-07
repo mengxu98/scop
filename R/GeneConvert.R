@@ -1,22 +1,25 @@
-#' Gene ID conversion function using biomart
+#' @title Gene ID conversion function using biomart
 #'
+#' @description
 #' This function can convert different gene ID types within one species or between two species using the biomart service.
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param geneID A vector of the geneID character.
-#' @param geneID_from_IDtype Gene ID type of the input \code{geneID}. e.g. "symbol", "ensembl_id", "entrez_id"
-#' @param geneID_to_IDtype Gene ID type(s) to convert to. e.g. "symbol", "ensembl_id", "entrez_id"
-#' @param species_from Latin names for animals of the input geneID. e.g. "Homo_sapiens","Mus_musculus"
-#' @param species_to Latin names for animals of the output geneID. e.g. "Homo_sapiens","Mus_musculus"
+#' @param geneID_from_IDtype Gene ID type of the input `geneID`. e.g. `"symbol"`, `"ensembl_id"`, `"entrez_id"`
+#' @param geneID_to_IDtype Gene ID type(s) to convert to. e.g. `"symbol"`, `"ensembl_id"`, `"entrez_id"`.
+#' @param species_from Latin names for animals of the input geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
+#' @param species_to Latin names for animals of the output geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
 #' @param Ensembl_version Ensembl database version. If NULL, use the current release version.
 #' @param biomart The name of the BioMart database that you want to connect to.
-#' Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".
+#' Possible options include `"ensembl"`, `"protists_mart"`, `"fungi_mart"`, and `"plants_mart"`.
 #' @param max_tries The maximum number of attempts to connect with the BioMart service.
-#' @param mirror Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.
+#' @param mirror Specify an Ensembl mirror to connect to. The valid options here are `"www"`, `"uswest"`, `"useast"`, `"asia"`.
 #'
 #' @return A list with the following elements:
 #'   \itemize{
-#'     \item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'.
-#'     \item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.
+#'     \item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: `"from_IDtype"`, `"from_geneID"`, `"to_IDtype"`, `"to_geneID"`.
+#'     \item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the `"from_geneID"` column (which is set as the row names) of the data.frame is unique.
 #'     \item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
 #'     \item \code{Ensembl_version:} Ensembl database version.
 #'     \item \code{Datasets:} Datasets available in the selected BioMart database.

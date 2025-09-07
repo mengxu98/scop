@@ -7,10 +7,10 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
+\href{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
+\href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
+\href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
+\href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 }
 \description{
 Human pancreatic islet cell datasets produced across four technologies,

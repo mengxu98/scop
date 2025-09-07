@@ -48,10 +48,10 @@ The default value is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{biomart}{The name of the BioMart database that you want to connect to.
-Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
+Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 

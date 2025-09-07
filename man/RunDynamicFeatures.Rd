@@ -70,6 +70,7 @@ Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

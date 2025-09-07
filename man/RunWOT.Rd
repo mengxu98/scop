@@ -85,6 +85,7 @@ Run WOT analysis
 \examples{
 \dontrun{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

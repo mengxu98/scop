@@ -191,6 +191,7 @@ This function generates a PAGA plot based on the given Seurat object and PAGA re
 \examples{
 PrepareEnv()
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group_by = "SubCellType",
