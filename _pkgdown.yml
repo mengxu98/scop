@@ -195,6 +195,7 @@ reference:
   - geom_sankey_label
   - make_long
   - palette_colors
+  - palette_list
   - panel_fix
   - print.scop_logo
   - segements_df
@@ -220,10 +221,6 @@ reference:
 - subtitle: "Data"
 - contents:
   - ifnb_sub
-  - lifemap_cell
-  - lifemap_compartment
-  - lifemap_organ
-  - palette_list
   - panc8_sub
   - pancreas_sub
   - ref_scHCL
