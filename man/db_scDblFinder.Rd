@@ -22,12 +22,12 @@ This function performs doublet-calling using the scDblFinder package on a Seurat
 data(pancreas_sub)
 pancreas_sub <- db_scDblFinder(pancreas_sub)
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   reduction = "umap",
   group.by = "db.scDblFinder_class"
 )
 FeatureDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   reduction = "umap",
   features = "db.scDblFinder_score"
 )

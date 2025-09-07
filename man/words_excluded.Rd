@@ -21,7 +21,7 @@ if (interactive()) {
     "regulation", "regulated", "positive", "negative",
     "response", "process", "processing", "small", "large", "change"
   )
-  # usethis::use_data(words_excluded)
+  usethis::use_data(words_excluded, compress = "xz")
 }
 }
 }

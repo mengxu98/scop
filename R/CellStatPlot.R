@@ -436,13 +436,12 @@ CellStatPlot <- function(
 #'   NA_stat = FALSE
 #' )
 #'
-#' # "CSPA" and "TF" have been restored in pancreas_sub
-#' # pancreas_sub <- AnnotateFeatures(
-#' #  pancreas_sub,
-#' #  species = "Mus_musculus",
-#' #  IDtype = "symbol",
-#' #  db = c("CSPA", "TF")
-#' # )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   IDtype = "symbol",
+#'   db = c("CSPA", "TF")
+#' )
 #' StatPlot(
 #'   GetFeaturesData(pancreas_sub, "RNA"),
 #'   stat.by = "TF",
