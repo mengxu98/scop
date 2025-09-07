@@ -9,7 +9,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -196,8 +196,7 @@ If set to TRUE, the similarities will be calculated between query groups rather 
 
 
 <dt id="arg-ref-collapsing">ref_collapsing<a class="anchor" aria-label="anchor" href="#arg-ref-collapsing"></a></dt>
-<dd><p>Whether to collapse cells within each reference group before calculating similarities.
-If set to TRUE, the similarities will be calculated between reference groups rather than individual cells.</p></dd>
+<dd><p>Detail description of the <code>query_collapsing</code> argument.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -207,14 +206,14 @@ If not provided, a default set of highly variable features (HVF) will be used.</
 
 <dt id="arg-features-type">features_type<a class="anchor" aria-label="anchor" href="#arg-features-type"></a></dt>
 <dd><p>The type of features to use.
-Options are "HVF" for highly variable features,
-"DE" for differentially expressed features between query and reference groups.</p></dd>
+Options are <code>"HVF"</code> for highly variable features,
+<code>"DE"</code> for differentially expressed features between query and reference groups.</p></dd>
 
 
 <dt id="arg-feature-source">feature_source<a class="anchor" aria-label="anchor" href="#arg-feature-source"></a></dt>
 <dd><p>The source of features to use.
-Options are "query" to use only features from the query dataset,
-"ref" to use only features from the reference dataset, or "both" to use features from both datasets.
+Options are <code>"query"</code> to use only features from the query dataset,
+<code>"ref"</code> to use only features from the reference dataset, or <code>"both"</code> to use features from both datasets.
 If not provided or set to "both", features will be selected from both datasets.</p></dd>
 
 
@@ -226,9 +225,9 @@ Default is 2000.</p></dd>
 <dt id="arg-detest-param">DEtest_param<a class="anchor" aria-label="anchor" href="#arg-detest-param"></a></dt>
 <dd><p>The parameters to use for differential expression testing.
 This should be a list with two elements:
-"max.cells.per.ident" specifying the maximum number of cells per group for differential expression testing,
-and "test.use" specifying the statistical test to use for differential expression testing.
-If not provided, the default parameters will be used.</p></dd>
+<code>"max.cells.per.ident"</code> specifying the maximum number of cells per group for differential expression testing,
+and <code>"test.use"</code> specifying the statistical test to use for differential expression testing.
+Default parameters will be used.</p></dd>
 
 
 <dt id="arg-de-threshold">DE_threshold<a class="anchor" aria-label="anchor" href="#arg-de-threshold"></a></dt>
@@ -238,8 +237,9 @@ Only features with adjusted p-values below this threshold will be considered dif
 
 <dt id="arg-distance-metric">distance_metric<a class="anchor" aria-label="anchor" href="#arg-distance-metric"></a></dt>
 <dd><p>The distance metric to use for calculating similarities between cells.
-This can be any of the following: "cosine", "pearson", "spearman", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", or "faith".
-If not provided, the default is "cosine".</p></dd>
+This can be any of the following:
+<code>"cosine"</code>, <code>"pearson"</code>, <code>"spearman"</code>, <code>"correlation"</code>, <code>"jaccard"</code>, <code>"ejaccard"</code>, <code>"dice"</code>, <code>"edice"</code>, <code>"hamman"</code>, <code>"simple matching"</code>, or <code>"faith"</code>.
+Dhe default is <code>"cosine"</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -250,13 +250,13 @@ Default is 30.</p></dd>
 <dt id="arg-filter-lowfreq">filter_lowfreq<a class="anchor" aria-label="anchor" href="#arg-filter-lowfreq"></a></dt>
 <dd><p>The minimum frequency threshold for selecting query dataset features.
 Features with a frequency below this threshold will be excluded from the heatmap.
-If not provided, the default is 0.</p></dd>
+Default is 0.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
 <dd><p>The prefix to use for the KNNPredict tool layer in the query dataset.
 This can be used to avoid conflicts with other tools in the Seurat object.
-If not provided, the default is "KNNPredict".</p></dd>
+The default is <code>"KNNPredict"</code>.</p></dd>
 
 
 <dt id="arg-exp-legend-title">exp_legend_title<a class="anchor" aria-label="anchor" href="#arg-exp-legend-title"></a></dt>
@@ -266,14 +266,14 @@ If not provided, a default title based on the similarity metric will be used.</p
 
 <dt id="arg-border">border<a class="anchor" aria-label="anchor" href="#arg-border"></a></dt>
 <dd><p>Whether to add a border around each heatmap cell.
-If not provided, the default is TRUE.</p></dd>
+The default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-flip">flip<a class="anchor" aria-label="anchor" href="#arg-flip"></a></dt>
 <dd><p>Whether to flip the orientation of the heatmap.
 If set to TRUE, the rows and columns of the heatmap will be swapped.
 This can be useful for visualizing large datasets in a more compact form.
-If not provided, the default is FALSE.</p></dd>
+The default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
@@ -284,40 +284,40 @@ If not provided, the default is to use the range of similarity values.</p></dd>
 <dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
 <dd><p>Whether to cluster the rows of the heatmap.
 If set to TRUE, the rows will be rearranged based on hierarchical clustering.
-If not provided, the default is FALSE.</p></dd>
+The default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-cluster-columns">cluster_columns<a class="anchor" aria-label="anchor" href="#arg-cluster-columns"></a></dt>
 <dd><p>Whether to cluster the columns of the heatmap.
 If set to TRUE, the columns will be rearranged based on hierarchical clustering.
-If not provided, the default is FALSE.</p></dd>
+The default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
 <dd><p>Whether to show the row names in the heatmap.
-If not provided, the default is FALSE.</p></dd>
+The default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
 <dd><p>Whether to show the column names in the heatmap.
-If not provided, the default is FALSE.</p></dd>
+The default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-row-names-side">row_names_side<a class="anchor" aria-label="anchor" href="#arg-row-names-side"></a></dt>
 <dd><p>The side of the heatmap to show the row names.
-Options are "left" or "right".
-If not provided, the default is "left".</p></dd>
+Options are <code>"left"</code> or <code>"right"</code>.
+Default is <code>"left"</code>.</p></dd>
 
 
 <dt id="arg-column-names-side">column_names_side<a class="anchor" aria-label="anchor" href="#arg-column-names-side"></a></dt>
 <dd><p>The side of the heatmap to show the column names.
-Options are "top" or "bottom".
-If not provided, the default is "top".</p></dd>
+Options are <code>"top"</code> or <code>"bottom"</code>.
+If not provided, Default is <code>"top"</code>.</p></dd>
 
 
 <dt id="arg-row-names-rot">row_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-rot"></a></dt>
 <dd><p>The rotation angle of the row names.
-If not provided, the default is 0 degrees.</p></dd>
+If not provided, Default is <code>0</code> degrees.</p></dd>
 
 
 <dt id="arg-column-names-rot">column_names_rot<a class="anchor" aria-label="anchor" href="#arg-column-names-rot"></a></dt>
@@ -332,84 +332,89 @@ If not provided, the default is to use the query grouping variable.</p></dd>
 
 <dt id="arg-column-title">column_title<a class="anchor" aria-label="anchor" href="#arg-column-title"></a></dt>
 <dd><p>The title for the column names in the heatmap.
-If not provided, the default is to use the reference grouping variable.</p></dd>
+Default is to use the reference grouping variable.</p></dd>
 
 
 <dt id="arg-row-title-side">row_title_side<a class="anchor" aria-label="anchor" href="#arg-row-title-side"></a></dt>
 <dd><p>The side of the heatmap to show the row title.
-Options are "top" or "bottom".
-If not provided, the default is "left".</p></dd>
+Options are <code>"top"</code> or <code>"bottom"</code>.
+Default is <code>"left"</code>.</p></dd>
 
 
 <dt id="arg-column-title-side">column_title_side<a class="anchor" aria-label="anchor" href="#arg-column-title-side"></a></dt>
 <dd><p>The side of the heatmap to show the column title.
-Options are "left" or "right".
-If not provided, the default is "top".</p></dd>
+Options are <code>"left"</code> or <code>"right"</code>.
+Default is <code>"top"</code>.</p></dd>
 
 
 <dt id="arg-row-title-rot">row_title_rot<a class="anchor" aria-label="anchor" href="#arg-row-title-rot"></a></dt>
 <dd><p>The rotation angle of the row title.
-If not provided, the default is 90 degrees.</p></dd>
+Default is <code>90</code> degrees.</p></dd>
 
 
 <dt id="arg-column-title-rot">column_title_rot<a class="anchor" aria-label="anchor" href="#arg-column-title-rot"></a></dt>
 <dd><p>The rotation angle of the column title.
-If not provided, the default is 0 degrees.</p></dd>
+Default is <code>0</code> degrees.</p></dd>
 
 
 <dt id="arg-nlabel">nlabel<a class="anchor" aria-label="anchor" href="#arg-nlabel"></a></dt>
 <dd><p>The maximum number of labels to show on each side of the heatmap.
 If set to 0, no labels will be shown.
 This can be useful for reducing clutter in large heatmaps.
-If not provided, the default is 0.</p></dd>
+Default is 0.</p></dd>
 
 
 <dt id="arg-label-cutoff">label_cutoff<a class="anchor" aria-label="anchor" href="#arg-label-cutoff"></a></dt>
 <dd><p>The similarity cutoff for showing labels.
 Only cells with similarity values above this cutoff will have labels.
-If not provided, the default is 0.</p></dd>
+Default is 0.</p></dd>
 
 
 <dt id="arg-label-by">label_by<a class="anchor" aria-label="anchor" href="#arg-label-by"></a></dt>
 <dd><p>The dimension to use for labeling cells.
-Options are "row" to label cells by row, "column" to label cells by column, or "both" to label cells by both row and column.
-If not provided, the default is "row".</p></dd>
+Options are <code>"row"</code> to label cells by row, <code>"column"</code> to label cells by column, or <code>"both"</code> to label cells by both row and column.
+Default is <code>"row"</code>.</p></dd>
+
+
+<dt id="arg-label-size">label_size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
+<dd><p>The size of the labels.
+Default is <code>10</code>.</p></dd>
 
 
 <dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
 <dd><p>The color palette to use for the heatmap.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "RdBu".</p></dd>
+Default is <code>"RdBu"</code>.</p></dd>
 
 
 <dt id="arg-heatmap-palcolor">heatmap_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-palcolor"></a></dt>
 <dd><p>The specific colors to use for the heatmap palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-query-group-palette">query_group_palette<a class="anchor" aria-label="anchor" href="#arg-query-group-palette"></a></dt>
 <dd><p>The color palette to use for the query group legend.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "Paired".</p></dd>
+Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-query-group-palcolor">query_group_palcolor<a class="anchor" aria-label="anchor" href="#arg-query-group-palcolor"></a></dt>
 <dd><p>The specific colors to use for the query group palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ref-group-palette">ref_group_palette<a class="anchor" aria-label="anchor" href="#arg-ref-group-palette"></a></dt>
 <dd><p>The color palette to use for the reference group legend.
 This can be any of the palettes available in the circlize package.
-If not provided, the default is "simspec".</p></dd>
+Default is <code>"simspec"</code>.</p></dd>
 
 
 <dt id="arg-ref-group-palcolor">ref_group_palcolor<a class="anchor" aria-label="anchor" href="#arg-ref-group-palcolor"></a></dt>
 <dd><p>The specific colors to use for the reference group palette.
 This should be a vector of color names or RGB values.
-If not provided, the default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-query-cell-annotation">query_cell_annotation<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation"></a></dt>
@@ -423,14 +428,20 @@ If not provided, no cell annotations will be shown.</p></dd>
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-If not provided, the default is "Paired".</p></dd>
+Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-query-cell-annotation-palcolor">query_cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation-palcolor"></a></dt>
 <dd><p>The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
-If not provided, the default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-query-cell-annotation-params">query_cell_annotation_params<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation-params"></a></dt>
+<dd><p>Additional parameters to customize the appearance of the query cell annotation tracks.
+This should be a list with named elements, where the names correspond to parameter names in the <a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">ComplexHeatmap::Heatmap</a> function.
+Any conflicting parameters will override the defaults set by this function.</p></dd>
 
 
 <dt id="arg-ref-cell-annotation">ref_cell_annotation<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation"></a></dt>
@@ -444,7 +455,7 @@ If not provided, no cell annotations will be shown.</p></dd>
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-If not provided, the default is "Paired".</p></dd>
+Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-ref-cell-annotation-palcolor">ref_cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation-palcolor"></a></dt>
@@ -452,24 +463,28 @@ If not provided, the default is "Paired".</p></dd>
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
 If multiple color vectors are provided, each track will be assigned a separate color vector.
-If not provided, the default is NULL.</p></dd>
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-ref-cell-annotation-params">ref_cell_annotation_params<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation-params"></a></dt>
+<dd><p>Detail description of the <code>query_cell_annotation_params</code> argument.</p></dd>
 
 
 <dt id="arg-use-raster">use_raster<a class="anchor" aria-label="anchor" href="#arg-use-raster"></a></dt>
 <dd><p>Whether to use raster images for rendering the heatmap.
-If set to TRUE, the heatmap will be rendered as a raster image using the raster_device argument.
-If not provided, the default is determined based on the number of rows and columns in the heatmap.</p></dd>
+If set to <code>TRUE</code>, the heatmap will be rendered as a raster image using the raster_device argument.
+Default is determined based on the number of rows and columns in the heatmap.</p></dd>
 
 
 <dt id="arg-raster-device">raster_device<a class="anchor" aria-label="anchor" href="#arg-raster-device"></a></dt>
 <dd><p>The raster device to use for rendering the heatmap.
-This should be a character string specifying the device name, such as "png", "jpeg", or "pdf".
-If not provided, the default is "png".</p></dd>
+This should be a character string specifying the device name, such as <code>"png"</code>, <code>"jpeg"</code>, or <code>"pdf"</code>.
+Default is <code>"png"</code>.</p></dd>
 
 
 <dt id="arg-raster-by-magick">raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-raster-by-magick"></a></dt>
 <dd><p>Whether to use the magick package for rendering rasters.
-If set to TRUE, the magick package will be used instead of the raster package.
+If set to <code>TRUE</code>, the magick package will be used instead of the raster package.
 This can be useful for rendering large heatmaps more efficiently.
 If the magick package is not installed, this argument will be ignored.</p></dd>
 
@@ -486,12 +501,12 @@ If not provided, the width will be automatically determined based on the number 
 
 <dt id="arg-units">units<a class="anchor" aria-label="anchor" href="#arg-units"></a></dt>
 <dd><p>The units to use for the width and height of the heatmap.
-Default is "inch", Options are "mm", "cm", or "inch".</p></dd>
+Default is <code>"inch"</code>, Options are <code>"mm"</code>, <code>"cm"</code>, or <code>"inch"</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>The random seed to use for reproducible results.
-Default is 11.</p></dd>
+Default is <code>11</code>.</p></dd>
 
 
 <dt id="arg-ht-params">ht_params<a class="anchor" aria-label="anchor" href="#arg-ht-params"></a></dt>
@@ -516,17 +531,81 @@ Any conflicting parameters will override the defaults set by this function.</p><
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:27] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:28] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:02:28] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:30] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:31] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:31] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:32] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:02:32] The input data is a <span style="color: #0000BB;">&lt;Assay5&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       `SeuratObject::JoinLayers()` will be used to combine the layers</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">This warning will be shown only once every 8 hours</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">To change this interval, set the scop.warning_interval option</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:33] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:33] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:34] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:34] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:02:34] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once every 8 hours.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:34] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:34] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:36] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-07 13:02:38] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:00] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:00] Use 2000 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:38] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:38] Use 2000 features to calculate distance.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod(generic = "DefaultAssay", object = object):</span> no applicable method for 'DefaultAssay' applied to an object of class "c('dgCMatrix', 'CsparseMatrix', 'dsparseMatrix', 'generalMatrix', 'AnyMatrix', 'V3Matrix', 'dMatrix', 'sparseMatrix', 'Matrix')"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:39] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:39] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:39] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:39] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:39] Predict cell type...</span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht1' not found</span>
+<span class="r-plt img"><img src="CellCorHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Simply convert genes from human to mouse and preprocess the data</span></span></span>
@@ -541,31 +620,12 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  newnames <span class="op">=</span> <span class="va">genenames</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:02] Rename features for the assay: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:40] Rename features for the assay: RNA</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="CheckDataMerge.html">CheckDataMerge</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">[[</span><span class="st">"srt_merge"</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:02] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:03] Checking srt_list...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:03] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:03] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:03] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:04] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:04] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:04] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:05] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:06] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:06] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:06] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:06] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:07] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:07] Finished checking.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in CheckDataMerge(panc8_sub, batch = "tech"):</span> object 'verbose' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -581,9 +641,16 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">4</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:09] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:09] Use 678 features to calculate distance.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod(generic = "DefaultAssay", object = object):</span> no applicable method for 'DefaultAssay' applied to an object of class "c('dgCMatrix', 'CsparseMatrix', 'dsparseMatrix', 'generalMatrix', 'AnyMatrix', 'V3Matrix', 'dMatrix', 'sparseMatrix', 'Matrix')"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:40] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding variable features for layer counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Use 358 features to calculate distance.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Detected reference data type: <span style="color: #0000BB;">"raw_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:02:41] Data type is unknown or different between query and reference</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in proxy(x, y, margin, method, mask = mask, min_proxy = min_simil,     rank = rank, drop0 = drop0, diag = diag, use_nan = use_nan,     sparse = sparse, digits = digits):</span> x and y must have the same number of columns</span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht2' not found</span>
 <span class="r-in"><span></span></span>
@@ -597,13 +664,11 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  ref_collapsing <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  cluster_columns <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:09] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:09] Use 678 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-06 09:45:09] The input data is a <span style="color: #0000BB;">&lt;Assay5&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       `SeuratObject::JoinLayers()` will be used to combine the layers</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">This warning will be shown only once every 8 hours</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">To change this interval, set the scop.warning_interval option</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod(generic = "DefaultAssay", object = object):</span> no applicable method for 'DefaultAssay' applied to an object of class "c('dgCMatrix', 'CsparseMatrix', 'dsparseMatrix', 'generalMatrix', 'AnyMatrix', 'V3Matrix', 'dMatrix', 'sparseMatrix', 'Matrix')"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:41] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding variable features for layer counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Use 358 features to calculate distance.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': subscript out of bounds</span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht3' not found</span>
 <span class="r-in"><span></span></span>
@@ -623,9 +688,16 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2.5</span>,</span></span>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:11] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-06 09:45:11] Use 678 features to calculate distance.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod(generic = "DefaultAssay", object = object):</span> no applicable method for 'DefaultAssay' applied to an object of class "c('dgCMatrix', 'CsparseMatrix', 'dsparseMatrix', 'generalMatrix', 'AnyMatrix', 'V3Matrix', 'dMatrix', 'sparseMatrix', 'Matrix')"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Finding variable features for layer counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Use 358 features to calculate distance.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Detected reference data type: <span style="color: #0000BB;">"raw_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:02:42] Data type is unknown or different between query and reference</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:02:42] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in proxy(x, y, margin, method, mask = mask, min_proxy = min_simil,     rank = rank, drop0 = drop0, diag = diag, use_nan = use_nan,     sparse = sparse, digits = digits):</span> x and y must have the same number of columns</span>
 <span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht4' not found</span>
 </code></pre></div>

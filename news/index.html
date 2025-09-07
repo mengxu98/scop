@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,20 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.7" id="scop-027">scop 0.2.7<a class="anchor" aria-label="anchor" href="#scop-027"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>Added an internal function <code>.check_pkg_status()</code> to check if an <em>R</em> package is installed.</li>
+<li>Update function <code><a href="../reference/CheckDataType.html">CheckDataType()</a></code> to <em>S4</em> class function.</li>
+<li>Update function <code><a href="../reference/standard_scop.html">standard_scop()</a></code>, make it more efficient.</li>
+</ul></li>
+<li>
+<strong>data</strong>:
+<ul><li>Delete <code>lifemap</code> data, including: <code>lifemap_cell</code>, <code>lifemap_compartment</code> and <code>lifemap_organ</code>.</li>
+<li>Reconstructed the sample data for both <code>panc8_sub</code> and <code>pancreas_sub</code>, retaining only the basic <code>Seurat</code> object.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="scop-026">scop 0.2.6<a class="anchor" aria-label="anchor" href="#scop-026"></a></h2>
 <ul><li>
 <strong>func</strong>:
@@ -45,30 +59,49 @@
 <li>Rename function: <code>RemovePackages()</code> to <code><a href="../reference/remove_python.html">remove_python()</a></code>.</li>
 <li>Removed other methods of installing <em>R</em> packages from the <code><a href="../reference/check_r.html">check_r()</a></code> function, only retaining <a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak</a>.</li>
 <li>Delete useless import packages: <code>BBmisc</code>, <code>BiocManager</code>, <code>covr</code>, <code>devtools</code>, <code>promises</code> and <code>withr</code>.</li>
-<li>Optimized the function structure in the <code>_pkgdown.yml</code> file.</li>
+<li>Optimize the structure of <code>_pkgdown.yml</code> file.</li>
 </ul></li>
 <li>
-<strong>docs</strong>: Updated documentation for some functions.</li>
+<strong>docs</strong>:
+<ul><li>Updated documentation for some functions.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="scop-025">scop 0.2.5<a class="anchor" aria-label="anchor" href="#scop-025"></a></h2>
 <ul><li>
-<strong>func</strong>: Rename function: <code>palette_scop()</code> to <code><a href="../reference/palette_colors.html">palette_colors()</a></code>.</li>
+<strong>func</strong>:
+<ul><li>Rename function: <code>palette_scop()</code> to <code><a href="../reference/palette_colors.html">palette_colors()</a></code>.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.4" id="scop-024">scop 0.2.4<a class="anchor" aria-label="anchor" href="#scop-024"></a></h2>
 <ul><li>
-<strong>func</strong>: Rename functions: <code>check_srt_merge()</code> to <code><a href="../reference/CheckDataMerge.html">CheckDataMerge()</a></code>, <code>check_srt_list()</code> to <code>CheckDataList</code> and <code>check_data_type()</code> to <code>CheckDataType</code>.</li>
+<strong>func</strong>:
+<ul><li>Rename functions: <code>check_srt_merge()</code> to <code><a href="../reference/CheckDataMerge.html">CheckDataMerge()</a></code>, <code>check_srt_list()</code> to <code>CheckDataList</code> and <code>check_data_type()</code> to <code>CheckDataType</code>.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="scop-022">scop 0.2.2<a class="anchor" aria-label="anchor" href="#scop-022"></a></h2>
-<ul><li><p><strong>func</strong>: <strong><em>Import!!!</em></strong> Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</p></li>
-<li><p><strong>bugs</strong>: Fix bugs in <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code>.</p></li>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<strong><em>Import!!!</em></strong> Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
+</ul></li>
+<li>
+<strong>bugs</strong>:
+<ul><li>Fix bugs in <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code>.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="scop-020">scop 0.2.0<a class="anchor" aria-label="anchor" href="#scop-020"></a></h2>
-<ul><li><p><strong>func</strong>: Added <code><a href="../reference/remove_python.html">remove_python()</a></code> function for easy remove <em>Python</em> packages.</p></li>
-<li><p><strong>bugs</strong>: Corrected an issue in <code>py_to_r2()</code> function (intrinsic function), which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</p></li>
+<ul><li>
+<strong>func</strong>:
+<ul><li>Added <code><a href="../reference/remove_python.html">remove_python()</a></code> function for easy remove <em>Python</em> packages.</li>
+</ul></li>
+<li>
+<strong>bugs</strong>:
+<ul><li>Corrected an issue in <code>py_to_r2()</code> function (intrinsic function), which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.9" id="scop-019">scop 0.1.9<a class="anchor" aria-label="anchor" href="#scop-019"></a></h2>
@@ -82,7 +115,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="scop-015">scop 0.1.5<a class="anchor" aria-label="anchor" href="#scop-015"></a></h2>
 <ul><li>
-<strong>bugs</strong>: Fix error for <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code> function, see <a href="https://github.com/mengxu98/scop/issues/23" class="external-link">#23</a>.</li>
+<strong>bugs</strong>:
+<ul><li>Fix error for <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code> function, see <a href="https://github.com/mengxu98/scop/issues/23" class="external-link">#23</a>.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.4" id="scop-014">scop 0.1.4<a class="anchor" aria-label="anchor" href="#scop-014"></a></h2>
@@ -96,12 +131,16 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="scop-013">scop 0.1.3<a class="anchor" aria-label="anchor" href="#scop-013"></a></h2>
 <ul><li>
-<strong>func</strong>: Added <code><a href="../reference/TACSPlot.html">TACSPlot()</a></code> function for creating FACS-like plots. Please refer to <a href="https://doi.org/10.1016/j.immuni.2018.04.015" class="external-link">manuscript</a> and <a href="https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271" class="external-link">code</a> for specific information.</li>
+<strong>func</strong>:
+<ul><li>Added <code><a href="../reference/TACSPlot.html">TACSPlot()</a></code> function for creating FACS-like plots. Please refer to <a href="https://doi.org/10.1016/j.immuni.2018.04.015" class="external-link">manuscript</a> and <a href="https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271" class="external-link">code</a> for specific information.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="scop-009">scop 0.0.9<a class="anchor" aria-label="anchor" href="#scop-009"></a></h2>
 <ul><li>
-<strong>bugs</strong>: Corrected an issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function. The default <em>Python</em> version is now set to <code>3.10-1</code>, which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
+<strong>bugs</strong>:
+<ul><li>Corrected an issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function. The default <em>Python</em> version is now set to <code>3.10-1</code>, which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.6" id="scop-006">scop 0.0.6<a class="anchor" aria-label="anchor" href="#scop-006"></a></h2>
@@ -114,7 +153,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="scop-005">scop 0.0.5<a class="anchor" aria-label="anchor" href="#scop-005"></a></h2>
 <ul><li>
-<strong>data</strong>: Updated the <code>pancreas_sub</code> and <code>panc8_sub</code> test datasets to the Seurat v5 object format.</li>
+<strong>data</strong>:
+<ul><li>Updated the <code>pancreas_sub</code> and <code>panc8_sub</code> test datasets to the Seurat v5 object format.</li>
+</ul></li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,9 +73,18 @@ Default is <code>NULL</code>, which matches all databases.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">ListDB</span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] identifier version    comment    timestamp  date       db_version db_name   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [8] file      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 <span class="r-in"><span><span class="fu">ListDB</span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Mus_musculus"</span>, db <span class="op">=</span> <span class="st">"GO_BP"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         identifier version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                 comment  timestamp                       date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.21.0 nterm:15445|Mus_musculus-GO_BP 1757250814 2025-09-07 13:13:33.599674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           db_version            db_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.21.0 nterm:15445 Mus_musculus-GO_BP</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                    file</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 /home/runner/.cache/R/R.cache/09126d217b75a645561f00b7375651ed.Rcache</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

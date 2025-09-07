@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,19 +67,19 @@
 
 
 <dt id="arg-geneid-from-idtype">geneID_from_IDtype<a class="anchor" aria-label="anchor" href="#arg-geneid-from-idtype"></a></dt>
-<dd><p>Gene ID type of the input <code>geneID</code>. e.g. "symbol", "ensembl_id", "entrez_id"</p></dd>
+<dd><p>Gene ID type of the input <code>geneID</code>. e.g. <code>"symbol"</code>, <code>"ensembl_id"</code>, <code>"entrez_id"</code></p></dd>
 
 
 <dt id="arg-geneid-to-idtype">geneID_to_IDtype<a class="anchor" aria-label="anchor" href="#arg-geneid-to-idtype"></a></dt>
-<dd><p>Gene ID type(s) to convert to. e.g. "symbol", "ensembl_id", "entrez_id"</p></dd>
+<dd><p>Gene ID type(s) to convert to. e.g. <code>"symbol"</code>, <code>"ensembl_id"</code>, <code>"entrez_id"</code>.</p></dd>
 
 
 <dt id="arg-species-from">species_from<a class="anchor" aria-label="anchor" href="#arg-species-from"></a></dt>
-<dd><p>Latin names for animals of the input geneID. e.g. "Homo_sapiens","Mus_musculus"</p></dd>
+<dd><p>Latin names for animals of the input geneID. e.g. <code>"Homo_sapiens"</code>, <code>"Mus_musculus"</code>.</p></dd>
 
 
 <dt id="arg-species-to">species_to<a class="anchor" aria-label="anchor" href="#arg-species-to"></a></dt>
-<dd><p>Latin names for animals of the output geneID. e.g. "Homo_sapiens","Mus_musculus"</p></dd>
+<dd><p>Latin names for animals of the output geneID. e.g. <code>"Homo_sapiens"</code>, <code>"Mus_musculus"</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
@@ -88,21 +88,26 @@
 
 <dt id="arg-biomart">biomart<a class="anchor" aria-label="anchor" href="#arg-biomart"></a></dt>
 <dd><p>The name of the BioMart database that you want to connect to.
-Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".</p></dd>
+Possible options include <code>"ensembl"</code>, <code>"protists_mart"</code>, <code>"fungi_mart"</code>, and <code>"plants_mart"</code>.</p></dd>
 
 
 <dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>
-<dd><p>Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.</p></dd>
+<dd><p>Specify an Ensembl mirror to connect to. The valid options here are <code>"www"</code>, <code>"uswest"</code>, <code>"useast"</code>, <code>"asia"</code>.</p></dd>
 
 
 <dt id="arg-max-tries">max_tries<a class="anchor" aria-label="anchor" href="#arg-max-tries"></a></dt>
 <dd><p>The maximum number of attempts to connect with the BioMart service.</p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print the message.
+Default is <em><code>TRUE</code></em>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with the following elements:</p><ul><li><p><code>geneID_res:</code> A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'.</p></li>
-<li><p><code>geneID_collapse:</code> The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.</p></li>
+    <p>A list with the following elements:</p><ul><li><p><code>geneID_res:</code> A data.frame contains the all gene IDs mapped in the database with columns: <code>"from_IDtype"</code>, <code>"from_geneID"</code>, <code>"to_IDtype"</code>, <code>"to_geneID"</code>.</p></li>
+<li><p><code>geneID_collapse:</code> The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the <code>"from_geneID"</code> column (which is set as the row names) of the data.frame is unique.</p></li>
 <li><p><code>geneID_expand:</code> The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.</p></li>
 <li><p><code>Ensembl_version:</code> Ensembl database version.</p></li>
 <li><p><code>Datasets:</code> Datasets available in the selected BioMart database.</p></li>

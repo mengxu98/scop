@@ -9,7 +9,7 @@ A total of 1000 cells were downsampled to form the pancreas_sub dataset."></head
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,8 @@ A total of 1000 cells were downsampled to form the <code>pancreas_sub</code> dat
     </div>
     <div class="section level2">
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
-    <p><a href="https://scvelo.readthedocs.io/scvelo.datasets.pancreas/" class="external-link">https://scvelo.readthedocs.io/scvelo.datasets.pancreas/</a>
-<a href="https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad" class="external-link">https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad</a></p>
+    <p><a href="https://scvelo.readthedocs.io/scvelo.datasets.pancreas/" class="external-link">scvelo.datasets.pancreas</a>,
+<a href="https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad" class="external-link">endocrinogenesis_day15.h5ad</a></p>
     </div>
 
     <div class="section level2">
@@ -66,13 +66,14 @@ A total of 1000 cells were downsampled to form the <code>pancreas_sub</code> dat
 <span class="r-in"><span>  <span class="va">scv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"scvelo"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">scv</span><span class="op">$</span><span class="va">datasets</span><span class="op">$</span><span class="fu">pancreas</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="adata_to_srt.html">adata_to_srt</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="va">pancreas</span><span class="op">[</span>, <span class="va">cells</span><span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">[</span><span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>      slot <span class="op">=</span> <span class="st">"counts"</span></span></span>
+<span class="r-in"><span>      layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"CellType"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"clusters_coarse"</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -96,20 +97,6 @@ A total of 1000 cells were downsampled to form the <code>pancreas_sub</code> dat
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">" "</span>, <span class="st">"-"</span>, <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">SubCellType</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_"</span>, <span class="st">"-"</span>, <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">SubCellType</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">SubCellType</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">" "</span>, <span class="st">"-"</span>, <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">SubCellType</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    group_by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="AnnotateFeatures.html">AnnotateFeatures</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
-<span class="r-in"><span>    db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_data</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>    compress <span class="op">=</span> <span class="st">"xz"</span>,</span></span>
