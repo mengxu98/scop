@@ -214,6 +214,7 @@ WilcoxDETest <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "SubCellType"

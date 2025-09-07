@@ -175,6 +175,7 @@ Users have the flexibility to specify custom cell groups, marker types, and vari
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "SubCellType"

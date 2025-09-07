@@ -21,8 +21,8 @@ Default is calculated as ncol(srt) / 1000 * 0.01.}
 This function performs doublet-calling using the doubletdetection(python) package on a Seurat object.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- db_DoubletDetection(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
@@ -33,5 +33,4 @@ FeatureDimPlot(
   pancreas_sub,
   reduction = "umap", features = "db.DoubletDetection_score"
 )
-}
 }
