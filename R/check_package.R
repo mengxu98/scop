@@ -473,3 +473,14 @@ remove_r <- function(
 
   return(invisible(status_list))
 }
+
+.check_pkg_status <- function(pkg) {
+  installed_pkgs <- installed.packages()[, "Package"]
+  pkg_exists <- pkg %in% installed_pkgs
+
+  if (isFALSE(pkg_exists)) {
+    return(FALSE)
+  }
+
+  TRUE
+}
