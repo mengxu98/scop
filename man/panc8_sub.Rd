@@ -7,17 +7,16 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
-\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
-\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi}
+\url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
+\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 }
 \description{
 Human pancreatic islet cell datasets produced across four technologies,
-CelSeq (GSE81076) CelSeq2 (GSE85241), Fluidigm C1 (GSE86469),
-and SMART-Seq2 (E-MTAB-5061) from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
-For each data set in `panc8`, 200 cells were downsampled to form the \code{panc8_sub} dataset.
+SMART-Seq2 (E-MTAB-5061), CelSeq (GSE81076), CelSeq2 (GSE85241), and Fluidigm C1 (GSE86469),
+from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
+For each data set in \code{panc8}, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
 \dontrun{
@@ -28,10 +27,10 @@ if (interactive()) {
   }
   library(SeuratData)
   library(Seurat)
-  suppressWarnings(InstallData("panc8"))
-  data("panc8")
+  InstallData("panc8")
+  data(panc8)
   panc8 <- UpdateSeuratObject(panc8)
-  set.seed(42)
+  set.seed(98)
   cells_sub <- unlist(
     lapply(
       split(colnames(panc8), panc8$dataset),
@@ -41,7 +40,8 @@ if (interactive()) {
   panc8_sub <- subset(panc8, cells = cells_sub)
   counts <- GetAssayData5(
     panc8_sub,
-    slot = "counts"
+    layer = "counts",
+    verbose = FALSE
   )
   panc8_sub <- CreateSeuratObject(
     counts = counts,
@@ -55,11 +55,6 @@ if (interactive()) {
   ), ]
   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  panc8_sub <- NormalizeData(panc8_sub)
-  panc8_sub <- FindVariableFeatures(panc8_sub)
-  panc8_sub <- ScaleData(panc8_sub)
-  panc8_sub <- RunPCA(panc8_sub)
-  panc8_sub <- RunUMAP(panc8_sub, dims = 1:20)
   usethis::use_data(
     panc8_sub,
     compress = "xz",
