@@ -4,6 +4,8 @@
 
 * **func**:
   * Added an internal function `.check_pkg_status()` to check if an *R* package is installed.
+  * Update function `CheckDataType()` to *S4* class function.
+  * Update function `standard_scop()`, make it more efficient.
 
 * **data**:
   * Delete `lifemap` data, including: `lifemap_cell`, `lifemap_compartment` and `lifemap_organ`.
@@ -16,7 +18,7 @@
   * Rename function: `RemovePackages()` to `remove_python()`.
   * Removed other methods of installing *R* packages from the `check_r()` function, only retaining [pak::pak](https://pak.r-lib.org/reference/pak.html). 
   * Delete useless import packages: `BBmisc`, `BiocManager`, `covr`, `devtools`, `promises` and `withr`.
-  * Optimized the function structure in the `_pkgdown.yml` file.
+  * Optimize the structure of `_pkgdown.yml` file.
 
 * **docs**:
   * Updated documentation for some functions.
