@@ -7,8 +7,8 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
-\url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
+\href{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+\href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 }
 \description{
 Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}.

@@ -46,8 +46,8 @@
 #'     "Chromosome",
 #'     "GeneType",
 #'     "Enzyme",
-#'     # "TF",
-#'     # "CSPA",
+#'     "TF",
+#'     "CSPA",
 #'     "VerSeDa"
 #'   )
 #' )

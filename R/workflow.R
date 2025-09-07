@@ -15,6 +15,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' raw_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
@@ -171,6 +172,7 @@ RecoverCounts <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- srt_reorder(
 #'   pancreas_sub,
 #'   reorder_by = "SubCellType",

@@ -64,7 +64,7 @@ The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
 
@@ -83,8 +83,8 @@ The default value is TRUE.}
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
-\item{verbose}{Whether to print progress messages.
-Default is \code{TRUE}.}
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 
 \item{...}{Additional arguments to be passed to the scoring methods.}
 }
@@ -94,6 +94,7 @@ It calculates scores for a given set of features and adds the scores as metadata
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,

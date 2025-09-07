@@ -40,9 +40,9 @@ Defaults to the default assay of the `srt_query` object.}
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data.
 Defaults to the default assay of the `srt_ref` object.}
 
-\item{genes}{"genes" parameter in \link[SingleR]{SingleR} function.}
+\item{genes}{\code{"genes"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
-\item{de.method}{"de.method" parameter in \link[SingleR]{SingleR} function.}
+\item{de.method}{\code{"de.method"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
 \item{sd.thresh}{Deprecated and ignored.}
 
@@ -53,13 +53,16 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 
 \item{aggr.ref, aggr.args}{Arguments controlling the aggregation of the references prior to annotation, see \code{\link[SingleR]{trainSingleR}}.}
 
-\item{quantile}{"quantile" parameter in \link[SingleR]{SingleR} function.}
+\item{quantile}{"quantile" parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
-\item{fine.tune}{"fine.tune" parameter in \link[SingleR]{SingleR} function.}
+\item{fine.tune}{\code{"fine.tune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
-\item{tune.thresh}{"tune.thresh" parameter in \link[SingleR]{SingleR} function.}
+\item{tune.thresh}{\code{"tune.thresh"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
-\item{prune}{"prune" parameter in \link[SingleR]{SingleR} function.}
+\item{prune}{\code{"prune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
+
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 }
 \description{
 Annotate single cells using SingleR

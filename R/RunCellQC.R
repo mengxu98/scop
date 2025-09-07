@@ -1,5 +1,6 @@
-#' Run doublet-calling with scDblFinder
+#' @title Run doublet-calling with scDblFinder
 #'
+#' @description
 #' This function performs doublet-calling using the scDblFinder package on a Seurat object.
 #'
 #' @param srt A Seurat object.
@@ -7,20 +8,23 @@
 #' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
 #' @param ... Additional arguments to be passed to scDblFinder::scDblFinder function.
 #'
+#' @export
+#'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_scDblFinder(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.scDblFinder_class"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
 #'   features = "db.scDblFinder_score"
 #' )
-#' @export
 db_scDblFinder <- function(
     srt,
     assay = "RNA",
@@ -47,8 +51,9 @@ db_scDblFinder <- function(
   return(srt)
 }
 
-#' Run doublet-calling with scds
+#' @title Run doublet-calling with scds
 #'
+#' @description
 #' This function performs doublet-calling using the scds package on a Seurat object.
 #'
 #' @param srt A Seurat object.
@@ -57,19 +62,21 @@ db_scDblFinder <- function(
 #' @param method The method to be used for doublet-calling. Options are "hybrid", "cxds", or "bcds".
 #' @param ... Additional arguments to be passed to scds::cxds_bcds_hybrid function.
 #'
+#' @export
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
 #'   group.by = "db.scds_hybrid_class"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap", features = "db.scds_hybrid_score"
 #' )
-#' @export
 db_scds <- function(
     srt,
     assay = "RNA",
@@ -106,8 +113,9 @@ db_scds <- function(
   return(srt)
 }
 
-#' Run doublet-calling with Scrublet
+#' @title Run doublet-calling with Scrublet
 #'
+#' @description
 #' This function performs doublet-calling using the scrublet(python) package on a Seurat object.
 #'
 #' @param srt A Seurat object.
@@ -118,8 +126,8 @@ db_scds <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -131,7 +139,6 @@ db_scds <- function(
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
-#' }
 db_Scrublet <- function(
     srt,
     assay = "RNA",
@@ -176,8 +183,9 @@ db_Scrublet <- function(
   return(srt)
 }
 
-#' Run doublet-calling with DoubletDetection
+#' @title Run doublet-calling with DoubletDetection
 #'
+#' @description
 #' This function performs doublet-calling using the doubletdetection(python) package on a Seurat object.
 #'
 #' @param srt A Seurat object.
@@ -190,8 +198,8 @@ db_Scrublet <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -202,7 +210,6 @@ db_Scrublet <- function(
 #'   pancreas_sub,
 #'   reduction = "umap", features = "db.DoubletDetection_score"
 #' )
-#' }
 db_DoubletDetection <- function(
     srt,
     assay = "RNA",
@@ -246,8 +253,9 @@ db_DoubletDetection <- function(
   return(srt)
 }
 
-#' Run doublet-calling for single cell RNA-seq data.
+#' @title Run doublet-calling for single cell RNA-seq data.
 #'
+#' @description
 #' Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
 #'
 #' @param srt A Seurat object.
@@ -266,6 +274,7 @@ db_DoubletDetection <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDoubletCalling(
 #'   pancreas_sub,
 #'   db_method = "scDblFinder"
@@ -348,8 +357,9 @@ RunDoubletCalling <- function(
   }
 }
 
-#' Detect outliers using MAD(Median Absolute Deviation) method
+#' @title Detect outliers using MAD(Median Absolute Deviation) method
 #'
+#' @description
 #' This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
 #' It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
 #'
@@ -397,8 +407,9 @@ is_outlier <- function(
   return(out)
 }
 
-#' Run cell-level quality control for single cell RNA-seq data.
+#' @title Run cell-level quality control for single cell RNA-seq data.
 #'
+#' @description
 #' This function handles multiple quality control methods for single-cell RNA-seq data.
 #'
 #' @md
@@ -432,6 +443,7 @@ is_outlier <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellQC(pancreas_sub)
 #' CellStatPlot(
 #'   pancreas_sub,
@@ -446,7 +458,7 @@ is_outlier <- function(
 #' )
 #' table(pancreas_sub$CellQC)
 #'
-#' data("ifnb_sub")
+#' data(ifnb_sub)
 #' ifnb_sub <- RunCellQC(
 #'   srt = ifnb_sub,
 #'   split.by = "stim",
@@ -464,6 +476,7 @@ is_outlier <- function(
 #'   plot_type = "upset",
 #'   stat_level = "Fail"
 #' )
+#'
 #' table(ifnb_sub$CellQC)
 RunCellQC <- function(
     srt,

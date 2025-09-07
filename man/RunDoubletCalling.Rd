@@ -35,6 +35,7 @@ Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"

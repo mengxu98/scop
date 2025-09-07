@@ -45,8 +45,6 @@
 #' This argument is only used if \code{GO_simplify} is \code{TRUE}.
 #' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for simplification of GO terms.
 #' This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param seed The random seed for reproducibility.
-#' Defaults to `11`.
 #' @inheritParams thisutils::parallelize_fun
 #'
 #' @returns
@@ -70,6 +68,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "CellType"

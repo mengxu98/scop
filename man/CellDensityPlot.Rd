@@ -108,6 +108,7 @@ grouped by specified variables.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 CellDensityPlot(
   pancreas_sub,
   features = "Sox9",
