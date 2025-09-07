@@ -36,6 +36,7 @@
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   pancreas_sub <- RunMonocle2(pancreas_sub)
 #'   names(pancreas_sub@tools$Monocle2)
 #'   trajectory <- pancreas_sub@tools$Monocle2$trajectory
@@ -553,6 +554,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   # Use Monocle clusters to infer the trajectories
 #'   pancreas_sub <- RunMonocle3(
 #'     pancreas_sub,

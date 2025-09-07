@@ -47,6 +47,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",

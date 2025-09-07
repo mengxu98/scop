@@ -12,6 +12,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' p1 <- CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -419,6 +420,7 @@ CellStatPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' head(pancreas_sub@meta.data)
 #' StatPlot(
 #'   pancreas_sub@meta.data,

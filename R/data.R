@@ -8,8 +8,8 @@
 #' @format A `Seurat` object.
 #' @concept data
 #' @source
-#' \url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
-#' \url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
+#' \href{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+#' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -72,10 +72,10 @@ NULL
 #' @format A `Seurat` object.
 #' @concept data
 #' @source
-#' \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
-#' \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
+#' \href{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
+#' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
+#' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE85241}{GSE85241},
+#' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
 #' \dontrun{
@@ -132,7 +132,7 @@ NULL
 #' @md
 #' @format A `Seurat` object.
 #' @concept data
-#' @source \url{https://www.nature.com/articles/nbt.4042}
+#' @source \href{https://www.nature.com/articles/nbt.4042}{paper_ifnb}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -375,9 +375,9 @@ NULL
 #'
 #' @concept data
 #' @source
-#' \url{https://github.com/ggjlab/scHCL}
-#' \url{https://github.com/ggjlab/scMCA}
-#' \url{https://github.com/ggjlab/scZCL}
+#' \href{https://github.com/ggjlab/scHCL}{scHCL},
+#' \href{https://github.com/ggjlab/scMCA}{scMCA},
+#' \href{https://github.com/ggjlab/scZCL}{scZCL}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
