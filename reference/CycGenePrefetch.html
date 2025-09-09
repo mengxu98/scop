@@ -94,8 +94,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:03] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-07 13:09:03] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:07] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-09 10:49:07] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res: NULL</span>
@@ -103,8 +103,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ G2M: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:03] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:03] Installing package: <span style="color: #0000BB;">biomaRt</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:07] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:07] Installing package: <span style="color: #0000BB;">biomaRt</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 10 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 10 packages (0 B) are cached.</span>
@@ -121,15 +121,25 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 10 pkgs are cached</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">filelock</span> 1.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (24.70 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">hms</span> 1.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (99.70 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">prettyunits</span> 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.62 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">progress</span> 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (87.00 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">BiocFileCache</span> 2.16.2 (source) (740.08 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">xml2</span> 1.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (280.17 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">biomaRt</span> 2.64.0 (source) (862.68 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">httr2</span> 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">dbplyr</span> 2.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.24 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">tidyr</span> 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.18 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libxml2-dev libcurl4-openssl-dev libssl-dev libpng-dev libicu-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -140,36 +150,36 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libssl-dev is already the newest version (3.0.13-0ubuntu3.5).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libpng-dev is already the newest version (1.6.43-5build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 15 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dbplyr</span> 2.5.0  <span style="color: #9E9E9E;">(59ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">filelock</span> 1.0.3  <span style="color: #9E9E9E;">(75ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">hms</span> 1.1.3  <span style="color: #9E9E9E;">(98ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">httr2</span> 1.2.1  <span style="color: #9E9E9E;">(129ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">prettyunits</span> 1.2.0  <span style="color: #9E9E9E;">(59ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">progress</span> 1.2.3  <span style="color: #9E9E9E;">(96ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tidyr</span> 1.3.1  <span style="color: #9E9E9E;">(66ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dbplyr</span> 2.5.0  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">filelock</span> 1.0.3  <span style="color: #9E9E9E;">(80ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">hms</span> 1.1.3  <span style="color: #9E9E9E;">(103ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">httr2</span> 1.2.1  <span style="color: #9E9E9E;">(134ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">prettyunits</span> 1.2.0  <span style="color: #9E9E9E;">(60ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">progress</span> 1.2.3  <span style="color: #9E9E9E;">(59ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tidyr</span> 1.3.1  <span style="color: #9E9E9E;">(117ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">BiocFileCache</span> 2.16.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xml2</span> 1.4.0  <span style="color: #9E9E9E;">(77ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xml2</span> 1.4.0  <span style="color: #9E9E9E;">(93ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocFileCache</span> 2.16.2 <span style="color: #9E9E9E;">(3.8s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocFileCache</span> 2.16.2  <span style="color: #9E9E9E;">(1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">biomaRt</span> 2.64.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">biomaRt</span> 2.64.0 <span style="color: #9E9E9E;">(7.7s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">biomaRt</span> 2.64.0  <span style="color: #9E9E9E;">(1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 57 deps: kept 48, added 10 <span style="color: #B2B2B2;">[17.8s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:21] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:21] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:23] Using the <span style="color: #0000BB;">"115"</span> version of biomart...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:23] Downloading the biomart from <span style="color: #0000BB;">"https://sep2025.archive.ensembl.org"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:25] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:25] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:26] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:28] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:28] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">biomaRt</span> 2.64.0  <span style="color: #9E9E9E;">(1.2s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 57 deps: kept 48, added 10, dld 10 (5.45 MB) <span style="color: #B2B2B2;">[18.7s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:25] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:25] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:27] Using the <span style="color: #0000BB;">"115"</span> version of biomart...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:27] Downloading the biomart from <span style="color: #0000BB;">"https://sep2025.archive.ensembl.org"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:28] Searching the dataset <span style="color: #0000BB;">"hsapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:28] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:30] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:32] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:32] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:09:28] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-07 13:09:28] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 10:49:32] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-09 10:49:32] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res:List of 7</span>

@@ -186,17 +186,17 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:15] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:16] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:31:16] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:18] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:18] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:19] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:19] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:19] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:48] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:49] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-09 11:10:49] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:51] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:52] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:52] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:52] Perform `Seurat::ScaleData()` on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:21] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:53] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -232,18 +232,18 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:21] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:22] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:31:22] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:22] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:22] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:26] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-07 13:31:30] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:54] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:54] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-09 11:10:54] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:54] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:54] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:10:58] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-09 11:11:02] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellQC</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:30] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:30] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:31] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:31:31] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:11:02] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:11:03] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:11:03] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:11:03] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 46 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">download</span> 1 CRAN package (14.98 kB), cached: 45 (0 B).</span>
@@ -260,7 +260,7 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">RcppAnnoy</span>              0.0.22    </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">RcppML</span>                 0.3.7     </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">Rhtslib</span>                3.4.0     [bld][cmp]<span style="color: #555555;"> + </span><span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> libbz2-dev</span>, <span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> libcurl4-openssl-dev</span>, <span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> liblzma-dev</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">Rsamtools</span>              2.24.0    [bld][cmp]<span style="color: #555555;"> + </span><span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> make</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">Rsamtools</span>              2.24.1    [bld][cmp]<span style="color: #555555;"> + </span><span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> make</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">Rtsne</span>                  0.17      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">S4Arrays</span>               1.8.1     [bld][cmp]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ScaledMatrix</span>           1.16.0    [bld]</span>
@@ -296,14 +296,58 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Getting 1 pkg (14.98 kB), 45 cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Cached copy of <span style="color: #0000BB;">restfulr</span> 0.0.16 (source) is the latest build</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">bitops</span> 1.0-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.02 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">beachmat</span> 2.24.0 (source) (377.29 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">BiocIO</span> 1.18.0 (source) (231.87 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">FNN</span> 1.1.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (128.22 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0 (source) (336.67 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">beeswarm</span> 0.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.13 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Cairo</span> 1.6-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (86.08 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">BiocSingular</span> 1.24.0 (source) (616.89 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">pheatmap</span> 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">statmod</span> 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (315.87 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">locfit</span> 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">restfulr</span> 0.0.16 (source) (15.03 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppAnnoy</span> 0.0.22 (x86_64-pc-linux-gnu-ubuntu-24.04) (269.84 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1 (source) (688.96 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">DelayedArray</span> 0.34.1 (source) (814.24 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1 (source) (985.78 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Rtsne</span> 0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (118.33 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0 (source) (313.75 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RCurl</span> 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">assorthead</span> 1.2.0 (source) (1.83 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppML</span> 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">SparseArray</span> 1.8.1 (source) (467.24 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggbeeswarm</span> 0.7.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.76 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RSpectra</span> 0.16-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (529.66 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">metapod</span> 1.16.0 (source) (331.69 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">dqrng</span> 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (215.52 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">bluster</span> 1.18.0 (source) (3.25 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">scran</span> 1.36.0 (source) (1.84 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggrastr</span> 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">scDblFinder</span> 1.22.0 (source) (2.29 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">uwot</span> 0.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">viridis</span> 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.01 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">GenomicAlignments</span> 1.44.0 (source) (2.27 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">XML</span> 3.99-0.19 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.82 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">GenomicRanges</span> 1.60.0 (source) (1.37 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">edgeR</span> 4.6.3 (source) (3.62 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">vipor</span> 0.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.58 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">scuttle</span> 1.18.0 (source) (1.03 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">xgboost</span> 1.7.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">S4Arrays</span> 1.8.1 (source) (294.50 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">limma</span> 3.64.3 (source) (2.85 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">scater</span> 1.36.0 (source) (4.64 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">rsvd</span> 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Rhtslib</span> 3.4.0 (source) (5.15 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">rtracklayer</span> 1.68.0 (source) (4.09 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -328,114 +372,116 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfribidi-dev is already the newest version (1.0.13-3build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libharfbuzz-dev is already the newest version (8.3.0-2build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 15 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">assorthead</span> 1.2.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">BiocIO</span> 1.18.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">GenomicRanges</span> 1.60.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">metapod</span> 1.16.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">assorthead</span> 1.2.0 <span style="color: #9E9E9E;">(4s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">assorthead</span> 1.2.0 <span style="color: #9E9E9E;">(3.9s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">Rhtslib</span> 3.4.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocIO</span> 1.18.0 <span style="color: #9E9E9E;">(4.4s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">S4Arrays</span> 1.8.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">S4Arrays</span> 1.8.1 <span style="color: #9E9E9E;">(15.6s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">beeswarm</span> 0.4.0  <span style="color: #9E9E9E;">(29ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">bitops</span> 1.0-9  <span style="color: #9E9E9E;">(30ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Cairo</span> 1.6-5  <span style="color: #9E9E9E;">(33ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dqrng</span> 0.4.1  <span style="color: #9E9E9E;">(42ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">FNN</span> 1.1.4.1  <span style="color: #9E9E9E;">(33ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggbeeswarm</span> 0.7.2  <span style="color: #9E9E9E;">(51ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggrastr</span> 1.0.2  <span style="color: #9E9E9E;">(67ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">locfit</span> 1.5-9.12  <span style="color: #9E9E9E;">(38ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pheatmap</span> 1.0.13  <span style="color: #9E9E9E;">(29ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppAnnoy</span> 0.0.22  <span style="color: #9E9E9E;">(39ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppML</span> 0.3.7  <span style="color: #9E9E9E;">(34ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RCurl</span> 1.98-1.17  <span style="color: #9E9E9E;">(55ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">restfulr</span> 0.0.16  <span style="color: #9E9E9E;">(33ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RSpectra</span> 0.16-2  <span style="color: #9E9E9E;">(54ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rsvd</span> 1.0.5  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rtsne</span> 0.17  <span style="color: #9E9E9E;">(34ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">statmod</span> 1.5.0  <span style="color: #9E9E9E;">(29ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">S4Arrays</span> 1.8.1 <span style="color: #9E9E9E;">(16.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">beeswarm</span> 0.4.0  <span style="color: #9E9E9E;">(31ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">bitops</span> 1.0-9  <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Cairo</span> 1.6-5  <span style="color: #9E9E9E;">(34ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dqrng</span> 0.4.1  <span style="color: #9E9E9E;">(41ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">FNN</span> 1.1.4.1  <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggbeeswarm</span> 0.7.2  <span style="color: #9E9E9E;">(62ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggrastr</span> 1.0.2  <span style="color: #9E9E9E;">(68ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">GenomicRanges</span> 1.60.0 <span style="color: #9E9E9E;">(23.3s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">locfit</span> 1.5-9.12  <span style="color: #9E9E9E;">(112ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pheatmap</span> 1.0.13  <span style="color: #9E9E9E;">(114ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppAnnoy</span> 0.0.22  <span style="color: #9E9E9E;">(153ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppML</span> 0.3.7  <span style="color: #9E9E9E;">(144ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RCurl</span> 1.98-1.17  <span style="color: #9E9E9E;">(89ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RSpectra</span> 0.16-2  <span style="color: #9E9E9E;">(88ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rsvd</span> 1.0.5  <span style="color: #9E9E9E;">(83ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rtsne</span> 0.17  <span style="color: #9E9E9E;">(76ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">statmod</span> 1.5.0  <span style="color: #9E9E9E;">(79ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">limma</span> 3.64.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">GenomicRanges</span> 1.60.0 <span style="color: #9E9E9E;">(22.4s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">uwot</span> 0.2.3  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">vipor</span> 0.4.7  <span style="color: #9E9E9E;">(79ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">viridis</span> 0.6.5  <span style="color: #9E9E9E;">(68ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xgboost</span> 1.7.11.1  <span style="color: #9E9E9E;">(136ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">XML</span> 3.99-0.19  <span style="color: #9E9E9E;">(69ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">assorthead</span> 1.2.0  <span style="color: #9E9E9E;">(156ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">uwot</span> 0.2.3  <span style="color: #9E9E9E;">(130ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">vipor</span> 0.4.7  <span style="color: #9E9E9E;">(101ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">viridis</span> 0.6.5  <span style="color: #9E9E9E;">(70ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xgboost</span> 1.7.11.1  <span style="color: #9E9E9E;">(85ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">XML</span> 3.99-0.19  <span style="color: #9E9E9E;">(71ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">restfulr</span> 0.0.16</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">metapod</span> 1.16.0 <span style="color: #9E9E9E;">(24.8s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocIO</span> 1.18.0  <span style="color: #9E9E9E;">(48ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">GenomicRanges</span> 1.60.0  <span style="color: #9E9E9E;">(74ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">metapod</span> 1.16.0  <span style="color: #9E9E9E;">(85ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">S4Arrays</span> 1.8.1  <span style="color: #9E9E9E;">(54ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">assorthead</span> 1.2.0  <span style="color: #9E9E9E;">(196ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">restfulr</span> 0.0.16 <span style="color: #9E9E9E;">(8.3s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">restfulr</span> 0.0.16  <span style="color: #9E9E9E;">(33ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocIO</span> 1.18.0  <span style="color: #9E9E9E;">(43ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">GenomicRanges</span> 1.60.0  <span style="color: #9E9E9E;">(71ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">metapod</span> 1.16.0  <span style="color: #9E9E9E;">(81ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">S4Arrays</span> 1.8.1  <span style="color: #9E9E9E;">(53ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">SparseArray</span> 1.8.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">limma</span> 3.64.3 <span style="color: #9E9E9E;">(18.9s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">limma</span> 3.64.3  <span style="color: #9E9E9E;">(72ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">limma</span> 3.64.3 <span style="color: #9E9E9E;">(18.6s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">limma</span> 3.64.3  <span style="color: #9E9E9E;">(71ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">edgeR</span> 4.6.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">edgeR</span> 4.6.3 <span style="color: #9E9E9E;">(14.9s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">edgeR</span> 4.6.3  <span style="color: #9E9E9E;">(67ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SparseArray</span> 1.8.1 <span style="color: #9E9E9E;">(33.1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SparseArray</span> 1.8.1  <span style="color: #9E9E9E;">(68ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">edgeR</span> 4.6.3 <span style="color: #9E9E9E;">(14.4s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">edgeR</span> 4.6.3  <span style="color: #9E9E9E;">(72ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SparseArray</span> 1.8.1 <span style="color: #9E9E9E;">(30.5s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SparseArray</span> 1.8.1  <span style="color: #9E9E9E;">(49ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">DelayedArray</span> 0.34.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0 <span style="color: #9E9E9E;">(45.1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0  <span style="color: #9E9E9E;">(100ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0 <span style="color: #9E9E9E;">(43.5s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocNeighbors</span> 2.2.0  <span style="color: #9E9E9E;">(80ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">bluster</span> 1.18.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">DelayedArray</span> 0.34.1 <span style="color: #9E9E9E;">(24.7s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DelayedArray</span> 0.34.1  <span style="color: #9E9E9E;">(64ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">DelayedArray</span> 0.34.1 <span style="color: #9E9E9E;">(23.6s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DelayedArray</span> 0.34.1  <span style="color: #9E9E9E;">(46ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">beachmat</span> 2.24.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">bluster</span> 1.18.0 <span style="color: #9E9E9E;">(17.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">bluster</span> 1.18.0 <span style="color: #9E9E9E;">(19.7s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">Rhtslib</span> 3.4.0 <span style="color: #9E9E9E;">(1m 34.2s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">bluster</span> 1.18.0  <span style="color: #9E9E9E;">(109ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rhtslib</span> 3.4.0  <span style="color: #9E9E9E;">(238ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">Rsamtools</span> 2.24.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0 <span style="color: #9E9E9E;">(16.2s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0  <span style="color: #9E9E9E;">(42ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1 <span style="color: #9E9E9E;">(25.3s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1  <span style="color: #9E9E9E;">(86ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">Rhtslib</span> 3.4.0 <span style="color: #9E9E9E;">(1m 34.7s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">bluster</span> 1.18.0  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rhtslib</span> 3.4.0  <span style="color: #9E9E9E;">(248ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">Rsamtools</span> 2.24.1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0 <span style="color: #9E9E9E;">(16.9s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ScaledMatrix</span> 1.16.0  <span style="color: #9E9E9E;">(39ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1 <span style="color: #9E9E9E;">(23.7s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SummarizedExperiment</span> 1.38.1  <span style="color: #9E9E9E;">(60ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1 <span style="color: #9E9E9E;">(16.6s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1  <span style="color: #9E9E9E;">(88ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">Rsamtools</span> 2.24.0 <span style="color: #9E9E9E;">(36.5s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rsamtools</span> 2.24.0  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1 <span style="color: #9E9E9E;">(17s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SingleCellExperiment</span> 1.30.1  <span style="color: #9E9E9E;">(46ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">Rsamtools</span> 2.24.1 <span style="color: #9E9E9E;">(37s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rsamtools</span> 2.24.1  <span style="color: #9E9E9E;">(118ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">GenomicAlignments</span> 1.44.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">GenomicAlignments</span> 1.44.0 <span style="color: #9E9E9E;">(18.8s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">GenomicAlignments</span> 1.44.0 <span style="color: #9E9E9E;">(19s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">GenomicAlignments</span> 1.44.0  <span style="color: #9E9E9E;">(44ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">rtracklayer</span> 1.68.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">rtracklayer</span> 1.68.0 <span style="color: #9E9E9E;">(29.4s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rtracklayer</span> 1.68.0  <span style="color: #9E9E9E;">(86ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rtracklayer</span> 1.68.0  <span style="color: #9E9E9E;">(71ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">beachmat</span> 2.24.0 <span style="color: #9E9E9E;">(3m 32.3s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">beachmat</span> 2.24.0  <span style="color: #9E9E9E;">(1.6s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">beachmat</span> 2.24.0  <span style="color: #9E9E9E;">(567ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">BiocSingular</span> 1.24.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">scuttle</span> 1.18.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocSingular</span> 1.24.0 <span style="color: #9E9E9E;">(16.4s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocSingular</span> 1.24.0  <span style="color: #9E9E9E;">(50ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scuttle</span> 1.18.0 <span style="color: #9E9E9E;">(42.5s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">BiocSingular</span> 1.24.0 <span style="color: #9E9E9E;">(16.5s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">BiocSingular</span> 1.24.0  <span style="color: #9E9E9E;">(51ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scuttle</span> 1.18.0 <span style="color: #9E9E9E;">(43.1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scuttle</span> 1.18.0  <span style="color: #9E9E9E;">(91ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">scater</span> 1.36.0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">scran</span> 1.36.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scater</span> 1.36.0 <span style="color: #9E9E9E;">(15s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scater</span> 1.36.0  <span style="color: #9E9E9E;">(72ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scran</span> 1.36.0 <span style="color: #9E9E9E;">(46s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scran</span> 1.36.0  <span style="color: #9E9E9E;">(93ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scater</span> 1.36.0 <span style="color: #9E9E9E;">(14.9s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scater</span> 1.36.0  <span style="color: #9E9E9E;">(80ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scran</span> 1.36.0 <span style="color: #9E9E9E;">(46.2s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scran</span> 1.36.0  <span style="color: #9E9E9E;">(97ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">scDblFinder</span> 1.22.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scDblFinder</span> 1.22.0 <span style="color: #9E9E9E;">(20.5s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scDblFinder</span> 1.22.0  <span style="color: #9E9E9E;">(55ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 114 deps: kept 68, added 46 <span style="color: #B2B2B2;">[6m 52.6s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:24] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; Total cells: 1000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; Cells which are filtered out: 49</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 26 potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 23 outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0low-UMI cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; 0species-contaminated cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] &gt;&gt;&gt; Remained cells after filtering: 951</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scDblFinder</span> 1.22.0 <span style="color: #9E9E9E;">(20.7s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scDblFinder</span> 1.22.0  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 114 deps: kept 68, added 46, dld 45 (63.94 MB) <span style="color: #B2B2B2;">[7m 2.9s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:06] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; Total cells: 1000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; Cells which are filtered out: 49</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 26 potential doublets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 23 outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0low-UMI cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0low-gene cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0high-mito cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0high-ribo cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; 0species-contaminated cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] &gt;&gt;&gt; Remained cells after filtering: 951</span>
 <span class="r-in"><span><span class="fu"><a href="CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -447,13 +493,13 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:38:33] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:33] Installing package: <span style="color: #0000BB;">ggupset</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-09 11:18:15] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:15] Installing package: <span style="color: #0000BB;">ggupset</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 25 deps: kept 25 <span style="color: #B2B2B2;">[1.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:34] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:16] All packages installed successfully</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
@@ -471,11 +517,11 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-in"><span>  UMI_threshold <span class="op">=</span> <span class="fl">1000</span>,</span></span>
 <span class="r-in"><span>  gene_threshold <span class="op">=</span> <span class="fl">550</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:35] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:35] Running QC for CTRL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:35] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:35] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:35] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:17] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:17] Running QC for CTRL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:17] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:17] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:17] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -483,12 +529,12 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libcairo2-dev make libcurl4-openssl-dev libxml2-dev libssl-dev libglpk-dev libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -509,26 +555,26 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfribidi-dev is already the newest version (1.0.13-3build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libharfbuzz-dev is already the newest version (8.3.0-2build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 15 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 111 deps: kept 111 <span style="color: #B2B2B2;">[4.4s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:40] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:45] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:45] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; Total cells: 1000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; Cells which are filtered out: 308</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 47 potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 8 outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 28low-UMI cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 250low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 0high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 0high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; 0species-contaminated cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] &gt;&gt;&gt; Remained cells after filtering: 692</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] Running QC for STIM</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:46] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:22] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; Total cells: 1000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; Cells which are filtered out: 308</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 47 potential doublets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 8 outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 28low-UMI cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 250low-gene cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 0high-mito cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 0high-ribo cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; 0species-contaminated cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] &gt;&gt;&gt; Remained cells after filtering: 692</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Running QC for STIM</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:28] Installing package: <span style="color: #0000BB;">scDblFinder</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -536,12 +582,12 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libcairo2-dev make libcurl4-openssl-dev libxml2-dev libssl-dev libglpk-dev libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -562,22 +608,22 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfribidi-dev is already the newest version (1.0.13-3build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libharfbuzz-dev is already the newest version (8.3.0-2build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 15 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 111 deps: kept 111 <span style="color: #B2B2B2;">[4.6s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:51] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:57] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:57] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; Total cells: 1000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; Cells which are filtered out: 302</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 41 potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 12 outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 25low-UMI cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 251low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 0high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 0high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; 0species-contaminated cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] &gt;&gt;&gt; Remained cells after filtering: 698</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 111 deps: kept 111 <span style="color: #B2B2B2;">[4.4s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:33] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:39] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:39] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; Total cells: 1000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; Cells which are filtered out: 302</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 41 potential doublets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 12 outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 25low-UMI cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 251low-gene cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 0high-mito cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 0high-ribo cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 0ribo_mito_ratio outlier cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; 0species-contaminated cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] &gt;&gt;&gt; Remained cells after filtering: 698</span>
 <span class="r-in"><span><span class="fu"><a href="CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">ifnb_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -589,13 +635,13 @@ See <a href="https://rdrr.io/pkg/scuttle/man/isOutlier.html" class="external-lin
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-07 13:38:58] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:58] Installing package: <span style="color: #0000BB;">ggupset</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-09 11:18:40] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:40] Installing package: <span style="color: #0000BB;">ggupset</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 25 deps: kept 25 <span style="color: #B2B2B2;">[1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-07 13:38:59] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 25 deps: kept 25 <span style="color: #B2B2B2;">[1.1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-09 11:18:41] All packages installed successfully</span>
 <span class="r-plt img"><img src="RunCellQC-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ifnb_sub</span><span class="op">$</span><span class="va">CellQC</span><span class="op">)</span></span></span>
