@@ -48,6 +48,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -529,14 +530,14 @@ DynamicPlot <- function(
                 alpha = 0.8
               ),
               scale_color_manual(
-                values = palette_scop(
+                values = palette_colors(
                   df[[group.by]],
                   palette = point_palette,
                   palcolor = point_palcolor
                 )
               ),
               scale_fill_manual(
-                values = palette_scop(
+                values = palette_colors(
                   df[[group.by]],
                   palette = point_palette,
                   palcolor = point_palcolor
@@ -576,7 +577,7 @@ DynamicPlot <- function(
               show.legend = isTRUE(compare_features)
             ),
             scale_color_manual(
-              values = palette_scop(
+              values = palette_colors(
                 df[[group.by]],
                 palette = point_palette,
                 palcolor = point_palcolor
@@ -605,7 +606,7 @@ DynamicPlot <- function(
             color = "grey90"
           ),
           scale_fill_manual(
-            values = palette_scop(
+            values = palette_colors(
               df[[fill_by]],
               palette = line_palette,
               palcolor = line_palcolor
@@ -637,7 +638,7 @@ DynamicPlot <- function(
             alpha = 0.8
           ),
           scale_color_manual(
-            values = palette_scop(
+            values = palette_colors(
               df[["Features"]],
               palette = line_palette,
               palcolor = line_palcolor
@@ -668,7 +669,7 @@ DynamicPlot <- function(
               alpha = 0.8
             ),
             scale_color_manual(
-              values = palette_scop(
+              values = palette_colors(
                 df[["Lineages"]],
                 palette = line_palette,
                 palcolor = line_palcolor

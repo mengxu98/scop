@@ -1,5 +1,6 @@
-#' Visualize feature values on a 2-dimensional reduction plot
+#' @title Visualize feature values on a 2-dimensional reduction plot
 #'
+#' @description
 #' Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
 #'
 #' @md
@@ -7,7 +8,7 @@
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
 #' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by \link{DefaultReduction}.
+#' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data to split plot by.
 #' @param palette Name of a color palette name collected in scop.
 #' @param palcolor Custom colors used to create a color palette.
@@ -87,27 +88,35 @@
 #' @param ylab y-axis label.
 #' @param force Whether to force drawing regardless of the number of features greater than 100.
 #' @param cells Subset cells to plot.
-#' @param theme_args Other arguments passed to the \code{theme_use}.
+#' @param theme_args Other arguments passed to the `theme_use`.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso \link{CellDimPlot}
+#' @seealso [CellDimPlot]
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score", reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP", bg_cutoff = -Inf
+#'   features = "G2M_score",
+#'   reduction = "UMAP",
+#'   bg_cutoff = -Inf
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP", theme_use = "theme_blank"
+#'   features = "G2M_score",
+#'   reduction = "UMAP",
+#'   theme_use = "theme_blank"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "G2M_score",
@@ -115,16 +124,16 @@
 #'   theme_use = ggplot2::theme_classic,
 #'   theme_args = list(base_size = 16)
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = "G2M_score", reduction = "UMAP"
+#'   features = "G2M_score",
+#'   reduction = "UMAP"
 #' ) %>% panel_fix(
 #'   height = 2,
 #'   raster = TRUE,
 #'   dpi = 30
 #' )
-#'
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #'
 #' # Label and highlight cell points
 #' FeatureDimPlot(
@@ -136,6 +145,7 @@
 #'     pancreas_sub
 #'   )[pancreas_sub$SubCellType == "Delta"]
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -153,6 +163,7 @@
 #'   label = TRUE,
 #'   add_density = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -169,6 +180,7 @@
 #'   reduction = "UMAP",
 #'   hex = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Rbp4",
@@ -183,12 +195,14 @@
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
 #'   reduction = "UMAP",
 #'   lineages = "Lineage2"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
@@ -196,6 +210,7 @@
 #'   lineages = "Lineage2",
 #'   lineages_whiskers = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = "Lineage2",
@@ -238,6 +253,7 @@
 #'   endocrine_markers,
 #'   reduction = "UMAP"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
@@ -245,6 +261,7 @@
 #'   lower_quantile = 0,
 #'   upper_quantile = 0.8
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
@@ -252,12 +269,14 @@
 #'   lower_cutoff = 1,
 #'   upper_cutoff = 4
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   endocrine_markers,
 #'   reduction = "UMAP",
 #'   keep_scale = "all"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   c("Delta" = "Sst", "Epsilon" = "Ghrl"),
@@ -276,6 +295,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -287,6 +307,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -298,6 +319,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -309,6 +331,7 @@
 #'   label = TRUE,
 #'   label_insitu = TRUE
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   features = c("S_score", "G2M_score"),
@@ -753,7 +776,7 @@ FeatureDimPlot <- function(
         dat[, "split.by"] <- s
         dat[, "features"] <- paste(features, collapse = "|")
         subtitle_use <- paste0(subtitle, collapse = "|") %||% s
-        colors <- palette_scop(
+        colors <- palette_colors(
           features,
           type = "discrete",
           palette = palette,
@@ -765,7 +788,7 @@ FeatureDimPlot <- function(
         temp_geom <- list()
         legend_list <- list()
         for (i in seq_along(colors)) {
-          colors_list[[i]] <- palette_scop(
+          colors_list[[i]] <- palette_colors(
             dat[, names(colors)[i]],
             type = "continuous",
             NA_color = NA,
@@ -773,7 +796,7 @@ FeatureDimPlot <- function(
             matched = TRUE,
             palcolor = c(adjcolors(colors[i], 0.1), colors[i])
           )
-          pal_list[[i]] <- palette_scop(
+          pal_list[[i]] <- palette_colors(
             dat[, names(colors)[i]],
             type = "continuous",
             NA_color = NA,
@@ -904,7 +927,7 @@ FeatureDimPlot <- function(
 
         if (isTRUE(add_density)) {
           if (isTRUE(density_filled)) {
-            filled_color <- palette_scop(
+            filled_color <- palette_colors(
               palette = density_filled_palette,
               palcolor = density_filled_palcolor
             )
@@ -1282,7 +1305,7 @@ FeatureDimPlot <- function(
       dat_exp[row.names(dat_use), features, drop = FALSE]
     )
     dat_split <- split.data.frame(dat_all, dat_all[[split.by]])
-    colors <- palette_scop(
+    colors <- palette_colors(
       type = "continuous",
       palette = palette,
       palcolor = palcolor
@@ -1433,7 +1456,7 @@ FeatureDimPlot <- function(
         }
         if (isTRUE(add_density)) {
           if (isTRUE(density_filled)) {
-            filled_color <- palette_scop(
+            filled_color <- palette_colors(
               palette = density_filled_palette,
               palcolor = density_filled_palcolor
             )
@@ -1774,13 +1797,16 @@ FeatureDimPlot <- function(
   }
 }
 
-#' 3D-Dimensional reduction plot for gene expression visualization.
+#' @title 3D-Dimensional reduction plot for gene expression visualization.
 #'
+#' @description
 #' Plotting cell points on a reduced 3D space and coloring according to the gene expression in the cells.
+#'
+#' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
 #'
-#' @seealso \link{FeatureDimPlot}, \link{CellDimPlot3D}
+#' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'
 #' @export
 #'

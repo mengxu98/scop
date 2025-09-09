@@ -39,6 +39,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -58,7 +59,7 @@
 #'   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 #' )
 #' ht <- DynamicHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   cell_annotation = "SubCellType",
 #'   n_split = 6,
@@ -67,7 +68,7 @@
 #' ht$plot
 #'
 #' DynamicPlot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   features = c("Arxes1", "Ncoa2"),
 #'   group.by = "SubCellType",
@@ -225,7 +226,7 @@ RunDynamicFeatures <- function(
   }
   gene_status <- status <- CheckDataType(srt, assay = assay, layer = layer)
   meta_status <- sapply(meta, function(x) {
-    CheckDataType(data = srt[[x]])
+    CheckDataType(srt[[x]])
   })
   if (is.null(family)) {
     family <- rep("gaussian", length(features))

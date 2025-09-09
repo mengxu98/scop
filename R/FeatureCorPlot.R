@@ -1,4 +1,6 @@
-#' Features correlation plot
+#' @title Features correlation plot
+#'
+#' @description
 #' This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
 #'
 #' @param srt A Seurat object.
@@ -49,12 +51,13 @@
 #'
 #' @examples
 #' data(pancreas_sub)
-#' pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureCorPlot(
 #'   pancreas_sub,
 #'   features = rownames(pancreas_sub)[1:5],
 #'   group.by = "SubCellType"
 #' )
+#'
 #' FeatureCorPlot(
 #'   pancreas_sub,
 #'   features = c(
@@ -69,6 +72,7 @@
 #'   cor_palette = "Greys",
 #'   cor_range = c(0, 1)
 #' )
+#'
 #' FeatureCorPlot(
 #'   pancreas_sub,
 #'   features = c("nFeature_RNA", "nCount_RNA"),
@@ -304,12 +308,12 @@ FeatureCorPlot <- function(
   }
 
   plist <- list()
-  colors <- palette_scop(
+  colors <- palette_colors(
     levels(dat_use[[group.by]]),
     palette = palette,
     palcolor = palcolor
   )
-  cor_colors <- palette_scop(
+  cor_colors <- palette_colors(
     x = seq(cor_range[1], cor_range[2], length.out = 200),
     palette = cor_palette,
     palcolor = cor_palcolor
