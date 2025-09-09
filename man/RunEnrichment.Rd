@@ -81,7 +81,7 @@ The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the gene IDs.}
@@ -110,11 +110,8 @@ This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
-\item{verbose}{Whether to print progress messages.
-Default is \code{TRUE}.}
-
-\item{seed}{The random seed for reproducibility.
-Defaults to \code{11}.}
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -135,12 +132,13 @@ Perform the enrichment analysis (over-representation) on the genes
 }
 \examples{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#   group_by = "CellType"
-# )
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = "GO_BP",
@@ -155,7 +153,7 @@ EnrichmentPlot(
 
 \dontrun{
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = c("MSigDB", "MSigDB_MH"),
@@ -176,7 +174,7 @@ EnrichmentPlot(
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
@@ -208,7 +206,7 @@ EnrichmentPlot(
 
 # Use a combined database
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"

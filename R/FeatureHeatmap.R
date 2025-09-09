@@ -1,33 +1,34 @@
-#' FeatureHeatmap
+#' @title Feature Heatmap
 #'
+#' @md
 #' @inheritParams GroupHeatmap
 #' @param max_cells An integer, maximum number of cells to sample per group.
 #' Default is 100.
 #' @param cell_order A vector of cell names defining the order of cells.
 #' Default is NULL.
 #'
-#' @seealso \link{RunDEtest}
+#' @seealso [RunDEtest]
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
-#' # pancreas_sub <- RunDEtest(
-#' #  pancreas_sub,
-#' #   group_by = "CellType"
-#' # )
-#' # "CSPA" and "TF" have been restored in pancreas_sub
-#' # pancreas_sub <- AnnotateFeatures(
-#' #   srt = pancreas_sub,
-#' #   species = "Mus_musculus",
-#' #   db = c("CSPA", "TF")
-#' # )
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
 #' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
 #' ht1 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   group.by = "CellType",
 #'   split.by = "Phase",
@@ -43,7 +44,7 @@
 #' )
 #'
 #' ht2 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   group.by = c("CellType", "SubCellType"),
 #'   n_split = 4,
@@ -56,7 +57,7 @@
 #' ht2$plot
 #'
 #' ht3 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   feature_split = de_filter$group1,
 #'   group.by = "CellType",
@@ -69,7 +70,7 @@
 #' ht3$plot
 #'
 #' ht4 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   n_split = 4,
 #'   group.by = "CellType",
@@ -84,7 +85,7 @@
 #' ht4$plot
 #'
 #' ht5 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   n_split = 4,
 #'   group.by = "CellType",
@@ -101,12 +102,12 @@
 #' ht5$plot
 #'
 #' pancreas_sub <- RunSlingshot(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
 #' ht6 <- FeatureHeatmap(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   nlabel = 10,
 #'   cell_order = names(sort(pancreas_sub$Lineage1)),
@@ -659,7 +660,7 @@ FeatureHeatmap <- function(
         2
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
-        palette_scop(
+        palette_colors(
           palette = heatmap_palette,
           palcolor = heatmap_palcolor
         )
@@ -671,7 +672,7 @@ FeatureHeatmap <- function(
       )
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
-        palette_scop(
+        palette_colors(
           palette = heatmap_palette,
           palcolor = heatmap_palcolor
         )
@@ -680,7 +681,7 @@ FeatureHeatmap <- function(
   } else {
     colors <- circlize::colorRamp2(
       seq(limits[1], limits[2], length = 100),
-      palette_scop(
+      palette_colors(
         palette = heatmap_palette,
         palcolor = heatmap_palcolor
       )
@@ -776,7 +777,7 @@ FeatureHeatmap <- function(
     if (cell_group != "All.groups") {
       funbody <- paste0(
         "
-        grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
         paste0(
           "c('",
           paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"),
@@ -835,7 +836,7 @@ FeatureHeatmap <- function(
     if (!is.null(split.by)) {
       funbody <- paste0(
         "
-      grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
         paste0(
           "c('",
           paste0(levels(srt@meta.data[[split.by]]), collapse = "','"),
@@ -899,7 +900,7 @@ FeatureHeatmap <- function(
         title = cell_group,
         labels = levels(srt@meta.data[[cell_group]]),
         legend_gp = grid::gpar(
-          fill = palette_scop(
+          fill = palette_colors(
             levels(srt@meta.data[[cell_group]]),
             palette = raw.group_palette[i],
             palcolor = group_palcolor[[i]]
@@ -914,7 +915,7 @@ FeatureHeatmap <- function(
       title = split.by,
       labels = levels(srt@meta.data[[split.by]]),
       legend_gp = grid::gpar(
-        fill = palette_scop(
+        fill = palette_colors(
           levels(srt@meta.data[[split.by]]),
           palette = cell_split_palette,
           palcolor = cell_split_palcolor
@@ -941,7 +942,7 @@ FeatureHeatmap <- function(
           ha_cell <- list()
           ha_cell[[cellan]] <- ComplexHeatmap::anno_simple(
             x = as.character(cell_anno[names(cell_groups[[cell_group]])]),
-            col = palette_scop(
+            col = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -974,7 +975,7 @@ FeatureHeatmap <- function(
           title = cellan,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
@@ -989,7 +990,7 @@ FeatureHeatmap <- function(
             max(cell_anno, na.rm = TRUE),
             length = 100
           ),
-          colors = palette_scop(palette = palette, palcolor = palcolor)
+          colors = palette_colors(palette = palette, palcolor = palcolor)
         )
         for (cell_group in group.by) {
           ha_cell <- list()
@@ -1163,7 +1164,7 @@ FeatureHeatmap <- function(
     }
     funbody <- paste0(
       "
-      grid::grid.rect(gp = grid::gpar(fill = palette_scop(",
+      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
       paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"),
       ",palette = '",
       feature_split_palette,
@@ -1209,7 +1210,7 @@ FeatureHeatmap <- function(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
       legend_gp = grid::gpar(
-        fill = palette_scop(
+        fill = palette_colors(
           intersect(levels(row_split_raw), row_split_raw),
           type = "discrete",
           palette = feature_split_palette,
@@ -1338,7 +1339,7 @@ FeatureHeatmap <- function(
         ha_feature <- list()
         ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
           x = as.character(featan_values),
-          col = palette_scop(
+          col = palette_colors(
             featan_values,
             palette = palette,
             palcolor = palcolor
@@ -1371,7 +1372,7 @@ FeatureHeatmap <- function(
           title = featan,
           labels = levels(featan_values),
           legend_gp = grid::gpar(
-            fill = palette_scop(
+            fill = palette_colors(
               featan_values,
               palette = palette,
               palcolor = palcolor
@@ -1386,7 +1387,7 @@ FeatureHeatmap <- function(
             max(featan_values, na.rm = TRUE),
             length = 100
           ),
-          colors = palette_scop(palette = palette, palcolor = palcolor)
+          colors = palette_colors(palette = palette, palcolor = palcolor)
         )
         ha_feature <- list()
         ha_feature[[featan]] <- ComplexHeatmap::anno_simple(

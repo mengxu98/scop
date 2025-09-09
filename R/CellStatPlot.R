@@ -1,15 +1,18 @@
-#' Statistical plot of cells
+#' @title Statistical plot of cells
 #'
+#' @md
 #' @inheritParams StatPlot
-#' @param srt A Seurat object.
-#' @param cells A character vector specifying the cells to include in the plot. Default is NULL.
+#' @param srt A `Seurat` object.
+#' @param cells A character vector specifying the cells to include in the plot.
+#' Default is `NULL`.
 #'
-#' @seealso \link{StatPlot}
+#' @seealso [StatPlot]
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' p1 <- CellStatPlot(
 #'   pancreas_sub,
 #'   stat.by = "Phase",
@@ -367,22 +370,22 @@ CellStatPlot <- function(
 #'
 #' @md
 #' @param meta.data The data frame containing the data to be plotted.
-#' @param stat.by The column name(s) in \code{meta.data} specifying the variable(s) to be plotted.
-#' @param group.by The column name in \code{meta.data} specifying the grouping variable.
-#' @param split.by The column name in \code{meta.data} specifying the splitting variable.
-#' @param bg.by The column name in \code{meta.data} specifying the background variable for bar plots.
+#' @param stat.by The column name(s) in `meta.data` specifying the variable(s) to be plotted.
+#' @param group.by The column name in `meta.data` specifying the grouping variable.
+#' @param split.by The column name in `meta.data` specifying the splitting variable.
+#' @param bg.by The column name in `meta.data` specifying the background variable for bar plots.
 #' @param flip Logical indicating whether to flip the plot.
 #' @param NA_color The color to use for missing values.
 #' @param NA_stat Logical indicating whether to include missing values in the plot.
 #' @param keep_empty Logical indicating whether to keep empty groups in the plot.
 #' @param individual Logical indicating whether to plot individual groups separately.
-#' @param stat_level The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
+#' @param stat_level The level(s) of the variable(s) specified in `stat.by` to include in the plot.
 #' @param plot_type The type of plot to create.
-#' Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".
+#' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`, `"venn"`, or `"upset"`.
 #' @param stat_type The type of statistic to compute for the plot.
-#' Can be one of "percent" or "count".
+#' Can be one of `"percent"` or `"count"`.
 #' @param position The position adjustment for the plot.
-#' Can be one of "stack" or "dodge".
+#' Can be one of `"stack"` or `"dodge"`.
 #' @param palette The name of the color palette to use for the plot.
 #' @param palcolor The color to use in the color palette.
 #' @param alpha The transparency level for the plot.
@@ -400,8 +403,8 @@ CellStatPlot <- function(
 #' @param xlab The x-axis label of the plot.
 #' @param ylab The y-axis label of the plot.
 #' @param legend.position The position of the legend in the plot.
-#' Can be one of "right", "left", "bottom", "top", or "none".
-#' @param legend.direction The direction of the legend in the plot. Can be one of "vertical" or "horizontal".
+#' Can be one of `"right"`, `"left"`, `"bottom"`, `"top"`, or `"none"`.
+#' @param legend.direction The direction of the legend in the plot. Can be one of `"vertical"` or `"horizontal"`.
 #' @param theme_use The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.
 #' @param theme_args A list of arguments to be passed to the theme function.
 #' @param combine Logical indicating whether to combine multiple plots into a single plot.
@@ -417,6 +420,7 @@ CellStatPlot <- function(
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' head(pancreas_sub@meta.data)
 #' StatPlot(
 #'   pancreas_sub@meta.data,
@@ -434,13 +438,12 @@ CellStatPlot <- function(
 #'   NA_stat = FALSE
 #' )
 #'
-#' # "CSPA" and "TF" have been restored in pancreas_sub
-#' # pancreas_sub <- AnnotateFeatures(
-#' #  pancreas_sub,
-#' #  species = "Mus_musculus",
-#' #  IDtype = "symbol",
-#' #  db = c("CSPA", "TF")
-#' # )
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   IDtype = "symbol",
+#'   db = c("CSPA", "TF")
+#' )
 #' StatPlot(
 #'   GetFeaturesData(pancreas_sub, "RNA"),
 #'   stat.by = "TF",
@@ -699,7 +702,7 @@ StatPlot <- function(
         theme_args[["add_coord"]] <- FALSE
       }
     }
-    colors <- palette_scop(
+    colors <- palette_colors(
       dat_all[[stat.by]],
       palette = palette,
       palcolor = palcolor,
@@ -808,14 +811,14 @@ StatPlot <- function(
         dat <- dat[!is.na(dat[["value"]]), , drop = FALSE]
         if (!is.null(bg.by)) {
           bg <- bg.by
-          bg_color <- palette_scop(
+          bg_color <- palette_colors(
             levels(dat_all[[bg]]),
             palette = bg_palette,
             palcolor = bg_palcolor
           )
         } else {
           bg <- g
-          bg_color <- palette_scop(
+          bg_color <- palette_colors(
             levels(dat_all[[bg]]),
             palcolor = bg_palcolor %||%
               rep(c("transparent", "grey85"), nlevels(dat_all[[bg]]))
@@ -1103,7 +1106,7 @@ StatPlot <- function(
       }
     )
   } else if (plot_type %in% c("chord", "sankey", "venn", "upset")) {
-    colors <- palette_scop(stat.by, palette = palette, palcolor = palcolor)
+    colors <- palette_colors(stat.by, palette = palette, palcolor = palcolor)
     if (plot_type == "chord" && isTRUE(combine)) {
       temp <- tempfile(fileext = "png")
       grDevices::png(temp)
@@ -1267,7 +1270,7 @@ StatPlot <- function(
           ) +
           ggupset::scale_x_upset(sets = stat.by, n_intersections = 20) +
           scale_fill_gradientn(
-            colors = palette_scop(palette = "material-indigo")
+            colors = palette_colors(palette = "material-indigo")
           ) +
           theme_scop(
             aspect.ratio = 0.6,
@@ -1281,7 +1284,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "sankey") {
-        colors <- palette_scop(
+        colors <- palette_colors(
           c(
             unique(
               unlist(
@@ -1380,7 +1383,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "chord") {
-        colors <- palette_scop(
+        colors <- palette_colors(
           c(
             unique(
               unlist(

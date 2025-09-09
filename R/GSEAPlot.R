@@ -1,7 +1,9 @@
-#' GSEA Plot
+#' @title GSEA Plot
 #'
+#' @description
 #' This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 #'
+#' @md
 #' @inheritParams EnrichmentPlot
 #' @param srt A Seurat object containing the results of RunDEtest and RunGSEA.
 #' If specified, GSEA results will be extracted from the Seurat object automatically.
@@ -23,16 +25,17 @@
 #' @param label.bg.r The radius of the rounding of the label's background.
 #' @param label.size The size of the labels.
 #'
-#' @seealso \link{RunGSEA}
+#' @seealso [RunGSEA]
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
-#' # pancreas_sub <- RunDEtest(
-#' #  pancreas_sub,
-#' #   group_by = "CellType"
-#' # )
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
 #'   group_by = "CellType",
@@ -375,7 +378,7 @@ GSEAPlot <- function(
     enrichment_sub[["Description"]] <- capitalize(
       enrichment_sub[["Description"]]
     )
-    enrichment_sub[["Description"]] <- str_wrap(
+    enrichment_sub[["Description"]] <- stringr::str_wrap(
       enrichment_sub[["Description"]],
       width = character_width
     )
@@ -422,7 +425,7 @@ GSEAPlot <- function(
           -max(abs(enrichment_sub[["NES"]])),
           max(abs(enrichment_sub[["NES"]]))
         ),
-        colors = palette_scop(palette = palette, palcolor = palcolor),
+        colors = palette_colors(palette = palette, palcolor = palcolor),
         guide = guide_colorbar(
           frame.colour = "black",
           ticks.colour = "black",
@@ -536,7 +539,7 @@ GSEAPlot <- function(
       gsdata[[metric]] <- stat[gsdata$Description, metric]
       gsdata[["p.sig"]] <- stat[gsdata$Description, "p.sig"]
       gsdata[["DescriptionP"]] <- capitalize(gsdata[["Description"]])
-      gsdata[["DescriptionP"]] <- str_wrap(
+      gsdata[["DescriptionP"]] <- stringr::str_wrap(
         gsdata[["DescriptionP"]],
         width = character_width
       )
@@ -876,7 +879,7 @@ GSEAPlot <- function(
         p1 <- p1 + ggtitle(gsdata$Description[1], subtitle = subtitle_use)
       }
       if (length(line_color) != length(geneSetID_use)) {
-        color_use <- palette_scop(
+        color_use <- palette_colors(
           levels(gsdata$DescriptionP),
           palette = palette,
           palcolor = palcolor
@@ -1003,7 +1006,7 @@ GSEAPlot <- function(
       stat <- stat[order(stat[["NES"]]), , drop = FALSE]
       rownames(stat) <- stat[, "Description"]
       stat[["Description"]] <- capitalize(stat[["Description"]])
-      stat[["Description"]] <- str_wrap(
+      stat[["Description"]] <- stringr::str_wrap(
         stat[["Description"]],
         width = character_width
       )
@@ -1045,7 +1048,7 @@ GSEAPlot <- function(
           )
         ) +
         scale_fill_manual(
-          values = palette_scop(
+          values = palette_colors(
             x = rev(levels(stat[["Direction"]])),
             palette = palette,
             palcolor = rev(palcolor)
@@ -1134,7 +1137,7 @@ GSEAPlot <- function(
       )
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1208,7 +1211,7 @@ GSEAPlot <- function(
       df_edges[["to_dim1"]] <- df_nodes[df_edges[["to"]], "dim1"]
       df_edges[["to_dim2"]] <- df_nodes[df_edges[["to"]], "dim2"]
 
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(df[["Description"]]),
         palette = palette,
         palcolor = palcolor
@@ -1388,7 +1391,7 @@ GSEAPlot <- function(
       df <- res_enrich[geneSetID_use, , drop = FALSE]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1465,7 +1468,7 @@ GSEAPlot <- function(
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
-        df_keyword1[["keyword"]] <- str_wrap(
+        df_keyword1[["keyword"]] <- stringr::str_wrap(
           df_keyword1[["keyword"]],
           width = character_width
         )
@@ -1476,7 +1479,7 @@ GSEAPlot <- function(
         )
       } else {
         if (enrichmap_label == "term") {
-          df_nodes[["Description"]] <- str_wrap(
+          df_nodes[["Description"]] <- stringr::str_wrap(
             df_nodes[["Description"]],
             width = character_width
           )
@@ -1517,7 +1520,7 @@ GSEAPlot <- function(
         dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
-      df_keyword2[["keyword"]] <- str_wrap(
+      df_keyword2[["keyword"]] <- stringr::str_wrap(
         df_keyword2[["keyword"]],
         width = character_width
       )
@@ -1620,7 +1623,7 @@ GSEAPlot <- function(
             "term" = "Feature:",
             "feature" = "Term:"
           ),
-          values = palette_scop(
+          values = palette_colors(
             levels(df_nodes[["clusters"]]),
             palette = palette,
             palcolor = palcolor
@@ -1796,7 +1799,7 @@ GSEAPlot <- function(
           drop = FALSE
         ]
       }
-      colors <- palette_scop(
+      colors <- palette_colors(
         df[["score"]],
         type = "continuous",
         palette = palette,
