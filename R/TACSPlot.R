@@ -54,7 +54,7 @@
 #' @export
 #'
 #' @references
-#' #' \href{https://doi.org/10.1016/j.immuni.2018.04.015}{paper},
+#' \href{https://doi.org/10.1016/j.immuni.2018.04.015}{paper},
 #' \href{https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271}{code}
 #'
 #' @examples
