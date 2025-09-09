@@ -153,7 +153,7 @@ db_Scrublet <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -164,7 +164,8 @@ db_Scrublet <- function(
       GetAssayData5(
         object = srt,
         assay = assay,
-        layer = "counts"
+        layer = "counts",
+        verbose = FALSE
       )
     )
   )

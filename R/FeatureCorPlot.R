@@ -1,4 +1,6 @@
-#' Features correlation plot
+#' @title Features correlation plot
+#'
+#' @description
 #' This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
 #'
 #' @param srt A Seurat object.
