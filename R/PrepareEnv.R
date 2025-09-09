@@ -1,6 +1,7 @@
 #' @title Prepare the virtual environment
 #'
-#' @description Prepare the virtual environment by installing the required dependencies and setting up the environment.
+#' @description
+#' Prepare the virtual environment by installing the required dependencies and setting up the environment.
 #' This function prepares the virtual environment by checking if conda is installed,
 #' creating a new conda environment if needed, installing the required packages,
 #' and setting up the Python environment for use with scop.
@@ -22,6 +23,7 @@
 #' @param version A character vector specifying the version of the environment.
 #' Default is `"3.10-1"`.
 #' @export
+#'
 #' @examples
 #' PrepareEnv()
 PrepareEnv <- function(
@@ -101,13 +103,13 @@ PrepareEnv <- function(
 
     if (python_version < numeric_version("3.8.0") || python_version >= numeric_version("3.12.0")) {
       log_message(
-        "scop currently supports Python versions 3.8-3.11. Requested: ", python_version,
+        "scop currently supports Python versions 3.8-3.12. Requested: {.val {python_version}}",
         message_type = "error"
       )
     }
 
     log_message(
-      "Creating conda environment with Python ", python_version, "..."
+      "Creating conda environment with Python {.val {python_version}}..."
     )
 
     python_path <- reticulate::conda_create(
@@ -237,7 +239,7 @@ install_miniconda2 <- function(miniconda_repo) {
       sprintf("Miniconda%s-latest-Linux-%s.sh", version, arch)
     } else {
       log_message(
-        "Unsupported platform: ", info$sysname,
+        "Unsupported platform: {.val {info$sysname}}",
         message_type = "error"
       )
     }
@@ -303,15 +305,15 @@ env_info <- function(conda, envname) {
   invisible(lapply(py_info_mesg, packageStartupMessage))
 }
 
-#' env_requirements function
+#' @title Python environment requirements
 #'
-#' This function provides the scop python environment requirements for a specific version.
+#' @description
+#' The function returns a list of requirements including the required Python version
+#' and a list of packages with their corresponding versions.
 #'
 #' @param version A character vector specifying the version of the environment.
 #' Default is "3.10-1".
 #' @return A list of requirements for the specified version.
-#' @details The function returns a list of requirements including the required Python version
-#' and a list of packages with their corresponding versions.
 #'
 #' @export
 #' @examples
@@ -326,7 +328,7 @@ env_requirements <- function(version = "3.10-1") {
     package_versions <- c(
       "leidenalg" = "leidenalg==0.10.2",
       "tbb" = "tbb==2022.2.0",
-      "igraph" = "igraph==0.11.8",
+      "python-igraph" = "python-igraph==0.11.9",
       "matplotlib" = "matplotlib==3.5.3",
       "numba" = "numba==0.56.4",
       "llvmlite" = "llvmlite==0.39.1",
@@ -350,7 +352,7 @@ env_requirements <- function(version = "3.10-1") {
     package_versions <- c(
       "leidenalg" = "leidenalg==0.10.2",
       "tbb" = "tbb==2022.2.0",
-      "igraph" = "igraph==0.10.16",
+      "python-igraph" = "python-igraph==0.11.9",
       "matplotlib" = "matplotlib==3.10.3",
       "numba" = "numba==0.59.1",
       "llvmlite" = "llvmlite==0.42.0",
@@ -375,7 +377,7 @@ env_requirements <- function(version = "3.10-1") {
   package_install_methods <- c(
     "leidenalg" = "conda",
     "tbb" = "conda",
-    "igraph" = "pip",
+    "python-igraph" = "conda",
     "matplotlib" = "pip",
     "numba" = "pip",
     "llvmlite" = "pip",
@@ -1013,10 +1015,11 @@ RemoveEnv <- function(
   return(invisible(result))
 }
 
-#' List conda environments
+#' @title List conda environments
 #'
-#' @param conda The path to a conda executable. Use "auto" to allow
-#' reticulate to automatically find an appropriate conda binary.
+#' @md
+#' @param conda The path to a conda executable.
+#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
 #'
 #' @return A data frame of conda environments.
 #' @export
@@ -1034,235 +1037,4 @@ ListEnv <- function(conda = "auto") {
 
 .is_linux <- function() {
   identical(tolower(Sys.info()[["sysname"]]), "linux")
-}
-
-#' @title Remove Python packages from conda environment
-#'
-#' @md
-#' @param packages A character vector of package names to remove.
-#' @param envname The name of the conda environment. If NULL, uses the default scop environment name.
-#' @param conda The path to a conda executable. Use `"auto"` to allow
-#' reticulate to automatically find an appropriate conda binary.
-#' @param pip Whether to use pip for package removal. Default is `FALSE` (use conda).
-#' @param force Whether to force removal without confirmation. Default is `FALSE`.
-#'
-#' @details This function removes specified Python packages from a conda environment.
-#' It can use either conda or pip for package removal depending on the \code{pip} parameter.
-#' If the environment doesn't exist, an error will be thrown.
-#'
-#' @return Invisibly value.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' # Remove a single package using conda
-#' RemovePackages("numpy")
-#'
-#' # Remove multiple packages using conda
-#' RemovePackages(c("numpy", "pandas"))
-#'
-#' # Remove packages using pip
-#' RemovePackages("numpy", pip = TRUE)
-#'
-#' # Force removal without confirmation
-#' RemovePackages("numpy", force = TRUE)
-#'
-#' # Remove packages from a specific environment
-#' RemovePackages("numpy", envname = "env")
-#' }
-RemovePackages <- function(
-    packages,
-    envname = NULL,
-    conda = "auto",
-    pip = FALSE,
-    force = FALSE) {
-  envname <- get_envname(envname)
-
-  log_message(
-    "Removing {.pkg {packages}} from environment: {.file {envname}}"
-  )
-
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
-
-  if (is.null(conda)) {
-    log_message("Conda not found", message_type = "error")
-    return(invisible(FALSE))
-  }
-
-  env_exists <- env_exist(envname = envname, conda = conda)
-  if (isFALSE(env_exists)) {
-    log_message(
-      "Cannot find the conda environment: {.file {envname}}",
-      message_type = "error"
-    )
-    return(invisible(FALSE))
-  }
-
-  if (!force) {
-    if (interactive()) {
-      response <- readline(
-        paste0(
-          "Are you sure you want to remove these packages from environment '",
-          envname, "'? (y/N): "
-        )
-      )
-      if (!tolower(response) %in% c("y", "yes")) {
-        log_message("{.pkg {packages}} removal cancelled")
-        return(invisible(FALSE))
-      }
-    } else {
-      log_message(
-        "Automatically remove {.pkg {packages}} in non-interactive mode",
-        message_type = "warning"
-      )
-    }
-  }
-
-  python <- tryCatch(
-    {
-      conda_python(envname = envname, conda = conda)
-    },
-    error = function(e) {
-      log_message(
-        "Failed to get Python path: {.val {e$message}}",
-        message_type = "error"
-      )
-      NULL
-    }
-  )
-
-  if (is.null(python)) {
-    return(invisible(FALSE))
-  }
-
-  if (pip) {
-    log_message("Removing {.pkg {packages}} via {.pkg pip}...")
-
-    result <- tryCatch(
-      {
-        for (pkg in packages) {
-          log_message("Removing {.pkg {pkg}}")
-
-          args <- c(
-            "-m", "pip", "uninstall", "-y", pkg
-          )
-
-          status <- reticulate:::system2t(python, shQuote(args))
-
-          if (status != 0L) {
-            log_message(
-              "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-              message_type = "warning"
-            )
-          } else {
-            log_message(
-              "Package {.pkg {pkg}} removed successfully via {.pkg pip}",
-              message_type = "success"
-            )
-          }
-        }
-        TRUE
-      },
-      error = function(e) {
-        log_message(
-          "Pip removal failed: {.val {e$message}}",
-          message_type = "error"
-        )
-        FALSE
-      }
-    )
-  } else {
-    log_message("Removing {.pkg {packages}} via {.pkg conda}...")
-
-    result <- tryCatch(
-      {
-        args <- reticulate:::conda_args("remove", envname)
-        args <- c(args, packages)
-
-        status <- reticulate:::system2t(conda, shQuote(args))
-
-        if (status != 0L) {
-          log_message(
-            "{.pkg {packages}} removal failed via {.pkg conda} with error code: {.val {status}}",
-            message_type = "warning"
-          )
-          FALSE
-        } else {
-          log_message(
-            "{.pkg {packages}} removed successfully via {.pkg conda}",
-            message_type = "success"
-          )
-          TRUE
-        }
-      },
-      error = function(e) {
-        log_message(
-          "Conda removal failed: {.val {e$message}}",
-          message_type = "warning"
-        )
-        FALSE
-      }
-    )
-
-    if (!result && !pip) {
-      log_message(
-        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg pip} as fallback...",
-        message_type = "info"
-      )
-
-      result <- tryCatch(
-        {
-          for (pkg in packages) {
-            log_message("Removing {.pkg {pkg}}")
-
-            args <- c(
-              "-m", "pip", "uninstall", "-y", pkg
-            )
-
-            status <- reticulate:::system2t(python, shQuote(args))
-
-            if (status != 0L) {
-              log_message(
-                "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-                message_type = "warning"
-              )
-            } else {
-              log_message(
-                "{.pkg {pkg}} removed successfully via {.pkg pip}",
-                message_type = "success"
-              )
-            }
-          }
-          TRUE
-        },
-        error = function(e) {
-          log_message(
-            "{.pkg {packages}} removal failed via {.pkg pip} as fallback: {.val {e$message}}",
-            message_type = "error"
-          )
-          FALSE
-        }
-      )
-    }
-  }
-
-  if (result) {
-    log_message(
-      "{.pkg {packages}} removal completed successfully",
-      message_type = "success"
-    )
-  } else {
-    log_message(
-      "{.pkg {packages}} removal failed",
-      message_type = "error"
-    )
-  }
-
-  return(invisible(result))
 }

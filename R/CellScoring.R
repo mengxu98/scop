@@ -27,6 +27,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' features_all <- rownames(pancreas_sub)
 #' pancreas_sub <- CellScoring(
 #'   pancreas_sub,

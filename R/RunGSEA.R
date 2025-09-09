@@ -30,6 +30,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "CellType"
@@ -67,7 +68,7 @@
 #'
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunGSEA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   db = "GO_BP",
 #'   GO_simplify = TRUE,
@@ -101,7 +102,7 @@
 #'
 #' # Use a combined database
 #' pancreas_sub <- RunGSEA(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "CellType",
 #'   db = c(
 #'     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
@@ -154,24 +155,20 @@ RunGSEA <- function(
       group_by <- "custom"
     }
     layer <- paste0("DEtest_", group_by)
-    if (
-      !layer %in% names(srt@tools) ||
-        length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
-    ) {
+    if (!layer %in% names(srt@tools) || length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0) {
       log_message(
-        "Cannot find the DEtest result for the group '",
-        group_by,
-        "'. You may perform RunDEtest first.",
+        "Cannot find the DEtest result for {.val {group_by}}. Perform {.fn RunDEtest} first",
         message_type = "error"
       )
     }
+    markers_name <- paste0("AllMarkers_", test.use)
     index <- grep(
-      pattern = paste0("AllMarkers_", test.use),
+      pattern = markers_name,
       names(srt@tools[[layer]])
     )[1]
     if (is.na(index)) {
       log_message(
-        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result",
+        "Cannot find the {.val {markers_name}} in the DEtest result",
         message_type = "error"
       )
     }
@@ -201,27 +198,27 @@ RunGSEA <- function(
   )
   if (length(geneID_groups) != length(geneID)) {
     log_message(
-      "length(geneID_groups)!=length(geneID)",
+      "{.arg geneID_groups} must be the same length with {.arg geneID}",
       message_type = "error"
     )
   }
   if (length(geneScore) != length(geneID)) {
     log_message(
-      "geneScore must be the same length with geneID",
+      "{.arg geneScore} must be the same length with {.arg geneID}",
       message_type = "error"
     )
   }
   if (all(geneScore > 0) && scoreType != "pos") {
     scoreType <- "pos"
     log_message(
-      "All values in the geneScore are greater than zero. Set scoreType = 'pos'.",
+      "All values in the {.arg geneScore} are greater than zero. Set scoreType = 'pos'",
       message_type = "warning"
     )
   }
   if (all(geneScore < 0) && scoreType != "neg") {
     scoreType <- "neg"
     log_message(
-      "All values in the geneScore are less than zero. Set scoreType = 'neg'.",
+      "All values in the {.arg geneScore} are less than zero. Set scoreType = 'neg'",
       message_type = "warning"
     )
   }
@@ -235,7 +232,7 @@ RunGSEA <- function(
 
   na_index <- which(is.na(geneScore))
   if (length(na_index) > 0) {
-    log_message("Ignore ", length(na_index), " NA geneScore")
+    log_message("Ignore {.val {length(na_index)}} NA {.arg geneScore}")
     input <- input[-na_index, , drop = FALSE]
   }
   input[
@@ -277,7 +274,10 @@ RunGSEA <- function(
     db_list[[species]][[db]][["version"]] <- "custom"
   }
   if (isTRUE(db_combine)) {
-    log_message("Create 'Combined' database ...")
+    log_message(
+      "Create {.val Combined} database ...",
+      verbose = verbose
+    )
     TERM2GENE <- do.call(
       rbind,
       lapply(
@@ -318,7 +318,7 @@ RunGSEA <- function(
       Ensembl_version = Ensembl_version,
       mirror = mirror
     )
-    geneMap <- res$geneID_collapse
+    geneMap <- res[["geneID_collapse"]]
     colnames(geneMap)[colnames(geneMap) == "from_geneID"] <- IDtype
   } else {
     geneMap <- data.frame(
@@ -333,7 +333,6 @@ RunGSEA <- function(
   input <- unnest_fun(input, cols = c(IDtype, result_IDtype))
   input <- input[!is.na(input[[IDtype]]), , drop = FALSE]
 
-  log_message("Permform GSEA...")
   comb <- expand.grid(
     group = levels(geneID_groups),
     term = db,
@@ -403,9 +402,7 @@ RunGSEA <- function(
         enrich_res@result <- result
         enrich_res@gene2Symbol <- as.character(gene_mapid)
 
-        if (
-          isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")
-        ) {
+        if (isTRUE(GO_simplify) && term %in% c("GO", "GO_BP", "GO_CC", "GO_MF")) {
           sim_res <- enrich_res
           if (term == "GO") {
             sim_res@result[["ONTOLOGY"]] <- stats::setNames(
@@ -422,23 +419,23 @@ RunGSEA <- function(
           ))
           if (nterm_simplify <= 1) {
             log_message(
-              group,
-              "|",
-              term,
-              " has no term to simplify.",
-              message_type = "warning"
+              "{.pkg {term}} | {.val {group}} has no term to simplify",
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             sim_res@result <- sim_res@result[
-              with(sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))), ,
+              with(
+                sim_res@result, eval(rlang::parse_expr(GO_simplify_cutoff))
+              ), ,
               drop = FALSE
             ]
-            semData <- db_list[[species]][[term]][["semData"]]
+            sem_data <- db_list[[species]][[term]][["semData"]]
             sim_res <- clusterProfiler::simplify(
               sim_res,
               measure = simplify_method,
               cutoff = simplify_similarityCutoff,
-              semData = semData
+              semData = sem_data
             )
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
@@ -478,7 +475,8 @@ RunGSEA <- function(
 
   log_message(
     "{.pkg GSEA} analysis done",
-    message_type = "success", verbose = verbose
+    message_type = "success",
+    verbose = verbose
   )
 
   res <- list(

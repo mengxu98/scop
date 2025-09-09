@@ -51,7 +51,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
-\item{shape.highlight}{Shape of the cell to highlight. See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
+\item{shape.highlight}{Shape of the cell to highlight.
+See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
 
 \item{sizes.highlight}{Size of highlighted cell points.}
 
@@ -77,19 +78,19 @@ Plotting cell points on a reduced 3D space and coloring according to the groups 
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot3D(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
 )
 
 pancreas_sub <- RunSlingshot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D",
   show_plot = FALSE
 )
 CellDimPlot3D(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D",
   lineages = "Lineage1"

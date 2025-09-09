@@ -2,7 +2,7 @@
 % Please edit documentation in R/GraphPlot.R
 \name{GraphPlot}
 \alias{GraphPlot}
-\title{GraphPlot}
+\title{Graph Plot}
 \usage{
 GraphPlot(
   node,

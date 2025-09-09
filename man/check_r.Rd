@@ -4,25 +4,17 @@
 \alias{check_r}
 \title{Check and install R packages}
 \usage{
-check_r(
-  packages,
-  install_methods = c("pak::pak", "BiocManager::install", "install.packages",
-    "devtools::install_github"),
-  lib = .libPaths()[1],
-  force = FALSE
-)
+check_r(packages, lib = .libPaths()[1], force = TRUE)
 }
 \arguments{
 \item{packages}{Package to be installed.
 Package source can be CRAN, Bioconductor or Github.
 By default, the package name is extracted according to the \code{packages} parameter.}
 
-\item{install_methods}{Functions used to install R packages.}
-
 \item{lib}{The location of the library directories where to install the packages.}
 
 \item{force}{Whether to force the installation of packages.
-Default is FALSE.}
+Default is \code{TRUE}.}
 }
 \description{
 Check and install R packages

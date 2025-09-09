@@ -19,9 +19,10 @@ PrepareSCExplorer(
 )
 }
 \arguments{
-\item{object}{A Seurat object or a list of Seurat objects.}
+\item{object}{A \code{Seurat} object or a list of \code{Seurat} objects.}
 
-\item{base_dir}{The base directory where the SCExplorer hdf5 files will be written. Default is "SCExplorer".}
+\item{base_dir}{The base directory where the SCExplorer hdf5 files will be written.
+Default is \code{"SCExplorer"}.}
 
 \item{DataFile}{Path to the output data file.
 If not provided, the file will be named \code{"Data.hdf5"} in the current directory.}
@@ -47,7 +48,9 @@ Default is \code{6}.}
 Default is \code{TRUE}.}
 }
 \description{
-This function prepares one or multiple Seurat objects for the SCExplorer app. It takes a Seurat object or a list of Seurat objects as input and outputs two hdf5 files: one for the data and one for the metadata.
+This function prepares one or multiple \code{Seurat} objects for the SCExplorer app.
+It takes a \code{Seurat} object or a list of \code{Seurat} objects as input and outputs two hdf5 files:
+one for the data and one for the metadata.
 }
 \examples{
 \dontrun{

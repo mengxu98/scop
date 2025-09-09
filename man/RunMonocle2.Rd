@@ -72,6 +72,7 @@ Run Monocle2 analysis
 \examples{
 if (interactive()) {
   data(pancreas_sub)
+  pancreas_sub <- standard_scop(pancreas_sub)
   pancreas_sub <- RunMonocle2(pancreas_sub)
   names(pancreas_sub@tools$Monocle2)
   trajectory <- pancreas_sub@tools$Monocle2$trajectory
@@ -99,7 +100,7 @@ if (interactive()) {
   )
 
   pancreas_sub <- RunMonocle2(
-    srt = pancreas_sub,
+    pancreas_sub,
     feature_type = "Disp",
     disp_filter = "mean_expression >= 0.01 & dispersion_empirical >= 1 * dispersion_fit"
   )

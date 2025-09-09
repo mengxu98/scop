@@ -36,6 +36,7 @@
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   pancreas_sub <- RunMonocle2(pancreas_sub)
 #'   names(pancreas_sub@tools$Monocle2)
 #'   trajectory <- pancreas_sub@tools$Monocle2$trajectory
@@ -63,7 +64,7 @@
 #'   )
 #'
 #'   pancreas_sub <- RunMonocle2(
-#'     srt = pancreas_sub,
+#'     pancreas_sub,
 #'     feature_type = "Disp",
 #'     disp_filter = "mean_expression >= 0.01 & dispersion_empirical >= 1 * dispersion_fit"
 #'   )
@@ -553,9 +554,10 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   # Use Monocle clusters to infer the trajectories
 #'   pancreas_sub <- RunMonocle3(
-#'     srt = pancreas_sub,
+#'     pancreas_sub,
 #'     reduction = "UMAP"
 #'   )
 #'   names(pancreas_sub@tools$Monocle3)
@@ -614,7 +616,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'     theme_use = "theme_blank"
 #'   )
 #'   pancreas_sub <- RunMonocle3(
-#'     srt = pancreas_sub,
+#'     pancreas_sub,
 #'     clusters = "Standardclusters"
 #'   )
 #'   trajectory <- pancreas_sub@tools$Monocle3$trajectory
@@ -649,7 +651,7 @@ extract_ddrtree_ordering <- function(cds, root_cell, verbose = TRUE) {
 #'     label = TRUE
 #'   )
 #'   pancreas_sub <- RunMonocle3(
-#'     srt = pancreas_sub,
+#'     pancreas_sub,
 #'     clusters = "Standardclusters",
 #'     graph = "Standardpca_SNN"
 #'   )
