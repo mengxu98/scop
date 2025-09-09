@@ -633,7 +633,7 @@ EnrichmentPlot <- function(
     enrichment_sub[["Description"]] <- capitalize(enrichment_sub[[
       "Description"
     ]])
-    enrichment_sub[["Description"]] <- str_wrap(
+    enrichment_sub[["Description"]] <- stringr::str_wrap(
       enrichment_sub[["Description"]],
       width = character_width
     )
@@ -724,7 +724,7 @@ EnrichmentPlot <- function(
 
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -804,7 +804,7 @@ EnrichmentPlot <- function(
       df <- df[order(df[["GeneRatio"]], decreasing = TRUE), ]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -898,7 +898,7 @@ EnrichmentPlot <- function(
       df[["FoldEnrichment"]] <- df[["GeneRatio"]] / df[["BgRatio"]]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1002,7 +1002,7 @@ EnrichmentPlot <- function(
 
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1282,7 +1282,7 @@ EnrichmentPlot <- function(
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
-        df_keyword1[["keyword"]] <- str_wrap(
+        df_keyword1[["keyword"]] <- stringr::str_wrap(
           df_keyword1[["keyword"]],
           width = character_width
         )
@@ -1293,7 +1293,7 @@ EnrichmentPlot <- function(
         )
       } else {
         if (enrichmap_label == "term") {
-          df_nodes[["Description"]] <- str_wrap(
+          df_nodes[["Description"]] <- stringr::str_wrap(
             df_nodes[["Description"]],
             width = character_width
           )
@@ -1334,7 +1334,7 @@ EnrichmentPlot <- function(
         dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
-      df_keyword2[["keyword"]] <- str_wrap(
+      df_keyword2[["keyword"]] <- stringr::str_wrap(
         df_keyword2[["keyword"]],
         width = character_width
       )
