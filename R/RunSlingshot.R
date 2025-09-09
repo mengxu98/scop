@@ -32,6 +32,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -149,9 +150,9 @@ RunSlingshot <- function(
       ncol(srt[[reduction]]@cell.embeddings) == 2 ||
         ncol(srt[[reduction]]@cell.embeddings) > 3
     ) {
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
+      # plot(srt[[reduction]]@cell.embeddings, col = palette_colors(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
       # lines(slingshot::SlingshotDataSet(sl), lwd = 2, type = "lineages", col = "black")
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_scop(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
+      # plot(srt[[reduction]]@cell.embeddings, col = palette_colors(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
       # lines(slingshot::SlingshotDataSet(sl), lwd = 3, col = 1:length(slingshot::SlingshotDataSet(sl)@lineages))
       p <- CellDimPlot(
         srt,

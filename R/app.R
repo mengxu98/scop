@@ -19,7 +19,7 @@
 #' Default is `TRUE`.
 #'
 #' @seealso
-#' \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
+#' [CreateMetaFile], [PrepareSCExplorer], [FetchH5], [RunSCExplorer]
 #'
 #' @export
 CreateDataFile <- function(
@@ -128,10 +128,12 @@ CreateDataFile <- function(
   return(invisible(NULL))
 }
 
-#' CreateMetaFile
+#' @title Create Meta File
 #'
+#' @description
 #' Creates a meta file in HDF5 format from a Seurat object.
 #'
+#' @md
 #' @param srt The Seurat object.
 #' @param MetaFile Path to the output meta file. If not provided, the file will be named "Meta.hdf5" in the current directory.
 #' @param name Name of the dataset. If not provided, the name will default to the Seurat object's project name.
@@ -141,7 +143,8 @@ CreateDataFile <- function(
 #' @param compression_level The level of compression for the meta file. Default is 6.
 #' @param overwrite A logical value indicating whether to overwrite existing metadata and reductions in the meta file. Default is FALSE.
 #'
-#' @seealso \link{CreateDataFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
+#' @seealso
+#' [CreateDataFile], [PrepareSCExplorer], [FetchH5], [RunSCExplorer]
 #'
 #' @export
 CreateMetaFile <- function(
@@ -377,16 +380,22 @@ CreateMetaFile <- function(
   return(invisible(NULL))
 }
 
-#' Prepare Seurat objects for the SCExplorer
+#' @title Prepare Seurat objects for the SCExplorer
 #'
-#' This function prepares one or multiple Seurat objects for the SCExplorer app. It takes a Seurat object or a list of Seurat objects as input and outputs two hdf5 files: one for the data and one for the metadata.
+#' @description
+#' This function prepares one or multiple `Seurat` objects for the SCExplorer app.
+#' It takes a `Seurat` object or a list of `Seurat` objects as input and outputs two hdf5 files:
+#' one for the data and one for the metadata.
 #'
+#' @md
 #' @inheritParams CreateDataFile
 #' @inheritParams CreateMetaFile
-#' @param object A Seurat object or a list of Seurat objects.
-#' @param base_dir The base directory where the SCExplorer hdf5 files will be written. Default is "SCExplorer".
+#' @param object A `Seurat` object or a list of `Seurat` objects.
+#' @param base_dir The base directory where the SCExplorer hdf5 files will be written.
+#' Default is `"SCExplorer"`.
 #'
-#' @seealso \link{CreateDataFile}, \link{CreateMetaFile}, \link{FetchH5}, \link{RunSCExplorer}
+#' @seealso
+#' [CreateDataFile], [CreateMetaFile], [FetchH5], [RunSCExplorer]
 #'
 #' @export
 #' @examples
@@ -509,7 +518,7 @@ PrepareSCExplorer <- function(
 #' @return A Seurat object with the fetched data.
 #'
 #' @seealso
-#' \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
+#' [CreateDataFile], [CreateMetaFile], [PrepareSCExplorer], [RunSCExplorer]
 #'
 #' @export
 #' @examples
@@ -836,7 +845,7 @@ CreateSeuratObject2 <- function(
 #' Default is `TRUE`.
 #'
 #' @seealso
-#' \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}
+#' [CreateDataFile], [CreateMetaFile], [PrepareSCExplorer], [FetchH5]
 #'
 #' @export
 #'
@@ -882,12 +891,7 @@ CreateSeuratObject2 <- function(
 #' # Or deploy the app on the website
 #' # (https://www.shinyapps.io) for free:
 #'
-#' # step1: set the repository URL for Bioconductor packages
-#' # and update them to the latest version
-#' # options(repos = BiocManager::repositories())
-#' # BiocManager::install(ask = FALSE)
-#'
-#' # step2: install "rsconnect" package and authorize your account
+#' # step1: install "rsconnect" package and authorize your account
 #' # install.packages("rsconnect")
 #' # library(rsconnect)
 #' # setAccountInfo(
@@ -896,7 +900,7 @@ CreateSeuratObject2 <- function(
 #' #   secret = "<SECRET>"
 #' # )
 #'
-#' ### step3: deploy the app
+#' ### step2: deploy the app
 #' # deployApp("./SCExplorer")
 #' }
 RunSCExplorer <- function(

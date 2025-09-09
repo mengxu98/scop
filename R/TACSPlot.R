@@ -54,17 +54,19 @@
 #' @export
 #'
 #' @references
-#' \url{https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271}
-#' \url{https://doi.org/10.1016/j.immuni.2018.04.015}
+#' \href{https://doi.org/10.1016/j.immuni.2018.04.015}{paper},
+#' \href{https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271}{code}
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' TACSPlot(
 #'   pancreas_sub,
 #'   feature1 = "H3f3b",
 #'   feature2 = "Eif1",
 #'   group.by = "CellType"
 #' )
+#'
 #' TACSPlot(
 #'   pancreas_sub,
 #'   feature1 = "H3f3b",
@@ -74,6 +76,7 @@
 #'   include_all = TRUE,
 #'   cutoffs = c(3, 2.5)
 #' )
+#'
 #' TACSPlot(
 #'   pancreas_sub,
 #'   feature1 = "H3f3b",
@@ -82,6 +85,7 @@
 #'   density = TRUE,
 #'   cutoffs = list(x = c(2, 3), y = c(2.5))
 #' )
+#'
 #' TACSPlot(
 #'   pancreas_sub,
 #'   feature1 = "H3f3b",
@@ -191,7 +195,7 @@ TACSPlot <- function(
   facet_levels <- FetchData(srt, group.by)[[1]] |>
     factor() |>
     levels()
-  colors <- palette_scop(
+  colors <- palette_colors(
     facet_levels,
     palette = palette
   )

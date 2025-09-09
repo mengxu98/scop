@@ -7,8 +7,8 @@
 A \code{Seurat} object.
 }
 \source{
-\url{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}
-\url{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}
+\href{https://scvelo.readthedocs.io/scvelo.datasets.pancreas/}{scvelo.datasets.pancreas},
+\href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 }
 \description{
 Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}.
@@ -23,13 +23,14 @@ if (interactive()) {
   scv <- import("scvelo")
   adata <- scv$datasets$pancreas()
   pancreas <- adata_to_srt(adata)
-  set.seed(42)
+  set.seed(98)
   cells <- sample(colnames(pancreas), size = 1000)
   pancreas_sub <- pancreas[, cells]
   pancreas_sub <- pancreas_sub[Matrix::rowSums(
     GetAssayData5(
       pancreas_sub,
-      slot = "counts"
+      layer = "counts",
+      verbose = FALSE
     )
   ) > 0, ]
   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
@@ -53,20 +54,6 @@ if (interactive()) {
   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-  pancreas_sub <- NormalizeData(pancreas_sub)
-  pancreas_sub <- FindVariableFeatures(pancreas_sub)
-  pancreas_sub <- ScaleData(pancreas_sub)
-  pancreas_sub <- RunPCA(pancreas_sub)
-  pancreas_sub <- RunUMAP(pancreas_sub, dims = 1:20)
-  pancreas_sub <- RunDEtest(
-    pancreas_sub,
-    group_by = "CellType"
-  )
-  pancreas_sub <- AnnotateFeatures(
-    srt = pancreas_sub,
-    species = "Mus_musculus",
-    db = c("CSPA", "TF")
-  )
   usethis::use_data(
     pancreas_sub,
     compress = "xz",

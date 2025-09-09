@@ -1,7 +1,9 @@
-#' GraphPlot
+#' @title Graph Plot
 #'
+#' @description
 #' A function to plot a graph with nodes and edges.
 #'
+#' @md
 #' @param node A data frame representing the nodes of the graph.
 #' @param edge A matrix representing the edges of the graph.
 #' @param transition A matrix representing the transitions between nodes.
@@ -61,7 +63,7 @@
 #' @param theme_args A list of arguments to be passed to the theme.
 #' @param return_layer A logical value indicating whether to return the layers of the plot instead of the plot itself.
 #'
-#' @seealso \link{CellDimPlot}
+#' @seealso [CellDimPlot]
 #'
 #' @export
 GraphPlot <- function(
@@ -624,7 +626,7 @@ GraphPlot <- function(
     list(
       scale_color_manual(
         name = node_group,
-        values = palette_scop(
+        values = palette_colors(
           node[["node_group"]],
           palette = node_palette,
           palcolor = node_palcolor

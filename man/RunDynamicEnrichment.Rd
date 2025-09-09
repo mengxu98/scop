@@ -38,7 +38,9 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{lineages}{A character vector specifying the lineages to plot.}
 
-\item{score_method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".}
+\item{score_method}{The method to use for scoring.
+Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.
+Defaults to \code{"Seurat"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
 Default is "counts".}
@@ -74,7 +76,7 @@ The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{TERM2GENE}{A data frame specifying the gene-term mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the gene IDs.}
@@ -89,11 +91,10 @@ The first column should contain the term IDs, and the second column should conta
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
-\item{verbose}{Whether to print progress messages.
-Default is \code{TRUE}.}
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 
-\item{seed}{The random seed for reproducibility.
-Defaults to \code{11}.}
+\item{seed}{An integer specifying the random seed. Default is 11.}
 }
 \description{
 This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).
@@ -101,6 +102,7 @@ It then treats these scores as expression values and uses them as input to the R
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -112,7 +114,7 @@ pancreas_sub <- RunDynamicFeatures(
   n_candidates = 200
 )
 ht1 <- DynamicHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 4
@@ -120,14 +122,14 @@ ht1 <- DynamicHeatmap(
 ht1$plot
 
 pancreas_sub <- RunDynamicEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = "Lineage1",
   score_method = "UCell",
   db = "GO_BP",
   species = "Mus_musculus"
 )
 ht2 <- DynamicHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   assay = "GO_BP",
   lineages = "Lineage1_GO_BP",
   cell_annotation = "SubCellType",

@@ -117,11 +117,11 @@ RunSeuratMap <- function(
   }
 
   status_query <- CheckDataType(
-    data = GetAssayData5(srt_query, layer = "data", assay = query_assay)
+    GetAssayData5(srt_query, layer = "data", assay = query_assay)
   )
   log_message("Detected srt_query data type: ", status_query)
   status_ref <- CheckDataType(
-    data = GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
+    GetAssayData5(srt_ref, layer = "data", assay = ref_assay)
   )
   log_message("Detected srt_ref data type: ", status_ref)
   if (

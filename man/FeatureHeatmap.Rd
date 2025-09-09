@@ -2,7 +2,7 @@
 % Please edit documentation in R/FeatureHeatmap.R
 \name{FeatureHeatmap}
 \alias{FeatureHeatmap}
-\title{FeatureHeatmap}
+\title{Feature Heatmap}
 \usage{
 FeatureHeatmap(
   srt,
@@ -418,26 +418,26 @@ Default is "inch".}
 Default is an empty list.}
 }
 \description{
-FeatureHeatmap
+Feature Heatmap
 }
 \examples{
 data(pancreas_sub)
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#   group_by = "CellType"
-# )
-# "CSPA" and "TF" have been restored in pancreas_sub
-# pancreas_sub <- AnnotateFeatures(
-#   srt = pancreas_sub,
-#   species = "Mus_musculus",
-#   db = c("CSPA", "TF")
-# )
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("CSPA", "TF")
+)
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
 ht1 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   group.by = "CellType",
   split.by = "Phase",
@@ -453,7 +453,7 @@ panel_fix(
 )
 
 ht2 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   group.by = c("CellType", "SubCellType"),
   n_split = 4,
@@ -466,7 +466,7 @@ ht2 <- FeatureHeatmap(
 ht2$plot
 
 ht3 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   feature_split = de_filter$group1,
   group.by = "CellType",
@@ -479,7 +479,7 @@ ht3 <- FeatureHeatmap(
 ht3$plot
 
 ht4 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   n_split = 4,
   group.by = "CellType",
@@ -494,7 +494,7 @@ ht4 <- FeatureHeatmap(
 ht4$plot
 
 ht5 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   n_split = 4,
   group.by = "CellType",
@@ -511,12 +511,12 @@ ht5 <- FeatureHeatmap(
 ht5$plot
 
 pancreas_sub <- RunSlingshot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
 ht6 <- FeatureHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   nlabel = 10,
   cell_order = names(sort(pancreas_sub$Lineage1)),

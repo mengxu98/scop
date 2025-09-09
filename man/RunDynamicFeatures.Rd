@@ -70,6 +70,7 @@ Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -89,7 +90,7 @@ head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
 ht <- DynamicHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   cell_annotation = "SubCellType",
   n_split = 6,
@@ -98,7 +99,7 @@ ht <- DynamicHeatmap(
 ht$plot
 
 DynamicPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   features = c("Arxes1", "Ncoa2"),
   group.by = "SubCellType",

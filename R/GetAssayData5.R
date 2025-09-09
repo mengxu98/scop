@@ -1,4 +1,4 @@
-#' @title Get expression data from Assay5 or Seurat object
+#' @title Get expression data from `Assay5` or Seurat object
 #'
 #' @description
 #' A re-implementation of the [SeuratObject::GetAssayData] function to compatible with Assay5 objects.
@@ -54,7 +54,8 @@ GetAssayData5.Seurat <- function(
   return(data)
 }
 
-#' @param join_layers Whether to join layers if the object is an Assay5 object. Default is `TRUE`.
+#' @param join_layers Whether to join layers if provided an `Assay5` object.
+#' Default is `TRUE`.
 #' @rdname GetAssayData5
 #' @method GetAssayData5 Assay5
 #' @export

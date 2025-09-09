@@ -36,8 +36,9 @@ Reorder idents by the gene expression
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- srt_reorder(
-  srt = pancreas_sub,
+  pancreas_sub,
   reorder_by = "SubCellType",
   layer = "data"
 )

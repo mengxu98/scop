@@ -42,7 +42,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Annotate cells using bulk RNA-seq data
 #' data(pancreas_sub)
 #' data(ref_scMCA)
@@ -50,9 +49,9 @@
 #'
 #' # Set the number of threads for RcppParallel
 #' # details see: ?RcppParallel::setThreadOptions
-#' if (requireNamespace("RcppParallel", quietly = TRUE)) {
-#'   RcppParallel::setThreadOptions()
-#' }
+#' # if (requireNamespace("RcppParallel", quietly = TRUE)) {
+#' #   RcppParallel::setThreadOptions()
+#' # }
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   bulk_ref = ref_scMCA
@@ -105,7 +104,7 @@
 #'   panc8_sub,
 #'   batch = "tech"
 #' )[["srt_merge"]]
-#'
+#' panc8_sub <- SeuratObject::JoinLayers(panc8_sub)
 #' pancreas_sub <- RunKNNPredict(
 #'   srt_query = pancreas_sub,
 #'   srt_ref = panc8_sub,
@@ -192,7 +191,6 @@
 #'   pancreas_sub,
 #'   features = "KNNPredict_simil"
 #' )
-#' }
 RunKNNPredict <- function(
     srt_query,
     srt_ref = NULL,
@@ -223,7 +221,7 @@ RunKNNPredict <- function(
     filter_lowfreq = 0,
     prefix = "KNNPredict") {
   query_assay <- query_assay %||% SeuratObject::DefaultAssay(srt_query)
-  features_type <- match.arg(features_type, choices = c("HVF", "DE"))
+  features_type <- match.arg(features_type)
   if (is.null(query_reduction) + is.null(ref_reduction) == 1) {
     log_message(
       "query_reduction and ref_reduction must be both provided",
@@ -239,16 +237,16 @@ RunKNNPredict <- function(
     if (length(features) == 0) {
       if (features_type == "HVF" && feature_source %in% c("both", "query")) {
         if (length(SeuratObject::VariableFeatures(srt_query, assay = query_assay)) == 0) {
+          log_message("Perform {.fn Seurat::FindVariableFeatures} on the query data...")
           srt_query <- Seurat::FindVariableFeatures(
             srt_query,
             nfeatures = nfeatures,
-            assay = query_assay
+            assay = query_assay,
+            verbose = FALSE
           )
         }
         features_query <- SeuratObject::VariableFeatures(srt_query, assay = query_assay)
-      } else if (
-        features_type == "DE" && feature_source %in% c("both", "query")
-      ) {
+      } else if (features_type == "DE" && feature_source %in% c("both", "query")) {
         if (is.null(query_group)) {
           log_message(
             "'query_group' must be provided when 'features_type' is 'DE' and 'feature_source' is 'both' or 'query'",
@@ -519,7 +517,7 @@ RunKNNPredict <- function(
     }
   } else {
     log_message(
-      "srt_ref or bulk_ref must be provided at least one.",
+      "srt_ref or bulk_ref must be provided at least one",
       message_type = "error"
     )
   }
@@ -553,7 +551,7 @@ RunKNNPredict <- function(
     if (isTRUE(query_collapsing)) {
       if (is.null(query_group)) {
         log_message(
-          "query_group must be provided when query_collapsing is TRUE.",
+          "{.arg query_group} must be provided when query_collapsing is TRUE",
           message_type = "error"
         )
       }
@@ -579,16 +577,13 @@ RunKNNPredict <- function(
   }
 
   if (isFALSE(use_reduction)) {
-    status_dat <- CheckDataType(data = query)
-    log_message("Detected query data type: ", status_dat)
-    status_ref <- CheckDataType(data = ref)
-    log_message("Detected reference data type: ", status_ref)
-    if (
-      status_ref != status_dat ||
-        any(status_dat == "unknown", status_ref == "unknown")
-    ) {
+    status_dat <- CheckDataType(query, verbose = FALSE)
+    log_message("Detected query data type: {.val {status_dat}}")
+    status_ref <- CheckDataType(ref, verbose = FALSE)
+    log_message("Detected reference data type: {.val {status_ref}}")
+    if (status_ref != status_dat || any(status_dat == "unknown", status_ref == "unknown")) {
       log_message(
-        "Data type is unknown or different between query and reference.",
+        "Data type is unknown or different between query and reference",
         message_type = "warning"
       )
     }
@@ -603,7 +598,7 @@ RunKNNPredict <- function(
       nn_method <- "raw"
     }
   }
-  log_message("Use {.val {nn_method}} method to find neighbors")
+  log_message("Use {.pkg {nn_method}} method to find neighbors")
   if (!nn_method %in% c("raw", "annoy", "rann")) {
     log_message("nn_method must be one of raw, rann and annoy",
       message_type = "error"
@@ -650,7 +645,7 @@ RunKNNPredict <- function(
   )
   if (!(distance_metric %in% c(simil_methods, dist_methods))) {
     log_message(
-      "{.val {distance_metric}} method is invalid.",
+      "{.val {distance_metric}} method is invalid",
       message_type = "error"
     )
   }

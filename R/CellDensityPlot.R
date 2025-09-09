@@ -42,6 +42,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDensityPlot(
 #'   pancreas_sub,
 #'   features = "Sox9",
@@ -228,7 +229,7 @@ CellDensityPlot <- function(
   plist <- list()
   for (f in features) {
     for (g in group.by) {
-      colors <- palette_scop(
+      colors <- palette_colors(
         levels(dat_use[[g]]),
         palette = palette,
         palcolor = palcolor

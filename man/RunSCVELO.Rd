@@ -168,8 +168,9 @@ version compatibility, and modular design.
 \examples{
 PrepareEnv()
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
-  srt = pancreas_sub,
+  pancreas_sub,
   assay_x = "RNA",
   group_by = "SubCellType",
   linear_reduction = "PCA",
@@ -200,6 +201,7 @@ CellDimPlot(
 )
 
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",

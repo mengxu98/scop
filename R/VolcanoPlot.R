@@ -66,6 +66,7 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'  pancreas_sub,
 #'  group_by = "CellType"
@@ -275,7 +276,7 @@ VolcanoPlot <- function(
       labs(x = xlab, y = ylab) +
       scale_color_gradientn(
         name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"),
-        colors = palette_scop(palette = palette, palcolor = palcolor),
+        colors = palette_colors(palette = palette, palcolor = palcolor),
         values = rescale(unique(c(
           min(c(df[, color_by], 0), na.rm = TRUE),
           0,
