@@ -378,7 +378,7 @@ GSEAPlot <- function(
     enrichment_sub[["Description"]] <- capitalize(
       enrichment_sub[["Description"]]
     )
-    enrichment_sub[["Description"]] <- str_wrap(
+    enrichment_sub[["Description"]] <- stringr::str_wrap(
       enrichment_sub[["Description"]],
       width = character_width
     )
@@ -539,7 +539,7 @@ GSEAPlot <- function(
       gsdata[[metric]] <- stat[gsdata$Description, metric]
       gsdata[["p.sig"]] <- stat[gsdata$Description, "p.sig"]
       gsdata[["DescriptionP"]] <- capitalize(gsdata[["Description"]])
-      gsdata[["DescriptionP"]] <- str_wrap(
+      gsdata[["DescriptionP"]] <- stringr::str_wrap(
         gsdata[["DescriptionP"]],
         width = character_width
       )
@@ -1006,7 +1006,7 @@ GSEAPlot <- function(
       stat <- stat[order(stat[["NES"]]), , drop = FALSE]
       rownames(stat) <- stat[, "Description"]
       stat[["Description"]] <- capitalize(stat[["Description"]])
-      stat[["Description"]] <- str_wrap(
+      stat[["Description"]] <- stringr::str_wrap(
         stat[["Description"]],
         width = character_width
       )
@@ -1137,7 +1137,7 @@ GSEAPlot <- function(
       )
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1391,7 +1391,7 @@ GSEAPlot <- function(
       df <- res_enrich[geneSetID_use, , drop = FALSE]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
-      df[["Description"]] <- str_wrap(
+      df[["Description"]] <- stringr::str_wrap(
         df[["Description"]],
         width = character_width
       )
@@ -1468,7 +1468,7 @@ GSEAPlot <- function(
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
-        df_keyword1[["keyword"]] <- str_wrap(
+        df_keyword1[["keyword"]] <- stringr::str_wrap(
           df_keyword1[["keyword"]],
           width = character_width
         )
@@ -1479,7 +1479,7 @@ GSEAPlot <- function(
         )
       } else {
         if (enrichmap_label == "term") {
-          df_nodes[["Description"]] <- str_wrap(
+          df_nodes[["Description"]] <- stringr::str_wrap(
             df_nodes[["Description"]],
             width = character_width
           )
@@ -1520,7 +1520,7 @@ GSEAPlot <- function(
         dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
-      df_keyword2[["keyword"]] <- str_wrap(
+      df_keyword2[["keyword"]] <- stringr::str_wrap(
         df_keyword2[["keyword"]],
         width = character_width
       )

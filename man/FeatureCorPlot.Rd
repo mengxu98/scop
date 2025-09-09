@@ -2,8 +2,7 @@
 % Please edit documentation in R/FeatureCorPlot.R
 \name{FeatureCorPlot}
 \alias{FeatureCorPlot}
-\title{Features correlation plot
-This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.}
+\title{Features correlation plot}
 \usage{
 FeatureCorPlot(
   srt,
@@ -139,7 +138,6 @@ FeatureCorPlot(
 \item{seed}{A numeric value specifying the random seed for reproducibility. Defaults to 11.}
 }
 \description{
-Features correlation plot
 This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
 }
 \examples{
