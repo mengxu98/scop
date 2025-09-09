@@ -56,12 +56,13 @@ EnrichmentPlot(
 }
 \arguments{
 \item{srt}{A Seurat object containing the results of RunDEtest and RunEnrichment.
-If specified, enrichment results will be extracted from the Seurat object automatically.
+If specified, enrichment results will be extracted from the \code{Seurat} object automatically.
 If not specified, the \code{res} arguments must be provided.}
 
-\item{db}{The database to use for enrichment plot. Default is "GO_BP".}
+\item{db}{The database to use for enrichment plot.
+Default is \code{"GO_BP"}.}
 
-\item{group_by}{A character vector specifying the grouping variable in the Seurat object.
+\item{group_by}{A character vector specifying the grouping variable in the \code{Seurat} object.
 This argument is only used if \code{srt} is specified.}
 
 \item{test.use}{A character vector specifying the test to be used in differential expression analysis.
@@ -71,121 +72,121 @@ This argument is only used if \code{srt} is specified.}
 If provided, 'srt', 'test.use' and 'group_by' are ignored.}
 
 \item{plot_type}{The type of plot to generate.
-Options are: "bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison".
-Default is "bar".}
+Options are: \code{"bar"}, \code{"dot"}, \code{"lollipop"}, \code{"network"}, \code{"enrichmap"}, \code{"wordcloud"}, \code{"comparison"}.
+Default is \code{"bar"}.}
 
 \item{split_by}{The splitting variable(s) for the plot.
-Can be "Database", "Groups", or both.
+Can be \code{"Database"}, \code{"Groups"}, or both.
 Default is c("Database", "Groups") for plots.}
 
 \item{color_by}{The variable used for coloring.
-Default is "Database".}
+Default is \code{"Database"}.}
 
 \item{group_use}{The group(s) to be used for enrichment plot.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{id_use}{List of IDs to be used to display specific terms in the enrichment plot.
-Default value is NULL.}
+Default value is \code{NULL}.}
 
 \item{pvalueCutoff}{The p-value cutoff.
-Only work when \code{padjustCutoff} is NULL.
-Default is NULL.}
+Only work when \code{padjustCutoff} is \code{NULL}.
+Default is \code{NULL}.}
 
 \item{padjustCutoff}{The p-adjusted cutoff.
-Default is 0.05.}
+Default is \code{0.05}.}
 
-\item{topTerm}{The number of top terms to display. Default is 6, or 100 if 'plot_type' is "enrichmap".}
+\item{topTerm}{The number of top terms to display. Default is 6, or 100 if \code{plot_type} is \code{"enrichmap"}.}
 
 \item{compare_only_sig}{Whether to compare only significant terms.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{topWord}{The number of top words to display for wordcloud.
-Default is 100.}
+Default is \code{100}.}
 
 \item{word_type}{The type of words to display in wordcloud.
-Options are "term" and "feature".
-Default is "term".}
+Options are \code{"term"} and \code{"feature"}.
+Default is \code{"term"}.}
 
-\item{word_size}{The size range for words in wordcloud. Default is c(2, 8).}
+\item{word_size}{The size range for words in wordcloud. Default is \code{c(2, 8)}.}
 
 \item{words_excluded}{Words to be excluded from the wordcloud.
-The default value is NULL, which means that the built-in words (\link{words_excluded}) will be used.}
+The default value is \code{NULL}, which means that the built-in words (\link{words_excluded}) will be used.}
 
 \item{network_layout}{The layout algorithm to use for network plot.
-Options are "fr", "kk","random", "circle", "tree", "grid", or other algorithm from 'igraph' package.
-Default is "fr".}
+Options are \code{"fr"}, \code{"kk"}, \code{"random"}, \code{"circle"}, \code{"tree"}, \code{"grid"}, or other algorithm from \code{igraph} package.
+Default is \code{"fr"}.}
 
 \item{network_labelsize}{The label size for network plot.
-Default is 5.}
+Default is \code{5}.}
 
 \item{network_blendmode}{The blend mode for network plot.
-Default is "blend".}
+Default is \code{"blend"}.}
 
 \item{network_layoutadjust}{Whether to adjust the layout of the network plot to avoid overlapping words.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{network_adjscale}{The scale for adjusting network plot layout.
-Default is 60.}
+Default is \code{60}.}
 
 \item{network_adjiter}{The number of iterations for adjusting network plot layout.
-Default is 100.}
+Default is \code{100}.}
 
 \item{enrichmap_layout}{The layout algorithm to use for enrichmap plot.
-Options are "fr", "kk","random", "circle", "tree", "grid", or other algorithm from 'igraph' package.
-Default is "fr".}
+Options are \code{"fr"}, \code{"kk"}, \code{"random"}, \code{"circle"}, \code{"tree"}, \code{"grid"}, or other algorithm from \code{igraph} package.
+Default is \code{"fr"}.}
 
 \item{enrichmap_cluster}{The clustering algorithm to use for enrichmap plot.
-Options are "walktrap", "fast_greedy", or other algorithm from 'igraph' package.
-Default is "fast_greedy".}
+Options are \code{"walktrap"}, \code{"fast_greedy"}, or other algorithm from \code{igraph} package.
+Default is \code{"fast_greedy"}.}
 
 \item{enrichmap_label}{The label type for enrichmap plot.
-Options are "term" and "feature". Default is "term".}
+Options are \code{"term"} and \code{"feature"}. Default is \code{"term"}.}
 
 \item{enrichmap_labelsize}{The label size for enrichmap plot.
-Default is 5.}
+Default is \code{5}.}
 
 \item{enrlichmap_nlabel}{The number of labels to display for each cluster in enrichmap plot.
-Default is 4.}
+Default is \code{4}.}
 
 \item{enrichmap_show_keyword}{Whether to show the keyword of terms or features in enrichmap plot.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{enrichmap_mark}{The mark shape for enrichmap plot.
-Options are "ellipse" and "hull".
-Default is "ellipse".}
+Options are \code{"ellipse"} and \code{"hull"}.
+Default is \code{"ellipse"}.}
 
 \item{enrichmap_expand}{The expansion factor for enrichmap plot.
-Default is c(0.5, 0.5).}
+Default is \code{c(0.5, 0.5)}.}
 
 \item{character_width}{The maximum width of character of descriptions.
-Default is 50.}
+Default is \code{50}.}
 
 \item{lineheight}{The line height for y-axis labels.
-Default is 0.5.}
+Default is \code{0.5}.}
 
 \item{palette}{The color palette to use.
-Default is "Spectral".}
+Default is \code{"Spectral"}.}
 
 \item{palcolor}{Custom colors for palette.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{aspect.ratio}{The aspect ratio of the plot.
-Default is 1.}
+Default is \code{1}.}
 
 \item{legend.position}{The position of the legend.
-Default is "right".}
+Default is \code{"right"}.}
 
 \item{legend.direction}{The direction of the legend.
-Default is "vertical".}
+Default is \code{"vertical"}.}
 
 \item{theme_use}{The theme to use for the plot.
-Default is "theme_scop".}
+Default is \code{"theme_scop"}.}
 
 \item{theme_args}{The arguments to pass to the theme.
 Default is an empty list.}
 
 \item{combine}{Whether to combine multiple plots into a single plot.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{nrow}{The number of rows in the combined plot.
 Default is NULL, calculated based on the number of plots.}
@@ -194,9 +195,9 @@ Default is NULL, calculated based on the number of plots.}
 Default is NULL, calculated based on the number of plots.}
 
 \item{byrow}{Whether to fill the combined plot by row.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
-\item{seed}{The random seed to use. Default is 11.}
+\item{seed}{The random seed to use. Default is \code{11}.}
 }
 \description{
 This function generates various types of plots for enrichment (over-representation) analysis.
@@ -204,13 +205,14 @@ This function generates various types of plots for enrichment (over-representati
 \examples{
 \dontrun{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
 
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   db = c("GO_BP", "GO_CC"),
   group_by = "CellType",
   species = "Mus_musculus"
@@ -445,7 +447,7 @@ EnrichmentPlot(
 ) |> panel_fix(height = 4)
 
 pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
+  pancreas_sub,
   db = c("MP", "DO"),
   group_by = "CellType",
   convert_species = TRUE,

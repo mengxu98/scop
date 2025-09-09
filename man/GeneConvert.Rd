@@ -20,34 +20,37 @@ GeneConvert(
 \arguments{
 \item{geneID}{A vector of the geneID character.}
 
-\item{geneID_from_IDtype}{Gene ID type of the input \code{geneID}. e.g. "symbol", "ensembl_id", "entrez_id"}
+\item{geneID_from_IDtype}{Gene ID type of the input \code{geneID}. e.g. \code{"symbol"}, \code{"ensembl_id"}, \code{"entrez_id"}}
 
-\item{geneID_to_IDtype}{Gene ID type(s) to convert to. e.g. "symbol", "ensembl_id", "entrez_id"}
+\item{geneID_to_IDtype}{Gene ID type(s) to convert to. e.g. \code{"symbol"}, \code{"ensembl_id"}, \code{"entrez_id"}.}
 
-\item{species_from}{Latin names for animals of the input geneID. e.g. "Homo_sapiens","Mus_musculus"}
+\item{species_from}{Latin names for animals of the input geneID. e.g. \code{"Homo_sapiens"}, \code{"Mus_musculus"}.}
 
-\item{species_to}{Latin names for animals of the output geneID. e.g. "Homo_sapiens","Mus_musculus"}
+\item{species_to}{Latin names for animals of the output geneID. e.g. \code{"Homo_sapiens"}, \code{"Mus_musculus"}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
 \item{biomart}{The name of the BioMart database that you want to connect to.
-Possible options include "ensembl", "protists_mart", "fungi_mart", and "plants_mart".}
+Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
+
+\item{verbose}{Whether to print the message.
+Default is \emph{\code{TRUE}}.}
 }
 \value{
 A list with the following elements:
-  \itemize{
-    \item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: 'from_IDtype','from_geneID','to_IDtype','to_geneID'.
-    \item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the 'from_geneID' column (which is set as the row names) of the data.frame is unique.
-    \item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
-    \item \code{Ensembl_version:} Ensembl database version.
-    \item \code{Datasets:} Datasets available in the selected BioMart database.
-    \item \code{Attributes:} Attributes available in the selected BioMart database.
-    \item \code{geneID_unmapped:} A character vector of gene IDs that are unmapped in the database.
-  }
+\itemize{
+\item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: \code{"from_IDtype"}, \code{"from_geneID"}, \code{"to_IDtype"}, \code{"to_geneID"}.
+\item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the \code{"from_geneID"} column (which is set as the row names) of the data.frame is unique.
+\item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
+\item \code{Ensembl_version:} Ensembl database version.
+\item \code{Datasets:} Datasets available in the selected BioMart database.
+\item \code{Attributes:} Attributes available in the selected BioMart database.
+\item \code{geneID_unmapped:} A character vector of gene IDs that are unmapped in the database.
+}
 }
 \description{
 This function can convert different gene ID types within one species or between two species using the biomart service.

@@ -18,7 +18,7 @@ CycGenePrefetch(
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
-\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are 'www', 'uswest', 'useast', 'asia'.}
+\item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 

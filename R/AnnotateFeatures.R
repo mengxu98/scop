@@ -1,7 +1,9 @@
-#' AnnotateFeatures
+#' @title Annotate Features
 #'
+#' @description
 #' Annotate features in a Seurat object with additional metadata from databases or a GTF file.
 #'
+#' @md
 #' @param srt Seurat object to be annotated.
 #' @param species Name of the species to be used for annotation.
 #' Default is "Homo_sapiens".
@@ -30,22 +32,22 @@
 #' @param overwrite Logical value indicating whether to overwrite existing metadata.
 #' Default is FALSE.
 #'
-#' @seealso \link{PrepareDB}, \link{ListDB}
+#' @seealso
+#' [PrepareDB], [ListDB]
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   species = "Mus_musculus",
 #'   db = c(
 #'     "Chromosome",
 #'     "GeneType",
 #'     "Enzyme",
-#'     # "TF",
-#'     # "CSPA",
+#'     "TF",
+#'     "CSPA",
 #'     "VerSeDa"
 #'   )
 #' )
@@ -56,6 +58,7 @@
 #'   )
 #' )
 #'
+#' \dontrun{
 #' # Annotate features using a GTF file
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,

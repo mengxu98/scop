@@ -4,7 +4,7 @@
 \alias{slim_data}
 \alias{slim_data.ggplot}
 \alias{slim_data.patchwork}
-\title{Drop unused data from the plot to reduce the object size}
+\title{Slim unused data in the plot}
 \usage{
 slim_data(p)
 
@@ -13,10 +13,10 @@ slim_data(p)
 \method{slim_data}{patchwork}(p)
 }
 \arguments{
-\item{p}{A \code{patchwork} object.}
+\item{p}{A \code{ggplot} object or a \code{patchwork} object.}
 }
 \description{
-Drop unused data from the plot to reduce the object size
+Slim unused data in the plot
 }
 \examples{
 library(ggplot2)

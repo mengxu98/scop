@@ -72,13 +72,13 @@ StatPlot(
 \item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.}
 
 \item{plot_type}{The type of plot to create.
-Can be one of "bar", "rose", "ring", "pie", "trend", "area", "dot", "sankey", "chord", "venn", or "upset".}
+Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"}, \code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"}, \code{"venn"}, or \code{"upset"}.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
-Can be one of "percent" or "count".}
+Can be one of \code{"percent"} or \code{"count"}.}
 
 \item{position}{The position adjustment for the plot.
-Can be one of "stack" or "dodge".}
+Can be one of \code{"stack"} or \code{"dodge"}.}
 
 \item{palette}{The name of the color palette to use for the plot.}
 
@@ -113,9 +113,9 @@ Can be one of "stack" or "dodge".}
 \item{ylab}{The y-axis label of the plot.}
 
 \item{legend.position}{The position of the legend in the plot.
-Can be one of "right", "left", "bottom", "top", or "none".}
+Can be one of \code{"right"}, \code{"left"}, \code{"bottom"}, \code{"top"}, or \code{"none"}.}
 
-\item{legend.direction}{The direction of the legend in the plot. Can be one of "vertical" or "horizontal".}
+\item{legend.direction}{The direction of the legend in the plot. Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{theme_use}{The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.}
 
@@ -140,6 +140,7 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 head(pancreas_sub@meta.data)
 StatPlot(
   pancreas_sub@meta.data,
@@ -157,13 +158,12 @@ StatPlot(
   NA_stat = FALSE
 )
 
-# "CSPA" and "TF" have been restored in pancreas_sub
-# pancreas_sub <- AnnotateFeatures(
-#  pancreas_sub,
-#  species = "Mus_musculus",
-#  IDtype = "symbol",
-#  db = c("CSPA", "TF")
-# )
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  IDtype = "symbol",
+  db = c("CSPA", "TF")
+)
 StatPlot(
   GetFeaturesData(pancreas_sub, "RNA"),
   stat.by = "TF",

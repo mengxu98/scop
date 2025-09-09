@@ -50,10 +50,11 @@
 #' @export
 #'
 #' @examples
-#' data(pancreas_sub)
 #' PrepareEnv()
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = "umap",
@@ -214,7 +215,7 @@ VelocityPlot <- function(
         ),
         scale_color_manual(
           name = group_by,
-          values = palette_scop(
+          values = palette_colors(
             df_field[["group_by"]],
             palette = group_palette,
             palcolor = group_palcolor
@@ -410,7 +411,7 @@ VelocityPlot <- function(
         ),
         scale_color_gradientn(
           name = "Velocity",
-          colors = palette_scop(
+          colors = palette_colors(
             palette = streamline_palette,
             palcolor = streamline_palcolor
           ),

@@ -491,16 +491,16 @@ The Group Heatmap
 \examples{
 library(dplyr)
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 
-# "CSPA" and "TF" have been restored in pancreas_sub
-# pancreas_sub <- AnnotateFeatures(
-#   srt = pancreas_sub,
-#   species = "Mus_musculus",
-#   db = c("CSPA", "TF")
-# )
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("CSPA", "TF")
+)
 
 ht1 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = c(
     "Sox9", "Anxa2", "Bicc1", # Ductal
     "Neurog3", "Hes6", # EPs
@@ -530,7 +530,7 @@ de_filter <- filter(
 )
 
 ht2 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   group.by = "CellType",
   split.by = "Phase",
@@ -541,7 +541,7 @@ ht2 <- GroupHeatmap(
 ht2$plot
 
 ht3 <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = de_filter$gene,
   feature_split = de_filter$group1,
   group.by = "CellType",

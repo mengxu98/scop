@@ -1,7 +1,9 @@
-#' LineagePlot
+#' @title Lineage Plot
 #'
+#' @description
 #' Generate a lineage plot based on the pseudotime.
 #'
+#' @md
 #' @param srt An object of class Seurat.
 #' @param lineages A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.
 #' @param reduction An optional string specifying the dimensionality reduction method to use.
@@ -30,12 +32,13 @@
 #' @param return_layer A logical value indicating whether to return the plot as a layer.
 #' @param seed An optional integer specifying the random seed for reproducibility.
 #'
-#' @seealso \link{RunSlingshot}, \link{CellDimPlot}
+#' @seealso [RunSlingshot], [CellDimPlot]
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -111,7 +114,7 @@ LineagePlot <- function(
     theme_args[["ylab"]] <- ylab
   }
 
-  colors <- palette_scop(lineages, palette = palette, palcolor = palcolor)
+  colors <- palette_colors(lineages, palette = palette, palcolor = palcolor)
   axes <- paste0(reduction_key, dims)
   fitted_list <- lapply(lineages, function(l) {
     trim_pass <- dat[[l]] > stats::quantile(dat[[l]], trim[1], na.rm = TRUE) &

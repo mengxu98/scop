@@ -362,7 +362,7 @@ Default is c(512, 512).}
 \item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
-For example, \code{"theme_blank"} or \code{ggplot2::theme_classic}.}
+For example, \code{"theme_blank"} or \link[ggplot2:ggtheme]{ggplot2::theme_classic}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
 
@@ -384,6 +384,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -659,8 +660,9 @@ CellDimPlot(
 
 # Show PAGA results on the plot
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
@@ -702,8 +704,9 @@ CellDimPlot(
 
 # Show RNA velocity results on the plot
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",

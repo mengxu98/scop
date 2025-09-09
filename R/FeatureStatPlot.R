@@ -84,28 +84,33 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType"
 #' ) %>% panel_fix(height = 1, width = 2)
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType",
 #'   plot_type = "box"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType",
 #'   plot_type = "bar"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -118,12 +123,14 @@
 #'   group.by = "SubCellType",
 #'   plot_type = "col"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType",
 #'   add_box = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -136,12 +143,14 @@
 #'   group.by = "SubCellType",
 #'   add_trend = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType",
 #'   add_stat = "mean"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -149,12 +158,14 @@
 #'   add_line = 0.2,
 #'   line_type = 2
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType",
 #'   split.by = "Phase"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -163,6 +174,7 @@
 #'   add_box = TRUE,
 #'   add_trend = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
@@ -170,6 +182,7 @@
 #'   split.by = "Phase",
 #'   comparisons = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
@@ -178,18 +191,21 @@
 #'   palette = "Blues",
 #'   same.y.lims = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
 #'   group.by = "SubCellType",
 #'   multiplegroup_comparisons = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
 #'   group.by = "SubCellType",
 #'   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta"))
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
@@ -197,6 +213,7 @@
 #'   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta")),
 #'   sig_label = "p.format"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
@@ -204,6 +221,7 @@
 #'   bg.by = "CellType",
 #'   add_box = TRUE, stack = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
@@ -219,6 +237,7 @@
 #'   bg.by = "CellType",
 #'   stack = TRUE
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
@@ -244,12 +263,14 @@
 #'   group.by = "CellType",
 #'   plot.by = "group"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
 #'   group.by = "CellType",
 #'   plot.by = "feature"
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
@@ -259,6 +280,7 @@
 #'   sig_label = "p.format",
 #'   sig_labelsize = 4
 #' )
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
@@ -267,6 +289,7 @@
 #'   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
 #'   stack = TRUE
 #' )
+#'
 #' FeatureStatPlot(pancreas_sub,
 #'   stat.by = c(
 #'     "Sox9", "Anxa2", "Bicc1", # Ductal
@@ -279,11 +302,11 @@
 #'   stack = TRUE
 #' )
 #'
-#' library(Matrix)
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data"
+#'   layer = "data",
+#'   verbose = FALSE
 #' )
 #' pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,

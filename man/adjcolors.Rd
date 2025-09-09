@@ -2,18 +2,17 @@
 % Please edit documentation in R/themes.R
 \name{adjcolors}
 \alias{adjcolors}
-\title{Convert a color with arbitrary transparency to a fixed color}
+\title{Convert a color with specified alpha level}
 \usage{
 adjcolors(colors, alpha)
 }
 \arguments{
 \item{colors}{Color vectors.}
 
-\item{alpha}{Alpha level in [0,1]}
+\item{alpha}{Alpha level in \verb{[0,1]}.}
 }
 \description{
-This function takes a vector of colors and an alpha level and converts the colors
-to fixed colors with the specified alpha level.
+Convert a color with specified alpha level
 }
 \examples{
 colors <- c("red", "blue", "green")

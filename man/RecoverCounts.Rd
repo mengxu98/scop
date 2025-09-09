@@ -37,10 +37,12 @@ Attempt to recover raw counts from the normalized matrix
 }
 \examples{
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 raw_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "counts"
+  layer = "counts",
+  verbose = FALSE
 )
 
 # Normalized the data
@@ -50,7 +52,8 @@ pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 data <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "data"
+  layer = "data",
+  verbose = FALSE
 )
 new_pancreas_sub <- SeuratObject::SetAssayData(
   object = pancreas_sub,
@@ -63,7 +66,8 @@ pancreas_sub <- RecoverCounts(new_pancreas_sub)
 new_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "counts"
+  layer = "counts",
+  verbose = FALSE
 )
 identical(raw_counts, new_counts)
 }

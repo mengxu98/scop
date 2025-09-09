@@ -17,7 +17,8 @@ CheckDataList(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
-  seed = 11
+  seed = 11,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -27,7 +28,8 @@ CheckDataList(
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 
-\item{do_normalization}{A logical value indicating whether data normalization should be performed.}
+\item{do_normalization}{Whether data normalization should be performed.
+Default is \code{TRUE}.}
 
 \item{normalization_method}{The normalization method to be used.
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.

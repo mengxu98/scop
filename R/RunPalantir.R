@@ -24,8 +24,9 @@
 #' @examples
 #' PrepareEnv()
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPalantir(
-#'   srt = pancreas_sub,
+#'   pancreas_sub,
 #'   group_by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
@@ -174,7 +175,7 @@ RunPalantir <- function(
     }
   }
   groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
-  args[["palette"]] <- palette_scop(
+  args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,
     palcolor = palcolor
