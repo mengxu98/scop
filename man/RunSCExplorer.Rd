@@ -6,8 +6,8 @@
 \usage{
 RunSCExplorer(
   base_dir = "SCExplorer",
-  DataFile = "Data.hdf5",
-  MetaFile = "Meta.hdf5",
+  data_file = "data.hdf5",
+  meta_file = "meta.hdf5",
   title = "SCExplorer",
   initial_dataset = NULL,
   initial_reduction = NULL,
@@ -33,9 +33,9 @@ RunSCExplorer(
 \item{base_dir}{The base directory of the SCExplorer app.
 Default is \code{"SCExplorer"}.}
 
-\item{DataFile}{The name of the HDF5 file that stores data matrices for each dataset. Default is \code{"Data.hdf5"}.}
+\item{data_file}{The name of the HDF5 file that stores data matrices for each dataset. Default is \code{"data.hdf5"}.}
 
-\item{MetaFile}{The name of the HDF5 file that stores metadata for each dataset. Default is \code{"Meta.hdf5"}.}
+\item{meta_file}{The name of the HDF5 file that stores metadata for each dataset. Default is \code{"meta.hdf5"}.}
 
 \item{title}{The title of the SCExplorer app. Default is \code{"SCExplorer"}.}
 

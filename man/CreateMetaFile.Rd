@@ -6,7 +6,7 @@
 \usage{
 CreateMetaFile(
   srt,
-  MetaFile,
+  meta_file,
   name = NULL,
   write_tools = FALSE,
   write_misc = FALSE,
@@ -18,7 +18,7 @@ CreateMetaFile(
 \arguments{
 \item{srt}{The Seurat object.}
 
-\item{MetaFile}{Path to the output meta file. If not provided, the file will be named "Meta.hdf5" in the current directory.}
+\item{meta_file}{Path to the output meta file. If not provided, the file will be named "meta.hdf5" in the current directory.}
 
 \item{name}{Name of the dataset. If not provided, the name will default to the Seurat object's project name.}
 

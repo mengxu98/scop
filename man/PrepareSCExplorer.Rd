@@ -7,8 +7,8 @@
 PrepareSCExplorer(
   object,
   base_dir = "SCExplorer",
-  DataFile = "Data.hdf5",
-  MetaFile = "Meta.hdf5",
+  data_file = "data.hdf5",
+  meta_file = "meta.hdf5",
   assays = "RNA",
   layers = c("counts", "data"),
   ignore_nlevel = 100,
@@ -24,10 +24,10 @@ PrepareSCExplorer(
 \item{base_dir}{The base directory where the SCExplorer hdf5 files will be written.
 Default is \code{"SCExplorer"}.}
 
-\item{DataFile}{Path to the output data file.
-If not provided, the file will be named \code{"Data.hdf5"} in the current directory.}
+\item{data_file}{Path to the output data file.
+If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
 
-\item{MetaFile}{Path to the output meta file. If not provided, the file will be named "Meta.hdf5" in the current directory.}
+\item{meta_file}{Path to the output meta file. If not provided, the file will be named "meta.hdf5" in the current directory.}
 
 \item{assays}{Character vector specifying the assays to include in the data file.
 Default is \code{"RNA"}.}
