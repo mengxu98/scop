@@ -5,8 +5,8 @@
 \title{Fetch data from the hdf5 file}
 \usage{
 FetchH5(
-  DataFile,
-  MetaFile,
+  data_file,
+  meta_file,
   name = NULL,
   features = NULL,
   layer = NULL,
@@ -16,9 +16,9 @@ FetchH5(
 )
 }
 \arguments{
-\item{DataFile}{The path to the hdf5 file containing the data.}
+\item{data_file}{The path to the hdf5 file containing the data.}
 
-\item{MetaFile}{The path to the hdf5 file containing the metadata.}
+\item{meta_file}{The path to the hdf5 file containing the metadata.}
 
 \item{name}{The name of the dataset in the hdf5 file.
 If not specified, the function will attempt to find the shared group name in both files.}
@@ -49,8 +49,8 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 srt <- FetchH5(
-  DataFile = "./SCExplorer/Data.hdf5",
-  MetaFile = "./SCExplorer/Meta.hdf5",
+  data_file = "./SCExplorer/data.hdf5",
+  meta_file = "./SCExplorer/meta.hdf5",
   features = c("Ins1", "Ghrl"),
   metanames = c("SubCellType", "Phase"),
   reduction = "UMAP"
