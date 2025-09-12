@@ -35,6 +35,7 @@ Uncorrected_integrate(
   neighbor_k = 20L,
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
+  verbose = TRUE,
   seed = 11
 )
 }
