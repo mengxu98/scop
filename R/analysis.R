@@ -29,7 +29,7 @@ CycGenePrefetch <- function(
     use_cached_gene = TRUE,
     verbose = TRUE) {
   log_message(
-    "Prefetching cell cycle genes for {.val {species}}...",
+    "Prefetching cell cycle genes for {.val {species}} ...",
     verbose = verbose
   )
   s_genes <- Seurat::cc.genes.updated.2019$s.genes
@@ -287,42 +287,5 @@ max_depth <- function(x, depth = 0) {
     return(max(unlist(lapply(x, max_depth, depth + 1))))
   } else {
     return(depth)
-  }
-}
-
-check_python_element <- function(
-    x,
-    depth = max_depth(x)) {
-  if (depth == 0 || !is.list(x) || !inherits(x, "python.builtin.object")) {
-    if (inherits(x, "python.builtin.object")) {
-      x_r <- tryCatch(py_to_r2(x), error = identity)
-      if (inherits(x_r, "error")) {
-        return(x)
-      } else {
-        return(x_r)
-      }
-    } else {
-      return(x)
-    }
-  } else {
-    raw_depth <- max_depth(x)
-    x <- lapply(x, function(element) {
-      if (inherits(element, "python.builtin.object")) {
-        element_r <- tryCatch(py_to_r2(element), error = identity)
-        if (inherits(element_r, "error")) {
-          return(element)
-        } else {
-          return(element_r)
-        }
-      } else {
-        return(element)
-      }
-    })
-    cur_depth <- max_depth(x)
-    if (cur_depth > raw_depth) {
-      depth <- depth + 1
-    }
-    x_checked <- lapply(x, check_python_element, depth - 1)
-    return(x_checked)
   }
 }
