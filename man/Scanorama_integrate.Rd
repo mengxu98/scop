@@ -32,6 +32,7 @@ Scanorama_integrate(
   cluster_resolution = 0.6,
   return_corrected = FALSE,
   Scanorama_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }

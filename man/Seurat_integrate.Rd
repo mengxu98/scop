@@ -38,6 +38,7 @@ Seurat_integrate(
   FindIntegrationAnchors_params = list(),
   IntegrateData_params = list(),
   IntegrateEmbeddings_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }

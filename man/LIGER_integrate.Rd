@@ -32,6 +32,7 @@ LIGER_integrate(
   cluster_resolution = 0.6,
   optimizeALS_params = list(),
   quantilenorm_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }

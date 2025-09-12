@@ -34,6 +34,7 @@ Conos_integrate(
   cluster_resolution = 0.6,
   buildGraph_params = list(),
   num_threads = 2,
+  verbose = TRUE,
   seed = 11
 )
 }

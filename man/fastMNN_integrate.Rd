@@ -28,6 +28,7 @@ fastMNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   fastMNN_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }

@@ -254,11 +254,13 @@ Uncorrected_integrate <- function(
     neighbor_k = 20L,
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     linear_reduction <- linear_reduction[1]
   }
@@ -347,7 +349,8 @@ Uncorrected_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
-      seed = seed
+      seed = seed,
+      verbose = verbose
     )
     srt_list <- checked[["srt_list"]]
     HVF <- checked[["HVF"]]
@@ -370,7 +373,8 @@ Uncorrected_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
-      seed = seed
+      seed = seed,
+      verbose = verbose
     )
     srt_merge <- checked[["srt_merge"]]
     HVF <- checked[["HVF"]]
@@ -580,11 +584,13 @@ Seurat_integrate <- function(
     FindIntegrationAnchors_params = list(),
     IntegrateData_params = list(),
     IntegrateEmbeddings_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
-      "Only the first method in the 'linear_reduction' will be used.",
-      message_type = "warning"
+      "Only the first method in the {.arg linear_reduction} will be used",
+      message_type = "warning",
+      verbose = verbose
     )
     linear_reduction <- linear_reduction[1]
   }
@@ -711,7 +717,7 @@ Seurat_integrate <- function(
 
   if (min(sapply(srt_list, ncol)) < 50) {
     log_message(
-      "The cell count in some batches is lower than 50, which may not be suitable for the current integration method.",
+      "The cell count in some batches is lower than 50, which may not be suitable for the current integration method",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
@@ -754,7 +760,7 @@ Seurat_integrate <- function(
     for (i in seq_along(srt_list)) {
       srt <- srt_list[[i]]
       log_message(
-        paste0("Perform linear dimension reduction (svd) on the data ", i, " ...")
+        "Perform linear dimension reduction (svd) on the data {.val {i}} ..."
       )
       srt <- RunDimReduction(
         srt,
@@ -832,7 +838,10 @@ Seurat_integrate <- function(
     for (nm in names(FindIntegrationAnchors_params)) {
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
-    srt_anchors <- invoke_fun(.fn = Seurat::FindIntegrationAnchors, .args = params1)
+    srt_anchors <- invoke_fun(
+      .fn = Seurat::FindIntegrationAnchors,
+      .args = params1
+    )
 
     log_message("Perform integration(Seurat) on the data...")
     params2 <- list(
@@ -852,11 +861,12 @@ Seurat_integrate <- function(
 
     scale_features <- rownames(
       GetAssayData5(
-      srtIntegrated,
-      layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srtIntegrated),
-      verbose = FALSE
-    ))
+        srtIntegrated,
+        layer = "scale.data",
+        assay = SeuratObject::DefaultAssay(srtIntegrated),
+        verbose = FALSE
+      )
+    )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
       log_message("Perform ScaleData on the data...")
       srtIntegrated <- Seurat::ScaleData(
@@ -871,7 +881,7 @@ Seurat_integrate <- function(
     }
 
     log_message(
-      paste0("Perform linear dimension reduction (", linear_reduction, ") on the data...")
+      "Perform linear dimension reduction ({.val {linear_reduction}}) on the data..."
     )
     srtIntegrated <- RunDimReduction(
       srtIntegrated,
@@ -977,7 +987,7 @@ Seurat_integrate <- function(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          "Perform nonlinear dimension reduction ({.pkg {nr}}) on the data..."
         )
         for (n in nonlinear_reduction_dims) {
           srtIntegrated <- RunDimReduction(
@@ -1066,7 +1076,8 @@ scVI_integrate <- function(
     model = "SCVI",
     SCVI_params = list(),
     PEAKVI_params = list(),
-    num_threads = 8,
+    num_threads = 1,
+    verbose = TRUE,
     seed = 11) {
   if (
     any(
@@ -1379,6 +1390,7 @@ MNN_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     mnnCorrect_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
@@ -1404,16 +1416,16 @@ MNN_integrate <- function(
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
   nonlinear_reductions <- c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
   if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
       "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
@@ -1727,6 +1739,7 @@ fastMNN_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     fastMNN_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (
     any(
@@ -2015,11 +2028,13 @@ Harmony_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     RunHarmony_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     linear_reduction <- linear_reduction[1]
   }
@@ -2368,6 +2383,7 @@ Scanorama_integrate <- function(
     cluster_resolution = 0.6,
     return_corrected = FALSE,
     Scanorama_params = list(),
+    verbose = TRUE,
     seed = 11) {
   nonlinear_reductions <- c(
     "umap",
@@ -2675,6 +2691,7 @@ BBKNN_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     bbknn_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
@@ -3063,6 +3080,7 @@ CSS_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     CSS_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
@@ -3416,6 +3434,7 @@ LIGER_integrate <- function(
     cluster_resolution = 0.6,
     optimizeALS_params = list(),
     quantilenorm_params = list(),
+    verbose = TRUE,
     seed = 11) {
   nonlinear_reductions <- c(
     "umap",
@@ -3660,10 +3679,11 @@ LIGER_integrate <- function(
       srtIntegrated
     },
     error = function(error) {
-      log_message(error, message_type = "warning")
+      log_message(error, message_type = "warning", verbose = verbose)
       log_message(
         "Error when performing {.fn FindClusters}. Skip this step",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       srtIntegrated
     }
@@ -3694,10 +3714,11 @@ LIGER_integrate <- function(
       srtIntegrated
     },
     error = function(error) {
-      log_message(error, message_type = "warning")
+      log_message(error, message_type = "warning", verbose = verbose)
       log_message(
         "Error when performing nonlinear dimension reduction. Skip this step",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       srtIntegrated
     }
@@ -3759,11 +3780,13 @@ Conos_integrate <- function(
     cluster_resolution = 0.6,
     buildGraph_params = list(),
     num_threads = 2,
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     linear_reduction <- linear_reduction[1]
   }
@@ -3846,6 +3869,7 @@ Conos_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_list <- checked[["srt_list"]]
@@ -3869,6 +3893,7 @@ Conos_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_list <- checked[["srt_list"]]
@@ -4125,11 +4150,13 @@ ComBat_integrate <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     ComBat_params = list(),
+    verbose = TRUE,
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose,
     )
     linear_reduction <- linear_reduction[1]
   }
@@ -4222,6 +4249,7 @@ ComBat_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_list <- checked[["srt_list"]]
@@ -4245,6 +4273,7 @@ ComBat_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
@@ -4267,10 +4296,7 @@ ComBat_integrate <- function(
     layer = "data",
     assay = SeuratObject::DefaultAssay(srt_merge),
     verbose = FALSE
-  )[
-    HVF, ,
-    drop = FALSE
-  ]
+  )[HVF, , drop = FALSE]
   batch <- srt_merge[[batch, drop = TRUE]]
   params <- list(
     dat = dat,
@@ -4419,11 +4445,13 @@ ComBat_integrate <- function(
     error = function(error) {
       log_message(
         error,
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       log_message(
         "Error when performing nonlinear dimension reduction. Skip this step",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
       return(srtIntegrated)
     }
