@@ -30,7 +30,8 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
-  num_threads = 8,
+  num_threads = 1,
+  verbose = TRUE,
   seed = 11
 )
 }
