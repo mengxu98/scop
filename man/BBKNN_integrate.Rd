@@ -34,6 +34,7 @@ BBKNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   bbknn_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }
