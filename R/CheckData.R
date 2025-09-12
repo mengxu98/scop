@@ -654,6 +654,7 @@ CheckDataMerge <- function(
     HVF_min_intersection = 1,
     HVF = NULL,
     vars_to_regress = NULL,
+    verbose = TRUE,
     seed = 11) {
   if (!inherits(srt_merge, "Seurat")) {
     log_message(
