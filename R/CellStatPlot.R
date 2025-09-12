@@ -1138,7 +1138,7 @@ StatPlot <- function(
             lg <- dat_list[[x]]
             names(lg) <- rownames(dat_use)
             cellkeep <- names(lg)[lg]
-            return(cellkeep)
+            cellkeep
           }
         )
         venn <- ggVennDiagram::Venn(dat_list)
@@ -1233,16 +1233,20 @@ StatPlot <- function(
       if (plot_type == "upset") {
         check_r("ggupset")
         for (n in seq_len(nrow(dat_use))) {
-          dat_use[["intersection"]][n] <- list(stat.by[unlist(dat_use[
-            n,
-            stat.by
-          ])])
+          dat_use[["intersection"]][n] <- list(
+            stat.by[unlist(dat_use[
+              n,
+              stat.by
+            ])]
+          )
         }
         dat_use <- dat_use[
           sapply(dat_use[["intersection"]], length) > 0, ,
           drop = FALSE
         ]
-        p <- ggplot(dat_use, aes(x = intersection)) +
+        p <- ggplot(
+          dat_use, aes(x = intersection)
+        ) +
           geom_bar(
             aes(fill = after_stat(count)),
             color = "black",

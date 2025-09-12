@@ -36,6 +36,7 @@ MNN_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   mnnCorrect_params = list(),
+  verbose = TRUE,
   seed = 11
 )
 }

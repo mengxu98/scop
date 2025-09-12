@@ -57,7 +57,7 @@ srt_to_adata <- function(
     )
   }
   log_message(
-    "Converting {.cls Seurat} object to {.cls AnnData} object...",
+    "Converting {.cls Seurat} to {.cls AnnData} ...",
     verbose = verbose
   )
 
@@ -295,10 +295,7 @@ adata_to_srt <- function(
       layer <- py_to_r2(adata$layers[[k]])
       if (!inherits(layer, c("Matrix", "matrix"))) {
         log_message(
-          paste0(
-            "The object in {.val {k}} layers is not a matrix: ",
-            paste0(class(adata$layers[[k]]), collapse = ",")
-          ),
+           "The object in {.val {k}} layers is not a matrix: {.val {class(adata$layers[[k]])}}",
           message_type = "error"
         )
       }
@@ -330,7 +327,7 @@ adata_to_srt <- function(
       obsm <- tryCatch(py_to_r2(adata$obsm[[k]]), error = identity)
       if (inherits(obsm, "error")) {
         log_message(
-          "{.val obsm}: {.val {k}} will not be converted.",
+          "{.val obsm}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -359,7 +356,7 @@ adata_to_srt <- function(
       obsp <- tryCatch(py_to_r2(adata$obsp[[k]]), error = identity)
       if (inherits(obsp, "error")) {
         log_message(
-          "{.val obsp}: {.val {k}} will not be converted.",
+          "{.val obsp}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -393,7 +390,7 @@ adata_to_srt <- function(
       varm <- tryCatch(py_to_r2(adata$varm[[k]]), error = identity)
       if (inherits(varm, "error")) {
         log_message(
-          "{.val varm}: {.val {k}} will not be converted.",
+          "{.val varm}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -443,7 +440,7 @@ adata_to_srt <- function(
       uns <- tryCatch(py_to_r2(adata$uns[[k]]), error = identity)
       if (inherits(uns, "error")) {
         log_message(
-          "{.val uns}: {.val {k}} will not be converted.",
+          "{.val uns}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -452,7 +449,7 @@ adata_to_srt <- function(
       uns <- tryCatch(check_python_element(uns), error = identity)
       if (inherits(uns, "error")) {
         log_message(
-          "{.val uns}: {.val {k}} will not be converted.",
+          "{.val uns}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -462,7 +459,7 @@ adata_to_srt <- function(
         srt@misc[[py_to_r2(k)]] <- uns
       } else {
         log_message(
-          "{.val uns}: {.val {k}} will not be converted.",
+          "{.val uns}: {.val {k}} will not be converted",
           message_type = "warning",
           verbose = verbose
         )
@@ -483,5 +480,50 @@ py_to_r2 <- function(x) {
     reticulate::py_to_r(x)
   } else {
     x
+  }
+}
+
+check_python_element <- function(
+    x,
+    depth = max_depth(x)) {
+  if (depth == 0 || !is.list(x) || !inherits(x, "python.builtin.object")) {
+    if (inherits(x, "python.builtin.object")) {
+      x_r <- tryCatch(
+        py_to_r2(x),
+        error = identity
+      )
+      if (inherits(x_r, "error")) {
+        return(x)
+      } else {
+        return(x_r)
+      }
+    } else {
+      return(x)
+    }
+  } else {
+    raw_depth <- max_depth(x)
+    x <- lapply(
+      x, function(element) {
+        if (inherits(element, "python.builtin.object")) {
+          element_r <- tryCatch(
+            py_to_r2(element),
+            error = identity
+          )
+          if (inherits(element_r, "error")) {
+            return(element)
+          } else {
+            return(element_r)
+          }
+        } else {
+          return(element)
+        }
+      }
+    )
+    cur_depth <- max_depth(x)
+    if (cur_depth > raw_depth) {
+      depth <- depth + 1
+    }
+    x_checked <- lapply(x, check_python_element, depth - 1)
+    return(x_checked)
   }
 }

@@ -6,7 +6,7 @@
 \usage{
 CreateDataFile(
   srt,
-  DataFile,
+  data_file,
   name = NULL,
   assays = "RNA",
   layers = "data",
@@ -17,8 +17,8 @@ CreateDataFile(
 \arguments{
 \item{srt}{The Seurat object.}
 
-\item{DataFile}{Path to the output data file.
-If not provided, the file will be named \code{"Data.hdf5"} in the current directory.}
+\item{data_file}{Path to the output data file.
+If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
 
 \item{name}{Name of the dataset.
 If not provided, the name will default to the Seurat object's project name.}
