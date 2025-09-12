@@ -11,7 +11,7 @@ one for the data and one for the metadata."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,8 +53,8 @@ one for the data and one for the metadata.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PrepareSCExplorer</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  base_dir <span class="op">=</span> <span class="st">"SCExplorer"</span>,</span>
-<span>  DataFile <span class="op">=</span> <span class="st">"Data.hdf5"</span>,</span>
-<span>  MetaFile <span class="op">=</span> <span class="st">"Meta.hdf5"</span>,</span>
+<span>  data_file <span class="op">=</span> <span class="st">"data.hdf5"</span>,</span>
+<span>  meta_file <span class="op">=</span> <span class="st">"meta.hdf5"</span>,</span>
 <span>  assays <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  layers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"counts"</span>, <span class="st">"data"</span><span class="op">)</span>,</span>
 <span>  ignore_nlevel <span class="op">=</span> <span class="fl">100</span>,</span>
@@ -78,13 +78,13 @@ one for the data and one for the metadata.</p>
 Default is <code>"SCExplorer"</code>.</p></dd>
 
 
-<dt id="arg-datafile">DataFile<a class="anchor" aria-label="anchor" href="#arg-datafile"></a></dt>
+<dt id="arg-data-file">data_file<a class="anchor" aria-label="anchor" href="#arg-data-file"></a></dt>
 <dd><p>Path to the output data file.
-If not provided, the file will be named <code>"Data.hdf5"</code> in the current directory.</p></dd>
+If not provided, the file will be named <code>"data.hdf5"</code> in the current directory.</p></dd>
 
 
-<dt id="arg-metafile">MetaFile<a class="anchor" aria-label="anchor" href="#arg-metafile"></a></dt>
-<dd><p>Path to the output meta file. If not provided, the file will be named "Meta.hdf5" in the current directory.</p></dd>
+<dt id="arg-meta-file">meta_file<a class="anchor" aria-label="anchor" href="#arg-meta-file"></a></dt>
+<dd><p>Path to the output meta file. If not provided, the file will be named "meta.hdf5" in the current directory.</p></dd>
 
 
 <dt id="arg-assays">assays<a class="anchor" aria-label="anchor" href="#arg-assays"></a></dt>
