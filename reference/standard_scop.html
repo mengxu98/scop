@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@ If NULL, the default assay of the Seurat object will be used.</p></dd>
 
 
 <dt id="arg-do-normalization">do_normalization<a class="anchor" aria-label="anchor" href="#arg-do-normalization"></a></dt>
-<dd><p>A logical value indicating whether to perform normalization.
+<dd><p>Whether to perform normalization.
 If NULL, normalization will be performed if the specified assay does not have scaled data.</p></dd>
 
 
@@ -105,7 +105,7 @@ Default is <code>"LogNormalize"</code>.</p></dd>
 
 
 <dt id="arg-do-hvf-finding">do_HVF_finding<a class="anchor" aria-label="anchor" href="#arg-do-hvf-finding"></a></dt>
-<dd><p>A logical value indicating whether to perform high variable feature finding.
+<dd><p>Whether to perform high variable feature finding.
 If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.</p></dd>
 
 
@@ -126,7 +126,7 @@ If NULL, the function will use the highly variable features identified by the HV
 
 
 <dt id="arg-do-scaling">do_scaling<a class="anchor" aria-label="anchor" href="#arg-do-scaling"></a></dt>
-<dd><p>A logical value indicating whether to perform scaling.
+<dd><p>Whether to perform scaling.
 If TRUE, the function will force to scale the data using the ScaleData function.</p></dd>
 
 
@@ -210,7 +210,7 @@ Default is <code>0.6</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print messages.
+<dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
 
@@ -232,43 +232,43 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Environment name: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Python version: <span style="color: #0000BB;">3.10-1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Number of packages to install: <span style="color: #0000BB;">21</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:57] Installing <span style="color: #0000BB;">conda</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:59] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:08:59] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:02] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:02] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:02] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:02] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:02] Installing <span style="color: #0000BB;">pip</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:03] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:04] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:06] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:06] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:08] <span style="color: #00BB00;">Python Environment Ready</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Environment name: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Python version: <span style="color: #0000BB;">3.10-1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Number of packages to install: <span style="color: #0000BB;">21</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Auto-detecting conda...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Checking and installing required packages...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:15] Installing <span style="color: #0000BB;">conda</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:17] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:17] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:20] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:20] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:20] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:20] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:20] Installing <span style="color: #0000BB;">pip</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:21] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:22] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:24] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:24] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:26] <span style="color: #00BB00;">Python Environment Ready</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">conda environment: </span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  conda:          /usr/share/miniconda/bin/conda</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  environment:    /usr/share/miniconda/envs/scop_env</span></span>
@@ -283,17 +283,17 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  NOTE: Python version was forced by use_python() function</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">standard_scop</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:09] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:09] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 13:09:10] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:12] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:12] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:12] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:12] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:13] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:27] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:27] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:57:28] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:30] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:30] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:30] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:31] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:31] Perform `Seurat::ScaleData()` on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:13] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:31] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -329,13 +329,147 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:14] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:14] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 13:09:14] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:14] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:19] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:09:23] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:32] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:32] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:57:32] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:32] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:32] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:32] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Writing NN index file to temp file /tmp/RtmpATKt2U/file23255bd4adb0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:32 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:34 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:35 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:35 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:35 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:37] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:37] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Writing NN index file to temp file /tmp/RtmpATKt2U/file2325463409db</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:37 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:38 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:40 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:40 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:40 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:42 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:57:42] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
@@ -354,15 +488,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="va">linear_reductions</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:23] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:23] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:24] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:24] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:24] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:24] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:25] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:25] Perform `Seurat::ScaleData()` on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:25] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:42] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:42] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:42] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:42] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:43] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:43] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:43] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:43] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:43] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -398,16 +532,150 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:26] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:26] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 13:09:26] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:26] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:44] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:45] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:57:45] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:45] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:45] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Writing NN index file to temp file /tmp/RtmpATKt2U/file232551f3f298</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:45 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:46 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:48 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:48 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:48 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:49 Optimization finished</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:49] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:49] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:49 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:49 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:49 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:49 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:50 Writing NN index file to temp file /tmp/RtmpATKt2U/file232525920d7d</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:50 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:50 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:51 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:52 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:52 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:52 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:57:54 Optimization finished</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:35] Perform <span style="color: #0000BB;">nmf</span> linear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:09:35] Installing package: <span style="color: #0000BB;">RcppML</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:54] Perform <span style="color: #0000BB;">nmf</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:57:54] Installing package: <span style="color: #0000BB;">RcppML</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">update</span> 1 package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → The package (0 B) is cached.</span>
@@ -425,9 +693,9 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install pandoc`</span>
@@ -439,12 +707,12 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Packaging <span style="color: #0000BB;">RcppML</span> 0.5.6</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Packaged <span style="color: #0000BB;">RcppML</span> 0.5.6 <span style="color: #9E9E9E;">(1.2s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">RcppML</span> 0.5.6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">RcppML</span> 0.5.6 <span style="color: #9E9E9E;">(20.2s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppML</span> 0.5.6 (github::zdebruine/RcppML@5449a5b) <span style="color: #9E9E9E;">(100ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 8 deps: kept 7, upd 1, dld 1 (NA B) <span style="color: #B2B2B2;">[25.2s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:01] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">RcppML</span> 0.5.6 <span style="color: #9E9E9E;">(20.5s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppML</span> 0.5.6 (github::zdebruine/RcppML@5449a5b) <span style="color: #9E9E9E;">(98ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 8 deps: kept 7, upd 1, dld 1 (NA B) <span style="color: #B2B2B2;">[25.7s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:20] All packages installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>internal error 1 in R_decompress1 with libdeflate</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RunNMF.default(object = data_use, assay = assay, layer = layer,     nbes = nbes, nmf.method = nmf.method, tol = tol, maxit = maxit,     rev.nmf = rev.nmf, verbose = verbose, ndims.print = ndims.print,     nfeatures.print = nfeatures.print, reduction.key = reduction.key,     seed.use = seed.use, ...):</span> lazy-load database '/tmp/RtmpsB2fV9/temp_libpath227a373fadb6/RcppML/R/RcppML.rdb' is corrupt</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RunNMF.default(object = data_use, assay = assay, layer = layer,     nbes = nbes, nmf.method = nmf.method, tol = tol, maxit = maxit,     rev.nmf = rev.nmf, verbose = verbose, ndims.print = ndims.print,     nfeatures.print = nfeatures.print, reduction.key = reduction.key,     seed.use = seed.use, ...):</span> lazy-load database '/tmp/RtmpsbpaCM/temp_libpath2285dc50346/RcppML/R/RcppML.rdb' is corrupt</span>
 <span class="r-in"><span><span class="va">plist1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">linear_reductions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lr</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
@@ -479,15 +747,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"pca"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="va">nonlinear_reductions</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:03] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:03] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:03] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:03] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:04] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:04] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:04] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:04] Perform `Seurat::ScaleData()` on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:04] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:22] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:23] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:23] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:23] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:23] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:24] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:24] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -523,20 +791,210 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:05] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:05] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 13:10:05] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:06] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:06] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:25] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:25] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:58:25] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:25] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:25] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:25] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Writing NN index file to temp file /tmp/RtmpATKt2U/file23252dfb720e</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:25 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:27 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:28 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:28 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:28 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Optimization finished</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:10] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:30] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:30] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Writing NN index file to temp file /tmp/RtmpATKt2U/file232541342316</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:30 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:31 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:33 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:33 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:33 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:58:34 Optimization finished</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:15] Perform <span style="color: #0000BB;">tsne</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:15] Non-linear dimensionality reduction (<span style="color: #0000BB;">tsne</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:17] Non-linear dimensionality reduction (<span style="color: #0000BB;">tsne</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:23] Perform <span style="color: #0000BB;">dm</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:23] Non-linear dimensionality reduction (<span style="color: #0000BB;">dm</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:10:23] Installing package: <span style="color: #0000BB;">destiny</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:35] Perform <span style="color: #0000BB;">tsne</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:35] Non-linear dimensionality reduction (<span style="color: #0000BB;">tsne</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Read the 1000 x 50 data matrix successfully!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> OpenMP is working. 1 threads.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Using no_dims = 2, perplexity = 30.000000, and theta = 0.500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing input similarities...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Building tree...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Done in 0.16 seconds (sparsity = 0.123070)!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Learning embedding...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 50: error is 67.143519 (50 iterations in 0.23 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 100: error is 58.277912 (50 iterations in 0.12 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 150: error is 57.729309 (50 iterations in 0.12 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 200: error is 57.507201 (50 iterations in 0.12 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 250: error is 57.429325 (50 iterations in 0.12 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 300: error is 1.071661 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 350: error is 0.933223 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 400: error is 0.897008 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 450: error is 0.880754 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 500: error is 0.872784 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 550: error is 0.865676 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 600: error is 0.859900 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 650: error is 0.852929 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 700: error is 0.845604 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 750: error is 0.841040 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 800: error is 0.839081 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 850: error is 0.836511 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 900: error is 0.834460 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 950: error is 0.831349 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 1000: error is 0.830510 (50 iterations in 0.11 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Fitting performed in 2.36 seconds.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:37] Non-linear dimensionality reduction (<span style="color: #0000BB;">tsne</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Read the 1000 x 50 data matrix successfully!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> OpenMP is working. 1 threads.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Using no_dims = 3, perplexity = 30.000000, and theta = 0.500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing input similarities...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Building tree...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Done in 0.16 seconds (sparsity = 0.123070)!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Learning embedding...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 50: error is 64.031848 (50 iterations in 0.57 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 100: error is 58.186915 (50 iterations in 0.28 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 150: error is 57.747960 (50 iterations in 0.26 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 200: error is 57.553685 (50 iterations in 0.25 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 250: error is 57.429018 (50 iterations in 0.26 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 300: error is 1.030081 (50 iterations in 0.26 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 350: error is 0.868321 (50 iterations in 0.27 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 400: error is 0.816735 (50 iterations in 0.27 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 450: error is 0.794752 (50 iterations in 0.27 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 500: error is 0.781963 (50 iterations in 0.27 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 550: error is 0.774223 (50 iterations in 0.28 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 600: error is 0.769137 (50 iterations in 0.28 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 650: error is 0.765521 (50 iterations in 0.29 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 700: error is 0.761562 (50 iterations in 0.30 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 750: error is 0.758342 (50 iterations in 0.30 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 800: error is 0.755965 (50 iterations in 0.30 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 850: error is 0.753431 (50 iterations in 0.30 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 900: error is 0.751412 (50 iterations in 0.30 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 950: error is 0.749502 (50 iterations in 0.31 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration 1000: error is 0.747763 (50 iterations in 0.31 seconds)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Fitting performed in 5.93 seconds.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:44] Perform <span style="color: #0000BB;">dm</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:44] Non-linear dimensionality reduction (<span style="color: #0000BB;">dm</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:58:44] Installing package: <span style="color: #0000BB;">destiny</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 19 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 19 packages (0 B) are cached.</span>
@@ -562,23 +1020,23 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 19 pkgs are cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">DEoptimR</span> 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggplot.multistats</span> 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">knn.covertree</span> 1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (91.51 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggthemes</span> 5.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (453.69 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">destiny</span> 3.22.0 (source) (891.59 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">DEoptimR</span> 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">lmtest</span> 0.9-40 (x86_64-pc-linux-gnu-ubuntu-24.04) (403.49 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">pcaMethods</span> 2.0.0 (source) (1.04 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">xts</span> 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">zoo</span> 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">smoother</span> 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppEigen</span> 0.3.4.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.85 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">vcd</span> 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppHNSW</span> 0.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (217.19 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">TTR</span> 0.24.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (524.49 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ranger</span> 0.17.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (473.78 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggplot.multistats</span> 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">destiny</span> 3.22.0 (source) (891.59 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">pcaMethods</span> 2.0.0 (source) (1.04 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">zoo</span> 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">vcd</span> 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggthemes</span> 5.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (453.69 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">VIM</span> 6.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.72 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">smoother</span> 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">robustbase</span> 0.99-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.13 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppHNSW</span> 0.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (217.19 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">xts</span> 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">RcppEigen</span> 0.3.4.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.85 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">laeken</span> 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">sp</span> 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.31 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
@@ -602,39 +1060,43 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">pcaMethods</span> 2.0.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DEoptimR</span> 1.1-4  <span style="color: #9E9E9E;">(88ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggplot.multistats</span> 1.0.1  <span style="color: #9E9E9E;">(117ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggthemes</span> 5.1.0  <span style="color: #9E9E9E;">(194ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DEoptimR</span> 1.1-4  <span style="color: #9E9E9E;">(78ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggplot.multistats</span> 1.0.1  <span style="color: #9E9E9E;">(102ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggthemes</span> 5.1.0  <span style="color: #9E9E9E;">(140ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">knn.covertree</span> 1.0  <span style="color: #9E9E9E;">(74ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">laeken</span> 0.5.3  <span style="color: #9E9E9E;">(77ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lmtest</span> 0.9-40  <span style="color: #9E9E9E;">(71ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ranger</span> 0.17.0  <span style="color: #9E9E9E;">(71ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppEigen</span> 0.3.4.0.2  <span style="color: #9E9E9E;">(88ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppHNSW</span> 0.6.0  <span style="color: #9E9E9E;">(120ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">robustbase</span> 0.99-6  <span style="color: #9E9E9E;">(78ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">smoother</span> 1.3  <span style="color: #9E9E9E;">(72ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">TTR</span> 0.24.4  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">laeken</span> 0.5.3  <span style="color: #9E9E9E;">(74ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lmtest</span> 0.9-40  <span style="color: #9E9E9E;">(119ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ranger</span> 0.17.0  <span style="color: #9E9E9E;">(86ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppHNSW</span> 0.6.0  <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RcppEigen</span> 0.3.4.0.2  <span style="color: #9E9E9E;">(1.2s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">robustbase</span> 0.99-6  <span style="color: #9E9E9E;">(87ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">smoother</span> 1.3  <span style="color: #9E9E9E;">(73ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">TTR</span> 0.24.4  <span style="color: #9E9E9E;">(1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">sp</span> 2.2-0  <span style="color: #9E9E9E;">(1.2s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">vcd</span> 1.4-13  <span style="color: #9E9E9E;">(76ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">VIM</span> 6.2.2  <span style="color: #9E9E9E;">(82ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">vcd</span> 1.4-13  <span style="color: #9E9E9E;">(79ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">VIM</span> 6.2.2  <span style="color: #9E9E9E;">(80ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xts</span> 0.14.1  <span style="color: #9E9E9E;">(76ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">zoo</span> 1.8-14  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">pcaMethods</span> 2.0.0 <span style="color: #9E9E9E;">(8.5s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pcaMethods</span> 2.0.0  <span style="color: #9E9E9E;">(38ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">pcaMethods</span> 2.0.0 <span style="color: #9E9E9E;">(8.6s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pcaMethods</span> 2.0.0  <span style="color: #9E9E9E;">(1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">destiny</span> 3.22.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">destiny</span> 3.22.0 <span style="color: #9E9E9E;">(27.2s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">destiny</span> 3.22.0  <span style="color: #9E9E9E;">(57ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 110 deps: kept 89, added 19, dld 19 (23.95 MB) <span style="color: #B2B2B2;">[43.2s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:06] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">destiny</span> 3.22.0 <span style="color: #9E9E9E;">(27.6s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">destiny</span> 3.22.0  <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 110 deps: kept 88, added 19, dld 19 (23.95 MB) <span style="color: #B2B2B2;">[45.4s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:29] All packages installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = as_matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> finding knns......done. Time: 0.65s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Calculating transition probabilities......done. Time: 0.01s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'as(&lt;dsCMatrix&gt;, "dgTMatrix")' is deprecated.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Use 'as(as(., "generalMatrix"), "TsparseMatrix")' instead.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> See help("Deprecated") and help("Matrix-deprecated").</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:07] Non-linear dimensionality reduction (<span style="color: #0000BB;">dm</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:07] Installing package: <span style="color: #0000BB;">destiny</span>...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> performing eigen decomposition......done. Time: 0.01s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:34] Non-linear dimensionality reduction (<span style="color: #0000BB;">dm</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:34] Installing package: <span style="color: #0000BB;">destiny</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -642,11 +1104,11 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make cmake libicu-dev`</span>
@@ -659,52 +1121,76 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cmake is already the newest version (3.28.3-1build7).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 110 deps: kept 108 <span style="color: #B2B2B2;">[4.5s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:11] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 110 deps: kept 107 <span style="color: #B2B2B2;">[4.4s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:38] All packages installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In destiny::DiffusionMap(data = as_matrix(object), n_eigs = ndcs, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     sigma = sigma, k = k, distance = dist.method, verbose = verbose, </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>     ...) :</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  extra argument ‘graph’ will be disregarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:12] Perform <span style="color: #0000BB;">phate</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:12] Non-linear dimensionality reduction (<span style="color: #0000BB;">phate</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:13] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:14] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:16] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:11:16] <span style="color: #0000BB;">phate</span> version: <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:19] Non-linear dimensionality reduction (<span style="color: #0000BB;">phate</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:20] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:21] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:23] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:11:23] <span style="color: #0000BB;">phate</span> version: <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:24] Perform <span style="color: #0000BB;">pacmap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:24] Non-linear dimensionality reduction (<span style="color: #0000BB;">pacmap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:25] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:26] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:28] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:11:28] <span style="color: #0000BB;">pacmap</span> version: <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:49] Non-linear dimensionality reduction (<span style="color: #0000BB;">pacmap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:50] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:51] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:53] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:11:53] <span style="color: #0000BB;">pacmap</span> version: <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:54] Perform <span style="color: #0000BB;">trimap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:54] Non-linear dimensionality reduction (<span style="color: #0000BB;">trimap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:55] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:56] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:11:58] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:11:58] <span style="color: #0000BB;">trimap</span> version: <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:13] Non-linear dimensionality reduction (<span style="color: #0000BB;">trimap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:14] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:15] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:17] Found <span style="color: #0000BB;">202</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:12:17] <span style="color: #0000BB;">trimap</span> version: <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:18] Perform <span style="color: #0000BB;">largevis</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:12:18] Non-linear dimensionality reduction (<span style="color: #0000BB;">largevis</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:14:38] Non-linear dimensionality reduction (<span style="color: #0000BB;">largevis</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:17:06] Perform <span style="color: #0000BB;">fr</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:17:06] Non-linear dimensionality reduction (<span style="color: #0000BB;">fr</span>) using (<span style="color: #0000BB;">Standardpca_SNN</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 13:17:08] Non-linear dimensionality reduction (<span style="color: #0000BB;">fr</span>) using (<span style="color: #0000BB;">Standardpca_SNN</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 13:17:09] Run scop standard workflow done</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> finding knns......done. Time: 0.64s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Calculating transition probabilities......done. Time: 0.00s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> performing eigen decomposition......done. Time: 0.01s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:43] Perform <span style="color: #0000BB;">phate</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:43] Non-linear dimensionality reduction (<span style="color: #0000BB;">phate</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:44] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:45] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:47] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:59:47] <span style="color: #0000BB;">phate</span> version: <span style="color: #0000BB;">1.0.11</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:50] Non-linear dimensionality reduction (<span style="color: #0000BB;">phate</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:51] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:52] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:54] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:59:54] <span style="color: #0000BB;">phate</span> version: <span style="color: #0000BB;">1.0.11</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:55] Perform <span style="color: #0000BB;">pacmap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:55] Non-linear dimensionality reduction (<span style="color: #0000BB;">pacmap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:56] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:57] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:59:59] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:59:59] <span style="color: #0000BB;">pacmap</span> version: <span style="color: #0000BB;">0.8.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:21] Non-linear dimensionality reduction (<span style="color: #0000BB;">pacmap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:23] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:23] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:26] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 08:00:26] <span style="color: #0000BB;">pacmap</span> version: <span style="color: #0000BB;">0.8.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:26] Perform <span style="color: #0000BB;">trimap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:26] Non-linear dimensionality reduction (<span style="color: #0000BB;">trimap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:28] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:28] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:30] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 08:00:30] <span style="color: #0000BB;">trimap</span> version: <span style="color: #0000BB;">1.1.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:46] Non-linear dimensionality reduction (<span style="color: #0000BB;">trimap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:47] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:48] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:50] Found <span style="color: #0000BB;">202</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 08:00:50] <span style="color: #0000BB;">trimap</span> version: <span style="color: #0000BB;">1.1.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:50] Perform <span style="color: #0000BB;">largevis</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:00:50] Non-linear dimensionality reduction (<span style="color: #0000BB;">largevis</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:50 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:51 Normalizing by max-abs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:51 Using FNN for neighbor search, n_neighbors = 150</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:52 Commencing calibration for perplexity = 50 using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:55 Initializing from random Gaussian with sd = 1e-4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:55 Commencing optimization for 202861 epochs, with 197600 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:00:55 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:10 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:03:10] Non-linear dimensionality reduction (<span style="color: #0000BB;">largevis</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:10 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:10 Normalizing by max-abs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:10 Using FNN for neighbor search, n_neighbors = 150</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:12 Commencing calibration for perplexity = 50 using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:14 Initializing from random Gaussian with sd = 1e-4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:14 Commencing optimization for 202861 epochs, with 197600 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:03:14 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:05:39 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:39] Perform <span style="color: #0000BB;">fr</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:39] Non-linear dimensionality reduction (<span style="color: #0000BB;">fr</span>) using (<span style="color: #0000BB;">Standardpca_SNN</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:39] Running force-directed layout</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:40] Force-directed layout computed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:40] Non-linear dimensionality reduction (<span style="color: #0000BB;">fr</span>) using (<span style="color: #0000BB;">Standardpca_SNN</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:40] Running force-directed layout</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 08:05:41] Force-directed layout computed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 08:05:41] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">plist2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">nonlinear_reductions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nr</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>

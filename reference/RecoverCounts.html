@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,8 @@
 <dd><p>When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
 However, due to decimal point preservation during normalization,
 the calculated nCount is usually a floating point number close to the integer.
-The tolerance is its difference from the integer. Default is 0.1</p></dd>
+The tolerance is its difference from the integer.
+Default is <code>0.1</code></p></dd>
 
 
 <dt id="arg-sf">sf<a class="anchor" aria-label="anchor" href="#arg-sf"></a></dt>
@@ -87,7 +88,8 @@ The tolerance is its difference from the integer. Default is 0.1</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to show messages.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
 
@@ -95,17 +97,17 @@ The tolerance is its difference from the integer. Default is 0.1</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:22] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:23] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:15:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:25] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:25] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:26] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:26] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:01:57] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:01:58] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:01:58] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:01:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:00] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:00] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:00] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:01] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:01] Perform `Seurat::ScaleData()` on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:01] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -141,13 +143,147 @@ The tolerance is its difference from the integer. Default is 0.1</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:27] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:27] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:15:27] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:27] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:15:35] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:02] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:02] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:02:02] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:02] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:02] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:02] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:02 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:02 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:02 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:02 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:03 Writing NN index file to temp file /tmp/RtmpATKt2U/file23251907a23d</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:03 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:03 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:04 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:05 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:05 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:05 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:06] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:06] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Writing NN index file to temp file /tmp/RtmpATKt2U/file2325e099299</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:06 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:07 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:08 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:09 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:09 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:09 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:02:10 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:02:10] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">raw_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -174,10 +310,9 @@ The tolerance is its difference from the integer. Default is 0.1</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Recover the counts and compare with the raw counts matrix</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RecoverCounts</span><span class="op">(</span><span class="va">new_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:37] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:37] The data is presumed to be log-normalized.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:37] Perform expm1 on the raw data.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:15:37] The presumed scale factor: 10000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:12] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:12] The data is presumed to be log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:02:12] Perform <span style="color: #0000BB;">"expm1"</span> on the raw data</span>
 <span class="r-in"><span><span class="va">new_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>

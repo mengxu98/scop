@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,32 +133,32 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to the <a href="https://jlmelville.github.io/uwot/reference/lvish.html" class="external-link">uwot::lvish</a> function.</p></dd>
+<dd><p>Additional arguments to be passed to <a href="https://jlmelville.github.io/uwot/reference/lvish.html" class="external-link">uwot::lvish</a>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used.
-Default is "pca".</p></dd>
+<dd><p>The reduction to be used.
+Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used.
-Default is NULL.</p></dd>
+<dd><p>The dimensions to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used.
-Default is NULL.</p></dd>
+<dd><p>The features to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used.
-Default is NULL.</p></dd>
+<dd><p>The assay to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used.
-Default is "data".</p></dd>
+<dd><p>The layer to be used.
+Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-perplexity">perplexity<a class="anchor" aria-label="anchor" href="#arg-perplexity"></a></dt>
@@ -174,8 +174,8 @@ manifold approximation. This is the analogous to <code>n_neighbors</code> in
 
 
 <dt id="arg-n-components">n_components<a class="anchor" aria-label="anchor" href="#arg-n-components"></a></dt>
-<dd><p>An integer specifying the number of LargeVis components.
-Default is 2.</p></dd>
+<dd><p>The number of LargeVis components.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-metric">metric<a class="anchor" aria-label="anchor" href="#arg-metric"></a></dt>
@@ -502,27 +502,27 @@ epoch. Its signature should be: <code>(epoch, n_epochs, coords)</code>, where:</
 
 <dt id="arg-pca-method">pca_method<a class="anchor" aria-label="anchor" href="#arg-pca-method"></a></dt>
 <dd><p>Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
-Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default.
-Uses "irlba", unless more than 50 case "svd" is used.)</p></dd>
+Allowed values are: <code>"irlba"</code>, <code>"rsvd"</code>, <code>"bigstatsr"</code>, <code>"svd"</code>, <code>"auto"</code>.
+Uses <code>"irlba"</code>, unless more than 50 case <code>"svd"</code> is used.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "largevis".</p></dd>
+<dd><p>The name of the reduction to be stored in the Seurat object.
+Default is <code>"largevis"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the LargeVis embeddings.
-Default is "LargeVis_".</p></dd>
+<dd><p>The prefix for the column names of the LargeVis embeddings.
+Default is <code>"LargeVis_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output.
-Default is TRUE.</p></dd>
+<dd><p>If <code>TRUE</code>, log details to the console.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used. Default is 11.</p></dd>
+<dd><p>The random seed to be used.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 

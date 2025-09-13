@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,7 +104,7 @@
 
 
 <dt id="arg-span">span<a class="anchor" aria-label="anchor" href="#arg-span"></a></dt>
-<dd><p>A numeric value specifying the span of the loess smoother.</p></dd>
+<dd><p>The span of the loess smoother.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
@@ -120,7 +120,7 @@
 
 
 <dt id="arg-linewidth">linewidth<a class="anchor" aria-label="anchor" href="#arg-linewidth"></a></dt>
-<dd><p>A numeric value specifying the linewidth for the lineages.</p></dd>
+<dd><p>The linewidth for the lineages.</p></dd>
 
 
 <dt id="arg-line-bg">line_bg<a class="anchor" aria-label="anchor" href="#arg-line-bg"></a></dt>
@@ -128,23 +128,23 @@
 
 
 <dt id="arg-line-bg-stroke">line_bg_stroke<a class="anchor" aria-label="anchor" href="#arg-line-bg-stroke"></a></dt>
-<dd><p>A numeric value specifying the stroke width for the background lines.</p></dd>
+<dd><p>The stroke width for the background lines.</p></dd>
 
 
 <dt id="arg-whiskers">whiskers<a class="anchor" aria-label="anchor" href="#arg-whiskers"></a></dt>
-<dd><p>A logical value indicating whether to include whiskers in the plot.</p></dd>
+<dd><p>Whether to include whiskers in the plot.</p></dd>
 
 
 <dt id="arg-whiskers-linewidth">whiskers_linewidth<a class="anchor" aria-label="anchor" href="#arg-whiskers-linewidth"></a></dt>
-<dd><p>A numeric value specifying the linewidth for the whiskers.</p></dd>
+<dd><p>The linewidth for the whiskers.</p></dd>
 
 
 <dt id="arg-whiskers-alpha">whiskers_alpha<a class="anchor" aria-label="anchor" href="#arg-whiskers-alpha"></a></dt>
-<dd><p>A numeric value specifying the transparency for the whiskers.</p></dd>
+<dd><p>The transparency for the whiskers.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>A numeric value specifying the aspect ratio of the plot.</p></dd>
+<dd><p>The aspect ratio of the plot.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
@@ -180,7 +180,7 @@
 
 
 <dt id="arg-return-layer">return_layer<a class="anchor" aria-label="anchor" href="#arg-return-layer"></a></dt>
-<dd><p>A logical value indicating whether to return the plot as a layer.</p></dd>
+<dd><p>Whether to return the plot as a layer.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -196,17 +196,17 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:18] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:13:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:21] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:21] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:21] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:22] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:22] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:34] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:35] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 06:59:35] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:37] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:38] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:38] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:38] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:39] Perform `Seurat::ScaleData()` on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:22] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:39] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -242,13 +242,147 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:23] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:23] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:13:23] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:23] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:23] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:13:27] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:13:31] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:40] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:40] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 06:59:40] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:40] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:40] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Writing NN index file to temp file /tmp/RtmpATKt2U/file232515daa219</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:40 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:41 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:42 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:42 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:42 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:44] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:59:44] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Writing NN index file to temp file /tmp/RtmpATKt2U/file23253a70caac</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:44 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:45 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:46 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:46 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:46 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:59:48 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:59:48] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>

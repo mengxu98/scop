@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -385,17 +385,17 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:16] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:17] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> objects...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:09:17] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:19] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:19] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:20] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:20] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:20] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:06] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:07] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 06:55:07] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:09] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:09] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:09] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:10] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:10] Perform `Seurat::ScaleData()` on the data...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:20] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:10] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -431,18 +431,152 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:21] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:21] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:09:21] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:21] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:21] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:25] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:09:28] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:11] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:11] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 06:55:11] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:11] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:11] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:11] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 Writing NN index file to temp file /tmp/RtmpATKt2U/file2325312fff1c</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:11 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:12 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:12 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:13 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:13 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:13 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:15] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:15] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 UMAP embedding parameters a = 0.9922 b = 1.112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Read 1000 rows and found 50 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Using Annoy for neighbor search, n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Writing NN index file to temp file /tmp/RtmpATKt2U/file23252a83410b</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Searching Annoy index using 2 threads, search_k = 3000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:15 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:16 Commencing smooth kNN distance calibration using 2 threads</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:17 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:17 Commencing optimization for 200 epochs, with 39304 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:17 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:55:18 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:55:18] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:28] Installing package: <span style="color: #0000BB;">presto</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:18] Installing package: <span style="color: #0000BB;">presto</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -452,8 +586,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -463,36 +597,36 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:32] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:32] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:32] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:32] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:32] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-12 12:09:32] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:09:32] Completed <span style="color: #0000BB;">5</span> tasks in 806ms</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:21] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:22] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:22] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:22] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:22] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 06:55:22] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:55:22] Completed <span style="color: #0000BB;">5</span> tasks in 804ms</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:33] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:09:33] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:23] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:55:23] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSEA.html">RunGSEA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:33] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-12 12:09:33] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:33] Species: Mus_musculus</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:33] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.21.0 nterm:15445</span> created: <span style="color: #0000BB;">"2025-09-12 11:58:32"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:09:34] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-12 12:09:34] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  3m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-12 12:09:34] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-12 12:09:34] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-12 12:09:34] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 28s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:09:34] Completed <span style="color: #0000BB;">5</span> tasks in 2m 8.4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:23] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 06:55:23] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:23] Species: Mus_musculus</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:23] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.21.0 nterm:15445</span> created: <span style="color: #0000BB;">"2025-09-13 06:49:36"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:55:24] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 06:55:24] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  3m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 06:55:24] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  2m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 06:55:24] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] ETA:  1m</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 06:55:24] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA: 28s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:55:24] Completed <span style="color: #0000BB;">5</span> tasks in 2m 11.6s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:11:42] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-12 12:11:42] <span style="color: #0000BB;">GSEA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:57:35] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 06:57:35] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -602,7 +736,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  group_use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:11:49] Installing package: <span style="color: #0000BB;">ggwordcloud</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:57:42] Installing package: <span style="color: #0000BB;">ggwordcloud</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 6 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 6 packages (0 B) are cached.</span>
@@ -618,15 +752,15 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">jpeg</span> 0.1-11 (x86_64-pc-linux-gnu-ubuntu-24.04) (30.04 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">markdown</span> 2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.28 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">gridtext</span> 0.1.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (362.29 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">litedown</span> 0.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.11 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">xfun</span> 0.53 (x86_64-pc-linux-gnu-ubuntu-24.04) (583.38 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">litedown</span> 0.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.11 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggwordcloud</span> 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.88 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
@@ -643,17 +777,17 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.5).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggwordcloud</span> 0.6.2  <span style="color: #9E9E9E;">(61ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">gridtext</span> 0.1.5  <span style="color: #9E9E9E;">(78ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">jpeg</span> 0.1-11  <span style="color: #9E9E9E;">(127ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">litedown</span> 0.7  <span style="color: #9E9E9E;">(182ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">markdown</span> 2.0  <span style="color: #9E9E9E;">(75ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">gridtext</span> 0.1.5  <span style="color: #9E9E9E;">(79ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">jpeg</span> 0.1-11  <span style="color: #9E9E9E;">(100ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">litedown</span> 0.7  <span style="color: #9E9E9E;">(185ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">markdown</span> 2.0  <span style="color: #9E9E9E;">(92ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">xfun</span> 0.53  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 30 deps: kept 24, added 6, dld 6 (3.29 MB) <span style="color: #B2B2B2;">[3.9s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:11:52] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:11:53] Installing package: <span style="color: #0000BB;">simplifyEnrichment</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 30 deps: kept 24, added 6, dld 6 (3.29 MB) <span style="color: #B2B2B2;">[4.1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:57:46] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:57:46] Installing package: <span style="color: #0000BB;">simplifyEnrichment</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 1 system package:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #00BBBB;">default-jdk</span>  <span style="color: #555555;">- </span><span style="color: #0000BB;">simona</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
@@ -677,8 +811,286 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libglpk-dev is already the newest version (5.0-1build2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.5).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libpng-dev is already the newest version (1.6.43-5build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> default-jdk is already the newest version (2:1.21-75+exp1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following additional packages will be installed:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ca-certificates-java default-jdk-headless default-jre default-jre-headless</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> libatk-wrapper-java libatk-wrapper-java-jni libpcsclite1 libxcb-shape0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   libxt-dev libxv1 libxxf86dga1 openjdk-21-jdk openjdk-21-jdk-headless</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   openjdk-21-jre openjdk-21-jre-headless x11-utils</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Suggested packages:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   pcscd libxt-doc openjdk-21-demo openjdk-21-source visualvm libnss-mdns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   fonts-ipafont-gothic fonts-ipafont-mincho fonts-wqy-microhei</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   | fonts-wqy-zenhei fonts-indic mesa-utils</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Recommended packages:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   luit</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following NEW packages will be installed:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ca-certificates-java default-jdk default-jdk-headless default-jre</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> default-jre-headless libatk-wrapper-java libatk-wrapper-java-jni</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   libpcsclite1 libxcb-shape0 libxt-dev libxv1 libxxf86dga1 openjdk-21-jdk</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   openjdk-21-jdk-headless openjdk-21-jre openjdk-21-jre-headless x11-utils</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 17 newly installed, 0 to remove and 16 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Need to get 132 MB of archives.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> After this operation, 304 MB of additional disk space will be used.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 ca-certificates-java all 20240118 [11.6 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpcsclite1 amd64 2.0.3-1build1 [21.4 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 openjdk-21-jre-headless amd64 21.0.8+9~us1-0ubuntu1~24.04.1 [46.4 MB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 default-jre-headless amd64 2:1.21-75+exp1 [3094 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 openjdk-21-jre amd64 21.0.8+9~us1-0ubuntu1~24.04.1 [228 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 default-jre amd64 2:1.21-75+exp1 [922 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 openjdk-21-jdk-headless amd64 21.0.8+9~us1-0ubuntu1~24.04.1 [82.7 MB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 default-jdk-headless amd64 2:1.21-75+exp1 [960 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 openjdk-21-jdk amd64 21.0.8+9~us1-0ubuntu1~24.04.1 [1645 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:11 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 default-jdk amd64 2:1.21-75+exp1 [926 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:12 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shape0 amd64 1.15-1ubuntu2 [6100 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:13 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxv1 amd64 2:1.0.11-1.1build1 [10.7 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxxf86dga1 amd64 2:1.1.5-1build1 [11.6 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 x11-utils amd64 7.7+6build2 [189 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:16 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libatk-wrapper-java all 0.40.0-3build2 [54.3 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:17 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libatk-wrapper-java-jni amd64 0.40.0-3build2 [46.4 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:18 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxt-dev amd64 1:1.2.1-1.2build1 [394 kB]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetched 132 MB in 1s (98.4 MB/s)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package ca-certificates-java.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 60%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 65%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 70%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 75%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 80%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 85%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 90%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 95%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> (Reading database ... 100%(Reading database ... 257267 files and directories currently installed.)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../00-ca-certificates-java_20240118_all.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking ca-certificates-java (20240118) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libpcsclite1:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../01-libpcsclite1_2.0.3-1build1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libpcsclite1:amd64 (2.0.3-1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package openjdk-21-jre-headless:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../02-openjdk-21-jre-headless_21.0.8+9~us1-0ubuntu1~24.04.1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking openjdk-21-jre-headless:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package default-jre-headless.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../03-default-jre-headless_2%3a1.21-75+exp1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking default-jre-headless (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package openjdk-21-jre:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../04-openjdk-21-jre_21.0.8+9~us1-0ubuntu1~24.04.1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking openjdk-21-jre:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package default-jre.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../05-default-jre_2%3a1.21-75+exp1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking default-jre (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package openjdk-21-jdk-headless:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../06-openjdk-21-jdk-headless_21.0.8+9~us1-0ubuntu1~24.04.1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking openjdk-21-jdk-headless:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package default-jdk-headless.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../07-default-jdk-headless_2%3a1.21-75+exp1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking default-jdk-headless (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package openjdk-21-jdk:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../08-openjdk-21-jdk_21.0.8+9~us1-0ubuntu1~24.04.1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking openjdk-21-jdk:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package default-jdk.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../09-default-jdk_2%3a1.21-75+exp1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking default-jdk (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libxcb-shape0:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../10-libxcb-shape0_1.15-1ubuntu2_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libxcb-shape0:amd64 (1.15-1ubuntu2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libxv1:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../11-libxv1_2%3a1.0.11-1.1build1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libxv1:amd64 (2:1.0.11-1.1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libxxf86dga1:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../12-libxxf86dga1_2%3a1.1.5-1build1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libxxf86dga1:amd64 (2:1.1.5-1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package x11-utils.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../13-x11-utils_7.7+6build2_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking x11-utils (7.7+6build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libatk-wrapper-java.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../14-libatk-wrapper-java_0.40.0-3build2_all.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libatk-wrapper-java (0.40.0-3build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libatk-wrapper-java-jni:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../15-libatk-wrapper-java-jni_0.40.0-3build2_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libatk-wrapper-java-jni:amd64 (0.40.0-3build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selecting previously unselected package libxt-dev:amd64.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Preparing to unpack .../16-libxt-dev_1%3a1.2.1-1.2build1_amd64.deb ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Unpacking libxt-dev:amd64 (1:1.2.1-1.2build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libxcb-shape0:amd64 (1.15-1ubuntu2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libxxf86dga1:amd64 (2:1.1.5-1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libxt-dev:amd64 (1:1.2.1-1.2build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libxv1:amd64 (2:1.0.11-1.1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libpcsclite1:amd64 (2.0.3-1build1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up x11-utils (7.7+6build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libatk-wrapper-java (0.40.0-3build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up ca-certificates-java (20240118) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:ACCVRAIZ1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AC_RAIZ_FNMT-RCM.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AC_RAIZ_FNMT-RCM_SERVIDORES_SEGUROS.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:ANF_Secure_Server_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Actalis_Authentication_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AffirmTrust_Commercial.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AffirmTrust_Networking.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AffirmTrust_Premium.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:AffirmTrust_Premium_ECC.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Amazon_Root_CA_1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Amazon_Root_CA_2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Amazon_Root_CA_3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Amazon_Root_CA_4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Atos_TrustedRoot_2011.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Atos_TrustedRoot_Root_CA_ECC_TLS_2021.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Atos_TrustedRoot_Root_CA_RSA_TLS_2021.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:BJCA_Global_Root_CA1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:BJCA_Global_Root_CA2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Baltimore_CyberTrust_Root.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Buypass_Class_2_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Buypass_Class_3_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CA_Disig_Root_R2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CFCA_EV_ROOT.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:COMODO_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:COMODO_ECC_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:COMODO_RSA_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certainly_Root_E1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certainly_Root_R1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certigna.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certigna_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certum_EC-384_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certum_Trusted_Network_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certum_Trusted_Network_CA_2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Certum_Trusted_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CommScope_Public_Trust_ECC_Root-01.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CommScope_Public_Trust_ECC_Root-02.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CommScope_Public_Trust_RSA_Root-01.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:CommScope_Public_Trust_RSA_Root-02.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Comodo_AAA_Services_root.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:D-TRUST_BR_Root_CA_1_2020.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:D-TRUST_EV_Root_CA_1_2020.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:D-TRUST_Root_Class_3_CA_2_2009.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:D-TRUST_Root_Class_3_CA_2_EV_2009.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Assured_ID_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Assured_ID_Root_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Assured_ID_Root_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Global_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Global_Root_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Global_Root_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_High_Assurance_EV_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_TLS_ECC_P384_Root_G5.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_TLS_RSA4096_Root_G5.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:DigiCert_Trusted_Root_G4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Entrust.net_Premium_2048_Secure_Server_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Entrust_Root_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Entrust_Root_Certification_Authority_-_EC1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Entrust_Root_Certification_Authority_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Entrust_Root_Certification_Authority_-_G4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GDCA_TrustAUTH_R5_ROOT.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GLOBALTRUST_2020.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GTS_Root_R1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GTS_Root_R2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GTS_Root_R3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GTS_Root_R4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_ECC_Root_CA_-_R4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_ECC_Root_CA_-_R5.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_Root_CA_-_R3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_Root_CA_-_R6.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_Root_E46.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:GlobalSign_Root_R46.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Go_Daddy_Class_2_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Go_Daddy_Root_Certificate_Authority_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:HARICA_TLS_ECC_Root_CA_2021.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:HARICA_TLS_RSA_Root_CA_2021.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Hellenic_Academic_and_Research_Institutions_ECC_RootCA_2015.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Hellenic_Academic_and_Research_Institutions_RootCA_2015.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:HiPKI_Root_CA_-_G1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Hongkong_Post_Root_CA_3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:ISRG_Root_X1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:ISRG_Root_X2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:IdenTrust_Commercial_Root_CA_1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:IdenTrust_Public_Sector_Root_CA_1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Izenpe.com.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Microsec_e-Szigno_Root_CA_2009.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Microsoft_ECC_Root_Certificate_Authority_2017.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Microsoft_RSA_Root_Certificate_Authority_2017.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:NAVER_Global_Root_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:NetLock_Arany_=Class_Gold=_Főtanúsítvány.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:OISTE_WISeKey_Global_Root_GB_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:OISTE_WISeKey_Global_Root_GC_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:QuoVadis_Root_CA_1_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:QuoVadis_Root_CA_2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:QuoVadis_Root_CA_2_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:QuoVadis_Root_CA_3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:QuoVadis_Root_CA_3_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_EV_Root_Certification_Authority_ECC.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_EV_Root_Certification_Authority_RSA_R2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_Root_Certification_Authority_ECC.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_Root_Certification_Authority_RSA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_TLS_ECC_Root_CA_2022.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SSL.com_TLS_RSA_Root_CA_2022.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SZAFIR_ROOT_CA2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Sectigo_Public_Server_Authentication_Root_E46.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Sectigo_Public_Server_Authentication_Root_R46.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SecureSign_RootCA11.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SecureTrust_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Secure_Global_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Security_Communication_ECC_RootCA1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Security_Communication_RootCA2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Security_Communication_RootCA3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Security_Communication_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Starfield_Class_2_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Starfield_Root_Certificate_Authority_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Starfield_Services_Root_Certificate_Authority_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SwissSign_Gold_CA_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:SwissSign_Silver_CA_-_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:T-TeleSec_GlobalRoot_Class_2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:T-TeleSec_GlobalRoot_Class_3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TUBITAK_Kamu_SM_SSL_Kok_Sertifikasi_-_Surum_1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TWCA_Global_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TWCA_Root_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TeliaSonera_Root_CA_v1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Telia_Root_CA_v2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TrustAsia_Global_Root_CA_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TrustAsia_Global_Root_CA_G4.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Trustwave_Global_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Trustwave_Global_ECC_P256_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:Trustwave_Global_ECC_P384_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:TunTrust_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:UCA_Extended_Validation_Root.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:UCA_Global_G2_Root.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:USERTrust_ECC_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:USERTrust_RSA_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:XRamp_Global_CA_Root.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:certSIGN_ROOT_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:certSIGN_Root_CA_G2.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:e-Szigno_Root_CA_2017.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:ePKI_Root_Certification_Authority.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:emSign_ECC_Root_CA_-_C3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:emSign_ECC_Root_CA_-_G3.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:emSign_Root_CA_-_C1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:emSign_Root_CA_-_G1.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:vTrus_ECC_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Adding debian:vTrus_Root_CA.pem</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> done.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up openjdk-21-jre-headless:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up libatk-wrapper-java-jni:amd64 (0.40.0-3build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing triggers for hicolor-icon-theme (0.17-2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing triggers for libc-bin (2.39-0ubuntu8.5) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing triggers for man-db (2.12.0-4build2) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Processing triggers for ca-certificates-java (20240118) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> done.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up openjdk-21-jre:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up openjdk-21-jdk-headless:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up default-jre-headless (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up default-jre (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up openjdk-21-jdk:amd64 (21.0.8+9~us1-0ubuntu1~24.04.1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up default-jdk-headless (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting up default-jdk (2:1.21-75+exp1) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running kernel seems to be up-to-date.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Restarting services...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Service restarts being deferred:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> systemctl restart hosted-compute-agent.service</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> No containers need to be restarted.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> No user sessions are running outdated binaries.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> No VM guests are running outdated hypervisor (qemu) binaries on this host.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c R CMD javareconf`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Java interpreter : /usr/lib/jvm/temurin-17-jdk-amd64/bin/java</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Java version     : 17.0.16</span>
@@ -698,8 +1110,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> JNI linker flags : -L$(JAVA_HOME)/lib/server -ljvm</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Updating Java configuration in /opt/R/4.5.1/lib/R</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 81 deps: kept 80 <span style="color: #B2B2B2;">[4.7s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:11:57] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 81 deps: kept 80 <span style="color: #B2B2B2;">[25.6s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:58:12] All packages installed successfully</span>
 <span class="r-plt img"><img src="GSEAPlot-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu">GSEAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -709,7 +1121,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:12:07] Installing package: <span style="color: #0000BB;">ggwordcloud</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:58:22] Installing package: <span style="color: #0000BB;">ggwordcloud</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -736,8 +1148,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.5).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 30 deps: kept 30 <span style="color: #B2B2B2;">[2.7s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:12:10] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:12:10] Installing package: <span style="color: #0000BB;">simplifyEnrichment</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:58:25] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:58:25] Installing package: <span style="color: #0000BB;">simplifyEnrichment</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
@@ -746,11 +1158,11 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install perl libcurl4-openssl-dev libssl-dev make zlib1g-dev libglpk-dev libxml2-dev libpng-dev default-jdk`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -785,8 +1197,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> JNI linker flags : -L$(JAVA_HOME)/lib/server -ljvm</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Updating Java configuration in /opt/R/4.5.1/lib/R</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 81 deps: kept 80 <span style="color: #B2B2B2;">[4.4s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:12:14] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 81 deps: kept 80 <span style="color: #B2B2B2;">[4.5s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 06:58:29] All packages installed successfully</span>
 <span class="r-plt img"><img src="GSEAPlot-13.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

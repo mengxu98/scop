@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,77 +88,77 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to the <a href="https://r.igraph.org/reference/layout_with_fr.html" class="external-link">igraph::layout_with_fr</a> function.</p></dd>
+<dd><p>Additional arguments to be passed to <a href="https://r.igraph.org/reference/layout_with_fr.html" class="external-link">igraph::layout_with_fr</a>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used.
-Default is NULL.</p></dd>
+<dd><p>The reduction to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used.
-Default is NULL.</p></dd>
+<dd><p>The dimensions to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used.
-Default is NULL.</p></dd>
+<dd><p>The features to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used.
-Default is NULL.</p></dd>
+<dd><p>The assay to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used.
-Default is "data".</p></dd>
+<dd><p>The layer to be used.
+Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-graph">graph<a class="anchor" aria-label="anchor" href="#arg-graph"></a></dt>
-<dd><p>A character string specifying the name of the Graph object to be used.
-Default is NULL.</p></dd>
+<dd><p>The name of the Graph object to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-neighbor">neighbor<a class="anchor" aria-label="anchor" href="#arg-neighbor"></a></dt>
-<dd><p>A character string specifying the name of the Neighbor object to be used.
-Default is NULL.</p></dd>
+<dd><p>The name of the Neighbor object to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-k-param">k.param<a class="anchor" aria-label="anchor" href="#arg-k-param"></a></dt>
-<dd><p>An integer specifying the number of nearest neighbors to consider.
-Default is 20.</p></dd>
+<dd><p>The number of nearest neighbors to consider.
+Default is <code>20</code>.</p></dd>
 
 
 <dt id="arg-ndim">ndim<a class="anchor" aria-label="anchor" href="#arg-ndim"></a></dt>
-<dd><p>An integer specifying the number of dimensions for the force-directed layout.
-Default is 2.</p></dd>
+<dd><p>The number of dimensions for the force-directed layout.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-niter">niter<a class="anchor" aria-label="anchor" href="#arg-niter"></a></dt>
-<dd><p>An integer specifying the number of iterations for the force-directed layout.
-Default is 500.</p></dd>
+<dd><p>The number of iterations for the force-directed layout.
+Default is <code>500</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "fr".</p></dd>
+<dd><p>The name of the reduction to be stored in the Seurat object.
+Default is <code>"fr"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the force-directed layout embeddings.
-Default is "FR_".</p></dd>
+<dd><p>The prefix for the column names of the force-directed layout embeddings.
+Default is <code>"FR_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output.
-Default is TRUE.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used.
-Default is 11.</p></dd>
+<dd><p>The random seed to be used.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 
@@ -170,7 +170,7 @@ Default is 11.</p></dd>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-12 12:33:57] Running force-directed layout</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:21:02] Running force-directed layout</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': subscript out of bounds</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
