@@ -73,29 +73,43 @@ RunMDS(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon} function.}
+\item{...}{Additional arguments to be passed to \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon}.}
 
-\item{assay}{A character string specifying the assay to be used for the analysis. Default is NULL.}
+\item{assay}{The assay to be used for the analysis.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used for the analysis. Default is "data".}
+\item{layer}{The layer to be used for the analysis.
+Default is \code{"data"}.}
 
-\item{features}{A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.}
+\item{features}{The features to be used for the analysis.
+Default is \code{NULL}, which uses all variable features.}
 
-\item{nmds}{An integer specifying the number of dimensions to be computed. Default is 50.}
+\item{nmds}{The number of dimensions to be computed.
+Default is \code{50}.}
 
-\item{dist.method}{A character string specifying the distance metric to be used. Currently supported values are "euclidean", "chisquared","kullback", "jeffreys", "jensen", "manhattan", "maximum", "canberra", "minkowski", and "hamming". Default is "euclidean".}
+\item{dist.method}{The distance metric to be used.
+Currently supported values are \code{"euclidean"}, \code{"chisquared"}, \code{"kullback"}, \code{"jeffreys"},
+\code{"jensen"}, \code{"manhattan"}, \code{"maximum"}, \code{"canberra"}, \code{"minkowski"}, and \code{"hamming"}.
+Default is \code{"euclidean"}.}
 
-\item{mds.method}{A character string specifying the MDS algorithm to be used. Currently supported values are "cmdscale", "isoMDS", and "sammon". Default is "cmdscale".}
+\item{mds.method}{The MDS algorithm to be used.
+Currently supported values are \code{"cmdscale"}, \code{"isoMDS"}, and \code{"sammon"}.
+Default is \code{"cmdscale"}.}
 
-\item{rev.mds}{A logical value indicating whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis. Default is FALSE.}
+\item{rev.mds}{Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.
+Default is \code{FALSE}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "mds".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"mds"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the basis vectors. Default is "MDS_".}
+\item{reduction.key}{The prefix for the column names of the basis vectors.
+Default is \code{"MDS_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run MDS (multi-dimensional scaling)

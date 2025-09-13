@@ -105,9 +105,9 @@ FeatureStatPlot(
 
 \item{assay}{A string specifying which assay to use. Default is NULL.}
 
-\item{keep_empty}{A logical indicating whether to keep empty levels in the plot. Default is FALSE.}
+\item{keep_empty}{Whether to keep empty levels in the plot. Default is FALSE.}
 
-\item{individual}{A logical indicating whether to create individual plots for each group. Default is FALSE.}
+\item{individual}{Whether to create individual plots for each group. Default is FALSE.}
 
 \item{plot_type}{A string specifying the type of plot to create. Possible values are "violin", "box", "bar", "dot", or "col". Default is "violin".}
 
@@ -115,71 +115,71 @@ FeatureStatPlot(
 
 \item{palcolor}{A character vector specifying specific colors to use for filling. Default is NULL.}
 
-\item{alpha}{A numeric value specifying the transparency of the plot. Default is 1.}
+\item{alpha}{The transparency of the plot. Default is 1.}
 
 \item{bg_palette}{A string specifying the color palette to use for the background. Default is "Paired".}
 
 \item{bg_palcolor}{A character vector specifying specific colors to use for the background. Default is NULL.}
 
-\item{bg_alpha}{A numeric value specifying the transparency of the background. Default is 0.2.}
+\item{bg_alpha}{The transparency of the background. Default is 0.2.}
 
-\item{add_box}{A logical indicating whether to add a box plot to the plot. Default is FALSE.}
+\item{add_box}{Whether to add a box plot to the plot. Default is FALSE.}
 
 \item{box_color}{A string specifying the color of the box plot. Default is "black".}
 
-\item{box_width}{A numeric value specifying the width of the box plot. Default is 0.1.}
+\item{box_width}{The width of the box plot. Default is 0.1.}
 
-\item{box_ptsize}{A numeric value specifying the size of the points of the box plot. Default is 2.}
+\item{box_ptsize}{The size of the points of the box plot. Default is 2.}
 
-\item{add_point}{A logical indicating whether to add individual data points to the plot. Default is FALSE.}
+\item{add_point}{Whether to add individual data points to the plot. Default is FALSE.}
 
 \item{pt.color}{A string specifying the color of the data points. Default is "grey30".}
 
-\item{pt.size}{A numeric value specifying the size of the data points. If NULL, the size is automatically determined. Default is NULL.}
+\item{pt.size}{The size of the data points. If NULL, the size is automatically determined. Default is NULL.}
 
-\item{pt.alpha}{A numeric value specifying the transparency of the data points. Default is 1.}
+\item{pt.alpha}{The transparency of the data points. Default is 1.}
 
-\item{jitter.width}{A numeric value specifying the width of the jitter. Default is 0.5.}
+\item{jitter.width}{The width of the jitter. Default is 0.5.}
 
-\item{jitter.height}{A numeric value specifying the height of the jitter. Default is 0.1.}
+\item{jitter.height}{The height of the jitter. Default is 0.1.}
 
-\item{add_trend}{A logical indicating whether to add a trend line to the plot. Default is FALSE.}
+\item{add_trend}{Whether to add a trend line to the plot. Default is FALSE.}
 
 \item{trend_color}{A string specifying the color of the trend line. Default is "black".}
 
-\item{trend_linewidth}{A numeric value specifying the width of the trend line. Default is 1.}
+\item{trend_linewidth}{The width of the trend line. Default is 1.}
 
-\item{trend_ptsize}{A numeric value specifying the size of the points of the trend line. Default is 2.}
+\item{trend_ptsize}{The size of the points of the trend line. Default is 2.}
 
 \item{add_stat}{A string specifying which statistical summary to add to the plot. Possible values are "none", "mean", or "median". Default is "none".}
 
 \item{stat_color}{A string specifying the color of the statistical summary. Default is "black".}
 
-\item{stat_size}{A numeric value specifying the size of the statistical summary. Default is 1.}
+\item{stat_size}{The size of the statistical summary. Default is 1.}
 
-\item{stat_stroke}{A numeric value specifying the stroke width of the statistical summary. Default is 1.}
+\item{stat_stroke}{The stroke width of the statistical summary. Default is 1.}
 
-\item{stat_shape}{A numeric value specifying the shape of the statistical summary. Default is 25.}
+\item{stat_shape}{The shape of the statistical summary. Default is 25.}
 
-\item{add_line}{A numeric value specifying the y-intercept for adding a horizontal line. Default is NULL.}
+\item{add_line}{The y-intercept for adding a horizontal line. Default is NULL.}
 
 \item{line_color}{A string specifying the color of the horizontal line. Default is "red".}
 
-\item{line_size}{A numeric value specifying the width of the horizontal line. Default is 1.}
+\item{line_size}{The width of the horizontal line. Default is 1.}
 
-\item{line_type}{A numeric value specifying the type of the horizontal line. Default is 1.}
+\item{line_type}{The type of the horizontal line. Default is 1.}
 
 \item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.}
 
 \item{cols.highlight}{A string specifying the color of the highlighted cells. Default is "red".}
 
-\item{sizes.highlight}{A numeric value specifying the size of the highlighted cells. Default is 1.}
+\item{sizes.highlight}{The size of the highlighted cells. Default is 1.}
 
-\item{alpha.highlight}{A numeric value specifying the transparency of the highlighted cells. Default is 1.}
+\item{alpha.highlight}{The transparency of the highlighted cells. Default is 1.}
 
-\item{calculate_coexp}{A logical indicating whether to calculate co-expression values. Default is FALSE.}
+\item{calculate_coexp}{Whether to calculate co-expression values. Default is FALSE.}
 
-\item{same.y.lims}{A logical indicating whether to use the same y-axis limits for all plots. Default is FALSE.}
+\item{same.y.lims}{Whether to use the same y-axis limits for all plots. Default is FALSE.}
 
 \item{y.min}{A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.}
 
@@ -187,7 +187,7 @@ FeatureStatPlot(
 
 \item{y.trans}{A string specifying the transformation to apply to the y-axis. Possible values are "identity" or "log2". Default is "identity".}
 
-\item{y.nbreaks}{An integer specifying the number of breaks to use for the y-axis. Default is 5.}
+\item{y.nbreaks}{A number of breaks to use for the y-axis. Default is 5.}
 
 \item{sort}{A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order. Default is FALSE.}
 
@@ -199,17 +199,17 @@ FeatureStatPlot(
 
 \item{ref_group}{A string specifying the reference group for pairwise comparisons. Default is NULL.}
 
-\item{pairwise_method}{A string specifying the method to use for pairwise comparisons. Default is "wilcox.test".}
+\item{pairwise_method}{Method to use for pairwise comparisons. Default is "wilcox.test".}
 
-\item{multiplegroup_comparisons}{A logical indicating whether to add multiple group comparisons to the plot. Default is FALSE.}
+\item{multiplegroup_comparisons}{Whether to add multiple group comparisons to the plot. Default is FALSE.}
 
-\item{multiple_method}{A string specifying the method to use for multiple group comparisons. Default is "kruskal.test".}
+\item{multiple_method}{Method to use for multiple group comparisons. Default is "kruskal.test".}
 
 \item{sig_label}{A string specifying the label to use for significant comparisons. Possible values are "p.signif" or "p.format". Default is "p.format".}
 
-\item{sig_labelsize}{A numeric value specifying the size of the significant comparison labels. Default is 3.5.}
+\item{sig_labelsize}{The size of the significant comparison labels. Default is 3.5.}
 
-\item{aspect.ratio}{A numeric value specifying the aspect ratio of the plot. Default is NULL.}
+\item{aspect.ratio}{The aspect ratio of the plot. Default is NULL.}
 
 \item{title}{A string specifying the title of the plot. Default is NULL.}
 
@@ -227,15 +227,15 @@ FeatureStatPlot(
 
 \item{theme_args}{A list of arguments to pass to the theme function. Default is an empty list.}
 
-\item{combine}{A logical indicating whether to combine the individual plots into a single plot. Default is TRUE.}
+\item{combine}{Whether to combine the individual plots into a single plot. Default is TRUE.}
 
-\item{nrow}{An integer specifying the number of rows for the combined plot. Default is NULL.}
+\item{nrow}{A number of rows for the combined plot. Default is NULL.}
 
-\item{ncol}{An integer specifying the number of columns for the combined plot. Default is NULL.}
+\item{ncol}{A number of columns for the combined plot. Default is NULL.}
 
 \item{byrow}{A logical specifying whether to fill the combined plot by row or by column. Default is TRUE.}
 
-\item{force}{A logical indicating whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.}
+\item{force}{Whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.}
 
 \item{seed}{An integer specifying the random seed to use for generating jitter. Default is 11.}
 }

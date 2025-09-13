@@ -33,40 +33,57 @@ RunSCExplorer(
 \item{base_dir}{The base directory of the SCExplorer app.
 Default is \code{"SCExplorer"}.}
 
-\item{data_file}{The name of the HDF5 file that stores data matrices for each dataset. Default is \code{"data.hdf5"}.}
+\item{data_file}{The name of the HDF5 file that stores data matrices for each dataset.
+Default is \code{"data.hdf5"}.}
 
-\item{meta_file}{The name of the HDF5 file that stores metadata for each dataset. Default is \code{"meta.hdf5"}.}
+\item{meta_file}{The name of the HDF5 file that stores metadata for each dataset.
+Default is \code{"meta.hdf5"}.}
 
-\item{title}{The title of the SCExplorer app. Default is \code{"SCExplorer"}.}
+\item{title}{The title of the SCExplorer app.
+Default is \code{"SCExplorer"}.}
 
-\item{initial_dataset}{The initial dataset to be loaded into the app. Default is \code{NULL}.}
+\item{initial_dataset}{The initial dataset to be loaded into the app.
+Default is \code{NULL}.}
 
-\item{initial_reduction}{The initial dimensional reduction method to be loaded into the app. Default is \code{NULL}.}
+\item{initial_reduction}{The initial dimensional reduction method to be loaded into the app.
+Default is \code{NULL}.}
 
-\item{initial_group}{The initial variable to group cells in the app. Default is \code{NULL}.}
+\item{initial_group}{The initial variable to group cells in the app.
+Default is \code{NULL}.}
 
-\item{initial_feature}{The initial feature to be loaded into the app. Default is \code{NULL}.}
+\item{initial_feature}{The initial feature to be loaded into the app.
+Default is \code{NULL}.}
 
-\item{initial_assay}{The initial assay to be loaded into the app. Default is \code{NULL}.}
+\item{initial_assay}{The initial assay to be loaded into the app.
+Default is \code{NULL}.}
 
-\item{initial_slot}{The initial layer to be loaded into the app. Default is \code{NULL}.}
+\item{initial_slot}{The initial layer to be loaded into the app.
+Default is \code{NULL}.}
 
-\item{initial_label}{Whether to add labels in the initial plot. Default is \code{FALSE}.}
+\item{initial_label}{Whether to add labels in the initial plot.
+Default is \code{FALSE}.}
 
-\item{initial_cell_palette}{The initial color palette for cells. Default is \code{"Paired"}.}
+\item{initial_cell_palette}{The initial color palette for cells.
+Default is \code{"Paired"}.}
 
-\item{initial_feature_palette}{The initial color palette for features. Default is \code{"Spectral"}.}
+\item{initial_feature_palette}{The initial color palette for features.
+Default is \code{"Spectral"}.}
 
-\item{initial_theme}{The initial theme for plots. Default is \code{"theme_scop"}.}
+\item{initial_theme}{The initial theme for plots.
+Default is \code{"theme_scop"}.}
 
-\item{initial_size}{The initial size of plots. Default is 4.}
+\item{initial_size}{The initial size of plots.
+Default is \code{4}.}
 
-\item{initial_ncol}{The initial number of columns for arranging plots. Default is 3.}
+\item{initial_ncol}{The initial number of columns for arranging plots.
+Default is \code{3}.}
 
-\item{initial_arrange}{Whether to use "Row" as the initial arrangement. Default is \code{TRUE}.}
+\item{initial_arrange}{Whether to use "Row" as the initial arrangement.
+Default is \code{TRUE}.}
 
 \item{initial_raster}{Whether to perform rasterization in the initial plot.
-By default, it is set to automatic, meaning it will be \code{TRUE} if the number of cells in the initial datasets exceeds 100,000.}
+By default, it is set to automatic, meaning it will be \code{TRUE} if the number of cells in the initial datasets exceeds 100,000.
+Default is \code{NULL}.}
 
 \item{create_script}{Whether to create the SCExplorer app script.
 Default is \code{TRUE}.}
@@ -109,7 +126,7 @@ app <- RunSCExplorer(
   initial_group = "CellType",
   initial_feature = "Ncoa2"
 )
-# This directory can be used as site directory for Shiny Server.
+# Check files
 list.files("./SCExplorer")
 
 # Run shiny app
@@ -117,9 +134,9 @@ if (interactive()) {
   shiny::runApp(app)
 }
 # Note: If scop installed in the isolated environment using renv,
-# you need to add `renv::activate(project = "path/to/scop_env")` to the app.R script.
+# add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 
-###########################
+
 # You can deploy the app on the self-hosted shiny server
 # (https://www.rstudio.com/products/shiny/shiny-server/).
 # Or deploy the app on the website

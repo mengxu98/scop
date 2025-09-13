@@ -37,7 +37,8 @@ RunDimReduction(
 
 \item{layer}{Specific layer to get data from.}
 
-\item{linear_reduction}{Method of linear dimensionality reduction. Options are "pca", "ica", "nmf", "mds", "glmpca".}
+\item{linear_reduction}{Method of linear dimensionality reduction.
+Options are \code{"pca"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}.}
 
 \item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
 
@@ -45,7 +46,8 @@ RunDimReduction(
 
 \item{force_linear_reduction}{Whether force to do linear dimensionality reduction.}
 
-\item{nonlinear_reduction}{Method of nonlinear dimensionality reduction. Options are "umap", "umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis"}
+\item{nonlinear_reduction}{Method of nonlinear dimensionality reduction.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}.}
 
 \item{nonlinear_reduction_dims}{Total number of dimensions to compute and store for \code{nonlinear_reduction}.}
 
@@ -61,9 +63,10 @@ RunDimReduction(
 
 \item{force_nonlinear_reduction}{Whether force to do nonlinear dimensionality reduction.}
 
-\item{verbose}{Show messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed}{Set a seed.}
+\item{seed}{Set a seed. Default is \code{11}.}
 }
 \description{
 Run dimensionality reduction

@@ -15,44 +15,44 @@
 #' @param node_alpha A numeric value or column name of \code{node} specifying the transparency of the nodes.
 #' @param node_highlight A character vector specifying the names of nodes to highlight.
 #' @param node_highlight_color A character vector specifying the color for highlighting nodes.
-#' @param label A logical value indicating whether to show labels for the nodes.
-#' @param label.size A numeric value specifying the size of the labels.
+#' @param label Whether to show labels for the nodes.
+#' @param label.size The size of the labels.
 #' @param label.fg A character vector specifying the foreground color of the labels.
 #' @param label.bg A character vector specifying the background color of the labels.
-#' @param label.bg.r A numeric value specifying the background color transparency of the labels.
-#' @param label_insitu A logical value indicating whether to display the node group labels in situ or as numeric values.
-#' @param label_repel A logical value indicating whether to use force-directed label repulsion.
-#' @param label_repulsion A numeric value specifying the repulsion force for labels.
-#' @param label_point_size A numeric value specifying the size of the label points.
+#' @param label.bg.r The background color transparency of the labels.
+#' @param label_insitu Whether to display the node group labels in situ or as numeric values.
+#' @param label_repel Whether to use force-directed label repulsion.
+#' @param label_repulsion The repulsion force for labels.
+#' @param label_point_size The size of the label points.
 #' @param label_point_color A character vector specifying the color of the label points.
 #' @param label_segment_color A character vector specifying the color for the label segments.
-#' @param edge_threshold A numeric value specifying the threshold for removing edges.
+#' @param edge_threshold The threshold for removing edges.
 #' @param use_triangular A character vector specifying which part of the edge matrix to use (upper, lower, both).
 #' @param edge_line A character vector specifying the type of line for edges (straight, curved).
-#' @param edge_line_curvature A numeric value specifying the curvature of curved edges.
-#' @param edge_line_angle A numeric value specifying the angle of curved edges.
+#' @param edge_line_curvature The curvature of curved edges.
+#' @param edge_line_angle The angle of curved edges.
 #' @param edge_color A character vector specifying the color of the edges.
 #' @param edge_size A numeric vector specifying the range of edge sizes.
-#' @param edge_alpha A numeric value specifying the transparency of the edges.
-#' @param edge_shorten A numeric value specifying the length of the edge shorten.
-#' @param edge_offset A numeric value specifying the length of the edge offset.
+#' @param edge_alpha The transparency of the edges.
+#' @param edge_shorten The length of the edge shorten.
+#' @param edge_offset The length of the edge offset.
 #' @param edge_highlight A character vector specifying the names of edges to highlight.
 #' @param edge_highlight_color A character vector specifying the color for highlighting edges.
-#' @param transition_threshold A numeric value specifying the threshold for removing transitions.
+#' @param transition_threshold The threshold for removing transitions.
 #' @param transition_line A character vector specifying the type of line for transitions (straight, curved).
-#' @param transition_line_curvature A numeric value specifying the curvature of curved transitions.
-#' @param transition_line_angle A numeric value specifying the angle of curved transitions.
+#' @param transition_line_curvature The curvature of curved transitions.
+#' @param transition_line_angle The angle of curved transitions.
 #' @param transition_color A character vector specifying the color of the transitions.
 #' @param transition_size A numeric vector specifying the range of transition sizes.
-#' @param transition_alpha A numeric value specifying the transparency of the transitions.
+#' @param transition_alpha The transparency of the transitions.
 #' @param transition_arrow_type A character vector specifying the type of arrow for transitions (closed, open).
-#' @param transition_arrow_angle A numeric value specifying the angle of the transition arrow.
-#' @param transition_arrow_length A numeric value specifying the length of the transition arrow.
-#' @param transition_shorten A numeric value specifying the length of the transition shorten.
-#' @param transition_offset A numeric value specifying the length of the transition offset.
+#' @param transition_arrow_angle The angle of the transition arrow.
+#' @param transition_arrow_length The length of the transition arrow.
+#' @param transition_shorten The length of the transition shorten.
+#' @param transition_offset The length of the transition offset.
 #' @param transition_highlight A character vector specifying the names of transitions to highlight.
 #' @param transition_highlight_color A character vector specifying the color for highlighting transitions.
-#' @param aspect.ratio A numeric value specifying the aspect ratio of the plot.
+#' @param aspect.ratio The aspect ratio of the plot.
 #' @param title A character value specifying the title of the plot.
 #' @param subtitle A character value specifying the subtitle of the plot.
 #' @param xlab A character value specifying the label for the x-axis.
@@ -61,7 +61,7 @@
 #' @param legend.direction A character value specifying the direction of the legend.
 #' @param theme_use A character value specifying the theme to use.
 #' @param theme_args A list of arguments to be passed to the theme.
-#' @param return_layer A logical value indicating whether to return the layers of the plot instead of the plot itself.
+#' @param return_layer Whether to return the layers of the plot instead of the plot itself.
 #'
 #' @seealso [CellDimPlot]
 #'

@@ -43,14 +43,14 @@ Default is \code{"Standard"}.}
 \item{assay}{The name of the assay to use for the analysis.
 If NULL, the default assay of the Seurat object will be used.}
 
-\item{do_normalization}{A logical value indicating whether to perform normalization.
+\item{do_normalization}{Whether to perform normalization.
 If NULL, normalization will be performed if the specified assay does not have scaled data.}
 
 \item{normalization_method}{The method to use for normalization.
 Options are \code{"LogNormalize"}, \code{"SCT"}, or \code{"TFIDF"}.
 Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{A logical value indicating whether to perform high variable feature finding.
+\item{do_HVF_finding}{Whether to perform high variable feature finding.
 If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.}
 
 \item{HVF_method}{The method to use for finding highly variable features.
@@ -63,7 +63,7 @@ If NULL, all highly variable features will be used.}
 \item{HVF}{A vector of feature names to use as highly variable features.
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
-\item{do_scaling}{A logical value indicating whether to perform scaling.
+\item{do_scaling}{Whether to perform scaling.
 If TRUE, the function will force to scale the data using the ScaleData function.}
 
 \item{vars_to_regress}{A vector of feature names to use as regressors in the scaling step.
@@ -115,7 +115,7 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{verbose}{Whether to print messages.
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{seed}{The random seed to use for reproducibility.

@@ -31,7 +31,7 @@ RunPHATE(object, ...)
   reduction.name = "phate",
   reduction.key = "PHATE_",
   verbose = TRUE,
-  seed.use = 11L,
+  seed.use = 11,
   ...
 )
 
@@ -53,82 +53,85 @@ RunPHATE(object, ...)
   max_clusters = 100,
   reduction.key = "PHATE_",
   verbose = TRUE,
-  seed.use = 11L,
+  seed.use = 11,
   ...
 )
 }
 \arguments{
-\item{object}{A Seurat object or a matrix-like object.}
+\item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the phate.PHATE function.}
+\item{...}{Additional arguments to be passed to phate.PHATE.}
 
-\item{reduction}{A character string specifying the reduction to be used.
+\item{reduction}{The reduction to be used.
 Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used.
+\item{dims}{The dimensions to be used.
 Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used.
+\item{features}{The features to be used.
 Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used.
+\item{assay}{The assay to be used.
 Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used.
+\item{layer}{The layer to be used.
 Default is \code{"data"}.}
 
-\item{n_components}{An integer specifying the number of PHATE components.
+\item{n_components}{The number of PHATE components.
 Default is \code{2}.}
 
-\item{knn}{An integer specifying the number of nearest neighbors on which to build kernel.
+\item{knn}{A number of nearest neighbors on which to build kernel.
 Default is \code{5}.}
 
-\item{decay}{An integer specifying the sets decay rate of kernel tails. Default is 40.}
+\item{decay}{The sets decay rate of kernel tails.
+Default is \code{40}.}
 
-\item{n_landmark}{An integer specifying the number of landmarks to use in fast PHATE.
+\item{n_landmark}{A number of landmarks to use in fast PHATE.
 Default is \code{2000}.}
 
-\item{t}{A character string specifying the power to which the diffusion operator is powered.
-This sets the level of diffusion. If \code{"auto"}, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
+\item{t}{The power to which the diffusion operator is powered.
+This sets the level of diffusion.
+If \code{"auto"}, \code{t} is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
 Default is \code{"auto"}.}
 
-\item{gamma}{A numeric value specifying the informational distance constant between -1 and 1.
-gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential.
+\item{gamma}{The informational distance constant between \code{-1} and \code{1}.
+\code{gamma=1} gives the PHATE log potential, \code{gamma=0} gives a square root potential.
 Default is \code{1}.}
 
-\item{n_pca}{An integer specifying the number of principal components to use for calculating neighborhoods.
-For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time.
+\item{n_pca}{A number of principal components to use for calculating neighborhoods.
+For extremely large datasets, using \code{n_pca < 20} allows neighborhoods to be calculated in roughly \code{log(n_samples)} time.
 Default is \code{100}.}
 
-\item{knn_dist}{A character string specifying the distance metric for k-nearest neighbors.
+\item{knn_dist}{The distance metric for k-nearest neighbors.
 Recommended values: \code{"euclidean"}, \code{"cosine"}, \code{"precomputed"}.
 Default is \code{"euclidean"}.}
 
-\item{knn_max}{An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point.
-For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly.
+\item{knn_max}{The maximum number of neighbors for which alpha decaying kernel is computed for each point.
+For very large datasets, setting \code{knn_max} to a small multiple of \code{knn} can speed up computation significantly.
 Default is \code{NULL}.}
 
-\item{t_max}{An integer specifying the maximum \code{t} to test. Default is \code{100}.}
-
-\item{do_cluster}{A logical value indicating whether to perform clustering on the PHATE embeddings.
-Default is \code{FALSE}.}
-
-\item{n_clusters}{An integer specifying the number of clusters to be identified.
-Default is \code{"auto"}.}
-
-\item{max_clusters}{An integer specifying the maximum number of clusters to test.
+\item{t_max}{The maximum \code{t} to test.
 Default is \code{100}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
+\item{do_cluster}{Whether to perform clustering on the PHATE embeddings.
+Default is \code{FALSE}.}
+
+\item{n_clusters}{A number of clusters to be identified.
+Default is \code{"auto"}.}
+
+\item{max_clusters}{The maximum number of clusters to test.
+Default is \code{100}.}
+
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
 Default is \code{"phate"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the PHATE embeddings.
+\item{reduction.key}{The prefix for the column names of the PHATE embeddings.
 Default is \code{"PHATE_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output.
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used.
+\item{seed.use}{The random seed to be used.
 Default is \code{11}.}
 }
 \description{

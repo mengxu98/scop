@@ -4,19 +4,22 @@
 #' This function takes a Seurat object and converts it to an anndata object using the reticulate package.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param assay_x Assay to convert as the main data matrix in the anndata object.
+#' Default is `"RNA"`.
 #' @param layer_x Layer name for assay_x in the Seurat object.
+#' Default is `"counts"`.
 #' @param assay_y Assays to convert as layers in the anndata object.
+#' Default is `c("spliced", "unspliced")`.
 #' @param layer_y Layer names for the assay_y in the Seurat object.
+#' Default is `"counts"`.
 #' @param convert_tools Whether to convert the tool-specific data.
 #' Default is `FALSE`.
 #' @param convert_misc Whether to convert the miscellaneous data.
 #' Default is `FALSE`.
 #' @param features Optional vector of features to include in the anndata object.
-#' Defaults to all features in assay_x.
-#' @param verbose Whether to print verbose messages during the conversion process.
-#' Default is `TRUE`.
+#' Defaults to all features in `assay_x`.
 #'
 #' @return A `anndata` object.
 #'
@@ -226,8 +229,9 @@ srt_to_adata <- function(
 
 #' @title Convert an anndata object to a seurat object using reticulate
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param adata A connected python anndata object.
-#' @param verbose Whether to print messages.
 #'
 #' @export
 #'

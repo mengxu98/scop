@@ -1,13 +1,15 @@
 #' @title Prefetch cell cycle genes
 #'
 #' @description
-#' Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
+#' Based on the human cell cycle genes,
+#' the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 #'
 #' @md
 #' @inheritParams GeneConvert
-#' @param species Latin names for animals,i.e., `"Homo_sapiens"`, `"Mus_musculus"`
+#' @inheritParams thisutils::log_message
+#' @param species Latin names for animals, i.e., `"Homo_sapiens"`, `"Mus_musculus"`
 #' @param use_cached_gene Whether to use previously cached cell cycle gene conversion results for the species.
-#' @param verbose Whether to print messages.
+#' Default is `TRUE`.
 #'
 #' @return A list of S-phase and G2M-phase genes.
 #'
@@ -48,7 +50,8 @@ CycGenePrefetch <- function(
         species_to = species,
         Ensembl_version = Ensembl_version,
         max_tries = max_tries,
-        mirror = mirror
+        mirror = mirror,
+        verbose = verbose
       )
       R.cache::saveCache(res, key = list(species))
       log_message(

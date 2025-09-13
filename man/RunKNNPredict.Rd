@@ -87,7 +87,7 @@ If TRUE, the function will return the distance matrix used for the KNN predictio
 
 \item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Defaults to "cosine".}
 
-\item{k}{An integer specifying the number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.}
+\item{k}{A number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.}
 
 \item{filter_lowfreq}{An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable". Defaults to 0, which means no filtering will be performed.}
 
