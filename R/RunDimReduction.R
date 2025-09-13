@@ -1,24 +1,27 @@
-#' Run dimensionality reduction
+#' @title Run dimensionality reduction
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param prefix The prefix used to name the result.
 #' @param features Use features expression data to run linear or nonlinear dimensionality reduction.
 #' @param assay Specific assay to get data from.
 #' @param layer Specific layer to get data from.
-#' @param linear_reduction Method of linear dimensionality reduction. Options are "pca", "ica", "nmf", "mds", "glmpca".
-#' @param linear_reduction_dims Total number of dimensions to compute and store for \code{linear_reduction}.
-#' @param linear_reduction_params Other parameters passed to the \code{linear_reduction} method.
+#' @param linear_reduction Method of linear dimensionality reduction.
+#' Options are `"pca"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`.
+#' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
+#' @param linear_reduction_params Other parameters passed to the `linear_reduction` method.
 #' @param force_linear_reduction Whether force to do linear dimensionality reduction.
-#' @param nonlinear_reduction Method of nonlinear dimensionality reduction. Options are "umap", "umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis"
-#' @param nonlinear_reduction_dims Total number of dimensions to compute and store for \code{nonlinear_reduction}.
-#' @param reduction_use Which dimensional reduction to use as input for \code{nonlinear_reduction}.
-#' @param reduction_dims Which dimensions to use as input for \code{nonlinear_reduction}, used only if \code{features} is \code{NULL}.
-#' @param neighbor_use Name of neighbor to use for the \code{nonlinear_reduction}.
-#' @param graph_use Name of graph to use for the \code{nonlinear_reduction}.
-#' @param nonlinear_reduction_params  Other parameters passed to the \code{nonlinear_reduction} method.
+#' @param nonlinear_reduction Method of nonlinear dimensionality reduction.
+#' Options are `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`.
+#' @param nonlinear_reduction_dims Total number of dimensions to compute and store for `nonlinear_reduction`.
+#' @param reduction_use Which dimensional reduction to use as input for `nonlinear_reduction`.
+#' @param reduction_dims Which dimensions to use as input for `nonlinear_reduction`, used only if `features` is `NULL`.
+#' @param neighbor_use Name of neighbor to use for the `nonlinear_reduction`.
+#' @param graph_use Name of graph to use for the `nonlinear_reduction`.
+#' @param nonlinear_reduction_params  Other parameters passed to the `nonlinear_reduction` method.
 #' @param force_nonlinear_reduction Whether force to do nonlinear dimensionality reduction.
-#' @param verbose Show messages.
-#' @param seed Set a seed.
+#' @param seed Set a seed. Default is `11`.
 #'
 #' @export
 RunDimReduction <- function(

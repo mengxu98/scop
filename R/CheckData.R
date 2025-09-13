@@ -132,7 +132,7 @@ CheckDataType.default <- function(
 #' @param normalization_method The normalization method to be used.
 #' Possible values are `"LogNormalize"`, `"SCT"`, and `"TFIDF"`.
 #' Default is `"LogNormalize"`.
-#' @param do_HVF_finding A logical value indicating whether highly variable feature (HVF) finding should be performed.
+#' @param do_HVF_finding Whether highly variable feature (HVF) finding should be performed.
 #' Default is `TRUE`.
 #' @param HVF_source The source of highly variable features.
 #' Possible values are `"global"` and `"separate"`.
@@ -169,10 +169,10 @@ CheckDataList <- function(
     HVF_min_intersection = 1,
     HVF = NULL,
     vars_to_regress = NULL,
-    seed = 11,
-    verbose = TRUE) {
+    verbose = TRUE,
+    seed = 11) {
   log_message(
-    "Checking a list of {.cls Seurat} objects...",
+    "Checking a list of {.cls Seurat} object...",
     verbose = verbose
   )
   set.seed(seed)
@@ -200,9 +200,10 @@ CheckDataList <- function(
       message_type = "error"
     )
   }
-  if (any(sapply(srt_list, ncol) < 2)) {
+  which_less_2 <- which(sapply(srt_list, ncol) < 2)
+  if (length(which_less_2) > 0) {
     log_message(
-      "{.cls Seurat} objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which(sapply(srt_list, ncol) < 2)}}",
+      "{.cls Seurat} objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which_less_2}}",
       message_type = "error"
     )
   }
@@ -261,7 +262,7 @@ CheckDataList <- function(
   if (length(unique(features_list)) != 1) {
     if (type == "Chromatin") {
       log_message(
-        "The peaks in assay {.val {assay}} is different between batches. Creating a common set of peaks and may take a long time...",
+        "The peaks in assay {.val {assay}} is different between batches. Creating a common set...",
         message_type = "warning",
         verbose = verbose
       )

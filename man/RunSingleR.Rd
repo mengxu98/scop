@@ -62,7 +62,7 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 \item{prune}{\code{"prune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 }
 \description{
 Annotate single cells using SingleR

@@ -67,19 +67,19 @@ FeatureCorPlot(
 
 \item{cor_method}{A character string specifying the correlation method to use. Can be "pearson" (default) or "spearman".}
 
-\item{adjust}{A numeric value specifying the adjustment factor for the width of the violin plots. Defaults to 1.}
+\item{adjust}{The adjustment factor for the width of the violin plots. Defaults to 1.}
 
-\item{margin}{A numeric value specifying the margin size for the plot. Defaults to 1.}
+\item{margin}{The margin size for the plot. Defaults to 1.}
 
-\item{reverse}{A logical value indicating whether to reverse the order of the features in the plot. Defaults to FALSE.}
+\item{reverse}{Whether to reverse the order of the features in the plot. Defaults to FALSE.}
 
-\item{add_equation}{A logical value indicating whether to add the equation of the linear regression line to each scatter plot. Defaults to FALSE.}
+\item{add_equation}{Whether to add the equation of the linear regression line to each scatter plot. Defaults to FALSE.}
 
-\item{add_r2}{A logical value indicating whether to add the R-squared value of the linear regression line to each scatter plot. Defaults to TRUE.}
+\item{add_r2}{Whether to add the R-squared value of the linear regression line to each scatter plot. Defaults to TRUE.}
 
-\item{add_pvalue}{A logical value indicating whether to add the p-value of the linear regression line to each scatter plot. Defaults to TRUE.}
+\item{add_pvalue}{Whether to add the p-value of the linear regression line to each scatter plot. Defaults to TRUE.}
 
-\item{add_smooth}{A logical value indicating whether to add a smoothed line to each scatter plot. Defaults to TRUE.}
+\item{add_smooth}{Whether to add a smoothed line to each scatter plot. Defaults to TRUE.}
 
 \item{palette}{A character string specifying the name of the color palette to use for the groups. Defaults to "Paired".}
 
@@ -91,7 +91,7 @@ FeatureCorPlot(
 
 \item{cor_range}{A two-length numeric vector specifying the range for the correlation.}
 
-\item{pt.size}{A numeric value specifying the size of the points in the scatter plots. If NULL (default), the size will be automatically determined based on the number of cells.}
+\item{pt.size}{The size of the points in the scatter plots. If NULL (default), the size will be automatically determined based on the number of cells.}
 
 \item{pt.alpha}{A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Defaults to 1.}
 
@@ -99,19 +99,19 @@ FeatureCorPlot(
 
 \item{cols.highlight}{A character string specifying the color for the highlighted cells. Defaults to "black".}
 
-\item{sizes.highlight}{A numeric value specifying the size of the highlighted cells in the scatter plots. Defaults to 1.}
+\item{sizes.highlight}{The size of the highlighted cells in the scatter plots. Defaults to 1.}
 
 \item{alpha.highlight}{A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Defaults to 1.}
 
-\item{stroke.highlight}{A numeric value specifying the stroke size of the highlighted cells in the scatter plots. Defaults to 0.5.}
+\item{stroke.highlight}{The stroke size of the highlighted cells in the scatter plots. Defaults to 0.5.}
 
-\item{calculate_coexp}{A logical value indicating whether to calculate the co-expression of selected features. Defaults to FALSE.}
+\item{calculate_coexp}{Whether to calculate the co-expression of selected features. Defaults to FALSE.}
 
-\item{raster}{A logical value indicating whether to use raster graphics for scatter plots. Defaults to NULL.}
+\item{raster}{Whether to use raster graphics for scatter plots. Defaults to NULL.}
 
 \item{raster.dpi}{A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Defaults to c(512, 512).}
 
-\item{aspect.ratio}{A numeric value specifying the aspect ratio of the scatter plots. Defaults to 1.}
+\item{aspect.ratio}{The aspect ratio of the scatter plots. Defaults to 1.}
 
 \item{title}{A character string specifying the title for the correlation plot. Defaults to NULL.}
 
@@ -125,17 +125,17 @@ FeatureCorPlot(
 
 \item{theme_args}{A list of arguments to pass to the theme function. Defaults to an empty list.}
 
-\item{combine}{A logical value indicating whether to combine the plots into a single plot. Defaults to TRUE.}
+\item{combine}{Whether to combine the plots into a single plot. Defaults to TRUE.}
 
-\item{nrow}{A numeric value specifying the number of rows in the combined plot. If NULL (default), the number of rows will be automatically determined.}
+\item{nrow}{The number of rows in the combined plot. If NULL (default), the number of rows will be automatically determined.}
 
-\item{ncol}{A numeric value specifying the number of columns in the combined plot. If NULL (default), the number of columns will be automatically determined.}
+\item{ncol}{The number of columns in the combined plot. If NULL (default), the number of columns will be automatically determined.}
 
-\item{byrow}{A logical value indicating whether to fill the combined plot byrow (top to bottom, left to right). Defaults to TRUE.}
+\item{byrow}{Whether to fill the combined plot byrow (top to bottom, left to right). Defaults to TRUE.}
 
-\item{force}{A logical value indicating whether to force the creation of the plot, even if it contains more than 50 subplots. Defaults to FALSE.}
+\item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots. Defaults to FALSE.}
 
-\item{seed}{A numeric value specifying the random seed for reproducibility. Defaults to 11.}
+\item{seed}{The random seed for reproducibility. Defaults to 11.}
 }
 \description{
 This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
