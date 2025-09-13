@@ -1,31 +1,31 @@
-#' Run GLMPCA (generalized version of principal components analysis)
+#' @title Run GLMPCA (generalized version of principal components analysis)
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object, an assay object, or a matrix-like object.
-#' @param assay A character string specifying the assay to be used for the analysis.
-#' Default is NULL.
-#' @param layer A character string specifying the layer to be used for the analysis.
-#' Default is "counts".
-#' @param features A character vector specifying the features to be used for the analysis.
-#' Default is NULL, which uses all variable features.
-#' @param L An integer specifying the number of components to be computed.
-#' Default is 5.
-#' @param fam A character string specifying the family of the generalized linear model to be used.
-#' Currently supported values are "poi", "nb", "nb2", "binom", "mult", and "bern".
-#' Default is "poi".
-#' @param rev.gmlpca A logical value indicating whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis. Default is FALSE.
-#' @param ndims.print An integer vector specifying the dimensions (number of components) to print in the output.
-#' Default is 1:5.
-#' @param nfeatures.print An integer specifying the number of features to print in the output.
-#' Default is 30.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
-#' Default is "glmpca".
-#' @param reduction.key A character string specifying the prefix for the column names of the basis vectors.
-#' Default is "GLMPC_".
-#' @param verbose A logical value indicating whether to print verbose output.
-#' Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used.
-#' Default is 11.
+#' @param assay The assay to be used for the analysis.
+#' Default is `NULL`.
+#' @param layer The layer to be used for the analysis.
+#' Default is `"counts"`.
+#' @param features The features to be used for the analysis.
+#' Default is `NULL`, which uses all variable features.
+#' @param L The number of components to be computed.
+#' Default is `5`.
+#' @param fam The family of the generalized linear model to be used.
+#' Currently supported values are `"poi"`, `"nb"`, `"nb2"`, `"binom"`, `"mult"`, and `"bern"`.
+#' Default is `"poi"`.
+#' @param rev.gmlpca Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.
+#' Default is `FALSE`.
+#' @param ndims.print The dimensions (number of components) to print in the output.
+#' Default is `1:5`.
+#' @param nfeatures.print The number of features to print in the output.
+#' Default is `30`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"glmpca"`.
+#' @param reduction.key The prefix for the column names of the basis vectors.
+#' Default is `"GLMPC_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
 #' @param ... Additional arguments to be passed to the [glmpca::glmpca] function.
 #'
 #' @rdname RunGLMPCA

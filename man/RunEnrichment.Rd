@@ -65,7 +65,7 @@ This argument is used to convert the gene IDs from \code{IDtype} to \code{result
 
 \item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is FALSE.}
 
@@ -73,10 +73,10 @@ Default is FALSE.}
 This argument is ignored if \code{db_update} is \code{TRUE}.
 Default is "latest".}
 
-\item{db_combine}{A logical value indicating whether to combine multiple databases into one.
+\item{db_combine}{Whether to combine multiple databases into one.
 If TRUE, all database specified by \code{db} will be combined as one named "Combined".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
@@ -89,13 +89,13 @@ The first column should contain the term IDs, and the second column should conta
 \item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the corresponding term names.}
 
-\item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
+\item{minGSSize}{The minimum size of a gene set to be considered in the enrichment analysis.}
 
-\item{maxGSSize}{A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.}
+\item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
 \item{unlimited_db}{A character vector specifying the names of databases that do not have size restrictions.}
 
-\item{GO_simplify}{A logical value indicating whether to simplify the GO terms.
+\item{GO_simplify}{Whether to simplify the GO terms.
 If \code{TRUE}, additional results with simplified GO terms will be returned.}
 
 \item{GO_simplify_cutoff}{A character vector specifying the filter condition for simplification of GO terms.
@@ -104,14 +104,14 @@ This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 \item{simplify_method}{A character vector specifying the method to be used for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{simplify_similarityCutoff}{A numeric value specifying the similarity cutoff for simplification of GO terms.
+\item{simplify_similarityCutoff}{The similarity cutoff for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.

@@ -1,6 +1,7 @@
 #' @title The Group Heatmap
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param features The features to include in the heatmap.
 #' Default is NULL.
@@ -8,7 +9,7 @@
 #' Default is NULL.
 #' @param split.by A character vector specifying the variable to split the heatmap by.
 #'  Default is NULL.
-#' @param within_groups A logical value indicating whether to create separate heatmap scales for each group or within each group.
+#' @param within_groups Whether to create separate heatmap scales for each group or within each group.
 #' Default is FALSE.
 #' @param grouping.var A character vector that specifies another variable for grouping, such as certain conditions.
 #' Default is NULL.
@@ -18,11 +19,11 @@
 #' Default is NULL.
 #' @param aggregate_fun A function to use for aggregating data within groups.
 #' Default is [base::mean].
-#' @param exp_cutoff A numeric value specifying the threshold for cell counting if \code{add_dot} is TRUE.
+#' @param exp_cutoff The threshold for cell counting if \code{add_dot} is TRUE.
 #' Default is 0.
-#' @param border A logical value indicating whether to add a border to the heatmap.
+#' @param border Whether to add a border to the heatmap.
 #' Default is TRUE.
-#' @param flip A logical value indicating whether to flip the heatmap.
+#' @param flip Whether to flip the heatmap.
 #' Default is FALSE.
 #' @param layer A character vector specifying the layer in the Seurat object to use.
 #' Default is "counts".
@@ -34,41 +35,41 @@
 #' Default is NULL.
 #' @param limits A two-length numeric vector specifying the limits for the color scale.
 #' Default is NULL.
-#' @param lib_normalize A logical value indicating whether to normalize the data by library size.
+#' @param lib_normalize Whether to normalize the data by library size.
 #' @param libsize A numeric vector specifying the library size for each cell.
 #' Default is NULL.
 #' @param feature_split A factor specifying how to split the features.
 #' Default is NULL.
 #' @param feature_split_by A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
 #' Default is NULL.
-#' @param n_split An integer specifying the number of feature splits (feature clusters) to create.
+#' @param n_split A number of feature splits (feature clusters) to create.
 #' Default is NULL.
 #' @param split_order A numeric vector specifying the order of splits. Default is NULL.
 #' @param split_method A character vector specifying the method for splitting features.
 #' Default is "kmeans" with options "kmeans", "hclust", "mfuzz").
-#' @param decreasing A logical value indicating whether to sort feature splits in decreasing order.
+#' @param decreasing Whether to sort feature splits in decreasing order.
 #' Default is FALSE.
-#' @param fuzzification A numeric value specifying the fuzzification coefficient.
+#' @param fuzzification The fuzzification coefficient.
 #' Default is NULL.
 #' @param cluster_features_by A character vector specifying which group.by to use when clustering features.
 #' Default is NULL. By default, this parameter is set to NULL, which means that all groups will be used.
-#' @param cluster_rows A logical value indicating whether to cluster rows in the heatmap.
+#' @param cluster_rows Whether to cluster rows in the heatmap.
 #' Default is FALSE.
-#' @param cluster_columns A logical value indicating whether to cluster columns in the heatmap.
+#' @param cluster_columns Whether to cluster columns in the heatmap.
 #' Default is FALSE.
-#' @param cluster_row_slices A logical value indicating whether to cluster row slices in the heatmap.
+#' @param cluster_row_slices Whether to cluster row slices in the heatmap.
 #' Default is FALSE.
-#' @param cluster_column_slices A logical value indicating whether to cluster column slices in the heatmap.
+#' @param cluster_column_slices Whether to cluster column slices in the heatmap.
 #' Default is FALSE.
-#' @param show_row_names A logical value indicating whether to show row names in the heatmap.
+#' @param show_row_names Whether to show row names in the heatmap.
 #' Default is FALSE.
-#' @param show_column_names A logical value indicating whether to show column names in the heatmap.
+#' @param show_column_names Whether to show column names in the heatmap.
 #' Default is FALSE.
 #' @param row_names_side A character vector specifying the side to place row names.
 #' @param column_names_side A character vector specifying the side to place column names.
-#' @param row_names_rot A numeric value specifying the rotation angle for row names.
+#' @param row_names_rot The rotation angle for row names.
 #' Default is 0.
-#' @param column_names_rot A numeric value specifying the rotation angle for column names.
+#' @param column_names_rot The rotation angle for column names.
 #' Default is 90.
 #' @param row_title A character vector specifying the title for rows.
 #' Default is NULL.
@@ -78,14 +79,14 @@
 #' Default is "left".
 #' @param column_title_side A character vector specifying the side to place column title.
 #' Default is "top".
-#' @param row_title_rot A numeric value specifying the rotation angle for row title.
+#' @param row_title_rot The rotation angle for row title.
 #' Default is 0.
-#' @param column_title_rot A numeric value specifying the rotation angle for column title.
-#' @param anno_terms A logical value indicating whether to include term annotations.
+#' @param column_title_rot The rotation angle for column title.
+#' @param anno_terms Whether to include term annotations.
 #' Default is FALSE.
-#' @param anno_keys A logical value indicating whether to include key annotations.
+#' @param anno_keys Whether to include key annotations.
 #' Default is FALSE.
-#' @param anno_features A logical value indicating whether to include feature annotations.
+#' @param anno_features Whether to include feature annotations.
 #' Default is FALSE.
 #' @param terms_width A unit specifying the width of term annotations.
 #' Default is unit(4, "in").
@@ -103,13 +104,13 @@
 #' Default is "symbol".
 #' @param species A character vector specifying the species for features.
 #' Default is "Homo_sapiens".
-#' @param db_update A logical value indicating whether to update the database.
+#' @param db_update Whether to update the database.
 #' Default is FALSE.
 #' @param db_version A character vector specifying the version of the database.
 #' Default is "latest".
-#' @param db_combine A logical value indicating whether to use a combined database.
+#' @param db_combine Whether to use a combined database.
 #' Default is FALSE.
-#' @param convert_species A logical value indicating whether to use a species-converted database if annotation is missing for `species`.
+#' @param convert_species Whether to use a species-converted database if annotation is missing for `species`.
 #' Default is FALSE.
 #' @param Ensembl_version An integer specifying the Ensembl version.
 #' Default is 103.
@@ -125,48 +126,48 @@
 #' Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size for the database.
 #' Default is 500.
-#' @param GO_simplify A logical value indicating whether to simplify gene ontology terms.
+#' @param GO_simplify Whether to simplify gene ontology terms.
 #' Default is FALSE.
 #' @param GO_simplify_cutoff A character vector specifying the cutoff for GO simplification.
 #' Default is "p.adjust < 0.05".
 #' @param simplify_method A character vector specifying the method for GO simplification.
 #' Default is "Wang".
-#' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for GO simplification.
+#' @param simplify_similarityCutoff The similarity cutoff for GO simplification.
 #' Default is 0.7.
 #' @param pvalueCutoff A numeric vector specifying the p-value cutoff(s) for significance.
 #' Default is NULL.
-#' @param padjustCutoff A numeric value specifying the adjusted p-value cutoff for significance.
+#' @param padjustCutoff The adjusted p-value cutoff for significance.
 #' Default is 0.05.
-#' @param topTerm An integer specifying the number of top terms to include.
+#' @param topTerm A number of top terms to include.
 #' Default is 5.
-#' @param show_termid A logical value indicating whether to show term IDs.
+#' @param show_termid Whether to show term IDs.
 #' Default is FALSE.
-#' @param topWord An integer specifying the number of top words to include.
+#' @param topWord A number of top words to include.
 #' Default is 20.
 #' @param words_excluded A character vector specifying the words to exclude.
 #' Default is NULL.
-#' @param nlabel An integer specifying the number of labels to include.
+#' @param nlabel A number of labels to include.
 #' Default is 0.
 #' @param features_label A character vector specifying the features to label.
 #' Default is NULL.
-#' @param label_size A numeric value specifying the size of labels.
+#' @param label_size The size of labels.
 #' Default is 10.
 #' @param label_color A character vector specifying the color of labels.
 #' Default is "black".
-#' @param add_bg A logical value indicating whether to add a background to the heatmap.
+#' @param add_bg Whether to add a background to the heatmap.
 #' Default is FALSE.
-#' @param bg_alpha A numeric value specifying the alpha value for the background color.
+#' @param bg_alpha The alpha value for the background color.
 #' Default is 0.5.
-#' @param add_dot A logical value indicating whether to add dots to the heatmap.
+#' @param add_dot Whether to add dots to the heatmap.
 #' The size of dot represents percentage of expressed cells based on the specified `exp_cutoff`.
 #' Default is FALSE.
 #' @param dot_size A unit specifying the base size of the dots.
 #' Default is unit(8, "mm").
-#' @param add_reticle A logical value indicating whether to add reticles to the heatmap.
+#' @param add_reticle Whether to add reticles to the heatmap.
 #' Default is FALSE.
 #' @param reticle_color A character vector specifying the color of the reticles.
 #' Default is "grey".
-#' @param add_violin A logical value indicating whether to add violins to the heatmap.
+#' @param add_violin Whether to add violins to the heatmap.
 #' Default is FALSE.
 #' @param fill.by A character vector specifying what to fill the violin.
 #' Possible values are "group", "feature", or "expression".
@@ -209,11 +210,11 @@
 #' Default is NULL.
 #' @param feature_annotation_params A list specifying additional parameters for feature annotations.
 #' Default is an empty list.
-#' @param use_raster A logical value indicating whether to use a raster device for plotting.
+#' @param use_raster Whether to use a raster device for plotting.
 #' Default is NULL.
 #' @param raster_device A character vector specifying the raster device to use.
 #' Default is "png".
-#' @param raster_by_magick A logical value indicating whether to use the 'magick' package for raster.
+#' @param raster_by_magick Whether to use the 'magick' package for raster.
 #' Default is FALSE.
 #' @param height A numeric vector specifying the height(s) of the heatmap body.
 #' Default is NULL.
@@ -224,8 +225,6 @@
 #' @param seed An integer specifying the random seed. Default is 11.
 #' @param ht_params A list specifying additional parameters passed to the [ComplexHeatmap::Heatmap] function.
 #' Default is an empty list.
-#' @param verbose A logical value indicating whether to print messages.
-#' Default is TRUE.
 #' @param ... Additional arguments passed to the [ComplexHeatmap::Heatmap] function.
 #'
 #' @seealso [RunDEtest]

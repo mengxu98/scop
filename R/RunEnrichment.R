@@ -20,30 +20,30 @@
 #' This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.
 #' @param species A character vector specifying the species for which the analysis is performed.
 #' @param db A character vector specifying the name of the database to be used for enrichment analysis.
-#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated.
+#' @param db_update Whether the gene annotation databases should be forcefully updated.
 #' If set to FALSE, the function will attempt to load the cached databases instead.
 #' Default is FALSE.
 #' @param db_version A character vector specifying the version of the database to be used.
 #' This argument is ignored if \code{db_update} is \code{TRUE}.
 #' Default is "latest".
-#' @param db_combine A logical value indicating whether to combine multiple databases into one.
+#' @param db_combine Whether to combine multiple databases into one.
 #' If TRUE, all database specified by \code{db} will be combined as one named "Combined".
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
 #' The default value is TRUE.
 #' @param TERM2GENE A data frame specifying the gene-term mapping for a custom database.
 #' The first column should contain the term IDs, and the second column should contain the gene IDs.
 #' @param TERM2NAME A data frame specifying the term-name mapping for a custom database.
 #' The first column should contain the term IDs, and the second column should contain the corresponding term names.
-#' @param minGSSize A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.
-#' @param maxGSSize A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.
+#' @param minGSSize The minimum size of a gene set to be considered in the enrichment analysis.
+#' @param maxGSSize The maximum size of a gene set to be considered in the enrichment analysis.
 #' @param unlimited_db A character vector specifying the names of databases that do not have size restrictions.
-#' @param GO_simplify A logical value indicating whether to simplify the GO terms.
+#' @param GO_simplify Whether to simplify the GO terms.
 #' If \code{TRUE}, additional results with simplified GO terms will be returned.
 #' @param GO_simplify_cutoff A character vector specifying the filter condition for simplification of GO terms.
 #' This argument is only used if \code{GO_simplify} is \code{TRUE}.
 #' @param simplify_method A character vector specifying the method to be used for simplification of GO terms.
 #' This argument is only used if \code{GO_simplify} is \code{TRUE}.
-#' @param simplify_similarityCutoff A numeric value specifying the similarity cutoff for simplification of GO terms.
+#' @param simplify_similarityCutoff The similarity cutoff for simplification of GO terms.
 #' This argument is only used if \code{GO_simplify} is \code{TRUE}.
 #' @inheritParams thisutils::parallelize_fun
 #'
