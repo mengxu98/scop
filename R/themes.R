@@ -435,9 +435,9 @@ palette_colors <- function(
 #' Default is `NULL`.
 #' @param palette_names A character vector specifying the names of the scop palettes to include.
 #' Default is `NULL`.
-#' @param return_names A logical value indicating whether to return the names of the selected palettes.
+#' @param return_names Whether to return the names of the selected palettes.
 #' Default is `TRUE`.
-#' @param return_palettes A logical value indicating whether to return the colors of selected palettes.
+#' @param return_palettes Whether to return the colors of selected palettes.
 #' Default is `FALSE`.
 #'
 #' @seealso [palette_colors], [palette_list]
@@ -540,6 +540,7 @@ show_palettes <- function(
 #' This function can set the panel width/height of plot to a fixed value and rasterize it.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param x A ggplot object, a grob object, or a combined plot made by patchwork or cowplot package.
 #' @param panel_index Specify the panel to be fixed.
 #' If `NULL`, will fix all panels.
@@ -551,15 +552,13 @@ show_palettes <- function(
 #' @param padding The padding to add around each panel, in inches.
 #' Default is `0`.
 #' @param units The units in which `height`, `width` and `margin` are given.
-#' Can be `mm`, `cm`, `in`, etc. See [grid::unit].
+#' Can be `"mm"`, `"cm"`, `"in"`, etc. See [grid::unit].
 #' @param raster Whether to rasterize the panel.
 #' @param dpi Plot resolution.
 #' @param return_grob Whether to return a grob object instead of a wrapped `patchwork` object.
 #' Default is `FALSE`.
 #' @param save `NULL` or the file name used to save the plot.
 #' @param bg_color The background color of the plot.
-#' @param verbose Whether to print messages.
-#' Default is `FALSE`.
 #' @param ... Additional arguments passed to other functions.
 #'
 #' @export
@@ -1445,9 +1444,9 @@ slim_data.default <- function(p) {
 #' @title Get used vars in a ggplot object
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param p A `ggplot` object.
 #' @param reverse If `TRUE` then will return unused vars.
-#' @param verbose Whether to print messages.
 #'
 #' @export
 get_vars <- function(p, reverse, verbose = FALSE) {

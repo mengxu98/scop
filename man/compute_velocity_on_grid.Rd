@@ -31,7 +31,7 @@ compute_velocity_on_grid(
 
 \item{scale}{An optional numeric value specifying the scaling factor for the velocity vectors. Default is 1.}
 
-\item{adjust_for_stream}{A logical value indicating whether to adjust the velocity vectors for streamlines. Default is FALSE.}
+\item{adjust_for_stream}{Whether to adjust the velocity vectors for streamlines. Default is FALSE.}
 
 \item{cutoff_perc}{An optional numeric value specifying the percentile cutoff for removing low-density grid points. Default is 5.}
 }

@@ -10,20 +10,20 @@
 #' @param reduction The type of reduction to use for the plot. Defaults to the default reduction in the Seurat object.
 #' @param dims The dimensions of the reduction to use for the plot. Defaults to the first two dimensions.
 #' @param cells The cells to include in the plot. Defaults to all cells.
-#' @param show_transition A logical value indicating whether to display transitions between different cell states. Defaults to \code{FALSE}.
+#' @param show_transition Whether to display transitions between different cell states. Defaults to \code{FALSE}.
 #' @param node_palette The color palette to use for node coloring. Defaults to "Paired".
 #' @param node_palcolor A vector of colors to use for node coloring. Defaults to \code{NULL}.
 #' @param node_size The size of the nodes in the plot. Defaults to 4.
 #' @param node_alpha The transparency of the nodes in the plot. Defaults to 1.
 #' @param node_highlight The group(s) to highlight in the plot. Defaults to \code{NULL}.
 #' @param node_highlight_color The color to use for highlighting the nodes. Defaults to "red".
-#' @param label A logical value indicating whether to display labels for the nodes. Defaults to \code{FALSE}.
+#' @param label Whether to display labels for the nodes. Defaults to \code{FALSE}.
 #' @param label.size The size of the labels. Defaults to 3.5.
 #' @param label.fg The color of the label text. Defaults to "white".
 #' @param label.bg The background color of the labels. Defaults to "black".
 #' @param label.bg.r The transparency of the label background color. Defaults to 0.1.
-#' @param label_insitu A logical value indicating whether to use in-situ labeling for the nodes. Defaults to \code{FALSE}.
-#' @param label_repel A logical value indicating whether to use repel mode for labeling nodes. Defaults to \code{FALSE}.
+#' @param label_insitu Whether to use in-situ labeling for the nodes. Defaults to \code{FALSE}.
+#' @param label_repel Whether to use repel mode for labeling nodes. Defaults to \code{FALSE}.
 #' @param label_repulsion The repulsion factor for repel mode. Defaults to 20.
 #' @param label_point_size The size of the points in the labels. Defaults to 1.
 #' @param label_point_color The color of the points in the labels. Defaults to "black".
@@ -62,7 +62,7 @@
 #' @param legend.direction The direction of the legend. Possible values are "vertical" and "horizontal". Defaults to "vertical".
 #' @param theme_use The name of the theme to use for the plot. Defaults to "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
-#' @param return_layer A logical value indicating whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.
+#' @param return_layer Whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.
 #'
 #' @seealso [RunPAGA], [CellDimPlot]
 #'

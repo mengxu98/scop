@@ -14,7 +14,7 @@ CycGenePrefetch(
 )
 }
 \arguments{
-\item{species}{Latin names for animals,i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
+\item{species}{Latin names for animals, i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
@@ -22,15 +22,18 @@ CycGenePrefetch(
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
-\item{use_cached_gene}{Whether to use previously cached cell cycle gene conversion results for the species.}
+\item{use_cached_gene}{Whether to use previously cached cell cycle gene conversion results for the species.
+Default is \code{TRUE}.}
 
-\item{verbose}{Whether to print messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A list of S-phase and G2M-phase genes.
 }
 \description{
-Based on the human cell cycle genes, the cell cycle genes of the corresponding species were captured by homologous gene conversion.
+Based on the human cell cycle genes,
+the cell cycle genes of the corresponding species were captured by homologous gene conversion.
 }
 \examples{
 ccgenes <- CycGenePrefetch("Homo_sapiens")

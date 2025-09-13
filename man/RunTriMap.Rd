@@ -54,41 +54,61 @@ RunTriMap(object, ...)
 
 \item{...}{Additional arguments to be passed to the trimap.TRIMAP function.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is "pca".}
+\item{reduction}{A character string specifying the reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is NULL.}
+\item{dims}{An integer vector specifying the dimensions to be used.
+Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{A character vector specifying the features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{A character string specifying the assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{A character string specifying the layer to be used.
+Default is \code{"data"}.}
 
-\item{n_components}{An integer specifying the number of TriMap components. Default is 2.}
+\item{n_components}{A number of TriMap components.
+Default is \code{2}.}
 
-\item{n_inliers}{An integer specifying the number of nearest neighbors for forming the nearest neighbor triplets. Default is 12.}
+\item{n_inliers}{A number of nearest neighbors for forming the nearest neighbor triplets.
+Default is \code{12}.}
 
-\item{n_outliers}{An integer specifying the number of outliers for forming the nearest neighbor triplets. Default is 4.}
+\item{n_outliers}{A number of outliers for forming the nearest neighbor triplets.
+Default is \code{4}.}
 
-\item{n_random}{An integer specifying the number of random triplets per point. Default is 3.}
+\item{n_random}{A number of random triplets per point.
+Default is \code{3}.}
 
-\item{distance_method}{A character string specifying the distance metric for TriMap. Options are: "euclidean", "manhattan", "angular", "cosine", "hamming". Default is "euclidean".}
+\item{distance_method}{A character string specifying the distance metric for TriMap.
+Options are: \code{"euclidean"}, \code{"manhattan"}, \code{"angular"}, \code{"cosine"}, \code{"hamming"}.
+Default is \code{"euclidean"}.}
 
-\item{lr}{A numeric value specifying the learning rate for TriMap. Default is 0.1.}
+\item{lr}{The learning rate for TriMap.
+Default is \code{0.1}.}
 
-\item{n_iters}{An integer specifying the number of iterations for TriMap. Default is 400.}
+\item{n_iters}{A number of iterations for TriMap.
+Default is \code{400}.}
 
-\item{apply_pca}{A logical value indicating whether to apply PCA before the nearest-neighbor calculation. Default is TRUE.}
+\item{apply_pca}{Whether to apply PCA before the nearest-neighbor calculation.
+Default is \code{TRUE}.}
 
-\item{opt_method}{A character string specifying the optimization method for TriMap. Options are: "dbd", "sd", "momentum". Default is "dbd".}
+\item{opt_method}{A character string specifying the optimization method for TriMap.
+Options are: \code{"dbd"}, \code{"sd"}, \code{"momentum"}.
+Default is \code{"dbd"}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "trimap".}
+\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
+Default is \code{"trimap"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the TriMap embeddings. Default is "TriMap_".}
+\item{reduction.key}{A character string specifying the prefix for the column names of the TriMap embeddings.
+Default is \code{"TriMap_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{An integer specifying the random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
