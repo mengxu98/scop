@@ -20,15 +20,19 @@ srt_to_adata(
 \item{srt}{A Seurat object.}
 
 \item{features}{Optional vector of features to include in the anndata object.
-Defaults to all features in assay_x.}
+Defaults to all features in \code{assay_x}.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
+Default is \code{"RNA"}.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.
+Default is \code{"counts"}.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.}
+\item{assay_y}{Assays to convert as layers in the anndata object.
+Default is \code{c("spliced", "unspliced")}.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.
+Default is \code{"counts"}.}
 
 \item{convert_tools}{Whether to convert the tool-specific data.
 Default is \code{FALSE}.}
@@ -36,7 +40,7 @@ Default is \code{FALSE}.}
 \item{convert_misc}{Whether to convert the miscellaneous data.
 Default is \code{FALSE}.}
 
-\item{verbose}{Whether to print verbose messages during the conversion process.
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \value{

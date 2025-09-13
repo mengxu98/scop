@@ -1,15 +1,17 @@
 #' @title Attempt to recover raw counts from the normalized matrix
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param assay Name of assay to recover counts.
 #' @param trans The transformation function to applied when data is presumed to be log-normalized.
 #' @param min_count Minimum UMI count of genes.
 #' @param tolerance When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
-#'  However, due to decimal point preservation during normalization,
-#'  the calculated nCount is usually a floating point number close to the integer.
-#'  The tolerance is its difference from the integer. Default is 0.1
+#' However, due to decimal point preservation during normalization,
+#' the calculated nCount is usually a floating point number close to the integer.
+#' The tolerance is its difference from the integer.
+#' Default is `0.1`
 #' @param sf Set the scaling factor manually.
-#' @param verbose Whether to show messages.
 #'
 #' @export
 #'
@@ -64,14 +66,14 @@ RecoverCounts <- function(
   )
   if (!inherits(counts, "dgCMatrix")) {
     counts <- SeuratObject::as.sparse(
-      counts[1:nrow(counts), , drop = FALSE]
+      counts[seq_len(nrow(counts)), , drop = FALSE]
     )
   }
 
   status <- CheckDataType(counts)
   if (status == "raw_counts") {
     log_message(
-      "The data is already raw counts.",
+      "The data is already raw counts",
       verbose = verbose
     )
     return(srt)
@@ -79,13 +81,13 @@ RecoverCounts <- function(
 
   if (status == "log_normalized_counts") {
     log_message(
-      "The data is presumed to be log-normalized.",
+      "The data is presumed to be log-normalized",
       verbose = verbose
     )
     trans <- match.arg(trans)
     if (trans %in% c("expm1", "exp")) {
       log_message(
-        "Perform ", trans, " on the raw data.",
+        "Perform {.val {trans}} on the raw data",
         verbose = verbose
       )
       counts <- do.call(trans, list(counts))
@@ -93,22 +95,20 @@ RecoverCounts <- function(
   }
   if (status == "raw_normalized_counts") {
     log_message(
-      "The data is presumed to be normalized without log transformation.",
+      "The data is presumed to be normalized without log transformation",
       verbose = verbose
     )
   }
   if (is.null(sf)) {
     sf <- unique(round(Matrix::colSums(counts)))
-    log_message(
-      "The presumed scale factor: ",
-      paste0(utils::head(sf, 10), collapse = ", "),
-      verbose = verbose
-    )
   }
 
   if (length(sf) == 1) {
     counts <- counts / sf
-    elements <- split(counts@x, rep(1:ncol(counts), diff(counts@p)))
+    elements <- split(
+      counts@x,
+      rep(seq_len(ncol(counts)), diff(counts@p))
+    )
     min_norm <- sapply(elements, min)
     nCount <- NULL
     for (m in min_count) {
@@ -122,14 +122,11 @@ RecoverCounts <- function(
     }
 
     if (is.null(nCount)) {
+      top10_cells <- utils::head(colnames(counts)[diff_value < tolerance], 10)
       log_message(
-        "The presumed nCount of some cells is not valid: ",
-        paste0(
-          utils::head(colnames(counts)[diff_value < tolerance], 10),
-          collapse = ","
-        ),
-        ", ...",
-        message_type = "warning"
+        "The presumed nCount of some cells is not valid: {.val {top10_cells}}",
+        message_type = "warning",
+        verbose = verbose
       )
       return(srt)
     }
@@ -149,7 +146,8 @@ RecoverCounts <- function(
   } else {
     log_message(
       "Scale factor is not unique. No changes to be made",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -158,15 +156,17 @@ RecoverCounts <- function(
 
 #' @title Reorder idents by the gene expression
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param features Features used to reorder idents.
 #' @param reorder_by Reorder groups instead of idents.
 #' @param layer Specific layer to get data from.
 #' @param assay Specific assay to get data from.
-#' @param log Whether log1p transformation needs to be applied.
-#' Default is \code{TRUE}.
+#' @param log Whether [log1p] transformation needs to be applied.
+#' Default is `TRUE`.
 #' @param distance_metric Metric to compute distance.
-#' Default is "euclidean".
+#' Default is `"euclidean"`.
 #'
 #' @export
 #'
@@ -185,7 +185,8 @@ srt_reorder <- function(
     layer = "data",
     assay = NULL,
     log = TRUE,
-    distance_metric = "euclidean") {
+    distance_metric = "euclidean",
+    verbose = TRUE) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (is.null(features)) {
     srt <- Seurat::FindVariableFeatures(
@@ -204,7 +205,8 @@ srt_reorder <- function(
   if (length(unique(srt[[reorder_by, drop = TRUE]])) == 1) {
     log_message(
       "Only one cluster found",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return(srt)
   }
@@ -242,7 +244,9 @@ srt_reorder <- function(
   )
   if (inherits(assay_obj, "Assay")) {
     log_message(
-      "Using {.fn Seurat::AverageExpression} to calculate pseudo-bulk data for {.cls Assay}"
+      "Using {.fn Seurat::AverageExpression} to calculate pseudo-bulk data for {.cls Assay}",
+      message_type = "warning",
+      verbose = verbose
     )
     data_avg <- Seurat::AverageExpression(
       object = srt,
@@ -255,7 +259,8 @@ srt_reorder <- function(
   } else if (inherits(assay_obj, "Assay5")) {
     log_message(
       "Using {.fn Seurat::AggregateExpression} to calculate pseudo-bulk data for {.cls Assay5}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     data_avg <- Seurat::AggregateExpression(
       object = srt,
@@ -266,7 +271,7 @@ srt_reorder <- function(
     )[[1]][features, , drop = FALSE]
   } else {
     log_message(
-      "Input data in not a Seurat object",
+      "Input data in not a {.cls Seurat} object",
       message_type = "error"
     )
   }
@@ -321,13 +326,13 @@ srt_reorder <- function(
 
 #' @title Append a Seurat object to another
 #'
+#' @inheritParams thisutils::log_message
 #' @param srt_raw A Seurat object to be appended.
 #' @param srt_append New Seurat object to append.
 #' @param slots slots names.
 #' @param pattern A character string containing a regular expression.
 #' All data with matching names will be considered for appending.
 #' @param overwrite Whether to overwrite.
-#' @param verbose Show messages.
 #'
 #' @export
 srt_append <- function(
@@ -360,13 +365,11 @@ srt_append <- function(
       )
       next
     }
-    for (info in names(methods::slot(srt_append, name = slot_nm))) {
+    slot_data <- methods::slot(srt_append, name = slot_nm)
+    for (info in names(slot_data)) {
       if (is.null(info)) {
-        if (length(methods::slot(srt_append, name = slot_nm)) > 0 && isTRUE(overwrite)) {
-          methods::slot(srt_raw, name = slot_nm) <- methods::slot(
-            srt_append,
-            name = slot_nm
-          )
+        if (length(slot_data) > 0 && isTRUE(overwrite)) {
+          methods::slot(srt_raw, name = slot_nm) <- slot_data
         }
         next
       }
@@ -396,7 +399,8 @@ srt_append <- function(
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
-                  layer = "counts"
+                  layer = "counts",
+                  verbose = FALSE
                 )
               )
               # srt_raw[[info]]@data <- srt_append[[info]]@data
@@ -407,7 +411,8 @@ srt_append <- function(
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
-                  layer = "data"
+                  layer = "data",
+                  verbose = FALSE
                 )
               )
               if (inherits(Seurat::GetAssay(srt_raw, assay = info), "Assay5")) {
@@ -510,7 +515,7 @@ DefaultReduction <- function(
   }))]
   if (length(reduc_all) == 0) {
     log_message(
-      "No dimensional reduction found in the srt object",
+      "No dimensional reduction found in {.cls Seurat} object",
       message_type = "error"
     )
   }

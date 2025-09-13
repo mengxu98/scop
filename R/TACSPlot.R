@@ -6,50 +6,53 @@
 #' This function is based on a simple scheme: choose features similar to the ones specified and average them to reduce the noise.
 #'
 #' @md
-#' @param srt Seurat object
-#' @param ref_srt Seurat object. If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
+#' @inheritParams thisutils::log_message
+#' @param srt A Seurat object.
+#' @param ref_srt A Seurat object.
+#' If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 #' for example if different time points are present or certain cell types are mostly depleted,
-#' you can feed in a reference srt, and TACS will choose axes based on the reference data. Default is NULL.
-#' @param assay The assay to use. Default is "RNA".
-#' @param layer The layer to use. Default is "data".
-#' @param group.by The variable to group the cells by. Default is NULL.
-#' @param feature1 Horizontal axis on plot mimics this feature. Character, usually length 1 but possibly longer.
+#' you can feed in a reference srt, and TACS will choose axes based on the reference data.
+#' Default is `NULL`.
+#' @param assay The assay to use. Default is `"RNA"`.
+#' @param layer The layer to use. Default is `"data"`.
+#' @param group.by The variable to group the cells by. Default is `NULL`.
+#' @param feature1 Horizontal axis on plot mimics this feature.
+#' Character, usually length 1 but possibly longer.
 #' @param feature2 Vertical axis on plot mimics this feature. Character, usually length 1 but possibly longer.
-#' @param features_predetermined If FALSE, plot the sum of many features similar to feature1 instead of feature1 alone (same
-#' for feature2). See ?GetSimilarFeatures. If TRUE, plot the sum of only the features given.
-#' @param num_features_add Each axis shows a simple sum of similar features. This is how many (before removing overlap). Integer.
+#' @param features_predetermined If `FALSE`, plot the sum of many features similar to feature1 instead of feature1 alone (same for feature2).
+#' See [GetSimilarFeatures].
+#' If `TRUE`, plot the sum of only the features given.
+#' @param num_features_add Each axis shows a simple sum of similar features. This is how many (before removing overlap).
 #' @param aggregator How to combine correlations when finding similar features.
-#' Options: "sum" (default), "min" (for "and"-like filter), "max", or "mean".
+#' Options: `"sum"` (default), `"min"` (for "and"-like filter), `"max"`, or `"mean"`.
 #' @param cutoffs If given, divide plot into four quadrants and annotate with percentages.
 #' Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x and y axes respectively.
-#' @param palette The palette to use. Default is "Paired".
-#' @param density If TRUE, plot contours instead of points.
-#' @param bins Number of bins for density plot. Default is 20.
-#' @param h Bandwidth for density plot. Default is NULL.
-#' @param remove_outliers If TRUE, remove outliers from the plot. Default is FALSE.
-#' @param aspect.ratio The aspect ratio of the plot. Default is 1.
+#' @param palette The palette to use. Default is `"Paired"`.
+#' @param density If `TRUE`, plot contours instead of points.
+#' @param bins Number of bins for density plot. Default is `20`.
+#' @param h Bandwidth for density plot. Default is `NULL`.
+#' @param remove_outliers If `TRUE`, remove outliers from the plot. Default is `FALSE`.
+#' @param aspect.ratio The aspect ratio of the plot. Default is `1`.
 #' @param title The title of the plot.
 #' @param subtitle The subtitle of the plot.
 #' @param xlab The x-axis label.
 #' @param ylab The y-axis label.
-#' @param suffix The suffix of the axis labels. Default is " expression level".
-#' @param legend.position The position of the legend. Default is "right".
-#' @param legend.direction The direction of the legend. Default is "vertical".
-#' @param theme_use The theme to use. Default is "theme_scop".
-#' @param theme_args A list of arguments for the theme. Default is list().
-#' @param include_all If TRUE, include a panel with all cells. Default is FALSE.
-#' @param all_color The color of the all cells panel. Default is "grey20".
-#' @param quadrants_line_color The color of the quadrants lines. Default is "grey30".
-#' @param quadrants_line_type The type of the quadrants lines. Default is "solid".
-#' @param quadrants_line_width The width of the quadrants lines. Default is 0.3.
-#' @param quadrants_label_size The size of the quadrants labels. Default is 3.
-#' @param density_alpha The alpha of the density plot. Default is NULL.
-#' @param nrow The number of rows for the facet plot. Default is NULL.
+#' @param suffix The suffix of the axis labels. Default is `" expression level"`.
+#' @param legend.position The position of the legend. Default is `"right"`.
+#' @param legend.direction The direction of the legend. Default is `"vertical"`.
+#' @param theme_use The theme to use. Default is `"theme_scop"`.
+#' @param theme_args A list of arguments for the theme. Default is `list()`.
+#' @param include_all If `TRUE`, include a panel with all cells. Default is `FALSE`.
+#' @param all_color The color of the all cells panel. Default is `"grey20"`.
+#' @param quadrants_line_color The color of the quadrants lines. Default is `"grey30"`.
+#' @param quadrants_line_type The type of the quadrants lines. Default is `"solid"`.
+#' @param quadrants_line_width The width of the quadrants lines. Default is `0.3`.
+#' @param quadrants_label_size The size of the quadrants labels. Default is `3`.
+#' @param density_alpha The alpha of the density plot. Default is `NULL`.
+#' @param nrow The number of rows for the facet plot. Default is `NULL`.
 #' @param ncol The number of columns for the facet plot.
-#' Default is NULL.
-#' @param verbose A logical value indicating whether to print verbose output.
-#' Default is TRUE.
-#' @param ... Extra params for [ggplot2::stat_density2d].
+#' Default is `NULL`.
+#' @param ... Additional parameters passed to [ggplot2::stat_density2d].
 #'
 #' @export
 #'
@@ -461,7 +464,7 @@ div_by_sum <- function(x) {
 #' @param features A character vector; giving feature names.
 #' @param n An integer; number of results to return.
 #' @param features_use A character vector; list of features eligible to be returned.
-#' @param anticorr A logical value indicating whether to allow negatively correlated genes.
+#' @param anticorr Whether to allow negatively correlated genes.
 #' Default is FALSE.
 #'
 #' @return character vector.

@@ -80,41 +80,42 @@ RunGLMPCA(object, ...)
 
 \item{...}{Additional arguments to be passed to the \link[glmpca:glmpca]{glmpca::glmpca} function.}
 
-\item{assay}{A character string specifying the assay to be used for the analysis.
-Default is NULL.}
+\item{assay}{The assay to be used for the analysis.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used for the analysis.
-Default is "counts".}
+\item{layer}{The layer to be used for the analysis.
+Default is \code{"counts"}.}
 
-\item{features}{A character vector specifying the features to be used for the analysis.
-Default is NULL, which uses all variable features.}
+\item{features}{The features to be used for the analysis.
+Default is \code{NULL}, which uses all variable features.}
 
-\item{L}{An integer specifying the number of components to be computed.
-Default is 5.}
+\item{L}{The number of components to be computed.
+Default is \code{5}.}
 
-\item{fam}{A character string specifying the family of the generalized linear model to be used.
-Currently supported values are "poi", "nb", "nb2", "binom", "mult", and "bern".
-Default is "poi".}
+\item{fam}{The family of the generalized linear model to be used.
+Currently supported values are \code{"poi"}, \code{"nb"}, \code{"nb2"}, \code{"binom"}, \code{"mult"}, and \code{"bern"}.
+Default is \code{"poi"}.}
 
-\item{rev.gmlpca}{A logical value indicating whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis. Default is FALSE.}
+\item{rev.gmlpca}{Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.
+Default is \code{FALSE}.}
 
-\item{ndims.print}{An integer vector specifying the dimensions (number of components) to print in the output.
-Default is 1:5.}
+\item{ndims.print}{The dimensions (number of components) to print in the output.
+Default is \code{1:5}.}
 
-\item{nfeatures.print}{An integer specifying the number of features to print in the output.
-Default is 30.}
+\item{nfeatures.print}{The number of features to print in the output.
+Default is \code{30}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "glmpca".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"glmpca"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the basis vectors.
-Default is "GLMPC_".}
+\item{reduction.key}{The prefix for the column names of the basis vectors.
+Default is \code{"GLMPC_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output.
-Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used.
-Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run GLMPCA (generalized version of principal components analysis)

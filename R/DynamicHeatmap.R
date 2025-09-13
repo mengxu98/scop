@@ -6,38 +6,48 @@
 #' @param lineages A character vector specifying the lineages to plot.
 #' @param features A character vector specifying the features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
-#' \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.
-#' @param use_fitted A logical indicating whether to use fitted values. Default is FALSE.
-#' @param border A logical indicating whether to add a border to the heatmap. Default is TRUE.
-#' @param flip A logical indicating whether to flip the heatmap. Default is FALSE.
-#' @param min_expcells A numeric value specifying the minimum number of expected cells. Default is 20.
-#' @param r.sq A numeric value specifying the R-squared threshold. Default is 0.2.
-#' @param dev.expl A numeric value specifying the deviance explained threshold. Default is 0.2.
-#' @param padjust A numeric value specifying the p-value adjustment threshold. Default is 0.05.
+#' `min_expcells`, `r.sq`, `dev.expl`, `padjust` and `num_intersections`.
+#' @param use_fitted Whether to use fitted values. Default is `FALSE`.
+#' @param border Whether to add a border to the heatmap. Default is `TRUE`.
+#' @param flip Whether to flip the heatmap. Default is `FALSE`.
+#' @param min_expcells The minimum number of expected cells. Default is `20`.
+#' @param r.sq The R-squared threshold. Default is `0.2`.
+#' @param dev.expl The deviance explained threshold. Default is `0.2`.
+#' @param padjust The p-value adjustment threshold. Default is `0.05`.
 #' @param num_intersections This parameter is a numeric vector used to determine the number of intersections among lineages.
 #' It helps in selecting which dynamic features will be used.
-#' By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.
-#' @param cell_density A numeric value is used to define the cell density within each cell bin.
-#' By default, this parameter is set to 1, which means that all cells will be included within each cell bin.
-#' @param cell_bins A numeric value specifying the number of cell bins. Default is 100.
-#' @param order_by A character vector specifying the order of the heatmap. Default is `"peaktime"`.
-#' @param family A character specifying the model used to calculate the dynamic features if needed.
-#' By default, this parameter is set to NULL, and the appropriate family will be automatically determined.
-#' @param cluster_features_by A character vector specifying which lineage to use when clustering features.
-#' By default, this parameter is set to NULL, which means that all lineages will be used.
-#' @param pseudotime_label A numeric vector specifying the pseudotime label. Default is NULL.
-#' @param pseudotime_label_color A character string specifying the pseudotime label color.
+#' By default, when this parameter is set to `NULL`,
+#' all dynamic features that pass the specified threshold will be used for each lineage.
+#' @param cell_density The cell density within each cell bin.
+#' By default, this parameter is set to `1`, which means that all cells will be included within each cell bin.
+#' @param cell_bins The number of cell bins.
+#' Default is `100`.
+#' @param order_by The order of the heatmap.
+#' Default is `"peaktime"`.
+#' @param family The model used to calculate the dynamic features if needed.
+#' By default, this parameter is set to `NULL`, and the appropriate family will be automatically determined.
+#' @param cluster_features_by Which lineage to use when clustering features.
+#' By default, this parameter is set to `NULL`, which means that all lineages will be used.
+#' @param pseudotime_label The pseudotime label.
+#' Default is `NULL`.
+#' @param pseudotime_label_color The pseudotime label color.
 #' Default is `"black"`.
-#' @param pseudotime_label_linetype A numeric value specifying the pseudotime label line type. Default is 2.
-#' @param pseudotime_label_linewidth A numeric value specifying the pseudotime label line width. Default is 3.
-#' @param pseudotime_palette A character vector specifying the color palette to use for pseudotime.
-#' @param pseudotime_palcolor A list specifying the colors to use for the pseudotime in the heatmap.
-#' @param separate_annotation A character vector of names of annotations to be displayed in separate annotation blocks.
+#' @param pseudotime_label_linetype The pseudotime label line type.
+#' Default is `2`.
+#' @param pseudotime_label_linewidth The pseudotime label line width.
+#' Default is `3`.
+#' @param pseudotime_palette The color palette to use for pseudotime.
+#' Default is `"cividis"`.
+#' @param pseudotime_palcolor The colors to use for the pseudotime in the heatmap.
+#' Default is `NULL`.
+#' @param separate_annotation Names of the annotations to be displayed in separate annotation blocks.
 #' Each name should match a column name in the metadata of the `Seurat` object.
-#' @param separate_annotation_palette A character vector specifying the color palette to use for separate annotations.
-#' @param separate_annotation_palcolor A list specifying the colors to use for each level of the separate annotations.
-#' @param separate_annotation_params A list of other parameters to be passed to the [ComplexHeatmap::HeatmapAnnotation] function when creating the separate annotation blocks.
-#' @param reverse_ht A logical indicating whether to reverse the heatmap.
+#' @param separate_annotation_palette The color palette to use for separate annotations.
+#' Default is `"Paired"`.
+#' @param separate_annotation_palcolor The colors to use for each level of the separate annotations.
+#' Default is `NULL`.
+#' @param separate_annotation_params Other parameters to [ComplexHeatmap::HeatmapAnnotation] when creating a separate annotation blocks.
+#' @param reverse_ht Whether to reverse the heatmap.
 #' Default is `NULL`.
 #'
 #' @seealso

@@ -35,7 +35,7 @@ Default is \code{TRUE}.}
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
 Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{A logical value indicating whether highly variable feature (HVF) finding should be performed.
+\item{do_HVF_finding}{Whether highly variable feature (HVF) finding should be performed.
 Default is \code{TRUE}.}
 
 \item{HVF_source}{The source of highly variable features.
