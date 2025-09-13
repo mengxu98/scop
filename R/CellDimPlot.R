@@ -1471,7 +1471,7 @@ CellDimPlot <- function(
 #' @inheritParams CellDimPlot
 #' @param dims Dimensions to plot, must be a three-length numeric vector specifying x-, y- and z-dimensions
 #' @param axis_labs A character vector of length 3 indicating the labels for the axes.
-#' @param span A numeric value specifying the span of the loess smoother for lineages line.
+#' @param span The span of the loess smoother for lineages line.
 #' @param shape.highlight Shape of the cell to highlight.
 #' See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}
 #' @param width Width in pixels, defaults to automatic sizing.

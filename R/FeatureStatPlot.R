@@ -12,59 +12,59 @@
 #' @param cells A character vector specifying the cells to include in the plot. Default is NULL.
 #' @param layer A string specifying which layer of the Seurat object to use. Default is "data".
 #' @param assay A string specifying which assay to use. Default is NULL.
-#' @param keep_empty A logical indicating whether to keep empty levels in the plot. Default is FALSE.
-#' @param individual A logical indicating whether to create individual plots for each group. Default is FALSE.
+#' @param keep_empty Whether to keep empty levels in the plot. Default is FALSE.
+#' @param individual Whether to create individual plots for each group. Default is FALSE.
 #' @param plot_type A string specifying the type of plot to create. Possible values are "violin", "box", "bar", "dot", or "col". Default is "violin".
 #' @param palette A string specifying the color palette to use for filling. Default is "Paired".
 #' @param palcolor A character vector specifying specific colors to use for filling. Default is NULL.
-#' @param alpha A numeric value specifying the transparency of the plot. Default is 1.
+#' @param alpha The transparency of the plot. Default is 1.
 #' @param bg_palette A string specifying the color palette to use for the background. Default is "Paired".
 #' @param bg_palcolor A character vector specifying specific colors to use for the background. Default is NULL.
-#' @param bg_alpha A numeric value specifying the transparency of the background. Default is 0.2.
-#' @param add_box A logical indicating whether to add a box plot to the plot. Default is FALSE.
+#' @param bg_alpha The transparency of the background. Default is 0.2.
+#' @param add_box Whether to add a box plot to the plot. Default is FALSE.
 #' @param box_color A string specifying the color of the box plot. Default is "black".
-#' @param box_width A numeric value specifying the width of the box plot. Default is 0.1.
-#' @param box_ptsize A numeric value specifying the size of the points of the box plot. Default is 2.
-#' @param add_point A logical indicating whether to add individual data points to the plot. Default is FALSE.
+#' @param box_width The width of the box plot. Default is 0.1.
+#' @param box_ptsize The size of the points of the box plot. Default is 2.
+#' @param add_point Whether to add individual data points to the plot. Default is FALSE.
 #' @param pt.color A string specifying the color of the data points. Default is "grey30".
-#' @param pt.size A numeric value specifying the size of the data points. If NULL, the size is automatically determined. Default is NULL.
-#' @param pt.alpha A numeric value specifying the transparency of the data points. Default is 1.
-#' @param jitter.width A numeric value specifying the width of the jitter. Default is 0.5.
-#' @param jitter.height A numeric value specifying the height of the jitter. Default is 0.1.
-#' @param add_trend A logical indicating whether to add a trend line to the plot. Default is FALSE.
+#' @param pt.size The size of the data points. If NULL, the size is automatically determined. Default is NULL.
+#' @param pt.alpha The transparency of the data points. Default is 1.
+#' @param jitter.width The width of the jitter. Default is 0.5.
+#' @param jitter.height The height of the jitter. Default is 0.1.
+#' @param add_trend Whether to add a trend line to the plot. Default is FALSE.
 #' @param trend_color A string specifying the color of the trend line. Default is "black".
-#' @param trend_linewidth A numeric value specifying the width of the trend line. Default is 1.
-#' @param trend_ptsize A numeric value specifying the size of the points of the trend line. Default is 2.
+#' @param trend_linewidth The width of the trend line. Default is 1.
+#' @param trend_ptsize The size of the points of the trend line. Default is 2.
 #' @param add_stat A string specifying which statistical summary to add to the plot. Possible values are "none", "mean", or "median". Default is "none".
 #' @param stat_color A string specifying the color of the statistical summary. Default is "black".
-#' @param stat_size A numeric value specifying the size of the statistical summary. Default is 1.
-#' @param stat_stroke A numeric value specifying the stroke width of the statistical summary. Default is 1.
-#' @param stat_shape A numeric value specifying the shape of the statistical summary. Default is 25.
-#' @param add_line A numeric value specifying the y-intercept for adding a horizontal line. Default is NULL.
+#' @param stat_size The size of the statistical summary. Default is 1.
+#' @param stat_stroke The stroke width of the statistical summary. Default is 1.
+#' @param stat_shape The shape of the statistical summary. Default is 25.
+#' @param add_line The y-intercept for adding a horizontal line. Default is NULL.
 #' @param line_color A string specifying the color of the horizontal line. Default is "red".
-#' @param line_size A numeric value specifying the width of the horizontal line. Default is 1.
-#' @param line_type A numeric value specifying the type of the horizontal line. Default is 1.
+#' @param line_size The width of the horizontal line. Default is 1.
+#' @param line_type The type of the horizontal line. Default is 1.
 #' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.
 #' @param cols.highlight A string specifying the color of the highlighted cells. Default is "red".
-#' @param sizes.highlight A numeric value specifying the size of the highlighted cells. Default is 1.
-#' @param alpha.highlight A numeric value specifying the transparency of the highlighted cells. Default is 1.
-#' @param calculate_coexp A logical indicating whether to calculate co-expression values. Default is FALSE.
-#' @param same.y.lims A logical indicating whether to use the same y-axis limits for all plots. Default is FALSE.
+#' @param sizes.highlight The size of the highlighted cells. Default is 1.
+#' @param alpha.highlight The transparency of the highlighted cells. Default is 1.
+#' @param calculate_coexp Whether to calculate co-expression values. Default is FALSE.
+#' @param same.y.lims Whether to use the same y-axis limits for all plots. Default is FALSE.
 #' @param y.min A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.
 #' @param y.max A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.
 #' @param y.trans A string specifying the transformation to apply to the y-axis. Possible values are "identity" or "log2". Default is "identity".
-#' @param y.nbreaks An integer specifying the number of breaks to use for the y-axis. Default is 5.
+#' @param y.nbreaks A number of breaks to use for the y-axis. Default is 5.
 #' @param sort A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order. Default is FALSE.
 #' @param stack A logical specifying whether to stack the plots on top of each other. Default is FALSE.
 #' @param flip A logical specifying whether to flip the plot vertically. Default is FALSE.
 #' @param comparisons A list of length-2 vectors. The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
 #' @param ref_group A string specifying the reference group for pairwise comparisons. Default is NULL.
-#' @param pairwise_method A string specifying the method to use for pairwise comparisons. Default is "wilcox.test".
-#' @param multiplegroup_comparisons A logical indicating whether to add multiple group comparisons to the plot. Default is FALSE.
-#' @param multiple_method A string specifying the method to use for multiple group comparisons. Default is "kruskal.test".
+#' @param pairwise_method Method to use for pairwise comparisons. Default is "wilcox.test".
+#' @param multiplegroup_comparisons Whether to add multiple group comparisons to the plot. Default is FALSE.
+#' @param multiple_method Method to use for multiple group comparisons. Default is "kruskal.test".
 #' @param sig_label A string specifying the label to use for significant comparisons. Possible values are "p.signif" or "p.format". Default is "p.format".
-#' @param sig_labelsize A numeric value specifying the size of the significant comparison labels. Default is 3.5.
-#' @param aspect.ratio A numeric value specifying the aspect ratio of the plot. Default is NULL.
+#' @param sig_labelsize The size of the significant comparison labels. Default is 3.5.
+#' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
 #' @param title A string specifying the title of the plot. Default is NULL.
 #' @param subtitle A string specifying the subtitle of the plot. Default is NULL.
 #' @param xlab A string specifying the label of the x-axis. Default is NULL.
@@ -73,11 +73,11 @@
 #' @param legend.direction A string specifying the direction of the legend. Possible values are "vertical" or "horizontal". Default is "vertical".
 #' @param theme_use A string specifying the theme to use for the plot. Default is "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function. Default is an empty list.
-#' @param combine A logical indicating whether to combine the individual plots into a single plot. Default is TRUE.
-#' @param nrow An integer specifying the number of rows for the combined plot. Default is NULL.
-#' @param ncol An integer specifying the number of columns for the combined plot. Default is NULL.
+#' @param combine Whether to combine the individual plots into a single plot. Default is TRUE.
+#' @param nrow A number of rows for the combined plot. Default is NULL.
+#' @param ncol A number of columns for the combined plot. Default is NULL.
 #' @param byrow A logical specifying whether to fill the combined plot by row or by column. Default is TRUE.
-#' @param force A logical indicating whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.
+#' @param force Whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.
 #' @param seed An integer specifying the random seed to use for generating jitter. Default is 11.
 #'
 #' @export

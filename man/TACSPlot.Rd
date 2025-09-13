@@ -45,40 +45,44 @@ TACSPlot(
 )
 }
 \arguments{
-\item{srt}{Seurat object}
+\item{srt}{A Seurat object.}
 
-\item{ref_srt}{Seurat object. If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
+\item{ref_srt}{A Seurat object.
+If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 for example if different time points are present or certain cell types are mostly depleted,
-you can feed in a reference srt, and TACS will choose axes based on the reference data. Default is NULL.}
+you can feed in a reference srt, and TACS will choose axes based on the reference data.
+Default is \code{NULL}.}
 
-\item{assay}{The assay to use. Default is "RNA".}
+\item{assay}{The assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{The layer to use. Default is "data".}
+\item{layer}{The layer to use. Default is \code{"data"}.}
 
-\item{group.by}{The variable to group the cells by. Default is NULL.}
+\item{group.by}{The variable to group the cells by. Default is \code{NULL}.}
 
-\item{feature1}{Horizontal axis on plot mimics this feature. Character, usually length 1 but possibly longer.}
+\item{feature1}{Horizontal axis on plot mimics this feature.
+Character, usually length 1 but possibly longer.}
 
 \item{feature2}{Vertical axis on plot mimics this feature. Character, usually length 1 but possibly longer.}
 
 \item{cutoffs}{If given, divide plot into four quadrants and annotate with percentages.
 Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x and y axes respectively.}
 
-\item{density}{If TRUE, plot contours instead of points.}
+\item{density}{If \code{TRUE}, plot contours instead of points.}
 
-\item{palette}{The palette to use. Default is "Paired".}
+\item{palette}{The palette to use. Default is \code{"Paired"}.}
 
-\item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap). Integer.}
+\item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap).}
 
-\item{features_predetermined}{If FALSE, plot the sum of many features similar to feature1 instead of feature1 alone (same
-for feature2). See ?GetSimilarFeatures. If TRUE, plot the sum of only the features given.}
+\item{features_predetermined}{If \code{FALSE}, plot the sum of many features similar to feature1 instead of feature1 alone (same for feature2).
+See \link{GetSimilarFeatures}.
+If \code{TRUE}, plot the sum of only the features given.}
 
 \item{aggregator}{How to combine correlations when finding similar features.
-Options: "sum" (default), "min" (for "and"-like filter), "max", or "mean".}
+Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"max"}, or \code{"mean"}.}
 
-\item{remove_outliers}{If TRUE, remove outliers from the plot. Default is FALSE.}
+\item{remove_outliers}{If \code{TRUE}, remove outliers from the plot. Default is \code{FALSE}.}
 
-\item{aspect.ratio}{The aspect ratio of the plot. Default is 1.}
+\item{aspect.ratio}{The aspect ratio of the plot. Default is \code{1}.}
 
 \item{title}{The title of the plot.}
 
@@ -88,43 +92,43 @@ Options: "sum" (default), "min" (for "and"-like filter), "max", or "mean".}
 
 \item{ylab}{The y-axis label.}
 
-\item{suffix}{The suffix of the axis labels. Default is " expression level".}
+\item{suffix}{The suffix of the axis labels. Default is \code{" expression level"}.}
 
-\item{legend.position}{The position of the legend. Default is "right".}
+\item{legend.position}{The position of the legend. Default is \code{"right"}.}
 
-\item{legend.direction}{The direction of the legend. Default is "vertical".}
+\item{legend.direction}{The direction of the legend. Default is \code{"vertical"}.}
 
-\item{theme_use}{The theme to use. Default is "theme_scop".}
+\item{theme_use}{The theme to use. Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments for the theme. Default is list().}
+\item{theme_args}{A list of arguments for the theme. Default is \code{list()}.}
 
-\item{include_all}{If TRUE, include a panel with all cells. Default is FALSE.}
+\item{include_all}{If \code{TRUE}, include a panel with all cells. Default is \code{FALSE}.}
 
-\item{all_color}{The color of the all cells panel. Default is "grey20".}
+\item{all_color}{The color of the all cells panel. Default is \code{"grey20"}.}
 
-\item{quadrants_line_color}{The color of the quadrants lines. Default is "grey30".}
+\item{quadrants_line_color}{The color of the quadrants lines. Default is \code{"grey30"}.}
 
-\item{quadrants_line_type}{The type of the quadrants lines. Default is "solid".}
+\item{quadrants_line_type}{The type of the quadrants lines. Default is \code{"solid"}.}
 
-\item{quadrants_line_width}{The width of the quadrants lines. Default is 0.3.}
+\item{quadrants_line_width}{The width of the quadrants lines. Default is \code{0.3}.}
 
-\item{quadrants_label_size}{The size of the quadrants labels. Default is 3.}
+\item{quadrants_label_size}{The size of the quadrants labels. Default is \code{3}.}
 
-\item{density_alpha}{The alpha of the density plot. Default is NULL.}
+\item{density_alpha}{The alpha of the density plot. Default is \code{NULL}.}
 
-\item{bins}{Number of bins for density plot. Default is 20.}
+\item{bins}{Number of bins for density plot. Default is \code{20}.}
 
-\item{h}{Bandwidth for density plot. Default is NULL.}
+\item{h}{Bandwidth for density plot. Default is \code{NULL}.}
 
-\item{nrow}{The number of rows for the facet plot. Default is NULL.}
+\item{nrow}{The number of rows for the facet plot. Default is \code{NULL}.}
 
 \item{ncol}{The number of columns for the facet plot.
-Default is NULL.}
+Default is \code{NULL}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output.
-Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{...}{Extra params for \link[ggplot2:geom_density_2d]{ggplot2::stat_density2d}.}
+\item{...}{Additional parameters passed to \link[ggplot2:geom_density_2d]{ggplot2::stat_density2d}.}
 }
 \description{
 TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-seq data.
