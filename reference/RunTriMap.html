@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,75 +103,95 @@
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used. Default is "pca".</p></dd>
+<dd><p>A character string specifying the reduction to be used.
+Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used. Default is NULL.</p></dd>
+<dd><p>An integer vector specifying the dimensions to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the features to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used. Default is NULL.</p></dd>
+<dd><p>A character string specifying the assay to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used. Default is "data".</p></dd>
+<dd><p>A character string specifying the layer to be used.
+Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-n-components">n_components<a class="anchor" aria-label="anchor" href="#arg-n-components"></a></dt>
-<dd><p>An integer specifying the number of TriMap components. Default is 2.</p></dd>
+<dd><p>A number of TriMap components.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-n-inliers">n_inliers<a class="anchor" aria-label="anchor" href="#arg-n-inliers"></a></dt>
-<dd><p>An integer specifying the number of nearest neighbors for forming the nearest neighbor triplets. Default is 12.</p></dd>
+<dd><p>A number of nearest neighbors for forming the nearest neighbor triplets.
+Default is <code>12</code>.</p></dd>
 
 
 <dt id="arg-n-outliers">n_outliers<a class="anchor" aria-label="anchor" href="#arg-n-outliers"></a></dt>
-<dd><p>An integer specifying the number of outliers for forming the nearest neighbor triplets. Default is 4.</p></dd>
+<dd><p>A number of outliers for forming the nearest neighbor triplets.
+Default is <code>4</code>.</p></dd>
 
 
 <dt id="arg-n-random">n_random<a class="anchor" aria-label="anchor" href="#arg-n-random"></a></dt>
-<dd><p>An integer specifying the number of random triplets per point. Default is 3.</p></dd>
+<dd><p>A number of random triplets per point.
+Default is <code>3</code>.</p></dd>
 
 
 <dt id="arg-distance-method">distance_method<a class="anchor" aria-label="anchor" href="#arg-distance-method"></a></dt>
-<dd><p>A character string specifying the distance metric for TriMap. Options are: "euclidean", "manhattan", "angular", "cosine", "hamming". Default is "euclidean".</p></dd>
+<dd><p>A character string specifying the distance metric for TriMap.
+Options are: <code>"euclidean"</code>, <code>"manhattan"</code>, <code>"angular"</code>, <code>"cosine"</code>, <code>"hamming"</code>.
+Default is <code>"euclidean"</code>.</p></dd>
 
 
 <dt id="arg-lr">lr<a class="anchor" aria-label="anchor" href="#arg-lr"></a></dt>
-<dd><p>A numeric value specifying the learning rate for TriMap. Default is 0.1.</p></dd>
+<dd><p>The learning rate for TriMap.
+Default is <code>0.1</code>.</p></dd>
 
 
 <dt id="arg-n-iters">n_iters<a class="anchor" aria-label="anchor" href="#arg-n-iters"></a></dt>
-<dd><p>An integer specifying the number of iterations for TriMap. Default is 400.</p></dd>
+<dd><p>A number of iterations for TriMap.
+Default is <code>400</code>.</p></dd>
 
 
 <dt id="arg-apply-pca">apply_pca<a class="anchor" aria-label="anchor" href="#arg-apply-pca"></a></dt>
-<dd><p>A logical value indicating whether to apply PCA before the nearest-neighbor calculation. Default is TRUE.</p></dd>
+<dd><p>Whether to apply PCA before the nearest-neighbor calculation.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-opt-method">opt_method<a class="anchor" aria-label="anchor" href="#arg-opt-method"></a></dt>
-<dd><p>A character string specifying the optimization method for TriMap. Options are: "dbd", "sd", "momentum". Default is "dbd".</p></dd>
+<dd><p>A character string specifying the optimization method for TriMap.
+Options are: <code>"dbd"</code>, <code>"sd"</code>, <code>"momentum"</code>.
+Default is <code>"dbd"</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object. Default is "trimap".</p></dd>
+<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object.
+Default is <code>"trimap"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the TriMap embeddings. Default is "TriMap_".</p></dd>
+<dd><p>A character string specifying the prefix for the column names of the TriMap embeddings.
+Default is <code>"TriMap_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output. Default is TRUE.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used. Default is 11.</p></dd>
+<dd><p>An integer specifying the random seed to be used.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,59 +90,73 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to the <a href="https://rdrr.io/pkg/destiny/man/DiffusionMap-class.html" class="external-link">DiffusionMap</a> function.</p></dd>
+<dd><p>Additional arguments to be passed to <a href="https://rdrr.io/pkg/destiny/man/DiffusionMap-class.html" class="external-link">destiny::DiffusionMap</a>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used.</p></dd>
+<dd><p>The reduction to be used.
+Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used. Default is 1:30.</p></dd>
+<dd><p>The dimensions to be used.
+Default is <code>1:30</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used. Default is NULL.</p></dd>
+<dd><p>The features to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used. Default is NULL.</p></dd>
+<dd><p>The assay to be used.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used. Default is "data".</p></dd>
+<dd><p>The layer to be used.
+Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-ndcs">ndcs<a class="anchor" aria-label="anchor" href="#arg-ndcs"></a></dt>
-<dd><p>An integer specifying the number of diffusion components (dimensions) to be computed. Default is 2.</p></dd>
+<dd><p>A number of diffusion components (dimensions) to be computed.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-sigma">sigma<a class="anchor" aria-label="anchor" href="#arg-sigma"></a></dt>
-<dd><p>A character string specifying the diffusion scale parameter of the Gaussian kernel. Currently supported values are "local" (default) and "global".</p></dd>
+<dd><p>The diffusion scale parameter of the Gaussian kernel.
+Currently supported values are <code>"local"</code> (default) and <code>"global"</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>An integer specifying the number of nearest neighbors to be used for the construction of the graph. Default is 30.</p></dd>
+<dd><p>A number of nearest neighbors to be used for the construction of the graph.
+Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-dist-method">dist.method<a class="anchor" aria-label="anchor" href="#arg-dist-method"></a></dt>
-<dd><p>A character string specifying the distance metric to be used for the construction of the knn graph. Currently supported values are "euclidean" and "cosine". Default is "euclidean".</p></dd>
+<dd><p>The distance metric to be used for the construction of the knn graph.
+Currently supported values are <code>"euclidean"</code> and <code>"cosine"</code>.
+Default is <code>"euclidean"</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object. Default is "dm".</p></dd>
+<dd><p>The name of the reduction to be stored in the Seurat object.
+Default is <code>"dm"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the basis vectors. Default is "DM_".</p></dd>
+<dd><p>The prefix for the column names of the basis vectors.
+Default is <code>"DM_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output. Default is TRUE.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used. Default is 11.</p></dd>
+<dd><p>An integer specifying the random seed to be used.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 

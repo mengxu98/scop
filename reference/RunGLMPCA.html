@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,63 +129,64 @@
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used for the analysis.
-Default is NULL.</p></dd>
+<dd><p>The assay to be used for the analysis.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used for the analysis.
-Default is "counts".</p></dd>
+<dd><p>The layer to be used for the analysis.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used for the analysis.
-Default is NULL, which uses all variable features.</p></dd>
+<dd><p>The features to be used for the analysis.
+Default is <code>NULL</code>, which uses all variable features.</p></dd>
 
 
 <dt id="arg-l">L<a class="anchor" aria-label="anchor" href="#arg-l"></a></dt>
-<dd><p>An integer specifying the number of components to be computed.
-Default is 5.</p></dd>
+<dd><p>The number of components to be computed.
+Default is <code>5</code>.</p></dd>
 
 
 <dt id="arg-fam">fam<a class="anchor" aria-label="anchor" href="#arg-fam"></a></dt>
-<dd><p>A character string specifying the family of the generalized linear model to be used.
-Currently supported values are "poi", "nb", "nb2", "binom", "mult", and "bern".
-Default is "poi".</p></dd>
+<dd><p>The family of the generalized linear model to be used.
+Currently supported values are <code>"poi"</code>, <code>"nb"</code>, <code>"nb2"</code>, <code>"binom"</code>, <code>"mult"</code>, and <code>"bern"</code>.
+Default is <code>"poi"</code>.</p></dd>
 
 
 <dt id="arg-rev-gmlpca">rev.gmlpca<a class="anchor" aria-label="anchor" href="#arg-rev-gmlpca"></a></dt>
-<dd><p>A logical value indicating whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis. Default is FALSE.</p></dd>
+<dd><p>Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-ndims-print">ndims.print<a class="anchor" aria-label="anchor" href="#arg-ndims-print"></a></dt>
-<dd><p>An integer vector specifying the dimensions (number of components) to print in the output.
-Default is 1:5.</p></dd>
+<dd><p>The dimensions (number of components) to print in the output.
+Default is <code>1:5</code>.</p></dd>
 
 
 <dt id="arg-nfeatures-print">nfeatures.print<a class="anchor" aria-label="anchor" href="#arg-nfeatures-print"></a></dt>
-<dd><p>An integer specifying the number of features to print in the output.
-Default is 30.</p></dd>
+<dd><p>The number of features to print in the output.
+Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "glmpca".</p></dd>
+<dd><p>The name of the reduction to be stored in the Seurat object.
+Default is <code>"glmpca"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the basis vectors.
-Default is "GLMPC_".</p></dd>
+<dd><p>The prefix for the column names of the basis vectors.
+Default is <code>"GLMPC_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output.
-Default is TRUE.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used.
-Default is 11.</p></dd>
+<dd><p>The random seed to be used.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
 

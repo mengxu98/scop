@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
 <span>  reduction.name <span class="op">=</span> <span class="st">"phate"</span>,</span>
 <span>  reduction.key <span class="op">=</span> <span class="st">"PHATE_"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  seed.use <span class="op">=</span> <span class="fl">11L</span>,</span>
+<span>  seed.use <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -93,7 +93,7 @@
 <span>  max_clusters <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  reduction.key <span class="op">=</span> <span class="st">"PHATE_"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  seed.use <span class="op">=</span> <span class="fl">11L</span>,</span>
+<span>  seed.use <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -103,123 +103,126 @@
 
 
 <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
-<dd><p>A Seurat object or a matrix-like object.</p></dd>
+<dd><p>An object. This can be a Seurat object or a matrix-like object.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to the phate.PHATE function.</p></dd>
+<dd><p>Additional arguments to be passed to phate.PHATE.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used.
+<dd><p>The reduction to be used.
 Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used.
+<dd><p>The dimensions to be used.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used.
+<dd><p>The features to be used.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used.
+<dd><p>The assay to be used.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used.
+<dd><p>The layer to be used.
 Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-n-components">n_components<a class="anchor" aria-label="anchor" href="#arg-n-components"></a></dt>
-<dd><p>An integer specifying the number of PHATE components.
+<dd><p>The number of PHATE components.
 Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-knn">knn<a class="anchor" aria-label="anchor" href="#arg-knn"></a></dt>
-<dd><p>An integer specifying the number of nearest neighbors on which to build kernel.
+<dd><p>A number of nearest neighbors on which to build kernel.
 Default is <code>5</code>.</p></dd>
 
 
 <dt id="arg-decay">decay<a class="anchor" aria-label="anchor" href="#arg-decay"></a></dt>
-<dd><p>An integer specifying the sets decay rate of kernel tails. Default is 40.</p></dd>
+<dd><p>The sets decay rate of kernel tails.
+Default is <code>40</code>.</p></dd>
 
 
 <dt id="arg-n-landmark">n_landmark<a class="anchor" aria-label="anchor" href="#arg-n-landmark"></a></dt>
-<dd><p>An integer specifying the number of landmarks to use in fast PHATE.
+<dd><p>A number of landmarks to use in fast PHATE.
 Default is <code>2000</code>.</p></dd>
 
 
 <dt id="arg-t">t<a class="anchor" aria-label="anchor" href="#arg-t"></a></dt>
-<dd><p>A character string specifying the power to which the diffusion operator is powered.
-This sets the level of diffusion. If <code>"auto"</code>, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
+<dd><p>The power to which the diffusion operator is powered.
+This sets the level of diffusion.
+If <code>"auto"</code>, <code>t</code> is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
 Default is <code>"auto"</code>.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p>A numeric value specifying the informational distance constant between -1 and 1.
-gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential.
+<dd><p>The informational distance constant between <code>-1</code> and <code>1</code>.
+<code>gamma=1</code> gives the PHATE log potential, <code>gamma=0</code> gives a square root potential.
 Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-n-pca">n_pca<a class="anchor" aria-label="anchor" href="#arg-n-pca"></a></dt>
-<dd><p>An integer specifying the number of principal components to use for calculating neighborhoods.
-For extremely large datasets, using n_pca &lt; 20 allows neighborhoods to be calculated in roughly log(n_samples) time.
+<dd><p>A number of principal components to use for calculating neighborhoods.
+For extremely large datasets, using <code>n_pca &lt; 20</code> allows neighborhoods to be calculated in roughly <code>log(n_samples)</code> time.
 Default is <code>100</code>.</p></dd>
 
 
 <dt id="arg-knn-dist">knn_dist<a class="anchor" aria-label="anchor" href="#arg-knn-dist"></a></dt>
-<dd><p>A character string specifying the distance metric for k-nearest neighbors.
+<dd><p>The distance metric for k-nearest neighbors.
 Recommended values: <code>"euclidean"</code>, <code>"cosine"</code>, <code>"precomputed"</code>.
 Default is <code>"euclidean"</code>.</p></dd>
 
 
 <dt id="arg-knn-max">knn_max<a class="anchor" aria-label="anchor" href="#arg-knn-max"></a></dt>
-<dd><p>An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point.
-For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly.
+<dd><p>The maximum number of neighbors for which alpha decaying kernel is computed for each point.
+For very large datasets, setting <code>knn_max</code> to a small multiple of <code>knn</code> can speed up computation significantly.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-t-max">t_max<a class="anchor" aria-label="anchor" href="#arg-t-max"></a></dt>
-<dd><p>An integer specifying the maximum <code>t</code> to test. Default is <code>100</code>.</p></dd>
+<dd><p>The maximum <code>t</code> to test.
+Default is <code>100</code>.</p></dd>
 
 
 <dt id="arg-do-cluster">do_cluster<a class="anchor" aria-label="anchor" href="#arg-do-cluster"></a></dt>
-<dd><p>A logical value indicating whether to perform clustering on the PHATE embeddings.
+<dd><p>Whether to perform clustering on the PHATE embeddings.
 Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-n-clusters">n_clusters<a class="anchor" aria-label="anchor" href="#arg-n-clusters"></a></dt>
-<dd><p>An integer specifying the number of clusters to be identified.
+<dd><p>A number of clusters to be identified.
 Default is <code>"auto"</code>.</p></dd>
 
 
 <dt id="arg-max-clusters">max_clusters<a class="anchor" aria-label="anchor" href="#arg-max-clusters"></a></dt>
-<dd><p>An integer specifying the maximum number of clusters to test.
+<dd><p>The maximum number of clusters to test.
 Default is <code>100</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
-<dd><p>A character string specifying the name of the reduction to be stored in the Seurat object.
+<dd><p>The name of the reduction to be stored in the Seurat object.
 Default is <code>"phate"</code>.</p></dd>
 
 
 <dt id="arg-reduction-key">reduction.key<a class="anchor" aria-label="anchor" href="#arg-reduction-key"></a></dt>
-<dd><p>A character string specifying the prefix for the column names of the PHATE embeddings.
+<dd><p>The prefix for the column names of the PHATE embeddings.
 Default is <code>"PHATE_"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical value indicating whether to print verbose output.
+<dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used.
+<dd><p>The random seed to be used.
 Default is <code>11</code>.</p></dd>
 
 </dl></div>
