@@ -38,7 +38,7 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 }
 \value{
 A list with the following elements:

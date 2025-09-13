@@ -11,7 +11,8 @@ srt_reorder(
   layer = "data",
   assay = NULL,
   log = TRUE,
-  distance_metric = "euclidean"
+  distance_metric = "euclidean",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -25,11 +26,14 @@ srt_reorder(
 
 \item{assay}{Specific assay to get data from.}
 
-\item{log}{Whether log1p transformation needs to be applied.
+\item{log}{Whether \link{log1p} transformation needs to be applied.
 Default is \code{TRUE}.}
 
 \item{distance_metric}{Metric to compute distance.
-Default is "euclidean".}
+Default is \code{"euclidean"}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Reorder idents by the gene expression

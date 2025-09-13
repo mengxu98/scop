@@ -4,8 +4,8 @@
 #' A re-implementation of the [SeuratObject::GetAssayData] function to compatible with Assay5 objects.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @inheritParams SeuratObject::GetAssayData
-#' @param verbose Whether to print messages. Default is `TRUE`.
 #' @param ... Additional arguments passed to [SeuratObject::GetAssayData].
 #'
 #' @return A matrix or data frame containing the assay data.

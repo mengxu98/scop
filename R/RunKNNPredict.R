@@ -35,7 +35,7 @@
 #' @param DE_threshold Threshold used to filter the DE features. Default is "p_val < 0.05". If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".
 #' @param nn_method A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Defaults to "raw".
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Defaults to "cosine".
-#' @param k An integer specifying the number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.
+#' @param k A number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.
 #' @param filter_lowfreq An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable". Defaults to 0, which means no filtering will be performed.
 #' @param prefix A character vector specifying the prefix to be added to the resulting annotations. Defaults to "KNNPredict".
 #'

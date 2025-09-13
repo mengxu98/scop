@@ -144,30 +144,33 @@ DynamicHeatmap(
 By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.}
 
-\item{use_fitted}{A logical indicating whether to use fitted values. Default is FALSE.}
+\item{use_fitted}{Whether to use fitted values. Default is \code{FALSE}.}
 
-\item{border}{A logical indicating whether to add a border to the heatmap. Default is TRUE.}
+\item{border}{Whether to add a border to the heatmap. Default is \code{TRUE}.}
 
-\item{flip}{A logical indicating whether to flip the heatmap. Default is FALSE.}
+\item{flip}{Whether to flip the heatmap. Default is \code{FALSE}.}
 
-\item{min_expcells}{A numeric value specifying the minimum number of expected cells. Default is 20.}
+\item{min_expcells}{The minimum number of expected cells. Default is \code{20}.}
 
-\item{r.sq}{A numeric value specifying the R-squared threshold. Default is 0.2.}
+\item{r.sq}{The R-squared threshold. Default is \code{0.2}.}
 
-\item{dev.expl}{A numeric value specifying the deviance explained threshold. Default is 0.2.}
+\item{dev.expl}{The deviance explained threshold. Default is \code{0.2}.}
 
-\item{padjust}{A numeric value specifying the p-value adjustment threshold. Default is 0.05.}
+\item{padjust}{The p-value adjustment threshold. Default is \code{0.05}.}
 
 \item{num_intersections}{This parameter is a numeric vector used to determine the number of intersections among lineages.
 It helps in selecting which dynamic features will be used.
-By default, when this parameter is set to NULL, all dynamic features that pass the specified threshold will be used for each lineage.}
+By default, when this parameter is set to \code{NULL},
+all dynamic features that pass the specified threshold will be used for each lineage.}
 
-\item{cell_density}{A numeric value is used to define the cell density within each cell bin.
-By default, this parameter is set to 1, which means that all cells will be included within each cell bin.}
+\item{cell_density}{The cell density within each cell bin.
+By default, this parameter is set to \code{1}, which means that all cells will be included within each cell bin.}
 
-\item{cell_bins}{A numeric value specifying the number of cell bins. Default is 100.}
+\item{cell_bins}{The number of cell bins.
+Default is \code{100}.}
 
-\item{order_by}{A character vector specifying the order of the heatmap. Default is \code{"peaktime"}.}
+\item{order_by}{The order of the heatmap.
+Default is \code{"peaktime"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
 Default is "counts".}
@@ -184,43 +187,43 @@ Default is NULL.}
 \item{limits}{A two-length numeric vector specifying the limits for the color scale.
 Default is NULL.}
 
-\item{lib_normalize}{A logical value indicating whether to normalize the data by library size.}
+\item{lib_normalize}{Whether to normalize the data by library size.}
 
 \item{libsize}{A numeric vector specifying the library size for each cell.
 Default is NULL.}
 
-\item{family}{A character specifying the model used to calculate the dynamic features if needed.
-By default, this parameter is set to NULL, and the appropriate family will be automatically determined.}
+\item{family}{The model used to calculate the dynamic features if needed.
+By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}
 
-\item{cluster_features_by}{A character vector specifying which lineage to use when clustering features.
-By default, this parameter is set to NULL, which means that all lineages will be used.}
+\item{cluster_features_by}{Which lineage to use when clustering features.
+By default, this parameter is set to \code{NULL}, which means that all lineages will be used.}
 
-\item{cluster_rows}{A logical value indicating whether to cluster rows in the heatmap.
+\item{cluster_rows}{Whether to cluster rows in the heatmap.
 Default is FALSE.}
 
-\item{cluster_row_slices}{A logical value indicating whether to cluster row slices in the heatmap.
+\item{cluster_row_slices}{Whether to cluster row slices in the heatmap.
 Default is FALSE.}
 
-\item{cluster_columns}{A logical value indicating whether to cluster columns in the heatmap.
+\item{cluster_columns}{Whether to cluster columns in the heatmap.
 Default is FALSE.}
 
-\item{cluster_column_slices}{A logical value indicating whether to cluster column slices in the heatmap.
+\item{cluster_column_slices}{Whether to cluster column slices in the heatmap.
 Default is FALSE.}
 
-\item{show_row_names}{A logical value indicating whether to show row names in the heatmap.
+\item{show_row_names}{Whether to show row names in the heatmap.
 Default is FALSE.}
 
-\item{show_column_names}{A logical value indicating whether to show column names in the heatmap.
+\item{show_column_names}{Whether to show column names in the heatmap.
 Default is FALSE.}
 
 \item{row_names_side}{A character vector specifying the side to place row names.}
 
 \item{column_names_side}{A character vector specifying the side to place column names.}
 
-\item{row_names_rot}{A numeric value specifying the rotation angle for row names.
+\item{row_names_rot}{The rotation angle for row names.
 Default is 0.}
 
-\item{column_names_rot}{A numeric value specifying the rotation angle for column names.
+\item{column_names_rot}{The rotation angle for column names.
 Default is 90.}
 
 \item{row_title}{A character vector specifying the title for rows.
@@ -235,10 +238,10 @@ Default is "left".}
 \item{column_title_side}{A character vector specifying the side to place column title.
 Default is "top".}
 
-\item{row_title_rot}{A numeric value specifying the rotation angle for row title.
+\item{row_title_rot}{The rotation angle for row title.
 Default is 0.}
 
-\item{column_title_rot}{A numeric value specifying the rotation angle for column title.}
+\item{column_title_rot}{The rotation angle for column title.}
 
 \item{feature_split}{A factor specifying how to split the features.
 Default is NULL.}
@@ -246,7 +249,7 @@ Default is NULL.}
 \item{feature_split_by}{A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
 Default is NULL.}
 
-\item{n_split}{An integer specifying the number of feature splits (feature clusters) to create.
+\item{n_split}{A number of feature splits (feature clusters) to create.
 Default is NULL.}
 
 \item{split_order}{A numeric vector specifying the order of splits. Default is NULL.}
@@ -254,19 +257,19 @@ Default is NULL.}
 \item{split_method}{A character vector specifying the method for splitting features.
 Default is "kmeans" with options "kmeans", "hclust", "mfuzz").}
 
-\item{decreasing}{A logical value indicating whether to sort feature splits in decreasing order.
+\item{decreasing}{Whether to sort feature splits in decreasing order.
 Default is FALSE.}
 
-\item{fuzzification}{A numeric value specifying the fuzzification coefficient.
+\item{fuzzification}{The fuzzification coefficient.
 Default is NULL.}
 
-\item{anno_terms}{A logical value indicating whether to include term annotations.
+\item{anno_terms}{Whether to include term annotations.
 Default is FALSE.}
 
-\item{anno_keys}{A logical value indicating whether to include key annotations.
+\item{anno_keys}{Whether to include key annotations.
 Default is FALSE.}
 
-\item{anno_features}{A logical value indicating whether to include feature annotations.
+\item{anno_features}{Whether to include feature annotations.
 Default is FALSE.}
 
 \item{terms_width}{A unit specifying the width of term annotations.
@@ -293,16 +296,16 @@ Default is "symbol".}
 \item{species}{A character vector specifying the species for features.
 Default is "Homo_sapiens".}
 
-\item{db_update}{A logical value indicating whether to update the database.
+\item{db_update}{Whether to update the database.
 Default is FALSE.}
 
 \item{db_version}{A character vector specifying the version of the database.
 Default is "latest".}
 
-\item{db_combine}{A logical value indicating whether to use a combined database.
+\item{db_combine}{Whether to use a combined database.
 Default is FALSE.}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database if annotation is missing for \code{species}.
+\item{convert_species}{Whether to use a species-converted database if annotation is missing for \code{species}.
 Default is FALSE.}
 
 \item{Ensembl_version}{An integer specifying the Ensembl version.
@@ -326,7 +329,7 @@ Default is 10.}
 \item{maxGSSize}{An integer specifying the maximum gene set size for the database.
 Default is 500.}
 
-\item{GO_simplify}{A logical value indicating whether to simplify gene ontology terms.
+\item{GO_simplify}{Whether to simplify gene ontology terms.
 Default is FALSE.}
 
 \item{GO_simplify_cutoff}{A character vector specifying the cutoff for GO simplification.
@@ -335,47 +338,50 @@ Default is "p.adjust < 0.05".}
 \item{simplify_method}{A character vector specifying the method for GO simplification.
 Default is "Wang".}
 
-\item{simplify_similarityCutoff}{A numeric value specifying the similarity cutoff for GO simplification.
+\item{simplify_similarityCutoff}{The similarity cutoff for GO simplification.
 Default is 0.7.}
 
 \item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
 Default is NULL.}
 
-\item{padjustCutoff}{A numeric value specifying the adjusted p-value cutoff for significance.
+\item{padjustCutoff}{The adjusted p-value cutoff for significance.
 Default is 0.05.}
 
-\item{topTerm}{An integer specifying the number of top terms to include.
+\item{topTerm}{A number of top terms to include.
 Default is 5.}
 
-\item{show_termid}{A logical value indicating whether to show term IDs.
+\item{show_termid}{Whether to show term IDs.
 Default is FALSE.}
 
-\item{topWord}{An integer specifying the number of top words to include.
+\item{topWord}{A number of top words to include.
 Default is 20.}
 
 \item{words_excluded}{A character vector specifying the words to exclude.
 Default is NULL.}
 
-\item{nlabel}{An integer specifying the number of labels to include.
+\item{nlabel}{A number of labels to include.
 Default is 0.}
 
 \item{features_label}{A character vector specifying the features to label.
 Default is NULL.}
 
-\item{label_size}{A numeric value specifying the size of labels.
+\item{label_size}{The size of labels.
 Default is 10.}
 
 \item{label_color}{A character vector specifying the color of labels.
 Default is "black".}
 
-\item{pseudotime_label}{A numeric vector specifying the pseudotime label. Default is NULL.}
+\item{pseudotime_label}{The pseudotime label.
+Default is \code{NULL}.}
 
-\item{pseudotime_label_color}{A character string specifying the pseudotime label color.
+\item{pseudotime_label_color}{The pseudotime label color.
 Default is \code{"black"}.}
 
-\item{pseudotime_label_linetype}{A numeric value specifying the pseudotime label line type. Default is 2.}
+\item{pseudotime_label_linetype}{The pseudotime label line type.
+Default is \code{2}.}
 
-\item{pseudotime_label_linewidth}{A numeric value specifying the pseudotime label line width. Default is 3.}
+\item{pseudotime_label_linewidth}{The pseudotime label line width.
+Default is \code{3}.}
 
 \item{heatmap_palette}{A character vector specifying the palette to use for the heatmap.
 Default is "RdBu".}
@@ -383,9 +389,11 @@ Default is "RdBu".}
 \item{heatmap_palcolor}{A character vector specifying the heatmap color to use.
 Default is NULL.}
 
-\item{pseudotime_palette}{A character vector specifying the color palette to use for pseudotime.}
+\item{pseudotime_palette}{The color palette to use for pseudotime.
+Default is \code{"cividis"}.}
 
-\item{pseudotime_palcolor}{A list specifying the colors to use for the pseudotime in the heatmap.}
+\item{pseudotime_palcolor}{The colors to use for the pseudotime in the heatmap.
+Default is \code{NULL}.}
 
 \item{feature_split_palette}{A character vector specifying the palette to use for feature splits.
 Default is "simspec".}
@@ -419,25 +427,27 @@ Default is NULL.}
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
 Default is an empty list.}
 
-\item{separate_annotation}{A character vector of names of annotations to be displayed in separate annotation blocks.
+\item{separate_annotation}{Names of the annotations to be displayed in separate annotation blocks.
 Each name should match a column name in the metadata of the \code{Seurat} object.}
 
-\item{separate_annotation_palette}{A character vector specifying the color palette to use for separate annotations.}
+\item{separate_annotation_palette}{The color palette to use for separate annotations.
+Default is \code{"Paired"}.}
 
-\item{separate_annotation_palcolor}{A list specifying the colors to use for each level of the separate annotations.}
-
-\item{separate_annotation_params}{A list of other parameters to be passed to the \link[ComplexHeatmap:HeatmapAnnotation]{ComplexHeatmap::HeatmapAnnotation} function when creating the separate annotation blocks.}
-
-\item{reverse_ht}{A logical indicating whether to reverse the heatmap.
+\item{separate_annotation_palcolor}{The colors to use for each level of the separate annotations.
 Default is \code{NULL}.}
 
-\item{use_raster}{A logical value indicating whether to use a raster device for plotting.
+\item{separate_annotation_params}{Other parameters to \link[ComplexHeatmap:HeatmapAnnotation]{ComplexHeatmap::HeatmapAnnotation} when creating a separate annotation blocks.}
+
+\item{reverse_ht}{Whether to reverse the heatmap.
+Default is \code{NULL}.}
+
+\item{use_raster}{Whether to use a raster device for plotting.
 Default is NULL.}
 
 \item{raster_device}{A character vector specifying the raster device to use.
 Default is "png".}
 
-\item{raster_by_magick}{A logical value indicating whether to use the 'magick' package for raster.
+\item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is FALSE.}
 
 \item{height}{A numeric vector specifying the height(s) of the heatmap body.

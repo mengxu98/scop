@@ -11,7 +11,8 @@ get_vars(p, reverse, verbose = FALSE)
 
 \item{reverse}{If \code{TRUE} then will return unused vars.}
 
-\item{verbose}{Whether to print messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Get used vars in a ggplot object

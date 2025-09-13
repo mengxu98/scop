@@ -25,7 +25,8 @@ All data with matching names will be considered for appending.}
 
 \item{overwrite}{Whether to overwrite.}
 
-\item{verbose}{Show messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Append a Seurat object to another

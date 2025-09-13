@@ -52,13 +52,13 @@ Default is NULL, which means the default assay will be used.}
 
 \item{layer}{A character specifying the layer to use from the assay. Default is "data".}
 
-\item{flip}{A logical indicating whether to flip the x-axis. Default is FALSE.}
+\item{flip}{Whether to flip the x-axis. Default is FALSE.}
 
-\item{reverse}{A logical indicating whether to reverse the y-axis. Default is FALSE.}
+\item{reverse}{Whether to reverse the y-axis. Default is FALSE.}
 
 \item{x_order}{A character specifying how to order the x-axis. Can be "value" or "rank". Default is "value".}
 
-\item{decreasing}{A logical indicating whether to order the groups in decreasing order. Default is NULL.}
+\item{decreasing}{Whether to order the groups in decreasing order. Default is NULL.}
 
 \item{palette}{A character specifying the color palette to use for grouping variables. Default is "Paired".}
 
@@ -66,15 +66,15 @@ Default is NULL, which means the default assay will be used.}
 
 \item{cells}{A character vector specifying the cells to plot. Default is NULL, which means all cells are included.}
 
-\item{keep_empty}{A logical indicating whether to keep empty groups. Default is FALSE.}
+\item{keep_empty}{Whether to keep empty groups. Default is FALSE.}
 
-\item{y.nbreaks}{An integer specifying the number of breaks on the y-axis. Default is 4.}
+\item{y.nbreaks}{A number of breaks on the y-axis. Default is 4.}
 
 \item{y.min}{A numeric specifying the minimum value on the y-axis. Default is NULL, which means the minimum value will be automatically determined.}
 
 \item{y.max}{A numeric specifying the maximum value on the y-axis. Default is NULL, which means the maximum value will be automatically determined.}
 
-\item{same.y.lims}{A logical indicating whether to use the same y-axis limits for all plots. Default is FALSE.}
+\item{same.y.lims}{Whether to use the same y-axis limits for all plots. Default is FALSE.}
 
 \item{aspect.ratio}{A numeric specifying the aspect ratio of the plot. Default is NULL, which means the aspect ratio will be automatically determined.}
 
@@ -90,17 +90,17 @@ Default is NULL, which means the default assay will be used.}
 
 \item{theme_args}{A list of arguments to pass to the theme function.}
 
-\item{combine}{A logical indicating whether to combine multiple plots into a single plot. Default is TRUE.}
+\item{combine}{Whether to combine multiple plots into a single plot. Default is TRUE.}
 
-\item{nrow}{An integer specifying the number of rows in the combined plot.
+\item{nrow}{A number of rows in the combined plot.
 Default is NULL, which means determined automatically based on the number of plots.}
 
-\item{ncol}{An integer specifying the number of columns in the combined plot.
+\item{ncol}{A number of columns in the combined plot.
 Default is NULL, which means determined automatically based on the number of plots.}
 
-\item{byrow}{A logical indicating whether to add plots by row or by column in the combined plot. Default is TRUE.}
+\item{byrow}{Whether to add plots by row or by column in the combined plot. Default is TRUE.}
 
-\item{force}{A logical indicating whether to continue plotting if there are more than 50 features. Default is FALSE.}
+\item{force}{Whether to continue plotting if there are more than 50 features. Default is FALSE.}
 }
 \description{
 Plots the density of specified features in a single or multiple groups,

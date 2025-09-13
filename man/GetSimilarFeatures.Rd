@@ -16,7 +16,7 @@ GetSimilarFeatures(
 )
 }
 \arguments{
-\item{srt}{Seurat object}
+\item{srt}{A Seurat object.}
 
 \item{features}{A character vector; giving feature names.}
 
@@ -24,15 +24,15 @@ GetSimilarFeatures(
 
 \item{features_use}{A character vector; list of features eligible to be returned.}
 
-\item{anticorr}{A logical value indicating whether to allow negatively correlated genes.
+\item{anticorr}{Whether to allow negatively correlated genes.
 Default is FALSE.}
 
 \item{aggregator}{How to combine correlations when finding similar features.
-Options: "sum" (default), "min" (for "and"-like filter), "max", or "mean".}
+Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"max"}, or \code{"mean"}.}
 
-\item{assay}{The assay to use. Default is "RNA".}
+\item{assay}{The assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{The layer to use. Default is "data".}
+\item{layer}{The layer to use. Default is \code{"data"}.}
 }
 \value{
 character vector.

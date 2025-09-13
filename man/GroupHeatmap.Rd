@@ -144,7 +144,7 @@ Default is NULL.}
 \item{split.by}{A character vector specifying the variable to split the heatmap by.
 Default is NULL.}
 
-\item{within_groups}{A logical value indicating whether to create separate heatmap scales for each group or within each group.
+\item{within_groups}{Whether to create separate heatmap scales for each group or within each group.
 Default is FALSE.}
 
 \item{grouping.var}{A character vector that specifies another variable for grouping, such as certain conditions.
@@ -159,13 +159,13 @@ Default is NULL.}
 \item{aggregate_fun}{A function to use for aggregating data within groups.
 Default is \link[base:mean]{base::mean}.}
 
-\item{exp_cutoff}{A numeric value specifying the threshold for cell counting if \code{add_dot} is TRUE.
+\item{exp_cutoff}{The threshold for cell counting if \code{add_dot} is TRUE.
 Default is 0.}
 
-\item{border}{A logical value indicating whether to add a border to the heatmap.
+\item{border}{Whether to add a border to the heatmap.
 Default is TRUE.}
 
-\item{flip}{A logical value indicating whether to flip the heatmap.
+\item{flip}{Whether to flip the heatmap.
 Default is FALSE.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
@@ -183,7 +183,7 @@ Default is NULL.}
 \item{limits}{A two-length numeric vector specifying the limits for the color scale.
 Default is NULL.}
 
-\item{lib_normalize}{A logical value indicating whether to normalize the data by library size.}
+\item{lib_normalize}{Whether to normalize the data by library size.}
 
 \item{libsize}{A numeric vector specifying the library size for each cell.
 Default is NULL.}
@@ -194,7 +194,7 @@ Default is NULL.}
 \item{feature_split_by}{A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
 Default is NULL.}
 
-\item{n_split}{An integer specifying the number of feature splits (feature clusters) to create.
+\item{n_split}{A number of feature splits (feature clusters) to create.
 Default is NULL.}
 
 \item{split_order}{A numeric vector specifying the order of splits. Default is NULL.}
@@ -202,41 +202,41 @@ Default is NULL.}
 \item{split_method}{A character vector specifying the method for splitting features.
 Default is "kmeans" with options "kmeans", "hclust", "mfuzz").}
 
-\item{decreasing}{A logical value indicating whether to sort feature splits in decreasing order.
+\item{decreasing}{Whether to sort feature splits in decreasing order.
 Default is FALSE.}
 
-\item{fuzzification}{A numeric value specifying the fuzzification coefficient.
+\item{fuzzification}{The fuzzification coefficient.
 Default is NULL.}
 
 \item{cluster_features_by}{A character vector specifying which group.by to use when clustering features.
 Default is NULL. By default, this parameter is set to NULL, which means that all groups will be used.}
 
-\item{cluster_rows}{A logical value indicating whether to cluster rows in the heatmap.
+\item{cluster_rows}{Whether to cluster rows in the heatmap.
 Default is FALSE.}
 
-\item{cluster_columns}{A logical value indicating whether to cluster columns in the heatmap.
+\item{cluster_columns}{Whether to cluster columns in the heatmap.
 Default is FALSE.}
 
-\item{cluster_row_slices}{A logical value indicating whether to cluster row slices in the heatmap.
+\item{cluster_row_slices}{Whether to cluster row slices in the heatmap.
 Default is FALSE.}
 
-\item{cluster_column_slices}{A logical value indicating whether to cluster column slices in the heatmap.
+\item{cluster_column_slices}{Whether to cluster column slices in the heatmap.
 Default is FALSE.}
 
-\item{show_row_names}{A logical value indicating whether to show row names in the heatmap.
+\item{show_row_names}{Whether to show row names in the heatmap.
 Default is FALSE.}
 
-\item{show_column_names}{A logical value indicating whether to show column names in the heatmap.
+\item{show_column_names}{Whether to show column names in the heatmap.
 Default is FALSE.}
 
 \item{row_names_side}{A character vector specifying the side to place row names.}
 
 \item{column_names_side}{A character vector specifying the side to place column names.}
 
-\item{row_names_rot}{A numeric value specifying the rotation angle for row names.
+\item{row_names_rot}{The rotation angle for row names.
 Default is 0.}
 
-\item{column_names_rot}{A numeric value specifying the rotation angle for column names.
+\item{column_names_rot}{The rotation angle for column names.
 Default is 90.}
 
 \item{row_title}{A character vector specifying the title for rows.
@@ -251,18 +251,18 @@ Default is "left".}
 \item{column_title_side}{A character vector specifying the side to place column title.
 Default is "top".}
 
-\item{row_title_rot}{A numeric value specifying the rotation angle for row title.
+\item{row_title_rot}{The rotation angle for row title.
 Default is 0.}
 
-\item{column_title_rot}{A numeric value specifying the rotation angle for column title.}
+\item{column_title_rot}{The rotation angle for column title.}
 
-\item{anno_terms}{A logical value indicating whether to include term annotations.
+\item{anno_terms}{Whether to include term annotations.
 Default is FALSE.}
 
-\item{anno_keys}{A logical value indicating whether to include key annotations.
+\item{anno_keys}{Whether to include key annotations.
 Default is FALSE.}
 
-\item{anno_features}{A logical value indicating whether to include feature annotations.
+\item{anno_features}{Whether to include feature annotations.
 Default is FALSE.}
 
 \item{terms_width}{A unit specifying the width of term annotations.
@@ -289,16 +289,16 @@ Default is "symbol".}
 \item{species}{A character vector specifying the species for features.
 Default is "Homo_sapiens".}
 
-\item{db_update}{A logical value indicating whether to update the database.
+\item{db_update}{Whether to update the database.
 Default is FALSE.}
 
 \item{db_version}{A character vector specifying the version of the database.
 Default is "latest".}
 
-\item{db_combine}{A logical value indicating whether to use a combined database.
+\item{db_combine}{Whether to use a combined database.
 Default is FALSE.}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database if annotation is missing for \code{species}.
+\item{convert_species}{Whether to use a species-converted database if annotation is missing for \code{species}.
 Default is FALSE.}
 
 \item{Ensembl_version}{An integer specifying the Ensembl version.
@@ -322,7 +322,7 @@ Default is 10.}
 \item{maxGSSize}{An integer specifying the maximum gene set size for the database.
 Default is 500.}
 
-\item{GO_simplify}{A logical value indicating whether to simplify gene ontology terms.
+\item{GO_simplify}{Whether to simplify gene ontology terms.
 Default is FALSE.}
 
 \item{GO_simplify_cutoff}{A character vector specifying the cutoff for GO simplification.
@@ -331,59 +331,59 @@ Default is "p.adjust < 0.05".}
 \item{simplify_method}{A character vector specifying the method for GO simplification.
 Default is "Wang".}
 
-\item{simplify_similarityCutoff}{A numeric value specifying the similarity cutoff for GO simplification.
+\item{simplify_similarityCutoff}{The similarity cutoff for GO simplification.
 Default is 0.7.}
 
 \item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
 Default is NULL.}
 
-\item{padjustCutoff}{A numeric value specifying the adjusted p-value cutoff for significance.
+\item{padjustCutoff}{The adjusted p-value cutoff for significance.
 Default is 0.05.}
 
-\item{topTerm}{An integer specifying the number of top terms to include.
+\item{topTerm}{A number of top terms to include.
 Default is 5.}
 
-\item{show_termid}{A logical value indicating whether to show term IDs.
+\item{show_termid}{Whether to show term IDs.
 Default is FALSE.}
 
-\item{topWord}{An integer specifying the number of top words to include.
+\item{topWord}{A number of top words to include.
 Default is 20.}
 
 \item{words_excluded}{A character vector specifying the words to exclude.
 Default is NULL.}
 
-\item{nlabel}{An integer specifying the number of labels to include.
+\item{nlabel}{A number of labels to include.
 Default is 0.}
 
 \item{features_label}{A character vector specifying the features to label.
 Default is NULL.}
 
-\item{label_size}{A numeric value specifying the size of labels.
+\item{label_size}{The size of labels.
 Default is 10.}
 
 \item{label_color}{A character vector specifying the color of labels.
 Default is "black".}
 
-\item{add_bg}{A logical value indicating whether to add a background to the heatmap.
+\item{add_bg}{Whether to add a background to the heatmap.
 Default is FALSE.}
 
-\item{bg_alpha}{A numeric value specifying the alpha value for the background color.
+\item{bg_alpha}{The alpha value for the background color.
 Default is 0.5.}
 
-\item{add_dot}{A logical value indicating whether to add dots to the heatmap.
+\item{add_dot}{Whether to add dots to the heatmap.
 The size of dot represents percentage of expressed cells based on the specified \code{exp_cutoff}.
 Default is FALSE.}
 
 \item{dot_size}{A unit specifying the base size of the dots.
 Default is unit(8, "mm").}
 
-\item{add_reticle}{A logical value indicating whether to add reticles to the heatmap.
+\item{add_reticle}{Whether to add reticles to the heatmap.
 Default is FALSE.}
 
 \item{reticle_color}{A character vector specifying the color of the reticles.
 Default is "grey".}
 
-\item{add_violin}{A logical value indicating whether to add violins to the heatmap.
+\item{add_violin}{Whether to add violins to the heatmap.
 Default is FALSE.}
 
 \item{fill.by}{A character vector specifying what to fill the violin.
@@ -446,13 +446,13 @@ Default is NULL.}
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
 Default is an empty list.}
 
-\item{use_raster}{A logical value indicating whether to use a raster device for plotting.
+\item{use_raster}{Whether to use a raster device for plotting.
 Default is NULL.}
 
 \item{raster_device}{A character vector specifying the raster device to use.
 Default is "png".}
 
-\item{raster_by_magick}{A logical value indicating whether to use the 'magick' package for raster.
+\item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is FALSE.}
 
 \item{height}{A numeric vector specifying the height(s) of the heatmap body.
@@ -469,8 +469,8 @@ Default is "inch".}
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Default is an empty list.}
 
-\item{verbose}{A logical value indicating whether to print messages.
-Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.}
 }

@@ -52,43 +52,65 @@ RunPaCMAP(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the pacmap.PaCMAP function.}
+\item{...}{Additional arguments to be passed to pacmap.PaCMAP.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is "pca".}
+\item{reduction}{The reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is NULL.}
+\item{dims}{The dimensions to be used.
+Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{The features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{The assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{The layer to be used.
+Default is \code{"data"}.}
 
-\item{n_components}{An integer specifying the number of PaCMAP components. Default is 2.}
+\item{n_components}{The number of PaCMAP components.
+Default is \code{2}.}
 
-\item{n.neighbors}{An integer specifying the number of neighbors considered in the k-Nearest Neighbor graph. Default to 10 for dataset whose sample size is smaller than 10000. For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).}
+\item{n.neighbors}{A number of neighbors considered in the k-Nearest Neighbor graph.
+Default to 10 for dataset whose sample size is smaller than 10000.
+For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).}
 
-\item{MN_ratio}{A numeric value specifying the ratio of the ratio of the number of mid-near pairs to the number of neighbors. Default is 0.5.}
+\item{MN_ratio}{The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
+Default is \code{0.5}.}
 
-\item{FP_ratio}{A numeric value specifying the ratio of the ratio of the number of further pairs to the number of neighbors. Default is 2.}
+\item{FP_ratio}{The ratio of the ratio of the number of further pairs to the number of neighbors.
+Default is \code{2}.}
 
-\item{distance_method}{A character string specifying the distance metric to be used. Default is "euclidean".}
+\item{distance_method}{The distance metric to be used.
+Default is \code{"euclidean"}.}
 
-\item{lr}{A numeric value specifying the learning rate of the AdaGrad optimizer. Default is 1.}
+\item{lr}{The learning rate of the AdaGrad optimizer.
+Default is \code{1}.}
 
-\item{num_iters}{An integer specifying the number of iterations for PaCMAP optimization. Default is 450.}
+\item{num_iters}{The number of iterations for PaCMAP optimization.
+Default is \code{450}.}
 
-\item{apply_pca}{A logical value indicating whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph. Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy. Notice that this option does not affect the initialization of the optimization process. Default is TRUE.}
+\item{apply_pca}{Whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph.
+Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy.
+Notice that this option does not affect the initialization of the optimization process.
+Default is \code{TRUE}.}
 
-\item{init}{A character string specifying the initialization of the lower dimensional embedding. One of "pca" or "random". Default is "random".}
+\item{init}{The initialization of the lower dimensional embedding.
+One of \code{"pca"} or \code{"random"}.
+Default is \code{"random"}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "pacmap".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"pacmap"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the PaCMAP embeddings. Default is "PaCMAP_".}
+\item{reduction.key}{The prefix for the column names of the PaCMAP embeddings.
+Default is \code{"PaCMAP_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run PaCMAP (Pairwise Controlled Manifold Approximation)

@@ -58,7 +58,7 @@ Default is \code{TRUE}.}
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
 Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{A logical value indicating whether highly variable feature (HVF) finding should be performed.
+\item{do_HVF_finding}{Whether highly variable feature (HVF) finding should be performed.
 Default is \code{TRUE}.}
 
 \item{HVF_source}{The source of highly variable features.
@@ -77,7 +77,7 @@ The default value is \code{1}.}
 \item{HVF}{A vector of highly variable features.
 Default is \code{NULL}.}
 
-\item{do_scaling}{A logical value indicating whether to perform scaling.
+\item{do_scaling}{Whether to perform scaling.
 If TRUE, the function will force to scale the data using the ScaleData function.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.

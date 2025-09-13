@@ -10,7 +10,7 @@
 #' If NULL, n_candidates must be provided.
 #' @param suffix A character vector specifying the suffix to append to the output layer names for each lineage.
 #' Defaults to the lineage names.
-#' @param n_candidates An integer specifying the number of candidate features to select when features is NULL.
+#' @param n_candidates A number of candidate features to select when features is NULL.
 #' Defaults to `1000`.
 #' @param minfreq An integer specifying the minimum frequency threshold for candidate features.
 #' Features with a frequency less than minfreq will be excluded. Defaults to `5`.

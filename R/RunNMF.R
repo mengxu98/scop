@@ -1,22 +1,36 @@
-#' Run NMF (non-negative matrix factorization)
+#' @title Run NMF (non-negative matrix factorization)
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object, an Assay object, or a matrix-like object.
-#' @param assay A character string specifying the assay to be used for the analysis. Default is NULL.
-#' @param layer A character string specifying the layer to be used for the analysis. Default is "data".
-#' @param features A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.
-#' @param nbes An integer specifying the number of basis vectors (components) to be computed. Default is 50.
-#' @param nmf.method A character string specifying the NMF algorithm to be used. Currently supported values are "RcppML" and "NMF". Default is "RcppML".
-#' @param tol A numeric value specifying the tolerance for convergence (only applicable when nmf.method is "RcppML"). Default is 1e-5.
-#' @param maxit An integer specifying the maximum number of iterations for convergence (only applicable when nmf.method is "RcppML"). Default is 100.
-#' @param rev.nmf A logical value indicating whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis. Default is FALSE.
-#' @param ndims.print An integer vector specifying the dimensions (number of basis vectors) to print in the output. Default is 1:5.
-#' @param nfeatures.print An integer specifying the number of features to print in the output. Default is 30.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "nmf".
-#' @param reduction.key A character string specifying the prefix for the column names of the basis vectors. Default is "BE_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf] function.
+#' @param assay The assay to be used for the analysis.
+#' Default is `NULL`.
+#' @param layer The layer to be used for the analysis.
+#' Default is `"data"`.
+#' @param features The features to be used for the analysis.
+#' Default is `NULL`, which uses all variable features.
+#' @param nbes The number of basis vectors (components) to be computed.
+#' Default is `50`.
+#' @param nmf.method The NMF algorithm to be used.
+#' Currently supported values are `"RcppML"` and `"NMF"`.
+#' Default is `"RcppML"`.
+#' @param tol The tolerance for convergence (only applicable when nmf.method is `"RcppML"`).
+#' Default is `1e-5`.
+#' @param maxit The maximum number of iterations for convergence (only applicable when nmf.method is `"RcppML"`).
+#' Default is `100`.
+#' @param rev.nmf Whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis.
+#' Default is `FALSE`.
+#' @param ndims.print The dimensions (number of basis vectors) to print in the output.
+#' Default is `1:5`.
+#' @param nfeatures.print The number of features to print in the output.
+#' Default is `30`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"nmf"`.
+#' @param reduction.key The prefix for the column names of the basis vectors.
+#' Default is `"BE_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
 #'
 #' @rdname RunNMF
 #' @export

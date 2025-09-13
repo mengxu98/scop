@@ -61,7 +61,7 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{lineages_palette}{Color palette used for lineages.}
 
-\item{span}{A numeric value specifying the span of the loess smoother for lineages line.}
+\item{span}{The span of the loess smoother for lineages line.}
 
 \item{width}{Width in pixels, defaults to automatic sizing.}
 

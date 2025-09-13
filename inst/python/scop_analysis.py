@@ -181,16 +181,65 @@ def SCVELO(
 
         # 4. Compute neighbors and moments with version compatibility
         print("Computing neighbors and moments...")
+        
+        # Find the best representation for neighbors computation
+        # Priority: PCA > other linear reductions > fallback to raw data
+        use_rep = None
+        if linear_reduction in adata.obsm:
+            rep_dims = adata.obsm[linear_reduction].shape[1]
+            if rep_dims >= n_pcs:
+                use_rep = linear_reduction
+                print(f"Using {linear_reduction} with {rep_dims} dimensions")
+            else:
+                print(f"Warning: {linear_reduction} has only {rep_dims} dimensions, need {n_pcs}")
+        elif f"X_{linear_reduction}" in adata.obsm:
+            rep_dims = adata.obsm[f"X_{linear_reduction}"].shape[1]
+            if rep_dims >= n_pcs:
+                use_rep = f"X_{linear_reduction}"
+                print(f"Using X_{linear_reduction} with {rep_dims} dimensions")
+            else:
+                print(f"Warning: X_{linear_reduction} has only {rep_dims} dimensions, need {n_pcs}")
+        
+        # Try to find a suitable PCA representation
+        if use_rep is None:
+            pca_candidates = [key for key in adata.obsm.keys() if 'pca' in key.lower() and 'umap' not in key.lower()]
+            for candidate in pca_candidates:
+                rep_dims = adata.obsm[candidate].shape[1]
+                if rep_dims >= n_pcs:
+                    use_rep = candidate
+                    print(f"Using PCA representation {candidate} with {rep_dims} dimensions")
+                    break
+        
+        # If still no suitable representation, reduce n_pcs to available dimensions
+        if use_rep is None:
+            # Find the representation with the most dimensions
+            max_dims = 0
+            for key in adata.obsm.keys():
+                if 'pca' in key.lower() and 'umap' not in key.lower():
+                    dims = adata.obsm[key].shape[1]
+                    if dims > max_dims:
+                        max_dims = dims
+                        use_rep = key
+            
+            if use_rep and max_dims > 0:
+                n_pcs = min(n_pcs, max_dims)
+                print(f"Reducing n_pcs to {n_pcs} to match available dimensions in {use_rep}")
+            else:
+                # Fallback to raw data
+                use_rep = None
+                n_pcs = min(n_pcs, adata.X.shape[1])
+                print(f"Using raw data with n_pcs={n_pcs}")
+        
         try:
             # Method 1: Try using scVelo's workflow
             scv.pp.moments(
-                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=linear_reduction
+                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep
             )
         except Exception as e:
             print(f"Warning: scVelo moments failed ({e}), using manual computation...")
             # Method 2: Manual computation for compatibility
             sc.pp.neighbors(
-                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=linear_reduction
+                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep
             )
 
             # Manual moments calculation

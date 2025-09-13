@@ -17,17 +17,17 @@
 #' Default is `"RdBu"`.
 #' @param palcolor A character string specifying the color for the palette.
 #' Default is `NULL`.
-#' @param pt.size A numeric value specifying the size of the points.
+#' @param pt.size The size of the points.
 #' Default is `1`.
-#' @param pt.alpha A numeric value specifying the transparency of the points.
+#' @param pt.alpha The transparency of the points.
 #' Default is `1`.
 #' @param cols.highlight A character string specifying the color for highlighted points.
 #' Default is `"black"`.
-#' @param sizes.highlight A numeric value specifying the size of the highlighted points.
+#' @param sizes.highlight The size of the highlighted points.
 #' Default is `1`.
-#' @param alpha.highlight A numeric value specifying the transparency of the highlighted points.
+#' @param alpha.highlight The transparency of the highlighted points.
 #' Default is `1`.
-#' @param stroke.highlight A numeric value specifying the stroke width for the highlighted points.
+#' @param stroke.highlight The stroke width for the highlighted points.
 #' Default is `0.5`.
 #' @param nlabel An integer value specifying the number of labeled points per group.
 #' Default is `5`.
@@ -37,11 +37,11 @@
 #' Default is `"black"`.
 #' @param label.bg A character string specifying the color for the labels' background.
 #' Default is `"white"`.
-#' @param label.bg.r A numeric value specifying the radius of the rounding of the labels' background.
+#' @param label.bg.r The radius of the rounding of the labels' background.
 #' Default is 0.1.
-#' @param label.size A numeric value specifying the size of the labels.
+#' @param label.size The size of the labels.
 #' Default is `4`.
-#' @param aspect.ratio A numeric value specifying the aspect ratio of the plot.
+#' @param aspect.ratio The aspect ratio of the plot.
 #' Default is `NULL`.
 #' @param xlab A character string specifying the x-axis label.
 #' Default is the value of `x_metric`.
@@ -51,13 +51,13 @@
 #' Default is `"theme_scop"`.
 #' @param theme_args A list of theme arguments to pass to the `theme_use` function.
 #' Default is an empty list.
-#' @param combine A logical value indicating whether to combine the plots for each group into a single plot.
+#' @param combine Whether to combine the plots for each group into a single plot.
 #' Default is `TRUE`.
 #' @param nrow An integer value specifying the number of rows in the combined plot.
 #' Default is `NULL`.
 #' @param ncol An integer value specifying the number of columns in the combined plot.
 #' Default is `NULL`.
-#' @param byrow A logical value indicating whether to arrange the plots by row in the combined plot.
+#' @param byrow Whether to arrange the plots by row in the combined plot.
 #' Default is `TRUE`.
 #'
 #' @seealso [RunDEtest]

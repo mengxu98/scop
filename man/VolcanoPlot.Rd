@@ -56,22 +56,22 @@ Default is \code{"RdBu"}.}
 \item{palcolor}{A character string specifying the color for the palette.
 Default is \code{NULL}.}
 
-\item{pt.size}{A numeric value specifying the size of the points.
+\item{pt.size}{The size of the points.
 Default is \code{1}.}
 
-\item{pt.alpha}{A numeric value specifying the transparency of the points.
+\item{pt.alpha}{The transparency of the points.
 Default is \code{1}.}
 
 \item{cols.highlight}{A character string specifying the color for highlighted points.
 Default is \code{"black"}.}
 
-\item{sizes.highlight}{A numeric value specifying the size of the highlighted points.
+\item{sizes.highlight}{The size of the highlighted points.
 Default is \code{1}.}
 
-\item{alpha.highlight}{A numeric value specifying the transparency of the highlighted points.
+\item{alpha.highlight}{The transparency of the highlighted points.
 Default is \code{1}.}
 
-\item{stroke.highlight}{A numeric value specifying the stroke width for the highlighted points.
+\item{stroke.highlight}{The stroke width for the highlighted points.
 Default is \code{0.5}.}
 
 \item{nlabel}{An integer value specifying the number of labeled points per group.
@@ -86,13 +86,13 @@ Default is \code{"black"}.}
 \item{label.bg}{A character string specifying the color for the labels' background.
 Default is \code{"white"}.}
 
-\item{label.bg.r}{A numeric value specifying the radius of the rounding of the labels' background.
+\item{label.bg.r}{The radius of the rounding of the labels' background.
 Default is 0.1.}
 
-\item{label.size}{A numeric value specifying the size of the labels.
+\item{label.size}{The size of the labels.
 Default is \code{4}.}
 
-\item{aspect.ratio}{A numeric value specifying the aspect ratio of the plot.
+\item{aspect.ratio}{The aspect ratio of the plot.
 Default is \code{NULL}.}
 
 \item{xlab}{A character string specifying the x-axis label.
@@ -107,7 +107,7 @@ Default is \code{"theme_scop"}.}
 \item{theme_args}{A list of theme arguments to pass to the \code{theme_use} function.
 Default is an empty list.}
 
-\item{combine}{A logical value indicating whether to combine the plots for each group into a single plot.
+\item{combine}{Whether to combine the plots for each group into a single plot.
 Default is \code{TRUE}.}
 
 \item{nrow}{An integer value specifying the number of rows in the combined plot.
@@ -116,7 +116,7 @@ Default is \code{NULL}.}
 \item{ncol}{An integer value specifying the number of columns in the combined plot.
 Default is \code{NULL}.}
 
-\item{byrow}{A logical value indicating whether to arrange the plots by row in the combined plot.
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 }
 \description{

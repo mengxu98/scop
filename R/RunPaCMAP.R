@@ -1,25 +1,47 @@
 #' @title Run PaCMAP (Pairwise Controlled Manifold Approximation)
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used. Default is "pca".
-#' @param dims An integer vector specifying the dimensions to be used. Default is NULL.
-#' @param features A character vector specifying the features to be used. Default is NULL.
-#' @param assay A character string specifying the assay to be used. Default is NULL.
-#' @param layer A character string specifying the layer to be used. Default is "data".
-#' @param n_components An integer specifying the number of PaCMAP components. Default is 2.
-#' @param n.neighbors An integer specifying the number of neighbors considered in the k-Nearest Neighbor graph. Default to 10 for dataset whose sample size is smaller than 10000. For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).
-#' @param MN_ratio A numeric value specifying the ratio of the ratio of the number of mid-near pairs to the number of neighbors. Default is 0.5.
-#' @param FP_ratio A numeric value specifying the ratio of the ratio of the number of further pairs to the number of neighbors. Default is 2.
-#' @param distance_method A character string specifying the distance metric to be used. Default is "euclidean".
-#' @param lr A numeric value specifying the learning rate of the AdaGrad optimizer. Default is 1.
-#' @param num_iters An integer specifying the number of iterations for PaCMAP optimization. Default is 450.
-#' @param apply_pca A logical value indicating whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph. Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy. Notice that this option does not affect the initialization of the optimization process. Default is TRUE.
-#' @param init A character string specifying the initialization of the lower dimensional embedding. One of "pca" or "random". Default is "random".
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "pacmap".
-#' @param reduction.key A character string specifying the prefix for the column names of the PaCMAP embeddings. Default is "PaCMAP_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param ... Additional arguments to be passed to the pacmap.PaCMAP function.
+#' @param reduction The reduction to be used.
+#' Default is `"pca"`.
+#' @param dims The dimensions to be used.
+#' Default is `NULL`.
+#' @param features The features to be used.
+#' Default is `NULL`.
+#' @param assay The assay to be used.
+#' Default is `NULL`.
+#' @param layer The layer to be used.
+#' Default is `"data"`.
+#' @param n_components The number of PaCMAP components.
+#' Default is `2`.
+#' @param n.neighbors A number of neighbors considered in the k-Nearest Neighbor graph.
+#' Default to 10 for dataset whose sample size is smaller than 10000.
+#' For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).
+#' @param MN_ratio The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
+#' Default is `0.5`.
+#' @param FP_ratio The ratio of the ratio of the number of further pairs to the number of neighbors.
+#' Default is `2`.
+#' @param distance_method The distance metric to be used.
+#' Default is `"euclidean"`.
+#' @param lr The learning rate of the AdaGrad optimizer.
+#' Default is `1`.
+#' @param num_iters The number of iterations for PaCMAP optimization.
+#' Default is `450`.
+#' @param apply_pca Whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph.
+#' Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy.
+#' Notice that this option does not affect the initialization of the optimization process.
+#' Default is `TRUE`.
+#' @param init The initialization of the lower dimensional embedding.
+#' One of `"pca"` or `"random"`.
+#' Default is `"random"`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"pacmap"`.
+#' @param reduction.key The prefix for the column names of the PaCMAP embeddings.
+#' Default is `"PaCMAP_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to pacmap.PaCMAP.
 #'
 #' @rdname RunPaCMAP
 #' @export

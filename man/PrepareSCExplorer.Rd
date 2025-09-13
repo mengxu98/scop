@@ -27,24 +27,28 @@ Default is \code{"SCExplorer"}.}
 \item{data_file}{Path to the output data file.
 If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
 
-\item{meta_file}{Path to the output meta file. If not provided, the file will be named "meta.hdf5" in the current directory.}
+\item{meta_file}{Path to the output meta file.
+If not provided, the file will be named \code{"meta.hdf5"} in the current directory.}
 
-\item{assays}{Character vector specifying the assays to include in the data file.
+\item{assays}{The assays to include in the data file.
 Default is \code{"RNA"}.}
 
-\item{layers}{Character vector specifying the layers to include in the data file.
+\item{layers}{The layers to include in the data file.
 Default is \code{"data"}.}
 
-\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored. Default is 100.}
+\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored.
+Default is \code{100}.}
 
-\item{write_tools}{A logical value indicating whether to write the tools information to the meta file. Default is FALSE.}
+\item{write_tools}{Whether to write the tools information to the meta file.
+Default is \code{FALSE}.}
 
-\item{write_misc}{A logical value indicating whether to write the miscellaneous information to the meta file. Default is FALSE.}
+\item{write_misc}{Whether to write the miscellaneous information to the meta file.
+Default is \code{FALSE}.}
 
 \item{compression_level}{Compression level for the HDF5 dataset.
 Default is \code{6}.}
 
-\item{overwrite}{Logical value indicating whether to overwrite existing data in the data file.
+\item{overwrite}{Whether to overwrite existing data in the data file.
 Default is \code{TRUE}.}
 }
 \description{

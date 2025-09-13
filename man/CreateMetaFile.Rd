@@ -12,25 +12,32 @@ CreateMetaFile(
   write_misc = FALSE,
   ignore_nlevel = 100,
   compression_level = 6,
-  overwrite = FALSE
+  overwrite = TRUE
 )
 }
 \arguments{
-\item{srt}{The Seurat object.}
+\item{srt}{A Seurat object.}
 
-\item{meta_file}{Path to the output meta file. If not provided, the file will be named "meta.hdf5" in the current directory.}
+\item{meta_file}{Path to the output meta file.
+If not provided, the file will be named \code{"meta.hdf5"} in the current directory.}
 
-\item{name}{Name of the dataset. If not provided, the name will default to the Seurat object's project name.}
+\item{name}{Name of the dataset.
+If not provided, the name will default to the Seurat object's project name.}
 
-\item{write_tools}{A logical value indicating whether to write the tools information to the meta file. Default is FALSE.}
+\item{write_tools}{Whether to write the tools information to the meta file.
+Default is \code{FALSE}.}
 
-\item{write_misc}{A logical value indicating whether to write the miscellaneous information to the meta file. Default is FALSE.}
+\item{write_misc}{Whether to write the miscellaneous information to the meta file.
+Default is \code{FALSE}.}
 
-\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored. Default is 100.}
+\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored.
+Default is \code{100}.}
 
-\item{compression_level}{The level of compression for the meta file. Default is 6.}
+\item{compression_level}{The level of compression for the meta file.
+Default is \code{6}.}
 
-\item{overwrite}{A logical value indicating whether to overwrite existing metadata and reductions in the meta file. Default is FALSE.}
+\item{overwrite}{Whether to overwrite existing metadata and reductions in the meta file.
+Default is \code{TRUE}.}
 }
 \description{
 Creates a meta file in HDF5 format from a Seurat object.

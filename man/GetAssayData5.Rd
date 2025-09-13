@@ -31,7 +31,8 @@ GetAssayData5(object, ...)
 \item{assay}{Specific assay to get data from or set data for;
 defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 
-\item{verbose}{Whether to print messages. Default is \code{TRUE}.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{join_layers}{Whether to join layers if provided an `Assay5` object.
 Default is `TRUE`.}
