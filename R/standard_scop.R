@@ -4,17 +4,18 @@
 #' This function performs a standard single-cell analysis workflow.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param prefix A prefix to add to the names of intermediate objects created by the function.
 #' Default is `"Standard"`.
 #' @param assay The name of the assay to use for the analysis.
 #' If NULL, the default assay of the Seurat object will be used.
-#' @param do_normalization A logical value indicating whether to perform normalization.
+#' @param do_normalization Whether to perform normalization.
 #' If NULL, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
 #' Options are `"LogNormalize"`, `"SCT"`, or `"TFIDF"`.
 #' Default is `"LogNormalize"`.
-#' @param do_HVF_finding A logical value indicating whether to perform high variable feature finding.
+#' @param do_HVF_finding Whether to perform high variable feature finding.
 #' If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.
 #' @param HVF_method The method to use for finding highly variable features.
 #' Options are `"vst"`, `"mvp"`, or `"disp"`.
@@ -23,7 +24,7 @@
 #' If NULL, all highly variable features will be used.
 #' @param HVF A vector of feature names to use as highly variable features.
 #' If NULL, the function will use the highly variable features identified by the HVF method.
-#' @param do_scaling A logical value indicating whether to perform scaling.
+#' @param do_scaling Whether to perform scaling.
 #' If TRUE, the function will force to scale the data using the ScaleData function.
 #' @param vars_to_regress A vector of feature names to use as regressors in the scaling step.
 #' If NULL, no regressors will be used.
@@ -60,8 +61,6 @@
 #' @param cluster_resolution The resolution parameter to use for clustering.
 #' Larger values result in fewer clusters.
 #' Default is `0.6`.
-#' @param verbose Whether to print messages.
-#' Default is `TRUE`.
 #' @param seed The random seed to use for reproducibility.
 #' Default is `11`.
 #'
@@ -228,7 +227,8 @@ standard_scop <- function(
     nHVF = nHVF,
     HVF = HVF,
     vars_to_regress = vars_to_regress,
-    seed = seed
+    seed = seed,
+    verbose = verbose
   )
   srt <- checked[["srt_list"]][[1]]
   HVF <- checked[["HVF"]]
@@ -238,7 +238,8 @@ standard_scop <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "{.arg normalization_method} is 'TFIDF'. Use 'lsi' workflow..."
+      "{.arg normalization_method} is 'TFIDF'. Use 'lsi' workflow...",
+      verbose = verbose
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
@@ -252,7 +253,8 @@ standard_scop <- function(
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     if (normalization_method != "SCT") {
       log_message(
-        "Perform {.fn Seurat::ScaleData} on the data..."
+        "Perform {.fn Seurat::ScaleData} on the data...",
+        verbose = verbose
       )
       srt <- Seurat::ScaleData(
         object = srt,
@@ -267,7 +269,8 @@ standard_scop <- function(
 
   for (lr in linear_reduction) {
     log_message(
-      "Perform {.pkg {lr}} linear dimension reduction on the data..."
+      "Perform {.pkg {lr}} linear dimension reduction on the data...",
+      verbose = verbose
     )
     srt <- RunDimReduction(
       srt,
@@ -278,7 +281,7 @@ standard_scop <- function(
       linear_reduction_dims = linear_reduction_dims,
       linear_reduction_params = linear_reduction_params,
       force_linear_reduction = force_linear_reduction,
-      verbose = TRUE,
+      verbose = verbose,
       seed = seed
     )
 
@@ -316,7 +319,8 @@ standard_scop <- function(
         )
 
         log_message(
-          "Perform {.fn Seurat::FindClusters} with {.pkg {cluster_algorithm}} and {.arg cluster_resolution} = {.val {cluster_resolution}} on the data..."
+          "Perform {.fn Seurat::FindClusters} with {.pkg {cluster_algorithm}} and {.arg cluster_resolution} = {.val {cluster_resolution}} on the data...",
+          verbose = verbose
         )
         srt <- Seurat::FindClusters(
           object = srt,
@@ -325,7 +329,7 @@ standard_scop <- function(
           graph.name = paste0(prefix, lr, "_SNN"),
           verbose = FALSE
         )
-        log_message("Reorder clusters...")
+        log_message("Reorder clusters...", verbose = verbose)
         srt <- srt_reorder(
           srt,
           features = HVF,
@@ -337,10 +341,11 @@ standard_scop <- function(
         srt
       },
       error = function(error) {
-        log_message(error, message_type = "warning")
+        log_message(error, message_type = "warning", verbose = verbose)
         log_message(
-          "Error when performing {.fn Seurat::FindClusters}. Skip this step",
-          message_type = "warning"
+          "Error when performing {.fn Seurat::FindClusters}. Skip it",
+          message_type = "warning",
+          verbose = verbose
         )
         srt
       }
@@ -350,7 +355,8 @@ standard_scop <- function(
       {
         for (nr in nonlinear_reduction) {
           log_message(
-            "Perform {.pkg {nr}} nonlinear dimension reduction on the data..."
+            "Perform {.pkg {nr}} nonlinear dimension reduction on the data...",
+            verbose = verbose
           )
           for (n in nonlinear_reduction_dims) {
             srt <- RunDimReduction(
@@ -363,7 +369,7 @@ standard_scop <- function(
               nonlinear_reduction_dims = n,
               nonlinear_reduction_params = nonlinear_reduction_params,
               force_nonlinear_reduction = force_nonlinear_reduction,
-              verbose = FALSE,
+              verbose = verbose,
               seed = seed
             )
           }
@@ -373,10 +379,11 @@ standard_scop <- function(
       error = function(error) {
         log_message(
           error,
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         log_message(
-          "Error when performing {.pkg {nr}} nonlinear dimension reduction. Skip this step",
+          "Error when performing {.pkg {nr}} nonlinear dimension reduction. Skip it",
           message_type = "error"
         )
         srt
@@ -410,7 +417,11 @@ standard_scop <- function(
   SeuratObject::DefaultAssay(srt) <- assay
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
-  log_message("Run scop standard workflow done", message_type = "success")
+  log_message(
+    "Run scop standard workflow done",
+    message_type = "success",
+    verbose = verbose
+  )
 
   return(srt)
 }

@@ -1,19 +1,32 @@
-#' Run MDS (multi-dimensional scaling)
+#' @title Run MDS (multi-dimensional scaling)
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object, an assay object, or a matrix-like object.
-#' @param assay A character string specifying the assay to be used for the analysis. Default is NULL.
-#' @param layer A character string specifying the layer to be used for the analysis. Default is "data".
-#' @param features A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.
-#' @param nmds An integer specifying the number of dimensions to be computed. Default is 50.
-#' @param dist.method A character string specifying the distance metric to be used. Currently supported values are "euclidean", "chisquared","kullback", "jeffreys", "jensen", "manhattan", "maximum", "canberra", "minkowski", and "hamming". Default is "euclidean".
-#' @param mds.method A character string specifying the MDS algorithm to be used. Currently supported values are "cmdscale", "isoMDS", and "sammon". Default is "cmdscale".
-#' @param rev.mds A logical value indicating whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis. Default is FALSE.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "mds".
-#' @param reduction.key A character string specifying the prefix for the column names of the basis vectors. Default is "MDS_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param ... Additional arguments to be passed to the [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon] function.
+#' @param assay The assay to be used for the analysis.
+#' Default is `NULL`.
+#' @param layer The layer to be used for the analysis.
+#' Default is `"data"`.
+#' @param features The features to be used for the analysis.
+#' Default is `NULL`, which uses all variable features.
+#' @param nmds The number of dimensions to be computed.
+#' Default is `50`.
+#' @param dist.method The distance metric to be used.
+#' Currently supported values are `"euclidean"`, `"chisquared"`, `"kullback"`, `"jeffreys"`,
+#' `"jensen"`, `"manhattan"`, `"maximum"`, `"canberra"`, `"minkowski"`, and `"hamming"`.
+#' Default is `"euclidean"`.
+#' @param mds.method The MDS algorithm to be used.
+#' Currently supported values are `"cmdscale"`, `"isoMDS"`, and `"sammon"`.
+#' Default is `"cmdscale"`.
+#' @param rev.mds Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.
+#' Default is `FALSE`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"mds"`.
+#' @param reduction.key The prefix for the column names of the basis vectors.
+#' Default is `"MDS_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
 #'
 #' @rdname RunMDS
 #' @export

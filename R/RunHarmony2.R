@@ -1,18 +1,25 @@
-#' Run Harmony algorithm
+#' @title Run Harmony algorithm
 #'
-#' This is a modified version of harmony::RunHarmony specifically designed for compatibility with RunSymphonyMap.
+#' @description
+#' This is a modified version of [harmony::RunHarmony] specifically designed for compatibility with RunSymphonyMap.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object A Seurat object.
-#' @param group.by.vars A character vector specifying the batch variable name.
-#' @param reduction A character string specifying the reduction to be used. Default is "pca".
-#' @param dims.use An integer vector specifying the dimensions to be used. Default is 1:30.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "Harmony".
-#' @param reduction.key A character string specifying the prefix for the column names of the Harmony embeddings. Default is "Harmony_".
-#' @param project.dim A logical value indicating whether to project dimension reduction loadings. Default is TRUE.
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param ... Additional arguments to be passed to the [harmony::RunHarmony] function.
+#' @param group.by.vars The batch variable name.
+#' @param reduction The reduction to be used.
+#' Default is `"pca"`.
+#' @param dims.use The dimensions to be used.
+#' Default is `1:30`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"Harmony"`.
+#' @param reduction.key The prefix for the column names of the Harmony embeddings.
+#' Default is `"Harmony_"`.
+#' @param project.dim Whether to project dimension reduction loadings.
+#' Default is `TRUE`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to [harmony::RunHarmony].
 #'
 #' @rdname RunHarmony2
 #' @export

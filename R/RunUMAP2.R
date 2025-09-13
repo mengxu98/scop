@@ -1,35 +1,65 @@
-#' Run UMAP (Uniform Manifold Approximation and Projection)
+#' @title Run UMAP (Uniform Manifold Approximation and Projection)
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.
-#' @param reduction A character string specifying the reduction to be used. Default is "pca".
-#' @param dims An integer vector specifying the dimensions to be used. Default is NULL.
-#' @param features A character vector specifying the features to be used. Default is NULL.
-#' @param neighbor A character string specifying the name of the Neighbor object to be used. Default is NULL.
-#' @param graph A character string specifying the name of the Graph object to be used. Default is NULL.
-#' @param assay A character string specifying the assay to be used. Default is NULL.
-#' @param layer A character string specifying the layer to be used. Default is "data".
-#' @param umap.method A character string specifying the UMAP method to be used. Options are "naive" and uwot". Default is "uwot".
+#' @param reduction The reduction to be used. Default is `"pca"`.
+#' @param dims The dimensions to be used. Default is `NULL`.
+#' @param features The features to be used. Default is `NULL`.
+#' @param neighbor The name of the Neighbor object to be used. Default is `NULL`.
+#' @param graph The name of the Graph object to be used. Default is `NULL`.
+#' @param assay The assay to be used. Default is `NULL`.
+#' @param layer The layer to be used. Default is `"data"`.
+#' @param umap.method The UMAP method to be used.
+#' Options are `"naive"` and `"uwot"`.
+#' Default is `"uwot"`.
 #' @param n_threads Num of threads used.
-#' @param reduction.model A DimReduc object containing a pre-trained UMAP model. Default is NULL.
-#' @param return.model A logical value indicating whether to return the UMAP model. Default is FALSE.
-#' @param n.neighbors An integer specifying the number of nearest neighbors to be used. Default is 30.
-#' @param n.components An integer specifying the number of UMAP components. Default is 2.
-#' @param metric A character string specifying the metric or a function to be used for distance calculations. When using a string, available metrics are: euclidean, manhattan. Other available generalized metrics are: cosine, pearson, pearson2. Note the triangle inequality may not be satisfied by some generalized metrics, hence knn search may not be optimal. When using metric.function as a function, the signature must be function(matrix, origin, target) and should compute a distance between the origin column and the target columns.  Default is "cosine".
-#' @param n.epochs An integer specifying the number of iterations performed during layout optimization for UMAP. Default is 200.
-#' @param spread A numeric value specifying the spread parameter for UMAP, used during automatic estimation of a/b parameters. Default is 1.
-#' @param min.dist A numeric value specifying the minimum distance between UMAP embeddings, determines how close points appear in the final layout. Default is 0.3.
-#' @param set.op.mix.ratio Interpolate between (fuzzy) union and intersection as the set operation used to combine local fuzzy simplicial sets to obtain a global fuzzy simplicial sets. Both fuzzy set operations use the product t-norm. The value of this parameter should be between 0.0 and 1.0; a value of 1.0 will use a pure fuzzy union, while 0.0 will use a pure fuzzy intersection.
-#' @param local.connectivity An integer specifying the local connectivity, used during construction of fuzzy simplicial set. Default is 1.
-#' @param negative.sample.rate An integer specifying the negative sample rate for UMAP optimization. Determines how many non-neighbor points are used per point and per iteration during layout optimization. Default is 5.
-#' @param a A numeric value specifying the parameter a for UMAP optimization. Contributes to gradient calculations during layout optimization. When left at NA, a suitable value will be estimated automatically. Default is NULL.
-#' @param b A numeric value specifying the parameter b for UMAP optimization. Contributes to gradient calculations during layout optimization. When left at NA, a suitable value will be estimated automatically. Default is NULL.
-#' @param learning.rate A numeric value specifying the initial value of "learning rate" of layout optimization. Default is 1.
-#' @param repulsion.strength A numeric value determines, together with alpha, the learning rate of layout optimization. Default is 1.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "umap".
-#' @param reduction.key A character string specifying the prefix for the column names of the UMAP embeddings. Default is "UMAP_".
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param ... Unused argument.
+#' @param reduction.model A DimReduc object containing a pre-trained UMAP model.
+#' Default is `NULL`.
+#' @param return.model Whether to return the UMAP model. Default is `FALSE`.
+#' @param n.neighbors A number of nearest neighbors to be used. Default is `30`.
+#' @param n.components A number of UMAP components. Default is `2`.
+#' @param metric The metric or a function to be used for distance calculations.
+#' When using a string, available metrics are: `euclidean`, `manhattan`.
+#' Other available generalized metrics are: cosine, pearson, pearson2.
+#' Note the triangle inequality may not be satisfied by some generalized metrics, hence knn search may not be optimal.
+#' When using metric.function as a function,
+#' the signature must be function(matrix, origin, target) and should compute a distance between the origin column and the target columns.
+#' Default is `"cosine"`.
+#' @param n.epochs A number of iterations performed during layout optimization for UMAP.
+#' Default is `200`.
+#' @param spread The spread parameter for UMAP, used during automatic estimation of a/b parameters.
+#' Default is `1`.
+#' @param min.dist The minimum distance between UMAP embeddings, determines how close points appear in the final layout.
+#' Default is `0.3`.
+#' @param set.op.mix.ratio Interpolate between (fuzzy) union and intersection as the set operation used to combine local fuzzy simplicial sets to obtain a global fuzzy simplicial sets.
+#' Both fuzzy set operations use the product t-norm.
+#' The value of this parameter should be between `0.0` and `1.0`;
+#' a value of `1.0` will use a pure fuzzy union, while `0.0` will use a pure fuzzy intersection.
+#' @param local.connectivity The local connectivity, used during construction of fuzzy simplicial set.
+#' Default is `1`.
+#' @param negative.sample.rate The negative sample rate for UMAP optimization.
+#' Determines how many non-neighbor points are used per point and per iteration during layout optimization.
+#' Default is `5`.
+#' @param a The parameter a for UMAP optimization.
+#' Contributes to gradient calculations during layout optimization.
+#' When left at NA, a suitable value will be estimated automatically.
+#' Default is `NULL`.
+#' @param b The parameter b for UMAP optimization. Details see parameter `a`.
+#' @param learning.rate The initial value of "learning rate" of layout optimization.
+#' Default is `1`.
+#' @param repulsion.strength A numeric value determines, together with alpha, the learning rate of layout optimization.
+#' Default is `1`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"umap"`.
+#' @param reduction.key The prefix for the column names of the UMAP embeddings.
+#' Default is `"UMAP_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to UMAP.
+#'
+#' @rdname RunUMAP2
+#' @export
 #'
 #' @examples
 #' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
@@ -42,9 +72,6 @@
 #'   group.by = "CellType",
 #'   reduction = "umap"
 #' )
-#'
-#' @rdname RunUMAP2
-#' @export
 RunUMAP2 <- function(object, ...) {
   UseMethod(generic = "RunUMAP2", object = object)
 }
@@ -81,7 +108,7 @@ RunUMAP2.Seurat <- function(
     reduction.name = "umap",
     reduction.key = "UMAP_",
     verbose = TRUE,
-    seed.use = 11L,
+    seed.use = 11,
     ...) {
   if (
     sum(c(
@@ -104,7 +131,8 @@ RunUMAP2.Seurat <- function(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay
+          assay = assay,
+          verbose = FALSE
         )[features, ]
       )
     )
@@ -230,14 +258,14 @@ RunUMAP2.default <- function(
         !inherits(x = reduction.model, what = "DimReduc")
     ) {
       log_message(
-        "If running projection UMAP, please pass a DimReduc object with the model stored to reduction.model.",
+        "If running projection UMAP, please pass a DimReduc object with the model stored to reduction.model",
         message_type = "error"
       )
     }
     model <- SeuratObject::Misc(object = reduction.model, slot = "model")
     if (length(x = model) == 0) {
       log_message(
-        "The provided reduction.model does not have a model stored.",
+        "The provided reduction.model does not have a model stored",
         message_type = "error"
       )
     }
