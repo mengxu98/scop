@@ -24,7 +24,7 @@ Default is \code{"data"}.}
 If not provided, the default assay will be used.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 }
 \value{
 A string indicating the type of data.

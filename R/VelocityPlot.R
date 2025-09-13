@@ -472,7 +472,7 @@ VelocityPlot <- function(
 #' @param n_neighbors An optional numeric value specifying the number of nearest neighbors for each grid point. Default is ceiling(n_obs / 50).
 #' @param min_mass An optional numeric value specifying the minimum mass required for a grid point to be considered. Default is 1.
 #' @param scale An optional numeric value specifying the scaling factor for the velocity vectors. Default is 1.
-#' @param adjust_for_stream A logical value indicating whether to adjust the velocity vectors for streamlines. Default is FALSE.
+#' @param adjust_for_stream Whether to adjust the velocity vectors for streamlines. Default is FALSE.
 #' @param cutoff_perc An optional numeric value specifying the percentile cutoff for removing low-density grid points. Default is 5.
 #'
 #' @references

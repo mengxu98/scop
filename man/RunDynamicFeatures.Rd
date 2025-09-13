@@ -31,7 +31,7 @@ If NULL, n_candidates must be provided.}
 \item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
 Defaults to the lineage names.}
 
-\item{n_candidates}{An integer specifying the number of candidate features to select when features is NULL.
+\item{n_candidates}{A number of candidate features to select when features is NULL.
 Defaults to \code{1000}.}
 
 \item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.

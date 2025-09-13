@@ -23,26 +23,33 @@ RunHarmony2(object, ...)
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{...}{Additional arguments to be passed to the \link[harmony:RunHarmony]{harmony::RunHarmony} function.}
+\item{...}{Additional arguments to be passed to \link[harmony:RunHarmony]{harmony::RunHarmony}.}
 
-\item{group.by.vars}{A character vector specifying the batch variable name.}
+\item{group.by.vars}{The batch variable name.}
 
-\item{reduction}{A character string specifying the reduction to be used. Default is "pca".}
+\item{reduction}{The reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims.use}{An integer vector specifying the dimensions to be used. Default is 1:30.}
+\item{dims.use}{The dimensions to be used.
+Default is \code{1:30}.}
 
-\item{project.dim}{A logical value indicating whether to project dimension reduction loadings. Default is TRUE.}
+\item{project.dim}{Whether to project dimension reduction loadings.
+Default is \code{TRUE}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "Harmony".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"Harmony"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the Harmony embeddings. Default is "Harmony_".}
+\item{reduction.key}{The prefix for the column names of the Harmony embeddings.
+Default is \code{"Harmony_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
-This is a modified version of harmony::RunHarmony specifically designed for compatibility with RunSymphonyMap.
+This is a modified version of \link[harmony:RunHarmony]{harmony::RunHarmony} specifically designed for compatibility with RunSymphonyMap.
 }
 \examples{
 panc8_sub <- RunHarmony2(

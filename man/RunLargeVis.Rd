@@ -86,22 +86,22 @@ RunLargeVis(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the \link[uwot:lvish]{uwot::lvish} function.}
+\item{...}{Additional arguments to be passed to \link[uwot:lvish]{uwot::lvish}.}
 
-\item{reduction}{A character string specifying the reduction to be used.
-Default is "pca".}
+\item{reduction}{The reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used.
-Default is NULL.}
+\item{dims}{The dimensions to be used.
+Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used.
-Default is NULL.}
+\item{features}{The features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used.
-Default is NULL.}
+\item{assay}{The assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used.
-Default is "data".}
+\item{layer}{The layer to be used.
+Default is \code{"data"}.}
 
 \item{perplexity}{Controls the size of the local neighborhood used for
 manifold approximation. This is the analogous to \code{n_neighbors} in
@@ -111,8 +111,8 @@ manifold approximation. This is the analogous to \code{n_neighbors} in
 \code{perplexity}. Usually set to three times the value of the
 \code{perplexity}. Must be at least as large as \code{perplexity}.}
 
-\item{n_components}{An integer specifying the number of LargeVis components.
-Default is 2.}
+\item{n_components}{The number of LargeVis components.
+Default is \code{2}.}
 
 \item{metric}{Type of distance metric to use to find nearest neighbors. For
  \code{nn_method = "annoy"} this can be one of:
@@ -422,19 +422,19 @@ epoch. Its signature should be: \code{(epoch, n_epochs, coords)}, where:
 }}
 
 \item{pca_method}{Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
-Allowed values are: "irlba", "rsvd", "bigstatsr", "svd", "auto"(the default.
-Uses "irlba", unless more than 50 case "svd" is used.)}
+Allowed values are: \code{"irlba"}, \code{"rsvd"}, \code{"bigstatsr"}, \code{"svd"}, \code{"auto"}.
+Uses \code{"irlba"}, unless more than 50 case \code{"svd"} is used.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "largevis".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"largevis"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the LargeVis embeddings.
-Default is "LargeVis_".}
+\item{reduction.key}{The prefix for the column names of the LargeVis embeddings.
+Default is \code{"LargeVis_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output.
-Default is TRUE.}
+\item{verbose}{If \code{TRUE}, log details to the console.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run LargeVis (Dimensionality Reduction with a LargeVis-like method)

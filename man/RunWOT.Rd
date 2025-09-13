@@ -46,20 +46,20 @@ RunWOT(
 
 \item{time_field}{A character string specifying the column name in \code{adata.obs} or \code{srt@meta.data} that contains the time information.}
 
-\item{growth_iters}{An integer specifying the number of growth iterations to perform during the OT Model computation.
+\item{growth_iters}{A number of growth iterations to perform during the OT Model computation.
 Default is 3.}
 
 \item{tmap_out}{A character string specifying the path to store the computed transport maps.}
 
-\item{time_from}{A numeric value specifying the starting time point for trajectory and fate analysis.}
+\item{time_from}{The starting time point for trajectory and fate analysis.}
 
-\item{time_to}{A numeric value specifying the ending time point for trajectory and fate analysis.
+\item{time_to}{The ending time point for trajectory and fate analysis.
 If not provided, only trajectory and fate analysis for the specified \code{time_from} will be performed.}
 
-\item{get_coupling}{A logical value indicating whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.
+\item{get_coupling}{Whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.
 Default is FALSE.}
 
-\item{recalculate}{A logical value indicating whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
+\item{recalculate}{Whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
 Default is FALSE.}
 
 \item{palette}{The palette to use for coloring cells.}

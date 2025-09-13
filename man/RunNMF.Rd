@@ -85,35 +85,50 @@ RunNMF(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an Assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments passed to \link[RcppML:nmf]{RcppML::nmf} or \link[NMF:nmf]{NMF::nmf} function.}
+\item{...}{Additional arguments passed to \link[RcppML:nmf]{RcppML::nmf} or \link[NMF:nmf]{NMF::nmf}.}
 
-\item{assay}{A character string specifying the assay to be used for the analysis. Default is NULL.}
+\item{assay}{The assay to be used for the analysis.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used for the analysis. Default is "data".}
+\item{layer}{The layer to be used for the analysis.
+Default is \code{"data"}.}
 
-\item{features}{A character vector specifying the features to be used for the analysis. Default is NULL, which uses all variable features.}
+\item{features}{The features to be used for the analysis.
+Default is \code{NULL}, which uses all variable features.}
 
-\item{nbes}{An integer specifying the number of basis vectors (components) to be computed. Default is 50.}
+\item{nbes}{The number of basis vectors (components) to be computed.
+Default is \code{50}.}
 
-\item{nmf.method}{A character string specifying the NMF algorithm to be used. Currently supported values are "RcppML" and "NMF". Default is "RcppML".}
+\item{nmf.method}{The NMF algorithm to be used.
+Currently supported values are \code{"RcppML"} and \code{"NMF"}.
+Default is \code{"RcppML"}.}
 
-\item{tol}{A numeric value specifying the tolerance for convergence (only applicable when nmf.method is "RcppML"). Default is 1e-5.}
+\item{tol}{The tolerance for convergence (only applicable when nmf.method is \code{"RcppML"}).
+Default is \code{1e-5}.}
 
-\item{maxit}{An integer specifying the maximum number of iterations for convergence (only applicable when nmf.method is "RcppML"). Default is 100.}
+\item{maxit}{The maximum number of iterations for convergence (only applicable when nmf.method is \code{"RcppML"}).
+Default is \code{100}.}
 
-\item{rev.nmf}{A logical value indicating whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis. Default is FALSE.}
+\item{rev.nmf}{Whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis.
+Default is \code{FALSE}.}
 
-\item{ndims.print}{An integer vector specifying the dimensions (number of basis vectors) to print in the output. Default is 1:5.}
+\item{ndims.print}{The dimensions (number of basis vectors) to print in the output.
+Default is \code{1:5}.}
 
-\item{nfeatures.print}{An integer specifying the number of features to print in the output. Default is 30.}
+\item{nfeatures.print}{The number of features to print in the output.
+Default is \code{30}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "nmf".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"nmf"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the basis vectors. Default is "BE_".}
+\item{reduction.key}{The prefix for the column names of the basis vectors.
+Default is \code{"BE_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run NMF (non-negative matrix factorization)

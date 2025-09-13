@@ -43,33 +43,47 @@ RunDM(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the \link[destiny]{DiffusionMap} function.}
+\item{...}{Additional arguments to be passed to \link[destiny:DiffusionMap-class]{destiny::DiffusionMap}.}
 
-\item{reduction}{A character string specifying the reduction to be used.}
+\item{reduction}{The reduction to be used.
+Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used. Default is 1:30.}
+\item{dims}{The dimensions to be used.
+Default is \code{1:30}.}
 
-\item{features}{A character vector specifying the features to be used. Default is NULL.}
+\item{features}{The features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used. Default is NULL.}
+\item{assay}{The assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used. Default is "data".}
+\item{layer}{The layer to be used.
+Default is \code{"data"}.}
 
-\item{ndcs}{An integer specifying the number of diffusion components (dimensions) to be computed. Default is 2.}
+\item{ndcs}{A number of diffusion components (dimensions) to be computed.
+Default is \code{2}.}
 
-\item{sigma}{A character string specifying the diffusion scale parameter of the Gaussian kernel. Currently supported values are "local" (default) and "global".}
+\item{sigma}{The diffusion scale parameter of the Gaussian kernel.
+Currently supported values are \code{"local"} (default) and \code{"global"}.}
 
-\item{k}{An integer specifying the number of nearest neighbors to be used for the construction of the graph. Default is 30.}
+\item{k}{A number of nearest neighbors to be used for the construction of the graph.
+Default is \code{30}.}
 
-\item{dist.method}{A character string specifying the distance metric to be used for the construction of the knn graph. Currently supported values are "euclidean" and "cosine". Default is "euclidean".}
+\item{dist.method}{The distance metric to be used for the construction of the knn graph.
+Currently supported values are \code{"euclidean"} and \code{"cosine"}.
+Default is \code{"euclidean"}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object. Default is "dm".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"dm"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the basis vectors. Default is "DM_".}
+\item{reduction.key}{The prefix for the column names of the basis vectors.
+Default is \code{"DM_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output. Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used. Default is 11.}
+\item{seed.use}{An integer specifying the random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run DM (diffusion map)

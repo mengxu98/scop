@@ -41,49 +41,49 @@ RunFR(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.}
 
-\item{...}{Additional arguments to be passed to the \link[igraph:layout_with_fr]{igraph::layout_with_fr} function.}
+\item{...}{Additional arguments to be passed to \link[igraph:layout_with_fr]{igraph::layout_with_fr}.}
 
-\item{reduction}{A character string specifying the reduction to be used.
-Default is NULL.}
+\item{reduction}{The reduction to be used.
+Default is \code{NULL}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used.
-Default is NULL.}
+\item{dims}{The dimensions to be used.
+Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used.
-Default is NULL.}
+\item{features}{The features to be used.
+Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used.
-Default is NULL.}
+\item{assay}{The assay to be used.
+Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to be used.
-Default is "data".}
+\item{layer}{The layer to be used.
+Default is \code{"data"}.}
 
-\item{graph}{A character string specifying the name of the Graph object to be used.
-Default is NULL.}
+\item{graph}{The name of the Graph object to be used.
+Default is \code{NULL}.}
 
-\item{neighbor}{A character string specifying the name of the Neighbor object to be used.
-Default is NULL.}
+\item{neighbor}{The name of the Neighbor object to be used.
+Default is \code{NULL}.}
 
-\item{k.param}{An integer specifying the number of nearest neighbors to consider.
-Default is 20.}
+\item{k.param}{The number of nearest neighbors to consider.
+Default is \code{20}.}
 
-\item{ndim}{An integer specifying the number of dimensions for the force-directed layout.
-Default is 2.}
+\item{ndim}{The number of dimensions for the force-directed layout.
+Default is \code{2}.}
 
-\item{niter}{An integer specifying the number of iterations for the force-directed layout.
-Default is 500.}
+\item{niter}{The number of iterations for the force-directed layout.
+Default is \code{500}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is "fr".}
+\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
+Default is \code{"fr"}.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the force-directed layout embeddings.
-Default is "FR_".}
+\item{reduction.key}{The prefix for the column names of the force-directed layout embeddings.
+Default is \code{"FR_"}.}
 
-\item{verbose}{A logical value indicating whether to print verbose output.
-Default is TRUE.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used.
-Default is 11.}
+\item{seed.use}{The random seed to be used.
+Default is \code{11}.}
 }
 \description{
 Run Force-Directed Layout (Fruchterman-Reingold algorithm)

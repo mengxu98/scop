@@ -9,7 +9,8 @@ adata_to_srt(adata, verbose = TRUE)
 \arguments{
 \item{adata}{A connected python anndata object.}
 
-\item{verbose}{Whether to print messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Convert an anndata object to a seurat object using reticulate

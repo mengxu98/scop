@@ -58,7 +58,7 @@ Default is \code{1}.}
 Default is \code{0}.}
 
 \item{units}{The units in which \code{height}, \code{width} and \code{margin} are given.
-Can be \code{mm}, \code{cm}, \verb{in}, etc. See \link[grid:unit]{grid::unit}.}
+Can be \code{"mm"}, \code{"cm"}, \code{"in"}, etc. See \link[grid:unit]{grid::unit}.}
 
 \item{raster}{Whether to rasterize the panel.}
 
@@ -71,8 +71,8 @@ Default is \code{FALSE}.}
 
 \item{save}{\code{NULL} or the file name used to save the plot.}
 
-\item{verbose}{Whether to print messages.
-Default is \code{FALSE}.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to other functions.}
 }

@@ -15,7 +15,7 @@ CreateDataFile(
 )
 }
 \arguments{
-\item{srt}{The Seurat object.}
+\item{srt}{A Seurat object.}
 
 \item{data_file}{Path to the output data file.
 If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
@@ -23,16 +23,16 @@ If not provided, the file will be named \code{"data.hdf5"} in the current direct
 \item{name}{Name of the dataset.
 If not provided, the name will default to the Seurat object's project name.}
 
-\item{assays}{Character vector specifying the assays to include in the data file.
+\item{assays}{The assays to include in the data file.
 Default is \code{"RNA"}.}
 
-\item{layers}{Character vector specifying the layers to include in the data file.
+\item{layers}{The layers to include in the data file.
 Default is \code{"data"}.}
 
 \item{compression_level}{Compression level for the HDF5 dataset.
 Default is \code{6}.}
 
-\item{overwrite}{Logical value indicating whether to overwrite existing data in the data file.
+\item{overwrite}{Whether to overwrite existing data in the data file.
 Default is \code{TRUE}.}
 }
 \description{

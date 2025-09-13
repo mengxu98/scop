@@ -88,81 +88,81 @@ GraphPlot(
 
 \item{node_highlight_color}{A character vector specifying the color for highlighting nodes.}
 
-\item{label}{A logical value indicating whether to show labels for the nodes.}
+\item{label}{Whether to show labels for the nodes.}
 
-\item{label.size}{A numeric value specifying the size of the labels.}
+\item{label.size}{The size of the labels.}
 
 \item{label.fg}{A character vector specifying the foreground color of the labels.}
 
 \item{label.bg}{A character vector specifying the background color of the labels.}
 
-\item{label.bg.r}{A numeric value specifying the background color transparency of the labels.}
+\item{label.bg.r}{The background color transparency of the labels.}
 
-\item{label_insitu}{A logical value indicating whether to display the node group labels in situ or as numeric values.}
+\item{label_insitu}{Whether to display the node group labels in situ or as numeric values.}
 
-\item{label_repel}{A logical value indicating whether to use force-directed label repulsion.}
+\item{label_repel}{Whether to use force-directed label repulsion.}
 
-\item{label_repulsion}{A numeric value specifying the repulsion force for labels.}
+\item{label_repulsion}{The repulsion force for labels.}
 
-\item{label_point_size}{A numeric value specifying the size of the label points.}
+\item{label_point_size}{The size of the label points.}
 
 \item{label_point_color}{A character vector specifying the color of the label points.}
 
 \item{label_segment_color}{A character vector specifying the color for the label segments.}
 
-\item{edge_threshold}{A numeric value specifying the threshold for removing edges.}
+\item{edge_threshold}{The threshold for removing edges.}
 
 \item{use_triangular}{A character vector specifying which part of the edge matrix to use (upper, lower, both).}
 
 \item{edge_line}{A character vector specifying the type of line for edges (straight, curved).}
 
-\item{edge_line_curvature}{A numeric value specifying the curvature of curved edges.}
+\item{edge_line_curvature}{The curvature of curved edges.}
 
-\item{edge_line_angle}{A numeric value specifying the angle of curved edges.}
+\item{edge_line_angle}{The angle of curved edges.}
 
 \item{edge_color}{A character vector specifying the color of the edges.}
 
 \item{edge_size}{A numeric vector specifying the range of edge sizes.}
 
-\item{edge_alpha}{A numeric value specifying the transparency of the edges.}
+\item{edge_alpha}{The transparency of the edges.}
 
-\item{edge_shorten}{A numeric value specifying the length of the edge shorten.}
+\item{edge_shorten}{The length of the edge shorten.}
 
-\item{edge_offset}{A numeric value specifying the length of the edge offset.}
+\item{edge_offset}{The length of the edge offset.}
 
 \item{edge_highlight}{A character vector specifying the names of edges to highlight.}
 
 \item{edge_highlight_color}{A character vector specifying the color for highlighting edges.}
 
-\item{transition_threshold}{A numeric value specifying the threshold for removing transitions.}
+\item{transition_threshold}{The threshold for removing transitions.}
 
 \item{transition_line}{A character vector specifying the type of line for transitions (straight, curved).}
 
-\item{transition_line_curvature}{A numeric value specifying the curvature of curved transitions.}
+\item{transition_line_curvature}{The curvature of curved transitions.}
 
-\item{transition_line_angle}{A numeric value specifying the angle of curved transitions.}
+\item{transition_line_angle}{The angle of curved transitions.}
 
 \item{transition_color}{A character vector specifying the color of the transitions.}
 
 \item{transition_size}{A numeric vector specifying the range of transition sizes.}
 
-\item{transition_alpha}{A numeric value specifying the transparency of the transitions.}
+\item{transition_alpha}{The transparency of the transitions.}
 
 \item{transition_arrow_type}{A character vector specifying the type of arrow for transitions (closed, open).}
 
-\item{transition_arrow_angle}{A numeric value specifying the angle of the transition arrow.}
+\item{transition_arrow_angle}{The angle of the transition arrow.}
 
-\item{transition_arrow_length}{A numeric value specifying the length of the transition arrow.}
+\item{transition_arrow_length}{The length of the transition arrow.}
 
-\item{transition_shorten}{A numeric value specifying the length of the transition shorten.}
+\item{transition_shorten}{The length of the transition shorten.}
 
-\item{transition_offset}{A numeric value specifying the length of the transition offset.}
+\item{transition_offset}{The length of the transition offset.}
 
 \item{transition_highlight}{A character vector specifying the names of transitions to highlight.}
 
 \item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
 
-\item{aspect.ratio}{A numeric value specifying the aspect ratio of the plot.}
+\item{aspect.ratio}{The aspect ratio of the plot.}
 
 \item{title}{A character value specifying the title of the plot.}
 
@@ -180,7 +180,7 @@ GraphPlot(
 
 \item{theme_args}{A list of arguments to be passed to the theme.}
 
-\item{return_layer}{A logical value indicating whether to return the layers of the plot instead of the plot itself.}
+\item{return_layer}{Whether to return the layers of the plot instead of the plot itself.}
 }
 \description{
 A function to plot a graph with nodes and edges.

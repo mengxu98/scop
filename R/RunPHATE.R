@@ -1,55 +1,57 @@
 #' @title Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 #'
 #' @md
-#' @param object A Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used.
+#' @inheritParams thisutils::log_message
+#' @param object An object. This can be a Seurat object or a matrix-like object.
+#' @param reduction The reduction to be used.
 #' Default is `"pca"`.
-#' @param dims An integer vector specifying the dimensions to be used.
+#' @param dims The dimensions to be used.
 #' Default is `NULL`.
-#' @param features A character vector specifying the features to be used.
+#' @param features The features to be used.
 #' Default is `NULL`.
-#' @param assay A character string specifying the assay to be used.
+#' @param assay The assay to be used.
 #' Default is `NULL`.
-#' @param layer A character string specifying the layer to be used.
+#' @param layer The layer to be used.
 #' Default is `"data"`.
-#' @param n_components An integer specifying the number of PHATE components.
+#' @param n_components The number of PHATE components.
 #' Default is `2`.
-#' @param knn An integer specifying the number of nearest neighbors on which to build kernel.
+#' @param knn A number of nearest neighbors on which to build kernel.
 #' Default is `5`.
-#' @param decay An integer specifying the sets decay rate of kernel tails. Default is 40.
-#' @param n_landmark An integer specifying the number of landmarks to use in fast PHATE.
+#' @param decay The sets decay rate of kernel tails.
+#' Default is `40`.
+#' @param n_landmark A number of landmarks to use in fast PHATE.
 #' Default is `2000`.
-#' @param t A character string specifying the power to which the diffusion operator is powered.
-#' This sets the level of diffusion. If `"auto"`, t is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
+#' @param t The power to which the diffusion operator is powered.
+#' This sets the level of diffusion.
+#' If `"auto"`, `t` is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
 #' Default is `"auto"`.
-#' @param gamma A numeric value specifying the informational distance constant between -1 and 1.
-#' gamma=1 gives the PHATE log potential, gamma=0 gives a square root potential.
+#' @param gamma The informational distance constant between `-1` and `1`.
+#' `gamma=1` gives the PHATE log potential, `gamma=0` gives a square root potential.
 #' Default is `1`.
-#' @param n_pca An integer specifying the number of principal components to use for calculating neighborhoods.
-#' For extremely large datasets, using n_pca < 20 allows neighborhoods to be calculated in roughly log(n_samples) time.
+#' @param n_pca A number of principal components to use for calculating neighborhoods.
+#' For extremely large datasets, using `n_pca < 20` allows neighborhoods to be calculated in roughly `log(n_samples)` time.
 #' Default is `100`.
-#' @param knn_dist A character string specifying the distance metric for k-nearest neighbors.
+#' @param knn_dist The distance metric for k-nearest neighbors.
 #' Recommended values: `"euclidean"`, `"cosine"`, `"precomputed"`.
 #' Default is `"euclidean"`.
-#' @param knn_max An integer specifying the maximum number of neighbors for which alpha decaying kernel is computed for each point.
-#' For very large datasets, setting knn_max to a small multiple of knn can speed up computation significantly.
+#' @param knn_max The maximum number of neighbors for which alpha decaying kernel is computed for each point.
+#' For very large datasets, setting `knn_max` to a small multiple of `knn` can speed up computation significantly.
 #' Default is `NULL`.
-#' @param t_max An integer specifying the maximum \code{t} to test. Default is `100`.
-#' @param do_cluster A logical value indicating whether to perform clustering on the PHATE embeddings.
-#' Default is `FALSE`.
-#' @param n_clusters An integer specifying the number of clusters to be identified.
-#' Default is `"auto"`.
-#' @param max_clusters An integer specifying the maximum number of clusters to test.
+#' @param t_max The maximum `t` to test.
 #' Default is `100`.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
+#' @param do_cluster Whether to perform clustering on the PHATE embeddings.
+#' Default is `FALSE`.
+#' @param n_clusters A number of clusters to be identified.
+#' Default is `"auto"`.
+#' @param max_clusters The maximum number of clusters to test.
+#' Default is `100`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
 #' Default is `"phate"`.
-#' @param reduction.key A character string specifying the prefix for the column names of the PHATE embeddings.
+#' @param reduction.key The prefix for the column names of the PHATE embeddings.
 #' Default is `"PHATE_"`.
-#' @param verbose A logical value indicating whether to print verbose output.
-#' Default is `TRUE`.
-#' @param seed.use An integer specifying the random seed to be used.
+#' @param seed.use The random seed to be used.
 #' Default is `11`.
-#' @param ... Additional arguments to be passed to the phate.PHATE function.
+#' @param ... Additional arguments to be passed to phate.PHATE.
 #'
 #' @rdname RunPHATE
 #' @export
@@ -99,7 +101,7 @@ RunPHATE.Seurat <- function(
     reduction.name = "phate",
     reduction.key = "PHATE_",
     verbose = TRUE,
-    seed.use = 11L,
+    seed.use = 11,
     ...) {
   if (sum(c(is.null(dims), is.null(features))) == 2) {
     log_message(
@@ -193,7 +195,7 @@ RunPHATE.default <- function(
     max_clusters = 100,
     reduction.key = "PHATE_",
     verbose = TRUE,
-    seed.use = 11L,
+    seed.use = 11,
     ...) {
   set.seed(seed = seed.use)
   check_python("phate")

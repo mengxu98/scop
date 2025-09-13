@@ -7,6 +7,7 @@
 #'
 #' @md
 #' @inheritParams GeneConvert
+#' @inheritParams thisutils::log_message
 #' @param species A character vector specifying the species for which the gene annotation databases should be prepared.
 #' Default is `c("Homo_sapiens", "Mus_musculus")`.
 #' @param db A character vector specifying the annotation sources to be included in the gene annotation databases.
@@ -18,10 +19,10 @@
 #' Default is `c("symbol", "entrez_id", "ensembl_id")`.
 #' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved.
 #' Default is `"latest"`.
-#' @param db_update A logical value indicating whether the gene annotation databases should be forcefully updated.
+#' @param db_update Whether the gene annotation databases should be forcefully updated.
 #' If set to FALSE, the function will attempt to load the cached databases instead.
 #' Default is `FALSE`.
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
 #' The default value is `TRUE`.
 #' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
 #' Default is `NULL`.
@@ -33,8 +34,6 @@
 #' Default is `NULL`.
 #' @param custom_version A character vector specifying the version to be used in a custom database.
 #' Default is `NULL`.
-#' @param verbose A logical value indicating whether to print verbose messages.
-#' Default is `TRUE`.
 #'
 #' @details
 #' The `PrepareDB` function prepares gene annotation databases for a given species and set of annotation sources.

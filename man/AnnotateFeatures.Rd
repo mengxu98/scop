@@ -40,7 +40,7 @@ Default is FALSE.}
 \item{db_version}{Version of the database to use.
 Default is "latest".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 The default value is TRUE.}
 
 \item{Ensembl_version}{Version of the Ensembl database to use.

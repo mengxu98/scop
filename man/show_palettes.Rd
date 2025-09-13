@@ -26,10 +26,10 @@ Default is \code{NULL}.}
 \item{palette_names}{A character vector specifying the names of the scop palettes to include.
 Default is \code{NULL}.}
 
-\item{return_names}{A logical value indicating whether to return the names of the selected palettes.
+\item{return_names}{Whether to return the names of the selected palettes.
 Default is \code{TRUE}.}
 
-\item{return_palettes}{A logical value indicating whether to return the colors of selected palettes.
+\item{return_palettes}{Whether to return the colors of selected palettes.
 Default is \code{FALSE}.}
 }
 \description{
