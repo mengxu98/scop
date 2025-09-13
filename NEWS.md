@@ -1,5 +1,13 @@
 # scop
 
+# scop 0.2.9
+
+* **bugs**:
+  * Fix bug for `RunSCVELO()`.
+
+* **docs**:
+  * Updated documentation for some functions.
+
 # scop 0.2.7
 
 * **func**:

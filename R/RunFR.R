@@ -1,36 +1,35 @@
-#' Run Force-Directed Layout (Fruchterman-Reingold algorithm)
+#' @title Run Force-Directed Layout (Fruchterman-Reingold algorithm)
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object, a Neighbor object, or a Graph object.
-#' @param reduction A character string specifying the reduction to be used.
-#' Default is NULL.
-#' @param dims An integer vector specifying the dimensions to be used.
-#' Default is NULL.
-#' @param features A character vector specifying the features to be used.
-#' Default is NULL.
-#' @param assay A character string specifying the assay to be used.
-#' Default is NULL.
-#' @param layer A character string specifying the layer to be used.
-#' Default is "data".
-#' @param graph A character string specifying the name of the Graph object to be used.
-#' Default is NULL.
-#' @param neighbor A character string specifying the name of the Neighbor object to be used.
-#' Default is NULL.
-#' @param k.param An integer specifying the number of nearest neighbors to consider.
-#' Default is 20.
-#' @param ndim An integer specifying the number of dimensions for the force-directed layout.
-#' Default is 2.
-#' @param niter An integer specifying the number of iterations for the force-directed layout.
-#' Default is 500.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
-#' Default is "fr".
-#' @param reduction.key A character string specifying the prefix for the column names of the force-directed layout embeddings.
-#' Default is "FR_".
-#' @param verbose A logical value indicating whether to print verbose output.
-#' Default is TRUE.
-#' @param seed.use An integer specifying the random seed to be used.
-#' Default is 11.
-#' @param ... Additional arguments to be passed to the [igraph::layout_with_fr] function.
+#' @param reduction The reduction to be used.
+#' Default is `NULL`.
+#' @param dims The dimensions to be used.
+#' Default is `NULL`.
+#' @param features The features to be used.
+#' Default is `NULL`.
+#' @param assay The assay to be used.
+#' Default is `NULL`.
+#' @param layer The layer to be used.
+#' Default is `"data"`.
+#' @param graph The name of the Graph object to be used.
+#' Default is `NULL`.
+#' @param neighbor The name of the Neighbor object to be used.
+#' Default is `NULL`.
+#' @param k.param The number of nearest neighbors to consider.
+#' Default is `20`.
+#' @param ndim The number of dimensions for the force-directed layout.
+#' Default is `2`.
+#' @param niter The number of iterations for the force-directed layout.
+#' Default is `500`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"fr"`.
+#' @param reduction.key The prefix for the column names of the force-directed layout embeddings.
+#' Default is `"FR_"`.
+#' @param seed.use The random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to [igraph::layout_with_fr].
 #'
 #' @export
 #'

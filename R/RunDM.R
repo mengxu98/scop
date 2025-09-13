@@ -1,20 +1,34 @@
-#' Run DM (diffusion map)
+#' @title Run DM (diffusion map)
 #'
+#' @md
+#' @inheritParams thisutils::log_message
 #' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used.
-#' @param dims An integer vector specifying the dimensions to be used. Default is 1:30.
-#' @param features A character vector specifying the features to be used. Default is NULL.
-#' @param assay A character string specifying the assay to be used. Default is NULL.
-#' @param layer A character string specifying the layer to be used. Default is "data".
-#' @param ndcs An integer specifying the number of diffusion components (dimensions) to be computed. Default is 2.
-#' @param sigma A character string specifying the diffusion scale parameter of the Gaussian kernel. Currently supported values are "local" (default) and "global".
-#' @param k An integer specifying the number of nearest neighbors to be used for the construction of the graph. Default is 30.
-#' @param dist.method A character string specifying the distance metric to be used for the construction of the knn graph. Currently supported values are "euclidean" and "cosine". Default is "euclidean".
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object. Default is "dm".
-#' @param reduction.key A character string specifying the prefix for the column names of the basis vectors. Default is "DM_".
-#' @param seed.use An integer specifying the random seed to be used. Default is 11.
-#' @param verbose A logical value indicating whether to print verbose output. Default is TRUE.
-#' @param ... Additional arguments to be passed to the \link[destiny]{DiffusionMap} function.
+#' @param reduction The reduction to be used.
+#' Default is `"pca"`.
+#' @param dims The dimensions to be used.
+#' Default is `1:30`.
+#' @param features The features to be used.
+#' Default is `NULL`.
+#' @param assay The assay to be used.
+#' Default is `NULL`.
+#' @param layer The layer to be used.
+#' Default is `"data"`.
+#' @param ndcs A number of diffusion components (dimensions) to be computed.
+#' Default is `2`.
+#' @param sigma The diffusion scale parameter of the Gaussian kernel.
+#' Currently supported values are `"local"` (default) and `"global"`.
+#' @param k A number of nearest neighbors to be used for the construction of the graph.
+#' Default is `30`.
+#' @param dist.method The distance metric to be used for the construction of the knn graph.
+#' Currently supported values are `"euclidean"` and `"cosine"`.
+#' Default is `"euclidean"`.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"dm"`.
+#' @param reduction.key The prefix for the column names of the basis vectors.
+#' Default is `"DM_"`.
+#' @param seed.use An integer specifying the random seed to be used.
+#' Default is `11`.
+#' @param ... Additional arguments to be passed to [destiny::DiffusionMap].
 #'
 #' @rdname RunDM
 #' @export

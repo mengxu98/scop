@@ -26,11 +26,13 @@ RecoverCounts(
 \item{tolerance}{When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
 However, due to decimal point preservation during normalization,
 the calculated nCount is usually a floating point number close to the integer.
-The tolerance is its difference from the integer. Default is 0.1}
+The tolerance is its difference from the integer.
+Default is \code{0.1}}
 
 \item{sf}{Set the scaling factor manually.}
 
-\item{verbose}{Whether to show messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Attempt to recover raw counts from the normalized matrix

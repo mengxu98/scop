@@ -38,7 +38,7 @@ RunCSSMap(
 
 \item{nn_method}{A character string specifying the nearest neighbor search method to use. Options are "raw", "annoy", and "rann". If "raw" is selected, the function will use the brute-force method to find the nearest neighbors. If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search. If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search. If not provided, the function will choose the search method based on the size of the query and reference datasets.}
 
-\item{k}{An integer specifying the number of nearest neighbors to find for each cell in the query object.}
+\item{k}{A number of nearest neighbors to find for each cell in the query object.}
 
 \item{distance_metric}{A character string specifying the distance metric to use for calculating the pairwise distances between cells. Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 

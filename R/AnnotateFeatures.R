@@ -15,7 +15,7 @@
 #' Default is FALSE.
 #' @param db_version Version of the database to use.
 #' Default is "latest".
-#' @param convert_species A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+#' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
 #' The default value is TRUE.
 #' @param Ensembl_version Version of the Ensembl database to use.
 #' Default is 103.

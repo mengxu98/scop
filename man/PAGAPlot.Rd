@@ -79,7 +79,7 @@ PAGAPlot(
 
 \item{cells}{The cells to include in the plot. Defaults to all cells.}
 
-\item{show_transition}{A logical value indicating whether to display transitions between different cell states. Defaults to \code{FALSE}.}
+\item{show_transition}{Whether to display transitions between different cell states. Defaults to \code{FALSE}.}
 
 \item{node_palette}{The color palette to use for node coloring. Defaults to "Paired".}
 
@@ -93,7 +93,7 @@ PAGAPlot(
 
 \item{node_highlight_color}{The color to use for highlighting the nodes. Defaults to "red".}
 
-\item{label}{A logical value indicating whether to display labels for the nodes. Defaults to \code{FALSE}.}
+\item{label}{Whether to display labels for the nodes. Defaults to \code{FALSE}.}
 
 \item{label.size}{The size of the labels. Defaults to 3.5.}
 
@@ -103,9 +103,9 @@ PAGAPlot(
 
 \item{label.bg.r}{The transparency of the label background color. Defaults to 0.1.}
 
-\item{label_insitu}{A logical value indicating whether to use in-situ labeling for the nodes. Defaults to \code{FALSE}.}
+\item{label_insitu}{Whether to use in-situ labeling for the nodes. Defaults to \code{FALSE}.}
 
-\item{label_repel}{A logical value indicating whether to use repel mode for labeling nodes. Defaults to \code{FALSE}.}
+\item{label_repel}{Whether to use repel mode for labeling nodes. Defaults to \code{FALSE}.}
 
 \item{label_repulsion}{The repulsion factor for repel mode. Defaults to 20.}
 
@@ -183,7 +183,7 @@ PAGAPlot(
 
 \item{theme_args}{A list of arguments to pass to the theme function. Defaults to an empty list.}
 
-\item{return_layer}{A logical value indicating whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.}
+\item{return_layer}{Whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.}
 }
 \description{
 This function generates a PAGA plot based on the given Seurat object and PAGA result.

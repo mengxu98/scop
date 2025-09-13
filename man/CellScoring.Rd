@@ -51,7 +51,7 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 
 \item{termnames}{A vector of term names to be used from the database. Defaults to NULL, in which case all features from the database are used.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is FALSE.}
 
@@ -59,16 +59,16 @@ Default is FALSE.}
 This argument is ignored if \code{db_update} is \code{TRUE}.
 Default is "latest".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
-\item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
+\item{minGSSize}{The minimum size of a gene set to be considered in the enrichment analysis.}
 
-\item{maxGSSize}{A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.}
+\item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
 \item{method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".}
 
@@ -84,7 +84,7 @@ The default value is TRUE.}
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments to be passed to the scoring methods.}
 }

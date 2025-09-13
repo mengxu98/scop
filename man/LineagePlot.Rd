@@ -47,7 +47,7 @@ LineagePlot(
 
 \item{trim}{A numeric vector of length 2 specifying the quantile range of lineages to include in the plot.}
 
-\item{span}{A numeric value specifying the span of the loess smoother.}
+\item{span}{The span of the loess smoother.}
 
 \item{palette}{A character string specifying the color palette to use for the lineages.}
 
@@ -55,19 +55,19 @@ LineagePlot(
 
 \item{lineages_arrow}{An arrow object specifying the arrow for lineages.}
 
-\item{linewidth}{A numeric value specifying the linewidth for the lineages.}
+\item{linewidth}{The linewidth for the lineages.}
 
 \item{line_bg}{A character string specifying the color for the background lines.}
 
-\item{line_bg_stroke}{A numeric value specifying the stroke width for the background lines.}
+\item{line_bg_stroke}{The stroke width for the background lines.}
 
-\item{whiskers}{A logical value indicating whether to include whiskers in the plot.}
+\item{whiskers}{Whether to include whiskers in the plot.}
 
-\item{whiskers_linewidth}{A numeric value specifying the linewidth for the whiskers.}
+\item{whiskers_linewidth}{The linewidth for the whiskers.}
 
-\item{whiskers_alpha}{A numeric value specifying the transparency for the whiskers.}
+\item{whiskers_alpha}{The transparency for the whiskers.}
 
-\item{aspect.ratio}{A numeric value specifying the aspect ratio of the plot.}
+\item{aspect.ratio}{The aspect ratio of the plot.}
 
 \item{title}{An optional character string specifying the plot title.}
 
@@ -85,7 +85,7 @@ LineagePlot(
 
 \item{theme_args}{A list of additional arguments to pass to the theme function.}
 
-\item{return_layer}{A logical value indicating whether to return the plot as a layer.}
+\item{return_layer}{Whether to return the plot as a layer.}
 
 \item{seed}{An optional integer specifying the random seed for reproducibility.}
 }

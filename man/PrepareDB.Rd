@@ -39,11 +39,11 @@ Default is \code{c("symbol", "entrez_id", "ensembl_id")}.}
 \item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 The default value is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
@@ -70,7 +70,7 @@ Default is \code{NULL}.}
 \item{custom_version}{A character vector specifying the version to be used in a custom database.
 Default is \code{NULL}.}
 
-\item{verbose}{A logical value indicating whether to print verbose messages.
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \value{

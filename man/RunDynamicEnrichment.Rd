@@ -48,13 +48,13 @@ Default is "counts".}
 \item{assay}{A character vector specifying the assay in the Seurat object to use.
 Default is NULL.}
 
-\item{min_expcells}{A numeric value specifying the minimum number of expected cells. Default is 20.}
+\item{min_expcells}{The minimum number of expected cells. Default is \code{20}.}
 
-\item{r.sq}{A numeric value specifying the R-squared threshold. Default is 0.2.}
+\item{r.sq}{The R-squared threshold. Default is \code{0.2}.}
 
-\item{dev.expl}{A numeric value specifying the deviance explained threshold. Default is 0.2.}
+\item{dev.expl}{The deviance explained threshold. Default is \code{0.2}.}
 
-\item{padjust}{A numeric value specifying the p-value adjustment threshold. Default is 0.05.}
+\item{padjust}{The p-value adjustment threshold. Default is \code{0.05}.}
 
 \item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
@@ -63,7 +63,7 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 
 \item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
 
-\item{db_update}{A logical value indicating whether the gene annotation databases should be forcefully updated.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is FALSE.}
 
@@ -71,7 +71,7 @@ Default is FALSE.}
 This argument is ignored if \code{db_update} is \code{TRUE}.
 Default is "latest".}
 
-\item{convert_species}{A logical value indicating whether to use a species-converted database when the annotation is missing for the specified species.
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 The default value is TRUE.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
@@ -84,15 +84,15 @@ The first column should contain the term IDs, and the second column should conta
 \item{TERM2NAME}{A data frame specifying the term-name mapping for a custom database.
 The first column should contain the term IDs, and the second column should contain the corresponding term names.}
 
-\item{minGSSize}{A numeric value specifying the minimum size of a gene set to be considered in the enrichment analysis.}
+\item{minGSSize}{The minimum size of a gene set to be considered in the enrichment analysis.}
 
-\item{maxGSSize}{A numeric value specifying the maximum size of a gene set to be considered in the enrichment analysis.}
+\item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
-Default is \emph{\code{TRUE}}.}
+Default is \code{TRUE}.}
 
 \item{seed}{An integer specifying the random seed. Default is 11.}
 }

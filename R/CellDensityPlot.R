@@ -11,18 +11,18 @@
 #' @param assay A character specifying the assay to use from the Seurat object.
 #'   Default is NULL, which means the default assay will be used.
 #' @param layer A character specifying the layer to use from the assay. Default is "data".
-#' @param flip A logical indicating whether to flip the x-axis. Default is FALSE.
-#' @param reverse A logical indicating whether to reverse the y-axis. Default is FALSE.
+#' @param flip Whether to flip the x-axis. Default is FALSE.
+#' @param reverse Whether to reverse the y-axis. Default is FALSE.
 #' @param x_order A character specifying how to order the x-axis. Can be "value" or "rank". Default is "value".
-#' @param decreasing A logical indicating whether to order the groups in decreasing order. Default is NULL.
+#' @param decreasing Whether to order the groups in decreasing order. Default is NULL.
 #' @param palette A character specifying the color palette to use for grouping variables. Default is "Paired".
 #' @param palcolor A character specifying the color to use for each group. Default is NULL.
 #' @param cells A character vector specifying the cells to plot. Default is NULL, which means all cells are included.
-#' @param keep_empty A logical indicating whether to keep empty groups. Default is FALSE.
-#' @param y.nbreaks An integer specifying the number of breaks on the y-axis. Default is 4.
+#' @param keep_empty Whether to keep empty groups. Default is FALSE.
+#' @param y.nbreaks A number of breaks on the y-axis. Default is 4.
 #' @param y.min A numeric specifying the minimum value on the y-axis. Default is NULL, which means the minimum value will be automatically determined.
 #' @param y.max A numeric specifying the maximum value on the y-axis. Default is NULL, which means the maximum value will be automatically determined.
-#' @param same.y.lims A logical indicating whether to use the same y-axis limits for all plots. Default is FALSE.
+#' @param same.y.lims Whether to use the same y-axis limits for all plots. Default is FALSE.
 #' @param aspect.ratio A numeric specifying the aspect ratio of the plot. Default is NULL, which means the aspect ratio will be automatically determined.
 #' @param title A character specifying the title of the plot. Default is NULL.
 #' @param subtitle A character specifying the subtitle of the plot. Default is NULL.
@@ -30,13 +30,13 @@
 #' @param legend.direction A character specifying the direction of the legend. Default is "vertical".
 #' @param theme_use A character specifying the theme to use. Default is "theme_scop".
 #' @param theme_args A list of arguments to pass to the theme function.
-#' @param combine A logical indicating whether to combine multiple plots into a single plot. Default is TRUE.
-#' @param nrow An integer specifying the number of rows in the combined plot.
+#' @param combine Whether to combine multiple plots into a single plot. Default is TRUE.
+#' @param nrow A number of rows in the combined plot.
 #'   Default is NULL, which means determined automatically based on the number of plots.
-#' @param ncol An integer specifying the number of columns in the combined plot.
+#' @param ncol A number of columns in the combined plot.
 #'   Default is NULL, which means determined automatically based on the number of plots.
-#' @param byrow A logical indicating whether to add plots by row or by column in the combined plot. Default is TRUE.
-#' @param force A logical indicating whether to continue plotting if there are more than 50 features. Default is FALSE.
+#' @param byrow Whether to add plots by row or by column in the combined plot. Default is TRUE.
+#' @param force Whether to continue plotting if there are more than 50 features. Default is FALSE.
 #'
 #' @export
 #'
