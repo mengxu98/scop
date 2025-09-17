@@ -76,7 +76,7 @@ Default is \code{"stochastic"}.}
 Default is \code{FALSE}.}
 
 \item{paga_layout}{The layout for plotting PAGA graph.
-See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in \code{scanpy.pl.paga} function.}
+See \href{https://scanpy.readthedocs.io/en/stable/tutorials/plotting/advanced.html#paga}{layout} param in \code{scanpy.pl.paga} function.}
 
 \item{threshold}{The threshold for plotting PAGA graph.
 Edges for weights below this threshold will not be drawn.}

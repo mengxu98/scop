@@ -168,7 +168,8 @@ CellDensityPlot <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = layer
+        layer = layer,
+        verbose = FALSE
       )[features_gene, , drop = FALSE]
     )
   } else {
