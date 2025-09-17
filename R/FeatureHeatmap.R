@@ -595,7 +595,8 @@ FeatureHeatmap <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = layer
+        layer = layer,
+        verbose = FALSE
       )[gene, all_cells, drop = FALSE],
       Matrix::t(srt@meta.data[all_cells, meta, drop = FALSE])
     )
@@ -609,7 +610,8 @@ FeatureHeatmap <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = "counts"
+          layer = "counts",
+          verbose = FALSE
         )[, colnames(mat_raw), drop = FALSE]
       )
       isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
@@ -706,7 +708,8 @@ FeatureHeatmap <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = "data"
+          layer = "data",
+          verbose = FALSE
         )[
           intersect(
             cell_annotation,

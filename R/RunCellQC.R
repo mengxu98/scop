@@ -146,7 +146,7 @@ db_Scrublet <- function(
     ...) {
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a Seurat object",
       message_type = "error"
     )
   }

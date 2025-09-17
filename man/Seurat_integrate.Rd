@@ -145,6 +145,9 @@ Default is an empty list.}
 \item{IntegrateEmbeddings_params}{A list of parameters for the Seurat::IntegrateEmbeddings function.
 Default is an empty list.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }

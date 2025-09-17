@@ -121,6 +121,9 @@ Default is an empty list.}
 \item{quantilenorm_params}{A list of parameters for the \link[rliger:rliger-deprecated]{rliger::quantile_norm} function.
 Default is an empty list.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }
