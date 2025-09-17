@@ -1,5 +1,24 @@
 # scop
 
+# scop 0.3.0
+
+* **func**:
+  * **IMPORTANT**:
+  * Fixed `segmentation faults` and `R crashes` on *M-series* MacBook when running *Python* functions.
+  * `RunPAGA()`: Enhanced with *M-series* MacBook detection and automatic environment configuration.
+  * `RunSCVELO()`: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.
+  * `RunCellRank()`: Implemented *M-series* compatibility with proper NUMBA configuration.
+  * `RunPalantir()`: Added ARM64 support with single-threaded execution mode.
+  * `RunWOT()`: Enhanced with *M-series* MacBook environment variable settings.
+  * `RunTriMap()`: Added *M-series* MacBook compatibility for dimensionality reduction.
+  * `RunPaCMAP()`: Implemented ARM64-specific environment configuration.
+  * `RunPHATE()`: Added *M-series* MacBook support for non-linear dimensionality reduction.
+  * `RunCellQC()`: Enhanced both scrublet and doubletdetection functions with ARM64 compatibility.
+
+* **docs**:
+  * Updated function documentation to reflect *M-series* MacBook compatibility.
+  * Added technical notes about ARM64 architecture considerations.
+
 # scop 0.2.9
 
 * **bugs**:
