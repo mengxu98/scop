@@ -9,7 +9,8 @@ remove_python(
   envname = NULL,
   conda = "auto",
   pip = FALSE,
-  force = FALSE
+  force = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ Default is \code{FALSE} (use conda).}
 
 \item{force}{Whether to force removal without confirmation.
 Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Invisibly value.

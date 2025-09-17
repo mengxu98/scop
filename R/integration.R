@@ -7,6 +7,7 @@
 #' @inheritParams CheckDataList
 #' @inheritParams CheckDataMerge
 #' @inheritParams standard_scop
+#' @inheritParams thisutils::log_message
 #' @param scale_within_batch  Whether to scale data within each batch.
 #' Only valid when the `integration_method` is one of `"Uncorrected"`,
 #' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
@@ -164,6 +165,7 @@ integration_scop <- function(
     cluster_algorithm = "louvain",
     cluster_resolution = 0.6,
     seed = 11,
+    verbose = TRUE,
     ...) {
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
@@ -196,23 +198,24 @@ integration_scop <- function(
     args <- utils::modifyList(formals, args)
 
     log_message(
-      "Run {.val {integration_method}} integration..."
+      "Run {.pkg {integration_method}} integration..."
     )
-    srtIntegrated <- invoke_fun(
-      .fn = paste0(integration_method, "_integrate"),
-      .args = args[
+    srt_integrated <- invoke_fun(
+      paste0(integration_method, "_integrate"),
+      args[
         names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
       ]
     )
     log_message(
-      "Run {.val {integration_method}} integration done",
-      message_type = "success"
+      "Run {.pkg {integration_method}} integration done",
+      message_type = "success",
+      verbose = verbose
     )
 
-    return(srtIntegrated)
+    return(srt_integrated)
   } else {
     log_message(
-      "{.val {integration_method}} is not a supported integration method",
+      "{.pkg {integration_method}} is not a supported integration method",
       message_type = "error"
     )
   }
@@ -391,7 +394,7 @@ Uncorrected_integrate <- function(
   }
 
   log_message(
-    "Perform {.pkg Uncorrected} integration on the data..."
+    "Perform {.pkg Uncorrected} integration"
   )
   scale_features <- rownames(
     GetAssayData5(
@@ -403,7 +406,7 @@ Uncorrected_integrate <- function(
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     if (normalization_method != "SCT") {
-      log_message("Perform ScaleData on the data...")
+      log_message("Perform ScaleData")
       srt_merge <- Seurat::ScaleData(
         object = srt_merge,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -417,7 +420,7 @@ Uncorrected_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction({.val {linear_reduction}}) on the data..."
+    "Perform linear dimension reduction({.val {linear_reduction}})"
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -455,7 +458,7 @@ Uncorrected_integrate <- function(
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
       srt_merge <- FindClusters(
         object = srt_merge,
@@ -492,7 +495,7 @@ Uncorrected_integrate <- function(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          "Perform nonlinear dimension reduction ({.val {nr}}) on the data..."
+          "Perform nonlinear dimension reduction ({.val {nr}})"
         )
         for (n in nonlinear_reduction_dims) {
           srt_merge <- RunDimReduction(
@@ -828,7 +831,7 @@ Seurat_integrate <- function(
   }
 
   if (normalization_method %in% c("LogNormalize", "SCT")) {
-    log_message("Perform FindIntegrationAnchors on the data...")
+    log_message("Perform FindIntegrationAnchors")
     params1 <- list(
       object.list = srt_list,
       normalization.method = normalization_method,
@@ -839,11 +842,11 @@ Seurat_integrate <- function(
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
     srt_anchors <- invoke_fun(
-      .fn = Seurat::FindIntegrationAnchors,
-      .args = params1
+      Seurat::FindIntegrationAnchors,
+      params1
     )
 
-    log_message("Perform integration(Seurat) on the data...")
+    log_message("Perform integration(Seurat)")
     params2 <- list(
       anchorset = srt_anchors,
       new.assay.name = "Seuratcorrected",
@@ -854,25 +857,25 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateData_params)) {
       params2[[nm]] <- IntegrateData_params[[nm]]
     }
-    srtIntegrated <- invoke_fun(.fn = Seurat::IntegrateData, .args = params2)
+    srt_integrated <- invoke_fun(Seurat::IntegrateData, params2)
 
-    SeuratObject::DefaultAssay(srtIntegrated) <- "Seuratcorrected"
-    SeuratObject::VariableFeatures(srtIntegrated[["Seuratcorrected"]]) <- HVF
+    SeuratObject::DefaultAssay(srt_integrated) <- "Seuratcorrected"
+    SeuratObject::VariableFeatures(srt_integrated[["Seuratcorrected"]]) <- HVF
 
     scale_features <- rownames(
       GetAssayData5(
-        srtIntegrated,
+        srt_integrated,
         layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srtIntegrated),
+        assay = SeuratObject::DefaultAssay(srt_integrated),
         verbose = FALSE
       )
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-      log_message("Perform ScaleData on the data...")
-      srtIntegrated <- Seurat::ScaleData(
-        object = srtIntegrated,
+      log_message("Perform ScaleData")
+      srt_integrated <- Seurat::ScaleData(
+        object = srt_integrated,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
-        assay = SeuratObject::DefaultAssay(srtIntegrated),
+        assay = SeuratObject::DefaultAssay(srt_integrated),
         features = HVF,
         vars.to.regress = vars_to_regress,
         model.use = regression_model,
@@ -881,13 +884,13 @@ Seurat_integrate <- function(
     }
 
     log_message(
-      "Perform linear dimension reduction ({.val {linear_reduction}}) on the data..."
+      "Perform linear dimension reduction ({.val {linear_reduction}})"
     )
-    srtIntegrated <- RunDimReduction(
-      srtIntegrated,
+    srt_integrated <- RunDimReduction(
+      srt_integrated,
       prefix = "Seurat",
       features = HVF,
-      assay = SeuratObject::DefaultAssay(srtIntegrated),
+      assay = SeuratObject::DefaultAssay(srt_integrated),
       linear_reduction = linear_reduction,
       linear_reduction_dims = linear_reduction_dims,
       linear_reduction_params = linear_reduction_params,
@@ -896,14 +899,14 @@ Seurat_integrate <- function(
       seed = seed
     )
     if (is.null(linear_reduction_dims_use)) {
-      linear_reduction_dims_use <- srtIntegrated@reductions[[paste0(
+      linear_reduction_dims_use <- srt_integrated@reductions[[paste0(
         "Seurat",
         linear_reduction
       )]]@misc[["dims_estimate"]] %||%
         1:linear_reduction_dims
     }
   } else if (normalization_method == "TFIDF") {
-    log_message("Perform FindIntegrationAnchors on the data...")
+    log_message("Perform FindIntegrationAnchors")
     params1 <- list(
       object.list = srt_list,
       normalization.method = "LogNormalize",
@@ -914,9 +917,9 @@ Seurat_integrate <- function(
     for (nm in names(FindIntegrationAnchors_params)) {
       params1[[nm]] <- FindIntegrationAnchors_params[[nm]]
     }
-    srt_anchors <- invoke_fun(.fn = Seurat::FindIntegrationAnchors, .args = params1)
+    srt_anchors <- invoke_fun(Seurat::FindIntegrationAnchors, params1)
 
-    log_message("Perform integration(Seurat) on the data...")
+    log_message("Perform integration(Seurat)")
     params2 <- list(
       anchorset = srt_anchors,
       reductions = srt_merge[["lsi"]],
@@ -926,10 +929,10 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateEmbeddings_params)) {
       params2[[nm]] <- IntegrateEmbeddings_params[[nm]]
     }
-    srtIntegrated <- invoke_fun(.fn = IntegrateEmbeddings, .args = params2)
+    srt_integrated <- invoke_fun(IntegrateEmbeddings, params2)
 
     if (is.null(linear_reduction_dims_use)) {
-      linear_reduction_dims_use <- 2:max(srtIntegrated@reductions[[paste0(
+      linear_reduction_dims_use <- 2:max(srt_integrated@reductions[[paste0(
         "Seurat",
         linear_reduction
       )]]@misc[["dims_estimate"]]) %||%
@@ -938,10 +941,10 @@ Seurat_integrate <- function(
     linear_reduction <- "lsi"
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = paste0("Seurat", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
@@ -952,10 +955,10 @@ Seurat_integrate <- function(
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -963,15 +966,15 @@ Seurat_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["Seuratclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["Seuratclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -979,19 +982,19 @@ Seurat_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          "Perform nonlinear dimension reduction ({.pkg {nr}}) on the data..."
+          "Perform nonlinear dimension reduction ({.pkg {nr}})"
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "Seurat",
             reduction_use = paste0("Seurat", linear_reduction),
             reduction_dims = linear_reduction_dims_use,
@@ -1005,7 +1008,7 @@ Seurat_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1013,24 +1016,24 @@ Seurat_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Seurat_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["Seurat_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|Seurat|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -1215,20 +1218,20 @@ scVI_integrate <- function(
     for (nm in names(SCVI_params)) {
       params[[nm]] <- SCVI_params[[nm]]
     }
-    model <- invoke_fun(.fn = scvi$model$SCVI, .args = params)
+    model <- invoke_fun(scvi$model$SCVI, params)
     model$train()
-    srtIntegrated <- srt_merge
+    srt_integrated <- srt_merge
     srt_merge <- NULL
     corrected <- Matrix::t(
       as_matrix(
         model$get_normalized_expression()
       )
     )
-    srtIntegrated[["scVIcorrected"]] <- SeuratObject::CreateAssayObject(
+    srt_integrated[["scVIcorrected"]] <- SeuratObject::CreateAssayObject(
       counts = corrected
     )
-    SeuratObject::DefaultAssay(srtIntegrated) <- "scVIcorrected"
-    SeuratObject::VariableFeatures(srtIntegrated[["scVIcorrected"]]) <- HVF
+    SeuratObject::DefaultAssay(srt_integrated) <- "scVIcorrected"
+    SeuratObject::VariableFeatures(srt_integrated[["scVIcorrected"]]) <- HVF
   } else if (model == "PEAKVI") {
     log_message("Assay is ChromatinAssay. Using PeakVI workflow.")
     scvi$model$PEAKVI$setup_anndata(adata, batch_key = batch)
@@ -1238,28 +1241,28 @@ scVI_integrate <- function(
     for (nm in names(PEAKVI_params)) {
       params[[nm]] <- PEAKVI_params[[nm]]
     }
-    model <- invoke_fun(.fn = scvi$model$PEAKVI, .args = params)
+    model <- invoke_fun(scvi$model$PEAKVI, params)
     model$train()
-    srtIntegrated <- srt_merge
+    srt_integrated <- srt_merge
     srt_merge <- NULL
   }
 
   latent <- as_matrix(model$get_latent_representation())
-  rownames(latent) <- colnames(srtIntegrated)
+  rownames(latent) <- colnames(srt_integrated)
   colnames(latent) <- paste0("scVI_", seq_len(ncol(latent)))
-  srtIntegrated[["scVI"]] <- CreateDimReducObject(
+  srt_integrated[["scVI"]] <- CreateDimReducObject(
     embeddings = latent,
     key = "scVI_",
-    assay = SeuratObject::DefaultAssay(srtIntegrated)
+    assay = SeuratObject::DefaultAssay(srt_integrated)
   )
   if (is.null(scVI_dims_use)) {
-    scVI_dims_use <- 1:ncol(srtIntegrated[["scVI"]]@cell.embeddings)
+    scVI_dims_use <- 1:ncol(srt_integrated[["scVI"]]@cell.embeddings)
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "scVI",
         dims = scVI_dims_use,
         annoy.metric = neighbor_metric,
@@ -1270,10 +1273,10 @@ scVI_integrate <- function(
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -1281,15 +1284,15 @@ scVI_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["scVIclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["scVIclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1297,19 +1300,19 @@ scVI_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "scVI",
             reduction_use = "scVI",
             reduction_dims = scVI_dims_use,
@@ -1323,7 +1326,7 @@ scVI_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1331,24 +1334,24 @@ scVI_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["scVI_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["scVI_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|scVI|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -1548,7 +1551,7 @@ MNN_integrate <- function(
     names(sce_list) <- paste0("sce_", seq_along(sce_list))
   }
 
-  log_message("Perform {.pkg MNN} integration on the data...")
+  log_message("Perform {.pkg MNN} integration")
   params <- list(
     sce_list,
     cos.norm.out = FALSE
@@ -1556,28 +1559,28 @@ MNN_integrate <- function(
   for (nm in names(mnnCorrect_params)) {
     params[[nm]] <- mnnCorrect_params[[nm]]
   }
-  out <- invoke_fun(.fn = batchelor::mnnCorrect, .args = params)
+  out <- invoke_fun(batchelor::mnnCorrect, params)
 
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
   srt_merge <- NULL
-  srtIntegrated[["MNNcorrected"]] <- CreateAssayObject(
+  srt_integrated[["MNNcorrected"]] <- CreateAssayObject(
     counts = out@assays@data$corrected
   )
-  SeuratObject::VariableFeatures(srtIntegrated[["MNNcorrected"]]) <- HVF
-  SeuratObject::DefaultAssay(srtIntegrated) <- "MNNcorrected"
+  SeuratObject::VariableFeatures(srt_integrated[["MNNcorrected"]]) <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- "MNNcorrected"
   scale_features <- rownames(
     GetAssayData5(
-      srtIntegrated,
+      srt_integrated,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srtIntegrated)
+      assay = SeuratObject::DefaultAssay(srt_integrated)
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData on the data...")
-    srtIntegrated <- Seurat::ScaleData(
-      object = srtIntegrated,
+    log_message("Perform ScaleData")
+    srt_integrated <- Seurat::ScaleData(
+      object = srt_integrated,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
-      assay = SeuratObject::DefaultAssay(srtIntegrated),
+      assay = SeuratObject::DefaultAssay(srt_integrated),
       features = HVF,
       vars.to.regress = vars_to_regress,
       model.use = regression_model,
@@ -1586,13 +1589,13 @@ MNN_integrate <- function(
   }
 
   log_message(
-    paste0("Perform linear dimension reduction (", linear_reduction, ") on the data...")
+    paste0("Perform linear dimension reduction (", linear_reduction, ")")
   )
-  srtIntegrated <- RunDimReduction(
-    srtIntegrated,
+  srt_integrated <- RunDimReduction(
+    srt_integrated,
     prefix = "MNN",
     features = HVF,
-    assay = SeuratObject::DefaultAssay(srtIntegrated),
+    assay = SeuratObject::DefaultAssay(srt_integrated),
     linear_reduction = linear_reduction,
     linear_reduction_dims = linear_reduction_dims,
     linear_reduction_params = linear_reduction_params,
@@ -1601,7 +1604,7 @@ MNN_integrate <- function(
     seed = seed
   )
   if (is.null(linear_reduction_dims_use)) {
-    linear_reduction_dims_use <- srtIntegrated@reductions[[paste0(
+    linear_reduction_dims_use <- srt_integrated@reductions[[paste0(
       "MNN",
       linear_reduction
     )]]@misc[["dims_estimate"]] %||%
@@ -1611,10 +1614,10 @@ MNN_integrate <- function(
     }
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = paste0("MNN", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
@@ -1625,10 +1628,10 @@ MNN_integrate <- function(
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        paste0("Perform FindClusters (", cluster_algorithm, ")")
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -1636,15 +1639,15 @@ MNN_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["MNNclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["MNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1652,19 +1655,19 @@ MNN_integrate <- function(
         "Error when performing FindClusters. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "MNN",
             reduction_use = paste0("MNN", linear_reduction),
             reduction_dims = linear_reduction_dims_use,
@@ -1678,7 +1681,7 @@ MNN_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1686,24 +1689,24 @@ MNN_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["MNN_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["MNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|MNN|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -1863,38 +1866,38 @@ fastMNN_integrate <- function(
     names(sce_list) <- paste0("sce_", seq_along(sce_list))
   }
 
-  log_message("Perform integration(fastMNN) on the data...")
+  log_message("Perform integration(fastMNN)")
   params <- list(
     sce_list
   )
   for (nm in names(fastMNN_params)) {
     params[[nm]] <- fastMNN_params[[nm]]
   }
-  out <- invoke_fun(.fn = batchelor::fastMNN, .args = params)
+  out <- invoke_fun(batchelor::fastMNN, params)
 
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
   srt_merge <- NULL
-  srtIntegrated[["fastMNNcorrected"]] <- CreateAssayObject(
+  srt_integrated[["fastMNNcorrected"]] <- CreateAssayObject(
     counts = as_matrix(out@assays@data$reconstructed)
   )
-  SeuratObject::DefaultAssay(srtIntegrated) <- "fastMNNcorrected"
-  SeuratObject::VariableFeatures(srtIntegrated[["fastMNNcorrected"]]) <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- "fastMNNcorrected"
+  SeuratObject::VariableFeatures(srt_integrated[["fastMNNcorrected"]]) <- HVF
   reduction <- out@int_colData$reducedDims$corrected
   colnames(reduction) <- paste0("fastMNN_", seq_len(ncol(reduction)))
-  srtIntegrated[["fastMNN"]] <- CreateDimReducObject(
+  srt_integrated[["fastMNN"]] <- CreateDimReducObject(
     embeddings = reduction,
     key = "fastMNN_",
     assay = "fastMNNcorrected"
   )
 
   if (is.null(fastMNN_dims_use)) {
-    fastMNN_dims_use <- 1:ncol(srtIntegrated[["fastMNN"]]@cell.embeddings)
+    fastMNN_dims_use <- 1:ncol(srt_integrated[["fastMNN"]]@cell.embeddings)
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "fastMNN",
         dims = fastMNN_dims_use,
         annoy.metric = neighbor_metric,
@@ -1905,10 +1908,10 @@ fastMNN_integrate <- function(
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        paste0("Perform FindClusters (", cluster_algorithm, ")")
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -1916,15 +1919,15 @@ fastMNN_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["fastMNNclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["fastMNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1932,19 +1935,19 @@ fastMNN_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "fastMNN",
             reduction_use = "fastMNN",
             reduction_dims = fastMNN_dims_use,
@@ -1958,7 +1961,7 @@ fastMNN_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -1966,24 +1969,24 @@ fastMNN_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["fastMNN_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["fastMNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|fastMNN|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -2173,7 +2176,7 @@ Harmony_integrate <- function(
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData on the data...")
+    log_message("Perform ScaleData")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -2186,7 +2189,7 @@ Harmony_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction({.val {linear_reduction}}) on the data..."
+    "Perform linear dimension reduction({.val {linear_reduction}})"
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -2211,7 +2214,7 @@ Harmony_integrate <- function(
     }
   }
 
-  log_message("Perform {.pkg Harmony} integration on the data...")
+  log_message("Perform {.pkg Harmony} integration")
   log_message(
     "Harmony integration using Reduction({.val {paste0('Harmony', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}}) as input"
   )
@@ -2238,20 +2241,20 @@ Harmony_integrate <- function(
   for (nm in names(RunHarmony_params)) {
     params[[nm]] <- RunHarmony_params[[nm]]
   }
-  srtIntegrated <- invoke_fun(.fn = RunHarmony2, .args = params)
+  srt_integrated <- invoke_fun(RunHarmony2, params)
 
   if (is.null(harmony_dims_use)) {
     harmony_dims_use <- seq_len(
       ncol(
-        srtIntegrated[["Harmony"]]@cell.embeddings
+        srt_integrated[["Harmony"]]@cell.embeddings
       )
     )
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "Harmony",
         dims = harmony_dims_use,
         annoy.metric = neighbor_metric,
@@ -2262,10 +2265,10 @@ Harmony_integrate <- function(
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        paste0("Perform FindClusters (", cluster_algorithm, ")")
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -2273,15 +2276,15 @@ Harmony_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["Harmonyclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["Harmonyclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -2289,19 +2292,19 @@ Harmony_integrate <- function(
         "Error when performing FindClusters. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "Harmony",
             reduction_use = "Harmony",
             reduction_dims = harmony_dims_use,
@@ -2315,7 +2318,7 @@ Harmony_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -2323,24 +2326,24 @@ Harmony_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Harmony_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["Harmony_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|Harmony|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -2487,9 +2490,9 @@ Scanorama_integrate <- function(
     assay <- checked[["assay"]]
     type <- checked[["type"]]
   }
-  srtIntegrated <- Reduce(merge, srt_list)
+  srt_integrated <- Reduce(merge, srt_list)
 
-  log_message("Perform integration(Scanorama) on the data...")
+  log_message("Perform integration(Scanorama)")
   assaylist <- list()
   genelist <- list()
   for (i in seq_along(srt_list)) {
@@ -2515,15 +2518,15 @@ Scanorama_integrate <- function(
     for (nm in names(Scanorama_params)) {
       params[[nm]] <- Scanorama_params[[nm]]
     }
-    corrected <- invoke_fun(.fn = scanorama$correct, .args = params)
+    corrected <- invoke_fun(scanorama$correct, params)
 
-    cor_value <- Matrix::t(do.call(rbind, corrected[[2]]))
+    cor_value <- Matrix::t(invoke_fun(rbind, corrected[[2]]))
     rownames(cor_value) <- corrected[[3]]
     colnames(cor_value) <- unlist(sapply(assaylist, rownames))
-    srtIntegrated[["Scanoramacorrected"]] <- CreateAssayObject(data = cor_value)
-    SeuratObject::VariableFeatures(srtIntegrated[["Scanoramacorrected"]]) <- HVF
+    srt_integrated[["Scanoramacorrected"]] <- CreateAssayObject(data = cor_value)
+    SeuratObject::VariableFeatures(srt_integrated[["Scanoramacorrected"]]) <- HVF
 
-    dim_reduction <- do.call(rbind, corrected[[1]])
+    dim_reduction <- invoke_fun(rbind, corrected[[1]])
     rownames(dim_reduction) <- unlist(sapply(assaylist, rownames))
     colnames(dim_reduction) <- paste0(
       "Scanorama_",
@@ -2538,29 +2541,29 @@ Scanorama_integrate <- function(
     for (nm in names(Scanorama_params)) {
       params[[nm]] <- Scanorama_params[[nm]]
     }
-    integrated <- invoke_fun(.fn = scanorama$integrate, .args = params)
+    integrated <- invoke_fun(scanorama$integrate, params)
 
-    dim_reduction <- do.call(rbind, integrated[[1]])
+    dim_reduction <- invoke_fun(rbind, integrated[[1]])
     rownames(dim_reduction) <- unlist(sapply(assaylist, rownames))
     colnames(dim_reduction) <- paste0(
       "Scanorama_",
       seq_len(ncol(dim_reduction))
     )
   }
-  srtIntegrated[["Scanorama"]] <- CreateDimReducObject(
+  srt_integrated[["Scanorama"]] <- CreateDimReducObject(
     embeddings = dim_reduction,
     key = "Scanorama_",
-    assay = SeuratObject::DefaultAssay(srtIntegrated)
+    assay = SeuratObject::DefaultAssay(srt_integrated)
   )
 
   if (is.null(Scanorama_dims_use)) {
-    Scanorama_dims_use <- 1:ncol(srtIntegrated[["Scanorama"]]@cell.embeddings)
+    Scanorama_dims_use <- 1:ncol(srt_integrated[["Scanorama"]]@cell.embeddings)
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "Scanorama",
         dims = Scanorama_dims_use,
         annoy.metric = neighbor_metric,
@@ -2571,10 +2574,10 @@ Scanorama_integrate <- function(
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        paste0("Perform FindClusters (", cluster_algorithm, ")")
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -2582,15 +2585,15 @@ Scanorama_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["Scanoramaclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["Scanoramaclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -2598,19 +2601,19 @@ Scanorama_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "Scanorama",
             reduction_use = "Scanorama",
             reduction_dims = Scanorama_dims_use,
@@ -2624,7 +2627,7 @@ Scanorama_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -2632,26 +2635,26 @@ Scanorama_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[[
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[[
     "Scanorama_HVF"
   ]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|Scanorama|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -2829,7 +2832,7 @@ BBKNN_integrate <- function(
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData on the data...")
+    log_message("Perform ScaleData")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -2842,7 +2845,7 @@ BBKNN_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction({.val {linear_reduction}}) on the data..."
+    "Perform linear dimension reduction({.val {linear_reduction}})"
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -2867,7 +2870,7 @@ BBKNN_integrate <- function(
   }
 
   log_message(
-    "Perform integration(BBKNN) on the data..."
+    "Perform integration(BBKNN)"
   )
   log_message(
     "Using Reduction({.val {paste0('BBKNN', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}}) as input"
@@ -2883,17 +2886,17 @@ BBKNN_integrate <- function(
   for (nm in names(bbknn_params)) {
     params[[nm]] <- bbknn_params[[nm]]
   }
-  bem <- invoke_fun(.fn = bbknn$matrix$bbknn, .args = params)
+  bem <- invoke_fun(bbknn$matrix$bbknn, params)
   n.neighbors <- bem[[3]]$n_neighbors
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
 
   bbknn_graph <- SeuratObject::as.sparse(
     bem[[2]][1:nrow(bem[[2]]), , drop = FALSE]
   )
   rownames(bbknn_graph) <- colnames(bbknn_graph) <- rownames(emb)
   bbknn_graph <- SeuratObject::as.Graph(bbknn_graph)
-  bbknn_graph@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
-  srtIntegrated@graphs[["BBKNN"]] <- bbknn_graph
+  bbknn_graph@assay.used <- SeuratObject::DefaultAssay(srt_integrated)
+  srt_integrated@graphs[["BBKNN"]] <- bbknn_graph
 
   bbknn_dist <- Matrix::t(
     SeuratObject::as.sparse(
@@ -2902,8 +2905,8 @@ BBKNN_integrate <- function(
   )
   rownames(bbknn_dist) <- colnames(bbknn_dist) <- rownames(emb)
   bbknn_dist <- SeuratObject::as.Graph(bbknn_dist)
-  bbknn_dist@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
-  srtIntegrated@graphs[["BBKNN_dist"]] <- bbknn_dist
+  bbknn_dist@assay.used <- SeuratObject::DefaultAssay(srt_integrated)
+  srt_integrated@graphs[["BBKNN_dist"]] <- bbknn_dist
 
   val <- split(
     bbknn_dist@x,
@@ -2941,7 +2944,7 @@ BBKNN_integrate <- function(
     y = val
   ))
   dist <- cbind(0, dist)
-  srtIntegrated[["BBKNN_neighbors"]] <- methods::new(
+  srt_integrated[["BBKNN_neighbors"]] <- methods::new(
     Class = "Neighbor",
     nn.idx = idx,
     nn.dist = dist,
@@ -2950,13 +2953,13 @@ BBKNN_integrate <- function(
   )
   nonlinear_reduction_params[["n.neighbors"]] <- n.neighbors
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         graph.name = "BBKNN",
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
@@ -2964,15 +2967,15 @@ BBKNN_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["BBKNNclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["BBKNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -2980,15 +2983,15 @@ BBKNN_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          "Perform nonlinear dimension reduction ({.val {nr}}) on the data..."
+          "Perform nonlinear dimension reduction ({.val {nr}})"
         )
         if (nr %in% c("fr")) {
           nonlinear_reduction_params[["n.neighbors"]] <- NULL
@@ -2996,8 +2999,8 @@ BBKNN_integrate <- function(
           nonlinear_reduction_params[["n.neighbors"]] <- n.neighbors
         }
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "BBKNN",
             neighbor_use = "BBKNN_neighbors",
             graph_use = "BBKNN",
@@ -3010,7 +3013,7 @@ BBKNN_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -3018,24 +3021,24 @@ BBKNN_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["BBKNN_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["BBKNN_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|BBKNN|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -3225,7 +3228,7 @@ CSS_integrate <- function(
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData on the data...")
+    log_message("Perform ScaleData")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -3238,7 +3241,7 @@ CSS_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction({.val {linear_reduction}}) on the data..."
+    "Perform linear dimension reduction({.val {linear_reduction}})"
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -3262,7 +3265,7 @@ CSS_integrate <- function(
     }
   }
 
-  log_message("Perform {.pkg CSS} integration on the data...")
+  log_message("Perform {.pkg CSS} integration")
   log_message(
     "Using Reduction({.val {paste0('CSS', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}}) as input"
   )
@@ -3279,14 +3282,14 @@ CSS_integrate <- function(
   for (nm in names(CSS_params)) {
     params[[nm]] <- CSS_params[[nm]]
   }
-  srtIntegrated <- invoke_fun(
-    .fn = get("cluster_sim_spectrum",
+  srt_integrated <- invoke_fun(
+    get("cluster_sim_spectrum",
       envir = getNamespace("simspec")
     ),
-    .args = params
+    params
   )
 
-  if (any(is.na(srtIntegrated@reductions[["CSS"]]@cell.embeddings))) {
+  if (any(is.na(srt_integrated@reductions[["CSS"]]@cell.embeddings))) {
     log_message(
       "NA detected in the CSS embeddings. You can try to use a lower resolution value in the {.arg CSS_params}.",
       message_type = "error"
@@ -3294,14 +3297,14 @@ CSS_integrate <- function(
   }
   if (is.null(CSS_dims_use)) {
     CSS_dims_use <- seq_len(
-      ncol(srtIntegrated[["CSS"]]@cell.embeddings)
+      ncol(srt_integrated[["CSS"]]@cell.embeddings)
     )
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "CSS",
         dims = CSS_dims_use,
         annoy.metric = neighbor_metric,
@@ -3312,10 +3315,10 @@ CSS_integrate <- function(
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -3323,15 +3326,15 @@ CSS_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["CSSclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["CSSclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -3339,19 +3342,19 @@ CSS_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "CSS",
             reduction_use = "CSS",
             reduction_dims = CSS_dims_use,
@@ -3365,7 +3368,7 @@ CSS_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
@@ -3373,24 +3376,24 @@ CSS_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["CSS_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["CSS_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|CSS|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -3585,7 +3588,7 @@ LIGER_integrate <- function(
     )
   }
 
-  log_message("Perform {.pkg LIGER} integration on the data...")
+  log_message("Perform {.pkg LIGER} integration")
   params1 <- list(
     object = scale.data,
     k = 20,
@@ -3594,9 +3597,9 @@ LIGER_integrate <- function(
   for (nm in names(optimizeALS_params)) {
     params1[[nm]] <- optimizeALS_params[[nm]]
   }
-  out1 <- invoke_fun(.fn = rliger::optimizeALS, .args = params1)
+  out1 <- invoke_fun(rliger::optimizeALS, params1)
   colnames(x = out1$W) <- colnames(scale.data[[1]])
-  reduction1 <- do.call(what = "rbind", args = out1$H)
+  reduction1 <- invoke_fun(what = "rbind", args = out1$H)
   colnames(reduction1) <- paste0("riNMF_", seq_len(ncol(reduction1)))
   loadings1 <- Matrix::t(x = out1$W)
   rownames(loadings1) <- colnames(scale.data[[1]])
@@ -3629,24 +3632,24 @@ LIGER_integrate <- function(
   for (nm in names(quantilenorm_params)) {
     params2[[nm]] <- quantilenorm_params[[nm]]
   }
-  out2 <- invoke_fun(.fn = rliger::quantile_norm, .args = params2)
+  out2 <- invoke_fun(rliger::quantile_norm, params2)
   srt_merge[["LIGER"]] <- CreateDimReducObject(
     embeddings = out2$H.norm,
     assay = SeuratObject::DefaultAssay(srt_merge),
     key = "LIGER_"
   )
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
   srt_merge <- NULL
   if (is.null(LIGER_dims_use)) {
     LIGER_dims_use <- seq_len(
-      ncol(srtIntegrated[["LIGER"]]@cell.embeddings)
+      ncol(srt_integrated[["LIGER"]]@cell.embeddings)
     )
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = "LIGER",
         dims = LIGER_dims_use,
         annoy.metric = neighbor_metric,
@@ -3657,10 +3660,10 @@ LIGER_integrate <- function(
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ") on the data...")
+        paste0("Perform FindClusters (", cluster_algorithm, ")")
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -3668,15 +3671,15 @@ LIGER_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["LIGERclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["LIGERclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning", verbose = verbose)
@@ -3685,19 +3688,19 @@ LIGER_integrate <- function(
         message_type = "warning",
         verbose = verbose
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "LIGER",
             reduction_use = "LIGER",
             reduction_dims = LIGER_dims_use,
@@ -3711,7 +3714,7 @@ LIGER_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning", verbose = verbose)
@@ -3720,24 +3723,24 @@ LIGER_integrate <- function(
         message_type = "warning",
         verbose = verbose
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["LIGER_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["LIGER_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|LIGER|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -3917,7 +3920,7 @@ Conos_integrate <- function(
     }
   }
 
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
   srt_merge <- NULL
 
   if (normalization_method == "TFIDF") {
@@ -3987,7 +3990,7 @@ Conos_integrate <- function(
   }
 
   log_message(
-    " Perform {.pkg Conos} integration on the data..."
+    " Perform {.pkg Conos} integration"
   )
   log_message(
     "Conos integration using Reduction(",
@@ -4004,7 +4007,7 @@ Conos_integrate <- function(
   for (nm in names(buildGraph_params)) {
     params[[nm]] <- buildGraph_params[[nm]]
   }
-  invoke_fun(.fn = srt_list_con[["buildGraph"]], .args = params)
+  invoke_fun(srt_list_con[["buildGraph"]], params)
   conos_graph <- igraph::as_adjacency_matrix(
     srt_list_con$graph,
     type = "both",
@@ -4013,17 +4016,17 @@ Conos_integrate <- function(
     sparse = TRUE
   )
   conos_graph <- SeuratObject::as.Graph(conos_graph)
-  conos_graph@assay.used <- SeuratObject::DefaultAssay(srtIntegrated)
-  srtIntegrated@graphs[["Conos"]] <- conos_graph
+  conos_graph@assay.used <- SeuratObject::DefaultAssay(srt_integrated)
+  srt_integrated@graphs[["Conos"]] <- conos_graph
   nonlinear_reduction_params[["n.neighbors"]] <- params[["k"]]
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       log_message(
-        "Perform {.fn FindClusters} ({.val {cluster_algorithm}}) on the data..."
+        "Perform {.fn FindClusters} ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         graph.name = "Conos",
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
@@ -4031,15 +4034,15 @@ Conos_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["Conosclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["Conosclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(
@@ -4050,15 +4053,15 @@ Conos_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          "Perform nonlinear dimension reduction ({.val {nr}}) on the data..."
+          "Perform nonlinear dimension reduction ({.val {nr}})"
         )
         if (nr %in% c("fr")) {
           nonlinear_reduction_params[["n.neighbors"]] <- NULL
@@ -4066,8 +4069,8 @@ Conos_integrate <- function(
           nonlinear_reduction_params[["n.neighbors"]] <- params[["k"]]
         }
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "Conos",
             graph_use = "Conos",
             nonlinear_reduction = nr,
@@ -4079,7 +4082,7 @@ Conos_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(
@@ -4090,24 +4093,24 @@ Conos_integrate <- function(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["Conos_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["Conos_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|Conos|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }
 
@@ -4284,13 +4287,13 @@ ComBat_integrate <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+      "{.arg normalization_method} is {.pkg TFIDF}. Use {.pkg lsi} workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
 
-  log_message("Perform {.pkg ComBat} integration on the data...")
+  log_message("Perform {.pkg ComBat} integration")
   dat <- GetAssayData5(
     srt_merge,
     layer = "data",
@@ -4307,16 +4310,16 @@ ComBat_integrate <- function(
   }
   corrected <- suppressMessages(
     invoke_fun(
-      .fn = sva::ComBat,
-      .args = params
+      sva::ComBat,
+      params
     )
   )
 
-  srtIntegrated <- srt_merge
+  srt_integrated <- srt_merge
   srt_merge <- NULL
-  srtIntegrated[["ComBatcorrected"]] <- CreateAssayObject(data = corrected)
-  SeuratObject::DefaultAssay(srtIntegrated) <- "ComBatcorrected"
-  SeuratObject::VariableFeatures(srtIntegrated[["ComBatcorrected"]]) <- HVF
+  srt_integrated[["ComBatcorrected"]] <- CreateAssayObject(data = corrected)
+  SeuratObject::DefaultAssay(srt_integrated) <- "ComBatcorrected"
+  SeuratObject::VariableFeatures(srt_integrated[["ComBatcorrected"]]) <- HVF
 
   if (
     isTRUE(do_scaling) ||
@@ -4325,19 +4328,19 @@ ComBat_integrate <- function(
           !HVF %in%
             rownames(
               GetAssayData5(
-                srtIntegrated,
+                srt_integrated,
                 layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srtIntegrated),
+                assay = SeuratObject::DefaultAssay(srt_integrated),
                 verbose = FALSE
               )
             )
         ))
   ) {
-    log_message("Perform ScaleData on the data...")
-    srtIntegrated <- Seurat::ScaleData(
-      srtIntegrated,
+    log_message("Perform ScaleData")
+    srt_integrated <- Seurat::ScaleData(
+      srt_integrated,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
-      assay = SeuratObject::DefaultAssay(srtIntegrated),
+      assay = SeuratObject::DefaultAssay(srt_integrated),
       features = HVF,
       vars.to.regress = vars_to_regress,
       model.use = regression_model,
@@ -4346,13 +4349,13 @@ ComBat_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction ({.val {linear_reduction}}) on the data..."
+    "Perform linear dimension reduction ({.val {linear_reduction}})"
   )
-  srtIntegrated <- RunDimReduction(
-    srtIntegrated,
+  srt_integrated <- RunDimReduction(
+    srt_integrated,
     prefix = "ComBat",
     features = HVF,
-    assay = SeuratObject::DefaultAssay(srtIntegrated),
+    assay = SeuratObject::DefaultAssay(srt_integrated),
     linear_reduction = linear_reduction,
     linear_reduction_dims = linear_reduction_dims,
     linear_reduction_params = linear_reduction_params,
@@ -4361,7 +4364,7 @@ ComBat_integrate <- function(
     seed = seed
   )
   if (is.null(linear_reduction_dims_use)) {
-    linear_reduction_dims_use <- srtIntegrated@reductions[[paste0(
+    linear_reduction_dims_use <- srt_integrated@reductions[[paste0(
       "ComBat",
       linear_reduction
     )]]@misc[["dims_estimate"]]
@@ -4370,10 +4373,10 @@ ComBat_integrate <- function(
     }
   }
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
-      srtIntegrated <- FindNeighbors(
-        object = srtIntegrated,
+      srt_integrated <- FindNeighbors(
+        object = srt_integrated,
         reduction = paste0("ComBat", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
@@ -4384,10 +4387,10 @@ ComBat_integrate <- function(
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}}) on the data..."
+        "Perform FindClusters ({.val {cluster_algorithm}})"
       )
-      srtIntegrated <- FindClusters(
-        object = srtIntegrated,
+      srt_integrated <- FindClusters(
+        object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
         method = "igraph",
@@ -4395,15 +4398,15 @@ ComBat_integrate <- function(
         verbose = FALSE
       )
       log_message("Reorder clusters...")
-      srtIntegrated <- srt_reorder(
-        srtIntegrated,
+      srt_integrated <- srt_reorder(
+        srt_integrated,
         features = HVF,
         reorder_by = "seurat_clusters",
         layer = "data"
       )
-      srtIntegrated[["seurat_clusters"]] <- NULL
-      srtIntegrated[["ComBatclusters"]] <- Idents(srtIntegrated)
-      srtIntegrated
+      srt_integrated[["seurat_clusters"]] <- NULL
+      srt_integrated[["ComBatclusters"]] <- Idents(srt_integrated)
+      srt_integrated
     },
     error = function(error) {
       log_message(
@@ -4414,19 +4417,19 @@ ComBat_integrate <- function(
         "Error when performing {.fn FindClusters}. Skip this step",
         message_type = "warning"
       )
-      srtIntegrated
+      srt_integrated
     }
   )
 
-  srtIntegrated <- tryCatch(
+  srt_integrated <- tryCatch(
     {
       for (nr in nonlinear_reduction) {
         log_message(
-          paste0("Perform nonlinear dimension reduction (", nr, ") on the data...")
+          paste0("Perform nonlinear dimension reduction (", nr, ")")
         )
         for (n in nonlinear_reduction_dims) {
-          srtIntegrated <- RunDimReduction(
-            srtIntegrated,
+          srt_integrated <- RunDimReduction(
+            srt_integrated,
             prefix = "ComBat",
             reduction_use = paste0("ComBat", linear_reduction),
             reduction_dims = linear_reduction_dims_use,
@@ -4440,7 +4443,7 @@ ComBat_integrate <- function(
           )
         }
       }
-      srtIntegrated
+      srt_integrated
     },
     error = function(error) {
       log_message(
@@ -4453,23 +4456,23 @@ ComBat_integrate <- function(
         message_type = "warning",
         verbose = verbose
       )
-      return(srtIntegrated)
+      return(srt_integrated)
     }
   )
 
-  SeuratObject::DefaultAssay(srtIntegrated) <- assay
-  SeuratObject::VariableFeatures(srtIntegrated) <- srtIntegrated@misc[["ComBat_HVF"]] <- HVF
+  SeuratObject::DefaultAssay(srt_integrated) <- assay
+  SeuratObject::VariableFeatures(srt_integrated) <- srt_integrated@misc[["ComBat_HVF"]] <- HVF
 
   if (isTRUE(append) && !is.null(srt_merge_raw)) {
     srt_merge_raw <- srt_append(
       srt_raw = srt_merge_raw,
-      srt_append = srtIntegrated,
+      srt_append = srt_integrated,
       pattern = paste0(assay, "|ComBat|Default_reduction"),
       overwrite = TRUE,
       verbose = FALSE
     )
     return(srt_merge_raw)
   } else {
-    return(srtIntegrated)
+    return(srt_integrated)
   }
 }

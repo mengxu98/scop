@@ -117,6 +117,9 @@ Default is an empty list.}
 \item{num_threads}{An integer setting the number of threads for scVI.
 Default is 8.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }

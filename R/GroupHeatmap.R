@@ -943,7 +943,8 @@ GroupHeatmap <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = layer
+        layer = layer,
+          verbose = FALSE
       )[gene, cells, drop = FALSE],
       Matrix::t(srt@meta.data[cells, meta, drop = FALSE])
     )
@@ -957,7 +958,8 @@ GroupHeatmap <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = "counts"
+          layer = "counts",
+          verbose = FALSE
         )[, colnames(mat_raw), drop = FALSE]
       )
       isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
@@ -1114,7 +1116,8 @@ GroupHeatmap <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = "data"
+          layer = "data",
+          verbose = FALSE
         )[intersect(cell_annotation, rownames(assay_use)) %||% integer(), cells, drop = FALSE]
       )
     )

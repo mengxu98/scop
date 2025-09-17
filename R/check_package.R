@@ -1,6 +1,7 @@
 #' @title Check and install python packages
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param packages A character vector, indicating package names which should be installed or removed.
 #' Use `"<package>==<version>"` to request the installation of a specific version of a package.
 #' @param envname The name of a conda environment.
@@ -33,6 +34,7 @@ check_python <- function(
     force = FALSE,
     pip = TRUE,
     pip_options = character(),
+    verbose = TRUE,
     ...) {
   envname <- get_envname(envname)
   if (identical(conda, "auto")) {
@@ -45,7 +47,8 @@ check_python <- function(
   if (isFALSE(env)) {
     log_message(
       "{.arg envname}: {.val {envname}} python environment does not exist. Create it with {.fn PrepareEnv}",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     PrepareEnv()
   }
@@ -67,7 +70,8 @@ check_python <- function(
   if (sum(!pkg_installed) > 0) {
     pkgs_to_install <- names(pkg_installed)[!pkg_installed]
     log_message(
-      "Try to install: {.pkg {pkgs_to_install}}"
+      "Try to install: {.pkg {pkgs_to_install}}",
+      verbose = verbose
     )
     if (isTRUE(pip)) {
       pkgs_to_install <- c("pip", pkgs_to_install)
@@ -97,7 +101,8 @@ check_python <- function(
     failed_pkgs <- names(pkg_installed)[!pkg_installed]
     log_message(
       "Failed to install: {.pkg {failed_pkgs}} into the environment {.file {envname}}. Please install manually",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   } else {
     return(invisible(NULL))
@@ -107,6 +112,7 @@ check_python <- function(
 #' @title Remove Python packages from conda environment
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param packages A character vector of package names to remove.
 #' @param envname The name of the conda environment.
 #' If `NULL`, uses the default scop environment name.
@@ -143,11 +149,13 @@ remove_python <- function(
     envname = NULL,
     conda = "auto",
     pip = FALSE,
-    force = FALSE) {
+    force = FALSE,
+    verbose = TRUE) {
   envname <- get_envname(envname)
 
   log_message(
-    "Removing {.pkg {packages}} from environment: {.file {envname}}"
+    "Removing {.pkg {packages}} from environment: {.file {envname}}",
+    verbose = verbose
   )
 
   if (identical(conda, "auto")) {
@@ -180,13 +188,18 @@ remove_python <- function(
         )
       )
       if (!tolower(response) %in% c("y", "yes")) {
-        log_message("{.pkg {packages}} removal cancelled")
+        log_message(
+          "{.pkg {packages}} removal cancelled",
+          message_type = "warning",
+          verbose = verbose
+        )
         return(invisible(FALSE))
       }
     } else {
       log_message(
         "Automatically remove {.pkg {packages}} in non-interactive mode",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
     }
   }
@@ -209,12 +222,18 @@ remove_python <- function(
   }
 
   if (pip) {
-    log_message("Removing {.pkg {packages}} via {.pkg pip}...")
+    log_message(
+      "Removing {.pkg {packages}} via {.pkg pip}...",
+      verbose = verbose
+    )
 
     result <- tryCatch(
       {
         for (pkg in packages) {
-          log_message("Removing {.pkg {pkg}}")
+          log_message(
+            "Removing {.pkg {pkg}}",
+            verbose = verbose
+          )
 
           args <- c(
             "-m", "pip", "uninstall", "-y", pkg
@@ -225,12 +244,14 @@ remove_python <- function(
           if (status != 0L) {
             log_message(
               "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-              message_type = "warning"
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             log_message(
               "Package {.pkg {pkg}} removed successfully via {.pkg pip}",
-              message_type = "success"
+              message_type = "success",
+              verbose = verbose
             )
           }
         }
@@ -245,7 +266,10 @@ remove_python <- function(
       }
     )
   } else {
-    log_message("Removing {.pkg {packages}} via {.pkg conda}...")
+    log_message(
+      "Removing {.pkg {packages}} via {.pkg conda}...",
+      verbose = verbose
+    )
 
     result <- tryCatch(
       {
@@ -257,13 +281,15 @@ remove_python <- function(
         if (status != 0L) {
           log_message(
             "{.pkg {packages}} removal failed via {.pkg conda} with error code: {.val {status}}",
-            message_type = "warning"
+            message_type = "warning",
+            verbose = verbose
           )
           FALSE
         } else {
           log_message(
             "{.pkg {packages}} removed successfully via {.pkg conda}",
-            message_type = "success"
+            message_type = "success",
+            verbose = verbose
           )
           TRUE
         }
@@ -271,7 +297,8 @@ remove_python <- function(
       error = function(e) {
         log_message(
           "Conda removal failed: {.val {e$message}}",
-          message_type = "warning"
+          message_type = "warning",
+          verbose = verbose
         )
         FALSE
       }
@@ -280,13 +307,17 @@ remove_python <- function(
     if (!result && !pip) {
       log_message(
         "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg pip} as fallback...",
-        message_type = "info"
+        message_type = "warning",
+        verbose = verbose
       )
 
       result <- tryCatch(
         {
           for (pkg in packages) {
-            log_message("Removing {.pkg {pkg}}")
+            log_message(
+              "Removing {.pkg {pkg}}",
+              verbose = verbose
+            )
 
             args <- c(
               "-m", "pip", "uninstall", "-y", pkg
@@ -297,12 +328,14 @@ remove_python <- function(
             if (status != 0L) {
               log_message(
                 "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-                message_type = "warning"
+                message_type = "warning",
+                verbose = verbose
               )
             } else {
               log_message(
                 "{.pkg {pkg}} removed successfully via {.pkg pip}",
-                message_type = "success"
+                message_type = "success",
+                verbose = verbose
               )
             }
           }
@@ -311,7 +344,8 @@ remove_python <- function(
         error = function(e) {
           log_message(
             "{.pkg {packages}} removal failed via {.pkg pip} as fallback: {.val {e$message}}",
-            message_type = "error"
+            message_type = "error",
+            verbose = verbose
           )
           FALSE
         }
@@ -322,12 +356,14 @@ remove_python <- function(
   if (result) {
     log_message(
       "{.pkg {packages}} removal completed successfully",
-      message_type = "success"
+      message_type = "success",
+      verbose = verbose
     )
   } else {
     log_message(
       "{.pkg {packages}} removal failed",
-      message_type = "error"
+      message_type = "warning",
+      verbose = verbose
     )
   }
 
@@ -337,18 +373,22 @@ remove_python <- function(
 #' @title Check and install R packages
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param packages Package to be installed.
 #' Package source can be CRAN, Bioconductor or Github.
 #' By default, the package name is extracted according to the `packages` parameter.
 #' @param lib The location of the library directories where to install the packages.
 #' @param force Whether to force the installation of packages.
-#' Default is `TRUE`.
+#' Default is `FALSE`.
 #'
 #' @export
+#' @examples
+#' check_r(c("Seurat", "reticulate"))
 check_r <- function(
     packages,
     lib = .libPaths()[1],
-    force = TRUE) {
+    force = FALSE,
+    verbose = TRUE) {
   status_list <- list()
   for (pkg in packages) {
     version <- NULL
@@ -363,7 +403,7 @@ check_r <- function(
     }
     dest <- gsub("@.*|==.*|>=.*", "", pkg)
 
-    check_pkg <- .check_pkg_status(pkg_name)
+    check_pkg <- .check_pkg_status(pkg_name, lib = lib)
 
     force_update <- FALSE
     if (check_pkg && !is.null(version)) {
@@ -374,7 +414,8 @@ check_r <- function(
 
     if (!check_pkg || force_update) {
       log_message(
-        "Installing package: {.pkg {pkg_name}}..."
+        "Installing: {.pkg {pkg_name}}...",
+        verbose = verbose
       )
       status_list[[pkg]] <- FALSE
       tryCatch(
@@ -387,12 +428,13 @@ check_r <- function(
         error = function(e) {
           status_list[[pkg]] <- FALSE
           log_message(
-            "Failed to install package: {.pkg {pkg_name}}. Error: {.val {e$message}}",
-            message_type = "warning"
+            "Failed to install: {.pkg {pkg_name}}. Error: {.val {e$message}}",
+            message_type = "warning",
+            verbose = verbose
           )
         }
       )
-      status_list[[pkg]] <- .check_pkg_status(pkg_name)
+      status_list[[pkg]] <- .check_pkg_status(pkg_name, lib = lib)
     } else {
       status_list[[pkg]] <- TRUE
     }
@@ -404,11 +446,13 @@ check_r <- function(
   if (length(failed) > 0) {
     log_message(
       "Failed to install: {.pkg {failed}}. Please install manually",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   } else {
     log_message(
-      "All packages installed successfully"
+      "{.pkg {packages}} installed successfully",
+      verbose = verbose
     )
   }
 
@@ -418,20 +462,23 @@ check_r <- function(
 #' @title Check and remove R packages
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param packages Package to be removed.
 #' @param lib The location of the library directories where to remove the packages.
 #'
 #' @export
 remove_r <- function(
     packages,
-    lib = .libPaths()[1]) {
+    lib = .libPaths()[1],
+    verbose = TRUE) {
   status_list <- list()
   for (pkg in packages) {
-    pkg_installed <- .check_pkg_status(pkg)
+    pkg_installed <- .check_pkg_status(pkg, lib = lib)
 
     if (pkg_installed) {
       log_message(
-        "Removing package: {.pkg {pkg}}..."
+        "Removing: {.pkg {pkg}}...",
+        verbose = verbose
       )
       status_list[[pkg]] <- FALSE
       tryCatch(
@@ -444,14 +491,16 @@ remove_r <- function(
         error = function(e) {
           log_message(
             "Warning during removal: {.pkg {pkg}}. Error: {.val {e$message}}",
-            message_type = "warning"
+            message_type = "warning",
+            verbose = verbose
           )
         }
       )
-      status_list[[pkg]] <- !.check_pkg_status(pkg)
+      status_list[[pkg]] <- !.check_pkg_status(pkg, lib = lib)
     } else {
       log_message(
-        "Package {.pkg {pkg}} is not installed, skipping removal"
+        "{.pkg {pkg}} is not installed, skipping removal",
+        verbose = verbose
       )
       status_list[[pkg]] <- TRUE
     }
@@ -463,19 +512,22 @@ remove_r <- function(
   if (length(failed) > 0) {
     log_message(
       "Failed to remove: {.pkg {failed}}. Please remove manually",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
   } else {
     log_message(
-      "All packages removed successfully"
+      "{.pkg {packages}} removed successfully",
+      verbose = verbose
     )
   }
 
   return(invisible(status_list))
 }
 
-.check_pkg_status <- function(pkg) {
-  installed_pkgs <- utils::installed.packages()[, "Package"]
+.check_pkg_status <- function(pkg, lib = .libPaths()[1]) {
+  installed_pkgs <- utils::installed.packages(lib.loc = lib)
+  installed_pkgs <- installed_pkgs[, "Package"]
   pkg_exists <- pkg %in% installed_pkgs
 
   if (isFALSE(pkg_exists)) {

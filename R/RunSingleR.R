@@ -208,7 +208,7 @@ RunSingleR <- function(
   )
 
   log_message(
-    "Perform {.val {method}} on the data...",
+    "Perform {.val {method}}",
     verbose = verbose
   )
   if (method == "SingleRCluster") {

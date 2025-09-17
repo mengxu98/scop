@@ -125,7 +125,8 @@ RunPCAMap <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay
+      assay = query_assay,
+      verbose = FALSE
     )
   )
   log_message("Detected srt_query data type: ", status_query)
@@ -133,7 +134,8 @@ RunPCAMap <- function(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay
+      assay = ref_assay,
+      verbose = FALSE
     )
   )
   log_message("Detected srt_ref data type: ", status_ref)
@@ -165,7 +167,8 @@ RunPCAMap <- function(
     GetAssayData5(
       object = srt_ref,
       layer = "data",
-      assay = ref_assay
+      assay = ref_assay,
+      verbose = FALSE
     )[
       features,
     ],
@@ -188,7 +191,8 @@ RunPCAMap <- function(
     GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay
+      assay = query_assay,
+      verbose = FALSE
     )[
       features_common,
     ]
@@ -203,7 +207,8 @@ RunPCAMap <- function(
   srt_query[["ref.pca"]] <- SeuratObject::CreateDimReducObject(
     embeddings = query_pca,
     key = pca.out@key,
-    assay = query_assay
+    assay = query_assay,
+    verbose = FALSE
   )
 
   log_message("Run UMAP projection")

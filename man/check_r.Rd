@@ -4,7 +4,7 @@
 \alias{check_r}
 \title{Check and install R packages}
 \usage{
-check_r(packages, lib = .libPaths()[1], force = TRUE)
+check_r(packages, lib = .libPaths()[1], force = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{packages}{Package to be installed.
@@ -14,8 +14,14 @@ By default, the package name is extracted according to the \code{packages} param
 \item{lib}{The location of the library directories where to install the packages.}
 
 \item{force}{Whether to force the installation of packages.
+Default is \code{FALSE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
 Check and install R packages
+}
+\examples{
+check_r(c("Seurat", "reticulate"))
 }

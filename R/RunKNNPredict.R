@@ -510,7 +510,8 @@ RunKNNPredict <- function(
           GetAssayData5(
             srt_ref,
             layer = "data",
-            assay = ref_assay
+            assay = ref_assay,
+            verbose = FALSE
           )[features_common, ]
         )
       }
@@ -570,7 +571,8 @@ RunKNNPredict <- function(
         GetAssayData5(
           srt_query,
           layer = "data",
-          assay = query_assay
+          assay = query_assay,
+          verbose = FALSE
         )[colnames(ref), , drop = FALSE]
       )
     }
