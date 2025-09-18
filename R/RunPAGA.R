@@ -26,7 +26,7 @@
 #' @param embedded_with_PAGA Whether to embed data using PAGA layout.
 #' Default is `FALSE`.
 #' @param paga_layout The layout for plotting PAGA graph.
-#' See \href{https://scanpy.readthedocs.io/en/stable/generated/scanpy.pl.paga.html}{layout} param in `scanpy.pl.paga` function.
+#' See \href{https://scanpy.readthedocs.io/en/stable/tutorials/plotting/advanced.html#paga}{layout} param in `scanpy.pl.paga` function.
 #' @param threshold The threshold for plotting PAGA graph.
 #' Edges for weights below this threshold will not be drawn.
 #' @param point_size The point size for plotting.
@@ -220,7 +220,7 @@ RunPAGA <- function(
     palette = palette,
     palcolor = palcolor
   )
-
+  
   scop_analysis <- reticulate::import_from_path(
     "scop_analysis",
     path = system.file("python", package = "scop", mustWork = TRUE),

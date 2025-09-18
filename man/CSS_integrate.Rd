@@ -141,6 +141,9 @@ Default is \code{0.6}.}
 \item{CSS_params}{A list of parameters for the simspec::cluster_sim_spectrum function.
 Default is an empty list.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }

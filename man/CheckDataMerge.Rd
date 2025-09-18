@@ -57,6 +57,9 @@ Default is \code{NULL}.}
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.
 Default is \code{NULL}.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }
