@@ -4,12 +4,15 @@
 \alias{remove_r}
 \title{Check and remove R packages}
 \usage{
-remove_r(packages, lib = .libPaths()[1])
+remove_r(packages, lib = .libPaths()[1], verbose = TRUE)
 }
 \arguments{
 \item{packages}{Package to be removed.}
 
 \item{lib}{The location of the library directories where to remove the packages.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Check and remove R packages

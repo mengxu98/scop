@@ -107,7 +107,8 @@ RunFR.Seurat <- function(
     data_use <- GetAssayData5(
       object = object,
       layer = layer,
-      assay = assay
+      assay = assay,
+      verbose = FALSE
     )
     data_use <- Matrix::t(data_use[features, ])
     log_message(

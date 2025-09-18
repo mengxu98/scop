@@ -37,6 +37,7 @@ integration_scop(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   seed = 11,
+  verbose = TRUE,
   ...
 )
 }
@@ -141,6 +142,9 @@ Default is \code{0.6}.}
 
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments to be passed to the integration method function.}
 }

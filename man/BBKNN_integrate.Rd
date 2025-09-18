@@ -127,6 +127,9 @@ Default is \code{0.6}.}
 
 \item{bbknn_params}{A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }

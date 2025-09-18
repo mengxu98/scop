@@ -189,10 +189,8 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
   options(reticulate.keras.backend = "tensorflow")
   options(reticulate.miniconda.enabled = FALSE)
 
-  # python_path <- reticulate::conda_python(conda = conda, envname = envname)
   python_path <- conda_python(conda = conda, envname = envname)
   reticulate::use_python(python_path, required = TRUE)
-  # Sys.setenv(RETICULATE_PYTHON = python_path)
 
   tryCatch(
     {
@@ -205,10 +203,24 @@ os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
 os.environ['NUMEXPR_NUM_THREADS'] = '1'
 os.environ['KMP_WARNINGS'] = '0'
 ")
+
+      if (Sys.info()["sysname"] == "Darwin" && Sys.info()["machine"] == "arm64") {
+        Sys.setenv(NUMBA_NUM_THREADS = "1")
+        Sys.setenv(NUMBA_DISABLE_JIT = "1")
+        Sys.setenv(NUMBA_THREADING_LAYER = "tbb")
+        Sys.setenv(NUMBA_DEFAULT_NUM_THREADS = "1")
+        Sys.setenv(OMP_NUM_THREADS = "1")
+        Sys.setenv(OPENBLAS_NUM_THREADS = "1")
+        Sys.setenv(MKL_NUM_THREADS = "1")
+        Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
+        Sys.setenv(NUMEXPR_NUM_THREADS = "1")
+        Sys.setenv(NUMBA_CACHE_DIR = "/tmp/numba_cache")
+        Sys.setenv(NUMBA_DEBUG = "0")
+      }
     },
     error = function(e) {
       cli::col_red(
-        "Could not set Python environment variables"
+        "Could not set python environment variables"
       )
     }
   )
