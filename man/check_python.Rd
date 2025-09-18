@@ -11,6 +11,7 @@ check_python(
   force = FALSE,
   pip = TRUE,
   pip_options = character(),
+  verbose = TRUE,
   ...
 )
 }
@@ -29,6 +30,9 @@ Default is TRUE, packages are installed from the active conda channels.}
 
 \item{pip_options}{An optional character vector of additional command line arguments to be passed to \code{pip}.
 Only relevant when \code{pip = TRUE}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Other arguments passed to \link[reticulate:conda-tools]{reticulate::conda_install}}
 }
