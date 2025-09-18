@@ -410,7 +410,12 @@ FeatureStatPlot <- function(
   meta.data <- srt@meta.data
   meta.data[["cells"]] <- rownames(meta.data)
   assay <- assay %||% DefaultAssay(srt)
-  exp.data <- GetAssayData5(srt, assay = assay, layer = layer)
+  exp.data <- GetAssayData5(
+    srt,
+    assay = assay,
+    layer = layer,
+    verbose = FALSE
+  )
   plot.by <- match.arg(plot.by)
 
   if (plot.by == "feature") {

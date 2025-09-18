@@ -108,7 +108,7 @@ RunDynamicFeatures <- function(
     )
     if (!all(isnum)) {
       log_message(
-        "{meta[!isnum]} is not numeric and will be dropped",
+        "{.val {meta[!isnum]}} is not numeric and will be dropped",
         message_type = "warning",
         verbose = verbose
       )
@@ -117,7 +117,7 @@ RunDynamicFeatures <- function(
     features <- c(gene, meta)
     if (length(features) == 0) {
       log_message(
-        "No feature found in the srt object.",
+        "No feature found in the srt object",
         message_type = "error"
       )
     }
@@ -133,7 +133,8 @@ RunDynamicFeatures <- function(
     status <- CheckDataType(
       srt,
       assay = assay,
-      layer = "counts"
+      layer = "counts",
+      verbose = verbose
     )
     if (status != "raw_counts") {
       y_libsize <- stats::setNames(
@@ -160,7 +161,7 @@ RunDynamicFeatures <- function(
       y_libsize <- stats::setNames(libsize, colnames(srt))
     } else {
       log_message(
-        "libsize must be length of 1 or the number of cells.",
+        "{.arg libsize} must be length of 1 or the number of cells",
         message_type = "error"
       )
     }

@@ -99,7 +99,8 @@ RunLargeVis.Seurat <- function(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay
+          assay = assay,
+          verbose = FALSE
         )[features, ]
       )
     )

@@ -713,7 +713,8 @@ CellCorHeatmap <- function(
         GetAssayData5(
           object = srt_ref,
           assay = ref_assay,
-          layer = "data"
+          layer = "data",
+          verbose = FALSE
         )[
           intersect(
             query_cell_annotation,
@@ -737,7 +738,8 @@ CellCorHeatmap <- function(
         GetAssayData5(
           object = srt_ref,
           assay = ref_assay,
-          layer = "data"
+          layer = "data",
+          verbose = FALSE
         )[
           intersect(
             ref_cell_annotation,
