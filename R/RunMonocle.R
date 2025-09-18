@@ -115,7 +115,12 @@ RunMonocle2 <- function(
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   expr_matrix <- SeuratObject::as.sparse(
-    GetAssayData5(srt, assay = assay, layer = layer)
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      verbose = FALSE
+    )
   )
   p_data <- srt@meta.data
   f_data <- data.frame(
@@ -697,7 +702,12 @@ RunMonocle3 <- function(
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   expr_matrix <- SeuratObject::as.sparse(
-    GetAssayData5(srt, assay = assay, layer = layer)
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      verbose = FALSE
+    )
   )
   p_data <- srt@meta.data
   f_data <- data.frame(

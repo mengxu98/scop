@@ -246,12 +246,18 @@ RunUMAP2.default <- function(
   }
   if (return.model) {
     if (verbose) {
-      log_message("UMAP will return its model")
+      log_message(
+        "UMAP will return its model",
+        verbose = verbose
+      )
     }
   }
   if (!is.null(x = reduction.model)) {
     if (verbose) {
-      log_message("Running UMAP projection")
+      log_message(
+        "Running UMAP projection",
+        verbose = verbose
+      )
     }
     if (
       is.null(x = reduction.model) ||
@@ -411,7 +417,7 @@ RunUMAP2.default <- function(
       )
       if (return.model) {
         log_message(
-          "return.model does not support 'Graph' input.",
+          "{.arg return.model} does not support 'Graph' input",
           message_type = "warning"
         )
       }
@@ -456,7 +462,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = verbose,
+        verbose = FALSE,
         ret_model = FALSE
       )
       rownames(x = embeddings) <- attr(object, "Labels")
@@ -469,7 +475,7 @@ RunUMAP2.default <- function(
       )
       if (return.model) {
         log_message(
-          "return.model does not support 'dist' input.",
+          "{.arg return.model} does not support 'dist' input",
           message_type = "warning"
         )
       }
@@ -492,7 +498,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = verbose,
+        verbose = FALSE,
         ret_model = return.model
       )
       if (return.model) {
@@ -578,7 +584,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = verbose,
+        verbose = FALSE,
         ret_model = return.model
       )
       if (return.model) {
@@ -621,7 +627,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = verbose,
+        verbose = FALSE,
         ret_model = return.model
       )
       if (return.model) {
@@ -697,7 +703,7 @@ RunUMAP2.default <- function(
         model = model,
         n_epochs = n.epochs,
         n_threads = n_threads,
-        verbose = verbose
+        verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
@@ -735,7 +741,7 @@ RunUMAP2.default <- function(
         model = model,
         n_epochs = n.epochs,
         n_threads = n_threads,
-        verbose = verbose
+        verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
@@ -756,7 +762,7 @@ RunUMAP2.default <- function(
         model = model,
         n_epochs = n.epochs,
         n_threads = n_threads,
-        verbose = verbose
+        verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)

@@ -133,6 +133,9 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
+
 \item{seed}{An integer specifying the random seed for reproducibility.
 Default is \code{11}.}
 }

@@ -112,7 +112,11 @@ RunNMF.Assay <- function(
     seed.use = 11,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data_use <- GetAssayData5(object = object, layer = layer)
+  data_use <- GetAssayData5(
+    object = object,
+    layer = layer,
+    verbose = FALSE
+  )
   features_var <- apply(
     X = data_use[features, ],
     MARGIN = 1,
@@ -159,7 +163,11 @@ RunNMF.Assay5 <- function(
     seed.use = 11,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data_use <- GetAssayData5(object = object, layer = layer)
+  data_use <- GetAssayData5(
+    object = object,
+    layer = layer,
+    verbose = FALSE
+  )
   features_var <- apply(
     X = data_use[features, ],
     MARGIN = 1,

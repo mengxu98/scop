@@ -238,7 +238,7 @@ standard_scop <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "{.arg normalization_method} is 'TFIDF'. Use 'lsi' workflow...",
+      "{.arg normalization_method} is {.pkg TFIDF}. Use {.pkg lsi} workflow",
       verbose = verbose
     )
     do_scaling <- FALSE
@@ -247,13 +247,14 @@ standard_scop <- function(
   scale_features <- GetAssayData5(
     srt,
     layer = "scale.data",
-    assay = assay
+    assay = assay,
+    verbose = FALSE
   ) |>
     rownames()
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     if (normalization_method != "SCT") {
       log_message(
-        "Perform {.fn Seurat::ScaleData} on the data...",
+        "Perform {.fn Seurat::ScaleData}",
         verbose = verbose
       )
       srt <- Seurat::ScaleData(
@@ -269,7 +270,7 @@ standard_scop <- function(
 
   for (lr in linear_reduction) {
     log_message(
-      "Perform {.pkg {lr}} linear dimension reduction on the data...",
+      "Perform {.pkg {lr}} linear dimension reduction",
       verbose = verbose
     )
     srt <- RunDimReduction(
@@ -319,7 +320,7 @@ standard_scop <- function(
         )
 
         log_message(
-          "Perform {.fn Seurat::FindClusters} with {.pkg {cluster_algorithm}} and {.arg cluster_resolution} = {.val {cluster_resolution}} on the data...",
+          "Perform {.fn Seurat::FindClusters} with {.pkg {cluster_algorithm}} and {.arg cluster_resolution} = {.val {cluster_resolution}}",
           verbose = verbose
         )
         srt <- Seurat::FindClusters(
@@ -355,7 +356,7 @@ standard_scop <- function(
       {
         for (nr in nonlinear_reduction) {
           log_message(
-            "Perform {.pkg {nr}} nonlinear dimension reduction on the data...",
+            "Perform {.pkg {nr}} nonlinear dimension reduction",
             verbose = verbose
           )
           for (n in nonlinear_reduction_dims) {
