@@ -223,7 +223,8 @@ RunDimReduction <- function(
         GetAssayData5(
           object = srt,
           layer = "scale.data",
-          assay = assay
+          assay = assay,
+          verbose = FALSE
         )[features, , drop = FALSE]
       )
       model <- list(
@@ -254,9 +255,10 @@ RunDimReduction <- function(
         },
         error = function(e) {
           log_message(
-            "Can not estimate intrinsic dimensions with maxLikGlobalDimEst."
+            "Can not estimate intrinsic dimensions with {.pkg maxLikGlobalDimEst}",
+            message_type = "warning"
           )
-          return(NA)
+          NA
         }
       )
       if (!is.na(dim_est)) {
@@ -297,7 +299,8 @@ RunDimReduction <- function(
       }
     }
 
-    fun_use <- switch(nonlinear_reduction,
+    fun_use <- switch(
+      EXPR = nonlinear_reduction,
       "umap" = "RunUMAP2",
       "umap-naive" = "RunUMAP2",
       "tsne" = "RunTSNE",
@@ -308,7 +311,8 @@ RunDimReduction <- function(
       "largevis" = "RunLargeVis",
       "fr" = "RunFR"
     )
-    components_nm <- switch(nonlinear_reduction,
+    components_nm <- switch(
+      EXPR = nonlinear_reduction,
       "umap" = "n.components",
       "umap-naive" = "n.components",
       "tsne" = "dim.embed",
@@ -319,7 +323,8 @@ RunDimReduction <- function(
       "largevis" = "n_components",
       "fr" = "ndim"
     )
-    other_params <- switch(nonlinear_reduction,
+    other_params <- switch(
+      EXPR = nonlinear_reduction,
       "umap" = list(umap.method = "uwot", return.model = TRUE),
       "umap-naive" = list(umap.method = "naive", return.model = TRUE),
       "tsne" = list(
@@ -334,11 +339,13 @@ RunDimReduction <- function(
       "largevis" = list(),
       "fr" = list()
     )
-    nonlinear_reduction_sim <- toupper(gsub(
-      pattern = "-.*",
-      replacement = "",
-      x = nonlinear_reduction
-    ))
+    nonlinear_reduction_sim <- toupper(
+      gsub(
+        pattern = "-.*",
+        replacement = "",
+        x = nonlinear_reduction
+      )
+    )
     params <- list(
       object = srt,
       assay = assay,

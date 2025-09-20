@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{MNN_integrate}
 \alias{MNN_integrate}
-\title{MNN_integrate}
+\title{Integrate data using MNN}
 \usage{
 MNN_integrate(
   srt_merge = NULL,
@@ -134,7 +134,8 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{mnnCorrect_params}{A list of parameters for the batchelor::mnnCorrect function, default is an empty list.}
+\item{mnnCorrect_params}{A list of parameters for the batchelor::mnnCorrect function,
+default is an empty list.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -143,5 +144,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-MNN_integrate
+Integrate data using MNN
 }
