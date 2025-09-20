@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,41 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="scop-030">scop 0.3.0<a class="anchor" aria-label="anchor" href="#scop-030"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<strong>IMPORTANT</strong>:</li>
+<li>Fixed <code>segmentation faults</code> and <code>R crashes</code> on <em>M-series</em> MacBook when running <em>Python</em> functions.</li>
+<li>
+<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>: Enhanced with <em>M-series</em> MacBook detection and automatic environment configuration.</li>
+<li>
+<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.</li>
+<li>
+<code>RunCellRank()</code>: Implemented <em>M-series</em> compatibility with proper NUMBA configuration.</li>
+<li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Added ARM64 support with single-threaded execution mode.</li>
+<li>
+<code><a href="../reference/RunWOT.html">RunWOT()</a></code>: Enhanced with <em>M-series</em> MacBook environment variable settings.</li>
+<li>
+<code><a href="../reference/RunTriMap.html">RunTriMap()</a></code>: Added <em>M-series</em> MacBook compatibility for dimensionality reduction.</li>
+<li>
+<code><a href="../reference/RunPaCMAP.html">RunPaCMAP()</a></code>: Implemented ARM64-specific environment configuration.</li>
+<li>
+<code><a href="../reference/RunPHATE.html">RunPHATE()</a></code>: Added <em>M-series</em> MacBook support for non-linear dimensionality reduction.</li>
+<li>
+<code><a href="../reference/RunCellQC.html">RunCellQC()</a></code>: Enhanced both scrublet and doubletdetection functions with ARM64 compatibility.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated function documentation to reflect <em>M-series</em> MacBook compatibility.</li>
+<li>Added technical notes about ARM64 architecture considerations.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="scop-029">scop 0.2.9<a class="anchor" aria-label="anchor" href="#scop-029"></a></h2>
 <ul><li>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>The integration_scop function</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
       <div class="d-none name"><code>integration_scop.Rd</code></div>
     </div>
 
@@ -77,6 +77,7 @@
 <span>  cluster_algorithm <span class="op">=</span> <span class="st">"louvain"</span>,</span>
 <span>  cluster_resolution <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -250,6 +251,11 @@ Default is <code>0.6</code>.</p></dd>
 Default is <code>11</code>.</p></dd>
 
 
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to be passed to the integration method function.</p></dd>
 
@@ -282,37 +288,37 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:12] Run <span style="color: #0000BB;">"Uncorrected"</span> integration...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:12] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:13] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:13] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:15] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:15] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:17] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:17] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:19] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:19] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:21] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:21] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:23] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:24] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:24] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:24] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:28] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:31] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:31] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:33] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:33] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:33] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:33] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:33] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">10</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:38] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">10</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:53:45] Run <span style="color: #0000BB;">"Uncorrected"</span> integration done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:24] Run <span style="color: #0000BB;">Uncorrected</span> integration...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:24] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:24] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:25] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:26] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:27] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:28] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:29] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:31] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:31] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:33] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:33] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:35] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:35] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:36] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:36] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:38] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:42] Perform ScaleData</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:43] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:45] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:45] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:04:45] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:45] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:45] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">10</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:50] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">10</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 14:04:56] Run <span style="color: #0000BB;">Uncorrected</span> integration done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -329,33 +335,33 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span>,</span></span>
 <span class="r-in"><span>  HVF_min_intersection <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:45] Run <span style="color: #0000BB;">"Uncorrected"</span> integration...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:45] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:46] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:46] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:46] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:47] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:47] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:47] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:47] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:48] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:48] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:48] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:48] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:49] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:49] Number of available HVF: <span style="color: #0000BB;">270</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:49] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:51] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:57] Run <span style="color: #0000BB;">Uncorrected</span> integration...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:57] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:58] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:58] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:58] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:59] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:59] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:59] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:04:59] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:00] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:00] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:00] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:00] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:00] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:01] Number of available HVF: <span style="color: #0000BB;">270</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:01] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:03] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:52] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:52] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:53] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:54] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:53:54] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:54] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:54] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:53:59] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:54:05] Run <span style="color: #0000BB;">"Uncorrected"</span> integration done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:03] Perform ScaleData</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:04] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:05] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:05] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:05:05] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:05] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:05] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:11] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 14:05:17] Run <span style="color: #0000BB;">Uncorrected</span> integration done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -373,33 +379,33 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  HVF_min_intersection <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  scale_within_batch <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:06] Run <span style="color: #0000BB;">"Uncorrected"</span> integration...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:06] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:06] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:07] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:07] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:07] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:07] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:08] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:08] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:08] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:08] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:09] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:09] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:09] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:09] Number of available HVF: <span style="color: #0000BB;">270</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:10] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:11] Perform <span style="color: #0000BB;">Uncorrected</span> integration on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:18] Run <span style="color: #0000BB;">Uncorrected</span> integration...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:18] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:19] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:19] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:19] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:20] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:20] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:20] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:20] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:21] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:21] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:21] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:21] Number of available HVF: <span style="color: #0000BB;">270</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:22] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:23] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:12] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:12] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:14] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:14] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:54:14] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:14] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:14] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">13</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:19] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">13</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:54:25] Run <span style="color: #0000BB;">"Uncorrected"</span> integration done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:24] Perform ScaleData</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:24] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:26] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:26] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:05:26] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:26] Perform nonlinear dimension reduction (<span style="color: #0000BB;">"umap"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:26] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">13</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Uncorrectedpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">13</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 14:05:37] Run <span style="color: #0000BB;">Uncorrected</span> integration done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span></span></span>
@@ -415,24 +421,24 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Seurat"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:26] Run <span style="color: #0000BB;">"Seurat"</span> integration...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:26] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:27] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:27] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:27] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:27] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:27] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:28] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:28] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:28] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:28] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:29] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:29] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:29] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:30] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:30] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:54:31] Perform FindIntegrationAnchors on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:07] Perform integration(Seurat) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:38] Run <span style="color: #0000BB;">Seurat</span> integration...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:38] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:39] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:39] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:39] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:39] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:39] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:40] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:40] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:40] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:40] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:41] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:41] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:41] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:42] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:42] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:05:44] Perform FindIntegrationAnchors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:18] Perform integration(Seurat)</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
@@ -440,16 +446,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:17] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:17] Perform linear dimension reduction (<span style="color: #0000BB;">"pca"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:17] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:18] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:19] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:55:19] Using `Seurat::AverageExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:19] Perform nonlinear dimension reduction (<span style="color: #0000BB;">umap</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:19] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:55:24] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:55:31] Run <span style="color: #0000BB;">"Seurat"</span> integration done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:28] Perform ScaleData</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:28] Perform linear dimension reduction (<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:29] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:29] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 14:06:29] Using `Seurat::AverageExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:29] Perform nonlinear dimension reduction (<span style="color: #0000BB;">umap</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:29] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 14:06:34] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 14:06:41] Run <span style="color: #0000BB;">Seurat</span> integration done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">panc8_sub</span>, group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>

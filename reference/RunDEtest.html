@@ -9,7 +9,7 @@ Users have the flexibility to specify custom cell groups, marker types, and vari
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ Users have the flexibility to specify custom cell groups, marker types, and vari
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Differential gene test</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunDEtest.R" class="external-link"><code>R/RunDEtest.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunDEtest.R" class="external-link"><code>R/RunDEtest.R</code></a></small>
       <div class="d-none name"><code>RunDEtest.Rd</code></div>
     </div>
 
@@ -281,17 +281,17 @@ Default is <code>1</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:44] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:44] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:10:44] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:46] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:47] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:47] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:47] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:47] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:51] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:52] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:33:52] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:54] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:55] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:55] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:55] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:55] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:48] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:55] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -327,183 +327,30 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:49] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:49] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:10:49] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:49] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:49] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:49] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 UMAP embedding parameters a = 0.9922 b = 1.112</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Read 1000 rows and found 50 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Using Annoy for neighbor search, n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Building Annoy index with metric = cosine, n_trees = 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Writing NN index file to temp file /tmp/RtmpATKt2U/file232521914482</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Searching Annoy index using 2 threads, search_k = 3000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:49 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:50 Commencing smooth kNN distance calibration using 2 threads</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:52 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:52 Commencing optimization for 200 epochs, with 39304 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:52 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Optimization finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:53] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:53] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 UMAP embedding parameters a = 0.9922 b = 1.112</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Read 1000 rows and found 50 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Using Annoy for neighbor search, n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Building Annoy index with metric = cosine, n_trees = 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Writing NN index file to temp file /tmp/RtmpATKt2U/file23255b1e338</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:53 Searching Annoy index using 2 threads, search_k = 3000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:54 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:55 Commencing smooth kNN distance calibration using 2 threads</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:56 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:56 Commencing optimization for 200 epochs, with 39304 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:56 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:10:58 Optimization finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:10:58] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:56] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:57] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:33:57] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:57] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:57] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:33:57] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:01] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:01] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:34:05] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDEtest</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:10:58] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:01] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:01] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:01] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:01] Find all markers(wilcox) among 8 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:01] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:11:01] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">8</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:11:01] Completed <span style="color: #0000BB;">8</span> tasks in 1.3s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:05] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:06] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:06] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:06] Find all markers(wilcox) among 8 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:06] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:34:06] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">8</span>] ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:34:06] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">8</span>] ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:34:06] Completed <span style="color: #0000BB;">8</span> tasks in 1.3s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:02] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:11:02] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:07] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:34:07] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">AllMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_SubCellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -523,9 +370,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'magick' package is suggested to install to give better rasterization.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:06] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:06] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:06] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:10] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:10] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:10] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-plt img"><img src="RunDEtest-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-2.png" alt="" width="700" height="433"></span>
@@ -545,9 +392,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'magick' package is suggested to install to give better rasterization.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:08] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:08] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:08] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:13] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:13] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:13] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-plt img"><img src="RunDEtest-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-4.png" alt="" width="700" height="433"></span>
@@ -557,40 +404,18 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"paired"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:09] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:12] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:12] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:12] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:12] Find paired markers(wilcox) among 8 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:12] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:11:12] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">56</span>] ETA:  6s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:11:12] Running [<span style="color: #0000BB;">21</span>/<span style="color: #0000BB;">56</span>] ETA:  4s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:11:12] Running [<span style="color: #0000BB;">54</span>/<span style="color: #0000BB;">56</span>] ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:11:12] Completed <span style="color: #0000BB;">56</span> tasks in 5.4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:13] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:14] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:14] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:14] Find paired markers(wilcox) among 8 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:14] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:34:14] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">56</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:34:14] Running [<span style="color: #0000BB;">13</span>/<span style="color: #0000BB;">56</span>] ETA:  5s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:34:14] Running [<span style="color: #0000BB;">44</span>/<span style="color: #0000BB;">56</span>] ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:34:14] Completed <span style="color: #0000BB;">56</span> tasks in 5.4s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:11:18] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:11:18] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:34:19] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:34:19] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">PairedMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_SubCellType</span><span class="op">$</span><span class="va">PairedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -604,9 +429,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'magick' package is suggested to install to give better rasterization.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:01] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:01] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:01] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:05] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:05] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:05] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-plt img"><img src="RunDEtest-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-6.png" alt="" width="700" height="433"></span>
@@ -617,34 +442,34 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Seurat"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:05] Run <span style="color: #0000BB;">"Seurat"</span> integration...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:05] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:05] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:12:05] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:07] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:12:08] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:09] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:12:10] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:11] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:12:12] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:13] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:12:14] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:16] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:16] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:16] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:17] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:19] Perform FindIntegrationAnchors on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:08] Run <span style="color: #0000BB;">Seurat</span> integration...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:08] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:09] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:35:09] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:10] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:35:11] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:12] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:35:13] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:14] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:35:15] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:16] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:35:17] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:18] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:19] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:19] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:20] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:22] Perform FindIntegrationAnchors</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:12:51] Perform integration(Seurat) on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:35:53] Perform integration(Seurat)</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
@@ -652,16 +477,15 @@ Default is <code>1</code>.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different cells in new layer data than already exists for scale.data</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:02] Perform ScaleData on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:02] Perform linear dimension reduction (<span style="color: #0000BB;">"pca"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:03] Get expression data from <span style="color: #0000BB;">&lt;Assay&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:03] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:04] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:04] Using `Seurat::AverageExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:04] Perform nonlinear dimension reduction (<span style="color: #0000BB;">umap</span>) on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:04] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:08] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:13:15] Run <span style="color: #0000BB;">"Seurat"</span> integration done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:05] Perform ScaleData</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:06] Perform linear dimension reduction (<span style="color: #0000BB;">"pca"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:07] Perform FindClusters (<span style="color: #0000BB;">"louvain"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:07] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:07] Using `Seurat::AverageExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:07] Perform nonlinear dimension reduction (<span style="color: #0000BB;">umap</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:07] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:12] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Seuratpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">12</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:36:18] Run <span style="color: #0000BB;">Seurat</span> integration done</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celltype"</span>, <span class="st">"tech"</span><span class="op">)</span></span></span>
@@ -678,75 +502,53 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  grouping.var <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"conserved"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:16] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:19] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:20] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:20] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:20] Find conserved markers(wilcox) among 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:20] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 10s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:25] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq has fewer than 3 cells. Skipping celseq</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Only a single group was tested</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq has fewer than 3 cells. Skipping celseq</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Only a single group was tested</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq has fewer than 3 cells. Skipping celseq</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:26] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:27] Only a single group was tested</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:27] Celseq has fewer than 3 cells. Skipping celseq</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:27] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:20] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:13:20] Completed <span style="color: #0000BB;">13</span> tasks in 7.8s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:19] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:19] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:19] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:19] Find conserved markers(wilcox) among 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:19] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 10s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  9s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:25] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:25] Celseq has fewer than 3 cells. Skipping celseq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:25] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:25] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:25] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Only a single group was tested</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Celseq has fewer than 3 cells. Skipping celseq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Only a single group was tested</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Celseq has fewer than 3 cells. Skipping celseq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Celseq2 has fewer than 3 cells. Skipping celseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Fluidigmc1 has fewer than 3 cells. Skipping fluidigmc1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Only a single group was tested</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:26] Celseq has fewer than 3 cells. Skipping celseq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:27] Smartseq2 has fewer than 3 cells. Skipping smartseq2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:19] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:36:19] Completed <span style="color: #0000BB;">13</span> tasks in 7.7s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:27] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:27] Building results</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in names(output_list) &lt;- x:</span> 'names' attribute [13] must be the same length as the vector [12]</span>
 <span class="r-in"><span><span class="va">ConservedMarkers1</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_celltype</span><span class="op">$</span><span class="va">ConservedMarkers_wilcox</span>,</span></span>
@@ -772,87 +574,65 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  grouping.var <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"conserved"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:27] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:31] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:31] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:31] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:31] Find conserved markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:31] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Schwann has fewer than 3 cells. Skipping schwann</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Epsilon has fewer than 3 cells. Skipping epsilon</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Mast has fewer than 3 cells. Skipping mast</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Macrophage has fewer than 3 cells. Skipping macrophage</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:31] Endothelial has fewer than 3 cells. Skipping endothelial</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:33] Schwann has fewer than 3 cells. Skipping schwann</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:33] Epsilon has fewer than 3 cells. Skipping epsilon</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:33] Mast has fewer than 3 cells. Skipping mast</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:33] Macrophage has fewer than 3 cells. Skipping macrophage</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:33] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Schwann has fewer than 3 cells. Skipping schwann</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Epsilon has fewer than 3 cells. Skipping epsilon</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Mast has fewer than 3 cells. Skipping mast</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Macrophage has fewer than 3 cells. Skipping macrophage</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:34] Endothelial has fewer than 3 cells. Skipping endothelial</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Schwann has fewer than 3 cells. Skipping schwann</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Epsilon has fewer than 3 cells. Skipping epsilon</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Mast has fewer than 3 cells. Skipping mast</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Macrophage has fewer than 3 cells. Skipping macrophage</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:35] Activated-stellate has fewer than 3 cells. Skipping activated-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:36] Schwann has fewer than 3 cells. Skipping schwann</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:36] Epsilon has fewer than 3 cells. Skipping epsilon</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:36] Mast has fewer than 3 cells. Skipping mast</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:13:36] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:31] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:13:31] Completed <span style="color: #0000BB;">5</span> tasks in 6.2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:27] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:28] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:28] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:28] Find conserved markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:28] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Schwann has fewer than 3 cells. Skipping schwann</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Epsilon has fewer than 3 cells. Skipping epsilon</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Mast has fewer than 3 cells. Skipping mast</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Macrophage has fewer than 3 cells. Skipping macrophage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:28] Endothelial has fewer than 3 cells. Skipping endothelial</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:29] Schwann has fewer than 3 cells. Skipping schwann</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:29] Epsilon has fewer than 3 cells. Skipping epsilon</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:29] Mast has fewer than 3 cells. Skipping mast</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:29] Macrophage has fewer than 3 cells. Skipping macrophage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:29] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Schwann has fewer than 3 cells. Skipping schwann</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Epsilon has fewer than 3 cells. Skipping epsilon</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Mast has fewer than 3 cells. Skipping mast</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Macrophage has fewer than 3 cells. Skipping macrophage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:30] Endothelial has fewer than 3 cells. Skipping endothelial</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:31] Schwann has fewer than 3 cells. Skipping schwann</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:31] Epsilon has fewer than 3 cells. Skipping epsilon</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:31] Mast has fewer than 3 cells. Skipping mast</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:31] Macrophage has fewer than 3 cells. Skipping macrophage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:31] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:32] Activated-stellate has fewer than 3 cells. Skipping activated-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:33] Schwann has fewer than 3 cells. Skipping schwann</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:33] Epsilon has fewer than 3 cells. Skipping epsilon</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:33] Mast has fewer than 3 cells. Skipping mast</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:36:33] Quiescent-stellate has fewer than 3 cells. Skipping quiescent-stellate</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:28] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:36:28] Completed <span style="color: #0000BB;">5</span> tasks in 5.9s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:38] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:13:38] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:34] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:36:34] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">ConservedMarkers2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_tech</span><span class="op">$</span><span class="va">ConservedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -872,9 +652,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'magick' package is suggested to install to give better rasterization.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:40] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:40] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:40] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:36] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:36] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:36] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-plt img"><img src="RunDEtest-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-9.png" alt="" width="700" height="433"></span>
@@ -885,362 +665,82 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  grouping.var <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"disturbed"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:44] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:47] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:48] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:48] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:48] Find disturbed markers(wilcox) among 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:48] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:48] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:51] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:53] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:53] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:54] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:57] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:58] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:58] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:13:59] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:02] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:02] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:02] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:03] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:06] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:07] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:07] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">13</span>] ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:08] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:11] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:12] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:12] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:13] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:16] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:17] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:17] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">13</span>] ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠦ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:18] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠦ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:21] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠦ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:22] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠦ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:22] Find all markers(wilcox) among 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠦ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠧ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:22] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠧ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:25] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠧ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:26] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠧ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:26] Find all markers(wilcox) among 3 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠧ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠇ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">8</span>/<span style="color: #0000BB;">13</span>] ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:26] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠇ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">8</span>/<span style="color: #0000BB;">13</span>] ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:29] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠇ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">8</span>/<span style="color: #0000BB;">13</span>] ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:30] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠇ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">8</span>/<span style="color: #0000BB;">13</span>] ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:30] Find all markers(wilcox) among 4 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠇ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">8</span>/<span style="color: #0000BB;">13</span>] ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠏ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:30] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠏ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3.3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:34] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠏ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:34] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠏ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:34] Find all markers(wilcox) among 2 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠏ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠋ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:34] Installing package: <span style="color: #0000BB;">presto</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠋ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 23 deps: kept 22 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:37] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠋ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:38] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠋ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:38] Find all markers(wilcox) among 4 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠋ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">10</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-13 07:13:48] Running [<span style="color: #0000BB;">11</span>/<span style="color: #0000BB;">13</span>] ETA:  9s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:13:48] Completed <span style="color: #0000BB;">13</span> tasks in 50.8s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] Find disturbed markers(wilcox) among 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:42] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:43] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:43] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 18s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:44] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 18s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:45] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 18s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:45] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠙ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>] ETA: 18s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:45] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:46] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:46] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:47] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:48] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:48] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠹ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] ETA: 16s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:49] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:49] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:49] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:50] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:51] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:51] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠸ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:52] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:53] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:53] Find all markers(wilcox) among 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:53] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:54] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:54] Find all markers(wilcox) among 3 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:54] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:55] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:55] Find all markers(wilcox) among 4 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠼ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">6</span>/<span style="color: #0000BB;">13</span>] ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:55] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:56] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:56] Find all markers(wilcox) among 2 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:56] <span style="color: #0000BB;">immunogenomics/presto</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:57] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:57] Find all markers(wilcox) among 4 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ⠴ [2025-09-20 13:36:42] Running [<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:36:42] Completed <span style="color: #0000BB;">13</span> tasks in 14.7s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:14:39] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:36:57] Building results</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in names(output_list) &lt;- x:</span> 'names' attribute [13] must be the same length as the vector [11]</span>
 <span class="r-in"><span><span class="va">DisturbedMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_celltype</span><span class="op">$</span><span class="va">DisturbedMarkers_wilcox</span>,</span></span>

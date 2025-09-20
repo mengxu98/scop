@@ -11,7 +11,7 @@ version compatibility, and modular design."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ version compatibility, and modular design."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run scVelo workflow</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunSCVELO.R" class="external-link"><code>R/RunSCVELO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunSCVELO.R" class="external-link"><code>R/RunSCVELO.R</code></a></small>
       <div class="d-none name"><code>RunSCVELO.Rd</code></div>
     </div>
 
@@ -316,43 +316,43 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:23] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:23] Environment name: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:23] Python version: <span style="color: #0000BB;">3.10-1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:23] Number of packages to install: <span style="color: #0000BB;">21</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:23] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:24] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:24] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:24] Installing <span style="color: #0000BB;">conda</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:25] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:26] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:28] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:28] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:28] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:28] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:28] Installing <span style="color: #0000BB;">pip</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:29] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:30] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:32] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:32] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:34] <span style="color: #00BB00;">Python Environment Ready</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Environment name: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Python version: <span style="color: #0000BB;">3.10-1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Number of packages to install: <span style="color: #0000BB;">21</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Auto-detecting conda...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Checking and installing required packages...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Installing <span style="color: #0000BB;">conda</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:11] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:12] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:14] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:14] Installing <span style="color: #0000BB;">pip</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:16] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:16] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:18] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:21] <span style="color: #00BB00;">Python Environment Ready</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">conda environment: </span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  conda:          /usr/share/miniconda/bin/conda</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  environment:    /usr/share/miniconda/envs/scop_env</span></span>
@@ -367,17 +367,17 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  NOTE: Python version was forced by use_python() function</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:35] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:36] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:35:36] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:38] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:38] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:39] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:39] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:39] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:22] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:24] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:39] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -413,147 +413,15 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:40] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span> on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:40] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:35:40] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:40] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction on the data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:40] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:40] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:40 UMAP embedding parameters a = 0.9922 b = 1.112</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:40 Read 1000 rows and found 50 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:40 Using Annoy for neighbor search, n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:40 Building Annoy index with metric = cosine, n_trees = 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:41 Writing NN index file to temp file /tmp/RtmpATKt2U/file2325455a8f4d</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:41 Searching Annoy index using 2 threads, search_k = 3000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:41 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:42 Commencing smooth kNN distance calibration using 2 threads</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:43 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:43 Commencing optimization for 200 epochs, with 39304 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:43 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Optimization finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:45] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:45] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 UMAP embedding parameters a = 0.9922 b = 1.112</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Read 1000 rows and found 50 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Using Annoy for neighbor search, n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Building Annoy index with metric = cosine, n_trees = 50</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Writing NN index file to temp file /tmp/RtmpATKt2U/file23255278821f</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Searching Annoy index using 2 threads, search_k = 3000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:45 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:47 Commencing smooth kNN distance calibration using 2 threads</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:48 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:48 Commencing optimization for 200 epochs, with 39304 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:48 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:35:50 Optimization finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:50] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:26] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:27] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:31] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:35] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunSCVELO</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay_x <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -561,23 +429,23 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"PCA"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:51] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:52] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:54] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:54] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:55] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:56] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:58] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:58] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:58] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:58] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:35:58] <span style="color: #0000BB;">"misc"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:35:58] <span style="color: #0000BB;">"tools"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:35:58] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:35:58] Running <span style="color: #0000BB;">scVelo</span> analysis...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:36:04] <span style="color: #0000BB;">scVelo</span> analysis completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:04] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:36:07] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:37] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:37] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:39] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:40] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:41] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:42] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">"misc"</span> slot is not converted</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">"tools"</span> slot is not converted</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Running <span style="color: #0000BB;">scVelo</span> analysis...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:49] <span style="color: #0000BB;">scVelo</span> analysis completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:49] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:53] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for counts</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for data</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -699,70 +567,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"stream"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:12] Installing package: <span style="color: #0000BB;">metR</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libabsl-dev cmake libssl-dev libgdal-dev gdal-bin libgeos-dev libproj-dev libsqlite3-dev libicu-dev libudunits2-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libabsl-dev is already the newest version (20220623.1-3.1ubuntu3.2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cmake is already the newest version (3.28.3-1build7).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libssl-dev is already the newest version (3.0.13-0ubuntu3.5).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgdal-dev is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> gdal-bin is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgeos-dev is already the newest version (3.12.1-3build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libproj-dev is already the newest version (9.4.0-1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.4).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libudunits2-dev is already the newest version (2.2.28-7build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 46 deps: kept 46 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:15] All packages installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:15] Installing package: <span style="color: #0000BB;">metR</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libabsl-dev cmake libssl-dev libgdal-dev gdal-bin libgeos-dev libproj-dev libsqlite3-dev libicu-dev libudunits2-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libabsl-dev is already the newest version (20220623.1-3.1ubuntu3.2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cmake is already the newest version (3.28.3-1build7).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libssl-dev is already the newest version (3.0.13-0ubuntu3.5).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgdal-dev is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> gdal-bin is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgeos-dev is already the newest version (3.12.1-3build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libproj-dev is already the newest version (9.4.0-1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.4).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libudunits2-dev is already the newest version (2.2.28-7build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 46 deps: kept 46 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:18] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:57] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:57] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-plt img"><img src="RunSCVELO-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -771,38 +577,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="cn">NA</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:19] Installing package: <span style="color: #0000BB;">metR</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libabsl-dev cmake libssl-dev libgdal-dev gdal-bin libgeos-dev libproj-dev libsqlite3-dev libicu-dev libudunits2-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libabsl-dev is already the newest version (20220623.1-3.1ubuntu3.2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> cmake is already the newest version (3.28.3-1build7).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libssl-dev is already the newest version (3.0.13-0ubuntu3.5).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgdal-dev is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> gdal-bin is already the newest version (3.8.4+dfsg-3ubuntu3).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libgeos-dev is already the newest version (3.12.1-3build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libproj-dev is already the newest version (9.4.0-1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.4).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libudunits2-dev is already the newest version (2.2.28-7build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 46 deps: kept 46 <span style="color: #B2B2B2;">[3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:22] All packages installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:58] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1000 rows containing missing values or values outside the scale range</span>
@@ -817,20 +592,20 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:22] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-13 07:36:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:59] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:25] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>number of items to replace is not a multiple of replacement length</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:25] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:25] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:25] Perform `Seurat::ScaleData()` on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:02] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction on the data...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:02] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> None of the requested features have any variance</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunSCVELO</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -846,16 +621,16 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  compute_pseudotime <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  compute_paga <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:27] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:28] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:30] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:36:30] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:31] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:32] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:34] Found <span style="color: #0000BB;">194</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:36:34] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-13 07:36:34] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-13 07:36:34] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:03] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:04] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:06] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:06] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:07] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:08] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:10] Found <span style="color: #0000BB;">197</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:10] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:10] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:10] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': subscript out of bounds</span>
 </code></pre></div>
     </div>
