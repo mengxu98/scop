@@ -30,6 +30,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
@@ -136,6 +137,7 @@
 #'   plot_type = "wordcloud",
 #'   word_type = "feature"
 #' )
+#' }
 GSEAPlot <- function(
     srt,
     db = "GO_BP",

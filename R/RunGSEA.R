@@ -29,6 +29,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
@@ -116,6 +117,7 @@
 #'   group_by = "CellType",
 #'   plot_type = "comparison"
 #' )
+#' }
 RunGSEA <- function(
     srt = NULL,
     group_by = NULL,

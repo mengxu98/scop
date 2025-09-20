@@ -226,6 +226,7 @@ Default is \code{TRUE}.}
 This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
@@ -332,6 +333,7 @@ GSEAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+}
 }
 \seealso{
 \link{RunGSEA}
