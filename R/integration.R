@@ -198,7 +198,8 @@ integration_scop <- function(
     args <- utils::modifyList(formals, args)
 
     log_message(
-      "Run {.pkg {integration_method}} integration..."
+      "Run {.pkg {integration_method}} integration...",
+      verbose = verbose
     )
     srt_integrated <- invoke_fun(
       paste0(integration_method, "_integrate"),
@@ -352,8 +353,8 @@ Uncorrected_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
-      seed = seed,
-      verbose = verbose
+      verbose = verbose,
+      seed = seed
     )
     srt_list <- checked[["srt_list"]]
     HVF <- checked[["HVF"]]
@@ -376,8 +377,8 @@ Uncorrected_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
-      seed = seed,
-      verbose = verbose
+      verbose = verbose,
+      seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
     HVF <- checked[["HVF"]]
@@ -420,7 +421,8 @@ Uncorrected_integrate <- function(
   }
 
   log_message(
-    "Perform linear dimension reduction({.val {linear_reduction}})"
+    "Perform linear dimension reduction({.val {linear_reduction}})",
+    verbose = verbose
   )
   srt_merge <- RunDimReduction(
     srt_merge,
@@ -1082,30 +1084,27 @@ scVI_integrate <- function(
     num_threads = 1,
     verbose = TRUE,
     seed = 11) {
-  if (
-    any(
-      !nonlinear_reduction %in%
-        c(
-          "umap",
-          "umap-naive",
-          "tsne",
-          "dm",
-          "phate",
-          "pacmap",
-          "trimap",
-          "largevis",
-          "fr"
-        )
-    )
-  ) {
+  nonlinear_reductions <- c(
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
+  )
+  if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
-      "'nonlinear_reduction' must be one of 'umap', 'tsne', 'dm', 'phate', 'pacmap', 'trimap', 'largevis', 'fr'.",
+      "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
       message_type = "error"
     )
   }
-  if (!cluster_algorithm %in% c("louvain", "slm", "leiden")) {
+  cluster_algorithms <- c("louvain", "slm", "leiden")
+  if (!cluster_algorithm %in% cluster_algorithms) {
     log_message(
-      "'cluster_algorithm' must be one of 'louvain', 'slm', 'leiden'.",
+      "{.arg cluster_algorithm} must be one of {.val {cluster_algorithms}}",
       message_type = "error"
     )
   }
@@ -1355,10 +1354,11 @@ scVI_integrate <- function(
   }
 }
 
-#' MNN_integrate
+#' @title Integrate data using MNN
 #'
 #' @inheritParams integration_scop
-#' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function, default is an empty list.
+#' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function,
+#' default is an empty list.
 #'
 #' @export
 MNN_integrate <- function(
