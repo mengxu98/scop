@@ -853,7 +853,7 @@ FeatureDimPlot <- function(
               temp_geom[[i]],
               scale_color_gradientn(
                 colours = pal_list[[i]],
-                values = rescale(value_list[[i]]),
+                values = scales::rescale(value_list[[i]]),
                 na.value = bg_color,
                 guide = guide_colorbar(
                   frame.colour = "black",
@@ -1576,7 +1576,7 @@ FeatureDimPlot <- function(
                 scale_fill_gradientn(
                   name = "",
                   colours = colors,
-                  values = rescale(colors_value),
+                  values = scales::rescale(colors_value),
                   limits = range(colors_value),
                   na.value = bg_color
                 )
@@ -1660,7 +1660,7 @@ FeatureDimPlot <- function(
             scale_color_gradientn(
               name = "",
               colours = colors,
-              values = rescale(colors_value),
+              values = scales::rescale(colors_value),
               limits = range(colors_value),
               na.value = bg_color,
               aesthetics = c("color")
