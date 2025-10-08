@@ -401,9 +401,10 @@ check_r <- function(
         version <- pkg_info[[2]]
       }
     }
-    dest <- gsub("@.*|==.*|>=.*", "", pkg)
-
-    check_pkg <- .check_pkg_status(pkg_name, lib = lib)
+    check_pkg <- .check_pkg_status(
+      pkg_name,
+      version = version, lib = lib
+    )
 
     force_update <- FALSE
     if (check_pkg && !is.null(version)) {
@@ -422,7 +423,7 @@ check_r <- function(
         expr = {
           old_lib_paths <- .libPaths()
           .libPaths(lib)
-          pak::pak(dest)
+          pak::pak(pkg, lib = lib)
           .libPaths(old_lib_paths)
         },
         error = function(e) {
@@ -434,7 +435,9 @@ check_r <- function(
           )
         }
       )
-      status_list[[pkg]] <- .check_pkg_status(pkg_name, lib = lib)
+      status_list[[pkg]] <- .check_pkg_status(
+        pkg_name, version = version, lib = lib
+      )
     } else {
       status_list[[pkg]] <- TRUE
     }
@@ -525,12 +528,18 @@ remove_r <- function(
   return(invisible(status_list))
 }
 
-.check_pkg_status <- function(pkg, lib = .libPaths()[1]) {
-  installed_pkgs <- utils::installed.packages(lib.loc = lib)
-  installed_pkgs <- installed_pkgs[, "Package"]
+.check_pkg_status <- function(pkg, version = NULL, lib = .libPaths()[1]) {
+  installed_pkgs_info <- utils::installed.packages(lib.loc = lib)
+  installed_pkgs <- installed_pkgs_info[, "Package"]
+  installed_pkgs_version <- installed_pkgs_info[, "Version"]
   pkg_exists <- pkg %in% installed_pkgs
+  if (is.null(version)) {
+    version_match <- TRUE
+  } else {
+    version_match <- installed_pkgs_version[installed_pkgs == pkg] == version
+  }
 
-  if (isFALSE(pkg_exists)) {
+  if (isFALSE(pkg_exists) || isFALSE(version_match)) {
     return(FALSE)
   }
 
