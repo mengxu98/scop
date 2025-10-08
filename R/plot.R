@@ -435,7 +435,7 @@ heatmap_enrichment <- function(
                   df[["col"]],
                   function(x) blendcolors(c(x, "black"))
                 )
-                df[["fontsize"]] <- rescale(df[, "count"], to = keys_fontsize)
+                df[["fontsize"]] <- scales::rescale(df[, "count"], to = keys_fontsize)
                 return(df)
               } else {
                 return(NULL)
@@ -507,7 +507,7 @@ heatmap_enrichment <- function(
                 df[["col"]],
                 function(x) blendcolors(c(x, "black"))
               )
-              df[["fontsize"]] <- rescale(df[, "count"], to = features_fontsize)
+              df[["fontsize"]] <- scales::rescale(df[, "count"], to = features_fontsize)
               return(df)
             })
             names(features_list) <- unlist(lapply(nm, function(x) x[[2]]))
