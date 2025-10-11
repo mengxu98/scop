@@ -39,7 +39,7 @@ EnrichmentPlot(
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
   character_width = 50,
-  lineheight = 0.5,
+  lineheight = 0.7,
   palette = "Spectral",
   palcolor = NULL,
   aspect.ratio = 1,
@@ -162,7 +162,7 @@ Default is \code{c(0.5, 0.5)}.}
 Default is \code{50}.}
 
 \item{lineheight}{The line height for y-axis labels.
-Default is \code{0.5}.}
+Default is \code{0.7}.}
 
 \item{palette}{The color palette to use.
 Default is \code{"Spectral"}.}
@@ -317,14 +317,6 @@ EnrichmentPlot(
   pancreas_sub,
   db = c("GO_BP", "GO_CC"),
   group_by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "bar",
-  split_by = c("Groups", "Database")
-)
-EnrichmentPlot(
-  pancreas_sub,
-  db = c("GO_BP", "GO_CC"),
-  group_by = "CellType",
   plot_type = "bar",
   split_by = "Database",
   color_by = "Groups",
@@ -348,6 +340,7 @@ EnrichmentPlot(
   plot_type = "lollipop",
   palette = "GdRd"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -355,6 +348,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "wordcloud"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -363,6 +357,7 @@ EnrichmentPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -370,6 +365,7 @@ EnrichmentPlot(
   group_use = "Ductal",
   plot_type = "network"
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
@@ -383,6 +379,7 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
+
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
