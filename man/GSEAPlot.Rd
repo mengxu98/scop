@@ -47,7 +47,7 @@ GSEAPlot(
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
   character_width = 50,
-  lineheight = 0.5,
+  lineheight = 0.7,
   palette = "Spectral",
   palcolor = NULL,
   aspect.ratio = NULL,
@@ -185,7 +185,7 @@ Default is \code{c(0.5, 0.5)}.}
 Default is \code{50}.}
 
 \item{lineheight}{The line height for y-axis labels.
-Default is \code{0.5}.}
+Default is \code{0.7}.}
 
 \item{palette}{The color palette to use.
 Default is \code{"Spectral"}.}
