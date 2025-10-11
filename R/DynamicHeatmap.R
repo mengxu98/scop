@@ -58,11 +58,6 @@
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c("CSPA", "TF")
-#' )
 #'
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
@@ -122,6 +117,27 @@
 #'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
+#'   cell_annotation = "SubCellType",
+#'   n_split = 5,
+#'   split_method = "mfuzz",
+#'   species = "Mus_musculus",
+#'   db = "GO_BP",
+#'   anno_terms = TRUE,
+#'   anno_keys = TRUE,
+#'   anno_features = TRUE
+#' )
+#' ht4$plot
+#'
+#' \dontrun{
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
+#' ht5 <- DynamicHeatmap(
+#'   pancreas_sub,
+#'   lineages = c("Lineage1", "Lineage2"),
+#'   reverse_ht = "Lineage1",
 #'   use_fitted = TRUE,
 #'   n_split = 6,
 #'   split_method = "mfuzz",
@@ -149,9 +165,9 @@
 #'   pseudotime_label = 25,
 #'   pseudotime_label_color = "red"
 #' )
-#' ht4$plot
+#' ht5$plot
 #'
-#' ht5 <- DynamicHeatmap(
+#' ht6 <- DynamicHeatmap(
 #'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
@@ -179,22 +195,8 @@
 #'   pseudotime_label_color = "red",
 #'   flip = TRUE, column_title_rot = 45
 #' )
-#' ht5$plot
-#'
-#' ht6 <- DynamicHeatmap(
-#'   pancreas_sub,
-#'   lineages = c("Lineage1", "Lineage2"),
-#'   reverse_ht = "Lineage1",
-#'   cell_annotation = "SubCellType",
-#'   n_split = 5,
-#'   split_method = "mfuzz",
-#'   species = "Mus_musculus",
-#'   db = "GO_BP",
-#'   anno_terms = TRUE,
-#'   anno_keys = TRUE,
-#'   anno_features = TRUE
-#' )
 #' ht6$plot
+#' }
 DynamicHeatmap <- function(
     srt,
     lineages,
