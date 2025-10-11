@@ -78,7 +78,7 @@
 #' @param character_width  The maximum width of character of descriptions.
 #' Default is `50`.
 #' @param lineheight The line height for y-axis labels.
-#' Default is `0.5`.
+#' Default is `0.7`.
 #' @param palette The color palette to use.
 #' Default is `"Spectral"`.
 #' @param palcolor Custom colors for palette.
@@ -222,14 +222,6 @@
 #'   pancreas_sub,
 #'   db = c("GO_BP", "GO_CC"),
 #'   group_by = "CellType",
-#'   group_use = c("Ductal", "Endocrine"),
-#'   plot_type = "bar",
-#'   split_by = c("Groups", "Database")
-#' )
-#' EnrichmentPlot(
-#'   pancreas_sub,
-#'   db = c("GO_BP", "GO_CC"),
-#'   group_by = "CellType",
 #'   plot_type = "bar",
 #'   split_by = "Database",
 #'   color_by = "Groups",
@@ -253,6 +245,7 @@
 #'   plot_type = "lollipop",
 #'   palette = "GdRd"
 #' )
+#'
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
@@ -260,6 +253,7 @@
 #'   group_use = "Ductal",
 #'   plot_type = "wordcloud"
 #' )
+#'
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
@@ -268,6 +262,7 @@
 #'   plot_type = "wordcloud",
 #'   word_type = "feature"
 #' )
+#'
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
@@ -275,6 +270,7 @@
 #'   group_use = "Ductal",
 #'   plot_type = "network"
 #' )
+#'
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
@@ -288,6 +284,7 @@
 #'     "GO:0030073"
 #'   )
 #' )
+#'
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
@@ -409,7 +406,7 @@ EnrichmentPlot <- function(
     enrichmap_mark = c("ellipse", "hull"),
     enrichmap_expand = c(0.5, 0.5),
     character_width = 50,
-    lineheight = 0.5,
+    lineheight = 0.7,
     palette = "Spectral",
     palcolor = NULL,
     aspect.ratio = 1,
@@ -435,7 +432,7 @@ EnrichmentPlot <- function(
       message_type = "error"
     )
   }
-  if (plot_type %in% c("network", "enrichmap") & length(split_by) == 1) {
+  if (plot_type %in% c("network", "enrichmap") && length(split_by) == 1) {
     log_message(
       "When 'plot_type' is 'network' or 'enrichmap', the 'split_by' parameter does not take effect.",
       message_type = "warning"
@@ -446,14 +443,14 @@ EnrichmentPlot <- function(
   if (is.null(res)) {
     if (is.null(group_by)) {
       log_message(
-        "'group_by' must be provided.",
+        "'group_by' must be provided",
         message_type = "error"
       )
     }
     layer <- paste("Enrichment", group_by, test.use, sep = "_")
     if (!layer %in% names(srt@tools)) {
       log_message(
-        "No enrichment result found. You may perform RunEnrichment first.",
+        "No enrichment result found. You may perform RunEnrichment first",
         message_type = "error"
       )
     }
@@ -478,7 +475,7 @@ EnrichmentPlot <- function(
     log_message(
       paste0(
         db[!db %in% enrichment[["Database"]]],
-        " is not in the enrichment result."
+        " is not in the enrichment result"
       ),
       message_type = "error"
     )
@@ -500,7 +497,7 @@ EnrichmentPlot <- function(
     if (is.list(id_use)) {
       if (is.null(names(id_use))) {
         log_message(
-          "'id_use' must be named when it is a list.",
+          "'id_use' must be named when it is a list",
           message_type = "error"
         )
       }
@@ -581,18 +578,19 @@ EnrichmentPlot <- function(
   )
 
   if (plot_type == "comparison") {
-    # comparison -------------------------------------------------------------------------------------------------
+    # comparison --------------------
     ids <- NULL
     for (i in seq_along(df_list)) {
       df <- df_list[[i]]
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
       ids <- unique(c(ids, df[, "ID"]))
     }
@@ -617,15 +615,14 @@ EnrichmentPlot <- function(
       enrichment_sub[["GeneRatio"]],
       function(x) {
         sp <- strsplit(x, "/")[[1]]
-        GeneRatio <- as.numeric(sp[1]) / as.numeric(sp[2])
+        as.numeric(sp[1]) / as.numeric(sp[2])
       }
     )
     enrichment_sub[["BgRatio"]] <- sapply(
       enrichment_sub[["BgRatio"]],
       function(x) {
         sp <- strsplit(x, "/")[[1]]
-        BgRatio <- as.numeric(sp[1]) / as.numeric(sp[2])
-        return(BgRatio)
+        as.numeric(sp[1]) / as.numeric(sp[2])
       }
     )
     enrichment_sub[["EnrichmentScore"]] <- enrichment_sub[["GeneRatio"]] /
@@ -637,7 +634,9 @@ EnrichmentPlot <- function(
       enrichment_sub[["Description"]],
       width = character_width
     )
-    terms <- stats::setNames(enrichment_sub[["Description"]], enrichment_sub[["ID"]])
+    terms <- stats::setNames(
+      enrichment_sub[["Description"]], enrichment_sub[["ID"]]
+    )
     enrichment_sub[["Description"]] <- factor(
       enrichment_sub[["Description"]],
       levels = unique(rev(terms[ids]))
@@ -650,7 +649,7 @@ EnrichmentPlot <- function(
     }
     p <- ggplot(enrichment_sub, aes(x = Groups, y = Description)) +
       geom_point(
-        aes(size = GeneRatio, fill = .data[[metric]], color = ""),
+        aes(size = GeneRatio, fill = .data[[metric]]),
         shape = 21
       ) +
       scale_size_area(name = "GeneRatio", max_size = 6, n.breaks = 4) +
@@ -664,7 +663,7 @@ EnrichmentPlot <- function(
         name = paste0(metric),
         limits = c(0, min(metric_value, 1)),
         n.breaks = 3,
-        colors = palette_colors(
+        colours = palette_colors(
           palette = palette,
           palcolor = palcolor,
           reverse = TRUE
@@ -684,7 +683,9 @@ EnrichmentPlot <- function(
         } else {
           guide_legend(
             "Non-sig",
-            override.aes = list(colour = "black", fill = "grey80", size = 3)
+            override.aes = list(
+              colour = "black", fill = "grey80", size = 3
+            )
           )
         }
       ) +
@@ -700,26 +701,22 @@ EnrichmentPlot <- function(
         ),
         axis.text.y = element_text(
           lineheight = lineheight,
-          hjust = 1,
-          face = ifelse(
-            grepl("\n", levels(enrichment_sub[["Description"]])),
-            "italic",
-            "plain"
-          )
+          hjust = 1
         )
       )
     plist <- list(p)
   } else if (plot_type == "bar") {
-    # bar -------------------------------------------------------------------------------------------------
+    # bar --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
 
       df[["metric"]] <- -log10(df[[metric]])
@@ -774,33 +771,31 @@ EnrichmentPlot <- function(
           panel.grid.major = element_line(colour = "grey80", linetype = 2),
           axis.text.y = element_text(
             lineheight = lineheight,
-            hjust = 1,
-            face = ifelse(
-              grepl("\n", levels(df[["Description"]])),
-              "italic",
-              "plain"
-            )
+            hjust = 1
           )
         )
       return(p)
     }))
   } else if (plot_type == "dot") {
-    # dot -------------------------------------------------------------------------------------------------
+    # dot --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
 
-      df[["GeneRatio"]] <- sapply(df[["GeneRatio"]], function(x) {
-        sp <- strsplit(x, "/")[[1]]
-        GeneRatio <- as.numeric(sp[1]) / as.numeric(sp[2])
-      })
+      df[["GeneRatio"]] <- sapply(
+        df[["GeneRatio"]], function(x) {
+          sp <- strsplit(x, "/")[[1]]
+          as.numeric(sp[1]) / as.numeric(sp[2])
+        }
+      )
       df <- df[order(df[["GeneRatio"]], decreasing = TRUE), ]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
@@ -840,7 +835,7 @@ EnrichmentPlot <- function(
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_colors(palette = palette, palcolor = palcolor),
+          colours = palette_colors(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(
             frame.colour = "black",
@@ -863,38 +858,37 @@ EnrichmentPlot <- function(
           axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
           axis.text.y = element_text(
             lineheight = lineheight,
-            hjust = 1,
-            face = ifelse(
-              grepl("\n", levels(df[["Description"]])),
-              "italic",
-              "plain"
-            )
+            hjust = 1
           )
         )
       return(p)
     }))
   } else if (plot_type == "lollipop") {
-    # lollipop -------------------------------------------------------------------------------------------------
+    # lollipop --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
 
-      df[["GeneRatio"]] <- sapply(df[["GeneRatio"]], function(x) {
-        sp <- strsplit(x, "/")[[1]]
-        GeneRatio <- as.numeric(sp[1]) / as.numeric(sp[2])
-      })
-      df[["BgRatio"]] <- sapply(df[["BgRatio"]], function(x) {
-        sp <- strsplit(x, "/")[[1]]
-        BgRatio <- as.numeric(sp[1]) / as.numeric(sp[2])
-        return(BgRatio)
-      })
+      df[["GeneRatio"]] <- sapply(
+        df[["GeneRatio"]], function(x) {
+          sp <- strsplit(x, "/")[[1]]
+          as.numeric(sp[1]) / as.numeric(sp[2])
+        }
+      )
+      df[["BgRatio"]] <- sapply(
+        df[["BgRatio"]], function(x) {
+          sp <- strsplit(x, "/")[[1]]
+          as.numeric(sp[1]) / as.numeric(sp[2])
+        }
+      )
       df[["FoldEnrichment"]] <- df[["GeneRatio"]] / df[["BgRatio"]]
       df[["metric"]] <- -log10(df[[metric]])
       df[["Description"]] <- capitalize(df[["Description"]])
@@ -958,7 +952,7 @@ EnrichmentPlot <- function(
         scale_fill_gradientn(
           name = paste0("-log10(", metric, ")"),
           n.breaks = 3,
-          colors = palette_colors(palette = palette, palcolor = palcolor),
+          colours = palette_colors(palette = palette, palcolor = palcolor),
           na.value = "grey80",
           guide = guide_colorbar(
             frame.colour = "black",
@@ -977,27 +971,23 @@ EnrichmentPlot <- function(
           panel.grid.major = element_line(colour = "grey80", linetype = 2),
           axis.text.y = element_text(
             lineheight = lineheight,
-            hjust = 1,
-            face = ifelse(
-              grepl("\n", levels(df[["Description"]])),
-              "italic",
-              "plain"
-            )
+            hjust = 1
           )
         )
       return(p)
     }))
   } else if (plot_type == "network") {
-    # network -------------------------------------------------------------------------------------------------
+    # network --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
 
       df[["metric"]] <- -log10(df[[metric]])
@@ -1106,7 +1096,7 @@ EnrichmentPlot <- function(
         )
         data_text$colour <- "black"
         data_text$alpha <- 1
-        data_text$size <- 11 / .pt
+        data_text$size <- 11 / ggplot2::.pt
         grid::grobTree(
           draw_key_point(data, list(color = "white", shape = 21)),
           ggrepel:::shadowtextGrob(
@@ -1198,16 +1188,17 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "enrichmap") {
-    # enrichmap -------------------------------------------------------------------------------------------------
+    # enrichmap --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
-      df_groups <- lapply(df_groups, function(group) {
-        filtered_group <- group[
-          utils::head(seq_len(nrow(group)), topTerm), ,
-          drop = FALSE
-        ]
-        return(filtered_group)
-      })
+      df_groups <- lapply(
+        df_groups, function(group) {
+          group[
+            utils::head(seq_len(nrow(group)), topTerm), ,
+            drop = FALSE
+          ]
+        }
+      )
       df <- do.call(rbind, df_groups)
 
       df[["metric"]] <- -log10(df[[metric]])
@@ -1474,7 +1465,7 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "wordcloud") {
-    # wordcloud -------------------------------------------------------------------------------------------------
+    # wordcloud --------------------
     check_r("ggwordcloud")
     check_r("simplifyEnrichment")
     plist <- lapply(df_list, function(df) {
@@ -1484,9 +1475,9 @@ EnrichmentPlot <- function(
         for (i in seq_along(df_groups)) {
           df_sub <- df_groups[[i]]
           if (all(df_sub$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
-            df0 <- simplifyEnrichment::keyword_enrichment_from_GO(df_sub[[
-              "ID"
-            ]])
+            df0 <- simplifyEnrichment::keyword_enrichment_from_GO(
+              df_sub[["ID"]]
+            )
             if (nrow(df0 > 0)) {
               df_sub <- df0 |>
                 dplyr::reframe(
@@ -1607,7 +1598,7 @@ EnrichmentPlot <- function(
         scale_color_gradientn(
           name = "Score:",
           colours = colors,
-          values = rescale(colors_value),
+          values = scales::rescale(colors_value),
           guide = guide_colorbar(
             frame.colour = "black",
             ticks.colour = "black",
