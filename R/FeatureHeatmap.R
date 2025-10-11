@@ -18,11 +18,6 @@
 #'   pancreas_sub,
 #'   group_by = "CellType"
 #' )
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c("CSPA", "TF")
-#' )
 #' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
@@ -35,6 +30,7 @@
 #'   cell_split_palette = "Dark2"
 #' )
 #' ht1$plot
+#'
 #' panel_fix(
 #'   ht1$plot,
 #'   height = 4,
@@ -69,7 +65,29 @@
 #' )
 #' ht3$plot
 #'
+#' pancreas_sub <- RunSlingshot(
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   reduction = "UMAP"
+#' )
 #' ht4 <- FeatureHeatmap(
+#'   pancreas_sub,
+#'   features = de_filter$gene,
+#'   nlabel = 10,
+#'   cell_order = names(sort(pancreas_sub$Lineage1)),
+#'   cell_annotation = c("SubCellType", "Lineage1"),
+#'   cell_annotation_palette = c("Paired", "cividis")
+#' )
+#' ht4$plot
+#'
+#' \dontrun{
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
+#'
+#' ht5 <- FeatureHeatmap(
 #'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   n_split = 4,
@@ -82,9 +100,9 @@
 #'   cell_annotation = c("Phase", "G2M_score"),
 #'   cell_annotation_palette = c("Dark2", "Purples")
 #' )
-#' ht4$plot
+#' ht5$plot
 #'
-#' ht5 <- FeatureHeatmap(
+#' ht6 <- FeatureHeatmap(
 #'   pancreas_sub,
 #'   features = de_filter$gene,
 #'   n_split = 4,
@@ -99,22 +117,8 @@
 #'   flip = TRUE,
 #'   column_title_rot = 45
 #' )
-#' ht5$plot
-#'
-#' pancreas_sub <- RunSlingshot(
-#'   pancreas_sub,
-#'   group.by = "SubCellType",
-#'   reduction = "UMAP"
-#' )
-#' ht6 <- FeatureHeatmap(
-#'   pancreas_sub,
-#'   features = de_filter$gene,
-#'   nlabel = 10,
-#'   cell_order = names(sort(pancreas_sub$Lineage1)),
-#'   cell_annotation = c("SubCellType", "Lineage1"),
-#'   cell_annotation_palette = c("Paired", "cividis")
-#' )
 #' ht6$plot
+#' }
 FeatureHeatmap <- function(
     srt,
     features = NULL,

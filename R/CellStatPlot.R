@@ -438,6 +438,7 @@ CellStatPlot <- function(
 #'   NA_stat = FALSE
 #' )
 #'
+#' \dontrun{
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
@@ -454,6 +455,7 @@ CellStatPlot <- function(
 #'   label = TRUE,
 #'   NA_stat = FALSE
 #' )
+#' }
 StatPlot <- function(
     meta.data,
     stat.by,

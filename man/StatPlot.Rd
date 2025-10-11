@@ -158,6 +158,7 @@ StatPlot(
   NA_stat = FALSE
 )
 
+\dontrun{
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
@@ -174,6 +175,7 @@ StatPlot(
   label = TRUE,
   NA_stat = FALSE
 )
+}
 }
 \seealso{
 \link{CellStatPlot}
