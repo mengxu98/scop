@@ -489,16 +489,6 @@ A list with the following elements:
 The Group Heatmap
 }
 \examples{
-library(dplyr)
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("CSPA", "TF")
-)
-
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -512,6 +502,7 @@ ht1 <- GroupHeatmap(
   group.by = c("CellType", "SubCellType")
 )
 ht1$plot
+
 panel_fix(
   ht1$plot,
   height = 4,
@@ -520,10 +511,20 @@ panel_fix(
   dpi = 50
 )
 
-# pancreas_sub <- RunDEtest(
-#  pancreas_sub,
-#   group_by = "CellType"
-# )
+\dontrun{
+library(dplyr)
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("CSPA", "TF")
+)
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType"
+)
 de_filter <- filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -660,6 +661,7 @@ ht8 <- GroupHeatmap(
   )
 )
 ht8$plot
+}
 }
 \seealso{
 \link{RunDEtest}
