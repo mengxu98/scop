@@ -38,6 +38,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
@@ -58,7 +59,6 @@
 #'   )
 #' )
 #'
-#' \dontrun{
 #' # Annotate features using a GTF file
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,

@@ -243,16 +243,6 @@
 #' @export
 #'
 #' @examples
-#' library(dplyr)
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#'
-#' pancreas_sub <- AnnotateFeatures(
-#'   pancreas_sub,
-#'   species = "Mus_musculus",
-#'   db = c("CSPA", "TF")
-#' )
-#'
 #' ht1 <- GroupHeatmap(
 #'   pancreas_sub,
 #'   features = c(
@@ -266,6 +256,7 @@
 #'   group.by = c("CellType", "SubCellType")
 #' )
 #' ht1$plot
+#'
 #' panel_fix(
 #'   ht1$plot,
 #'   height = 4,
@@ -274,10 +265,20 @@
 #'   dpi = 50
 #' )
 #'
-#' # pancreas_sub <- RunDEtest(
-#' #  pancreas_sub,
-#' #   group_by = "CellType"
-#' # )
+#' \dontrun{
+#' library(dplyr)
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#'
+#' pancreas_sub <- AnnotateFeatures(
+#'   pancreas_sub,
+#'   species = "Mus_musculus",
+#'   db = c("CSPA", "TF")
+#' )
+#' pancreas_sub <- RunDEtest(
+#'   pancreas_sub,
+#'   group_by = "CellType"
+#' )
 #' de_filter <- filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
@@ -414,6 +415,7 @@
 #'   )
 #' )
 #' ht8$plot
+#' }
 GroupHeatmap <- function(
     srt,
     features = NULL,
@@ -944,7 +946,7 @@ GroupHeatmap <- function(
         srt,
         assay = assay,
         layer = layer,
-          verbose = FALSE
+        verbose = FALSE
       )[gene, cells, drop = FALSE],
       Matrix::t(srt@meta.data[cells, meta, drop = FALSE])
     )
