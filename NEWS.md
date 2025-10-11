@@ -1,5 +1,15 @@
 # scop
 
+# scop 0.3.1
+
+* **func**:
+  * `EnrichmentPlot()` and `GSEAPlot()`: Removed conditional font face styling (`face = ifelse()` logic) for better text rendering consistency. Set the default value of `lineheight` from `0.5` to `0.7`.
+  * Updated `check_r()` function for improved package checking functionality.
+  * Updated reexports functionality.
+
+* **docs**:
+  * Updated documentation formatting and consistency.
+
 # scop 0.3.0
 
 * **func**:
