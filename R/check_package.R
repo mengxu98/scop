@@ -6,7 +6,8 @@
 #' Use `"<package>==<version>"` to request the installation of a specific version of a package.
 #' @param envname The name of a conda environment.
 #' @param conda The path to a conda executable. Use `"auto"` to allow scop to automatically find an appropriate conda binary.
-#' @param force Whether to force package installation. Default is FALSE.
+#' @param force Whether to force package installation.
+#' Default is `FALSE`.
 #' @param pip Whether to use pip for package installation.
 #' Default is TRUE, packages are installed from the active conda channels.
 #' @param pip_options An optional character vector of additional command line arguments to be passed to `pip`.
