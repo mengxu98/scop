@@ -5,7 +5,7 @@
 \alias{AddFeaturesData.Seurat}
 \alias{AddFeaturesData.Assay}
 \alias{AddFeaturesData.Assay5}
-\title{AddFeaturesData}
+\title{Add features data}
 \usage{
 AddFeaturesData(object, ...)
 
@@ -16,19 +16,19 @@ AddFeaturesData(object, ...)
 \method{AddFeaturesData}{Assay5}(object, features, ...)
 }
 \arguments{
-\item{object}{A object}
+\item{object}{A \code{Assay}, \code{Assay5} or \code{Seurat} object.}
 
-\item{...}{Additional arguments passed to the method}
+\item{...}{Additional arguments passed to the method.}
 
-\item{features}{Features to add data to}
+\item{features}{Features data to add.}
 
-\item{assay}{Assay to add data to}
+\item{assay}{Assay name to use. Default is \code{NULL}.}
 }
 \value{
-data
+A `Assay`, `Assay5` or `Seurat` object.
 }
 \description{
-Add the data to the Seurat object
+Add features data to the `Assay`, `Assay5` or `Seurat` object.
 }
 \examples{
 data(pancreas_sub)
