@@ -793,23 +793,53 @@ ExpressionStatPlot <- function(
 
         y_max_use <- layer_scales(p)$y$range$range[2]
       } else {
-        p <- p +
-          ggpubr::stat_compare_means(
-            mapping = aes(
-              x = .data[["group.by"]],
-              y = .data[["value"]],
-              group = .data[["group.unique"]]
-            ),
-            label = sig_label,
-            label.y = y_max_use,
-            size = sig_labelsize,
-            step.increase = 0.1,
-            tip.length = 0.03,
-            vjust = 0,
-            comparisons = comparisons,
-            ref.group = ref_group,
-            method = pairwise_method
-          )
+        # When using split.by, comparisons should be based on split.by groups
+        if (split.by != "All.groups") {
+          # Filter comparisons to only include groups that exist in the data
+          valid_comparisons <- list()
+          for (comp in comparisons) {
+            if (length(comp) == 2 && all(comp %in% levels(dat[["split.by"]]))) {
+              valid_comparisons <- append(valid_comparisons, list(comp))
+            }
+          }
+          if (length(valid_comparisons) > 0) {
+            p <- p +
+              ggpubr::stat_compare_means(
+                mapping = aes(
+                  x = .data[["group.by"]],
+                  y = .data[["value"]],
+                  group = .data[["split.by"]]
+                ),
+                label = sig_label,
+                label.y = y_max_use,
+                size = sig_labelsize,
+                step.increase = 0.1,
+                tip.length = 0.03,
+                vjust = 0,
+                comparisons = valid_comparisons,
+                ref.group = ref_group,
+                method = pairwise_method
+              )
+          }
+        } else {
+          p <- p +
+            ggpubr::stat_compare_means(
+              mapping = aes(
+                x = .data[["group.by"]],
+                y = .data[["value"]],
+                group = .data[["group.unique"]]
+              ),
+              label = sig_label,
+              label.y = y_max_use,
+              size = sig_labelsize,
+              step.increase = 0.1,
+              tip.length = 0.03,
+              vjust = 0,
+              comparisons = comparisons,
+              ref.group = ref_group,
+              method = pairwise_method
+            )
+        }
         y_max_use <- layer_scales(p)$y$range$range[1] +
           (layer_scales(p)$y$range$range[2] -
             layer_scales(p)$y$range$range[1]) *
