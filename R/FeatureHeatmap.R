@@ -3,9 +3,9 @@
 #' @md
 #' @inheritParams GroupHeatmap
 #' @param max_cells An integer, maximum number of cells to sample per group.
-#' Default is 100.
+#' Default is `100`.
 #' @param cell_order A vector of cell names defining the order of cells.
-#' Default is NULL.
+#' Default is `NULL`.
 #'
 #' @seealso [RunDEtest]
 #'
