@@ -173,24 +173,25 @@ Default is \code{100}.}
 Default is \code{"peaktime"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
-Default is "counts".}
+Default is \code{"counts"}.}
 
 \item{assay}{A character vector specifying the assay in the Seurat object to use.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{exp_method}{A character vector specifying the method for calculating expression values.
-Default is "zscore" with options "zscore", "raw", "fc", "log2fc", "log1p".}
+Options are \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"}, or \code{"log1p"}.
+Default is \code{"zscore"}.}
 
 \item{exp_legend_title}{A character vector specifying the title for the legend of expression value.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{limits}{A two-length numeric vector specifying the limits for the color scale.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{lib_normalize}{Whether to normalize the data by library size.}
 
 \item{libsize}{A numeric vector specifying the library size for each cell.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{family}{The model used to calculate the dynamic features if needed.
 By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}
@@ -199,177 +200,179 @@ By default, this parameter is set to \code{NULL}, and the appropriate family wil
 By default, this parameter is set to \code{NULL}, which means that all lineages will be used.}
 
 \item{cluster_rows}{Whether to cluster rows in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{cluster_row_slices}{Whether to cluster row slices in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{cluster_columns}{Whether to cluster columns in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{cluster_column_slices}{Whether to cluster column slices in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{show_row_names}{Whether to show row names in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{show_column_names}{Whether to show column names in the heatmap.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{row_names_side}{A character vector specifying the side to place row names.}
 
 \item{column_names_side}{A character vector specifying the side to place column names.}
 
 \item{row_names_rot}{The rotation angle for row names.
-Default is 0.}
+Default is \code{0}.}
 
 \item{column_names_rot}{The rotation angle for column names.
-Default is 90.}
+Default is \code{90}.}
 
 \item{row_title}{A character vector specifying the title for rows.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{column_title}{A character vector specifying the title for columns.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{row_title_side}{A character vector specifying the side to place row title.
-Default is "left".}
+Default is \code{"left"}.}
 
 \item{column_title_side}{A character vector specifying the side to place column title.
-Default is "top".}
+Default is \code{"top"}.}
 
 \item{row_title_rot}{The rotation angle for row title.
-Default is 0.}
+Default is \code{0}.}
 
 \item{column_title_rot}{The rotation angle for column title.}
 
 \item{feature_split}{A factor specifying how to split the features.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{feature_split_by}{A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{n_split}{A number of feature splits (feature clusters) to create.
-Default is NULL.}
+Default is \code{NULL}.}
 
-\item{split_order}{A numeric vector specifying the order of splits. Default is NULL.}
+\item{split_order}{A numeric vector specifying the order of splits.
+Default is \code{NULL}.}
 
 \item{split_method}{A character vector specifying the method for splitting features.
-Default is "kmeans" with options "kmeans", "hclust", "mfuzz").}
+Options are \code{"kmeans"}, \code{"hclust"}, or \code{"mfuzz"}.
+Default is \code{"kmeans"}.}
 
 \item{decreasing}{Whether to sort feature splits in decreasing order.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{fuzzification}{The fuzzification coefficient.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{anno_terms}{Whether to include term annotations.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{anno_keys}{Whether to include key annotations.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{anno_features}{Whether to include feature annotations.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{terms_width}{A unit specifying the width of term annotations.
-Default is unit(4, "in").}
+Default is \code{unit(4, "in")}.}
 
 \item{terms_fontsize}{A numeric vector specifying the font size(s) for term annotations.
-Default is 8.}
+Default is \code{8}.}
 
 \item{keys_width}{A unit specifying the width of key annotations.
-Default is unit(2, "in").}
+Default is \code{unit(2, "in")}.}
 
 \item{keys_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
-Default is c(6, 10).}
+Default is \code{c(6, 10)}.}
 
 \item{features_width}{A unit specifying the width of feature annotations.
-Default is unit(2, "in").}
+Default is \code{unit(2, "in")}.}
 
 \item{features_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for feature annotations.
-Default is c(6, 10).}
+Default is \code{c(6, 10)}.}
 
 \item{IDtype}{A character vector specifying the type of IDs for features.
-Default is "symbol".}
+Default is \code{"symbol"}.}
 
 \item{species}{A character vector specifying the species for features.
-Default is "Homo_sapiens".}
+Default is \code{"Homo_sapiens"}.}
 
 \item{db_update}{Whether to update the database.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{db_version}{A character vector specifying the version of the database.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{db_combine}{Whether to use a combined database.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{convert_species}{Whether to use a species-converted database if annotation is missing for \code{species}.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is 103.}
+Default is \code{103}.}
 
 \item{mirror}{A character vector specifying the mirror for the Ensembl database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{db}{A character vector specifying the database to use.
-Default is "GO_BP".}
+Default is \code{"GO_BP"}.}
 
 \item{TERM2GENE}{A data.frame specifying the TERM2GENE mapping for the database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{TERM2NAME}{A data.frame specifying the TERM2NAME mapping for the database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{minGSSize}{An integer specifying the minimum gene set size for the database.
-Default is 10.}
+Default is \code{10}.}
 
 \item{maxGSSize}{An integer specifying the maximum gene set size for the database.
-Default is 500.}
+Default is \code{500}.}
 
 \item{GO_simplify}{Whether to simplify gene ontology terms.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{GO_simplify_cutoff}{A character vector specifying the cutoff for GO simplification.
-Default is "p.adjust < 0.05".}
+Default is \code{"p.adjust < 0.05"}.}
 
 \item{simplify_method}{A character vector specifying the method for GO simplification.
-Default is "Wang".}
+Default is \code{"Wang"}.}
 
 \item{simplify_similarityCutoff}{The similarity cutoff for GO simplification.
-Default is 0.7.}
+Default is \code{0.7}.}
 
 \item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{padjustCutoff}{The adjusted p-value cutoff for significance.
-Default is 0.05.}
+Default is \code{0.05}.}
 
 \item{topTerm}{A number of top terms to include.
-Default is 5.}
+Default is \code{5}.}
 
 \item{show_termid}{Whether to show term IDs.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{topWord}{A number of top words to include.
-Default is 20.}
+Default is \code{20}.}
 
 \item{words_excluded}{A character vector specifying the words to exclude.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{nlabel}{A number of labels to include.
-Default is 0.}
+Default is \code{0}.}
 
 \item{features_label}{A character vector specifying the features to label.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{label_size}{The size of labels.
-Default is 10.}
+Default is \code{10}.}
 
 \item{label_color}{A character vector specifying the color of labels.
-Default is "black".}
+Default is \code{"black"}.}
 
 \item{pseudotime_label}{The pseudotime label.
 Default is \code{NULL}.}
@@ -384,10 +387,10 @@ Default is \code{2}.}
 Default is \code{3}.}
 
 \item{heatmap_palette}{A character vector specifying the palette to use for the heatmap.
-Default is "RdBu".}
+Default is \code{"RdBu"}.}
 
 \item{heatmap_palcolor}{A character vector specifying the heatmap color to use.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{pseudotime_palette}{The color palette to use for pseudotime.
 Default is \code{"cividis"}.}
@@ -396,33 +399,35 @@ Default is \code{"cividis"}.}
 Default is \code{NULL}.}
 
 \item{feature_split_palette}{A character vector specifying the palette to use for feature splits.
-Default is "simspec".}
+Default is \code{"simspec"}.}
 
 \item{feature_split_palcolor}{A character vector specifying the feature split color to use.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{cell_annotation}{A character vector specifying the cell annotation(s) to include.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation. Default is "Paired".}
+The length of the vector should match the number of cell_annotation.
+Default is \code{"Paired"}.}
 
 \item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation. Default is NULL.}
+The length of the list should match the number of cell_annotation.
+Default is \code{NULL}.}
 
 \item{cell_annotation_params}{A list specifying additional parameters for cell annotations.
-Default is a list with width = unit(1, "cm") if flip is TRUE, else a list with height = unit(1, "cm").}
+Default is a list with \code{width = unit(1, "cm")} if flip is TRUE, else a list with \code{height = unit(1, "cm")}.}
 
 \item{feature_annotation}{A character vector specifying the feature annotation(s) to include.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{feature_annotation_palette}{A character vector specifying the palette to use for feature annotations.
 The length of the vector should match the number of feature_annotation.
-Default is "Dark2".}
+Default is \code{"Dark2"}.}
 
 \item{feature_annotation_palcolor}{A list of character vector specifying the feature annotation color to use.
 The length of the list should match the number of feature_annotation.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
 Default is an empty list.}
@@ -442,24 +447,25 @@ Default is \code{NULL}.}
 Default is \code{NULL}.}
 
 \item{use_raster}{Whether to use a raster device for plotting.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{raster_device}{A character vector specifying the raster device to use.
-Default is "png".}
+Default is \code{"png"}.}
 
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{units}{A character vector specifying the units for the height and width.
-Default is "inch".}
+Default is \code{"inch"}.}
 
-\item{seed}{An integer specifying the random seed. Default is 11.}
+\item{seed}{An integer specifying the random seed.
+Default is \code{11}.}
 
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Default is an empty list.}

@@ -194,15 +194,15 @@ WilcoxDETest <- function(
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-#' Default is 1.5.
+#' Default is `1.5`.
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
-#' Default is "LogNormalize".
+#' Default is `"LogNormalize"`.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
-#' Default is "bonferroni".
+#' Default is `"bonferroni"`.
 #' @param seed An integer value specifying the seed.
-#' Default is 11.
+#' Default is `11`.
 #' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'

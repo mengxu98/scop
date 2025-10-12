@@ -374,14 +374,20 @@ CellStatPlot <- function(
 #' @param group.by The column name in `meta.data` specifying the grouping variable.
 #' @param split.by The column name in `meta.data` specifying the splitting variable.
 #' @param bg.by The column name in `meta.data` specifying the background variable for bar plots.
-#' @param flip Logical indicating whether to flip the plot.
+#' @param flip Whether to flip the plot.
+#' Default is `FALSE`.
 #' @param NA_color The color to use for missing values.
-#' @param NA_stat Logical indicating whether to include missing values in the plot.
-#' @param keep_empty Logical indicating whether to keep empty groups in the plot.
-#' @param individual Logical indicating whether to plot individual groups separately.
+#' @param NA_stat Whether to include missing values in the plot.
+#' Default is `TRUE`.
+#' @param keep_empty Whether to keep empty groups in the plot.
+#' Default is `FALSE`.
+#' @param individual Whether to plot individual groups separately.
+#' Default is `FALSE`.
 #' @param stat_level The level(s) of the variable(s) specified in `stat.by` to include in the plot.
+#' Default is `NULL`.
 #' @param plot_type The type of plot to create.
-#' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`, `"venn"`, or `"upset"`.
+#' Can be one of `"bar"`, `"rose"`, `"ring"`, `"pie"`, `"trend"`,
+#' `"area"`, `"dot"`, `"sankey"`, `"chord"`, `"venn"`, or `"upset"`.
 #' @param stat_type The type of statistic to compute for the plot.
 #' Can be one of `"percent"` or `"count"`.
 #' @param position The position adjustment for the plot.
@@ -392,7 +398,8 @@ CellStatPlot <- function(
 #' @param bg_palette The name of the background color palette to use for bar plots.
 #' @param bg_palcolor The color to use in the background color palette.
 #' @param bg_alpha The transparency level for the background color in bar plots.
-#' @param label Logical indicating whether to add labels on the plot.
+#' @param label Whether to add labels on the plot.
+#' Default is `FALSE`.
 #' @param label.size The size of the labels.
 #' @param label.fg The foreground color of the labels.
 #' @param label.bg The background color of the labels.
@@ -404,15 +411,23 @@ CellStatPlot <- function(
 #' @param ylab The y-axis label of the plot.
 #' @param legend.position The position of the legend in the plot.
 #' Can be one of `"right"`, `"left"`, `"bottom"`, `"top"`, or `"none"`.
-#' @param legend.direction The direction of the legend in the plot. Can be one of `"vertical"` or `"horizontal"`.
-#' @param theme_use The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.
+#' @param legend.direction The direction of the legend in the plot.
+#' Can be one of `"vertical"` or `"horizontal"`.
+#' @param theme_use The name of the theme to use for the plot.
+#' Can be one of the predefined themes or a custom theme.
 #' @param theme_args A list of arguments to be passed to the theme function.
-#' @param combine Logical indicating whether to combine multiple plots into a single plot.
+#' @param combine Whether to combine multiple plots into a single plot.
+#' Default is TRUE.
 #' @param nrow The number of rows in the combined plot.
+#' Default is NULL.
 #' @param ncol The number of columns in the combined plot.
-#' @param byrow Logical indicating whether to fill the plot by row or by column.
-#' @param force Logical indicating whether to force the plot even if some variables have more than 100 levels.
+#' Default is NULL.
+#' @param byrow Whether to fill the plot by row or by column.
+#' Default is TRUE.
+#' @param force Whether to force the plot even if some variables have more than 100 levels.
+#' Default is FALSE.
 #' @param seed The random seed to use for reproducible results.
+#' Default is `11`.
 #'
 #' @seealso [CellStatPlot]
 #'

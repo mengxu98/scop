@@ -15,11 +15,14 @@ db_scds(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The name of the assay to be used for doublet-calling. Default is "RNA".}
+\item{assay}{The name of the assay to be used for doublet-calling.
+Default is `"RNA"`.}
 
-\item{db_rate}{The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.}
+\item{db_rate}{The expected doublet rate.
+Default is calculated as `ncol(srt) / 1000 * 0.01`.}
 
-\item{method}{The method to be used for doublet-calling. Options are "hybrid", "cxds", or "bcds".}
+\item{method}{The method to be used for doublet-calling.
+Options are `"hybrid"`, `"cxds"`, or `"bcds"`.}
 
 \item{...}{Additional arguments to be passed to scds::cxds_bcds_hybrid function.}
 }
