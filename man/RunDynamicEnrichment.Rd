@@ -43,10 +43,10 @@ Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.
 Defaults to \code{"Seurat"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
-Default is "counts".}
+Default is \code{"counts"}.}
 
 \item{assay}{A character vector specifying the assay in the Seurat object to use.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{min_expcells}{The minimum number of expected cells. Default is \code{20}.}
 
@@ -94,7 +94,8 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{An integer specifying the random seed. Default is 11.}
+\item{seed}{An integer specifying the random seed.
+Default is \code{11}.}
 }
 \description{
 This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).

@@ -63,20 +63,26 @@ CellStatPlot(
 \item{cells}{A character vector specifying the cells to include in the plot.
 Default is \code{NULL}.}
 
-\item{flip}{Logical indicating whether to flip the plot.}
+\item{flip}{Whether to flip the plot.
+Default is \code{FALSE}.}
 
 \item{NA_color}{The color to use for missing values.}
 
-\item{NA_stat}{Logical indicating whether to include missing values in the plot.}
+\item{NA_stat}{Whether to include missing values in the plot.
+Default is \code{TRUE}.}
 
-\item{keep_empty}{Logical indicating whether to keep empty groups in the plot.}
+\item{keep_empty}{Whether to keep empty groups in the plot.
+Default is \code{FALSE}.}
 
-\item{individual}{Logical indicating whether to plot individual groups separately.}
+\item{individual}{Whether to plot individual groups separately.
+Default is \code{FALSE}.}
 
-\item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.}
+\item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
+Default is \code{NULL}.}
 
 \item{plot_type}{The type of plot to create.
-Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"}, \code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"}, \code{"venn"}, or \code{"upset"}.}
+Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
+\code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"}, \code{"venn"}, or \code{"upset"}.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
 Can be one of \code{"percent"} or \code{"count"}.}
@@ -96,7 +102,8 @@ Can be one of \code{"stack"} or \code{"dodge"}.}
 
 \item{bg_alpha}{The transparency level for the background color in bar plots.}
 
-\item{label}{Logical indicating whether to add labels on the plot.}
+\item{label}{Whether to add labels on the plot.
+Default is \code{FALSE}.}
 
 \item{label.size}{The size of the labels.}
 
@@ -119,23 +126,31 @@ Can be one of \code{"stack"} or \code{"dodge"}.}
 \item{legend.position}{The position of the legend in the plot.
 Can be one of \code{"right"}, \code{"left"}, \code{"bottom"}, \code{"top"}, or \code{"none"}.}
 
-\item{legend.direction}{The direction of the legend in the plot. Can be one of \code{"vertical"} or \code{"horizontal"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.}
+\item{theme_use}{The name of the theme to use for the plot.
+Can be one of the predefined themes or a custom theme.}
 
 \item{theme_args}{A list of arguments to be passed to the theme function.}
 
-\item{combine}{Logical indicating whether to combine multiple plots into a single plot.}
+\item{combine}{Whether to combine multiple plots into a single plot.
+Default is TRUE.}
 
-\item{nrow}{The number of rows in the combined plot.}
+\item{nrow}{The number of rows in the combined plot.
+Default is NULL.}
 
-\item{ncol}{The number of columns in the combined plot.}
+\item{ncol}{The number of columns in the combined plot.
+Default is NULL.}
 
-\item{byrow}{Logical indicating whether to fill the plot by row or by column.}
+\item{byrow}{Whether to fill the plot by row or by column.
+Default is TRUE.}
 
-\item{force}{Logical indicating whether to force the plot even if some variables have more than 100 levels.}
+\item{force}{Whether to force the plot even if some variables have more than 100 levels.
+Default is FALSE.}
 
-\item{seed}{The random seed to use for reproducible results.}
+\item{seed}{The random seed to use for reproducible results.
+Default is \code{11}.}
 }
 \description{
 Statistical plot of cells

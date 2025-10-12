@@ -81,7 +81,8 @@ If TRUE, the function will return the distance matrix used for the KNN predictio
 
 \item{DEtest_param}{A list of parameters to be passed to the differential expression test function if `features_type` is set to "DE". Defaults to `list(max.cells.per.ident = 200, test.use = "wilcox")`.}
 
-\item{DE_threshold}{Threshold used to filter the DE features. Default is "p_val < 0.05". If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".}
+\item{DE_threshold}{Threshold used to filter the DE features.
+Default is `"p_val < 0.05"`. If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".}
 
 \item{nn_method}{A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Defaults to "raw".}
 

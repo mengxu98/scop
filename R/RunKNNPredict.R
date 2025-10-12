@@ -32,7 +32,8 @@
 #' @param feature_source A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Defaults to "both".
 #' @param nfeatures An integer specifying the maximum number of features to be used for the KNN prediction. Defaults to 2000.
 #' @param DEtest_param A list of parameters to be passed to the differential expression test function if `features_type` is set to "DE". Defaults to `list(max.cells.per.ident = 200, test.use = "wilcox")`.
-#' @param DE_threshold Threshold used to filter the DE features. Default is "p_val < 0.05". If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".
+#' @param DE_threshold Threshold used to filter the DE features.
+#' Default is `"p_val < 0.05"`. If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".
 #' @param nn_method A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Defaults to "raw".
 #' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Defaults to "cosine".
 #' @param k A number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.

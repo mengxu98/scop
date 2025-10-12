@@ -23,7 +23,8 @@ Use \code{"<package>==<version>"} to request the installation of a specific vers
 
 \item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
-\item{force}{Whether to force package installation. Default is FALSE.}
+\item{force}{Whether to force package installation.
+Default is \code{FALSE}.}
 
 \item{pip}{Whether to use pip for package installation.
 Default is TRUE, packages are installed from the active conda channels.}

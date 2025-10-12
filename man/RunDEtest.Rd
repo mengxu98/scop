@@ -114,7 +114,7 @@ Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
 \item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-Default is 1.5.}
+Default is \code{1.5}.}
 
 \item{base}{The base with respect to which logarithms are computed.}
 
@@ -150,17 +150,17 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{min.cells.group}{Minimum number of cells in one of the groups}
 
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
-Default is "LogNormalize".}
+Default is \code{"LogNormalize"}.}
 
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
-Default is "bonferroni".}
+Default is \code{"bonferroni"}.}
 
 \item{layer}{The layer used.}
 
 \item{assay}{Assay to use in differential expression testing}
 
 \item{seed}{An integer value specifying the seed.
-Default is 11.}
+Default is \code{11}.}
 
 \item{verbose}{Print a progress bar once expression testing begins}
 
