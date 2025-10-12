@@ -39,12 +39,14 @@ RunCellQC(
 \item{assay}{The name of the assay to be used for doublet-calling.
 Default is "RNA".}
 
-\item{split.by}{Name of the sample variable to split the Seurat object. Default is NULL.}
+\item{split.by}{Name of the sample variable to split the Seurat object.
+Default is \code{NULL}.}
 
-\item{return_filtered}{Logical indicating whether to return a cell-filtered Seurat object. Default is FALSE.}
+\item{return_filtered}{Logical indicating whether to return a cell-filtered Seurat object.
+Default is \code{FALSE}.}
 
-\item{qc_metrics}{A character vector specifying the quality control metrics to be applied. Default is
-\code{c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.}
+\item{qc_metrics}{A character vector specifying the quality control metrics to be applied.
+Default is \code{c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.}
 
 \item{db_method}{Doublet-calling methods used.
 Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
@@ -53,39 +55,54 @@ Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \cod
 By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
 which is appropriate for 10x datasets.}
 
-\item{db_coefficient}{The coefficient used to calculate the doublet rate. Default is 0.01. Doublet rate is calculated as\code{ncol(srt) / 1000 * db_coefficient}}
+\item{db_coefficient}{The coefficient used to calculate the doublet rate.
+Default is \code{0.01}. Doublet rate is calculated as \code{ncol(srt) / 1000 * db_coefficient}.}
 
-\item{outlier_threshold}{A character vector specifying the outlier threshold. Default is
-\code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}.
+\item{outlier_threshold}{A character vector specifying the outlier threshold.
+Default is \code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}.
 See \link[scuttle:isOutlier]{scuttle::isOutlier}.}
 
-\item{outlier_n}{Minimum number of outlier metrics that meet the conditions for determining outlier cells. Default is 1.}
+\item{outlier_n}{Minimum number of outlier metrics that meet the conditions for determining outlier cells.
+Default is \code{1}.}
 
-\item{UMI_threshold}{UMI number threshold. Cells that exceed this threshold will be considered as kept. Default is 3000.}
+\item{UMI_threshold}{UMI number threshold. Cells that exceed this threshold will be considered as kept.
+Default is \code{3000}.}
 
-\item{gene_threshold}{Gene number threshold. Cells that exceed this threshold will be considered as kept. Default is 1000.}
+\item{gene_threshold}{Gene number threshold. Cells that exceed this threshold will be considered as kept.
+Default is \code{1000}.}
 
-\item{mito_threshold}{Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded. Default is 20.}
+\item{mito_threshold}{Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded.
+Default is \code{20}.}
 
-\item{mito_pattern}{Regex patterns to match the mitochondrial genes. Default is \code{c("MT-", "Mt-", "mt-")}.}
+\item{mito_pattern}{Regex patterns to match the mitochondrial genes.
+Default is \code{c("MT-", "Mt-", "mt-")}.}
 
-\item{mito_gene}{A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching. Default is \code{NULL}.}
+\item{mito_gene}{A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching.
+Default is \code{NULL}.}
 
-\item{ribo_threshold}{Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded. Default is 50.}
+\item{ribo_threshold}{Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded.
+Default is \code{50}.}
 
-\item{ribo_pattern}{Regex patterns to match the ribosomal genes. Default is \code{c("RP[SL]\\\\d+\\\\w{0,1}\\\\d*$", "Rp[sl]\\\\d+\\\\w{0,1}\\\\d*$", "rp[sl]\\\\d+\\\\w{0,1}\\\\d*$")}.}
+\item{ribo_pattern}{Regex patterns to match the ribosomal genes.
+Default is \code{c("RP[SL]\\\\d+\\\\w{0,1}\\\\d*$", "Rp[sl]\\\\d+\\\\w{0,1}\\\\d*$", "rp[sl]\\\\d+\\\\w{0,1}\\\\d*$")}.}
 
-\item{ribo_gene}{A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching. Default is \code{NULL}.}
+\item{ribo_gene}{A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching.
+Default is \code{NULL}.}
 
-\item{ribo_mito_ratio_range}{A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells. Default is c(1, Inf).}
+\item{ribo_mito_ratio_range}{A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
+Default is \code{c(1, Inf)}.}
 
-\item{species}{Species used as the suffix of the QC metrics. The first is the species of interest. Default is \code{NULL}.}
+\item{species}{Species used as the suffix of the QC metrics. The first is the species of interest.
+Default is \code{NULL}.}
 
-\item{species_gene_prefix}{Species gene prefix used to calculate QC metrics for each species. Default is \code{NULL}.}
+\item{species_gene_prefix}{Species gene prefix used to calculate QC metrics for each species.
+Default is \code{NULL}.}
 
-\item{species_percent}{Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept. Default is 95.}
+\item{species_percent}{Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
+Default is \code{95}.}
 
-\item{seed}{Set a random seed. Default is 11.}
+\item{seed}{Set a random seed.
+Default is \code{11}.}
 }
 \value{
 Returns Seurat object with the QC results stored in the meta.data layer.

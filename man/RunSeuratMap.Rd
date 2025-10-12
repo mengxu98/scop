@@ -43,17 +43,23 @@ RunSeuratMap(
 
 \item{ref_group}{A character string specifying a metadata column name in the reference object to use for grouping.}
 
-\item{normalization.method}{The normalization method to use. Default is "LogNormalize".}
+\item{normalization.method}{The normalization method to use.
+Default is `"LogNormalize"`.}
 
-\item{reduction_project_method}{Dimensional reduction to perform when finding anchors. Default is "pcaproject".}
+\item{reduction_project_method}{Dimensional reduction to perform when finding anchors.
+Default is `"pcaproject"`.}
 
-\item{k.anchor}{How many neighbors (k) to use when finding anchors. Default is 5.}
+\item{k.anchor}{How many neighbors (k) to use when finding anchors.
+Default is `5`.}
 
-\item{k.filter}{How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering. Default is 200.}
+\item{k.filter}{How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering.
+Default is `200`.}
 
-\item{k.score}{How many neighbors (k) to use when scoring anchors. Default is 30.}
+\item{k.score}{How many neighbors (k) to use when scoring anchors.
+Default is `30`.}
 
-\item{k.weight}{Number of neighbors to consider when weighting anchors. Default is 100.}
+\item{k.weight}{Number of neighbors to consider when weighting anchors.
+Default is `100`.}
 
 \item{projection_method}{A character string specifying the projection method to use. Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection. If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
 

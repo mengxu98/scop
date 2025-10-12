@@ -32,7 +32,8 @@
 #' @param ncol Number of columns in the combined plot.
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.
-#' @param layer Which layer to pull expression data from? Default is \code{data}.
+#' @param layer Which layer to pull expression data from?
+#' Default is `data`.
 #' @param assay Which assay to pull expression data from. If \code{NULL}, will use the assay returned by [SeuratObject::DefaultAssay].
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
@@ -79,7 +80,8 @@
 #' @param hex.color Border color of hexagonal bins.
 #' @param hex.linewidth Border width of hexagonal bins.
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
-#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).
+#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
+#' Default is `c(512, 512)`.
 #' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.

@@ -26,43 +26,45 @@ AnnotateFeatures(
 \item{srt}{Seurat object to be annotated.}
 
 \item{species}{Name of the species to be used for annotation.
-Default is "Homo_sapiens".}
+Default is \code{"Homo_sapiens"}.}
 
 \item{IDtype}{Type of identifier to use for annotation.
-Default is "symbol" with options "symbol", "ensembl_id", and "entrez_id".}
+Options are \code{"symbol"}, \code{"ensembl_id"}, or \code{"entrez_id"}.
+Default is \code{"symbol"}.}
 
 \item{db}{Vector of database names to be used for annotation.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{db_update}{Logical value indicating whether to update the database.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{db_version}{Version of the database to use.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.}
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{Version of the Ensembl database to use.
-Default is 103.}
+Default is \code{103}.}
 
 \item{mirror}{URL of the mirror to use for Ensembl database.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{gtf}{Path to the GTF file to be used for annotation.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{merge_gtf_by}{Column name to merge the GTF file by.
-Default is "gene_name".}
+Default is \code{"gene_name"}.}
 
 \item{columns}{Vector of column names to be used from the GTF file.
-Default is "seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type".}
+Default is \code{"seqname"}, \code{"feature"}, \code{"start"}, \code{"end"},
+\code{"strand"}, \code{"gene_id"}, \code{"gene_name"}, \code{"gene_type"}.}
 
 \item{assays}{Character vector of assay names to be annotated.
-Default is "RNA".}
+Default is \code{"RNA"}.}
 
 \item{overwrite}{Logical value indicating whether to overwrite existing metadata.
-Default is FALSE.}
+Default is \code{FALSE}.}
 }
 \description{
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.
@@ -84,8 +86,7 @@ pancreas_sub <- AnnotateFeatures(
 )
 head(
   GetFeaturesData(
-    pancreas_sub,
-    assays = "RNA"
+    pancreas_sub
   )
 )
 
@@ -96,8 +97,7 @@ pancreas_sub <- AnnotateFeatures(
 )
 head(
   GetFeaturesData(
-    pancreas_sub,
-    assays = "RNA"
+    pancreas_sub
   )
 )
 }

@@ -39,7 +39,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
 
-\item{palette}{Name of a color palette name collected in scop. Default is "Paired".}
+\item{palette}{Name of a color palette name collected in scop.
+Default is \code{"Paired"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.}
 

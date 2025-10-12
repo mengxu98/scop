@@ -32,7 +32,8 @@
 #' Default is `NULL`.
 #' @param padjustCutoff The p-adjusted cutoff.
 #' Default is `0.05`.
-#' @param topTerm The number of top terms to display. Default is 6, or 100 if `plot_type` is `"enrichmap"`.
+#' @param topTerm The number of top terms to display.
+#' Default is `6`, or `100` if `plot_type` is `"enrichmap"`.
 #' @param compare_only_sig Whether to compare only significant terms.
 #' Default is `FALSE`.
 #' @param topWord The number of top words to display for wordcloud.

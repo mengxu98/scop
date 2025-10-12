@@ -95,7 +95,8 @@ Default is \code{NULL}.}
 \item{padjustCutoff}{The p-adjusted cutoff.
 Default is \code{0.05}.}
 
-\item{topTerm}{The number of top terms to display. Default is 6, or 100 if \code{plot_type} is \code{"enrichmap"}.}
+\item{topTerm}{The number of top terms to display.
+Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}
 
 \item{direction}{The direction of enrichment to include in the plot.
 Must be one of "pos", "neg", or "both". The default value is "both".}
