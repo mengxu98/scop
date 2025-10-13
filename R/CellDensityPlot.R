@@ -1,42 +1,63 @@
-#' CellDensityPlot
+#' @title Cell density plot
 #'
+#' @description
 #' Plots the density of specified features in a single or multiple groups,
 #' grouped by specified variables.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param features A character vector specifying the features to plot.
 #' @param group.by A character vector specifying the variables to group the data by.
 #' @param split.by A character vector specifying the variables to split the data by.
-#' Default is NULL, which means no splitting is performed.
+#' Default is `NULL`, which means no splitting is performed.
 #' @param assay A character specifying the assay to use from the Seurat object.
-#'   Default is NULL, which means the default assay will be used.
-#' @param layer A character specifying the layer to use from the assay. Default is "data".
-#' @param flip Whether to flip the x-axis. Default is FALSE.
-#' @param reverse Whether to reverse the y-axis. Default is FALSE.
-#' @param x_order A character specifying how to order the x-axis. Can be "value" or "rank". Default is "value".
-#' @param decreasing Whether to order the groups in decreasing order. Default is NULL.
-#' @param palette A character specifying the color palette to use for grouping variables. Default is "Paired".
-#' @param palcolor A character specifying the color to use for each group. Default is NULL.
-#' @param cells A character vector specifying the cells to plot. Default is NULL, which means all cells are included.
-#' @param keep_empty Whether to keep empty groups. Default is FALSE.
-#' @param y.nbreaks A number of breaks on the y-axis. Default is 4.
-#' @param y.min A numeric specifying the minimum value on the y-axis. Default is NULL, which means the minimum value will be automatically determined.
-#' @param y.max A numeric specifying the maximum value on the y-axis. Default is NULL, which means the maximum value will be automatically determined.
-#' @param same.y.lims Whether to use the same y-axis limits for all plots. Default is FALSE.
-#' @param aspect.ratio A numeric specifying the aspect ratio of the plot. Default is NULL, which means the aspect ratio will be automatically determined.
-#' @param title A character specifying the title of the plot. Default is NULL.
-#' @param subtitle A character specifying the subtitle of the plot. Default is NULL.
-#' @param legend.position A character specifying the position of the legend. Default is "right".
-#' @param legend.direction A character specifying the direction of the legend. Default is "vertical".
-#' @param theme_use A character specifying the theme to use. Default is "theme_scop".
+#' Default is `NULL`, which means the default assay will be used.
+#' @param layer A character specifying the layer to use from the assay.
+#' Default is `"data"`.
+#' @param flip Whether to flip the x-axis. Default is `FALSE`.
+#' @param reverse Whether to reverse the y-axis. Default is `FALSE`.
+#' @param x_order A character specifying how to order the x-axis.
+#' Can be `"value"` or `"rank"`.
+#' Default is `"value"`.
+#' @param decreasing Whether to order the groups in decreasing order.
+#' Default is `NULL`.
+#' @param palette The color palette to use for grouping variables.
+#' Default is `"Paired"`.
+#' @param palcolor The color to use for each group.
+#' Default is `NULL`.
+#' @param cells A character vector specifying the cells to plot.
+#' Default is `NULL`, which means all cells are included.
+#' @param keep_empty Whether to keep empty groups. Default is `FALSE`.
+#' @param y.nbreaks A number of breaks on the y-axis. Default is `4`.
+#' @param y.min A numeric specifying the minimum value on the y-axis.
+#' Default is `NULL`, which means the minimum value will be automatically determined.
+#' @param y.max A numeric specifying the maximum value on the y-axis.
+#' Default is `NULL`, which means the maximum value will be automatically determined.
+#' @param same.y.lims Whether to use the same y-axis limits for all plots.
+#' Default is `FALSE`.
+#' @param aspect.ratio A numeric specifying the aspect ratio of the plot.
+#' Default is `NULL`, which means the aspect ratio will be automatically determined.
+#' @param title A character specifying the title of the plot.
+#' Default is `NULL`.
+#' @param subtitle A character specifying the subtitle of the plot.
+#' Default is `NULL`.
+#' @param legend.position A character specifying the position of the legend.
+#' Default is `"right"`.
+#' @param legend.direction A character specifying the direction of the legend.
+#' Default is `"vertical"`.
+#' @param theme_use A character specifying the theme to use.
+#' Default is `"theme_scop"`.
 #' @param theme_args A list of arguments to pass to the theme function.
-#' @param combine Whether to combine multiple plots into a single plot. Default is TRUE.
+#' @param combine Whether to combine multiple plots into a single plot.
+#' Default is `TRUE`.
 #' @param nrow A number of rows in the combined plot.
-#'   Default is NULL, which means determined automatically based on the number of plots.
+#' Default is `NULL`, which means determined automatically based on the number of plots.
 #' @param ncol A number of columns in the combined plot.
-#'   Default is NULL, which means determined automatically based on the number of plots.
-#' @param byrow Whether to add plots by row or by column in the combined plot. Default is TRUE.
-#' @param force Whether to continue plotting if there are more than 50 features. Default is FALSE.
+#' Default is `NULL`, which means determined automatically based on the number of plots.
+#' @param byrow Whether to add plots by row or by column in the combined plot.
+#' Default is `TRUE`.
+#' @param force Whether to continue plotting if there are more than 50 features.
+#' Default is `FALSE`.
 #'
 #' @export
 #'
@@ -54,12 +75,14 @@
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP"
 #' )
+#'
 #' CellDensityPlot(
 #'   pancreas_sub,
 #'   features = "Lineage1",
 #'   group.by = "SubCellType",
 #'   aspect.ratio = 1
 #' )
+#'
 #' CellDensityPlot(
 #'   pancreas_sub,
 #'   features = "Lineage1",
@@ -102,13 +125,13 @@ CellDensityPlot <- function(
   x_order <- match.arg(x_order)
   if (is.null(features)) {
     log_message(
-      "'features' must be provided.",
+      "{.arg features} must be provided",
       message_type = "error"
     )
   }
   if (!inherits(features, "character")) {
     log_message(
-      "'features' is not a character vectors",
+      "{.arg features} is not a character vectors",
       message_type = "error"
     )
   }
@@ -126,7 +149,7 @@ CellDensityPlot <- function(
   for (i in c(group.by, split.by)) {
     if (!i %in% colnames(srt@meta.data)) {
       log_message(
-        paste0(i, " is not in the meta.data of srt object."),
+        "{.val {i}} is not in the meta.data of object",
         message_type = "error"
       )
     }
@@ -144,8 +167,7 @@ CellDensityPlot <- function(
   ]
   if (length(features_drop) > 0) {
     log_message(
-      paste0(features_drop, collapse = ","),
-      " are not in the features of srt.",
+      "{.val {features_drop}} are not in the features of srt",
       message_type = "warning"
     )
     features <- features[!features %in% features_drop]
@@ -155,10 +177,7 @@ CellDensityPlot <- function(
   features_meta <- features[features %in% colnames(srt@meta.data)]
   if (length(intersect(features_gene, features_meta)) > 0) {
     log_message(
-      paste0(
-        "Features appear in both gene names and metadata names: ",
-        paste0(intersect(features_gene, features_meta), collapse = ",")
-      ),
+      "Features appear in both gene names and metadata names: {.val {intersect(features_gene, features_meta)}}",
       message_type = "warning"
     )
   }
@@ -185,13 +204,13 @@ CellDensityPlot <- function(
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
     log_message(
-      "'features' must be type of numeric variable.",
+      "{.arg features} must be type of numeric variable",
       message_type = "error"
     )
   }
   if (length(features) > 50 && isFALSE(force)) {
     log_message(
-      "More than 50 features to be plotted",
+      "More than 50 {.arg features} to be plotted",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)

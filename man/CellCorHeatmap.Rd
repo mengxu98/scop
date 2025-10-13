@@ -56,18 +56,18 @@ CellCorHeatmap(
   query_group_palcolor = NULL,
   ref_group_palette = "simspec",
   ref_group_palcolor = NULL,
-  query_cell_annotation = NULL,
-  query_cell_annotation_palette = "Paired",
-  query_cell_annotation_palcolor = NULL,
+  query_annotation = NULL,
+  query_annotation_palette = "Paired",
+  query_annotation_palcolor = NULL,
   query_cell_annotation_params = if (flip) {
      list(height = grid::unit(10, "mm"))
  }
     else {
      list(width = grid::unit(10, "mm"))
  },
-  ref_cell_annotation = NULL,
-  ref_cell_annotation_palette = "Paired",
-  ref_cell_annotation_palcolor = NULL,
+  ref_annotation = NULL,
+  ref_annotation_palette = "Paired",
+  ref_annotation_palcolor = NULL,
   ref_cell_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
  }
@@ -268,17 +268,17 @@ Default is \code{"simspec"}.}
 This should be a vector of color names or RGB values.
 Default is \code{NULL}.}
 
-\item{query_cell_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+\item{query_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
 If not provided, no cell annotations will be shown.}
 
-\item{query_cell_annotation_palette}{The color palette to use for the query cell annotation tracks.
+\item{query_annotation_palette}{The color palette to use for the query cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
 Default is \code{"Paired"}.}
 
-\item{query_cell_annotation_palcolor}{The specific colors to use for the query cell annotation palettes.
+\item{query_annotation_palcolor}{The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
 Default is \code{NULL}.}
@@ -287,17 +287,17 @@ Default is \code{NULL}.}
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Any conflicting parameters will override the defaults set by this function.}
 
-\item{ref_cell_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+\item{ref_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
 If not provided, no cell annotations will be shown.}
 
-\item{ref_cell_annotation_palette}{The color palette to use for the reference cell annotation tracks.
+\item{ref_annotation_palette}{The color palette to use for the reference cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
 Default is \code{"Paired"}.}
 
-\item{ref_cell_annotation_palcolor}{The specific colors to use for the reference cell annotation palettes.
+\item{ref_annotation_palcolor}{The specific colors to use for the reference cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
 If multiple color vectors are provided, each track will be assigned a separate color vector.
@@ -382,12 +382,10 @@ ht2 <- CellCorHeatmap(
   label_cutoff = 0.6,
   query_group = "SubCellType",
   ref_group = "celltype",
-  query_cell_annotation = "Phase",
-  query_cell_annotation_palette = "Set2",
-  ref_cell_annotation = "tech",
-  ref_cell_annotation_palette = "Set3",
-  width = 4,
-  height = 4
+  query_annotation = "Phase",
+  query_annotation_palette = "Set2",
+  ref_annotation = "tech",
+  ref_annotation_palette = "Set3"
 )
 ht2$plot
 
@@ -410,14 +408,12 @@ ht4 <- CellCorHeatmap(
   show_column_names = TRUE,
   query_group = "SubCellType",
   ref_group = "celltype",
-  query_cell_annotation = c(
+  query_annotation = c(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   ),
-  ref_cell_annotation = c(
+  ref_annotation = c(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
-  ),
-  height = 2.5,
-  width = 3.5
+  )
 )
 ht4$plot
 }
