@@ -484,7 +484,8 @@ FeatureStatPlot <- function(
     force = FALSE,
     seed = 11) {
   if (is.null(group.by)) {
-    group.by <- "All.groups" # avoid having the same name with split.by. split.by will be All.groups by default
+    # avoid having the same name with split.by. split.by will be All.groups by default
+    group.by <- "All.groups"
     xlab <- "All groups"
     srt[[group.by]] <- factor("All groups")
   }
@@ -503,60 +504,61 @@ FeatureStatPlot <- function(
   if (plot.by == "feature") {
     if (length(group.by) > 1) {
       log_message(
-        "The 'group.by' must have a length of 1 when 'plot.by' is set to 'feature'",
+        "{.arg group.by} must have a length of 1 when {.arg plot.by} is set to {.val feature}",
         message_type = "error"
       )
     }
     if (!is.null(bg.by)) {
       log_message(
-        "'bg.by' is invalid when plot.by is set to 'feature'",
+        "{.arg bg.by} is invalid when {.arg plot.by} is set to {.val feature}",
         message_type = "warning"
       )
     }
     log_message(
-      "Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'"
+      "Setting {.arg group.by} to {.val Features} as {.arg plot.by} is set to {.val feature}"
     )
     srt@assays[setdiff(names(srt@assays), assay)] <- NULL
-    meta.reshape <- SeuratObject::FetchData(
+    meta_reshape <- SeuratObject::FetchData(
       srt,
       vars = c(stat.by, group.by, split.by),
       cells = cells %||% rownames(meta.data),
       layer = layer
     )
-    meta.reshape[["cells"]] <- rownames(meta.reshape)
-    meta.reshape <- reshape2::melt(
-      meta.reshape,
+    meta_reshape[["cells"]] <- rownames(meta_reshape)
+    meta_reshape <- reshape2::melt(
+      meta_reshape,
       measure.vars = stat.by,
       variable.name = "Features",
       value.name = "Stat.by"
     )
-    rownames(meta.reshape) <- paste0(
-      meta.reshape[["cells"]],
+    rownames(meta_reshape) <- paste0(
+      meta_reshape[["cells"]],
       "-",
-      meta.reshape[["Features"]]
+      meta_reshape[["Features"]]
     )
     exp.data <- matrix(
       0,
       nrow = 1,
-      ncol = nrow(meta.reshape),
-      dimnames = list("Stat.by", rownames(meta.reshape))
+      ncol = nrow(meta_reshape),
+      dimnames = list("Stat.by", rownames(meta_reshape))
     )
     plist <- list()
-    for (g in unique(meta.reshape[[group.by]])) {
-      if (length(rownames(meta.reshape)[meta.reshape[[group.by]] == g]) > 0) {
-        meta.use <- meta.reshape
-        meta.use[[group.by]] <- NULL
-        colnames(meta.use)[colnames(meta.use) == "Stat.by"] <- g
+    for (g in unique(meta_reshape[[group.by]])) {
+      cells_g <- rownames(meta_reshape)[meta_reshape[[group.by]] == g]
+      if (length(cells_g) > 0) {
+        meta_use <- meta_reshape
+        meta_use[[group.by]] <- NULL
+        colnames(meta_use)[colnames(meta_use) == "Stat.by"] <- g
         p <- ExpressionStatPlot(
           exp.data = exp.data,
-          meta.data = meta.use,
+          meta.data = meta_use,
           stat.by = g,
           group.by = "Features",
           split.by = split.by,
           bg.by = NULL,
           plot.by = "group",
           fill.by = fill.by,
-          cells = rownames(meta.reshape)[meta.reshape[[group.by]] == g],
+          cells = cells_g,
           keep_empty = keep_empty,
           individual = individual,
           plot_type = plot_type,
@@ -714,38 +716,41 @@ FeatureStatPlot <- function(
           label = ifelse(is.null(ylab), "Expression level", ylab),
           hjust = 0.5
         )
-        plist_g <- lapply(seq_along(plist_g), FUN = function(i) {
-          p <- plist_g[[i]]
-          if (i != 1) {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  plot.title = element_blank(),
-                  plot.subtitle = element_blank(),
-                  axis.title = element_blank(),
-                  axis.text.y = element_blank(),
-                  axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
-                )
-            )
-          } else {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title.x = element_blank(),
-                  axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
-                )
-            )
+        plist_g <- lapply(
+          seq_along(plist_g),
+          FUN = function(i) {
+            p <- plist_g[[i]]
+            if (i != 1) {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    plot.title = element_blank(),
+                    plot.subtitle = element_blank(),
+                    axis.title = element_blank(),
+                    axis.text.y = element_blank(),
+                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.ticks.length.y = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                  )
+              )
+            } else {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title.x = element_blank(),
+                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.ticks.length.y = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                  )
+              )
+            }
+            return(as_grob(p))
           }
-          return(as_grob(p))
-        })
+        )
         gtable <- do.call(cbind, plist_g)
         gtable <- add_grob(gtable, lab, "bottom", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
@@ -755,43 +760,46 @@ FeatureStatPlot <- function(
           rot = 90,
           hjust = 0.5
         )
-        plist_g <- lapply(seq_along(plist_g), FUN = function(i) {
-          p <- plist_g[[i]]
-          if (i != length(plist_g)) {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title = element_blank(),
-                  axis.text.x = element_blank(),
-                  axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
-                )
-            )
-            if (i == 1) {
-              p <- p +
-                theme(
-                  plot.title = element_blank(),
-                  plot.subtitle = element_blank()
-                )
+        plist_g <- lapply(
+          seq_along(plist_g),
+          FUN = function(i) {
+            p <- plist_g[[i]]
+            if (i != length(plist_g)) {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title = element_blank(),
+                    axis.text.x = element_blank(),
+                    axis.text.y = element_text(vjust = c(0, 1)),
+                    axis.ticks.length.x = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                  )
+              )
+              if (i == 1) {
+                p <- p +
+                  theme(
+                    plot.title = element_blank(),
+                    plot.subtitle = element_blank()
+                  )
+              }
+            } else {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title.y = element_blank(),
+                    axis.text.y = element_text(vjust = c(0, 1)),
+                    axis.ticks.length.x = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                  )
+              )
             }
-          } else {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title.y = element_blank(),
-                  axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
-                )
-            )
+            return(as_grob(p))
           }
-          return(as_grob(p))
-        })
+        )
         gtable <- do.call(rbind, plist_g)
         gtable <- add_grob(gtable, lab, "left", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
