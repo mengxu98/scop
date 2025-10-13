@@ -137,15 +137,15 @@
 #' @param ref_group_palcolor The specific colors to use for the reference group palette.
 #' This should be a vector of color names or RGB values.
 #' Default is `NULL`.
-#' @param query_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+#' @param query_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 #' Each element of the vector will create a separate cell annotation track in the heatmap.
 #' If not provided, no cell annotations will be shown.
-#' @param query_cell_annotation_palette The color palette to use for the query cell annotation tracks.
+#' @param query_annotation_palette The color palette to use for the query cell annotation tracks.
 #' This can be any of the palettes available in the circlize package.
 #' If a single color palette is provided, it will be used for all cell annotation tracks.
 #' If multiple color palettes are provided, each track will be assigned a separate palette.
 #' Default is `"Paired"`.
-#' @param query_cell_annotation_palcolor The specific colors to use for the query cell annotation palettes.
+#' @param query_annotation_palcolor The specific colors to use for the query cell annotation palettes.
 #' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 #' If a single color vector is provided, it will be used for all cell annotation tracks.
 #' Default is `NULL`.
@@ -153,15 +153,15 @@
 #' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
 #' Any conflicting parameters will override the defaults set by this function.
 #' @param ref_cell_annotation_params Detail description of the `query_cell_annotation_params` argument.
-#' @param ref_cell_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
+#' @param ref_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 #' Each element of the vector will create a separate cell annotation track in the heatmap.
 #' If not provided, no cell annotations will be shown.
-#' @param ref_cell_annotation_palette The color palette to use for the reference cell annotation tracks.
+#' @param ref_annotation_palette The color palette to use for the reference cell annotation tracks.
 #' This can be any of the palettes available in the circlize package.
 #' If a single color palette is provided, it will be used for all cell annotation tracks.
 #' If multiple color palettes are provided, each track will be assigned a separate palette.
 #' Default is `"Paired"`.
-#' @param ref_cell_annotation_palcolor The specific colors to use for the reference cell annotation palettes.
+#' @param ref_annotation_palcolor The specific colors to use for the reference cell annotation palettes.
 #' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 #' If a single color vector is provided, it will be used for all cell annotation tracks.
 #' If multiple color vectors are provided, each track will be assigned a separate color vector.
@@ -237,12 +237,10 @@
 #'   label_cutoff = 0.6,
 #'   query_group = "SubCellType",
 #'   ref_group = "celltype",
-#'   query_cell_annotation = "Phase",
-#'   query_cell_annotation_palette = "Set2",
-#'   ref_cell_annotation = "tech",
-#'   ref_cell_annotation_palette = "Set3",
-#'   width = 4,
-#'   height = 4
+#'   query_annotation = "Phase",
+#'   query_annotation_palette = "Set2",
+#'   ref_annotation = "tech",
+#'   ref_annotation_palette = "Set3"
 #' )
 #' ht2$plot
 #'
@@ -265,14 +263,12 @@
 #'   show_column_names = TRUE,
 #'   query_group = "SubCellType",
 #'   ref_group = "celltype",
-#'   query_cell_annotation = c(
+#'   query_annotation = c(
 #'     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
 #'   ),
-#'   ref_cell_annotation = c(
+#'   ref_annotation = c(
 #'     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
-#'   ),
-#'   height = 2.5,
-#'   width = 3.5
+#'   )
 #' )
 #' ht4$plot
 CellCorHeatmap <- function(
@@ -330,17 +326,17 @@ CellCorHeatmap <- function(
     query_group_palcolor = NULL,
     ref_group_palette = "simspec",
     ref_group_palcolor = NULL,
-    query_cell_annotation = NULL,
-    query_cell_annotation_palette = "Paired",
-    query_cell_annotation_palcolor = NULL,
+    query_annotation = NULL,
+    query_annotation_palette = "Paired",
+    query_annotation_palcolor = NULL,
     query_cell_annotation_params = if (flip) {
       list(height = grid::unit(10, "mm"))
     } else {
       list(width = grid::unit(10, "mm"))
     },
-    ref_cell_annotation = NULL,
-    ref_cell_annotation_palette = "Paired",
-    ref_cell_annotation_palcolor = NULL,
+    ref_annotation = NULL,
+    ref_annotation_palette = "Paired",
+    ref_annotation_palcolor = NULL,
     ref_cell_annotation_params = if (flip) {
       list(width = grid::unit(10, "mm"))
     } else {
@@ -369,9 +365,9 @@ CellCorHeatmap <- function(
     ref_collapsing <- query_collapsing
     ref_group_palette <- query_group_palette
     ref_group_palcolor <- query_group_palcolor
-    ref_cell_annotation <- query_cell_annotation
-    ref_cell_annotation_palette <- query_cell_annotation_palette
-    ref_cell_annotation_palcolor <- query_cell_annotation_palcolor
+    ref_annotation <- query_annotation
+    ref_annotation_palette <- query_annotation_palette
+    ref_annotation_palcolor <- query_annotation_palcolor
     ref_legend <- FALSE
   }
   if (!is.null(bulk_ref)) {
@@ -583,88 +579,69 @@ CellCorHeatmap <- function(
     ]
   }
 
-  if (!is.null(query_cell_annotation)) {
-    if (length(query_cell_annotation_palette) == 1) {
-      query_cell_annotation_palette <- rep(
-        query_cell_annotation_palette,
-        length(query_cell_annotation)
+  if (!is.null(query_annotation)) {
+    if (length(query_annotation_palette) == 1) {
+      query_annotation_palette <- rep(
+        query_annotation_palette,
+        length(query_annotation)
       )
     }
-    if (length(query_cell_annotation_palcolor) == 1) {
-      query_cell_annotation_palcolor <- rep(
-        query_cell_annotation_palcolor,
-        length(query_cell_annotation)
+    if (length(query_annotation_palcolor) == 1) {
+      query_annotation_palcolor <- rep(
+        query_annotation_palcolor,
+        length(query_annotation)
       )
     }
     npal <- unique(c(
-      length(query_cell_annotation_palette),
-      length(query_cell_annotation_palcolor),
-      length(query_cell_annotation)
+      length(query_annotation_palette),
+      length(query_annotation_palcolor),
+      length(query_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
       log_message(
-        "query_cell_annotation_palette and query_cell_annotation_palcolor must be the same length as query_cell_annotation",
+        "{.arg query_annotation_palette} and {.arg query_annotation_palcolor} must be the same length as {.arg query_annotation}",
         message_type = "error"
       )
     }
-    if (any(!query_cell_annotation %in% c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]])))) {
+    query_annotation_all <- c(colnames(srt_query@meta.data), rownames(srt_query[[query_assay]]))
+    if (any(!query_annotation %in% query_annotation_all)) {
       log_message(
-        "query_cell_annotation: ",
-        paste0(
-          query_cell_annotation[
-            !query_cell_annotation %in%
-              c(
-                colnames(srt_query@meta.data),
-                rownames(srt_query[[query_assay]])
-              )
-          ],
-          collapse = ","
-        ),
-        " is not in the Seurat object.",
+        "{.arg query_annotation}: {.val {query_annotation[!query_annotation %in% query_annotation_all]}} is not in the object",
         message_type = "error"
       )
     }
   }
-  if (!is.null(ref_cell_annotation)) {
-    if (length(ref_cell_annotation_palette) == 1) {
-      ref_cell_annotation_palette <- rep(
-        ref_cell_annotation_palette,
-        length(ref_cell_annotation)
+  if (!is.null(ref_annotation)) {
+    if (length(ref_annotation_palette) == 1) {
+      ref_annotation_palette <- rep(
+        ref_annotation_palette,
+        length(ref_annotation)
       )
     }
-    if (length(ref_cell_annotation_palcolor) == 1) {
-      ref_cell_annotation_palcolor <- rep(
-        ref_cell_annotation_palcolor,
-        length(ref_cell_annotation)
+    if (length(ref_annotation_palcolor) == 1) {
+      ref_annotation_palcolor <- rep(
+        ref_annotation_palcolor,
+        length(ref_annotation)
       )
     }
     npal <- unique(c(
-      length(ref_cell_annotation_palette),
-      length(ref_cell_annotation_palcolor),
-      length(ref_cell_annotation)
+      length(ref_annotation_palette),
+      length(ref_annotation_palcolor),
+      length(ref_annotation)
     ))
     if (length(npal[npal != 0]) > 1) {
       log_message(
-        "ref_cell_annotation_palette and ref_cell_annotation_palcolor must be the same length as ref_cell_annotation",
+        "{.arg ref_annotation_palette} and {.arg ref_annotation_palcolor} must be the same length as {.arg ref_annotation}",
         message_type = "error"
       )
     }
-    if (
-      any(
-        !ref_cell_annotation %in%
-          c(colnames(srt_ref@meta.data), rownames(srt_ref[[ref_assay]]))
-      )
-    ) {
+    ref_annotation_all <- c(
+      colnames(srt_ref@meta.data),
+      rownames(srt_ref[[ref_assay]])
+    )
+    if (any(!ref_annotation %in% ref_annotation_all)) {
       log_message(
-        "ref_cell_annotation: ",
-        paste0(
-          ref_cell_annotation[
-            !ref_cell_annotation %in%
-              c(colnames(srt_ref@meta.data), rownames(srt_ref[[ref_assay]]))
-          ],
-          collapse = ","
-        ),
-        " is not in the Seurat object.",
+        "{.arg ref_annotation}: {.val {ref_annotation[!ref_annotation %in% ref_annotation_all]}} is not in the object",
         message_type = "error"
       )
     }
@@ -683,12 +660,18 @@ CellCorHeatmap <- function(
         max(simil_matrix, na.rm = TRUE),
         length = 100
       ),
-      palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
+      palette_colors(
+        palette = heatmap_palette,
+        palcolor = heatmap_palcolor
+      )
     )
   } else {
     colors <- circlize::colorRamp2(
       seq(limits[1], limits[2], length = 100),
-      palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
+      palette_colors(
+        palette = heatmap_palette,
+        palcolor = heatmap_palcolor
+      )
     )
   }
 
@@ -704,7 +687,7 @@ CellCorHeatmap <- function(
       cell_metadata[["cells"]],
       c(
         query_group,
-        intersect(query_cell_annotation, colnames(srt_query@meta.data))
+        intersect(query_annotation, colnames(srt_query@meta.data))
       ),
       drop = FALSE
     ],
@@ -717,7 +700,7 @@ CellCorHeatmap <- function(
           verbose = FALSE
         )[
           intersect(
-            query_cell_annotation,
+            query_annotation,
             rownames(srt_query[[query_assay]])
           ) %||%
             integer(), ,
@@ -730,7 +713,7 @@ CellCorHeatmap <- function(
   ref_metadata <- cbind.data.frame(
     srt_ref@meta.data[
       cell_metadata[["cells"]],
-      c(ref_group, intersect(ref_cell_annotation, colnames(srt_ref@meta.data))),
+      c(ref_group, intersect(ref_annotation, colnames(srt_ref@meta.data))),
       drop = FALSE
     ],
     as.data.frame(
@@ -742,7 +725,7 @@ CellCorHeatmap <- function(
           verbose = FALSE
         )[
           intersect(
-            ref_cell_annotation,
+            ref_annotation,
             rownames(srt_ref[[ref_assay]])
           ) %||%
             integer(), ,
@@ -768,17 +751,17 @@ CellCorHeatmap <- function(
   if (query_group != "All.groups") {
     if (
       isFALSE(query_collapsing) &&
-        ((isFALSE(flip) & isTRUE(cluster_rows)) ||
-          (isTRUE(flip) & isTRUE(cluster_columns)))
+        ((isFALSE(flip) && isTRUE(cluster_rows)) ||
+          (isTRUE(flip) && isTRUE(cluster_columns)))
     ) {
-      query_cell_annotation <- c(query_group, query_cell_annotation)
-      query_cell_annotation_palette <- c(
+      query_annotation <- c(query_group, query_annotation)
+      query_annotation_palette <- c(
         query_group_palette,
-        query_cell_annotation_palette
+        query_annotation_palette
       )
-      query_cell_annotation_palcolor <- c(
+      query_annotation_palcolor <- c(
         list(query_group_palcolor),
-        query_cell_annotation_palcolor %||% list(NULL)
+        query_annotation_palcolor %||% list(NULL)
       )
     } else {
       funbody <- paste0(
@@ -813,8 +796,9 @@ CellCorHeatmap <- function(
       )
 
       anno <- list()
+      query_group_name <- paste0(c("Query", query_group), collapse = ":")
       if (isTRUE(query_collapsing)) {
-        anno[[paste0(c("Query", query_group), collapse = ":")]] <- ComplexHeatmap::anno_block(
+        anno[[query_group_name]] <- ComplexHeatmap::anno_block(
           align_to = split(
             seq_along(levels(cell_groups[["query_group"]])),
             levels(cell_groups[["query_group"]])
@@ -824,7 +808,7 @@ CellCorHeatmap <- function(
           show_name = FALSE
         )
       } else {
-        anno[[paste0(c("Query", query_group), collapse = ":")]] <- ComplexHeatmap::anno_block(
+        anno[[query_group_name]] <- ComplexHeatmap::anno_block(
           align_to = split(
             seq_along(cell_groups[["query_group"]]),
             cell_groups[["query_group"]]
@@ -844,12 +828,9 @@ CellCorHeatmap <- function(
           border = TRUE
         )
       )
-      ha_query_list[[paste0(
-        c("Query", query_group),
-        collapse = ":"
-      )]] <- ha_cell_group
-      lgd[[paste0(c("Query", query_group), collapse = ":")]] <- ComplexHeatmap::Legend(
-        title = paste0(c("Query", query_group), collapse = ":"),
+      ha_query_list[[query_group_name]] <- ha_cell_group
+      lgd[[query_group_name]] <- ComplexHeatmap::Legend(
+        title = query_group_name,
         labels = levels(srt_query[[query_group, drop = TRUE]]),
         legend_gp = grid::gpar(
           fill = palette_colors(
@@ -867,17 +848,17 @@ CellCorHeatmap <- function(
   if (ref_group != "All.groups") {
     if (
       isFALSE(ref_collapsing) &&
-        ((isFALSE(flip) & isTRUE(cluster_columns)) ||
-          (isTRUE(flip) & isTRUE(cluster_rows)))
+        ((isFALSE(flip) && isTRUE(cluster_columns)) ||
+          (isTRUE(flip) && isTRUE(cluster_rows)))
     ) {
-      ref_cell_annotation <- c(ref_group, ref_cell_annotation)
-      ref_cell_annotation_palette <- c(
+      ref_annotation <- c(ref_group, ref_annotation)
+      ref_annotation_palette <- c(
         ref_group_palette,
-        ref_cell_annotation_palette
+        ref_annotation_palette
       )
-      ref_cell_annotation_palcolor <- c(
+      ref_annotation_palcolor <- c(
         list(ref_group_palcolor),
-        ref_cell_annotation_palcolor %||% list(NULL)
+        ref_annotation_palcolor %||% list(NULL)
       )
     } else {
       funbody <- paste0(
@@ -909,8 +890,9 @@ CellCorHeatmap <- function(
       )
 
       anno <- list()
+      ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
       if (isTRUE(ref_collapsing)) {
-        anno[[paste0(c("Ref", ref_group), collapse = ":")]] <- ComplexHeatmap::anno_block(
+        anno[[ref_group_name]] <- ComplexHeatmap::anno_block(
           align_to = split(
             seq_along(levels(cell_groups[["ref_group"]])),
             levels(cell_groups[["ref_group"]])
@@ -920,7 +902,7 @@ CellCorHeatmap <- function(
           show_name = FALSE
         )
       } else {
-        anno[[paste0(c("Ref", ref_group), collapse = ":")]] <- ComplexHeatmap::anno_block(
+        anno[[ref_group_name]] <- ComplexHeatmap::anno_block(
           align_to = split(
             seq_along(cell_groups[["ref_group"]]),
             cell_groups[["ref_group"]]
@@ -941,12 +923,9 @@ CellCorHeatmap <- function(
           border = TRUE
         )
       )
-      ha_ref_list[[paste0(
-        c("Ref", ref_group),
-        collapse = ":"
-      )]] <- ha_cell_group
-      lgd[[paste0(c("Ref", ref_group), collapse = ":")]] <- ComplexHeatmap::Legend(
-        title = paste0(c("Ref", ref_group), collapse = ":"),
+      ha_ref_list[[ref_group_name]] <- ha_cell_group
+      lgd[[ref_group_name]] <- ComplexHeatmap::Legend(
+        title = ref_group_name,
         labels = levels(srt_ref[[ref_group, drop = TRUE]]),
         legend_gp = grid::gpar(
           fill = palette_colors(
@@ -960,12 +939,12 @@ CellCorHeatmap <- function(
     }
   }
 
-  if (!is.null(query_cell_annotation)) {
+  if (!is.null(query_annotation)) {
     query_subplots_list <- list()
-    for (i in seq_along(query_cell_annotation)) {
-      cellan <- query_cell_annotation[i]
-      palette <- query_cell_annotation_palette[i]
-      palcolor <- query_cell_annotation_palcolor[[i]]
+    for (i in seq_along(query_annotation)) {
+      cellan <- query_annotation[i]
+      palette <- query_annotation_palette[i]
+      palcolor <- query_annotation_palcolor[[i]]
       cell_anno <- cell_metadata[, paste0("query_", cellan)]
       names(cell_anno) <- rownames(cell_metadata)
       if (!is.numeric(cell_anno)) {
@@ -1051,23 +1030,16 @@ CellCorHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_query <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]])
-          ) {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- ha_query
+          ha_query <- do.call(
+            ComplexHeatmap::HeatmapAnnotation,
+            args = anno_args
+          )
+          query_group_name <- paste0(c("Query", query_group), collapse = ":")
+          if (is.null(ha_query_list[[query_group_name]])) {
+            ha_query_list[[query_group_name]] <- ha_query
           } else {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- c(
-              ha_query_list[[paste0(c("Query", query_group), collapse = ":")]],
+            ha_query_list[[query_group_name]] <- c(
+              ha_query_list[[query_group_name]],
               ha_query
             )
           }
@@ -1100,29 +1072,23 @@ CellCorHeatmap <- function(
               names(anno_args)
             )]
           )
-          ha_query <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]])
-          ) {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- ha_query
+          ha_query <- do.call(
+            ComplexHeatmap::HeatmapAnnotation,
+            args = anno_args
+          )
+          query_group_name <- paste0(c("Query", query_group), collapse = ":")
+          if (is.null(ha_query_list[[query_group_name]])) {
+            ha_query_list[[query_group_name]] <- ha_query
           } else {
-            ha_query_list[[paste0(
-              c("Query", query_group),
-              collapse = ":"
-            )]] <- c(
-              ha_query_list[[paste0(c("Query", query_group), collapse = ":")]],
+            ha_query_list[[query_group_name]] <- c(
+              ha_query_list[[query_group_name]],
               ha_query
             )
           }
         }
-        lgd[[paste0(c("Query", cellan), collapse = ":")]] <- ComplexHeatmap::Legend(
-          title = paste0(c("Query", cellan), collapse = ":"),
+        query_cell_name <- paste0(c("Query", cellan), collapse = ":")
+        lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
+          title = query_cell_name,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
             fill = palette_colors(
@@ -1286,8 +1252,9 @@ CellCorHeatmap <- function(
               ha_query
             )
           }
-          lgd[[paste0(c("Query", cellan), collapse = ":")]] <- ComplexHeatmap::Legend(
-            title = paste0(c("Query", cellan), collapse = ":"),
+          query_cell_name <- paste0(c("Query", cellan), collapse = ":")
+          lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
+            title = query_cell_name,
             col_fun = col_fun,
             border = TRUE
           )
@@ -1296,12 +1263,12 @@ CellCorHeatmap <- function(
     }
   }
 
-  if (!is.null(ref_cell_annotation)) {
+  if (!is.null(ref_annotation)) {
     ref_subplots_list <- list()
-    for (i in seq_along(ref_cell_annotation)) {
-      cellan <- ref_cell_annotation[i]
-      palette <- ref_cell_annotation_palette[i]
-      palcolor <- ref_cell_annotation_palcolor[[i]]
+    for (i in seq_along(ref_annotation)) {
+      cellan <- ref_annotation[i]
+      palette <- ref_annotation_palette[i]
+      palcolor <- ref_annotation_palcolor[[i]]
       cell_anno <- cell_metadata[, paste0("ref_", cellan)]
       names(cell_anno) <- rownames(cell_metadata)
       if (!is.numeric(cell_anno)) {
@@ -1388,13 +1355,12 @@ CellCorHeatmap <- function(
             )]
           )
           ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]])
-          ) {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- ha_ref
+          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
+          if (is.null(ha_ref_list[[ref_group_name]])) {
+            ha_ref_list[[ref_group_name]] <- ha_ref
           } else {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- c(
-              ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]],
+            ha_ref_list[[ref_group_name]] <- c(
+              ha_ref_list[[ref_group_name]],
               ha_ref
             )
           }
@@ -1428,19 +1394,19 @@ CellCorHeatmap <- function(
             )]
           )
           ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]])
-          ) {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- ha_ref
+          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
+          if (is.null(ha_ref_list[[ref_group_name]])) {
+            ha_ref_list[[ref_group_name]] <- ha_ref
           } else {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- c(
-              ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]],
+            ha_ref_list[[ref_group_name]] <- c(
+              ha_ref_list[[ref_group_name]],
               ha_ref
             )
           }
         }
-        lgd[[paste0(c("Ref", cellan), collapse = ":")]] <- ComplexHeatmap::Legend(
-          title = paste0(c("Ref", cellan), collapse = ":"),
+        ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
+        lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
+          title = ref_cell_name,
           labels = levels(cell_anno),
           legend_gp = grid::gpar(
             fill = palette_colors(
@@ -1532,13 +1498,12 @@ CellCorHeatmap <- function(
             )]
           )
           ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]])
-          ) {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- ha_ref
+          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
+          if (is.null(ha_ref_list[[ref_group_name]])) {
+            ha_ref_list[[ref_group_name]] <- ha_ref
           } else {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- c(
-              ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]],
+            ha_ref_list[[ref_group_name]] <- c(
+              ha_ref_list[[ref_group_name]],
               ha_ref
             )
           }
@@ -1573,18 +1538,18 @@ CellCorHeatmap <- function(
             )]
           )
           ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (
-            is.null(ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]])
-          ) {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- ha_ref
+          ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
+          if (is.null(ha_ref_list[[ref_group_name]])) {
+            ha_ref_list[[ref_group_name]] <- ha_ref
           } else {
-            ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]] <- c(
-              ha_ref_list[[paste0(c("Ref", ref_group), collapse = ":")]],
+            ha_ref_list[[ref_group_name]] <- c(
+              ha_ref_list[[ref_group_name]],
               ha_ref
             )
           }
-          lgd[[paste0(c("Ref", cellan), collapse = ":")]] <- ComplexHeatmap::Legend(
-            title = paste0(c("Ref", cellan), collapse = ":"),
+          ref_cell_name <- paste0(c("Ref", cellan), collapse = ":")
+          lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
+            title = ref_cell_name,
             col_fun = col_fun,
             border = TRUE
           )
@@ -1703,9 +1668,7 @@ CellCorHeatmap <- function(
   )
   if (any(names(ht_params) %in% names(ht_args))) {
     log_message(
-      "ht_params: ",
-      paste0(intersect(names(ht_params), names(ht_args)), collapse = ","),
-      " were duplicated and will not be used.",
+      "{.arg ht_params}: {.val {intersect(names(ht_params), names(ht_args))}} were duplicated and will not be used",
       message_type = "warning"
     )
   }
