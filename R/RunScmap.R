@@ -95,8 +95,7 @@ RunScmap <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: ", status_query)
@@ -104,8 +103,7 @@ RunScmap <- function(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: ", status_ref)
@@ -123,14 +121,12 @@ RunScmap <- function(
     counts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     ),
     logcounts = GetAssayData5(
       object = srt_query,
       assay = query_assay,
-      layer = "data",
-      verbose = FALSE
+      layer = "data"
     )
   )
   sce_query <- methods::as(
@@ -151,14 +147,12 @@ RunScmap <- function(
     counts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     ),
     logcounts = GetAssayData5(
       object = srt_ref,
       assay = ref_assay,
-      layer = "data",
-      verbose = FALSE
+      layer = "data"
     )
   )
   sce_ref <- methods::as(

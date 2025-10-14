@@ -287,8 +287,7 @@ DynamicPlot <- function(
     GetAssayData5(
       srt,
       assay = assay,
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     )
   )
   for (l in lineages) {
