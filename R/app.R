@@ -54,8 +54,7 @@ CreateDataFile <- function(
         GetAssayData5(
           srt,
           layer = layer,
-          assay = assay,
-          verbose = FALSE
+          assay = assay
         )
       )
       assay_group <- paste0(name, "/", assay)

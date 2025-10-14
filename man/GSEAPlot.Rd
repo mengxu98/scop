@@ -47,7 +47,7 @@ GSEAPlot(
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
   character_width = 50,
-  lineheight = 0.5,
+  lineheight = 0.7,
   palette = "Spectral",
   palcolor = NULL,
   aspect.ratio = NULL,
@@ -95,7 +95,8 @@ Default is \code{NULL}.}
 \item{padjustCutoff}{The p-adjusted cutoff.
 Default is \code{0.05}.}
 
-\item{topTerm}{The number of top terms to display. Default is 6, or 100 if \code{plot_type} is \code{"enrichmap"}.}
+\item{topTerm}{The number of top terms to display.
+Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}
 
 \item{direction}{The direction of enrichment to include in the plot.
 Must be one of "pos", "neg", or "both". The default value is "both".}
@@ -185,7 +186,7 @@ Default is \code{c(0.5, 0.5)}.}
 Default is \code{50}.}
 
 \item{lineheight}{The line height for y-axis labels.
-Default is \code{0.5}.}
+Default is \code{0.7}.}
 
 \item{palette}{The color palette to use.
 Default is \code{"Spectral"}.}
@@ -226,6 +227,7 @@ Default is \code{TRUE}.}
 This function generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
@@ -332,6 +334,7 @@ GSEAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+}
 }
 \seealso{
 \link{RunGSEA}

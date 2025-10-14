@@ -57,7 +57,7 @@ Defaults to \code{NULL}.}
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
 
-\item{verbose}{Whether to print progress messages.
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{seed}{An integer specifying the seed for random number generation. Defaults to \code{11}.}

@@ -43,8 +43,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 raw_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "counts",
-  verbose = FALSE
+  layer = "counts"
 )
 
 # Normalized the data
@@ -54,8 +53,7 @@ pancreas_sub <- Seurat::NormalizeData(pancreas_sub)
 data <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "data",
-  verbose = FALSE
+  layer = "data"
 )
 new_pancreas_sub <- SeuratObject::SetAssayData(
   object = pancreas_sub,
@@ -68,8 +66,7 @@ pancreas_sub <- RecoverCounts(new_pancreas_sub)
 new_counts <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "counts",
-  verbose = FALSE
+  layer = "counts"
 )
 identical(raw_counts, new_counts)
 }

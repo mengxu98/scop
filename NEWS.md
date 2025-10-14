@@ -1,5 +1,33 @@
 # scop
 
+# scop 0.3.3
+
+* **func**:
+  * Multiple functions: Improved parameter documentation formatting and consistency across the package.
+
+# scop 0.3.2
+
+* **func**:
+  * `GetFeaturesData()` and `AddFeaturesData()`: Enhanced argument clarity, added input validation, and standardized return values for `Seurat`, `Assay`, and `Assay5` objects.
+  * `CellCorHeatmap()`: 
+    - Renamed parameters: `query_cell_annotation` → `query_annotation`, `ref_cell_annotation` → `ref_annotation`.
+    - Improved error message formatting using cli-style formatting.
+    - Simplified variable assignments and improved readability.
+
+* **docs**:
+  * Comprehensive documentation updates across multiple functions including `AnnotateFeatures`, `CellDimPlot`, `CellStatPlot`, `FeatureStatPlot`, `GroupHeatmap`, `RunCellQC`, and others.
+  * Improved parameter descriptions and function clarity.
+
+# scop 0.3.1
+
+* **func**:
+  * `EnrichmentPlot()` and `GSEAPlot()`: Removed conditional font face styling (`face = ifelse()` logic) for better text rendering consistency. Set the default value of `lineheight` from `0.5` to `0.7`.
+  * Updated `check_r()` function for improved package checking functionality.
+  * Updated reexports functionality.
+
+* **docs**:
+  * Updated documentation formatting and consistency.
+
 # scop 0.3.0
 
 * **func**:

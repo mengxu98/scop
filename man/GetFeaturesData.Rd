@@ -5,7 +5,7 @@
 \alias{GetFeaturesData.Seurat}
 \alias{GetFeaturesData.Assay}
 \alias{GetFeaturesData.Assay5}
-\title{GetFeaturesData}
+\title{Get features data}
 \usage{
 GetFeaturesData(object, ...)
 
@@ -16,17 +16,17 @@ GetFeaturesData(object, ...)
 \method{GetFeaturesData}{Assay5}(object, ...)
 }
 \arguments{
-\item{object}{A object}
+\item{object}{A \code{Assay}, \code{Assay5} or \code{Seurat} object.}
 
-\item{...}{Additional arguments passed to the method}
+\item{...}{Additional arguments passed to the method.}
 
-\item{assay}{Assay to get data from}
+\item{assay}{Assay name to use. Default is \code{NULL}.}
 }
 \value{
-data
+A data frame containing the features data.
 }
 \description{
-Get the data from the \pkg{Seurat} object
+Get the data from the \code{Assay}, \code{Assay5} or \code{Seurat} object.
 }
 \examples{
 data(pancreas_sub)
