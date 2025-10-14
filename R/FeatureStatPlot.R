@@ -387,8 +387,7 @@
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data",
-#'   verbose = FALSE
+#'   layer = "data"
 #' )
 #' pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
@@ -496,8 +495,7 @@ FeatureStatPlot <- function(
   exp.data <- GetAssayData5(
     srt,
     assay = assay,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )
   plot.by <- match.arg(plot.by)
 

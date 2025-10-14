@@ -40,8 +40,7 @@ if (interactive()) {
   panc8_sub <- subset(panc8, cells = cells_sub)
   counts <- GetAssayData5(
     panc8_sub,
-    layer = "counts",
-    verbose = FALSE
+    layer = "counts"
   )
   panc8_sub <- CreateSeuratObject(
     counts = counts,

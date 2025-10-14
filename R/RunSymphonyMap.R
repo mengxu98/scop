@@ -149,8 +149,7 @@ RunSymphonyMap <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: {.val {status_query}}")
@@ -158,8 +157,7 @@ RunSymphonyMap <- function(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: {.val {status_ref}}")
@@ -187,8 +185,7 @@ RunSymphonyMap <- function(
     exp_query = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     ),
     metadata_query = srt_query@meta.data,
     ref_obj = ref,

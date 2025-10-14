@@ -131,8 +131,7 @@ RunUMAP2.Seurat <- function(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay,
-          verbose = FALSE
+          assay = assay
         )[features, ]
       )
     )
@@ -458,7 +457,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = FALSE
       )
       rownames(x = embeddings) <- attr(object, "Labels")
@@ -494,7 +493,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {
@@ -580,7 +579,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {
@@ -623,7 +622,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {
