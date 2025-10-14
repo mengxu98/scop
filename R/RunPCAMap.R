@@ -125,8 +125,7 @@ RunPCAMap <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: ", status_query)
@@ -134,8 +133,7 @@ RunPCAMap <- function(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: ", status_ref)
@@ -167,8 +165,7 @@ RunPCAMap <- function(
     GetAssayData5(
       object = srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )[
       features,
     ],
@@ -191,8 +188,7 @@ RunPCAMap <- function(
     GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )[
       features_common,
     ]

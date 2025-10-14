@@ -34,8 +34,7 @@ if (interactive()) {
     GetAssayData5(
       ifnb_sub,
       assay = "RNA",
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     )
   ) > 0, ]
   ifnb_sub <- UpdateSeuratObject(ifnb_sub)

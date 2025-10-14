@@ -103,8 +103,7 @@ RunMDS.Assay <- function(
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )
   features_var <- apply(
     X = data_use[features, ],
@@ -148,8 +147,7 @@ RunMDS.Assay5 <- function(
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
     object = object,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )
   features_var <- apply(
     X = data_use[features, ],

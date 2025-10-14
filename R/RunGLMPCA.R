@@ -102,7 +102,6 @@ RunGLMPCA.Assay <- function(
   data.use <- GetAssayData5(
     object = object,
     layer = layer,
-    verbose = FALSE,
     ...
   )
   features.var <- apply(
@@ -149,7 +148,6 @@ RunGLMPCA.Assay5 <- function(
   data.use <- GetAssayData5(
     object = object,
     layer = layer,
-    verbose = FALSE,
     ...
   )
   features.var <- apply(

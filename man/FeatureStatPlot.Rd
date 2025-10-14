@@ -547,8 +547,7 @@ FeatureStatPlot(pancreas_sub,
 data <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
-  layer = "data",
-  verbose = FALSE
+  layer = "data"
 )
 pancreas_sub <- SeuratObject::SetAssayData(
   object = pancreas_sub,
