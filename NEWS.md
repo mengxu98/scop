@@ -1,5 +1,10 @@
 # scop
 
+# scop 0.3.3
+
+* **func**:
+  * Multiple functions: Improved parameter documentation formatting and consistency across the package.
+
 # scop 0.3.2
 
 * **func**:
