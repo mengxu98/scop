@@ -171,8 +171,7 @@ db_Scrublet <- function(
       GetAssayData5(
         object = srt,
         assay = assay,
-        layer = "counts",
-        verbose = FALSE
+        layer = "counts"
       )
     )
   )

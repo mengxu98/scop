@@ -126,8 +126,7 @@ RunSeuratMap <- function(
     GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: ", status_query)
@@ -135,8 +134,7 @@ RunSeuratMap <- function(
     GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: ", status_ref)

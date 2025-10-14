@@ -570,8 +570,7 @@ FeatureDimPlot <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer,
-          verbose = FALSE
+          layer = layer
         )[features_gene, , drop = FALSE],
         2,
         function(x) exp(mean(log(x)))
@@ -582,8 +581,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         ),
         2,
@@ -606,8 +604,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )
         )
       )
@@ -617,8 +614,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         )
       )
@@ -1984,8 +1980,7 @@ FeatureDimPlot3D <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer,
-          verbose = FALSE
+          layer = layer
         )[features_gene, , drop = FALSE],
         2,
         function(x) exp(mean(log(x)))
@@ -1996,8 +1991,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         ),
         2,
@@ -2020,8 +2014,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )
         )
       )
@@ -2031,8 +2024,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         )
       )

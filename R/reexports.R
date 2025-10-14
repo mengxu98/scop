@@ -13,8 +13,6 @@
 #' @export
 dplyr::`%>%`
 
-.scop_env <- new.env(parent = emptyenv())
-
 #' @importFrom rlang %||%
 #' @export
 rlang::`%||%`
