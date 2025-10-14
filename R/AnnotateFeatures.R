@@ -6,31 +6,33 @@
 #' @md
 #' @param srt Seurat object to be annotated.
 #' @param species Name of the species to be used for annotation.
-#' Default is "Homo_sapiens".
+#' Default is `"Homo_sapiens"`.
 #' @param IDtype Type of identifier to use for annotation.
-#' Default is "symbol" with options "symbol", "ensembl_id", and "entrez_id".
+#' Options are `"symbol"`, `"ensembl_id"`, or `"entrez_id"`.
+#' Default is `"symbol"`.
 #' @param db Vector of database names to be used for annotation.
-#' Default is NULL.
+#' Default is `NULL`.
 #' @param db_update Logical value indicating whether to update the database.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #' @param db_version Version of the database to use.
-#' Default is "latest".
+#' Default is `"latest"`.
 #' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
-#' The default value is TRUE.
+#' Default is `TRUE`.
 #' @param Ensembl_version Version of the Ensembl database to use.
-#' Default is 103.
+#' Default is `103`.
 #' @param mirror URL of the mirror to use for Ensembl database.
-#' Default is NULL.
+#' Default is `NULL`.
 #' @param gtf Path to the GTF file to be used for annotation.
-#' Default is NULL.
+#' Default is `NULL`.
 #' @param merge_gtf_by Column name to merge the GTF file by.
-#' Default is "gene_name".
+#' Default is `"gene_name"`.
 #' @param columns Vector of column names to be used from the GTF file.
-#' Default is "seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type".
+#' Default is `"seqname"`, `"feature"`, `"start"`, `"end"`,
+#' `"strand"`, `"gene_id"`, `"gene_name"`, `"gene_type"`.
 #' @param assays Character vector of assay names to be annotated.
-#' Default is "RNA".
+#' Default is `"RNA"`.
 #' @param overwrite Logical value indicating whether to overwrite existing metadata.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #'
 #' @seealso
 #' [PrepareDB], [ListDB]
@@ -38,6 +40,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
@@ -53,12 +56,10 @@
 #' )
 #' head(
 #'   GetFeaturesData(
-#'     pancreas_sub,
-#'     assays = "RNA"
+#'     pancreas_sub
 #'   )
 #' )
 #'
-#' \dontrun{
 #' # Annotate features using a GTF file
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
@@ -66,8 +67,7 @@
 #' )
 #' head(
 #'   GetFeaturesData(
-#'     pancreas_sub,
-#'     assays = "RNA"
+#'     pancreas_sub
 #'   )
 #' )
 #' }
@@ -207,15 +207,18 @@ AnnotateFeatures <- function(
     }
 
     gtf_attribute <- gtf_all[["attribute"]]
-    gtf_attribute <- gsub(pattern = "\"", replacement = "", x = gtf_attribute)
+    gtf_attribute <- gsub(
+      pattern = "\"", replacement = "", x = gtf_attribute
+    )
     gtf_attribute <- strsplit(gtf_attribute, split = "; *")
-    gene_attr <- lapply(gtf_attribute, function(x) {
-      detail <- strsplit(x, " ")
-      out <- lapply(detail, function(x) x[2:length(x)])
-      names(out) <- sapply(detail, function(x) x[1])
-      out <- out[intersect(columns, names(out))]
-      return(out)
-    })
+    gene_attr <- lapply(
+      gtf_attribute, function(x) {
+        detail <- strsplit(x, " ")
+        out <- lapply(detail, function(x) x[2:length(x)])
+        names(out) <- sapply(detail, function(x) x[1])
+        out[intersect(columns, names(out))]
+      }
+    )
     gene_attr_df <- data.table::rbindlist(gene_attr, fill = TRUE)
     gtf_columns <- cbind(
       gtf_all[, intersect(colnames(gtf_all), columns), with = FALSE],

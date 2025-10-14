@@ -1,15 +1,18 @@
-#' @title GetFeaturesData
-#' @description Get the data from the \pkg{Seurat} object
+#' @title Get features data
 #'
-#' @param object A object
-#' @param ... Additional arguments passed to the method
-#' @return data
+#' @description Get the data from the `Assay`, `Assay5` or `Seurat` object.
+#'
+#' @md
+#' @param object A `Assay`, `Assay5` or `Seurat` object.
+#' @param assay Assay name to use. Default is `NULL`.
+#' @param ... Additional arguments passed to the method.
+#'
+#' @return A data frame containing the features data.
 #' @export
 GetFeaturesData <- function(object, ...) {
   UseMethod(generic = "GetFeaturesData", object = object)
 }
 
-#' @param assay Assay to get data from
 #' @export
 #' @rdname GetFeaturesData
 #' @method GetFeaturesData Seurat
@@ -44,29 +47,19 @@ GetFeaturesData.Assay <- function(
 GetFeaturesData.Assay5 <- function(
     object,
     ...) {
-  misc <- object@misc
-  meta.features <- data.frame(
-    row.names = rownames(object)
-  ) |> as.data.frame()
-
-  if (is.null(misc)) {
-    return(meta.features)
-  } else {
-    if ("meta.features" %in% names(misc)) {
-      return(as.data.frame(misc[["meta.features"]]))
-    } else {
-      return(meta.features)
-    }
-  }
+  return(object[[]])
 }
 
-#' @title AddFeaturesData
-#' @description Add the data to the Seurat object
-#' @param object A object
-#' @param assay Assay to add data to
-#' @param features Features to add data to
-#' @param ... Additional arguments passed to the method
-#' @return data
+#' @title Add features data
+#'
+#' @description
+#' Add features data to the `Assay`, `Assay5` or `Seurat` object.
+#'
+#' @inheritParams GetFeaturesData
+#' @param features Features data to add.
+#' @param ... Additional arguments passed to the method.
+#'
+#' @return A `Assay`, `Assay5` or `Seurat` object.
 #' @export
 AddFeaturesData <- function(object, ...) {
   UseMethod(
@@ -105,7 +98,7 @@ AddFeaturesData.Assay <- function(
     object,
     features,
     ...) {
-  object@meta.features <- features
+  object@meta.features <- .check_features_data(object, features)
   return(object)
 }
 
@@ -116,6 +109,28 @@ AddFeaturesData.Assay5 <- function(
     object,
     features,
     ...) {
-  object@misc$meta.features <- features
+  object[[]] <- .check_features_data(object, features)
   return(object)
+}
+
+.check_features_data <- function(object, features) {
+  features_rownames <- rownames(object)
+  features_rownames_add <- rownames(features)
+  if (is.null(features_rownames_add)) {
+    cli::cli_abort(
+      "{.arg features} must have rownames"
+    )
+  }
+  if (length(features_rownames) != length(features_rownames_add)) {
+    cli::cli_abort(
+      "{.arg features} must have the same number of rownames as the object"
+    )
+  }
+  if (any(!features_rownames_add %in% features_rownames)) {
+    cli::cli_abort(
+      "{.arg features} must have the same rownames as the object"
+    )
+  }
+  features <- features[features_rownames, , drop = FALSE]
+  return(features)
 }

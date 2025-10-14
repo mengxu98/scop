@@ -102,7 +102,6 @@ RunGLMPCA.Assay <- function(
   data.use <- GetAssayData5(
     object = object,
     layer = layer,
-    verbose = FALSE,
     ...
   )
   features.var <- apply(
@@ -149,7 +148,6 @@ RunGLMPCA.Assay5 <- function(
   data.use <- GetAssayData5(
     object = object,
     layer = layer,
-    verbose = FALSE,
     ...
   )
   features.var <- apply(
@@ -223,7 +221,11 @@ RunGLMPCA.default <- function(
         nfeatures = nfeatures.print
       )
     )
-    log_message(paste(msg, collapse = "\n"))
+    log_message(
+      paste(msg, collapse = "\n"),
+      multiline_indent = FALSE,
+      timestamp = FALSE
+    )
   }
   return(reduction.data)
 }

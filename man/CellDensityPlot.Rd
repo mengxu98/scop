@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellDensityPlot.R
 \name{CellDensityPlot}
 \alias{CellDensityPlot}
-\title{CellDensityPlot}
+\title{Cell density plot}
 \usage{
 CellDensityPlot(
   srt,
@@ -45,62 +45,81 @@ CellDensityPlot(
 \item{group.by}{A character vector specifying the variables to group the data by.}
 
 \item{split.by}{A character vector specifying the variables to split the data by.
-Default is NULL, which means no splitting is performed.}
+Default is \code{NULL}, which means no splitting is performed.}
 
 \item{assay}{A character specifying the assay to use from the Seurat object.
-Default is NULL, which means the default assay will be used.}
+Default is \code{NULL}, which means the default assay will be used.}
 
-\item{layer}{A character specifying the layer to use from the assay. Default is "data".}
+\item{layer}{A character specifying the layer to use from the assay.
+Default is \code{"data"}.}
 
-\item{flip}{Whether to flip the x-axis. Default is FALSE.}
+\item{flip}{Whether to flip the x-axis. Default is \code{FALSE}.}
 
-\item{reverse}{Whether to reverse the y-axis. Default is FALSE.}
+\item{reverse}{Whether to reverse the y-axis. Default is \code{FALSE}.}
 
-\item{x_order}{A character specifying how to order the x-axis. Can be "value" or "rank". Default is "value".}
+\item{x_order}{A character specifying how to order the x-axis.
+Can be \code{"value"} or \code{"rank"}.
+Default is \code{"value"}.}
 
-\item{decreasing}{Whether to order the groups in decreasing order. Default is NULL.}
+\item{decreasing}{Whether to order the groups in decreasing order.
+Default is \code{NULL}.}
 
-\item{palette}{A character specifying the color palette to use for grouping variables. Default is "Paired".}
+\item{palette}{The color palette to use for grouping variables.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{A character specifying the color to use for each group. Default is NULL.}
+\item{palcolor}{The color to use for each group.
+Default is \code{NULL}.}
 
-\item{cells}{A character vector specifying the cells to plot. Default is NULL, which means all cells are included.}
+\item{cells}{A character vector specifying the cells to plot.
+Default is \code{NULL}, which means all cells are included.}
 
-\item{keep_empty}{Whether to keep empty groups. Default is FALSE.}
+\item{keep_empty}{Whether to keep empty groups. Default is \code{FALSE}.}
 
-\item{y.nbreaks}{A number of breaks on the y-axis. Default is 4.}
+\item{y.nbreaks}{A number of breaks on the y-axis. Default is \code{4}.}
 
-\item{y.min}{A numeric specifying the minimum value on the y-axis. Default is NULL, which means the minimum value will be automatically determined.}
+\item{y.min}{A numeric specifying the minimum value on the y-axis.
+Default is \code{NULL}, which means the minimum value will be automatically determined.}
 
-\item{y.max}{A numeric specifying the maximum value on the y-axis. Default is NULL, which means the maximum value will be automatically determined.}
+\item{y.max}{A numeric specifying the maximum value on the y-axis.
+Default is \code{NULL}, which means the maximum value will be automatically determined.}
 
-\item{same.y.lims}{Whether to use the same y-axis limits for all plots. Default is FALSE.}
+\item{same.y.lims}{Whether to use the same y-axis limits for all plots.
+Default is \code{FALSE}.}
 
-\item{aspect.ratio}{A numeric specifying the aspect ratio of the plot. Default is NULL, which means the aspect ratio will be automatically determined.}
+\item{aspect.ratio}{A numeric specifying the aspect ratio of the plot.
+Default is \code{NULL}, which means the aspect ratio will be automatically determined.}
 
-\item{title}{A character specifying the title of the plot. Default is NULL.}
+\item{title}{A character specifying the title of the plot.
+Default is \code{NULL}.}
 
-\item{subtitle}{A character specifying the subtitle of the plot. Default is NULL.}
+\item{subtitle}{A character specifying the subtitle of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{A character specifying the position of the legend. Default is "right".}
+\item{legend.position}{A character specifying the position of the legend.
+Default is \code{"right"}.}
 
-\item{legend.direction}{A character specifying the direction of the legend. Default is "vertical".}
+\item{legend.direction}{A character specifying the direction of the legend.
+Default is \code{"vertical"}.}
 
-\item{theme_use}{A character specifying the theme to use. Default is "theme_scop".}
+\item{theme_use}{A character specifying the theme to use.
+Default is \code{"theme_scop"}.}
 
 \item{theme_args}{A list of arguments to pass to the theme function.}
 
-\item{combine}{Whether to combine multiple plots into a single plot. Default is TRUE.}
+\item{combine}{Whether to combine multiple plots into a single plot.
+Default is \code{TRUE}.}
 
 \item{nrow}{A number of rows in the combined plot.
-Default is NULL, which means determined automatically based on the number of plots.}
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{ncol}{A number of columns in the combined plot.
-Default is NULL, which means determined automatically based on the number of plots.}
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Whether to add plots by row or by column in the combined plot. Default is TRUE.}
+\item{byrow}{Whether to add plots by row or by column in the combined plot.
+Default is \code{TRUE}.}
 
-\item{force}{Whether to continue plotting if there are more than 50 features. Default is FALSE.}
+\item{force}{Whether to continue plotting if there are more than 50 features.
+Default is \code{FALSE}.}
 }
 \description{
 Plots the density of specified features in a single or multiple groups,
@@ -120,12 +139,14 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
+
 CellDensityPlot(
   pancreas_sub,
   features = "Lineage1",
   group.by = "SubCellType",
   aspect.ratio = 1
 )
+
 CellDensityPlot(
   pancreas_sub,
   features = "Lineage1",

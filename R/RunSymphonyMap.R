@@ -2,8 +2,8 @@
 #'
 #' @md
 #' @inheritParams RunKNNMap
-#' @param ref_pca A character string specifying the name of the PCA reduction in the reference object to use for calculating the distance metric.
-#' @param ref_harmony A character string specifying the name of the Harmony reduction in the reference object to use for calculating the distance metric.
+#' @param ref_pca The PCA reduction in the reference object to use for calculating the distance metric.
+#' @param ref_harmony The Harmony reduction in the reference object to use for calculating the distance metric.
 #'
 #' @export
 #'
@@ -65,7 +65,7 @@ RunSymphonyMap <- function(
       }
     } else {
       log_message(
-        "Length of {.arg ref_group} must be one or length of {.arg srt_ref}.",
+        "Length of {.arg ref_group} must be one or length of {.arg srt_ref}",
         message_type = "error"
       )
     }
@@ -149,8 +149,7 @@ RunSymphonyMap <- function(
     data = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: {.val {status_query}}")
@@ -158,8 +157,7 @@ RunSymphonyMap <- function(
     data = GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: {.val {status_ref}}")
@@ -187,8 +185,7 @@ RunSymphonyMap <- function(
     exp_query = GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     ),
     metadata_query = srt_query@meta.data,
     ref_obj = ref,
@@ -236,4 +233,141 @@ RunSymphonyMap <- function(
   )
 
   return(srt_query)
+}
+
+buildReferenceFromSeurat <- function(
+    obj,
+    assay = "RNA",
+    pca = "pca",
+    pca_dims = NULL,
+    harmony = "harmony",
+    umap = "umap",
+    verbose = TRUE) {
+  if (!assay %in% c("RNA", "SCT")) {
+    log_message(
+      "Only supported assays are RNA or SCT",
+      message_type = "error"
+    )
+  }
+  if (is.null(pca_dims)) {
+    pca_dims <- seq_len(
+      ncol(
+        SeuratObject::Embeddings(obj, pca)
+      )
+    )
+  }
+  res <- list()
+  ## TODO: check that these objects are all correctly initialized
+  res$Z_corr <- Matrix::t(
+    SeuratObject::Embeddings(obj, harmony)
+  )
+  res$Z_orig <- Matrix::t(
+    SeuratObject::Embeddings(obj, pca)[, pca_dims, drop = FALSE]
+  )
+  log_message("Saved embeddings")
+
+  res$R <- Matrix::t(obj[[harmony]]@misc$R)
+  log_message("Saved soft cluster assignments")
+
+  var_features <- SeuratObject::VariableFeatures(obj)
+
+  if (assay == "RNA") {
+    vargenes_means_sds <- data.frame(
+      symbol = var_features,
+      mean = Matrix::rowMeans(
+        GetAssayData5(
+          obj,
+          assay = assay,
+          layer = "data"
+        )[
+          var_features,
+        ]
+      )
+    )
+
+    vargenes_means_sds$stddev <- symphony::rowSDs(
+      A = GetAssayData5(
+        obj,
+        assay = assay,
+        layer = "data"
+      )[var_features, ],
+      row_means = vargenes_means_sds$mean
+    )
+  } else if (assay == "SCT") {
+    vargenes_means_sds <- data.frame(
+      symbol = var_features,
+      mean = Matrix::rowMeans(
+        GetAssayData5(
+          obj,
+          assay = assay,
+          layer = "scale.data"
+        )[
+          var_features,
+        ]
+      )
+    )
+    asdgc <- Matrix::Matrix(
+      GetAssayData5(
+        obj,
+        assay = assay,
+        layer = "scale.data"
+      )[var_features, ],
+      sparse = TRUE
+    )
+    vargenes_means_sds$stddev <- symphony::rowSDs(
+      asdgc,
+      vargenes_means_sds$mean
+    )
+  }
+
+  res$vargenes_means_sds <- vargenes_means_sds
+  log_message(
+    "Saved variable gene information for {.val {nrow(vargenes_means_sds)}} genes."
+  )
+
+  res$loadings <- obj[[pca]]@feature.loadings[, pca_dims, drop = FALSE]
+  log_message("Saved PCA loadings", verbose = verbose)
+
+  res$meta_data <- obj@meta.data
+  log_message("Saved metadata", verbose = verbose)
+
+  if (is.null(obj[[umap]]@misc$model)) {
+    log_message(
+      "uwot model not initialiazed in Seurat object. Please do RunUMAP with umap.method='uwot', return.model=TRUE first.",
+      message_type = "error"
+    )
+  }
+  res$umap <- obj[[umap]]@misc$model
+
+  ## Build Reference!
+  log_message("Calculate final L2 normalized reference centroids (Y_cos)", verbose = verbose)
+  res$centroids <- Matrix::t(
+    symphony:::cosine_normalize_cpp(
+      V = res$R %*% Matrix::t(res$Z_corr),
+      dim = 1
+    )
+  )
+  log_message("Calculate reference compression terms (Nr and C)", verbose = verbose)
+  res$cache <- symphony:::compute_ref_cache(
+    Rr = res$R,
+    Zr = res$Z_corr
+  )
+  colnames(res$Z_orig) <- row.names(res$meta_data)
+  rownames(res$Z_orig) <- paste0(
+    SeuratObject::Key(
+      obj[[pca]]
+    ), seq_len(nrow(res$Z_corr))
+  )
+  colnames(res$Z_corr) <- row.names(res$meta_data)
+  rownames(res$Z_corr) <- paste0(
+    SeuratObject::Key(
+      obj[[harmony]]
+    ),
+    seq_len(nrow(res$Z_corr))
+  )
+  log_message(
+    "Finished",
+    verbose = verbose
+  )
+  return(res)
 }

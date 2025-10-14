@@ -30,6 +30,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
@@ -136,6 +137,7 @@
 #'   plot_type = "wordcloud",
 #'   word_type = "feature"
 #' )
+#' }
 GSEAPlot <- function(
     srt,
     db = "GO_BP",
@@ -186,7 +188,7 @@ GSEAPlot <- function(
     enrichmap_mark = c("ellipse", "hull"),
     enrichmap_expand = c(0.5, 0.5),
     character_width = 50,
-    lineheight = 0.5,
+    lineheight = 0.7,
     palette = "Spectral",
     palcolor = NULL,
     aspect.ratio = NULL,
@@ -328,7 +330,7 @@ GSEAPlot <- function(
 
   plist <- NULL
   if (plot_type == "comparison") {
-    # comparison -------------------------------------------------------------------------------------------------
+    # comparison --------------------
     if (length(id_use) > 0) {
       ids <- unlist(id_use)
     } else {
@@ -455,17 +457,12 @@ GSEAPlot <- function(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         axis.text.y = element_text(
           lineheight = lineheight,
-          hjust = 1,
-          face = ifelse(
-            grepl("\n", levels(enrichment_sub[["Description"]])),
-            "italic",
-            "plain"
-          )
+          hjust = 1
         )
       )
     plist <- list(p)
   } else if (plot_type == "line") {
-    # line -------------------------------------------------------------------------------------------------
+    # line --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -949,7 +946,7 @@ GSEAPlot <- function(
       }
     }
   } else if (plot_type == "bar") {
-    # bar -------------------------------------------------------------------------------------------------
+    # bar --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -1074,7 +1071,7 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "network") {
-    # network -------------------------------------------------------------------------------------------------
+    # network --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -1335,7 +1332,7 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "enrichmap") {
-    # enrichmap -------------------------------------------------------------------------------------------------
+    # enrichmap --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -1660,7 +1657,7 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "wordcloud") {
-    # wordcloud -------------------------------------------------------------------------------------------------
+    # wordcloud --------------------
     check_r("ggwordcloud")
     check_r("simplifyEnrichment")
     for (nm in names(res)) {
@@ -1830,7 +1827,7 @@ GSEAPlot <- function(
         scale_color_gradientn(
           name = "Score:",
           colours = colors,
-          values = rescale(colors_value),
+          values = scales::rescale(colors_value),
           guide = guide_colorbar(
             frame.colour = "black",
             ticks.colour = "black",

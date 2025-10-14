@@ -114,7 +114,7 @@ Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "
 \item{only.pos}{Only return positive markers (FALSE by default)}
 
 \item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-Default is 1.5.}
+Default is \code{1.5}.}
 
 \item{base}{The base with respect to which logarithms are computed.}
 
@@ -150,17 +150,17 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{min.cells.group}{Minimum number of cells in one of the groups}
 
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
-Default is "LogNormalize".}
+Default is \code{"LogNormalize"}.}
 
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
-Default is "bonferroni".}
+Default is \code{"bonferroni"}.}
 
 \item{layer}{The layer used.}
 
 \item{assay}{Assay to use in differential expression testing}
 
 \item{seed}{An integer value specifying the seed.
-Default is 11.}
+Default is \code{11}.}
 
 \item{verbose}{Print a progress bar once expression testing begins}
 
@@ -184,7 +184,6 @@ AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
-table(AllMarkers$group1)
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = AllMarkers$gene,
@@ -266,7 +265,6 @@ ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
-table(ConservedMarkers2$group1)
 ht4 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",
@@ -281,13 +279,13 @@ panc8_sub <- RunDEtest(
   srt = panc8_sub,
   group_by = "celltype",
   grouping.var = "tech",
-  markers_type = "disturbed"
+  markers_type = "disturbed",
+  cores = 2
 )
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 )
-table(DisturbedMarkers$group1)
 ht5 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",
@@ -302,7 +300,6 @@ gene_specific <- names(which(table(DisturbedMarkers$gene) == 1))
 DisturbedMarkers_specific <- DisturbedMarkers[
   DisturbedMarkers$gene \%in\% gene_specific,
 ]
-table(DisturbedMarkers_specific$group1)
 ht6 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",

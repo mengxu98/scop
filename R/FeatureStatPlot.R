@@ -4,81 +4,163 @@
 #'
 #' @param srt A Seurat object.
 #' @param stat.by A character vector specifying the features to plot.
-#' @param group.by A character vector specifying the groups to group by. Default is NULL.
-#' @param split.by A character vector specifying the variable to split the plot by. Default is NULL.
-#' @param plot.by A character vector specifying how to plot the data, by group or feature. Possible values are "group", "feature". Default is "group".
-#' @param bg.by A character vector specifying the variable to use as the background color. Default is NULL.
-#' @param fill.by A string specifying what to fill the plot by. Possible values are "group", "feature", or "expression". Default is "group".
-#' @param cells A character vector specifying the cells to include in the plot. Default is NULL.
-#' @param layer A string specifying which layer of the Seurat object to use. Default is "data".
-#' @param assay A string specifying which assay to use. Default is NULL.
-#' @param keep_empty Whether to keep empty levels in the plot. Default is FALSE.
-#' @param individual Whether to create individual plots for each group. Default is FALSE.
-#' @param plot_type A string specifying the type of plot to create. Possible values are "violin", "box", "bar", "dot", or "col". Default is "violin".
-#' @param palette A string specifying the color palette to use for filling. Default is "Paired".
-#' @param palcolor A character vector specifying specific colors to use for filling. Default is NULL.
-#' @param alpha The transparency of the plot. Default is 1.
-#' @param bg_palette A string specifying the color palette to use for the background. Default is "Paired".
-#' @param bg_palcolor A character vector specifying specific colors to use for the background. Default is NULL.
-#' @param bg_alpha The transparency of the background. Default is 0.2.
-#' @param add_box Whether to add a box plot to the plot. Default is FALSE.
-#' @param box_color A string specifying the color of the box plot. Default is "black".
-#' @param box_width The width of the box plot. Default is 0.1.
-#' @param box_ptsize The size of the points of the box plot. Default is 2.
-#' @param add_point Whether to add individual data points to the plot. Default is FALSE.
-#' @param pt.color A string specifying the color of the data points. Default is "grey30".
-#' @param pt.size The size of the data points. If NULL, the size is automatically determined. Default is NULL.
-#' @param pt.alpha The transparency of the data points. Default is 1.
-#' @param jitter.width The width of the jitter. Default is 0.5.
-#' @param jitter.height The height of the jitter. Default is 0.1.
-#' @param add_trend Whether to add a trend line to the plot. Default is FALSE.
-#' @param trend_color A string specifying the color of the trend line. Default is "black".
-#' @param trend_linewidth The width of the trend line. Default is 1.
-#' @param trend_ptsize The size of the points of the trend line. Default is 2.
-#' @param add_stat A string specifying which statistical summary to add to the plot. Possible values are "none", "mean", or "median". Default is "none".
-#' @param stat_color A string specifying the color of the statistical summary. Default is "black".
-#' @param stat_size The size of the statistical summary. Default is 1.
-#' @param stat_stroke The stroke width of the statistical summary. Default is 1.
-#' @param stat_shape The shape of the statistical summary. Default is 25.
-#' @param add_line The y-intercept for adding a horizontal line. Default is NULL.
-#' @param line_color A string specifying the color of the horizontal line. Default is "red".
-#' @param line_size The width of the horizontal line. Default is 1.
-#' @param line_type The type of the horizontal line. Default is 1.
-#' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.
-#' @param cols.highlight A string specifying the color of the highlighted cells. Default is "red".
-#' @param sizes.highlight The size of the highlighted cells. Default is 1.
-#' @param alpha.highlight The transparency of the highlighted cells. Default is 1.
-#' @param calculate_coexp Whether to calculate co-expression values. Default is FALSE.
-#' @param same.y.lims Whether to use the same y-axis limits for all plots. Default is FALSE.
-#' @param y.min A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.
-#' @param y.max A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.
-#' @param y.trans A string specifying the transformation to apply to the y-axis. Possible values are "identity" or "log2". Default is "identity".
-#' @param y.nbreaks A number of breaks to use for the y-axis. Default is 5.
-#' @param sort A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order. Default is FALSE.
-#' @param stack A logical specifying whether to stack the plots on top of each other. Default is FALSE.
-#' @param flip A logical specifying whether to flip the plot vertically. Default is FALSE.
+#' @param group.by A character vector specifying the groups to group by.
+#' Default is `NULL`.
+#' @param split.by A character vector specifying the variable to split the plot by.
+#' Default is `NULL`.
+#' @param plot.by A character vector specifying how to plot the data, by group or feature.
+#' Possible values are `"group"` or `"feature"`.
+#' Default is `"group"`.
+#' @param bg.by A character vector specifying the variable to use as the background color.
+#' Default is `NULL`.
+#' @param fill.by A string specifying what to fill the plot by.
+#' Possible values are `"group"`, `"feature"`, or `"expression"`.
+#' Default is `"group"`.
+#' @param cells A character vector specifying the cells to include in the plot.
+#' Default is `NULL`.
+#' @param layer A string specifying which layer of the Seurat object to use.
+#' Default is `"data"`.
+#' @param assay A string specifying which assay to use.
+#' Default is `NULL`.
+#' @param keep_empty Whether to keep empty levels in the plot.
+#' Default is `FALSE`.
+#' @param individual Whether to create individual plots for each group.
+#' Default is `FALSE`.
+#' @param plot_type A string specifying the type of plot to create.
+#' Possible values are `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
+#' Default is `"violin"`.
+#' @param palette A string specifying the color palette to use for filling.
+#' Default is `"Paired"`.
+#' @param palcolor A character vector specifying specific colors to use for filling.
+#' Default is `NULL`.
+#' @param alpha The transparency of the plot.
+#' Default is `1`.
+#' @param bg_palette A string specifying the color palette to use for the background.
+#' Default is `"Paired"`.
+#' @param bg_palcolor A character vector specifying specific colors to use for the background.
+#' Default is `NULL`.
+#' @param bg_alpha The transparency of the background.
+#' Default is `0.2`.
+#' @param add_box Whether to add a box plot to the plot.
+#' Default is `FALSE`.
+#' @param box_color A string specifying the color of the box plot.
+#' Default is `"black"`.
+#' @param box_width The width of the box plot.
+#' Default is `0.1`.
+#' @param box_ptsize The size of the points of the box plot.
+#' Default is `2`.
+#' @param add_point Whether to add individual data points to the plot.
+#' Default is `FALSE`.
+#' @param pt.color A string specifying the color of the data points.
+#' Default is `"grey30"`.
+#' @param pt.size The size of the data points. If NULL, the size is automatically determined.
+#' Default is `NULL`.
+#' @param pt.alpha The transparency of the data points.
+#' Default is `1`.
+#' @param jitter.width The width of the jitter.
+#' Default is `0.5`.
+#' @param jitter.height The height of the jitter.
+#' Default is `0.1`.
+#' @param add_trend Whether to add a trend line to the plot.
+#' Default is `FALSE`.
+#' @param trend_color A string specifying the color of the trend line.
+#' Default is `"black"`.
+#' @param trend_linewidth The width of the trend line.
+#' Default is `1`.
+#' @param trend_ptsize The size of the points of the trend line.
+#' Default is `2`.
+#' @param add_stat A string specifying which statistical summary to add to the plot.
+#' Possible values are `"none"`, `"mean"`, or `"median"`.
+#' Default is `"none"`.
+#' @param stat_color A string specifying the color of the statistical summary.
+#' Default is `"black"`.
+#' @param stat_size The size of the statistical summary.
+#' Default is `1`.
+#' @param stat_stroke The stroke width of the statistical summary.
+#' Default is `1`.
+#' @param stat_shape The shape of the statistical summary.
+#' Default is `25`.
+#' @param add_line The y-intercept for adding a horizontal line.
+#' Default is `NULL`.
+#' @param line_color A string specifying the color of the horizontal line.
+#' Default is `"red"`.
+#' @param line_size The width of the horizontal line.
+#' Default is `1`.
+#' @param line_type The type of the horizontal line.
+#' Default is `1`.
+#' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted.
+#' Default is `NULL`.
+#' @param cols.highlight A string specifying the color of the highlighted cells.
+#' Default is `"red"`.
+#' @param sizes.highlight The size of the highlighted cells.
+#' Default is `1`.
+#' @param alpha.highlight The transparency of the highlighted cells.
+#' Default is `1`.
+#' @param calculate_coexp Whether to calculate co-expression values.
+#' Default is `FALSE`.
+#' @param same.y.lims Whether to use the same y-axis limits for all plots.
+#' Default is `FALSE`.
+#' @param y.min A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+#' Default is `NULL`.
+#' @param y.max A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+#' Default is `NULL`.
+#' @param y.trans A string specifying the transformation to apply to the y-axis.
+#' Possible values are `"identity"` or `"log2"`.
+#' Default is `"identity"`.
+#' @param y.nbreaks A number of breaks to use for the y-axis.
+#' Default is `5`.
+#' @param sort A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order.
+#' Default is `FALSE`.
+#' @param stack A logical specifying whether to stack the plots on top of each other.
+#' Default is `FALSE`.
+#' @param flip A logical specifying whether to flip the plot vertically.
+#' Default is `FALSE`.
 #' @param comparisons A list of length-2 vectors. The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
-#' @param ref_group A string specifying the reference group for pairwise comparisons. Default is NULL.
-#' @param pairwise_method Method to use for pairwise comparisons. Default is "wilcox.test".
-#' @param multiplegroup_comparisons Whether to add multiple group comparisons to the plot. Default is FALSE.
-#' @param multiple_method Method to use for multiple group comparisons. Default is "kruskal.test".
-#' @param sig_label A string specifying the label to use for significant comparisons. Possible values are "p.signif" or "p.format". Default is "p.format".
-#' @param sig_labelsize The size of the significant comparison labels. Default is 3.5.
-#' @param aspect.ratio The aspect ratio of the plot. Default is NULL.
-#' @param title A string specifying the title of the plot. Default is NULL.
-#' @param subtitle A string specifying the subtitle of the plot. Default is NULL.
-#' @param xlab A string specifying the label of the x-axis. Default is NULL.
-#' @param ylab A string specifying the label of the y-axis. Default is "Expression level".
-#' @param legend.position A string specifying the position of the legend. Possible values are "right", "left", "top", "bottom", or "none". Default is "right".
-#' @param legend.direction A string specifying the direction of the legend. Possible values are "vertical" or "horizontal". Default is "vertical".
-#' @param theme_use A string specifying the theme to use for the plot. Default is "theme_scop".
-#' @param theme_args A list of arguments to pass to the theme function. Default is an empty list.
-#' @param combine Whether to combine the individual plots into a single plot. Default is TRUE.
-#' @param nrow A number of rows for the combined plot. Default is NULL.
-#' @param ncol A number of columns for the combined plot. Default is NULL.
-#' @param byrow A logical specifying whether to fill the combined plot by row or by column. Default is TRUE.
-#' @param force Whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.
-#' @param seed An integer specifying the random seed to use for generating jitter. Default is 11.
+#' @param ref_group A string specifying the reference group for pairwise comparisons.
+#' Default is `NULL`.
+#' @param pairwise_method Method to use for pairwise comparisons.
+#' Default is `"wilcox.test"`.
+#' @param multiplegroup_comparisons Whether to add multiple group comparisons to the plot.
+#' Default is `FALSE`.
+#' @param multiple_method Method to use for multiple group comparisons.
+#' Default is `"kruskal.test"`.
+#' @param sig_label A string specifying the label to use for significant comparisons.
+#' Possible values are `"p.signif"` or `"p.format"`.
+#' Default is `"p.format"`.
+#' @param sig_labelsize The size of the significant comparison labels.
+#' Default is `3.5`.
+#' @param aspect.ratio The aspect ratio of the plot.
+#' Default is `NULL`.
+#' @param title A string specifying the title of the plot.
+#' Default is `NULL`.
+#' @param subtitle A string specifying the subtitle of the plot.
+#' Default is `NULL`.
+#' @param xlab A string specifying the label of the x-axis.
+#' Default is `NULL`.
+#' @param ylab A string specifying the label of the y-axis.
+#' Default is `"Expression level"`.
+#' @param legend.position A string specifying the position of the legend.
+#' Possible values are `"right"`, `"left"`, `"top"`, `"bottom"`, or `"none"`.
+#' Default is `"right"`.
+#' @param legend.direction A string specifying the direction of the legend.
+#' Possible values are `"vertical"` or `"horizontal"`.
+#' Default is `"vertical"`.
+#' @param theme_use A string specifying the theme to use for the plot.
+#' Default is `"theme_scop"`.
+#' @param theme_args A list of arguments to pass to the theme function.
+#' Default is an empty list.
+#' @param combine Whether to combine the individual plots into a single plot.
+#' Default is `TRUE`.
+#' @param nrow A number of rows for the combined plot.
+#' Default is `NULL`.
+#' @param ncol A number of columns for the combined plot.
+#' Default is `NULL`.
+#' @param byrow Whether to fill the combined plot by row or by column.
+#' Default is `TRUE`.
+#' @param force Whether to force the plot creation even if there are more than 100 levels in a variable.
+#' Default is `FALSE`.
+#' @param seed An integer specifying the random seed to use for generating jitter.
+#' Default is `11`.
 #'
 #' @export
 #'
@@ -305,8 +387,7 @@
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data",
-#'   verbose = FALSE
+#'   layer = "data"
 #' )
 #' pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
@@ -402,7 +483,8 @@ FeatureStatPlot <- function(
     force = FALSE,
     seed = 11) {
   if (is.null(group.by)) {
-    group.by <- "All.groups" # avoid having the same name with split.by. split.by will be All.groups by default
+    # avoid having the same name with split.by. split.by will be All.groups by default
+    group.by <- "All.groups"
     xlab <- "All groups"
     srt[[group.by]] <- factor("All groups")
   }
@@ -413,68 +495,68 @@ FeatureStatPlot <- function(
   exp.data <- GetAssayData5(
     srt,
     assay = assay,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )
   plot.by <- match.arg(plot.by)
 
   if (plot.by == "feature") {
     if (length(group.by) > 1) {
       log_message(
-        "The 'group.by' must have a length of 1 when 'plot.by' is set to 'feature'",
+        "{.arg group.by} must have a length of 1 when {.arg plot.by} is set to {.val feature}",
         message_type = "error"
       )
     }
     if (!is.null(bg.by)) {
       log_message(
-        "'bg.by' is invalid when plot.by is set to 'feature'",
+        "{.arg bg.by} is invalid when {.arg plot.by} is set to {.val feature}",
         message_type = "warning"
       )
     }
     log_message(
-      "Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'"
+      "Setting {.arg group.by} to {.val Features} as {.arg plot.by} is set to {.val feature}"
     )
     srt@assays[setdiff(names(srt@assays), assay)] <- NULL
-    meta.reshape <- SeuratObject::FetchData(
+    meta_reshape <- SeuratObject::FetchData(
       srt,
       vars = c(stat.by, group.by, split.by),
       cells = cells %||% rownames(meta.data),
       layer = layer
     )
-    meta.reshape[["cells"]] <- rownames(meta.reshape)
-    meta.reshape <- reshape2::melt(
-      meta.reshape,
+    meta_reshape[["cells"]] <- rownames(meta_reshape)
+    meta_reshape <- reshape2::melt(
+      meta_reshape,
       measure.vars = stat.by,
       variable.name = "Features",
       value.name = "Stat.by"
     )
-    rownames(meta.reshape) <- paste0(
-      meta.reshape[["cells"]],
+    rownames(meta_reshape) <- paste0(
+      meta_reshape[["cells"]],
       "-",
-      meta.reshape[["Features"]]
+      meta_reshape[["Features"]]
     )
     exp.data <- matrix(
       0,
       nrow = 1,
-      ncol = nrow(meta.reshape),
-      dimnames = list("Stat.by", rownames(meta.reshape))
+      ncol = nrow(meta_reshape),
+      dimnames = list("Stat.by", rownames(meta_reshape))
     )
     plist <- list()
-    for (g in unique(meta.reshape[[group.by]])) {
-      if (length(rownames(meta.reshape)[meta.reshape[[group.by]] == g]) > 0) {
-        meta.use <- meta.reshape
-        meta.use[[group.by]] <- NULL
-        colnames(meta.use)[colnames(meta.use) == "Stat.by"] <- g
+    for (g in unique(meta_reshape[[group.by]])) {
+      cells_g <- rownames(meta_reshape)[meta_reshape[[group.by]] == g]
+      if (length(cells_g) > 0) {
+        meta_use <- meta_reshape
+        meta_use[[group.by]] <- NULL
+        colnames(meta_use)[colnames(meta_use) == "Stat.by"] <- g
         p <- ExpressionStatPlot(
           exp.data = exp.data,
-          meta.data = meta.use,
+          meta.data = meta_use,
           stat.by = g,
           group.by = "Features",
           split.by = split.by,
           bg.by = NULL,
           plot.by = "group",
           fill.by = fill.by,
-          cells = rownames(meta.reshape)[meta.reshape[[group.by]] == g],
+          cells = cells_g,
           keep_empty = keep_empty,
           individual = individual,
           plot_type = plot_type,
@@ -632,38 +714,41 @@ FeatureStatPlot <- function(
           label = ifelse(is.null(ylab), "Expression level", ylab),
           hjust = 0.5
         )
-        plist_g <- lapply(seq_along(plist_g), FUN = function(i) {
-          p <- plist_g[[i]]
-          if (i != 1) {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  plot.title = element_blank(),
-                  plot.subtitle = element_blank(),
-                  axis.title = element_blank(),
-                  axis.text.y = element_blank(),
-                  axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
-                )
-            )
-          } else {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title.x = element_blank(),
-                  axis.text.x = element_text(vjust = c(1, 0)),
-                  axis.ticks.length.y = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
-                )
-            )
+        plist_g <- lapply(
+          seq_along(plist_g),
+          FUN = function(i) {
+            p <- plist_g[[i]]
+            if (i != 1) {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    plot.title = element_blank(),
+                    plot.subtitle = element_blank(),
+                    axis.title = element_blank(),
+                    axis.text.y = element_blank(),
+                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.ticks.length.y = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                  )
+              )
+            } else {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title.x = element_blank(),
+                    axis.text.x = element_text(vjust = c(1, 0)),
+                    axis.ticks.length.y = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
+                  )
+              )
+            }
+            return(as_grob(p))
           }
-          return(as_grob(p))
-        })
+        )
         gtable <- do.call(cbind, plist_g)
         gtable <- add_grob(gtable, lab, "bottom", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
@@ -673,43 +758,46 @@ FeatureStatPlot <- function(
           rot = 90,
           hjust = 0.5
         )
-        plist_g <- lapply(seq_along(plist_g), FUN = function(i) {
-          p <- plist_g[[i]]
-          if (i != length(plist_g)) {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title = element_blank(),
-                  axis.text.x = element_blank(),
-                  axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
-                )
-            )
-            if (i == 1) {
-              p <- p +
-                theme(
-                  plot.title = element_blank(),
-                  plot.subtitle = element_blank()
-                )
+        plist_g <- lapply(
+          seq_along(plist_g),
+          FUN = function(i) {
+            p <- plist_g[[i]]
+            if (i != length(plist_g)) {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title = element_blank(),
+                    axis.text.x = element_blank(),
+                    axis.text.y = element_text(vjust = c(0, 1)),
+                    axis.ticks.length.x = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                  )
+              )
+              if (i == 1) {
+                p <- p +
+                  theme(
+                    plot.title = element_blank(),
+                    plot.subtitle = element_blank()
+                  )
+              }
+            } else {
+              suppressWarnings(
+                p <- p +
+                  theme(
+                    legend.position = "none",
+                    panel.grid = element_blank(),
+                    axis.title.y = element_blank(),
+                    axis.text.y = element_text(vjust = c(0, 1)),
+                    axis.ticks.length.x = grid::unit(0, "pt"),
+                    plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
+                  )
+              )
             }
-          } else {
-            suppressWarnings(
-              p <- p +
-                theme(
-                  legend.position = "none",
-                  panel.grid = element_blank(),
-                  axis.title.y = element_blank(),
-                  axis.text.y = element_text(vjust = c(0, 1)),
-                  axis.ticks.length.x = grid::unit(0, "pt"),
-                  plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
-                )
-            )
+            return(as_grob(p))
           }
-          return(as_grob(p))
-        })
+        )
         gtable <- do.call(rbind, plist_g)
         gtable <- add_grob(gtable, lab, "left", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)

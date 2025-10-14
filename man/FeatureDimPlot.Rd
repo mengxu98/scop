@@ -104,7 +104,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{cells}{Subset cells to plot.}
 
-\item{layer}{Which layer to pull expression data from? Default is \code{data}.}
+\item{layer}{Which layer to pull expression data from?
+Default is \code{data}.}
 
 \item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
 
@@ -223,7 +224,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{raster}{Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells}
 
-\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).}
+\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore().
+Default is \code{c(512, 512)}.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.}
 

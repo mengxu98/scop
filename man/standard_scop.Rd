@@ -41,17 +41,17 @@ standard_scop(
 Default is \code{"Standard"}.}
 
 \item{assay}{The name of the assay to use for the analysis.
-If NULL, the default assay of the Seurat object will be used.}
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{do_normalization}{Whether to perform normalization.
-If NULL, normalization will be performed if the specified assay does not have scaled data.}
+If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}
 
 \item{normalization_method}{The method to use for normalization.
 Options are \code{"LogNormalize"}, \code{"SCT"}, or \code{"TFIDF"}.
 Default is \code{"LogNormalize"}.}
 
 \item{do_HVF_finding}{Whether to perform high variable feature finding.
-If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
 
 \item{HVF_method}{The method to use for finding highly variable features.
 Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
@@ -64,7 +64,7 @@ If NULL, all highly variable features will be used.}
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
 \item{do_scaling}{Whether to perform scaling.
-If TRUE, the function will force to scale the data using the ScaleData function.}
+If \code{TRUE}, the function will force to scale the data using the \link[Seurat:ScaleData]{Seurat::ScaleData} function.}
 
 \item{vars_to_regress}{A vector of feature names to use as regressors in the scaling step.
 If NULL, no regressors will be used.}
@@ -81,14 +81,15 @@ Default is \code{"pca"}.}
 Default is \code{50}.}
 
 \item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If NULL, all dimensions will be used.}
+If \code{NULL}, all dimensions will be used.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
 \item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
 Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
