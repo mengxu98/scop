@@ -168,7 +168,6 @@ WilcoxDETest <- function(
   )
 }
 
-
 #' @title Differential gene test
 #'
 #' @description
@@ -195,15 +194,15 @@ WilcoxDETest <- function(
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-#' Default is 1.5.
+#' Default is `1.5`.
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
-#' Default is "LogNormalize".
+#' Default is `"LogNormalize"`.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
-#' Default is "bonferroni".
+#' Default is `"bonferroni"`.
 #' @param seed An integer value specifying the seed.
-#' Default is 11.
+#' Default is `11`.
 #' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
@@ -223,7 +222,6 @@ WilcoxDETest <- function(
 #'   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
-#' table(AllMarkers$group1)
 #' ht1 <- GroupHeatmap(
 #'   pancreas_sub,
 #'   features = AllMarkers$gene,
@@ -305,7 +303,6 @@ WilcoxDETest <- function(
 #'   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
-#' table(ConservedMarkers2$group1)
 #' ht4 <- GroupHeatmap(
 #'   srt = panc8_sub,
 #'   layer = "data",
@@ -320,13 +317,13 @@ WilcoxDETest <- function(
 #'   srt = panc8_sub,
 #'   group_by = "celltype",
 #'   grouping.var = "tech",
-#'   markers_type = "disturbed"
+#'   markers_type = "disturbed",
+#'   cores = 2
 #' )
 #' DisturbedMarkers <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 #' )
-#' table(DisturbedMarkers$group1)
 #' ht5 <- GroupHeatmap(
 #'   srt = panc8_sub,
 #'   layer = "data",
@@ -341,7 +338,6 @@ WilcoxDETest <- function(
 #' DisturbedMarkers_specific <- DisturbedMarkers[
 #'   DisturbedMarkers$gene %in% gene_specific,
 #' ]
-#' table(DisturbedMarkers_specific$group1)
 #' ht6 <- GroupHeatmap(
 #'   srt = panc8_sub,
 #'   layer = "data",

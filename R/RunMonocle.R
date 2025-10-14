@@ -118,8 +118,7 @@ RunMonocle2 <- function(
     GetAssayData5(
       srt,
       assay = assay,
-      layer = layer,
-      verbose = FALSE
+      layer = layer
     )
   )
   p_data <- srt@meta.data
@@ -705,8 +704,7 @@ RunMonocle3 <- function(
     GetAssayData5(
       srt,
       assay = assay,
-      layer = layer,
-      verbose = FALSE
+      layer = layer
     )
   )
   p_data <- srt@meta.data

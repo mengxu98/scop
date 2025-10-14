@@ -2,12 +2,18 @@
 #'
 #' @inheritParams RunKNNMap
 #' @param ref_pca A character string specifying the name of the PCA reduction in the reference object to use for calculating the distance metric.
-#' @param normalization.method The normalization method to use. Default is "LogNormalize".
-#' @param reduction_project_method Dimensional reduction to perform when finding anchors. Default is "pcaproject".
-#' @param k.anchor How many neighbors (k) to use when finding anchors. Default is 5.
-#' @param k.filter How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering. Default is 200.
-#' @param k.score How many neighbors (k) to use when scoring anchors. Default is 30.
-#' @param k.weight Number of neighbors to consider when weighting anchors. Default is 100.
+#' @param normalization.method The normalization method to use.
+#' Default is `"LogNormalize"`.
+#' @param reduction_project_method Dimensional reduction to perform when finding anchors.
+#' Default is `"pcaproject"`.
+#' @param k.anchor How many neighbors (k) to use when finding anchors.
+#' Default is `5`.
+#' @param k.filter How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering.
+#' Default is `200`.
+#' @param k.score How many neighbors (k) to use when scoring anchors.
+#' Default is `30`.
+#' @param k.weight Number of neighbors to consider when weighting anchors.
+#' Default is `100`.
 #'
 #' @export
 #'
@@ -120,8 +126,7 @@ RunSeuratMap <- function(
     GetAssayData5(
       srt_query,
       layer = "data",
-      assay = query_assay,
-      verbose = FALSE
+      assay = query_assay
     )
   )
   log_message("Detected srt_query data type: ", status_query)
@@ -129,8 +134,7 @@ RunSeuratMap <- function(
     GetAssayData5(
       srt_ref,
       layer = "data",
-      assay = ref_assay,
-      verbose = FALSE
+      assay = ref_assay
     )
   )
   log_message("Detected srt_ref data type: ", status_ref)

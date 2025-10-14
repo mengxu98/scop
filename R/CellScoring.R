@@ -272,8 +272,7 @@ CellScoring <- function(
   expr_data <- GetAssayData5(
     srt,
     layer = layer,
-    assay = assay,
-    verbose = FALSE
+    assay = assay
   )
   features_expressed <- names(
     which(
@@ -358,8 +357,7 @@ CellScoring <- function(
           GetAssayData5(
             srt_sp,
             layer = layer,
-            assay = assay,
-            verbose = FALSE
+            assay = assay
           )
         ),
         plotStats = FALSE
@@ -477,8 +475,7 @@ AddModuleScore2 <- function(
   SeuratObject::DefaultAssay(object = object) <- assay
   expr_data <- GetAssayData5(
     object = object,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )
   features_raw <- features
 

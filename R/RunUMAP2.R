@@ -131,8 +131,7 @@ RunUMAP2.Seurat <- function(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay,
-          verbose = FALSE
+          assay = assay
         )[features, ]
       )
     )
@@ -245,20 +244,16 @@ RunUMAP2.default <- function(
     set.seed(seed = seed.use)
   }
   if (return.model) {
-    if (verbose) {
-      log_message(
-        "UMAP will return its model",
-        verbose = verbose
-      )
-    }
+    log_message(
+      "UMAP will return its model",
+      verbose = verbose
+    )
   }
   if (!is.null(x = reduction.model)) {
-    if (verbose) {
-      log_message(
-        "Running UMAP projection",
-        verbose = verbose
-      )
-    }
+    log_message(
+      "Running UMAP projection",
+      verbose = verbose
+    )
     if (
       is.null(x = reduction.model) ||
         !inherits(x = reduction.model, what = "DimReduc")
@@ -462,7 +457,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = FALSE
       )
       rownames(x = embeddings) <- attr(object, "Labels")
@@ -498,7 +493,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {
@@ -584,7 +579,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {
@@ -627,7 +622,7 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        verbose = FALSE,
+        
         ret_model = return.model
       )
       if (return.model) {

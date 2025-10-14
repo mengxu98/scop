@@ -277,7 +277,7 @@ VolcanoPlot <- function(
       scale_color_gradientn(
         name = ifelse(x_metric == "diff_pct", "log2FC", "diff_pct"),
         colors = palette_colors(palette = palette, palcolor = palcolor),
-        values = rescale(unique(c(
+        values = scales::rescale(unique(c(
           min(c(df[, color_by], 0), na.rm = TRUE),
           0,
           max(df[, color_by], na.rm = TRUE)

@@ -213,8 +213,7 @@ FeatureCorPlot <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer,
-          verbose = FALSE
+          layer = layer
         )[features_gene, , drop = FALSE],
         2,
         function(x) exp(mean(log(x)))
@@ -225,8 +224,7 @@ FeatureCorPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         ),
         2,
@@ -246,8 +244,7 @@ FeatureCorPlot <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = layer,
-        verbose = FALSE
+        layer = layer
       )[features_gene, , drop = FALSE]
     )
   } else {
