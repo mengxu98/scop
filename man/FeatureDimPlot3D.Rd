@@ -40,7 +40,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{split.by}{Name of a column in meta.data to split plot by.}
 
-\item{layer}{Which layer to pull expression data from? Default is \code{data}.}
+\item{layer}{Which layer to pull expression data from?
+Default is \code{data}.}
 
 \item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
 

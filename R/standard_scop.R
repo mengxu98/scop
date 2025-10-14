@@ -9,14 +9,14 @@
 #' @param prefix A prefix to add to the names of intermediate objects created by the function.
 #' Default is `"Standard"`.
 #' @param assay The name of the assay to use for the analysis.
-#' If NULL, the default assay of the Seurat object will be used.
+#' If `NULL`, the default assay of the Seurat object will be used.
 #' @param do_normalization Whether to perform normalization.
-#' If NULL, normalization will be performed if the specified assay does not have scaled data.
+#' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
 #' @param normalization_method The method to use for normalization.
 #' Options are `"LogNormalize"`, `"SCT"`, or `"TFIDF"`.
 #' Default is `"LogNormalize"`.
 #' @param do_HVF_finding Whether to perform high variable feature finding.
-#' If TRUE, the function will force to find the highly variable features (HVF) using the specified HVF method.
+#' If `TRUE`, the function will force to find the highly variable features (HVF) using the specified HVF method.
 #' @param HVF_method The method to use for finding highly variable features.
 #' Options are `"vst"`, `"mvp"`, or `"disp"`.
 #' Default is `"vst"`.
@@ -25,7 +25,7 @@
 #' @param HVF A vector of feature names to use as highly variable features.
 #' If NULL, the function will use the highly variable features identified by the HVF method.
 #' @param do_scaling Whether to perform scaling.
-#' If TRUE, the function will force to scale the data using the ScaleData function.
+#' If `TRUE`, the function will force to scale the data using the [Seurat::ScaleData] function.
 #' @param vars_to_regress A vector of feature names to use as regressors in the scaling step.
 #' If NULL, no regressors will be used.
 #' @param regression_model The regression model to use for scaling.
@@ -38,11 +38,12 @@
 #' The number of dimensions to keep after linear dimensionality reduction.
 #' Default is `50`.
 #' @param linear_reduction_dims_use The dimensions to use for downstream analysis.
-#' If NULL, all dimensions will be used.
+#' If `NULL`, all dimensions will be used.
 #' @param linear_reduction_params A list of parameters to pass to the linear dimensionality reduction method.
 #' @param force_linear_reduction Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.
 #' @param nonlinear_reduction The nonlinear dimensionality reduction method to use.
-#' Options are `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, or `"fr"`.
+#' Options are `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`,
+#' `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, or `"fr"`.
 #' Default is `"umap"`.
 #' @param nonlinear_reduction_dims The number of dimensions to keep after nonlinear dimensionality reduction.
 #' If a vector is provided, different numbers of dimensions can be specified for each method.
@@ -247,8 +248,7 @@ standard_scop <- function(
   scale_features <- GetAssayData5(
     srt,
     layer = "scale.data",
-    assay = assay,
-    verbose = FALSE
+    assay = assay
   ) |>
     rownames()
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {

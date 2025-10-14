@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellDimPlot.R
 \name{CellDimPlot}
 \alias{CellDimPlot}
-\title{Visualize cell groups on a 2-dimensional reduction plot}
+\title{Cell Dimensional Plot}
 \usage{
 CellDimPlot(
   srt,
@@ -150,7 +150,8 @@ If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.}
 
 \item{pt.alpha}{Point transparency.}
 
-\item{palette}{Name of a color palette name collected in scop. Default is "Paired".}
+\item{palette}{Name of a color palette name collected in scop.
+Default is \code{"Paired"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.}
 
@@ -380,6 +381,7 @@ If \code{FALSE}, return a list of ggplot objects.}
 \item{seed}{Random seed set for reproducibility}
 }
 \description{
+Visualize cell groups on a 2-dimensional reduction plot.
 Plotting cell points on a reduced 2D plane and coloring according to the groups.
 }
 \examples{

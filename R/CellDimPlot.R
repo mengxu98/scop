@@ -1,5 +1,7 @@
-#' Visualize cell groups on a 2-dimensional reduction plot
+#' @title Cell Dimensional Plot
 #'
+#' @description
+#' Visualize cell groups on a 2-dimensional reduction plot.
 #' Plotting cell points on a reduced 2D plane and coloring according to the groups.
 #'
 #' @md
@@ -8,7 +10,8 @@
 #' @param reduction Which dimensionality reduction to use.
 #' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data column to split plot by.
-#' @param palette Name of a color palette name collected in scop. Default is "Paired".
+#' @param palette Name of a color palette name collected in scop.
+#' Default is `"Paired"`.
 #' @param palcolor Custom colors used to create a color palette.
 #' @param bg_color Color value for background(NA) points.
 #' @param pt.size Point size.

@@ -4,8 +4,10 @@
 #' This function performs doublet-calling using the scDblFinder package on a Seurat object.
 #'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling. Default is "RNA".
-#' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
+#' @param assay The name of the assay to be used for doublet-calling.
+#' Default is `"RNA"`.
+#' @param db_rate The expected doublet rate.
+#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
 #' @param ... Additional arguments to be passed to scDblFinder::scDblFinder function.
 #'
 #' @export
@@ -57,9 +59,12 @@ db_scDblFinder <- function(
 #' This function performs doublet-calling using the scds package on a Seurat object.
 #'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling. Default is "RNA".
-#' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
-#' @param method The method to be used for doublet-calling. Options are "hybrid", "cxds", or "bcds".
+#' @param assay The name of the assay to be used for doublet-calling.
+#' Default is `"RNA"`.
+#' @param db_rate The expected doublet rate.
+#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
+#' @param method The method to be used for doublet-calling.
+#' Options are `"hybrid"`, `"cxds"`, or `"bcds"`.
 #' @param ... Additional arguments to be passed to scds::cxds_bcds_hybrid function.
 #'
 #' @export
@@ -119,8 +124,10 @@ db_scds <- function(
 #' This function performs doublet-calling using the scrublet(python) package on a Seurat object.
 #'
 #' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling. Default is "RNA".
-#' @param db_rate The expected doublet rate. Default is calculated as ncol(srt) / 1000 * 0.01.
+#' @param assay The name of the assay to be used for doublet-calling.
+#' Default is `"RNA"`.
+#' @param db_rate The expected doublet rate.
+#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
 #' @param ... Additional arguments to be passed to scrublet.Scrublet function.
 #'
 #' @export
@@ -164,8 +171,7 @@ db_Scrublet <- function(
       GetAssayData5(
         object = srt,
         assay = assay,
-        layer = "counts",
-        verbose = FALSE
+        layer = "counts"
       )
     )
   )
@@ -415,28 +421,45 @@ is_outlier <- function(
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
-#' @param split.by Name of the sample variable to split the Seurat object. Default is NULL.
-#' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object. Default is FALSE.
-#' @param qc_metrics A character vector specifying the quality control metrics to be applied. Default is
-#'   `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
-#' @param outlier_threshold A character vector specifying the outlier threshold. Default is
-#'   `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
-#'   See [scuttle::isOutlier].
-#' @param db_coefficient The coefficient used to calculate the doublet rate. Default is 0.01. Doublet rate is calculated as`ncol(srt) / 1000 * db_coefficient`
-#' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells. Default is 1.
-#' @param UMI_threshold UMI number threshold. Cells that exceed this threshold will be considered as kept. Default is 3000.
-#' @param gene_threshold Gene number threshold. Cells that exceed this threshold will be considered as kept. Default is 1000.
-#' @param mito_threshold Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded. Default is 20.
-#' @param mito_pattern Regex patterns to match the mitochondrial genes. Default is `c("MT-", "Mt-", "mt-")`.
-#' @param mito_gene A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching. Default is \code{NULL}.
-#' @param ribo_threshold Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded. Default is 50.
-#' @param ribo_pattern Regex patterns to match the ribosomal genes. Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
-#' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching. Default is \code{NULL}.
-#' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells. Default is c(1, Inf).
-#' @param species Species used as the suffix of the QC metrics. The first is the species of interest. Default is \code{NULL}.
-#' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species. Default is \code{NULL}.
-#' @param species_percent Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept. Default is 95.
-#' @param seed Set a random seed. Default is 11.
+#' @param split.by Name of the sample variable to split the Seurat object.
+#' Default is `NULL`.
+#' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object.
+#' Default is `FALSE`.
+#' @param qc_metrics A character vector specifying the quality control metrics to be applied.
+#' Default is `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
+#' @param outlier_threshold A character vector specifying the outlier threshold.
+#' Default is `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
+#' See [scuttle::isOutlier].
+#' @param db_coefficient The coefficient used to calculate the doublet rate.
+#' Default is `0.01`. Doublet rate is calculated as `ncol(srt) / 1000 * db_coefficient`.
+#' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells.
+#' Default is `1`.
+#' @param UMI_threshold UMI number threshold. Cells that exceed this threshold will be considered as kept.
+#' Default is `3000`.
+#' @param gene_threshold Gene number threshold. Cells that exceed this threshold will be considered as kept.
+#' Default is `1000`.
+#' @param mito_threshold Percentage of UMI counts of mitochondrial genes. Cells that exceed this threshold will be considered as discarded.
+#' Default is `20`.
+#' @param mito_pattern Regex patterns to match the mitochondrial genes.
+#' Default is `c("MT-", "Mt-", "mt-")`.
+#' @param mito_gene A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching.
+#' Default is `NULL`.
+#' @param ribo_threshold Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded.
+#' Default is `50`.
+#' @param ribo_pattern Regex patterns to match the ribosomal genes.
+#' Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
+#' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching.
+#' Default is `NULL`.
+#' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
+#' Default is `c(1, Inf)`.
+#' @param species Species used as the suffix of the QC metrics. The first is the species of interest.
+#' Default is `NULL`.
+#' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species.
+#' Default is `NULL`.
+#' @param species_percent Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
+#' Default is `95`.
+#' @param seed Set a random seed.
+#' Default is `11`.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
 #'

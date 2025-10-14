@@ -21,8 +21,7 @@
 #' raw_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "counts",
-#'   verbose = FALSE
+#'   layer = "counts"
 #' )
 #'
 #' # Normalized the data
@@ -32,8 +31,7 @@
 #' data <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "data",
-#'   verbose = FALSE
+#'   layer = "data"
 #' )
 #' new_pancreas_sub <- SeuratObject::SetAssayData(
 #'   object = pancreas_sub,
@@ -46,8 +44,7 @@
 #' new_counts <- GetAssayData5(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   layer = "counts",
-#'   verbose = FALSE
+#'   layer = "counts"
 #' )
 #' identical(raw_counts, new_counts)
 RecoverCounts <- function(
@@ -73,7 +70,7 @@ RecoverCounts <- function(
   status <- CheckDataType(counts)
   if (status == "raw_counts") {
     log_message(
-      "The data is already raw counts",
+      "The data is raw counts",
       verbose = verbose
     )
     return(srt)
@@ -238,43 +235,14 @@ srt_reorder <- function(
     )
   }
 
-  assay_obj <- Seurat::GetAssay(
-    srt,
-    assay = assay
-  )
-  if (inherits(assay_obj, "Assay")) {
-    log_message(
-      "Using {.fn Seurat::AverageExpression} to calculate pseudo-bulk data for {.cls Assay}",
-      message_type = "warning",
-      verbose = verbose
-    )
-    data_avg <- Seurat::AverageExpression(
-      object = srt,
-      features = features,
-      layer = layer,
-      assays = assay,
-      group.by = "ident",
-      verbose = FALSE
-    )[[1]][features, , drop = FALSE]
-  } else if (inherits(assay_obj, "Assay5")) {
-    log_message(
-      "Using {.fn Seurat::AggregateExpression} to calculate pseudo-bulk data for {.cls Assay5}",
-      message_type = "warning",
-      verbose = verbose
-    )
-    data_avg <- Seurat::AggregateExpression(
-      object = srt,
-      features = features,
-      assays = assay,
-      group.by = "ident",
-      verbose = FALSE
-    )[[1]][features, , drop = FALSE]
-  } else {
-    log_message(
-      "Input data in not a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
+  data_avg <- Seurat::AggregateExpression(
+    object = srt,
+    features = features,
+    layer = layer,
+    assays = assay,
+    group.by = "ident",
+    verbose = FALSE
+  )[[1]][features, , drop = FALSE]
 
   if (isTRUE(log)) {
     data_avg <- log1p(data_avg)
@@ -399,8 +367,7 @@ srt_append <- function(
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
-                  layer = "counts",
-                  verbose = FALSE
+                  layer = "counts"
                 )
               )
               # srt_raw[[info]]@data <- srt_append[[info]]@data
@@ -411,8 +378,7 @@ srt_append <- function(
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
-                  layer = "data",
-                  verbose = FALSE
+                  layer = "data"
                 )
               )
               if (inherits(Seurat::GetAssay(srt_raw, assay = info), "Assay5")) {
