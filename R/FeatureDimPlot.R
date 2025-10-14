@@ -32,7 +32,8 @@
 #' @param ncol Number of columns in the combined plot.
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.
-#' @param layer Which layer to pull expression data from? Default is \code{data}.
+#' @param layer Which layer to pull expression data from?
+#' Default is `data`.
 #' @param assay Which assay to pull expression data from. If \code{NULL}, will use the assay returned by [SeuratObject::DefaultAssay].
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
@@ -79,7 +80,8 @@
 #' @param hex.color Border color of hexagonal bins.
 #' @param hex.linewidth Border width of hexagonal bins.
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
-#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore(). Default is c(512, 512).
+#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
+#' Default is `c(512, 512)`.
 #' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.
@@ -568,8 +570,7 @@ FeatureDimPlot <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer,
-          verbose = FALSE
+          layer = layer
         )[features_gene, , drop = FALSE],
         2,
         function(x) exp(mean(log(x)))
@@ -580,8 +581,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         ),
         2,
@@ -604,8 +604,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )
         )
       )
@@ -615,8 +614,7 @@ FeatureDimPlot <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         )
       )
@@ -853,7 +851,7 @@ FeatureDimPlot <- function(
               temp_geom[[i]],
               scale_color_gradientn(
                 colours = pal_list[[i]],
-                values = rescale(value_list[[i]]),
+                values = scales::rescale(value_list[[i]]),
                 na.value = bg_color,
                 guide = guide_colorbar(
                   frame.colour = "black",
@@ -1576,7 +1574,7 @@ FeatureDimPlot <- function(
                 scale_fill_gradientn(
                   name = "",
                   colours = colors,
-                  values = rescale(colors_value),
+                  values = scales::rescale(colors_value),
                   limits = range(colors_value),
                   na.value = bg_color
                 )
@@ -1660,7 +1658,7 @@ FeatureDimPlot <- function(
             scale_color_gradientn(
               name = "",
               colours = colors,
-              values = rescale(colors_value),
+              values = scales::rescale(colors_value),
               limits = range(colors_value),
               na.value = bg_color,
               aesthetics = c("color")
@@ -1982,8 +1980,7 @@ FeatureDimPlot3D <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer,
-          verbose = FALSE
+          layer = layer
         )[features_gene, , drop = FALSE],
         2,
         function(x) exp(mean(log(x)))
@@ -1994,8 +1991,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         ),
         2,
@@ -2018,8 +2014,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )
         )
       )
@@ -2029,8 +2024,7 @@ FeatureDimPlot3D <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[features_gene, , drop = FALSE]
         )
       )

@@ -43,7 +43,6 @@ CheckDataType.Seurat <- function(
     object,
     layer = layer,
     assay = assay,
-    verbose = FALSE,
     ...
   )
   CheckDataType(data, verbose = verbose)
@@ -571,8 +570,7 @@ CheckDataList <- function(
           GetAssayData5(
             srt,
             layer = "counts",
-            assay = SeuratObject::DefaultAssay(srt),
-            verbose = FALSE
+            assay = SeuratObject::DefaultAssay(srt)
           )
         )
       })
@@ -589,8 +587,7 @@ CheckDataList <- function(
       GetAssayData5(
         srt,
         layer = "counts",
-        assay = SeuratObject::DefaultAssay(srt),
-        verbose = FALSE
+        assay = SeuratObject::DefaultAssay(srt)
       )[
         HVF, ,
         drop = FALSE
@@ -665,13 +662,13 @@ CheckDataMerge <- function(
   }
   if (length(batch) != 1) {
     log_message(
-      "'batch' must be provided to specify the batch column in the meta.data",
+      "{.arg batch} must be provided to specify the batch column in meta.data",
       message_type = "error"
     )
   }
   if (!batch %in% colnames(srt_merge@meta.data)) {
     log_message(
-      "No batch column('", batch, "') found in the meta.data",
+      "No batch column: {.val {batch}} found in the meta.data",
       message_type = "error"
     )
   }

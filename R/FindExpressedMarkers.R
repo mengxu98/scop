@@ -94,8 +94,7 @@ FindExpressedMarkers <- function(
     EXPR = data_layer,
     "scale.data" = GetAssayData5(
       object = object,
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     ),
     numeric()
   )
