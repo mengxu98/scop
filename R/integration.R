@@ -401,13 +401,15 @@ Uncorrected_integrate <- function(
     GetAssayData5(
       srt_merge,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      verbose = FALSE
+      assay = SeuratObject::DefaultAssay(srt_merge)
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
     if (normalization_method != "SCT") {
-      log_message("Perform ScaleData")
+      log_message(
+        "Perform {.fn Seurat::ScaleData}",
+        verbose = verbose
+      )
       srt_merge <- Seurat::ScaleData(
         object = srt_merge,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -711,6 +713,7 @@ Seurat_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_list <- checked[["srt_list"]]
@@ -792,8 +795,7 @@ Seurat_integrate <- function(
         GetAssayData5(
           srt,
           layer = "scale.data",
-          assay = SeuratObject::DefaultAssay(srt),
-          verbose = FALSE
+          assay = SeuratObject::DefaultAssay(srt)
         )
       )
       if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -868,8 +870,7 @@ Seurat_integrate <- function(
       GetAssayData5(
         srt_integrated,
         layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt_integrated),
-        verbose = FALSE
+        assay = SeuratObject::DefaultAssay(srt_integrated)
       )
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -1192,6 +1193,7 @@ scVI_integrate <- function(
       nHVF = nHVF,
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
+      verbose = verbose,
       seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
@@ -1527,13 +1529,13 @@ MNN_integrate <- function(
     do_scaling <- FALSE
     linear_reduction <- "svd"
   }
-  data_matrix <- GetAssayData5(
-    srt,
-    layer = "data",
-    assay = SeuratObject::DefaultAssay(srt)
-  )
   sce_list <- lapply(
     srt_list, function(srt) {
+      data_matrix <- GetAssayData5(
+        srt,
+        layer = "data",
+        assay = SeuratObject::DefaultAssay(srt)
+      )
       sce <- Seurat::as.SingleCellExperiment(
         Seurat::CreateSeuratObject(
           counts = data_matrix[HVF, ]
@@ -2152,6 +2154,7 @@ Harmony_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
@@ -2171,8 +2174,7 @@ Harmony_integrate <- function(
     GetAssayData5(
       srt_merge,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      verbose = FALSE
+      assay = SeuratObject::DefaultAssay(srt_merge)
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -2231,8 +2233,7 @@ Harmony_integrate <- function(
     GetAssayData5(
       srt_merge,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      verbose = FALSE
+      assay = SeuratObject::DefaultAssay(srt_merge)
     )
   )
   if (feature_num == 0) {
@@ -2808,6 +2809,7 @@ BBKNN_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
@@ -2827,8 +2829,7 @@ BBKNN_integrate <- function(
     GetAssayData5(
       srt_merge,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      verbose = FALSE
+      assay = SeuratObject::DefaultAssay(srt_merge)
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -3204,6 +3205,7 @@ CSS_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_merge <- checked[["srt_merge"]]
@@ -3223,8 +3225,7 @@ CSS_integrate <- function(
     GetAssayData5(
       srt_merge,
       layer = "scale.data",
-      assay = SeuratObject::DefaultAssay(srt_merge),
-      verbose = FALSE
+      assay = SeuratObject::DefaultAssay(srt_merge)
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -3535,6 +3536,7 @@ LIGER_integrate <- function(
       HVF_min_intersection = HVF_min_intersection,
       HVF = HVF,
       vars_to_regress = vars_to_regress,
+      verbose = verbose,
       seed = seed
     )
     srt_list <- checked[["srt_list"]]
@@ -3546,7 +3548,7 @@ LIGER_integrate <- function(
 
   if (min(sapply(srt_list, ncol)) < 30) {
     log_message(
-      "The cell count in some batches is lower than 30, which may not be suitable for the current integration method.",
+      "The cell count in some batches is lower than 30, which may not be suitable for the current integration method",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
@@ -3562,12 +3564,11 @@ LIGER_integrate <- function(
       GetAssayData5(
         srt,
         layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt),
-        verbose = FALSE
+        assay = SeuratObject::DefaultAssay(srt)
       )
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-      log_message("Perform ScaleData on the data ", i, " ...")
+      log_message("Perform ScaleData on the data {.val {i}} ...")
       srt <- Seurat::ScaleData(
         object = srt,
         assay = SeuratObject::DefaultAssay(srt),
@@ -3582,8 +3583,7 @@ LIGER_integrate <- function(
       x = GetAssayData5(
         object = srt,
         layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt),
-        verbose = FALSE
+        assay = SeuratObject::DefaultAssay(srt)
       )
     )
   }
@@ -3937,8 +3937,7 @@ Conos_integrate <- function(
       GetAssayData5(
         srt,
         layer = "scale.data",
-        assay = SeuratObject::DefaultAssay(srt),
-        verbose = FALSE
+        assay = SeuratObject::DefaultAssay(srt)
       )
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
@@ -4297,8 +4296,7 @@ ComBat_integrate <- function(
   dat <- GetAssayData5(
     srt_merge,
     layer = "data",
-    assay = SeuratObject::DefaultAssay(srt_merge),
-    verbose = FALSE
+    assay = SeuratObject::DefaultAssay(srt_merge)
   )[HVF, , drop = FALSE]
   batch <- srt_merge[[batch, drop = TRUE]]
   params <- list(
@@ -4330,8 +4328,7 @@ ComBat_integrate <- function(
               GetAssayData5(
                 srt_integrated,
                 layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srt_integrated),
-                verbose = FALSE
+                assay = SeuratObject::DefaultAssay(srt_integrated)
               )
             )
         ))

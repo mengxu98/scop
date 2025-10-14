@@ -223,8 +223,7 @@ RunDimReduction <- function(
         GetAssayData5(
           object = srt,
           layer = "scale.data",
-          assay = assay,
-          verbose = FALSE
+          assay = assay
         )[features, , drop = FALSE]
       )
       model <- list(

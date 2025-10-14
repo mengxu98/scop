@@ -25,8 +25,7 @@
 #'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
 #'     GetAssayData5(
 #'       pancreas_sub,
-#'       layer = "counts",
-#'       verbose = FALSE
+#'       layer = "counts"
 #'     )
 #'   ) > 0, ]
 #'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
@@ -99,8 +98,7 @@ NULL
 #'   panc8_sub <- subset(panc8, cells = cells_sub)
 #'   counts <- GetAssayData5(
 #'     panc8_sub,
-#'     layer = "counts",
-#'     verbose = FALSE
+#'     layer = "counts"
 #'   )
 #'   panc8_sub <- CreateSeuratObject(
 #'     counts = counts,
@@ -155,8 +153,7 @@ NULL
 #'     GetAssayData5(
 #'       ifnb_sub,
 #'       assay = "RNA",
-#'       layer = "counts",
-#'       verbose = FALSE
+#'       layer = "counts"
 #'     )
 #'   ) > 0, ]
 #'   ifnb_sub <- UpdateSeuratObject(ifnb_sub)

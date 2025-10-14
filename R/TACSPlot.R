@@ -495,8 +495,7 @@ GetSimilarFeatures <- function(
   data_use <- GetAssayData5(
     srt,
     assay = assay,
-    layer = layer,
-    verbose = FALSE
+    layer = layer
   )[features_use, , drop = FALSE] |> Matrix::Matrix(sparse = TRUE)
 
   gene_averages <- Matrix::rowMeans(data_use)

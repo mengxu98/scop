@@ -118,8 +118,7 @@ srt_to_adata <- function(
     GetAssayData5(
       srt,
       assay = assay_x,
-      layer = layer_x,
-      verbose = FALSE
+      layer = layer_x
     )[features, , drop = FALSE]
   )
   adata <- sc$AnnData(
@@ -139,8 +138,7 @@ srt_to_adata <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = layer_y[assay],
-          verbose = FALSE
+          layer = layer_y[assay]
         )
       )
       if (!identical(dim(layer), dim(X))) {

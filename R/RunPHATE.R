@@ -116,8 +116,7 @@ RunPHATE.Seurat <- function(
         GetAssayData5(
           object = object,
           layer = layer,
-          assay = assay,
-          verbose = FALSE
+          assay = assay
         )[features, ]
       )
     )

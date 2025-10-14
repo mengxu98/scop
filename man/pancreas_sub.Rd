@@ -29,8 +29,7 @@ if (interactive()) {
   pancreas_sub <- pancreas_sub[Matrix::rowSums(
     GetAssayData5(
       pancreas_sub,
-      layer = "counts",
-      verbose = FALSE
+      layer = "counts"
     )
   ) > 0, ]
   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]

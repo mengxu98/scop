@@ -655,8 +655,7 @@ DynamicHeatmap <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = "data",
-            verbose = FALSE
+            layer = "data"
           )[
             intersect(cell_annotation, rownames(srt@assays[[assay]])) %||%
               integer(),
@@ -844,8 +843,7 @@ DynamicHeatmap <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = "counts",
-        verbose = FALSE
+        layer = "counts"
       )
     )
 
@@ -856,8 +854,7 @@ DynamicHeatmap <- function(
           GetAssayData5(
             srt,
             assay = assay,
-            layer = layer,
-            verbose = FALSE
+            layer = layer
           )[gene, cells, drop = FALSE],
           Matrix::t(
             srt@meta.data[cells, meta, drop = FALSE]

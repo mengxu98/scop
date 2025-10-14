@@ -80,7 +80,7 @@ The default value is \code{1}.}
 Default is \code{NULL}.}
 
 \item{do_scaling}{Whether to perform scaling.
-If TRUE, the function will force to scale the data using the ScaleData function.}
+If \code{TRUE}, the function will force to scale the data using the \link[Seurat:ScaleData]{Seurat::ScaleData} function.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.
 Default is \code{NULL}.}
@@ -101,7 +101,7 @@ Default is \code{"pca"}.}
 Default is \code{50}.}
 
 \item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If NULL, all dimensions will be used.}
+If \code{NULL}, all dimensions will be used.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
@@ -111,7 +111,8 @@ If NULL, all dimensions will be used.}
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
 Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.

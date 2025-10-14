@@ -184,16 +184,14 @@ RunKNNMap <- function(
       data = GetAssayData5(
         srt_query,
         layer = "data",
-        assay = query_assay,
-        verbose = FALSE
+        assay = query_assay
       )
     )
     status_ref <- CheckDataType(
       data = GetAssayData5(
         srt_ref,
         layer = "data",
-        assay = ref_assay,
-        verbose = FALSE
+        assay = ref_assay
       )
     )
     if (status_ref != status_query) {
@@ -241,8 +239,7 @@ RunKNNMap <- function(
       GetAssayData5(
         srt_query,
         layer = "data",
-        assay = query_assay,
-        verbose = FALSE
+        assay = query_assay
       )[
         features_common,
       ]
@@ -251,8 +248,7 @@ RunKNNMap <- function(
       GetAssayData5(
         srt_ref,
         layer = "data",
-        assay = ref_assay,
-        verbose = FALSE
+        assay = ref_assay
       )[
         features_common,
       ]

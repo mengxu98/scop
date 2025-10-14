@@ -126,8 +126,7 @@ RunDynamicFeatures <- function(
   y_mat <- GetAssayData5(
     srt,
     layer = layer,
-    assay = assay,
-    verbose = FALSE
+    assay = assay
   )
   if (is.null(libsize)) {
     status <- CheckDataType(
@@ -146,8 +145,7 @@ RunDynamicFeatures <- function(
         GetAssayData5(
           srt,
           assay = assay,
-          layer = "counts",
-          verbose = FALSE
+          layer = "counts"
         )
       )
     }
@@ -199,8 +197,7 @@ RunDynamicFeatures <- function(
       HVF_counts <- GetAssayData5(
         srt_sub,
         assay = assay,
-        layer = "counts",
-        verbose = FALSE
+        layer = "counts"
       )[HVF, , drop = FALSE]
       HVF <- HVF[
         apply(HVF_counts, 1, function(x) {
