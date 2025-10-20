@@ -1,5 +1,10 @@
 # scop
 
+# scop 0.3.4
+
+* **docs**:
+  * Updated workflow examples and function documentation.
+
 # scop 0.3.3
 
 * **func**:
