@@ -85,12 +85,6 @@ GeneConvert <- function(
     )
   }
 
-  if (missing(geneID)) {
-    log_message(
-      "'geneID' must be provided.",
-      message_type = "error"
-    )
-  }
   if (is.null(species_to)) {
     species_to <- species_from
   }
@@ -151,12 +145,14 @@ GeneConvert <- function(
   )
 
   if (species_from != species_to && all(geneID_to_IDtype %in% c("symbol", "ensembl_id"))) {
-    to_IDtype <- sapply(to_IDtype, function(x) {
-      switch(x,
-        "external_gene_name" = "associated_gene_name",
-        "ensembl_gene_id" = "ensembl_gene"
-      )
-    })
+    to_IDtype <- sapply(
+      to_IDtype, function(x) {
+        switch(x,
+          "external_gene_name" = "associated_gene_name",
+          "ensembl_gene_id" = "ensembl_gene"
+        )
+      }
+    )
     to_attr <- paste(species_to_simp, to_IDtype, sep = "_homolog_")
     names(to_attr) <- geneID_to_IDtype
   } else {
@@ -166,7 +162,10 @@ GeneConvert <- function(
 
   check_r("biomaRt")
   if (is.null(biomart)) {
-    log_message("Connect to the Ensembl archives...", verbose = verbose)
+    log_message(
+      "Connect to the Ensembl archives...",
+      verbose = verbose
+    )
     archives <- try_get(
       expr = {
         biomaRt::listEnsemblArchives()
@@ -177,10 +176,9 @@ GeneConvert <- function(
     Ensembl_version <- as.character(Ensembl_version)
     if (Ensembl_version == "current_release") {
       url <- archives[which(archives$current_release == "*"), "url"]
-      version <- as.character(archives[
-        which(archives$current_release == "*"),
-        "version"
-      ])
+      version <- as.character(
+        archives[which(archives$current_release == "*"), "version"]
+      )
     } else if (Ensembl_version %in% archives$version) {
       url <- archives[which(archives$version == Ensembl_version), "url"]
       version <- as.character(
@@ -193,8 +191,8 @@ GeneConvert <- function(
       )
     }
     log_message(
-      "Using the {.val {version}} version of biomart...\n",
-      "Downloading the biomart from {.val {url}}...",
+      "Using the {.pkg {version}} version of ensembl database...\n",
+      "Downloading the ensembl database from {.pkg {url}}...",
       multiline_indent = TRUE,
       verbose = verbose
     )
@@ -207,7 +205,7 @@ GeneConvert <- function(
         }
       },
       max_tries = max_tries,
-      error_message = "Get errors when connecting with ensembl mart..."
+      error_message = "Get errors when connecting with ensembl database..."
     )
     mart_from <- mart_to <- mart
   } else {
@@ -230,7 +228,10 @@ GeneConvert <- function(
       ),
       nm = c("ensembl", "protists_mart", "fungi_mart", "plants_mart")
     )
-    log_message("Connecting to the biomart...", verbose = verbose)
+    log_message(
+      "Connecting to the ensembl database...",
+      verbose = verbose
+    )
     if (length(biomart) == 1) {
       mart <- try_get(
         expr = {
@@ -238,15 +239,13 @@ GeneConvert <- function(
         },
         max_tries = max_tries,
         error_message = paste0(
-          "Get errors when connecting with ensembl mart(",
-          biomart,
-          ")"
+          "Get errors when connecting with ensembl database ({.pkg {biomart}})",
         )
       )
       mart_from <- mart_to <- mart
     } else {
       log_message(
-        "Supports conversion within one mart only.",
+        "Supports conversion within one ensembl database only",
         message_type = "error"
       )
       mart_from <- try_get(
@@ -258,9 +257,7 @@ GeneConvert <- function(
         },
         max_tries = max_tries,
         error_message = paste0(
-          "Get errors when connecting with ensembl mart(",
-          biomart[1],
-          ")"
+          "Get errors when connecting with ensembl database ({.pkg {biomart[1]}})",
         )
       )
       mart_to <- try_get(
@@ -272,16 +269,14 @@ GeneConvert <- function(
         },
         max_tries = max_tries,
         error_message = paste0(
-          "Get errors when connecting with ensembl mart(",
-          biomart[2],
-          ")"
+          "Get errors when connecting with ensembl database ({.pkg {biomart[2]}})",
         )
       )
     }
   }
 
   log_message(
-    "Searching the dataset {.val {species_from_simp}} ...",
+    "Searching the dataset {.pkg {species_from_simp}} ...",
     verbose = verbose
   )
   Datasets <- try_get(
@@ -290,27 +285,19 @@ GeneConvert <- function(
     },
     max_tries = max_tries,
     error_message = paste0(
-      "Get errors when connecting with ensembl mart(",
-      mart_from@biomart,
-      ")"
+      "Get errors when connecting with ensembl database ({.pkg {mart_from@biomart}})",
     )
   )
   dataset <- search_datasets(
     Datasets,
-    pattern = species_from_simp
-  )[["dataset"]][
-    1
-  ]
+    pattern = species_from_simp,
+    verbose = verbose
+  )[["dataset"]][1]
   if (is.null(dataset)) {
     log_message(
-      paste0(
-        "Can not find the dataset for the species: ",
-        species_from,
-        " (",
-        species_from_simp,
-        ")"
-      ),
-      message_type = "warning"
+      "Can not find the dataset for the species: {.pkg {species_from}} ({.pkg {species_from_simp}})",
+      message_type = "warning",
+      verbose = verbose
     )
     return(
       list(
@@ -325,7 +312,7 @@ GeneConvert <- function(
   }
 
   log_message(
-    "Connecting to the dataset {.val {dataset}} ...",
+    "Connecting to the dataset {.pkg {dataset}} ...",
     verbose = verbose
   )
   mart1 <- try_get(
@@ -337,18 +324,13 @@ GeneConvert <- function(
     },
     max_tries = max_tries,
     error_message = paste0(
-      "Get errors when connecting with Dataset(",
-      dataset,
-      ")"
+      "Get errors when connecting with Dataset ({.pkg {dataset}})",
     )
   )
 
-  if (
-    species_from != species_to &&
-      any(!geneID_to_IDtype %in% c("symbol", "ensembl_id"))
-  ) {
+  if (species_from != species_to && any(!geneID_to_IDtype %in% c("symbol", "ensembl_id"))) {
     log_message(
-      "Searching the dataset {.val {species_to_simp}} ...",
+      "Searching the dataset {.pkg {species_to_simp}} ...",
       verbose = verbose
     )
     Datasets2 <- try_get(
@@ -357,27 +339,19 @@ GeneConvert <- function(
       },
       max_tries = max_tries,
       error_message = paste0(
-        "Get errors when connecting with ensembl mart(",
-        mart_to@biomart,
-        ")"
+        "Get errors when connecting with ensembl database ({.pkg {mart_to@biomart}})",
       )
     )
     dataset2 <- search_datasets(
       Datasets2,
-      pattern = species_to_simp
-    )[[
-      "dataset"
-    ]][1]
+      pattern = species_to_simp,
+      verbose = verbose
+    )[["dataset"]][1]
     if (is.null(dataset2)) {
       log_message(
-        paste0(
-          "Can not find the dataset for the species: ",
-          species_to,
-          " (",
-          species_to_simp,
-          ")"
-        ),
-        message_type = "warning"
+        "Can not find the dataset for the species: {.pkg {species_to}} ({.pkg {species_to_simp}})",
+        message_type = "warning",
+        verbose = verbose
       )
       return(
         list(
@@ -392,7 +366,7 @@ GeneConvert <- function(
     }
 
     log_message(
-      "Connecting to the dataset {.val {dataset2}} ...",
+      "Connecting to the dataset {.pkg {dataset2}} ...",
       verbose = verbose
     )
     mart2 <- try_get(
@@ -404,9 +378,7 @@ GeneConvert <- function(
       },
       max_tries = max_tries,
       error_message = paste0(
-        "Get errors when connecting with Dataset(",
-        dataset2,
-        ")"
+        "Get errors when connecting with Dataset ({.pkg {dataset2}})",
       )
     )
   }
@@ -426,12 +398,14 @@ GeneConvert <- function(
         ": ",
         paste(to_attr_drop, collapse = ", ")
       ),
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     if (length(to_attr) == 0) {
       log_message(
-        "No attribute found for the species {.val {species_from}}. Please check the 'Attributes' in the result.",
-        message_type = "warning"
+        "No attribute found for the species {.val {species_from}}. Please check the 'Attributes' in the result",
+        message_type = "warning",
+        verbose = verbose
       )
       return(
         list(
@@ -616,7 +590,10 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        log_message("{.val {sum(ismap)}} genes mapped with {.val {from_name}}", verbose = verbose)
+        log_message(
+          "{.val {sum(ismap)}} genes mapped with {.val {from_name}}",
+          verbose = verbose
+        )
         geneID <- geneID[!ismap]
       }
     }
@@ -690,7 +667,10 @@ GeneConvert <- function(
           "to_geneID"
         )]
         ismap <- geneID %in% geneID_res_list[[from_attr]][, "from_geneID"]
-        log_message("{.val {sum(ismap)}} genes mapped with {.val {from_name}}", verbose = verbose)
+        log_message(
+          "{.val {sum(ismap)}} genes mapped with {.val {from_name}}",
+          verbose = verbose
+        )
         geneID <- geneID[!ismap]
       }
     }
@@ -705,11 +685,7 @@ GeneConvert <- function(
   geneID_res <- unique(do.call(rbind, geneID_res_list))
   rownames(geneID_res) <- NULL
 
-  if (
-    is.null(geneID_res) ||
-      nrow(geneID_res) == 0 ||
-      all(is.na(geneID_res[["to_geneID"]]))
-  ) {
+  if (is.null(geneID_res) || nrow(geneID_res) == 0 || all(is.na(geneID_res[["to_geneID"]]))) {
     log_message(
       "None of the gene IDs were converted",
       message_type = "warning",
@@ -776,8 +752,8 @@ GeneConvert <- function(
   )
 }
 
-search_datasets <- function(datasets, pattern) {
-  colIdx <- vapply(
+search_datasets <- function(datasets, pattern, verbose = TRUE) {
+  col_index <- vapply(
     datasets,
     FUN = function(x) {
       return(
@@ -790,13 +766,14 @@ search_datasets <- function(datasets, pattern) {
     },
     FUN.VALUE = logical(length = nrow(datasets))
   )
-  rowIdx <- apply(colIdx, 1, any)
-  if (any(rowIdx)) {
-    return(datasets[rowIdx, , drop = FALSE])
+  row_index <- apply(col_index, 1, any)
+  if (any(row_index)) {
+    return(datasets[row_index, , drop = FALSE])
   } else {
     log_message(
       "No matching datasets found",
-      message_type = "warning"
+      message_type = "warning",
+      verbose = verbose
     )
     return(NULL)
   }
