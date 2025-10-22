@@ -52,6 +52,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -101,6 +102,7 @@
 #'   reduction = "PAGAUMAP2D",
 #'   paga = pancreas_sub@misc$paga
 #' )
+#' }
 RunPAGA <- function(
     srt = NULL,
     assay_x = "RNA",
