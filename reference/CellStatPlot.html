@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,7 +120,8 @@ Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-flip">flip<a class="anchor" aria-label="anchor" href="#arg-flip"></a></dt>
-<dd><p>Logical indicating whether to flip the plot.</p></dd>
+<dd><p>Whether to flip the plot.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-na-color">NA_color<a class="anchor" aria-label="anchor" href="#arg-na-color"></a></dt>
@@ -128,24 +129,29 @@ Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-na-stat">NA_stat<a class="anchor" aria-label="anchor" href="#arg-na-stat"></a></dt>
-<dd><p>Logical indicating whether to include missing values in the plot.</p></dd>
+<dd><p>Whether to include missing values in the plot.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-keep-empty">keep_empty<a class="anchor" aria-label="anchor" href="#arg-keep-empty"></a></dt>
-<dd><p>Logical indicating whether to keep empty groups in the plot.</p></dd>
+<dd><p>Whether to keep empty groups in the plot.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-individual">individual<a class="anchor" aria-label="anchor" href="#arg-individual"></a></dt>
-<dd><p>Logical indicating whether to plot individual groups separately.</p></dd>
+<dd><p>Whether to plot individual groups separately.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-stat-level">stat_level<a class="anchor" aria-label="anchor" href="#arg-stat-level"></a></dt>
-<dd><p>The level(s) of the variable(s) specified in <code>stat.by</code> to include in the plot.</p></dd>
+<dd><p>The level(s) of the variable(s) specified in <code>stat.by</code> to include in the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>The type of plot to create.
-Can be one of <code>"bar"</code>, <code>"rose"</code>, <code>"ring"</code>, <code>"pie"</code>, <code>"trend"</code>, <code>"area"</code>, <code>"dot"</code>, <code>"sankey"</code>, <code>"chord"</code>, <code>"venn"</code>, or <code>"upset"</code>.</p></dd>
+Can be one of <code>"bar"</code>, <code>"rose"</code>, <code>"ring"</code>, <code>"pie"</code>, <code>"trend"</code>,
+<code>"area"</code>, <code>"dot"</code>, <code>"sankey"</code>, <code>"chord"</code>, <code>"venn"</code>, or <code>"upset"</code>.</p></dd>
 
 
 <dt id="arg-stat-type">stat_type<a class="anchor" aria-label="anchor" href="#arg-stat-type"></a></dt>
@@ -183,7 +189,8 @@ Can be one of <code>"stack"</code> or <code>"dodge"</code>.</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Logical indicating whether to add labels on the plot.</p></dd>
+<dd><p>Whether to add labels on the plot.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
@@ -228,11 +235,13 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>The direction of the legend in the plot. Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
+<dd><p>The direction of the legend in the plot.
+Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>The name of the theme to use for the plot. Can be one of the predefined themes or a custom theme.</p></dd>
+<dd><p>The name of the theme to use for the plot.
+Can be one of the predefined themes or a custom theme.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
@@ -240,27 +249,33 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Logical indicating whether to combine multiple plots into a single plot.</p></dd>
+<dd><p>Whether to combine multiple plots into a single plot.
+Default is TRUE.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>The number of rows in the combined plot.</p></dd>
+<dd><p>The number of rows in the combined plot.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>The number of columns in the combined plot.</p></dd>
+<dd><p>The number of columns in the combined plot.
+Default is NULL.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Logical indicating whether to fill the plot by row or by column.</p></dd>
+<dd><p>Whether to fill the plot by row or by column.
+Default is TRUE.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
-<dd><p>Logical indicating whether to force the plot even if some variables have more than 100 levels.</p></dd>
+<dd><p>Whether to force the plot even if some variables have more than 100 levels.
+Default is FALSE.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>The random seed to use for reproducible results.</p></dd>
+<dd><p>The random seed to use for reproducible results.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -272,17 +287,17 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:48] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:49] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:07:49] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:51] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:51] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:51] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:51] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:52] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:01] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:02] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:02] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:03] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:04] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:04] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:04] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:04] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:52] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:05] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -318,15 +333,14 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:53] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:53] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:07:53] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:53] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:53] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:53] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:56] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:07:56] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:07:59] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:05] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:05] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:06] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:06] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:06] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:08] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:08] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-22 09:15:11] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
@@ -554,7 +568,7 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"sankey"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:06] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:18] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
 <span class="r-plt img"><img src="CellStatPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
@@ -562,7 +576,7 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"Phase"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"chord"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:07] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:19] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
 <span class="r-plt img"><img src="CellStatPlot-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
@@ -574,40 +588,32 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>    Phase <span class="op">=</span> <span class="st">"S"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:08] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:08:08] Installing: <span style="color: #0000BB;">ggVennDiagram</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:19] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:19] Installing: <span style="color: #0000BB;">ggVennDiagram</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 14 packages.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → All 14 packages (0 B) are cached.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 18 packages.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → All 18 packages (0 B) are cached.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">admisc</span>          0.38   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">aplot</span>           0.2.9  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">dplyr</span>           1.1.4  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">forcats</span>         1.0.0  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">forcats</span>         1.0.1  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">fs</span>              1.6.6  <span style="color: #555555;"> + </span><span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> make</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggVennDiagram</span>   1.5.4  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggfun</span>           0.2.0  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggplotify</span>       0.1.2  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggplotify</span>       0.1.3  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">gridGraphics</span>    0.5-1  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">patchwork</span>       1.3.2  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">pillar</span>          1.11.1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">pkgconfig</span>       2.0.3  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">rappdirs</span>        0.3.3  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">tibble</span>          3.3.0  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">tidyselect</span>      1.2.1  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">utf8</span>            1.2.6  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">venn</span>            1.12   </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">yulab.utils</span>     0.2.1  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 14 pkgs are cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggplotify</span> 0.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (140.32 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggfun</span> 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (250.63 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">gridGraphics</span> 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">tidyselect</span> 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (225.28 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">forcats</span> 1.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (421.67 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">utf8</span> 1.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.81 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">admisc</span> 0.38 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.70 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">venn</span> 1.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (308.02 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">tibble</span> 3.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (680.35 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">dplyr</span> 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.49 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">patchwork</span> 1.3.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.35 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggVennDiagram</span> 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.27 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 18 pkgs are cached</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
@@ -623,23 +629,27 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> make is already the newest version (4.3-4.1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 41 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">admisc</span> 0.38  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">aplot</span> 0.2.9  <span style="color: #9E9E9E;">(75ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dplyr</span> 1.1.4  <span style="color: #9E9E9E;">(115ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">forcats</span> 1.0.0  <span style="color: #9E9E9E;">(130ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggfun</span> 0.2.0  <span style="color: #9E9E9E;">(90ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggplotify</span> 0.1.2  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 36 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">admisc</span> 0.38  <span style="color: #9E9E9E;">(59ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">aplot</span> 0.2.9  <span style="color: #9E9E9E;">(74ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">dplyr</span> 1.1.4  <span style="color: #9E9E9E;">(114ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">forcats</span> 1.0.1  <span style="color: #9E9E9E;">(128ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">fs</span> 1.6.6  <span style="color: #9E9E9E;">(92ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggfun</span> 0.2.0  <span style="color: #9E9E9E;">(102ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggplotify</span> 0.1.3  <span style="color: #9E9E9E;">(65ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">gridGraphics</span> 0.5-1  <span style="color: #9E9E9E;">(1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggVennDiagram</span> 1.5.4  <span style="color: #9E9E9E;">(1.1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">patchwork</span> 1.3.2  <span style="color: #9E9E9E;">(71ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pillar</span> 1.11.1  <span style="color: #9E9E9E;">(64ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tibble</span> 3.3.0  <span style="color: #9E9E9E;">(64ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tidyselect</span> 1.2.1  <span style="color: #9E9E9E;">(63ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">utf8</span> 1.2.6  <span style="color: #9E9E9E;">(101ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">venn</span> 1.12  <span style="color: #9E9E9E;">(83ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 36 deps: kept 23, added 14, dld 12 (12.91 MB) <span style="color: #B2B2B2;">[6.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:08:14] <span style="color: #0000BB;">ggVennDiagram</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">patchwork</span> 1.3.2  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pillar</span> 1.11.1  <span style="color: #9E9E9E;">(103ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pkgconfig</span> 2.0.3  <span style="color: #9E9E9E;">(68ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rappdirs</span> 0.3.3  <span style="color: #9E9E9E;">(62ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tibble</span> 3.3.0  <span style="color: #9E9E9E;">(66ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">tidyselect</span> 1.2.1  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">utf8</span> 1.2.6  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">venn</span> 1.12  <span style="color: #9E9E9E;">(59ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">yulab.utils</span> 0.2.1  <span style="color: #9E9E9E;">(40ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 36 deps: kept 19, added 18 <span style="color: #B2B2B2;">[5.2s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:25] <span style="color: #0000BB;">ggVennDiagram</span> installed successfully</span>
 <span class="r-plt img"><img src="CellStatPlot-28.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Progenitor</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ngn3-low-EP"</span>, <span class="st">"Ngn3-high-EP"</span><span class="op">)</span></span></span>
@@ -649,10 +659,6 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">[</span><span class="st">"Fancb"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:14] The input data is a <span style="color: #0000BB;">&lt;Assay5&gt;</span> object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       `SeuratObject::JoinLayers()` will be used to combine the layers</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">This warning will be shown only once every 8 hours</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       <span style="color: #555555;">To change this interval, set the scop.warning_interval option</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Dlg3_Expressed</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -666,8 +672,8 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"venn"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:14] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:08:14] <span style="color: #0000BB;">ggVennDiagram</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:25] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:25] <span style="color: #0000BB;">ggVennDiagram</span> installed successfully</span>
 <span class="r-plt img"><img src="CellStatPlot-29.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellStatPlot</span><span class="op">(</span></span></span>
@@ -678,18 +684,21 @@ Can be one of <code>"right"</code>, <code>"left"</code>, <code>"bottom"</code>, 
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"TRUE"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:08:15] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:08:15] Installing: <span style="color: #0000BB;">ggupset</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:15:25] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:25] Installing: <span style="color: #0000BB;">ggupset</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 1 package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → The package (0 B) is cached.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggupset</span>   0.4.1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 1 pkg is cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggupset</span> 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.59 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggupset</span> 0.4.1  <span style="color: #9E9E9E;">(1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 21 deps: kept 21, added 1, dld 1 (2.59 MB) <span style="color: #B2B2B2;">[2.6s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:08:17] <span style="color: #0000BB;">ggupset</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggupset</span> 0.4.1  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 21 deps: kept 21, added 1 <span style="color: #B2B2B2;">[2.5s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:15:28] <span style="color: #0000BB;">ggupset</span> installed successfully</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">ggupset</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/const-ae/ggupset/issues&gt;</span>.</span>
 <span class="r-plt img"><img src="CellStatPlot-30.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span></span></span>

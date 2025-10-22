@@ -9,7 +9,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,18 +99,18 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 <span>  query_group_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_group_palette <span class="op">=</span> <span class="st">"simspec"</span>,</span>
 <span>  ref_group_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  query_cell_annotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  query_cell_annotation_palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
-<span>  query_cell_annotation_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  query_annotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  query_annotation_palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
+<span>  query_annotation_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  query_cell_annotation_params <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">flip</span><span class="op">)</span> <span class="op">{</span></span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">10</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="op">}</span></span>
 <span>    <span class="kw">else</span> <span class="op">{</span></span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">10</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="op">}</span>,</span>
-<span>  ref_cell_annotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ref_cell_annotation_palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
-<span>  ref_cell_annotation_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ref_annotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ref_annotation_palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
+<span>  ref_annotation_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_cell_annotation_params <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">flip</span><span class="op">)</span> <span class="op">{</span></span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">10</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="op">}</span></span>
@@ -417,13 +417,13 @@ This should be a vector of color names or RGB values.
 Default is <code>NULL</code>.</p></dd>
 
 
-<dt id="arg-query-cell-annotation">query_cell_annotation<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation"></a></dt>
+<dt id="arg-query-annotation">query_annotation<a class="anchor" aria-label="anchor" href="#arg-query-annotation"></a></dt>
 <dd><p>A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
 If not provided, no cell annotations will be shown.</p></dd>
 
 
-<dt id="arg-query-cell-annotation-palette">query_cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation-palette"></a></dt>
+<dt id="arg-query-annotation-palette">query_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-query-annotation-palette"></a></dt>
 <dd><p>The color palette to use for the query cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
@@ -431,7 +431,7 @@ If multiple color palettes are provided, each track will be assigned a separate 
 Default is <code>"Paired"</code>.</p></dd>
 
 
-<dt id="arg-query-cell-annotation-palcolor">query_cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-query-cell-annotation-palcolor"></a></dt>
+<dt id="arg-query-annotation-palcolor">query_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-query-annotation-palcolor"></a></dt>
 <dd><p>The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
@@ -444,13 +444,13 @@ This should be a list with named elements, where the names correspond to paramet
 Any conflicting parameters will override the defaults set by this function.</p></dd>
 
 
-<dt id="arg-ref-cell-annotation">ref_cell_annotation<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation"></a></dt>
+<dt id="arg-ref-annotation">ref_annotation<a class="anchor" aria-label="anchor" href="#arg-ref-annotation"></a></dt>
 <dd><p>A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
 If not provided, no cell annotations will be shown.</p></dd>
 
 
-<dt id="arg-ref-cell-annotation-palette">ref_cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation-palette"></a></dt>
+<dt id="arg-ref-annotation-palette">ref_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-ref-annotation-palette"></a></dt>
 <dd><p>The color palette to use for the reference cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
@@ -458,7 +458,7 @@ If multiple color palettes are provided, each track will be assigned a separate 
 Default is <code>"Paired"</code>.</p></dd>
 
 
-<dt id="arg-ref-cell-annotation-palcolor">ref_cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-ref-cell-annotation-palcolor"></a></dt>
+<dt id="arg-ref-annotation-palcolor">ref_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-ref-annotation-palcolor"></a></dt>
 <dd><p>The specific colors to use for the reference cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
@@ -532,17 +532,17 @@ Any conflicting parameters will override the defaults set by this function.</p><
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:28] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:29] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:30] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:32] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:33] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:33] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:33] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:34] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:26] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:27] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:27] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:29] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:30] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:30] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:31] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:31] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:35] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:32] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -578,30 +578,29 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:36] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:36] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:36] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:33] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:33] Reorder clusters...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once every 8 hours.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:36] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:36] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:36] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:38] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:38] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 12:59:40] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:33] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:33] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:33] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:35] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:36] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-22 09:08:38] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:40] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:40] Use 2000 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Use 2000 features to calculate distance.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:41] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:41] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:41] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:41] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:41] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:38] Predict cell type...</span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="CellCorHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -618,31 +617,31 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  newnames <span class="op">=</span> <span class="va">genenames</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:42] Rename features for the assay: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:40] Rename features for the assay: RNA</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="CheckDataMerge.html">CheckDataMerge</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">[[</span><span class="st">"srt_merge"</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:43] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:43] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:43] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:44] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:44] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:45] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:46] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:47] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:47] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:48] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 12:59:48] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:50] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:50] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:50] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:51] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:40] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:40] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:40] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:41] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:42] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:43] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:43] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:44] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:44] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:45] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:08:46] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:47] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:47] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:47] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:48] Finished check</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -651,23 +650,20 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  label_cutoff <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
-<span class="r-in"><span>  query_cell_annotation <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
-<span class="r-in"><span>  query_cell_annotation_palette <span class="op">=</span> <span class="st">"Set2"</span>,</span></span>
-<span class="r-in"><span>  ref_cell_annotation <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
-<span class="r-in"><span>  ref_cell_annotation_palette <span class="op">=</span> <span class="st">"Set3"</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">4</span></span></span>
+<span class="r-in"><span>  query_annotation <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
+<span class="r-in"><span>  query_annotation_palette <span class="op">=</span> <span class="st">"Set2"</span>,</span></span>
+<span class="r-in"><span>  ref_annotation <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
+<span class="r-in"><span>  ref_annotation_palette <span class="op">=</span> <span class="st">"Set3"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:54] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:54] Use 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:55] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:55] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:55] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:55] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 12:59:55] Predict cell type...</span>
-<span class="r-plt img"><img src="CellCorHeatmap-2.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Use 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:08:52] Predict cell type...</span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="CellCorHeatmap-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellCorHeatmap-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht3</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -679,15 +675,15 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  ref_collapsing <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  cluster_columns <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:06] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:06] Use 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:07] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:07] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:07] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:07] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:08] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:01] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:01] Use 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:03] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:03] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:03] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:03] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:03] Predict cell type...</span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="CellCorHeatmap-4.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellCorHeatmap-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht4</span> <span class="op">&lt;-</span> <span class="fu">CellCorHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -696,22 +692,20 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-in"><span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
-<span class="r-in"><span>  query_cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  query_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Rbp4"</span>, <span class="st">"Gcg"</span>, <span class="st">"Nap1l2"</span>, <span class="st">"Xist"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ref_cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  ref_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Rbp4"</span>, <span class="st">"Gcg"</span>, <span class="st">"Nap1l2"</span>, <span class="st">"Xist"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2.5</span>,</span></span>
-<span class="r-in"><span>  width <span class="op">=</span> <span class="fl">3.5</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:20] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:20] Use 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:20] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:21] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:21] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:21] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:00:21] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:17] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:17] Use 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:17] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:17] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:18] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:18] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:09:18] Predict cell type...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -957,254 +951,8 @@ Any conflicting parameters will override the defaults set by this function.</p><
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_ydensity()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `$&lt;-.data.frame`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> replacement has 1 row, data has 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_ydensity()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `$&lt;-.data.frame`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> replacement has 1 row, data has 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_ydensity()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `$&lt;-.data.frame`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> replacement has 1 row, data has 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_ydensity()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `$&lt;-.data.frame`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> replacement has 1 row, data has 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_ydensity()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `$&lt;-.data.frame`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> replacement has 1 row, data has 0</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="CellCorHeatmap-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
-<span class="r-plt img"><img src="CellCorHeatmap-6.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="CellCorHeatmap-4.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -27,7 +27,7 @@ The function also checks if the package versions in the environment meet the req
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,60 +117,6 @@ Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">PrepareEnv</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:32] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:32] Environment name: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:32] Python version: <span style="color: #0000BB;">3.10-1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:32] Number of packages to install: <span style="color: #0000BB;">21</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:32] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:33] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:33] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:33] Installing <span style="color: #0000BB;">conda</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:34] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:35] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:37] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:37] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:37] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:37] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:37] Installing <span style="color: #0000BB;">pip</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:38] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:39] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:24:41] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:41] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:24:43] <span style="color: #00BB00;">Python Environment Ready</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">conda environment: </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  conda:          /usr/share/miniconda/bin/conda</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  environment:    /usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">python config: </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  python:         /usr/share/miniconda/envs/scop_env/bin/python3.10</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.10.so</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  version:        3.10.1 | packaged by conda-forge | (main, Dec 22 2021, 01:39:36) [GCC 9.4.0]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/numpy</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy_version:  1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  NOTE: Python version was forced by use_python() function</span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

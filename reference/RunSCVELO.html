@@ -11,7 +11,7 @@ version compatibility, and modular design."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -315,113 +315,10 @@ Default is <code>TRUE</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Environment name: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Python version: <span style="color: #0000BB;">3.10-1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Number of packages to install: <span style="color: #0000BB;">21</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:09] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Using existing environment: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:10] Installing <span style="color: #0000BB;">conda</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:11] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:12] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:14] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:14] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:14] Installing <span style="color: #0000BB;">pip</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:16] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:16] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:18] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">palantir</span> <span style="color: #0000BB;">1.4.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scanpy</span> <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scvelo</span> <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">wot</span> <span style="color: #0000BB;">1.0.8.post2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">pacmap</span> <span style="color: #0000BB;">0.8.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">phate</span> <span style="color: #0000BB;">1.0.11</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">bbknn</span> <span style="color: #0000BB;">1.6.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scanorama</span> <span style="color: #0000BB;">1.7.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">scvi-tools</span> <span style="color: #0000BB;">1.2.1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:18] <span style="color: #0000BB;">cellrank</span> <span style="color: #0000BB;">2.0.7</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:21] <span style="color: #00BB00;">Python Environment Ready</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">conda environment: </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  conda:          /usr/share/miniconda/bin/conda</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  environment:    /usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">python config: </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  python:         /usr/share/miniconda/envs/scop_env/bin/python3.10</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.10.so</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  version:        3.10.1 | packaged by conda-forge | (main, Dec 22 2021, 01:39:36) [GCC 9.4.0]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/numpy</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy_version:  1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  </span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  NOTE: Python version was forced by use_python() function</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:22] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:24] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:25] Perform `Seurat::ScaleData()`</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:26] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:27] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:27] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:31] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:35] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunSCVELO</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay_x <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -429,147 +326,22 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"PCA"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:37] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:37] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:39] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:40] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:41] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:42] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">"misc"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:44] <span style="color: #0000BB;">"tools"</span> slot is not converted</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:44] Convert <span style="color: #0000BB;">&lt;Seurat&gt;</span> object to <span style="color: #0000BB;">&lt;AnnData&gt;</span> object completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:44] Running <span style="color: #0000BB;">scVelo</span> analysis...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:49] <span style="color: #0000BB;">scVelo</span> analysis completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:49] Converting <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:47:53] Convert <span style="color: #0000BB;">&lt;AnnData&gt;</span> object to <span style="color: #0000BB;">&lt;Seurat&gt;</span> object completed</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for counts</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for data</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     orig.ident nCount_RNA nFeature_RNA     S_score  G2M_score</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT SeuratProject       7071         2613 -0.01470664 -0.2326104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC SeuratProject       5026         2211 -0.17998111 -0.1260295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT SeuratProject       6194         2486 -0.16794573 -0.1666881</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC SeuratProject       6370         2581 -0.17434505 -0.2216024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC SeuratProject       9182         2906 -0.18656224 -0.1571970</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC SeuratProject       5892         2282 -0.12347911 -0.2298337</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nCount_spliced nFeature_spliced nCount_unspliced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT           7071             2613              953</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC           5026             2211             1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT           6194             2486              721</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC           6370             2581             1544</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC           9182             2906             2262</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC           5892             2282              935</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_unspliced     CellType  SubCellType Phase</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                638       Ductal       Ductal    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                623 Ngn3-high-EP Ngn3-high-EP    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                550       Ductal       Ductal    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC               1015    Endocrine         Beta    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC               1096    Endocrine         Beta    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                712  Ngn3-low-EP  Ngn3-low-EP    G1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  Standardpca_SNN_res.0.6 ident Standardpcaclusters</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                       0  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                       3  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                       0  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC                       1  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC                       1  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                       0  &lt;NA&gt;                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  Standardclusters initial_size_unspliced initial_size_spliced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT             &lt;NA&gt;                    953                 7071</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC             &lt;NA&gt;                   1000                 5026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT             &lt;NA&gt;                    721                 6194</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC             &lt;NA&gt;                   1544                 6370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC             &lt;NA&gt;                   2262                 9182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC             &lt;NA&gt;                    935                 5892</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  initial_size n_counts stochastic_self_transition</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT         7071 5557.081               3.088521e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC         5026 5521.244               1.283474e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT         6194 5591.387               1.607823e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC         6370 5563.226               1.589271e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC         9182 5618.999               1.558661e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC         5892 5544.945               1.397027e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  stochastic_length stochastic_confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT              4.39             0.8236299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC             13.37             0.9523554</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT              5.94             0.8664176</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC              5.56             0.6425864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC             31.12             0.9922326</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC              7.09             0.7898204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  stochastic_confidence_transition stochastic_root_cells</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                       0.07636669                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                       0.22660273                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                       0.16279691                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC                       0.31432876                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC                       0.91638625                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                       0.17698289                     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  stochastic_end_points stochastic_pseudotime nCount_Ms</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT          2.649858e-03             0.1353906  5574.122</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC          2.463039e-05             0.7681831  5535.907</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT          1.552235e-03             0.1487381  5563.701</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC          7.212214e-05             0.9486359  5533.869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC          4.176336e-01             0.9009965  5564.412</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC          1.074514e-03             0.1452119  5558.879</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_Ms nCount_Mu nFeature_Mu nCount_velocity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT        9224  1181.493        7679       154.04584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC        7684  1185.507        6079        50.20667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT        8948  1181.818        7174       194.47365</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC        8554  1185.836        7220       -30.74317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC        9018  1184.744        7896       -39.84477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC        8171  1183.398        5673       205.13576</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_velocity nCount_variance_velocity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT              4127                32.604618</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC              3460                -2.177535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT              4137                32.813191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC              3685               -85.936140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC              3515              -633.498995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC              3746                48.939999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_variance_velocity nCount_stochastic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                        349         154.04584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                        195          50.20667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                        304         194.47365</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC                        227         -30.74317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC                        314         -39.84477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                        252         205.13576</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_stochastic nCount_variance_stochastic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                4127                  32.604618</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                3460                  -2.177535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                4137                  32.813191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC                3685                 -85.936140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC                3515                -633.498995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                3746                  48.939999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  nFeature_variance_stochastic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGAGCCTTGAT                          349</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACCTGGTAAGTGGC                          195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGAGATATGGT                          304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGCAAAGAATC                          227</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGGTACAGTTC                          314</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AAACGGGTCAGCTCTC                          252</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">assays</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "RNA"                 "spliced"             "unspliced"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "Ms"                  "Mu"                  "velocity"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "variance_velocity"   "stochastic"          "variance_stochastic"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stochastic_length"</span>, <span class="st">"stochastic_confidence"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunSCVELO-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"stochastic_pseudotime"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunSCVELO-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="VelocityPlot.html">VelocityPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"stream"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:57] <span style="color: #0000BB;">metR</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:57] <span style="color: #0000BB;">metR</span> installed successfully</span>
-<span class="r-plt img"><img src="RunSCVELO-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -577,36 +349,9 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="cn">NA</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:58] <span style="color: #0000BB;">metR</span> installed successfully</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1000 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1000 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_segment()`).</span>
-<span class="r-plt img"><img src="RunSCVELO-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:47:59] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:47:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>number of items to replace is not a multiple of replacement length</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:01] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:02] Perform `Seurat::ScaleData()`</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:02] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> None of the requested features have any variance</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunSCVELO</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay_x <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
@@ -621,17 +366,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  compute_pseudotime <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  compute_paga <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:03] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:04] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:06] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:06] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:07] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:08] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:10] Found <span style="color: #0000BB;">197</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:10] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:48:10] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:48:10] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': subscript out of bounds</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
