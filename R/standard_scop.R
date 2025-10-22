@@ -72,6 +72,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(Matrix)
 #' PrepareEnv()
 #' data(pancreas_sub)
@@ -131,6 +132,7 @@
 #'   }
 #' )
 #' patchwork::wrap_plots(plotlist = plist2)
+#' }
 standard_scop <- function(
     srt,
     prefix = "Standard",

@@ -189,6 +189,7 @@ PAGAPlot(
 This function generates a PAGA plot based on the given Seurat object and PAGA result.
 }
 \examples{
+\dontrun{
 PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -282,6 +283,7 @@ PAGAPlot(
   show_transition = TRUE,
   transition_offset = 0.02
 )
+}
 }
 \seealso{
 \link{RunPAGA}, \link{CellDimPlot}
