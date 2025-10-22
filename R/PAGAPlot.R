@@ -69,6 +69,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -162,6 +163,7 @@
 #'   show_transition = TRUE,
 #'   transition_offset = 0.02
 #' )
+#' }
 PAGAPlot <- function(
     srt,
     paga = srt@misc$paga,

@@ -123,6 +123,7 @@ CheckDataType.default <- function(
 #' Finally, it prepares the data for integration analysis based on the highly variable features.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
 #' @param assay The name of the assay to be used for downstream analysis.

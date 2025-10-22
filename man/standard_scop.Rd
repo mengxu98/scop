@@ -129,6 +129,7 @@ A \code{Seurat} object.
 This function performs a standard single-cell analysis workflow.
 }
 \examples{
+\dontrun{
 library(Matrix)
 PrepareEnv()
 data(pancreas_sub)
@@ -188,6 +189,7 @@ plist2 <- lapply(
   }
 )
 patchwork::wrap_plots(plotlist = plist2)
+}
 }
 \seealso{
 \link{integration_scop}

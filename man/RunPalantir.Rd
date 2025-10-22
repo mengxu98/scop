@@ -120,6 +120,7 @@ Default is \code{TRUE}.}
 Run Palantir analysis
 }
 \examples{
+\dontrun{
 PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -144,6 +145,7 @@ FeatureDimPlot(
     "_diff_potential"
   )
 )
+}
 }
 \seealso{
 \link{srt_to_adata}

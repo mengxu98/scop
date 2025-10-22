@@ -22,6 +22,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -46,6 +47,7 @@
 #'     "_diff_potential"
 #'   )
 #' )
+#' }
 RunPalantir <- function(
     srt = NULL,
     assay_x = "RNA",
