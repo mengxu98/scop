@@ -5,6 +5,7 @@
 #' @inheritParams SingleR::SingleR
 #' @inheritParams SingleR::trainSingleR
 #' @inheritParams thisutils::log_message
+#' @inheritParams thisutils::parallelize_fun
 #' @param genes `"genes"` parameter in [SingleR::SingleR] function.
 #' @param de.method `"de.method"` parameter in [SingleR::SingleR] function.
 #' @param quantile "quantile" parameter in [SingleR::SingleR] function.
