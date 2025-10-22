@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,215 +138,273 @@
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>A character vector specifying the groups to group by. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the groups to group by.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>A character vector specifying the variable to split the plot by. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the variable to split the plot by.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-bg-by">bg.by<a class="anchor" aria-label="anchor" href="#arg-bg-by"></a></dt>
-<dd><p>A character vector specifying the variable to use as the background color. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the variable to use as the background color.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-plot-by">plot.by<a class="anchor" aria-label="anchor" href="#arg-plot-by"></a></dt>
-<dd><p>A character vector specifying how to plot the data, by group or feature. Possible values are "group", "feature". Default is "group".</p></dd>
+<dd><p>A character vector specifying how to plot the data, by group or feature.
+Possible values are `"group"` or `"feature"`.
+Default is `"group"`.</p></dd>
 
 
 <dt id="arg-fill-by">fill.by<a class="anchor" aria-label="anchor" href="#arg-fill-by"></a></dt>
-<dd><p>A string specifying what to fill the plot by. Possible values are "group", "feature", or "expression". Default is "group".</p></dd>
+<dd><p>A string specifying what to fill the plot by.
+Possible values are `"group"`, `"feature"`, or `"expression"`.
+Default is `"group"`.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>A character vector specifying the cells to include in the plot. Default is NULL.</p></dd>
+<dd><p>A character vector specifying the cells to include in the plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A string specifying which layer of the Seurat object to use. Default is "data".</p></dd>
+<dd><p>A string specifying which layer of the Seurat object to use.
+Default is `"data"`.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A string specifying which assay to use. Default is NULL.</p></dd>
+<dd><p>A string specifying which assay to use.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-keep-empty">keep_empty<a class="anchor" aria-label="anchor" href="#arg-keep-empty"></a></dt>
-<dd><p>Whether to keep empty levels in the plot. Default is FALSE.</p></dd>
+<dd><p>Whether to keep empty levels in the plot.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-individual">individual<a class="anchor" aria-label="anchor" href="#arg-individual"></a></dt>
-<dd><p>Whether to create individual plots for each group. Default is FALSE.</p></dd>
+<dd><p>Whether to create individual plots for each group.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>A string specifying the type of plot to create. Possible values are "violin", "box", "bar", "dot", or "col". Default is "violin".</p></dd>
+<dd><p>A string specifying the type of plot to create.
+Possible values are `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
+Default is `"violin"`.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>A string specifying the color palette to use for filling. Default is "Paired".</p></dd>
+<dd><p>A string specifying the color palette to use for filling.
+Default is `"Paired"`.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>A character vector specifying specific colors to use for filling. Default is NULL.</p></dd>
+<dd><p>A character vector specifying specific colors to use for filling.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The transparency of the plot. Default is 1.</p></dd>
+<dd><p>The transparency of the plot.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-bg-palette">bg_palette<a class="anchor" aria-label="anchor" href="#arg-bg-palette"></a></dt>
-<dd><p>A string specifying the color palette to use for the background. Default is "Paired".</p></dd>
+<dd><p>A string specifying the color palette to use for the background.
+Default is `"Paired"`.</p></dd>
 
 
 <dt id="arg-bg-palcolor">bg_palcolor<a class="anchor" aria-label="anchor" href="#arg-bg-palcolor"></a></dt>
-<dd><p>A character vector specifying specific colors to use for the background. Default is NULL.</p></dd>
+<dd><p>A character vector specifying specific colors to use for the background.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-bg-alpha">bg_alpha<a class="anchor" aria-label="anchor" href="#arg-bg-alpha"></a></dt>
-<dd><p>The transparency of the background. Default is 0.2.</p></dd>
+<dd><p>The transparency of the background.
+Default is `0.2`.</p></dd>
 
 
 <dt id="arg-add-box">add_box<a class="anchor" aria-label="anchor" href="#arg-add-box"></a></dt>
-<dd><p>Whether to add a box plot to the plot. Default is FALSE.</p></dd>
+<dd><p>Whether to add a box plot to the plot.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-box-color">box_color<a class="anchor" aria-label="anchor" href="#arg-box-color"></a></dt>
-<dd><p>A string specifying the color of the box plot. Default is "black".</p></dd>
+<dd><p>A string specifying the color of the box plot.
+Default is `"black"`.</p></dd>
 
 
 <dt id="arg-box-width">box_width<a class="anchor" aria-label="anchor" href="#arg-box-width"></a></dt>
-<dd><p>The width of the box plot. Default is 0.1.</p></dd>
+<dd><p>The width of the box plot.
+Default is `0.1`.</p></dd>
 
 
 <dt id="arg-box-ptsize">box_ptsize<a class="anchor" aria-label="anchor" href="#arg-box-ptsize"></a></dt>
-<dd><p>The size of the points of the box plot. Default is 2.</p></dd>
+<dd><p>The size of the points of the box plot.
+Default is `2`.</p></dd>
 
 
 <dt id="arg-add-point">add_point<a class="anchor" aria-label="anchor" href="#arg-add-point"></a></dt>
-<dd><p>Whether to add individual data points to the plot. Default is FALSE.</p></dd>
+<dd><p>Whether to add individual data points to the plot.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-pt-color">pt.color<a class="anchor" aria-label="anchor" href="#arg-pt-color"></a></dt>
-<dd><p>A string specifying the color of the data points. Default is "grey30".</p></dd>
+<dd><p>A string specifying the color of the data points.
+Default is `"grey30"`.</p></dd>
 
 
 <dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>The size of the data points. If NULL, the size is automatically determined. Default is NULL.</p></dd>
+<dd><p>The size of the data points. If NULL, the size is automatically determined.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>The transparency of the data points. Default is 1.</p></dd>
+<dd><p>The transparency of the data points.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-jitter-width">jitter.width<a class="anchor" aria-label="anchor" href="#arg-jitter-width"></a></dt>
-<dd><p>The width of the jitter. Default is 0.5.</p></dd>
+<dd><p>The width of the jitter.
+Default is `0.5`.</p></dd>
 
 
 <dt id="arg-jitter-height">jitter.height<a class="anchor" aria-label="anchor" href="#arg-jitter-height"></a></dt>
-<dd><p>The height of the jitter. Default is 0.1.</p></dd>
+<dd><p>The height of the jitter.
+Default is `0.1`.</p></dd>
 
 
 <dt id="arg-add-trend">add_trend<a class="anchor" aria-label="anchor" href="#arg-add-trend"></a></dt>
-<dd><p>Whether to add a trend line to the plot. Default is FALSE.</p></dd>
+<dd><p>Whether to add a trend line to the plot.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-trend-color">trend_color<a class="anchor" aria-label="anchor" href="#arg-trend-color"></a></dt>
-<dd><p>A string specifying the color of the trend line. Default is "black".</p></dd>
+<dd><p>A string specifying the color of the trend line.
+Default is `"black"`.</p></dd>
 
 
 <dt id="arg-trend-linewidth">trend_linewidth<a class="anchor" aria-label="anchor" href="#arg-trend-linewidth"></a></dt>
-<dd><p>The width of the trend line. Default is 1.</p></dd>
+<dd><p>The width of the trend line.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-trend-ptsize">trend_ptsize<a class="anchor" aria-label="anchor" href="#arg-trend-ptsize"></a></dt>
-<dd><p>The size of the points of the trend line. Default is 2.</p></dd>
+<dd><p>The size of the points of the trend line.
+Default is `2`.</p></dd>
 
 
 <dt id="arg-add-stat">add_stat<a class="anchor" aria-label="anchor" href="#arg-add-stat"></a></dt>
-<dd><p>A string specifying which statistical summary to add to the plot. Possible values are "none", "mean", or "median". Default is "none".</p></dd>
+<dd><p>A string specifying which statistical summary to add to the plot.
+Possible values are `"none"`, `"mean"`, or `"median"`.
+Default is `"none"`.</p></dd>
 
 
 <dt id="arg-stat-color">stat_color<a class="anchor" aria-label="anchor" href="#arg-stat-color"></a></dt>
-<dd><p>A string specifying the color of the statistical summary. Default is "black".</p></dd>
+<dd><p>A string specifying the color of the statistical summary.
+Default is `"black"`.</p></dd>
 
 
 <dt id="arg-stat-size">stat_size<a class="anchor" aria-label="anchor" href="#arg-stat-size"></a></dt>
-<dd><p>The size of the statistical summary. Default is 1.</p></dd>
+<dd><p>The size of the statistical summary.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-stat-stroke">stat_stroke<a class="anchor" aria-label="anchor" href="#arg-stat-stroke"></a></dt>
-<dd><p>The stroke width of the statistical summary. Default is 1.</p></dd>
+<dd><p>The stroke width of the statistical summary.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-stat-shape">stat_shape<a class="anchor" aria-label="anchor" href="#arg-stat-shape"></a></dt>
-<dd><p>The shape of the statistical summary. Default is 25.</p></dd>
+<dd><p>The shape of the statistical summary.
+Default is `25`.</p></dd>
 
 
 <dt id="arg-add-line">add_line<a class="anchor" aria-label="anchor" href="#arg-add-line"></a></dt>
-<dd><p>The y-intercept for adding a horizontal line. Default is NULL.</p></dd>
+<dd><p>The y-intercept for adding a horizontal line.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-line-color">line_color<a class="anchor" aria-label="anchor" href="#arg-line-color"></a></dt>
-<dd><p>A string specifying the color of the horizontal line. Default is "red".</p></dd>
+<dd><p>A string specifying the color of the horizontal line.
+Default is `"red"`.</p></dd>
 
 
 <dt id="arg-line-size">line_size<a class="anchor" aria-label="anchor" href="#arg-line-size"></a></dt>
-<dd><p>The width of the horizontal line. Default is 1.</p></dd>
+<dd><p>The width of the horizontal line.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-line-type">line_type<a class="anchor" aria-label="anchor" href="#arg-line-type"></a></dt>
-<dd><p>The type of the horizontal line. Default is 1.</p></dd>
+<dd><p>The type of the horizontal line.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
-<dd><p>A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted. Default is NULL.</p></dd>
+<dd><p>A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-cols-highlight">cols.highlight<a class="anchor" aria-label="anchor" href="#arg-cols-highlight"></a></dt>
-<dd><p>A string specifying the color of the highlighted cells. Default is "red".</p></dd>
+<dd><p>A string specifying the color of the highlighted cells.
+Default is `"red"`.</p></dd>
 
 
 <dt id="arg-sizes-highlight">sizes.highlight<a class="anchor" aria-label="anchor" href="#arg-sizes-highlight"></a></dt>
-<dd><p>The size of the highlighted cells. Default is 1.</p></dd>
+<dd><p>The size of the highlighted cells.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-alpha-highlight">alpha.highlight<a class="anchor" aria-label="anchor" href="#arg-alpha-highlight"></a></dt>
-<dd><p>The transparency of the highlighted cells. Default is 1.</p></dd>
+<dd><p>The transparency of the highlighted cells.
+Default is `1`.</p></dd>
 
 
 <dt id="arg-calculate-coexp">calculate_coexp<a class="anchor" aria-label="anchor" href="#arg-calculate-coexp"></a></dt>
-<dd><p>Whether to calculate co-expression values. Default is FALSE.</p></dd>
+<dd><p>Whether to calculate co-expression values.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-same-y-lims">same.y.lims<a class="anchor" aria-label="anchor" href="#arg-same-y-lims"></a></dt>
-<dd><p>Whether to use the same y-axis limits for all plots. Default is FALSE.</p></dd>
+<dd><p>Whether to use the same y-axis limits for all plots.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-y-min">y.min<a class="anchor" aria-label="anchor" href="#arg-y-min"></a></dt>
-<dd><p>A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.</p></dd>
+<dd><p>A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-y-max">y.max<a class="anchor" aria-label="anchor" href="#arg-y-max"></a></dt>
-<dd><p>A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit. Default is NULL.</p></dd>
+<dd><p>A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-y-trans">y.trans<a class="anchor" aria-label="anchor" href="#arg-y-trans"></a></dt>
-<dd><p>A string specifying the transformation to apply to the y-axis. Possible values are "identity" or "log2". Default is "identity".</p></dd>
+<dd><p>A string specifying the transformation to apply to the y-axis.
+Possible values are `"identity"` or `"log2"`.
+Default is `"identity"`.</p></dd>
 
 
 <dt id="arg-y-nbreaks">y.nbreaks<a class="anchor" aria-label="anchor" href="#arg-y-nbreaks"></a></dt>
-<dd><p>A number of breaks to use for the y-axis. Default is 5.</p></dd>
+<dd><p>A number of breaks to use for the y-axis.
+Default is `5`.</p></dd>
 
 
 <dt id="arg-sort">sort<a class="anchor" aria-label="anchor" href="#arg-sort"></a></dt>
-<dd><p>A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order. Default is FALSE.</p></dd>
+<dd><p>A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-stack">stack<a class="anchor" aria-label="anchor" href="#arg-stack"></a></dt>
-<dd><p>A logical specifying whether to stack the plots on top of each other. Default is FALSE.</p></dd>
+<dd><p>A logical specifying whether to stack the plots on top of each other.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-flip">flip<a class="anchor" aria-label="anchor" href="#arg-flip"></a></dt>
-<dd><p>A logical specifying whether to flip the plot vertically. Default is FALSE.</p></dd>
+<dd><p>A logical specifying whether to flip the plot vertically.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-comparisons">comparisons<a class="anchor" aria-label="anchor" href="#arg-comparisons"></a></dt>
@@ -354,87 +412,111 @@
 
 
 <dt id="arg-ref-group">ref_group<a class="anchor" aria-label="anchor" href="#arg-ref-group"></a></dt>
-<dd><p>A string specifying the reference group for pairwise comparisons. Default is NULL.</p></dd>
+<dd><p>A string specifying the reference group for pairwise comparisons.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-pairwise-method">pairwise_method<a class="anchor" aria-label="anchor" href="#arg-pairwise-method"></a></dt>
-<dd><p>Method to use for pairwise comparisons. Default is "wilcox.test".</p></dd>
+<dd><p>Method to use for pairwise comparisons.
+Default is `"wilcox.test"`.</p></dd>
 
 
 <dt id="arg-multiplegroup-comparisons">multiplegroup_comparisons<a class="anchor" aria-label="anchor" href="#arg-multiplegroup-comparisons"></a></dt>
-<dd><p>Whether to add multiple group comparisons to the plot. Default is FALSE.</p></dd>
+<dd><p>Whether to add multiple group comparisons to the plot.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-multiple-method">multiple_method<a class="anchor" aria-label="anchor" href="#arg-multiple-method"></a></dt>
-<dd><p>Method to use for multiple group comparisons. Default is "kruskal.test".</p></dd>
+<dd><p>Method to use for multiple group comparisons.
+Default is `"kruskal.test"`.</p></dd>
 
 
 <dt id="arg-sig-label">sig_label<a class="anchor" aria-label="anchor" href="#arg-sig-label"></a></dt>
-<dd><p>A string specifying the label to use for significant comparisons. Possible values are "p.signif" or "p.format". Default is "p.format".</p></dd>
+<dd><p>A string specifying the label to use for significant comparisons.
+Possible values are `"p.signif"` or `"p.format"`.
+Default is `"p.format"`.</p></dd>
 
 
 <dt id="arg-sig-labelsize">sig_labelsize<a class="anchor" aria-label="anchor" href="#arg-sig-labelsize"></a></dt>
-<dd><p>The size of the significant comparison labels. Default is 3.5.</p></dd>
+<dd><p>The size of the significant comparison labels.
+Default is `3.5`.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>The aspect ratio of the plot. Default is NULL.</p></dd>
+<dd><p>The aspect ratio of the plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>A string specifying the title of the plot. Default is NULL.</p></dd>
+<dd><p>A string specifying the title of the plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>A string specifying the subtitle of the plot. Default is NULL.</p></dd>
+<dd><p>A string specifying the subtitle of the plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>A string specifying the label of the x-axis. Default is NULL.</p></dd>
+<dd><p>A string specifying the label of the x-axis.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>A string specifying the label of the y-axis. Default is "Expression level".</p></dd>
+<dd><p>A string specifying the label of the y-axis.
+Default is `"Expression level"`.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>A string specifying the position of the legend. Possible values are "right", "left", "top", "bottom", or "none". Default is "right".</p></dd>
+<dd><p>A string specifying the position of the legend.
+Possible values are `"right"`, `"left"`, `"top"`, `"bottom"`, or `"none"`.
+Default is `"right"`.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>A string specifying the direction of the legend. Possible values are "vertical" or "horizontal". Default is "vertical".</p></dd>
+<dd><p>A string specifying the direction of the legend.
+Possible values are `"vertical"` or `"horizontal"`.
+Default is `"vertical"`.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>A string specifying the theme to use for the plot. Default is "theme_scop".</p></dd>
+<dd><p>A string specifying the theme to use for the plot.
+Default is `"theme_scop"`.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>A list of arguments to pass to the theme function. Default is an empty list.</p></dd>
+<dd><p>A list of arguments to pass to the theme function.
+Default is an empty list.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine the individual plots into a single plot. Default is TRUE.</p></dd>
+<dd><p>Whether to combine the individual plots into a single plot.
+Default is `TRUE`.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>A number of rows for the combined plot. Default is NULL.</p></dd>
+<dd><p>A number of rows for the combined plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>A number of columns for the combined plot. Default is NULL.</p></dd>
+<dd><p>A number of columns for the combined plot.
+Default is `NULL`.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>A logical specifying whether to fill the combined plot by row or by column. Default is TRUE.</p></dd>
+<dd><p>Whether to fill the combined plot by row or by column.
+Default is `TRUE`.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
-<dd><p>Whether to force the plot creation even if there are more than 100 levels in a variable. Default is FALSE.</p></dd>
+<dd><p>Whether to force the plot creation even if there are more than 100 levels in a variable.
+Default is `FALSE`.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>An integer specifying the random seed to use for generating jitter. Default is 11.</p></dd>
+<dd><p>An integer specifying the random seed to use for generating jitter.
+Default is `11`.</p></dd>
 
 </dl></div>
 
@@ -442,17 +524,17 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:15] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:16] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:21:16] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:18] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:18] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:19] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:19] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:19] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:11] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:12] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-22 09:32:12] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:14] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:15] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:15] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:15] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:15] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:19] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:16] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -488,15 +570,14 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:20] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:20] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-09-20 13:21:20] Using `Seurat::AggregateExpression()` to calculate pseudo-bulk data for <span style="color: #0000BB;">&lt;Assay5&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:20] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:20] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:20] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:24] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:24] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-09-20 13:21:28] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:17] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:17] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:17] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:17] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:17] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:20] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:20] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-22 09:32:24] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span>, <span class="st">"Fev"</span><span class="op">)</span>,</span></span>
@@ -695,7 +776,7 @@
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:41] Installing: <span style="color: #0000BB;">ggpubr</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:37] Installing: <span style="color: #0000BB;">ggpubr</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 26 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 26 packages (0 B) are cached.</span>
@@ -709,8 +790,8 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">carData</span>          3.0-5      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">corrplot</span>         0.95       </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">doBy</span>             4.7.0      </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggpubr</span>           0.6.1      </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggsci</span>            3.2.0      </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggpubr</span>           0.6.2      </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggsci</span>            4.0.0      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">ggsignif</span>         0.6.4      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">gridExtra</span>        2.3        </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">lme4</span>             1.1-37     </span>
@@ -724,59 +805,19 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">quantreg</span>         6.1        </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">rbibutils</span>        2.3        </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">reformulas</span>       0.4.1      </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">rstatix</span>          0.7.2      </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">rstatix</span>          0.7.3      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 26 pkgs are cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">abind</span> 1.4-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.92 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Deriv</span> 4.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.58 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">minqa</span> 1.2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.60 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">microbenchmark</span> 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (65.96 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">nloptr</span> 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (567.65 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">rstatix</span> 0.7.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (616.65 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggsignif</span> 0.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (602.07 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">MatrixModels</span> 0.5-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (408.50 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">pbkrtest</span> 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.06 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">modelr</span> 0.1.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (200.70 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">car</span> 3.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.54 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">carData</span> 3.0-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.70 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Rdpack</span> 2.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (637.80 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">SparseM</span> 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">rbibutils</span> 2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.14 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">numDeriv</span> 2016.8-1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (114.36 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggpubr</span> 0.6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.12 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">polynom</span> 1.4-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (406.99 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">corrplot</span> 0.95 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.82 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">reformulas</span> 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (134.90 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">gridExtra</span> 2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.11 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ggsci</span> 3.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.40 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">quantreg</span> 6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.46 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">lme4</span> 1.1-37 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.28 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">doBy</span> 4.7.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.91 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1415 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1485 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [377 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:14 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7080 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:15 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [19.2 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:16 http://azure.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:17 http://azure.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [21.5 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fetched 3933 kB in 1s (6102 kB/s)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install make cmake libicu-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -785,41 +826,41 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> make is already the newest version (4.3-4.1build2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cmake is already the newest version (3.28.3-1build7).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 41 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">abind</span> 1.4-8  <span style="color: #9E9E9E;">(53ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">broom</span> 1.0.10  <span style="color: #9E9E9E;">(94ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">car</span> 3.1-3  <span style="color: #9E9E9E;">(139ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">carData</span> 3.0-5  <span style="color: #9E9E9E;">(159ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">corrplot</span> 0.95  <span style="color: #9E9E9E;">(98ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Deriv</span> 4.2.0  <span style="color: #9E9E9E;">(116ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">doBy</span> 4.7.0  <span style="color: #9E9E9E;">(76ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggpubr</span> 0.6.1  <span style="color: #9E9E9E;">(64ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggsci</span> 3.2.0  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 36 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">abind</span> 1.4-8  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">broom</span> 1.0.10  <span style="color: #9E9E9E;">(96ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">car</span> 3.1-3  <span style="color: #9E9E9E;">(118ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">carData</span> 3.0-5  <span style="color: #9E9E9E;">(147ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">corrplot</span> 0.95  <span style="color: #9E9E9E;">(90ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Deriv</span> 4.2.0  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">doBy</span> 4.7.0  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggpubr</span> 0.6.2  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggsci</span> 4.0.0  <span style="color: #9E9E9E;">(67ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ggsignif</span> 0.6.4  <span style="color: #9E9E9E;">(62ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">gridExtra</span> 2.3  <span style="color: #9E9E9E;">(61ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lme4</span> 1.1-37  <span style="color: #9E9E9E;">(65ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">MatrixModels</span> 0.5-4  <span style="color: #9E9E9E;">(121ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">microbenchmark</span> 1.5.0  <span style="color: #9E9E9E;">(68ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">minqa</span> 1.2.8  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">modelr</span> 0.1.11  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">nloptr</span> 2.2.1  <span style="color: #9E9E9E;">(63ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">numDeriv</span> 2016.8-1.1  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pbkrtest</span> 0.5.5  <span style="color: #9E9E9E;">(92ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">polynom</span> 1.4-1  <span style="color: #9E9E9E;">(116ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">quantreg</span> 6.1  <span style="color: #9E9E9E;">(66ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rbibutils</span> 2.3  <span style="color: #9E9E9E;">(62ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rdpack</span> 2.6.4  <span style="color: #9E9E9E;">(62ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">reformulas</span> 0.4.1  <span style="color: #9E9E9E;">(61ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rstatix</span> 0.7.2  <span style="color: #9E9E9E;">(61ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SparseM</span> 1.84-2  <span style="color: #9E9E9E;">(82ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 66 deps: kept 39, added 26, dld 25 (29.68 MB) <span style="color: #B2B2B2;">[9.4s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:50] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:50] Detected more than 2 groups. Use multiple_method for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">gridExtra</span> 2.3  <span style="color: #9E9E9E;">(67ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lme4</span> 1.1-37  <span style="color: #9E9E9E;">(99ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">MatrixModels</span> 0.5-4  <span style="color: #9E9E9E;">(93ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">microbenchmark</span> 1.5.0  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">minqa</span> 1.2.8  <span style="color: #9E9E9E;">(64ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">modelr</span> 0.1.11  <span style="color: #9E9E9E;">(64ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">nloptr</span> 2.2.1  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">numDeriv</span> 2016.8-1.1  <span style="color: #9E9E9E;">(64ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">pbkrtest</span> 0.5.5  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">polynom</span> 1.4-1  <span style="color: #9E9E9E;">(91ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">quantreg</span> 6.1  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rbibutils</span> 2.3  <span style="color: #9E9E9E;">(66ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rdpack</span> 2.6.4  <span style="color: #9E9E9E;">(65ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">reformulas</span> 0.4.1  <span style="color: #9E9E9E;">(62ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">rstatix</span> 0.7.3  <span style="color: #9E9E9E;">(64ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">SparseM</span> 1.84-2  <span style="color: #9E9E9E;">(46ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 66 deps: kept 39, added 26 <span style="color: #B2B2B2;">[5.7s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:42] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:42] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:50] Detected more than 2 groups. Use multiple_method for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:43] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set `drop = FALSE` to consider such groups for position adjustment purposes.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Groups with fewer than two datapoints have been dropped.</span>
@@ -854,7 +895,7 @@
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  multiplegroup_comparisons <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:53] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:45] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -867,7 +908,7 @@
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Beta"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Delta"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:54] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:46] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -881,7 +922,7 @@
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Beta"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Delta"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  sig_label <span class="op">=</span> <span class="st">"p.format"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:21:56] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:32:48] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -954,7 +995,7 @@
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:08] Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:00] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -976,12 +1017,12 @@
 <span class="r-in"><span>  sig_label <span class="op">=</span> <span class="st">"p.format"</span>,</span></span>
 <span class="r-in"><span>  sig_labelsize <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:10] Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:10] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:10] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:10] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:11] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:11] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:02] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:02] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:02] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:02] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:03] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:03] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -1002,12 +1043,12 @@
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Ins1"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:13] Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:13] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:13] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:13] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:14] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:14] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:05] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:05] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:05] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:05] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:06] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:06] <span style="color: #0000BB;">ggpubr</span> installed successfully</span>
 <span class="r-plt img"><img src="FeatureStatPlot-25.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
@@ -1021,14 +1062,13 @@
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-09-20 13:22:16] Setting 'group.by' to 'Features' as 'plot.by' is set to 'feature'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-22 09:33:08] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">SetAssayData</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
