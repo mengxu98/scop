@@ -368,7 +368,7 @@ RunGSEA <- function(
         geneList = geneList,
         minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
         maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        nPermSimple = 1e5, # nPermSimple:fgseaMultilevel; nperm:fgseaSimple
+        nPermSimple = 1e5,
         eps = 0,
         scoreType = scoreType,
         pAdjustMethod = "BH",
