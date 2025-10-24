@@ -130,6 +130,7 @@ This function creates a velocity plot for a given Seurat object.
 The plot shows the velocity vectors of the cells in a specified reduction space.
 }
 \examples{
+\dontrun{
 PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -177,6 +178,7 @@ VelocityPlot(
   streamline_color = "black",
   arrow_color = "red"
 )
+}
 }
 \seealso{
 [RunSCVELO], [CellDimPlot]

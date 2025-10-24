@@ -61,6 +61,9 @@ Ignored if \code{genes} is a list of markers/DE genes.}
 
 \item{prune}{\code{"prune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
+
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }

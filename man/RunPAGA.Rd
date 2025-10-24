@@ -117,6 +117,7 @@ PAGA is a graph-based method used to infer cellular trajectories.
 This function runs the PAGA analysis on a Seurat object.
 }
 \examples{
+\dontrun{
 PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -166,6 +167,7 @@ CellDimPlot(
   reduction = "PAGAUMAP2D",
   paga = pancreas_sub@misc$paga
 )
+}
 }
 \seealso{
 \link{srt_to_adata}, \link{PAGAPlot}, \link{CellDimPlot}, \link{RunSCVELO}

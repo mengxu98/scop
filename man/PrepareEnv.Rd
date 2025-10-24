@@ -43,6 +43,3 @@ If \code{force} set to \code{TRUE}, the existing environment will be recreated.
 Note that recreating the environment will remove any existing data in the environment.
 The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter.
 }
-\examples{
-PrepareEnv()
-}

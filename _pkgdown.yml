@@ -143,6 +143,7 @@ reference:
   - RunGSEA
   - RunEnrichment
   - RunDynamicEnrichment
+  - RunProportionTest
 
 - subtitle: "Trajectory Analysis"
 - contents:
@@ -176,6 +177,7 @@ reference:
   - LineagePlot
   - PAGAPlot
   - ProjectionPlot
+  - ProportionTestPlot
   - StatPlot
   - TACSPlot
   - VelocityPlot

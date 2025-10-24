@@ -48,6 +48,7 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -98,6 +99,7 @@
 #'   compute_pseudotime = TRUE,
 #'   compute_paga = TRUE
 #' )
+#' }
 RunSCVELO <- function(
     srt = NULL,
     assay_x = "RNA",

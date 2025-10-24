@@ -1,5 +1,22 @@
 # scop
 
+# scop 0.4.0
+
+* **func**:
+  * `RunProportionTest()`: New function to perform Monte-carlo permutation test for quantifying cell proportion differences between conditions.
+  * `ProportionTestPlot()`: New function to generate proportion test plots with customizable significance thresholds and visualization options.
+  * Multiple *Python*-based functions: add `\dontrun{}` blocks for Github workfolw checking.
+
+* **docs**:
+  * Added comprehensive documentation for new proportion testing functions.
+  * Enhanced example documentation across multiple functions.
+  * Updated package documentation and examples.
+
+# scop 0.3.4
+
+* **docs**:
+  * Updated workflow examples and function documentation.
+
 # scop 0.3.3
 
 * **func**:
