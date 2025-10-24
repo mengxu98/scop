@@ -166,6 +166,7 @@ This function runs an enhanced scVelo workflow on a Seurat object with improved 
 version compatibility, and modular design.
 }
 \examples{
+\dontrun{
 PrepareEnv()
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -216,6 +217,7 @@ pancreas_sub <- RunSCVELO(
   compute_pseudotime = TRUE,
   compute_paga = TRUE
 )
+}
 }
 \seealso{
 \link{srt_to_adata}, \link{VelocityPlot}, \link{CellDimPlot}, \link{RunPAGA}

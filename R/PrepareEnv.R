@@ -23,9 +23,6 @@
 #' @param version A character vector specifying the version of the environment.
 #' Default is `"3.10-1"`.
 #' @export
-#'
-#' @examples
-#' PrepareEnv()
 PrepareEnv <- function(
     conda = "auto",
     miniconda_repo = "https://repo.anaconda.com/miniconda",

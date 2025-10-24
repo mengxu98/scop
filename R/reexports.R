@@ -43,6 +43,8 @@ utils::globalVariables(
     "node",
     "next_node",
     "next_x",
-    "..r"
+    "..r",
+    "boot_CI_2.5", "boot_CI_97.5", "clusters",
+    "obs_log2FD", "significance"
   )
 )
