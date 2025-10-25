@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{Conos_integrate}
 \alias{Conos_integrate}
-\title{Conos_integrate}
+\title{The Conos integration function}
 \usage{
 Conos_integrate(
   srt_merge = NULL,
@@ -135,5 +135,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Conos_integrate
+The Conos integration function
 }

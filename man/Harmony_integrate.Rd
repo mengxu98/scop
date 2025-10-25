@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{Harmony_integrate}
 \alias{Harmony_integrate}
-\title{Harmony_integrate}
+\title{The Harmony integration function}
 \usage{
 Harmony_integrate(
   srt_merge = NULL,
@@ -148,5 +148,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Harmony_integrate
+The Harmony integration function
 }

@@ -10,18 +10,20 @@ db_Scrublet(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 \item{srt}{A Seurat object.}
 
 \item{assay}{The name of the assay to be used for doublet-calling.
-Default is `"RNA"`.}
+Default is \code{"RNA"}.}
 
 \item{db_rate}{The expected doublet rate.
-Default is calculated as `ncol(srt) / 1000 * 0.01`.}
+Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
-\item{...}{Additional arguments to be passed to scrublet.Scrublet function.}
+\item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
 }
 \description{
 This function performs doublet-calling using the scrublet(python) package on a Seurat object.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
+PrepareEnv()
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- db_Scrublet(pancreas_sub)
 CellDimPlot(
@@ -29,9 +31,11 @@ CellDimPlot(
   reduction = "umap",
   group.by = "db.Scrublet_class"
 )
+
 FeatureDimPlot(
   pancreas_sub,
   reduction = "umap",
   features = "db.Scrublet_score"
 )
+}
 }
