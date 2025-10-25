@@ -199,6 +199,7 @@ integration_scop <- function(
 
     log_message(
       "Run {.pkg {integration_method}} integration...",
+      message_type = "running",
       verbose = verbose
     )
     srt_integrated <- invoke_fun(
@@ -216,13 +217,13 @@ integration_scop <- function(
     return(srt_integrated)
   } else {
     log_message(
-      "{.pkg {integration_method}} is not a supported integration method",
+      "{.pkg {integration_method}} is not a supported integration method. Must be one of {.val {methods}}",
       message_type = "error"
     )
   }
 }
 
-#' Uncorrected_integrate
+#' @title The Uncorrected integration function
 #'
 #' @inheritParams integration_scop
 #'
@@ -546,7 +547,7 @@ Uncorrected_integrate <- function(
   }
 }
 
-#' Seurat_integrate
+#' @title The Seurat integration function
 #'
 #' @inheritParams integration_scop
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function.
@@ -1040,7 +1041,7 @@ Seurat_integrate <- function(
   }
 }
 
-#' scVI_integrate
+#' @title The scVI integration function
 #'
 #' @inheritParams integration_scop
 #' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and non-linear reduction.
@@ -1356,7 +1357,7 @@ scVI_integrate <- function(
   }
 }
 
-#' @title Integrate data using MNN
+#' @title The MNN integration function
 #'
 #' @inheritParams integration_scop
 #' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function,
@@ -1712,7 +1713,7 @@ MNN_integrate <- function(
   }
 }
 
-#' fastMNN_integrate
+#' @title The fastMNN integration function
 #'
 #' @inheritParams integration_scop
 #' @param fastMNN_dims_use A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and non-linear reduction.
@@ -1992,7 +1993,7 @@ fastMNN_integrate <- function(
   }
 }
 
-#' Harmony_integrate
+#' @title The Harmony integration function
 #'
 #' @inheritParams integration_scop
 #' @param harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
@@ -2093,7 +2094,6 @@ Harmony_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("harmony@1.1.0")
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
@@ -2178,7 +2178,7 @@ Harmony_integrate <- function(
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData")
+    log_message("Perform {.fn Seurat::ScaleData}")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -2348,7 +2348,7 @@ Harmony_integrate <- function(
   }
 }
 
-#' Scanorama_integrate
+#' @title The Scanorama integration function
 #'
 #' @inheritParams integration_scop
 #' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction.
@@ -2659,7 +2659,7 @@ Scanorama_integrate <- function(
   }
 }
 
-#' BBKNN_integrate
+#' @title The BBKNN integration function
 #'
 #' @inheritParams integration_scop
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
@@ -2820,7 +2820,7 @@ BBKNN_integrate <- function(
 
   if (normalization_method == "TFIDF") {
     log_message(
-      "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
+      "{.arg normalization_method} is {.pkg TFIDF}. Use {.pkg lsi} workflow..."
     )
     do_scaling <- FALSE
     linear_reduction <- "svd"
@@ -2833,7 +2833,7 @@ BBKNN_integrate <- function(
     )
   )
   if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-    log_message("Perform ScaleData")
+    log_message("Perform {.fn Seurat::ScaleData}")
     srt_merge <- Seurat::ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
@@ -3043,13 +3043,14 @@ BBKNN_integrate <- function(
   }
 }
 
-#' CSS_integrate
+#' @title The CSS integration function
 #'
 #' @inheritParams integration_scop
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function.
 #' Default is an empty list.
+#'
 #' @export
 CSS_integrate <- function(
     srt_merge = NULL,
@@ -3398,7 +3399,7 @@ CSS_integrate <- function(
   }
 }
 
-#' LIGER_integrate
+#' @title The LIGER integration function
 #'
 #' @md
 #' @inheritParams integration_scop
@@ -3744,7 +3745,7 @@ LIGER_integrate <- function(
   }
 }
 
-#' Conos_integrate
+#' @title The Conos integration function
 #'
 #' @inheritParams integration_scop
 #' @param buildGraph_params A list of parameters for the buildGraph function.
@@ -4113,7 +4114,7 @@ Conos_integrate <- function(
   }
 }
 
-#' Combat_integrate
+#' @title The ComBat integration function
 #'
 #' @inheritParams integration_scop
 #' @param ComBat_params A list of parameters for the sva::ComBat function.
@@ -4318,22 +4319,15 @@ ComBat_integrate <- function(
   srt_integrated[["ComBatcorrected"]] <- CreateAssayObject(data = corrected)
   SeuratObject::DefaultAssay(srt_integrated) <- "ComBatcorrected"
   SeuratObject::VariableFeatures(srt_integrated[["ComBatcorrected"]]) <- HVF
-
-  if (
-    isTRUE(do_scaling) ||
-      (is.null(do_scaling) &&
-        any(
-          !HVF %in%
-            rownames(
-              GetAssayData5(
-                srt_integrated,
-                layer = "scale.data",
-                assay = SeuratObject::DefaultAssay(srt_integrated)
-              )
-            )
-        ))
-  ) {
-    log_message("Perform ScaleData")
+  scale_features <- rownames(
+    GetAssayData5(
+      srt_integrated,
+      layer = "scale.data",
+      assay = SeuratObject::DefaultAssay(srt_integrated)
+    )
+  )
+  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
+    log_message("Perform {.fn Seurat::ScaleData}")
     srt_integrated <- Seurat::ScaleData(
       srt_integrated,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,

@@ -1,21 +1,30 @@
-#' @title Run doublet-calling with scDblFinder
+#' @title Run doublet-calling for single cell RNA-seq data.
 #'
 #' @description
-#' This function performs doublet-calling using the scDblFinder package on a Seurat object.
+#' This function performs doublet-calling for single cell RNA-seq data.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param assay The name of the assay to be used for doublet-calling.
 #' Default is `"RNA"`.
+#' @param db_method Method used for doublet-calling.
+#' Can be one of `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
+#' `"scds_cxds"`, `"scds_bcds"`, `"scds_hybrid"`.
 #' @param db_rate The expected doublet rate.
 #' Default is calculated as `ncol(srt) / 1000 * 0.01`.
-#' @param ... Additional arguments to be passed to scDblFinder::scDblFinder function.
+#' @param ... Additional arguments to be passed to the corresponding doublet-calling method.
+#'
+#' @return Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
 #'
 #' @export
 #'
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- db_scDblFinder(pancreas_sub)
+#' pancreas_sub <- RunDoubletCalling(
+#'   pancreas_sub,
+#'   db_method = "scDblFinder"
+#' )
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
@@ -27,6 +36,81 @@
 #'   reduction = "umap",
 #'   features = "db.scDblFinder_score"
 #' )
+RunDoubletCalling <- function(
+    srt,
+    assay = "RNA",
+    db_rate = ncol(srt) / 1000 * 0.01,
+    db_method = "scDblFinder",
+    ...) {
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} is not a Seurat object",
+      message_type = "error"
+    )
+  }
+  status <- CheckDataType(srt, layer = "counts", assay = assay)
+  if (status != "raw_counts") {
+    log_message(
+      "Data type is not raw counts",
+      message_type = "error"
+    )
+  }
+  db_methods <- c(
+    "scDblFinder",
+    "Scrublet",
+    "DoubletDetection",
+    "scds_cxds",
+    "scds_bcds",
+    "scds_hybrid"
+  )
+  if (db_method %in% db_methods) {
+    methods <- unlist(strsplit(db_method, "_"))
+    method1 <- methods[1]
+    method2 <- methods[2]
+    if (is.na(method2)) {
+      args1 <- mget(names(formals()), sys.frame(sys.nframe()))
+      args2 <- as.list(match.call())
+    } else {
+      args1 <- c(
+        mget(names(formals()), sys.frame(sys.nframe())),
+        method = method2
+      )
+      args2 <- c(as.list(match.call()), method = method2)
+    }
+    for (n in names(args2)) {
+      args1[[n]] <- args2[[n]]
+    }
+    args1 <- args1[!names(args1) %in% c("db_method", "...")]
+    tryCatch(
+      expr = {
+        srt <- do.call(
+          what = paste0("db_", method1),
+          args = args1
+        )
+      },
+      error = function(e) {
+        log_message(e, message_type = "error")
+      }
+    )
+    return(srt)
+  } else {
+    log_message(
+      "{.arg db_method} must be one of {.val {db_methods}}",
+      message_type = "error"
+    )
+  }
+}
+
+#' @title Run doublet-calling with scDblFinder
+#'
+#' @description
+#' This function performs doublet-calling using the scDblFinder package on a Seurat object.
+#'
+#' @md
+#' @inheritParams RunDoubletCalling
+#' @param ... Additional arguments to be passed to [scDblFinder::scDblFinder()].
+#'
+#' @export
 db_scDblFinder <- function(
     srt,
     assay = "RNA",
@@ -58,14 +142,11 @@ db_scDblFinder <- function(
 #' @description
 #' This function performs doublet-calling using the scds package on a Seurat object.
 #'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling.
-#' Default is `"RNA"`.
-#' @param db_rate The expected doublet rate.
-#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
+#' @md
+#' @inheritParams RunDoubletCalling
 #' @param method The method to be used for doublet-calling.
 #' Options are `"hybrid"`, `"cxds"`, or `"bcds"`.
-#' @param ... Additional arguments to be passed to scds::cxds_bcds_hybrid function.
+#' @param ... Additional arguments to be passed to [scds::cxds_bcds_hybrid()].
 #'
 #' @export
 #' @examples
@@ -80,7 +161,8 @@ db_scDblFinder <- function(
 #'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   reduction = "umap", features = "db.scds_hybrid_score"
+#'   reduction = "umap",
+#'   features = "db.scds_hybrid_score"
 #' )
 db_scds <- function(
     srt,
@@ -123,17 +205,16 @@ db_scds <- function(
 #' @description
 #' This function performs doublet-calling using the scrublet(python) package on a Seurat object.
 #'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling.
-#' Default is `"RNA"`.
-#' @param db_rate The expected doublet rate.
-#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
-#' @param ... Additional arguments to be passed to scrublet.Scrublet function.
+#' @md
+#' @inheritParams RunDoubletCalling
+#' @param ... Additional arguments to be passed to [scrublet.Scrublet](https://github.com/swolock/scrublet).
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
+#' PrepareEnv()
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
@@ -141,11 +222,13 @@ db_scds <- function(
 #'   reduction = "umap",
 #'   group.by = "db.Scrublet_class"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
 #'   reduction = "umap",
 #'   features = "db.Scrublet_score"
 #' )
+#' }
 db_Scrublet <- function(
     srt,
     assay = "RNA",
@@ -195,17 +278,16 @@ db_Scrublet <- function(
 #' @description
 #' This function performs doublet-calling using the doubletdetection(python) package on a Seurat object.
 #'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling.
-#' Default is "RNA".
-#' @param db_rate The expected doublet rate.
-#' Default is calculated as ncol(srt) / 1000 * 0.01.
-#' @param ... Additional arguments to be passed to doubletdetection.BoostClassifier function.
+#' @md
+#' @inheritParams RunDoubletCalling
+#' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
+#' PrepareEnv()
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
@@ -213,10 +295,13 @@ db_Scrublet <- function(
 #'   reduction = "umap",
 #'   group.by = "db.DoubletDetection_class"
 #' )
+#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   reduction = "umap", features = "db.DoubletDetection_score"
+#'   reduction = "umap",
+#'   features = "db.DoubletDetection_score"
 #' )
+#' }
 db_DoubletDetection <- function(
     srt,
     assay = "RNA",
@@ -231,7 +316,7 @@ db_DoubletDetection <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -260,126 +345,25 @@ db_DoubletDetection <- function(
   return(srt)
 }
 
-#' @title Run doublet-calling for single cell RNA-seq data.
-#'
-#' @description
-#' Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
-#'
-#' @param srt A Seurat object.
-#' @param assay The name of the assay to be used for doublet-calling.
-#' Default is "RNA".
-#' @param db_method Doublet-calling methods used.
-#' Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}
-#' @param db_rate The expected doublet rate.
-#' By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
-#' which is appropriate for 10x datasets.
-#' @param ... Arguments passed to the corresponding doublet-calling method.
-#'
-#' @return Returns Seurat object with the doublet prediction results and prediction scores stored in the meta.data layer.
-#'
-#' @export
-#'
-#' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunDoubletCalling(
-#'   pancreas_sub,
-#'   db_method = "scDblFinder"
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   reduction = "umap",
-#'   group.by = "db.scDblFinder_class"
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   reduction = "umap",
-#'   features = "db.scDblFinder_score"
-#' )
-RunDoubletCalling <- function(
-    srt,
-    assay = "RNA",
-    db_method = "scDblFinder",
-    db_rate = ncol(srt) / 1000 * 0.01,
-    ...) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "'srt' is not a Seurat object.",
-      message_type = "error"
-    )
-  }
-  status <- CheckDataType(srt, layer = "counts", assay = assay)
-  if (status != "raw_counts") {
-    log_message(
-      "Data type is not raw counts!",
-      message_type = "error"
-    )
-  }
-  if (
-    db_method %in%
-      c(
-        "scDblFinder",
-        "Scrublet",
-        "DoubletDetection",
-        "scds_cxds",
-        "scds_bcds",
-        "scds_hybrid"
-      )
-  ) {
-    methods <- unlist(strsplit(db_method, "_"))
-    method1 <- methods[1]
-    method2 <- methods[2]
-    if (is.na(method2)) {
-      args1 <- mget(names(formals()), sys.frame(sys.nframe()))
-      args2 <- as.list(match.call())
-    } else {
-      args1 <- c(
-        mget(names(formals()), sys.frame(sys.nframe())),
-        method = method2
-      )
-      args2 <- c(as.list(match.call()), method = method2)
-    }
-    for (n in names(args2)) {
-      args1[[n]] <- args2[[n]]
-    }
-    args1 <- args1[!names(args1) %in% c("db_method", "...")]
-    tryCatch(
-      expr = {
-        srt <- do.call(
-          what = paste0("db_", method1),
-          args = args1
-        )
-      },
-      error = function(e) {
-        log_message(e, message_type = "error")
-      }
-    )
-    return(srt)
-  } else {
-    log_message(
-      paste(db_method, "is not a suppoted doublet-calling method!"),
-      message_type = "error"
-    )
-  }
-}
-
-#' @title Detect outliers using MAD(Median Absolute Deviation) method
+#' @title Detect outliers using MAD (Median Absolute Deviation)
 #'
 #' @description
 #' This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
 #' It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
 #'
-#' @param x a numeric vector.
-#' @param nmads the number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
-#' The default value is 2.5.
-#' @param constant a constant factor to convert the MAD to a standard deviation.
-#' The default value is 1.4826, which is consistent with the MAD of a normal distribution.
-#' @param type the type of outliers to detect. Available options are "both" (default), "lower", or "higher".
-#' If set to "both", it detects both lower and higher outliers. If set to "lower", it detects only lower outliers.
-#' If set to "higher", it detects only higher outliers.
+#' @md
+#' @param x Numeric vector.
+#' @param nmads Number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
+#' Default is `2.5`.
+#' @param constant Constant factor to convert the MAD to a standard deviation.
+#' Default is `1.4826`, which is consistent with the MAD of a normal distribution.
+#' @param type Type of outliers to detect.
+#' Available options are `"both"`, `"lower"`, or `"higher"`.
+#' If `type` is `"both"`, it detects both lower and higher outliers.
+#' If `type` is `"lower"`, it detects only lower outliers.
+#' If `type` is `"higher"`, it detects only higher outliers.
 #'
-#' @return A numeric vector of indices indicating the positions of outliers in \code{x}.
+#' @return Numeric vector of indices indicating the positions of outliers in `x`.
 #'
 #' @export
 #'

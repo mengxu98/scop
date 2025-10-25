@@ -16,15 +16,15 @@ db_scds(
 \item{srt}{A Seurat object.}
 
 \item{assay}{The name of the assay to be used for doublet-calling.
-Default is `"RNA"`.}
+Default is \code{"RNA"}.}
 
 \item{db_rate}{The expected doublet rate.
-Default is calculated as `ncol(srt) / 1000 * 0.01`.}
+Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
 \item{method}{The method to be used for doublet-calling.
-Options are `"hybrid"`, `"cxds"`, or `"bcds"`.}
+Options are \code{"hybrid"}, \code{"cxds"}, or \code{"bcds"}.}
 
-\item{...}{Additional arguments to be passed to scds::cxds_bcds_hybrid function.}
+\item{...}{Additional arguments to be passed to \code{\link[scds:cxds_bcds_hybrid]{scds::cxds_bcds_hybrid()}}.}
 }
 \description{
 This function performs doublet-calling using the scds package on a Seurat object.
@@ -41,6 +41,7 @@ CellDimPlot(
 
 FeatureDimPlot(
   pancreas_sub,
-  reduction = "umap", features = "db.scds_hybrid_score"
+  reduction = "umap",
+  features = "db.scds_hybrid_score"
 )
 }
