@@ -159,8 +159,11 @@ CellDimPlot(
 
 ``` r
 CellDimPlot(
-  srt = pancreas_sub, group.by = "SubCellType", stat.by = "Phase",
-  reduction = "UMAP", theme_use = "theme_blank"
+  srt = pancreas_sub,
+  group.by = "SubCellType",
+  stat.by = "Phase",
+  reduction = "UMAP",
+  theme_use = "theme_blank"
 )
 ```
 
@@ -298,10 +301,6 @@ CellDimPlot(
 
 <img src="man/figures/integration_scop-1.png" width="100%" style="display: block; margin: auto;"/>
 
-UMAP embeddings based on different integration methods in scop:
-
-![Integration-all](man/figures/Integration-all.png)
-
 ### Cell projection between single-cell datasets
 
 ``` r
@@ -368,24 +367,6 @@ CellDimPlot(
 ```
 
 <img src="man/figures/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  query_group = "SubCellType",
-  ref_group = "celltype",
-  return_full_distance_matrix = TRUE
-)
-CellDimPlot(
-  srt = pancreas_sub,
-  group.by = "KNNPredict_classification",
-  reduction = "UMAP",
-  label = TRUE
-)
-```
-
-<img src="man/figures/RunKNNPredict-scrna-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 ht <- CellCorHeatmap(
@@ -609,16 +590,6 @@ GSEAPlot(
 
 <img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
-``` r
-GSEAPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  plot_type = "comparison"
-)
-```
-
-<img src="man/figures/GSEA_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
-
 ### Trajectory inference
 
 ``` r
@@ -641,18 +612,6 @@ FeatureDimPlot(
 ```
 
 <img src="man/figures/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-CellDimPlot(
-  pancreas_sub,
-  group.by = "SubCellType",
-  reduction = "UMAP",
-  lineages = paste0("Lineage", 1:3),
-  lineages_span = 0.1
-)
-```
-
-<img src="man/figures/RunSlingshot-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Dynamic features
 
@@ -743,7 +702,7 @@ if (interactive()) {
 }
 ```
 
-![SCExplorer1](man/figures/SCExplorer-1.png) ![SCExplorer2](man/figures/SCExplorer-2.png)
+![SCExplorer1](man/figures/SCExplorer-1.png)
 
 ### Other visualization examples
 
