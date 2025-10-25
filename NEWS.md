@@ -1,5 +1,24 @@
 # scop
 
+# scop 0.5.0
+
+* **func**:
+  * **IMPORTANT**:
+  * `RunCellChat()`: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.
+  * `CellChatPlot()`: New function to visualize CellChat analysis results with various plot types and customization options.
+  * Multiple integration functions: Improved error messages and message formatting for better user experience.
+
+* **deps**:
+  * Added `CellChat` package dependency with remote repository `jinworks/CellChat`.
+
+* **docs**:
+  * Updated README.md with improved code formatting and examples.
+  * Enhanced documentation for cell communication analysis functions.
+  * Improved error messages and user guidance across integration functions.
+
+* **pack**:
+  * Removed some example figures to optimize package installation size.
+
 # scop 0.4.0
 
 * **func**:
