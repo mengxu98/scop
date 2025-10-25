@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.4.0
-Date: 2025-10-22
+Version: 0.5.0
+Date: 2025-10-25
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -44,6 +44,7 @@ Suggests:
     BiocGenerics,
     data.table,
     biomaRt,
+    CellChat,
     circlize,
     cli,
     clusterProfiler,
@@ -115,6 +116,8 @@ Suggests:
     tidyr,
     umap,
     UCell
+Remotes:
+    jinworks/CellChat
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
