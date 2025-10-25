@@ -10,29 +10,13 @@ db_scDblFinder(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 \item{srt}{A Seurat object.}
 
 \item{assay}{The name of the assay to be used for doublet-calling.
-Default is `"RNA"`.}
+Default is \code{"RNA"}.}
 
 \item{db_rate}{The expected doublet rate.
-Default is calculated as `ncol(srt) / 1000 * 0.01`.}
+Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
-\item{...}{Additional arguments to be passed to scDblFinder::scDblFinder function.}
+\item{...}{Additional arguments to be passed to \code{\link[scDblFinder:scDblFinder]{scDblFinder::scDblFinder()}}.}
 }
 \description{
 This function performs doublet-calling using the scDblFinder package on a Seurat object.
-}
-\examples{
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- db_scDblFinder(pancreas_sub)
-CellDimPlot(
-  pancreas_sub,
-  reduction = "umap",
-  group.by = "db.scDblFinder_class"
-)
-
-FeatureDimPlot(
-  pancreas_sub,
-  reduction = "umap",
-  features = "db.scDblFinder_score"
-)
 }

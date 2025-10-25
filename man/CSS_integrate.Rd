@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{CSS_integrate}
 \alias{CSS_integrate}
-\title{CSS_integrate}
+\title{The CSS integration function}
 \usage{
 CSS_integrate(
   srt_merge = NULL,
@@ -149,5 +149,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-CSS_integrate
+The CSS integration function
 }
