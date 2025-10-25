@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{MNN_integrate}
 \alias{MNN_integrate}
-\title{Integrate data using MNN}
+\title{The MNN integration function}
 \usage{
 MNN_integrate(
   srt_merge = NULL,
@@ -145,5 +145,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Integrate data using MNN
+The MNN integration function
 }
