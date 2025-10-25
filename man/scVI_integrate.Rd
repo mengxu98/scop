@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{scVI_integrate}
 \alias{scVI_integrate}
-\title{scVI_integrate}
+\title{The scVI integration function}
 \usage{
 scVI_integrate(
   srt_merge = NULL,
@@ -125,5 +125,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-scVI_integrate
+The scVI integration function
 }

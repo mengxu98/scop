@@ -7,8 +7,8 @@
 RunDoubletCalling(
   srt,
   assay = "RNA",
-  db_method = "scDblFinder",
   db_rate = ncol(srt)/1000 * 0.01,
+  db_method = "scDblFinder",
   ...
 )
 }
@@ -16,22 +16,22 @@ RunDoubletCalling(
 \item{srt}{A Seurat object.}
 
 \item{assay}{The name of the assay to be used for doublet-calling.
-Default is "RNA".}
-
-\item{db_method}{Doublet-calling methods used.
-Can be one of \code{scDblFinder}, \code{Scrublet}, \code{DoubletDetection}, \code{scds_cxds}, \code{scds_bcds}, \code{scds_hybrid}}
+Default is \code{"RNA"}.}
 
 \item{db_rate}{The expected doublet rate.
-By default this is assumed to be 1\% per thousand cells captured (so 4\% among 4000 thousand cells),
-which is appropriate for 10x datasets.}
+Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
-\item{...}{Arguments passed to the corresponding doublet-calling method.}
+\item{db_method}{Method used for doublet-calling.
+Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
+\code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.}
+
+\item{...}{Additional arguments to be passed to the corresponding doublet-calling method.}
 }
 \value{
-Returns Seurat object with the doublet prediction results and prediction scores stored in the meta.data layer.
+Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
 }
 \description{
-Identification of heterotypic (or neotypic) doublets in single-cell RNAseq data.
+This function performs doublet-calling for single cell RNA-seq data.
 }
 \examples{
 data(pancreas_sub)

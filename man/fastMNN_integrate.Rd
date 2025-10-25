@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{fastMNN_integrate}
 \alias{fastMNN_integrate}
-\title{fastMNN_integrate}
+\title{The fastMNN integration function}
 \usage{
 fastMNN_integrate(
   srt_merge = NULL,
@@ -111,5 +111,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-fastMNN_integrate
+The fastMNN integration function
 }

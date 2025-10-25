@@ -32,13 +32,13 @@
 scop_logo <- function(
     unicode = cli::is_utf8_output()) {
   logo <- c(
-    "       0        1      2           3    4
-               ______________  ____
-              / ___/ ___/ __ ./ __ .
-             (__  ) /__/ /_/ / /_/ /
-            /____/.___/.____/ .___/
-                           /_/
-    5             6      7      8       9   "
+    "          0          1        2             3     4
+                     _____ _________  ____
+                    / ___// ___/ __ ./ __ .
+                   (__  )/ /__/ /_/ / /_/ /
+                  /____/ .___/.____/ .___/
+                                  /_/
+      5               6      7        8          9"
   )
 
   hexa <- c("*", ".", "o", "*", ".", "*", ".", "o", ".", "*")
@@ -51,8 +51,10 @@ scop_logo <- function(
     "yellow", "green", "white", "magenta", "cyan"
   )
 
-  col_hexa <- purrr::map2(
-    hexa, cols, ~ cli::make_ansi_style(.y)(.x)
+  col_hexa <- mapply(
+    function(x, y) cli::make_ansi_style(y)(x),
+    hexa, cols,
+    SIMPLIFY = FALSE
   )
 
   for (i in 0:9) {
@@ -77,107 +79,116 @@ print.scop_logo <- function(x, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
-  scop_env_init <- getOption("scop_env_init", default = FALSE)
-  version <- utils::packageDescription(pkgname, fields = "Version")
-  msg <- paste0(
-    strrep("-", 60),
-    "\n",
-    cli::col_blue(pkgname, " version ", version),
-    "\n"
-  )
-  if (isFALSE(scop_env_init)) {
+  verbose <- thisutils::get_verbose()
+  if (isTRUE(verbose)) {
+    version <- utils::packageDescription(
+      pkgname,
+      fields = "Version"
+    )
+    scop_env_init <- getOption("scop_env_init", default = FALSE)
+    version <- utils::packageDescription(pkgname, fields = "Version")
     msg <- paste0(
-      msg,
+      cli::col_grey(strrep("-", 60)),
       "\n",
-      cli::col_grey("Python environment initialization is disabled"),
-      "\n",
-      cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
+      cli::col_blue(pkgname, " version ", version),
       "\n"
     )
-  }
-  suppress_msg <- paste0(
-    cli::col_grey("The message can be suppressed by: "),
-    "\n",
-    cli::col_grey("  suppressPackageStartupMessages(library(scop))")
-  )
-  if (isFALSE(scop_env_init)) {
-    msg <- paste0(
-      msg,
+    if (isFALSE(scop_env_init)) {
+      msg <- paste0(
+        msg,
+        "\n",
+        cli::col_grey("Python environment initialization is disabled"),
+        "\n",
+        cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
+        "\n"
+      )
+    }
+    suppress_msg <- paste0(
+      cli::col_grey("The message can be suppressed by: "),
       "\n",
-      suppress_msg,
+      cli::col_grey("  suppressPackageStartupMessages(library(scop))"),
       "\n",
-      strrep("-", 60)
+      cli::col_grey("  or options(log_message.verbose = FALSE)")
     )
-  }
+    if (isFALSE(scop_env_init)) {
+      msg <- paste0(
+        msg,
+        "\n",
+        suppress_msg,
+        "\n",
+        cli::col_grey(strrep("-", 60))
+      )
+    }
 
-  packageStartupMessage(scop_logo())
-  packageStartupMessage(msg)
+    packageStartupMessage(scop_logo())
+    packageStartupMessage(msg)
 
-  if (isTRUE(scop_env_init)) {
-    tryCatch(
-      {
-        conda <- find_conda()
-        if (is.null(conda)) {
-          packageStartupMessage(
-            cli::col_grey(
-              "Conda not found. Run: PrepareEnv() to create the environment"
+    if (isTRUE(scop_env_init)) {
+      tryCatch(
+        {
+          conda <- find_conda()
+          if (is.null(conda)) {
+            packageStartupMessage(
+              cli::col_grey(
+                "Conda not found. Run: PrepareEnv() to create the environment"
+              )
             )
+            return(invisible(NULL))
+          }
+          envname <- get_envname()
+          envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
+          env <- env_exist(
+            conda = conda,
+            envname = envname,
+            envs_dir = envs_dir
           )
-          return(invisible(NULL))
-        }
-        envname <- get_envname()
-        envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
-        env <- env_exist(
-          conda = conda,
-          envname = envname,
-          envs_dir = envs_dir
-        )
 
-        if (isFALSE(env)) {
-          packageStartupMessage(
-            cli::col_grey(
-              "Python environment not found. Run: PrepareEnv() to create the environment"
+          if (isFALSE(env)) {
+            packageStartupMessage(
+              cli::col_grey(
+                "Python environment not found. Run: PrepareEnv() to create the environment"
+              )
             )
+            return(invisible(NULL))
+          }
+          set_python_env(conda = conda, envname = envname, verbose = FALSE)
+
+          packageStartupMessage(
+            cli::col_green("conda environment initialized successfully")
           )
-          return(invisible(NULL))
-        }
-        set_python_env(conda = conda, envname = envname, verbose = FALSE)
 
-        packageStartupMessage(
-          cli::col_green("conda environment initialized successfully")
-        )
+          env_info(conda = conda, envname = envname)
 
-        env_info(conda = conda, envname = envname)
-
-        packageStartupMessage(
-          "\n",
-          cli::col_grey(
-            "Configure conda path: options(reticulate.conda_binary = \"/path/to/conda\")"
-          ),
-          "\n",
-          cli::col_grey(
-            "Disable Python initialization information: options(scop_env_init = FALSE)"
-          ),
-          "\n\n",
-          suppress_msg,
-          "\n",
-          strrep("-", 60)
-        )
-      },
-      error = function(e) {
-        packageStartupMessage(
-          cli::col_grey(
-            "Failed to initialize Python environment: ",
-            e$message,
+          packageStartupMessage(
             "\n",
-            "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
+            cli::col_grey(
+              "Configure conda path: options(reticulate.conda_binary = \"/path/to/conda\")"
+            ),
+            "\n",
+            cli::col_grey(
+              "Disable Python initialization information: options(scop_env_init = FALSE)"
+            ),
             "\n\n",
             suppress_msg,
             "\n",
-            strrep("-", 60)
+            cli::col_grey(strrep("-", 60))
           )
-        )
-      }
-    )
+        },
+        error = function(e) {
+          packageStartupMessage(
+            cli::col_grey(
+              "Failed to initialize Python environment: ",
+              e$message,
+              "\n",
+              "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
+              "\n\n",
+              suppress_msg,
+              "\n",
+              strrep("-", 60)
+            )
+          )
+        }
+      )
+    }
   }
 }

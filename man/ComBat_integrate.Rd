@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{ComBat_integrate}
 \alias{ComBat_integrate}
-\title{Combat_integrate}
+\title{The ComBat integration function}
 \usage{
 ComBat_integrate(
   srt_merge = NULL,
@@ -145,5 +145,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Combat_integrate
+The ComBat integration function
 }

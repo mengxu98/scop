@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{BBKNN_integrate}
 \alias{BBKNN_integrate}
-\title{BBKNN_integrate}
+\title{The BBKNN integration function}
 \usage{
 BBKNN_integrate(
   srt_merge = NULL,
@@ -135,5 +135,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-BBKNN_integrate
+The BBKNN integration function
 }
