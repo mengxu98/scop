@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{LIGER_integrate}
 \alias{LIGER_integrate}
-\title{LIGER_integrate}
+\title{The LIGER integration function}
 \usage{
 LIGER_integrate(
   srt_merge = NULL,
@@ -129,5 +129,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-LIGER_integrate
+The LIGER integration function
 }
