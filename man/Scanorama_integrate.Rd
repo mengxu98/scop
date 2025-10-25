@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{Scanorama_integrate}
 \alias{Scanorama_integrate}
-\title{Scanorama_integrate}
+\title{The Scanorama integration function}
 \usage{
 Scanorama_integrate(
   srt_merge = NULL,
@@ -129,5 +129,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Scanorama_integrate
+The Scanorama integration function
 }

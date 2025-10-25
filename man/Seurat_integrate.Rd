@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{Seurat_integrate}
 \alias{Seurat_integrate}
-\title{Seurat_integrate}
+\title{The Seurat integration function}
 \usage{
 Seurat_integrate(
   srt_merge = NULL,
@@ -153,5 +153,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Seurat_integrate
+The Seurat integration function
 }

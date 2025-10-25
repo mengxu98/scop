@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellQC.R
 \name{is_outlier}
 \alias{is_outlier}
-\title{Detect outliers using MAD(Median Absolute Deviation) method}
+\title{Detect outliers using MAD (Median Absolute Deviation)}
 \usage{
 is_outlier(
   x,
@@ -12,20 +12,22 @@ is_outlier(
 )
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{x}{Numeric vector.}
 
-\item{nmads}{the number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
-The default value is 2.5.}
+\item{nmads}{Number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
+Default is \code{2.5}.}
 
-\item{constant}{a constant factor to convert the MAD to a standard deviation.
-The default value is 1.4826, which is consistent with the MAD of a normal distribution.}
+\item{constant}{Constant factor to convert the MAD to a standard deviation.
+Default is \code{1.4826}, which is consistent with the MAD of a normal distribution.}
 
-\item{type}{the type of outliers to detect. Available options are "both" (default), "lower", or "higher".
-If set to "both", it detects both lower and higher outliers. If set to "lower", it detects only lower outliers.
-If set to "higher", it detects only higher outliers.}
+\item{type}{Type of outliers to detect.
+Available options are \code{"both"}, \code{"lower"}, or \code{"higher"}.
+If \code{type} is \code{"both"}, it detects both lower and higher outliers.
+If \code{type} is \code{"lower"}, it detects only lower outliers.
+If \code{type} is \code{"higher"}, it detects only higher outliers.}
 }
 \value{
-A numeric vector of indices indicating the positions of outliers in \code{x}.
+Numeric vector of indices indicating the positions of outliers in \code{x}.
 }
 \description{
 This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
