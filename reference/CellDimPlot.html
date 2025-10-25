@@ -9,7 +9,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Cell Dimensional Plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/CellDimPlot.R" class="external-link"><code>R/CellDimPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/CellDimPlot.R" class="external-link"><code>R/CellDimPlot.R</code></a></small>
       <div class="d-none name"><code>CellDimPlot.Rd</code></div>
     </div>
 
@@ -676,17 +676,17 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:39] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:40] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:20:40] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:43] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:43] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:44] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:44] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:44] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:49] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:50] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:17:50] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:52] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:52] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:52] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:53] Perform `Seurat::ScaleData()`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:44] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:53] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -695,12 +695,12 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
@@ -722,14 +722,14 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:45] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:45] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:45] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:45] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:48] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:48] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:20:51] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:55] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:55] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:55] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:55] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:55] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:58] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:17:58] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:18:01] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -748,7 +748,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:51] Installing: <span style="color: #0000BB;">png</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:02] Installing: <span style="color: #0000BB;">png</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 1 package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → The package (0 B) is cached.</span>
@@ -756,15 +756,16 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 1 pkg is cached</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">png</span> 0.1-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (40.57 kB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libpng-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -772,9 +773,9 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libpng-dev is already the newest version (1.6.43-5build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 40 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">png</span> 0.1-8  <span style="color: #9E9E9E;">(13ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg: added 1 <span style="color: #B2B2B2;">[5.8s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:20:57] Installing: <span style="color: #0000BB;">ragg</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">png</span> 0.1-8  <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg: added 1, dld 1 (40.57 kB) <span style="color: #B2B2B2;">[5.2s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:07] Installing: <span style="color: #0000BB;">ragg</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 6 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 6 packages (0 B) are cached.</span>
@@ -787,15 +788,21 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 6 pkgs are cached</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">base64enc</span> 0.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.57 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">textshaping</span> 1.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (189.59 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">ragg</span> 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">systemfonts</span> 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (816.45 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">jsonlite</span> 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.09 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">stringi</span> 1.8.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.29 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libfreetype6-dev libjpeg-dev libpng-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
@@ -811,14 +818,14 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libfribidi-dev is already the newest version (1.0.13-3build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libharfbuzz-dev is already the newest version (8.3.0-2build2).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 40 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">base64enc</span> 0.1-3  <span style="color: #9E9E9E;">(71ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">jsonlite</span> 2.0.0  <span style="color: #9E9E9E;">(87ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ragg</span> 1.5.0  <span style="color: #9E9E9E;">(124ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">stringi</span> 1.8.7  <span style="color: #9E9E9E;">(139ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">systemfonts</span> 1.3.1  <span style="color: #9E9E9E;">(82ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">textshaping</span> 1.0.4  <span style="color: #9E9E9E;">(50ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 9 deps: kept 4, added 6 <span style="color: #B2B2B2;">[3.1s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:00] <span style="color: #0000BB;">png</span> and <span style="color: #0000BB;">ragg</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">base64enc</span> 0.1-3  <span style="color: #9E9E9E;">(57ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">jsonlite</span> 2.0.0  <span style="color: #9E9E9E;">(105ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">ragg</span> 1.5.0  <span style="color: #9E9E9E;">(144ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">stringi</span> 1.8.7  <span style="color: #9E9E9E;">(158ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">systemfonts</span> 1.3.1  <span style="color: #9E9E9E;">(90ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">textshaping</span> 1.0.4  <span style="color: #9E9E9E;">(46ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 9 deps: kept 4, added 6, dld 6 (6.16 MB) <span style="color: #B2B2B2;">[3.8s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:11] <span style="color: #0000BB;">png</span> and <span style="color: #0000BB;">ragg</span> installed successfully</span>
 <span class="r-plt img"><img src="CellDimPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
@@ -1122,16 +1129,17 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  hex <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:10] Installing: <span style="color: #0000BB;">hexbin</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:21] Installing: <span style="color: #0000BB;">hexbin</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 1 package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → The package (0 B) is cached.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">hexbin</span>   1.28.5 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 1 pkg is cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">hexbin</span> 1.28.5  <span style="color: #9E9E9E;">(28ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 1 dep: kept 1, added 1 <span style="color: #B2B2B2;">[974ms]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:11] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">hexbin</span> 1.28.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.60 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">hexbin</span> 1.28.5  <span style="color: #9E9E9E;">(1.1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 1 dep: kept 1, added 1, dld 1 (1.60 MB) <span style="color: #B2B2B2;">[3s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:24] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="CellDimPlot-24.png" alt="" width="700" height="433"></span>
@@ -1143,7 +1151,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  hex <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  hex.bins <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:11] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:24] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="CellDimPlot-25.png" alt="" width="700" height="433"></span>
@@ -1155,22 +1163,22 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  hex <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  hex.count <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:12] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:24] <span style="color: #0000BB;">hexbin</span> installed successfully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
 <span class="r-plt img"><img src="CellDimPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show neighbors graphs on the plot</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:12] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:12] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:12] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:12] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:13] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:13] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:13] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:13] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:14] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:25] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:25] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:25] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:25] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:26] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:26] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:26] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:26] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -1179,12 +1187,12 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
@@ -1206,16 +1214,16 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:14] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:15] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:15] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:15] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:15] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:27] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:27] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:27] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:27] UMAP will return its model</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:18] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:18] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:31] UMAP will return its model</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:21:21] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:18:34] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -1303,15 +1311,15 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span><span class="co"># Show PAGA results on the plot</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:25] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:25] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:26] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:26] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:26] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:26] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:27] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:27] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:39] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:39] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:40] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -1320,12 +1328,12 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
@@ -1347,14 +1355,14 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:28] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:28] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:28] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:28] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:28] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:31] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:31] UMAP will return its model</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:21:34] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:42] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:42] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:42] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:42] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:45] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:18:45] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:18:48] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -1362,57 +1370,57 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:21:46] `envname`: <span style="color: #0000BB;">"scop_env"</span> python environment does not exist. Create it with `PrepareEnv()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] Environment name: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] Python version: <span style="color: #0000BB;">3.10-1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] Number of packages to install: <span style="color: #0000BB;">21</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] Auto-detecting conda...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:21:46] Creating conda environment with Python <span style="color: #0000BB;">"3.10-1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:19:07] `envname`: <span style="color: #0000BB;">"scop_env"</span> python environment does not exist. Create it with `PrepareEnv()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] <span style="color: #0000BB;">Preparing scop Python Environment</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] Environment name: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] Python version: <span style="color: #0000BB;">3.10-1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] Number of packages to install: <span style="color: #0000BB;">21</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] Auto-detecting conda...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:07] Creating conda environment with Python <span style="color: #0000BB;">"3.10-1"</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> + /usr/share/miniconda/bin/conda create --yes --name scop_env 'python=3.10-1' pip setuptools wheel --quiet -c conda-forge</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:22:12] Environment created successfully: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:12] Checking and installing required packages...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:12] Installing <span style="color: #0000BB;">conda</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:12] Try to install: <span style="color: #0000BB;">leidenalg==0.10.2</span>, <span style="color: #0000BB;">tbb==2022.2.0</span>, and <span style="color: #0000BB;">python-igraph==0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:12] Installing <span style="color: #0000BB;">3</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:14] Installing packages via <span style="color: #0000BB;">conda</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:14] Using channel: <span style="color: #0000BB;">"conda-forge"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:14] Installing <span style="color: #0000BB;">3</span> packages...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:19:35] Environment created successfully: <span style="color: #0000BB;">/usr/share/miniconda/envs/scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:35] Checking and installing required packages...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:35] Installing <span style="color: #0000BB;">conda</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:36] Try to install: <span style="color: #0000BB;">leidenalg==0.10.2</span>, <span style="color: #0000BB;">tbb==2022.2.0</span>, and <span style="color: #0000BB;">python-igraph==0.11.9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:36] Installing <span style="color: #0000BB;">3</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:37] Installing packages via <span style="color: #0000BB;">conda</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:37] Using channel: <span style="color: #0000BB;">"conda-forge"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:37] Installing <span style="color: #0000BB;">3</span> packages...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> + /usr/share/miniconda/bin/conda 'install' '--yes' '--name' 'scop_env' '-c' 'conda-forge' 'leidenalg==0.10.2' 'tbb==2022.2.0' 'python-igraph==0.11.9'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:22:22] <span style="color: #0000BB;">conda</span> installation completed successfully</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:23] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:23] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:24] Found <span style="color: #0000BB;">51</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:22:24] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:22:24] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:22:24] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:24] Installing <span style="color: #0000BB;">pip</span> packages</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:25] Try to install: <span style="color: #0000BB;">matplotlib==3.10.3</span>, <span style="color: #0000BB;">numba==0.59.1</span>, <span style="color: #0000BB;">llvmlite==0.42.0</span>, <span style="color: #0000BB;">numpy==1.26.4</span>, <span style="color: #0000BB;">palantir==1.4.1</span>, <span style="color: #0000BB;">pandas==2.0.3</span>, <span style="color: #0000BB;">scanpy==1.11.3</span>, <span style="color: #0000BB;">scikit-learn==1.7.0</span>, <span style="color: #0000BB;">scipy==1.15.3</span>, <span style="color: #0000BB;">scvelo==0.3.3</span>, <span style="color: #0000BB;">wot==1.0.8.post2</span>, <span style="color: #0000BB;">trimap==1.1.4</span>, <span style="color: #0000BB;">pacmap==0.8.0</span>, <span style="color: #0000BB;">phate==1.0.11</span>, <span style="color: #0000BB;">bbknn==1.6.0</span>, <span style="color: #0000BB;">scanorama==1.7.4</span>, <span style="color: #0000BB;">scvi-tools==1.2.1</span>, and <span style="color: #0000BB;">cellrank==2.0.7</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:25] Installing <span style="color: #0000BB;">19</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:22:26] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:32] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:33] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:34] Found <span style="color: #0000BB;">54</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">matplotlib</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">numba</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">llvmlite</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">numpy</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">palantir</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">pandas</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scanpy</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scikit-learn</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scipy</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scvelo</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">wot</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">trimap</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">pacmap</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">phate</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">bbknn</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scanorama</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">scvi-tools</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] <span style="color: #0000BB;">cellrank</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:34] Failed to install: <span style="color: #0000BB;">matplotlib==3.10.3</span>, <span style="color: #0000BB;">numba==0.59.1</span>, <span style="color: #0000BB;">llvmlite==0.42.0</span>, <span style="color: #0000BB;">numpy==1.26.4</span>, <span style="color: #0000BB;">palantir==1.4.1</span>, <span style="color: #0000BB;">pandas==2.0.3</span>, <span style="color: #0000BB;">scanpy==1.11.3</span>, <span style="color: #0000BB;">scikit-learn==1.7.0</span>, <span style="color: #0000BB;">scipy==1.15.3</span>, <span style="color: #0000BB;">scvelo==0.3.3</span>, <span style="color: #0000BB;">wot==1.0.8.post2</span>, <span style="color: #0000BB;">trimap==1.1.4</span>, <span style="color: #0000BB;">pacmap==0.8.0</span>, <span style="color: #0000BB;">phate==1.0.11</span>, <span style="color: #0000BB;">bbknn==1.6.0</span>, <span style="color: #0000BB;">scanorama==1.7.4</span>, <span style="color: #0000BB;">scvi-tools==1.2.1</span>, and <span style="color: #0000BB;">cellrank==2.0.7</span> into the environment <span style="color: #0000BB;">scop_env</span>. Please install manually</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:23:38] <span style="color: #00BB00;">Python Environment Ready</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:19:45] <span style="color: #0000BB;">conda</span> installation completed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:46] Checking <span style="color: #0000BB;">3</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:47] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:47] Found <span style="color: #0000BB;">51</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:19:47] <span style="color: #0000BB;">leidenalg</span> <span style="color: #0000BB;">0.10.2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:19:47] <span style="color: #0000BB;">tbb</span> <span style="color: #0000BB;">2022.2.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:19:47] <span style="color: #0000BB;">python-igraph</span> <span style="color: #0000BB;">0.11.9</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:47] Installing <span style="color: #0000BB;">pip</span> packages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:48] Try to install: <span style="color: #0000BB;">matplotlib==3.10.3</span>, <span style="color: #0000BB;">numba==0.59.1</span>, <span style="color: #0000BB;">llvmlite==0.42.0</span>, <span style="color: #0000BB;">numpy==1.26.4</span>, <span style="color: #0000BB;">palantir==1.4.1</span>, <span style="color: #0000BB;">pandas==2.0.3</span>, <span style="color: #0000BB;">scanpy==1.11.3</span>, <span style="color: #0000BB;">scikit-learn==1.7.0</span>, <span style="color: #0000BB;">scipy==1.15.3</span>, <span style="color: #0000BB;">scvelo==0.3.3</span>, <span style="color: #0000BB;">wot==1.0.8.post2</span>, <span style="color: #0000BB;">trimap==1.1.4</span>, <span style="color: #0000BB;">pacmap==0.8.0</span>, <span style="color: #0000BB;">phate==1.0.11</span>, <span style="color: #0000BB;">bbknn==1.6.0</span>, <span style="color: #0000BB;">scanorama==1.7.4</span>, <span style="color: #0000BB;">scvi-tools==1.2.1</span>, and <span style="color: #0000BB;">cellrank==2.0.7</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:48] Installing <span style="color: #0000BB;">19</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:19:50] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:07] Checking <span style="color: #0000BB;">18</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:08] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:09] Found <span style="color: #0000BB;">164</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">matplotlib</span> <span style="color: #0000BB;">3.10.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">numba</span> <span style="color: #0000BB;">0.59.1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">llvmlite</span> <span style="color: #0000BB;">0.42.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">numpy</span> <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">palantir</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">pandas</span> <span style="color: #0000BB;">2.0.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scanpy</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scikit-learn</span> <span style="color: #0000BB;">1.7.0</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scipy</span> <span style="color: #0000BB;">1.15.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scvelo</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">wot</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">trimap</span> <span style="color: #0000BB;">1.1.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">pacmap</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">phate</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">bbknn</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scanorama</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">scvi-tools</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] <span style="color: #0000BB;">cellrank</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:09] Failed to install: <span style="color: #0000BB;">palantir==1.4.1</span>, <span style="color: #0000BB;">scanpy==1.11.3</span>, <span style="color: #0000BB;">scvelo==0.3.3</span>, <span style="color: #0000BB;">wot==1.0.8.post2</span>, <span style="color: #0000BB;">pacmap==0.8.0</span>, <span style="color: #0000BB;">phate==1.0.11</span>, <span style="color: #0000BB;">bbknn==1.6.0</span>, <span style="color: #0000BB;">scanorama==1.7.4</span>, <span style="color: #0000BB;">scvi-tools==1.2.1</span>, and <span style="color: #0000BB;">cellrank==2.0.7</span> into the environment <span style="color: #0000BB;">scop_env</span>. Please install manually</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:14] <span style="color: #00BB00;">Python Environment Ready</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">conda environment: </span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  conda:          /usr/share/miniconda/bin/conda</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  environment:    /usr/share/miniconda/envs/scop_env</span></span>
@@ -1421,25 +1429,27 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  libpython:      /usr/share/miniconda/envs/scop_env/lib/libpython3.10.so</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  pythonhome:     /usr/share/miniconda/envs/scop_env:/usr/share/miniconda/envs/scop_env</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  version:        3.10.1 | packaged by conda-forge | (main, Dec 22 2021, 01:39:36) [GCC 9.4.0]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy:           [NOT FOUND]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy:          /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/numpy</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  numpy_version:  1.26.4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  </span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  NOTE: Python version was forced by use_python() function</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:39] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:40] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:40] Found <span style="color: #0000BB;">54</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:40] <span style="color: #0000BB;">scanpy</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:23:40] <span style="color: #0000BB;">numpy</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:40] Try to install: <span style="color: #0000BB;">scanpy</span> and <span style="color: #0000BB;">numpy</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:40] Installing <span style="color: #0000BB;">3</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:23:42] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:03] <span style="color: #0000BB;">pip</span> installation completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:04] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:05] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:06] Found <span style="color: #0000BB;">88</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:06] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:06] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">2.2.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:06] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Required version of NumPy not available: installation of Numpy &gt;= 1.6 not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:15] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:16] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:17] Found <span style="color: #0000BB;">164</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:17] <span style="color: #0000BB;">scanpy</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:17] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:17] Try to install: <span style="color: #0000BB;">scanpy</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:17] Installing <span style="color: #0000BB;">2</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:18] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:23] <span style="color: #0000BB;">pip</span> installation completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:24] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:25] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:26] Found <span style="color: #0000BB;">170</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:26] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.5</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:26] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:26] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in py_module_import(module, convert = convert):</span> OSError: /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/torch/lib/libtorch_global_deps.so: cannot open shared object file: No such file or directory</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Run `reticulate::py_last_error()` for details.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1486,15 +1496,15 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span><span class="co"># Show RNA velocity results on the plot</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:09] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:09] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:10] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:10] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:10] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:10] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:10] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:11] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:11] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:27] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:27] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:27] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` has been log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:27] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:28] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:28] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:28] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:28] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:28] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
@@ -1503,12 +1513,12 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
@@ -1530,16 +1540,16 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:12] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:12] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:12] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:12] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:29] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:29] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:29] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:29] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:29] UMAP will return its model</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:15] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:15] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:33] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:33] UMAP will return its model</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:18] Run scop standard workflow done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:36] Run scop standard workflow done</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSCVELO.html">RunSCVELO</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -1548,25 +1558,26 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:19] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:20] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:21] Found <span style="color: #0000BB;">88</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-24 14:24:21] <span style="color: #0000BB;">scvelo</span> not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:21] Try to install: <span style="color: #0000BB;">scvelo</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:21] Installing <span style="color: #0000BB;">2</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:22] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:24] <span style="color: #0000BB;">pip</span> installation completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:25] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:25] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:26] Found <span style="color: #0000BB;">92</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:26] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:28] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:28] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:29] Found <span style="color: #0000BB;">92</span> packages installed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:29] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-24 14:24:29] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">2.2.6</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:29] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Required version of NumPy not available: installation of Numpy &gt;= 1.6 not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:37] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:38] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:39] Found <span style="color: #0000BB;">170</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-10-25 05:22:39] <span style="color: #0000BB;">scvelo</span> not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:39] Try to install: <span style="color: #0000BB;">scvelo</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:39] Installing <span style="color: #0000BB;">2</span> packages into environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:40] Installing packages via <span style="color: #0000BB;">pip</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:43] <span style="color: #0000BB;">pip</span> installation completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:43] Checking <span style="color: #0000BB;">1</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:44] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:45] Found <span style="color: #0000BB;">171</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:45] <span style="color: #0000BB;">scvelo</span> version: <span style="color: #0000BB;">0.3.3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:47] Checking <span style="color: #0000BB;">2</span> packages in environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:47] Retrieving package list for environment: <span style="color: #0000BB;">scop_env</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:49] Found <span style="color: #0000BB;">171</span> packages installed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:49] <span style="color: #0000BB;">scanpy</span> version: <span style="color: #0000BB;">1.11.5</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-10-25 05:22:49] <span style="color: #0000BB;">numpy</span> version: <span style="color: #0000BB;">1.26.4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:49] Converting <span style="color: #0000BB;">&lt;Seurat&gt;</span> to <span style="color: #0000BB;">&lt;AnnData&gt;</span> ...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in py_module_import(module, convert = convert):</span> OSError: /usr/share/miniconda/envs/scop_env/lib/python3.10/site-packages/torch/lib/libtorch_global_deps.so: cannot open shared object file: No such file or directory</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Run `reticulate::py_last_error()` for details.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1586,7 +1597,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="cn">NA</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:30] Installing: <span style="color: #0000BB;">metR</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:49] Installing: <span style="color: #0000BB;">metR</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 27 packages.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → All 27 packages (0 B) are cached.</span>
@@ -1620,12 +1631,39 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 27 pkgs are cached</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">cachem</span> 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (67.49 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">classInt</span> 0.4-11 (x86_64-pc-linux-gnu-ubuntu-24.04) (496.56 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">digest</span> 0.6.37 (x86_64-pc-linux-gnu-ubuntu-24.04) (227.14 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">plyr</span> 1.8.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (787.35 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">checkmate</span> 2.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (777.39 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">DBI</span> 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (916.93 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">lubridate</span> 1.9.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (990.67 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">memoise</span> 2.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (48.86 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Formula</span> 1.2-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (159.13 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">magrittr</span> 2.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (221.44 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">formula.tools</span> 1.7.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (87.50 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">units</span> 1.0-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (478.77 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">generics</span> 0.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (80.38 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">e1071</span> 1.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (596.57 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">operator.tools</span> 1.6.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (52.84 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">fastmap</span> 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (66.05 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">stringr</span> 1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (311.71 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">proxy</span> 0.4-27 (x86_64-pc-linux-gnu-ubuntu-24.04) (175.47 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">purrr</span> 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (554.62 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">timechange</span> 0.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (174.23 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">backports</span> 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (115.90 kB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">data.table</span> 1.17.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.67 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">s2</span> 1.1.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.21 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">Rcpp</span> 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.19 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">wk</span> 0.9.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.73 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">metR</span> 0.18.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.79 MB)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">sf</span> 1.0-21 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.08 MB)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
@@ -1645,35 +1683,35 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libudunits2-dev is already the newest version (2.2.28-7build1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 40 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">backports</span> 1.5.0  <span style="color: #9E9E9E;">(49ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">cachem</span> 1.1.0  <span style="color: #9E9E9E;">(63ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">checkmate</span> 2.3.3  <span style="color: #9E9E9E;">(86ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">classInt</span> 0.4-11  <span style="color: #9E9E9E;">(115ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">data.table</span> 1.17.8  <span style="color: #9E9E9E;">(86ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DBI</span> 1.2.3  <span style="color: #9E9E9E;">(60ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">digest</span> 0.6.37  <span style="color: #9E9E9E;">(58ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">e1071</span> 1.7-16  <span style="color: #9E9E9E;">(56ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">fastmap</span> 1.2.0  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Formula</span> 1.2-5  <span style="color: #9E9E9E;">(49ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">formula.tools</span> 1.7.1  <span style="color: #9E9E9E;">(51ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">generics</span> 0.1.4  <span style="color: #9E9E9E;">(53ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lubridate</span> 1.9.4  <span style="color: #9E9E9E;">(82ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">magrittr</span> 2.0.4  <span style="color: #9E9E9E;">(55ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">memoise</span> 2.0.1  <span style="color: #9E9E9E;">(55ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">metR</span> 0.18.2  <span style="color: #9E9E9E;">(59ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">operator.tools</span> 1.6.3  <span style="color: #9E9E9E;">(54ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">plyr</span> 1.8.9  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">proxy</span> 0.4-27  <span style="color: #9E9E9E;">(51ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">purrr</span> 1.1.0  <span style="color: #9E9E9E;">(52ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rcpp</span> 1.1.0  <span style="color: #9E9E9E;">(82ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">s2</span> 1.1.9  <span style="color: #9E9E9E;">(55ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">stringr</span> 1.5.2  <span style="color: #9E9E9E;">(22ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">sf</span> 1.0-21  <span style="color: #9E9E9E;">(108ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">timechange</span> 0.3.0  <span style="color: #9E9E9E;">(57ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">units</span> 1.0-0  <span style="color: #9E9E9E;">(54ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">wk</span> 0.9.4  <span style="color: #9E9E9E;">(39ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 46 deps: kept 20, added 27 <span style="color: #B2B2B2;">[4.9s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:35] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">backports</span> 1.5.0  <span style="color: #9E9E9E;">(59ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">cachem</span> 1.1.0  <span style="color: #9E9E9E;">(72ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">checkmate</span> 2.3.3  <span style="color: #9E9E9E;">(94ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">classInt</span> 0.4-11  <span style="color: #9E9E9E;">(123ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">data.table</span> 1.17.8  <span style="color: #9E9E9E;">(67ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">DBI</span> 1.2.3  <span style="color: #9E9E9E;">(99ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">digest</span> 0.6.37  <span style="color: #9E9E9E;">(97ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">e1071</span> 1.7-16  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">fastmap</span> 1.2.0  <span style="color: #9E9E9E;">(59ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Formula</span> 1.2-5  <span style="color: #9E9E9E;">(58ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">formula.tools</span> 1.7.1  <span style="color: #9E9E9E;">(60ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">generics</span> 0.1.4  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">lubridate</span> 1.9.4  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">magrittr</span> 2.0.4  <span style="color: #9E9E9E;">(100ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">memoise</span> 2.0.1  <span style="color: #9E9E9E;">(103ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">metR</span> 0.18.2  <span style="color: #9E9E9E;">(63ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">operator.tools</span> 1.6.3  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">plyr</span> 1.8.9  <span style="color: #9E9E9E;">(60ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">proxy</span> 0.4-27  <span style="color: #9E9E9E;">(58ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">purrr</span> 1.1.0  <span style="color: #9E9E9E;">(60ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">Rcpp</span> 1.1.0  <span style="color: #9E9E9E;">(69ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">s2</span> 1.1.9  <span style="color: #9E9E9E;">(101ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">sf</span> 1.0-21  <span style="color: #9E9E9E;">(102ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">stringr</span> 1.5.2  <span style="color: #9E9E9E;">(67ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">timechange</span> 0.3.0  <span style="color: #9E9E9E;">(62ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">units</span> 1.0-0  <span style="color: #9E9E9E;">(61ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">wk</span> 0.9.4  <span style="color: #9E9E9E;">(44ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 46 deps: kept 20, added 27, dld 27 (24.06 MB) <span style="color: #B2B2B2;">[7s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:56] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in VelocityPlot(srt, cells = cells, reduction = reduction, dims = dims,     velocity = velocity, plot_type = velocity_plot_type, group_by = group.by,     group_palette = palette, group_palcolor = palcolor, n_neighbors = velocity_n_neighbors,     density = velocity_density, smooth = velocity_smooth, scale = velocity_scale,     min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,     arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,     streamline_L = streamline_L, streamline_minL = streamline_minL,     streamline_res = streamline_res, streamline_n = streamline_n,     streamline_width = streamline_width, streamline_alpha = streamline_alpha,     streamline_color = streamline_color, streamline_palette = streamline_palette,     streamline_palcolor = streamline_palcolor, streamline_bg_color = streamline_bg_color,     streamline_bg_stroke = streamline_bg_stroke, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = "bottom", legend.direction = legend.direction,     theme_use = theme_void, theme_args = theme_args, return_layer = TRUE):</span> Cannot find the velocity embedding <span style="color: #0000BB;">"stochastic_X_umap"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
@@ -1685,7 +1723,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
 <span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:35] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:56] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in VelocityPlot(srt, cells = cells, reduction = reduction, dims = dims,     velocity = velocity, plot_type = velocity_plot_type, group_by = group.by,     group_palette = palette, group_palcolor = palcolor, n_neighbors = velocity_n_neighbors,     density = velocity_density, smooth = velocity_smooth, scale = velocity_scale,     min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,     arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,     streamline_L = streamline_L, streamline_minL = streamline_minL,     streamline_res = streamline_res, streamline_n = streamline_n,     streamline_width = streamline_width, streamline_alpha = streamline_alpha,     streamline_color = streamline_color, streamline_palette = streamline_palette,     streamline_palcolor = streamline_palcolor, streamline_bg_color = streamline_bg_color,     streamline_bg_stroke = streamline_bg_stroke, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = "bottom", legend.direction = legend.direction,     theme_use = theme_void, theme_args = theme_args, return_layer = TRUE):</span> Cannot find the velocity embedding <span style="color: #0000BB;">"stochastic_X_umap"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
@@ -1698,7 +1736,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"grid"</span>,</span></span>
 <span class="r-in"><span>  velocity_scale <span class="op">=</span> <span class="fl">1.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:35] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:56] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in VelocityPlot(srt, cells = cells, reduction = reduction, dims = dims,     velocity = velocity, plot_type = velocity_plot_type, group_by = group.by,     group_palette = palette, group_palcolor = palcolor, n_neighbors = velocity_n_neighbors,     density = velocity_density, smooth = velocity_smooth, scale = velocity_scale,     min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,     arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,     streamline_L = streamline_L, streamline_minL = streamline_minL,     streamline_res = streamline_res, streamline_n = streamline_n,     streamline_width = streamline_width, streamline_alpha = streamline_alpha,     streamline_color = streamline_color, streamline_palette = streamline_palette,     streamline_palcolor = streamline_palcolor, streamline_bg_color = streamline_bg_color,     streamline_bg_stroke = streamline_bg_stroke, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = "bottom", legend.direction = legend.direction,     theme_use = theme_void, theme_args = theme_args, return_layer = TRUE):</span> Cannot find the velocity embedding <span style="color: #0000BB;">"stochastic_X_umap"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
@@ -1710,7 +1748,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
 <span class="r-in"><span>  velocity_plot_type <span class="op">=</span> <span class="st">"stream"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:35] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:56] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in VelocityPlot(srt, cells = cells, reduction = reduction, dims = dims,     velocity = velocity, plot_type = velocity_plot_type, group_by = group.by,     group_palette = palette, group_palcolor = palcolor, n_neighbors = velocity_n_neighbors,     density = velocity_density, smooth = velocity_smooth, scale = velocity_scale,     min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,     arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,     streamline_L = streamline_L, streamline_minL = streamline_minL,     streamline_res = streamline_res, streamline_n = streamline_n,     streamline_width = streamline_width, streamline_alpha = streamline_alpha,     streamline_color = streamline_color, streamline_palette = streamline_palette,     streamline_palcolor = streamline_palcolor, streamline_bg_color = streamline_bg_color,     streamline_bg_stroke = streamline_bg_stroke, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = "bottom", legend.direction = legend.direction,     theme_use = theme_void, theme_args = theme_args, return_layer = TRUE):</span> Cannot find the velocity embedding <span style="color: #0000BB;">"stochastic_X_umap"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
@@ -1731,7 +1769,7 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 <span class="r-in"><span>  legend.position <span class="op">=</span> <span class="st">"none"</span>,</span></span>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-24 14:24:35] <span style="color: #0000BB;">metR</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-10-25 05:22:56] <span style="color: #0000BB;">metR</span> installed successfully</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in VelocityPlot(srt, cells = cells, reduction = reduction, dims = dims,     velocity = velocity, plot_type = velocity_plot_type, group_by = group.by,     group_palette = palette, group_palcolor = palcolor, n_neighbors = velocity_n_neighbors,     density = velocity_density, smooth = velocity_smooth, scale = velocity_scale,     min_mass = velocity_min_mass, cutoff_perc = velocity_cutoff_perc,     arrow_color = velocity_arrow_color, arrow_angle = velocity_arrow_angle,     streamline_L = streamline_L, streamline_minL = streamline_minL,     streamline_res = streamline_res, streamline_n = streamline_n,     streamline_width = streamline_width, streamline_alpha = streamline_alpha,     streamline_color = streamline_color, streamline_palette = streamline_palette,     streamline_palcolor = streamline_palcolor, streamline_bg_color = streamline_bg_color,     streamline_bg_stroke = streamline_bg_stroke, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = "bottom", legend.direction = legend.direction,     theme_use = theme_void, theme_args = theme_args, return_layer = TRUE):</span> Cannot find the velocity embedding <span style="color: #0000BB;">"stochastic_X_umap"</span></span>
 </code></pre></div>
     </div>
