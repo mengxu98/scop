@@ -50,12 +50,12 @@ A \code{anndata} object.
 This function takes a Seurat object and converts it to an anndata object using the reticulate package.
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata
 
-\dontrun{
 # Or save as a h5ad/loom file
 adata$write_h5ad(
   "pancreas_sub.h5ad"

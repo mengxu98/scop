@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{Uncorrected_integrate}
 \alias{Uncorrected_integrate}
-\title{Uncorrected_integrate}
+\title{The Uncorrected integration function}
 \usage{
 Uncorrected_integrate(
   srt_merge = NULL,
@@ -141,5 +141,5 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Uncorrected_integrate
+The Uncorrected integration function
 }
