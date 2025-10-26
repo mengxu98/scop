@@ -63,7 +63,7 @@ ProportionTestPlot(
 )
 }
 \references{
-\href{https://doi.org/10.1158/0008-5472.can-20-3562}{Paper: Miller SA},
+\href{https://doi.org/10.1158/0008-5472.can-20-3562}{Miller et al. paper},
 \href{https://github.com/rpolicastro/scProportionTest}{scProportionTest}
 }
 \seealso{
