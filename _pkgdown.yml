@@ -156,8 +156,13 @@ reference:
   - RunWOT
   - RunDynamicFeatures
 
+- subtitle: "Cell Communication Analysis"
+- contents:
+  - RunCellChat
+
 - subtitle: "Visualization Functions"
 - contents:
+  - CellChatPlot
   - CellDimPlot
   - CellDimPlot3D
   - CellDensityPlot
