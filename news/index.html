@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,16 +34,22 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="scop-051">scop 0.5.1<a class="anchor" aria-label="anchor" href="#scop-051"></a></h2>
+<ul><li>
+<strong>docs</strong>:
+<ul><li>Improved reference formatting and consistency across multiple functions.</li>
+<li>Enhanced documentation clarity and readability.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="scop-050">scop 0.5.0<a class="anchor" aria-label="anchor" href="#scop-050"></a></h2>
 <ul><li>
 <strong>func</strong>:
 <ul><li>
-<strong>IMPORTANT</strong>:</li>
-<li>
 <code><a href="../reference/RunCellChat.html">RunCellChat()</a></code>: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.</li>
 <li>
 <code><a href="../reference/CellChatPlot.html">CellChatPlot()</a></code>: New function to visualize CellChat analysis results with various plot types and customization options.</li>
@@ -51,7 +57,7 @@
 </ul></li>
 <li>
 <strong>deps</strong>:
-<ul><li>Added <code>CellChat</code> package dependency with remote repository <code>jinworks/CellChat</code>.</li>
+<ul><li>Added <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a> package dependency with remote repository <code>jinworks/CellChat</code>.</li>
 </ul></li>
 <li>
 <strong>docs</strong>:
@@ -132,9 +138,7 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="scop-030">scop 0.3.0<a class="anchor" aria-label="anchor" href="#scop-030"></a></h2>
 <ul><li>
 <strong>func</strong>:
-<ul><li>
-<strong>IMPORTANT</strong>:</li>
-<li>Fixed <code>segmentation faults</code> and <code>R crashes</code> on <em>M-series</em> MacBook when running <em>Python</em> functions.</li>
+<ul><li>Fixed <code>segmentation faults</code> and <code>R crashes</code> on <em>M-series</em> MacBook when running <em>Python</em> functions.</li>
 <li>
 <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>: Enhanced with <em>M-series</em> MacBook detection and automatic environment configuration.</li>
 <li>
@@ -218,8 +222,7 @@
 <h2 class="pkg-version" data-toc-text="0.2.2" id="scop-022">scop 0.2.2<a class="anchor" aria-label="anchor" href="#scop-022"></a></h2>
 <ul><li>
 <strong>func</strong>:
-<ul><li>
-<strong><em>Import!!!</em></strong> Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
+<ul><li>Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
 </ul></li>
 <li>
 <strong>bugs</strong>:
@@ -266,14 +269,15 @@
 <h2 class="pkg-version" data-toc-text="0.1.3" id="scop-013">scop 0.1.3<a class="anchor" aria-label="anchor" href="#scop-013"></a></h2>
 <ul><li>
 <strong>func</strong>:
-<ul><li>Added <code><a href="../reference/TACSPlot.html">TACSPlot()</a></code> function for creating FACS-like plots. Please refer to <a href="https://doi.org/10.1016/j.immuni.2018.04.015" class="external-link">manuscript</a> and <a href="https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271" class="external-link">code</a> for specific information.</li>
+<ul><li>Added <code><a href="../reference/TACSPlot.html">TACSPlot()</a></code> function for creating FACS-like plots. Please refer to <a href="https://doi.org/10.1016/j.immuni.2018.04.015" class="external-link">Kernfeld et al. paper</a> and <a href="https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271" class="external-link">Github</a> for specific information.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="scop-009">scop 0.0.9<a class="anchor" aria-label="anchor" href="#scop-009"></a></h2>
 <ul><li>
 <strong>bugs</strong>:
-<ul><li>Corrected an issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function. The default <em>Python</em> version is now set to <code>3.10-1</code>, which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
+<ul><li>Fix a bug for <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function.</li>
+<li>The default <em>Python</em> version is now set to <code>3.10-1</code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
