@@ -1,15 +1,20 @@
 # scop
 
+# scop 0.5.1
+
+* **docs**:
+  * Improved reference formatting and consistency across multiple functions.
+  * Enhanced documentation clarity and readability.
+
 # scop 0.5.0
 
 * **func**:
-  * **IMPORTANT**:
   * `RunCellChat()`: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.
   * `CellChatPlot()`: New function to visualize CellChat analysis results with various plot types and customization options.
   * Multiple integration functions: Improved error messages and message formatting for better user experience.
 
 * **deps**:
-  * Added `CellChat` package dependency with remote repository `jinworks/CellChat`.
+  * Added [CellChat](https://github.com/jinworks/CellChat) package dependency with remote repository `jinworks/CellChat`.
 
 * **docs**:
   * Updated README.md with improved code formatting and examples.
@@ -67,7 +72,6 @@
 # scop 0.3.0
 
 * **func**:
-  * **IMPORTANT**:
   * Fixed `segmentation faults` and `R crashes` on *M-series* MacBook when running *Python* functions.
   * `RunPAGA()`: Enhanced with *M-series* MacBook detection and automatic environment configuration.
   * `RunSCVELO()`: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.
@@ -127,7 +131,7 @@
 # scop 0.2.2
 
 * **func**:
-  * ***Import!!!*** Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
+  * Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
 
 * **bugs**:
   * Fix bugs in `RunSingleR()`.
@@ -161,12 +165,13 @@
 # scop 0.1.3
 
 * **func**:
-  * Added `TACSPlot()` function for creating FACS-like plots. Please refer to [manuscript](https://doi.org/10.1016/j.immuni.2018.04.015) and [code](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271) for specific information.
+  * Added `TACSPlot()` function for creating FACS-like plots. Please refer to [Kernfeld et al. paper](https://doi.org/10.1016/j.immuni.2018.04.015) and [Github](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271) for specific information.
 
 # scop 0.0.9
 
 * **bugs**:
-  * Corrected an issue in `PrepareEnv()` function. The default *Python* version is now set to `3.10-1`, which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
+  * Fix a bug for `PrepareEnv()` function.
+  * The default *Python* version is now set to `3.10-1`.
 
 # scop 0.0.6
 
