@@ -20,7 +20,7 @@
 #' [ProportionTestPlot]
 #'
 #' @references
-#' [Paper: Miller SA](https://doi.org/10.1158/0008-5472.can-20-3562),
+#' [Miller et al. paper](https://doi.org/10.1158/0008-5472.can-20-3562),
 #' [scProportionTest](https://github.com/rpolicastro/scProportionTest)
 #'
 #' @examples
