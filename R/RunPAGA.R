@@ -5,6 +5,7 @@
 #' This function runs the PAGA analysis on a Seurat object.
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @param srt A Seurat object.
 #' @param assay_x Assay to convert in the anndata object.
 #' @param layer_x Layer name for `assay_x` in the Seurat object.
@@ -135,7 +136,8 @@ RunPAGA <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
+    return_seurat = !is.null(srt),
+    verbose = TRUE) {
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "One of {.arg srt} or {.arg adata} must be provided",
@@ -222,14 +224,14 @@ RunPAGA <- function(
     palette = palette,
     palcolor = palcolor
   )
-  
-  scop_analysis <- reticulate::import_from_path(
-    "scop_analysis",
+
+  functions <- reticulate::import_from_path(
+    "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
   log_message("Running {.pkg PAGA} analysis...")
-  adata <- do.call(scop_analysis$PAGA, args)
+  adata <- do.call(functions$PAGA, args)
   log_message(
     "{.pkg PAGA} analysis completed",
     message_type = "success"

@@ -14,7 +14,7 @@ PrepareDB(
   db_version = "latest",
   db_update = FALSE,
   convert_species = TRUE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   biomart = NULL,
   max_tries = 5,

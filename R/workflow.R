@@ -195,32 +195,27 @@ srt_append <- function(
         next
       }
       if (!info %in% names(methods::slot(srt_raw, name = slot_nm)) || isTRUE(overwrite)) {
-        if (
-          slot_nm %in%
-            c("assays", "graphs", "neighbors", "reductions", "images")
-        ) {
+        if (slot_nm %in% c("assays", "graphs", "neighbors", "reductions", "images")) {
           if (identical(slot_nm, "graphs")) {
             srt_raw@graphs[[info]] <- srt_append[[info]]
           } else if (identical(slot_nm, "assays")) {
             if (!info %in% SeuratObject::Assays(srt_raw)) {
               srt_raw[[info]] <- srt_append[[info]]
             } else {
-              # srt_raw[[info]]@counts <- srt_append[[info]]@counts
               srt_raw <- SeuratObject::SetAssayData(
                 object = srt_raw,
                 layer = "counts",
-                assay = "RNA",
+                assay = info,
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
                   layer = "counts"
                 )
               )
-              # srt_raw[[info]]@data <- srt_append[[info]]@data
               srt_raw <- SeuratObject::SetAssayData(
                 object = srt_raw,
                 layer = "data",
-                assay = "RNA",
+                assay = info,
                 new.data = GetAssayData5(
                   srt_append,
                   assay = info,
@@ -235,7 +230,7 @@ srt_append <- function(
                 srt_raw[[info]]@var.features <- srt_append[[info]]@var.features
               }
               srt_raw[[info]]@misc <- srt_append[[info]]@misc
-              meta.features <- cbind(
+              meta_features <- cbind(
                 GetFeaturesData(srt_raw, assay = info),
                 GetFeaturesData(srt_append, assay = info)[
                   rownames(GetFeaturesData(srt_raw, assay = info)),
@@ -247,7 +242,7 @@ srt_append <- function(
               )
               srt_raw <- AddFeaturesData(
                 srt_raw,
-                features = meta.features,
+                features = meta_features,
                 assay = info
               )
             }

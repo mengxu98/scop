@@ -12,7 +12,7 @@
 #' @param condition Condition to plot (if multiple conditions exist).
 #' @param pathway Specific pathway to visualize (for pathway, bubble, and gene plots).
 #' If `NULL`, uses top pathways.
-#' @param output_dir Directory to save plots.
+#' @param dirpath Directory to save plots.
 #' @param output_format Format of output figure: `"png"` or `"pdf"`.
 #' Default: `"png"`.
 #' @param top_n Number of top pathways to use for plotting.
@@ -49,7 +49,7 @@ CellChatPlot <- function(
     plot_type = "aggregate",
     condition = NULL,
     pathway = NULL,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "pdf",
     top_n = 10,
     base_height = 1,
@@ -87,9 +87,9 @@ CellChatPlot <- function(
   cellchat_object <- cellchat_results[[condition]]$cellchat_object
   seurat_object <- cellchat_results[[condition]]$seurat_object
 
-  if (!is.null(output_dir)) {
-    if (!dir.exists(output_dir)) {
-      dir.create(output_dir, recursive = TRUE)
+  if (!is.null(dirpath)) {
+    if (!dir.exists(dirpath)) {
+      dir.create(dirpath, recursive = TRUE)
     }
   }
 
@@ -98,9 +98,9 @@ CellChatPlot <- function(
     verbose = verbose
   )
 
-  if (!is.null(output_dir)) {
-    if (!dir.exists(output_dir)) {
-      dir.create(output_dir, recursive = TRUE)
+  if (!is.null(dirpath)) {
+    if (!dir.exists(dirpath)) {
+      dir.create(dirpath, recursive = TRUE)
     }
   }
 
@@ -108,7 +108,7 @@ CellChatPlot <- function(
     p <- .create_aggregate_plots(
       cellchat_object = cellchat_object,
       condition = condition,
-      output_dir = output_dir,
+      dirpath = dirpath,
       output_format = output_format,
       base_height = base_height,
       base_width = base_width,
@@ -131,7 +131,7 @@ CellChatPlot <- function(
       seurat_object = seurat_object,
       pathways_to_show = pathways_top,
       condition = condition,
-      output_dir = output_dir,
+      dirpath = dirpath,
       output_format = output_format,
       base_height = base_height,
       base_width = base_width,
@@ -141,7 +141,7 @@ CellChatPlot <- function(
     p <- .create_heatmap_plots(
       cellchat_object = cellchat_object,
       condition = condition,
-      output_dir = output_dir,
+      dirpath = dirpath,
       output_format = output_format,
       base_height = base_height,
       base_width = base_width,
@@ -151,7 +151,7 @@ CellChatPlot <- function(
     p <- .create_circle_plots(
       cellchat_object = cellchat_object,
       condition = condition,
-      output_dir = output_dir,
+      dirpath = dirpath,
       output_format = output_format,
       base_height = base_height,
       base_width = base_width,
@@ -171,7 +171,7 @@ CellChatPlot <- function(
             cellchat_object = cellchat_object,
             pathway = path,
             condition = condition,
-            output_dir = output_dir,
+            dirpath = dirpath,
             output_format = output_format,
             base_height = base_height,
             base_width = base_width,
@@ -185,7 +185,7 @@ CellChatPlot <- function(
         cellchat_object = cellchat_object,
         pathway = pathway,
         condition = condition,
-        output_dir = output_dir,
+        dirpath = dirpath,
         output_format = output_format,
         base_height = base_height,
         base_width = base_width,
@@ -208,7 +208,7 @@ CellChatPlot <- function(
             seurat_object = seurat_object,
             pathway = path,
             condition = condition,
-            output_dir = output_dir,
+            dirpath = dirpath,
             output_format = output_format,
             species = parameters$species,
             base_height = base_height,
@@ -224,7 +224,7 @@ CellChatPlot <- function(
         seurat_object = seurat_object,
         pathway = pathway,
         condition = condition,
-        output_dir = output_dir,
+        dirpath = dirpath,
         output_format = output_format,
         species = parameters$species,
         base_height = base_height,
@@ -266,7 +266,7 @@ CellChatPlot <- function(
     res = 300,
     units = "in") {
   if (output_format == "png") {
-    png(
+    grDevices::png(
       filename,
       height = height,
       width = width,
@@ -274,7 +274,7 @@ CellChatPlot <- function(
       units = units
     )
   } else if (output_format == "pdf") {
-    pdf(
+    grDevices::pdf(
       filename,
       height = height,
       width = width
@@ -305,7 +305,7 @@ CellChatPlot <- function(
 .create_aggregate_plots <- function(
     cellchat_object,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "pdf",
     base_height = 1,
     base_width = 1,
@@ -315,9 +315,9 @@ CellChatPlot <- function(
   height_in <- max(4, 2 * (numofcelltypes / 4)) * base_height
   width_in <- max(6, 8 / 3 * (numofcelltypes / 4 + 1)) * base_width
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     circle_filename <- paste0(
-      output_dir, "/", condition, "_net_interaction_and_weight.", output_format
+      dirpath, "/", condition, "_net_interaction_and_weight.", output_format
     )
     .create_output_device(
       circle_filename,
@@ -328,7 +328,7 @@ CellChatPlot <- function(
     )
   }
 
-  par(mfrow = c(1, 2), xpd = TRUE)
+  graphics::par(mfrow = c(1, 2), xpd = TRUE)
   CellChat::netVisual_circle(
     cellchat_object@net$count,
     vertex.weight = group_size,
@@ -344,16 +344,16 @@ CellChatPlot <- function(
     title.name = "Interaction weights/strength"
   )
 
-  if (!is.null(output_dir)) {
-    dev.off()
+  if (!is.null(dirpath)) {
+    grDevices::dev.off()
   }
 
   p_scatter <- CellChat::netAnalysis_signalingRole_scatter(cellchat_object)
   print(p_scatter)
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     p_scatter_filename <- paste0(
-      output_dir, "/", condition, "_signaling_role.", output_format
+      dirpath, "/", condition, "_signaling_role.", output_format
     )
     .save_ggplot(
       p_scatter,
@@ -371,15 +371,15 @@ CellChatPlot <- function(
     seurat_object,
     pathways_to_show,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "pdf",
     base_height = 1,
     base_width = 1,
     res = 300) {
   for (pathway in pathways_to_show) {
-    if (!is.null(output_dir)) {
+    if (!is.null(dirpath)) {
       chord_filename <- paste0(
-        output_dir, "/", pathway, "_",
+        dirpath, "/", pathway, "_",
         condition, "_signaling_strength_chord.", output_format
       )
       .create_output_device(
@@ -398,8 +398,8 @@ CellChatPlot <- function(
       layout = "chord"
     )
 
-    if (!is.null(output_dir)) {
-      dev.off()
+    if (!is.null(dirpath)) {
+      grDevices::dev.off()
     }
 
     p <- CellChat::netVisual_bubble(
@@ -409,9 +409,9 @@ CellChatPlot <- function(
       font.size = 7
     )
 
-    if (!is.null(output_dir)) {
+    if (!is.null(dirpath)) {
       bubble_filename <- paste0(
-        output_dir, "/", pathway, "_",
+        dirpath, "/", pathway, "_",
         condition, "_LR_bubble_plot.", output_format
       )
       bubble_height <- (2 + 0.4 * length(unique(p$data$interaction_name))) * base_height
@@ -425,7 +425,7 @@ CellChatPlot <- function(
         res = res
       )
       print(p)
-      dev.off()
+      grDevices::dev.off()
     }
   }
 }
@@ -433,7 +433,7 @@ CellChatPlot <- function(
 .create_heatmap_plots <- function(
     cellchat_object,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "png",
     base_height = 1,
     base_width = 1,
@@ -446,9 +446,9 @@ CellChatPlot <- function(
   heatmap_height <- 10 * ceiling(pathway_num / 50) * base_height
   heatmap_width <- 10 * ceiling(length(group_size) / 30) * base_width
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     heatmap_filename <- paste0(
-      output_dir, "/", condition, "_outgoing_incoming_signal.", output_format
+      dirpath, "/", condition, "_outgoing_incoming_signal.", output_format
     )
     .create_output_device(
       heatmap_filename,
@@ -475,15 +475,15 @@ CellChatPlot <- function(
   )
   ComplexHeatmap::draw(ht1 + ht2)
 
-  if (!is.null(output_dir)) {
-    dev.off()
+  if (!is.null(dirpath)) {
+    grDevices::dev.off()
   }
 }
 
 .create_circle_plots <- function(
     cellchat_object,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "png",
     base_height = 1,
     base_width = 1,
@@ -495,9 +495,9 @@ CellChatPlot <- function(
   height_in <- 2 * 3 * ceiling(numofcelltypes / 4) * base_height
   width_in <- 2 * 4 * 3 * base_width
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     circle_filename <- paste0(
-      output_dir, "/",
+      dirpath, "/",
       condition, "_net_weight_per_celltype.", output_format
     )
     .create_output_device(
@@ -509,7 +509,7 @@ CellChatPlot <- function(
     )
   }
 
-  par(mfrow = c(ceiling(length(group_size) / 4), 4), xpd = TRUE)
+  graphics::par(mfrow = c(ceiling(length(group_size) / 4), 4), xpd = TRUE)
   for (i in seq_len(nrow(mat))) {
     mat2 <- matrix(
       0,
@@ -528,8 +528,8 @@ CellChatPlot <- function(
     )
   }
 
-  if (!is.null(output_dir)) {
-    dev.off()
+  if (!is.null(dirpath)) {
+    grDevices::dev.off()
   }
 }
 
@@ -537,7 +537,7 @@ CellChatPlot <- function(
     cellchat_object,
     pathway,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "png",
     base_height = 1,
     base_width = 1,
@@ -552,9 +552,9 @@ CellChatPlot <- function(
   bubble_height <- (2 + 0.4 * length(unique(p$data$interaction_name))) * base_height
   bubble_width <- (2 + 25 / 300 * length(unique(p$data$source.target))) * base_width
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     bubble_filename <- paste0(
-      output_dir, "/", pathway, "_",
+      dirpath, "/", pathway, "_",
       condition, "_LR_bubble_plot.", output_format
     )
     .create_output_device(
@@ -565,7 +565,7 @@ CellChatPlot <- function(
       res = res
     )
     print(p)
-    dev.off()
+    grDevices::dev.off()
   }
   return(p)
 }
@@ -575,7 +575,7 @@ CellChatPlot <- function(
     seurat_object,
     pathway,
     condition,
-    output_dir = NULL,
+    dirpath = NULL,
     output_format = "pdf",
     species,
     base_height = 1,
@@ -614,9 +614,9 @@ CellChatPlot <- function(
     gene_height <- (1 + .5 * length(levels(seurat_object))) * base_height
   }
 
-  if (!is.null(output_dir)) {
+  if (!is.null(dirpath)) {
     gene_filename <- paste0(
-      output_dir, "/", pathway, "_",
+      dirpath, "/", pathway, "_",
       condition, "_signaling_gene.", output_format
     )
     .create_output_device(
@@ -627,7 +627,7 @@ CellChatPlot <- function(
       res = res
     )
     print(p2)
-    dev.off()
+    grDevices::dev.off()
   }
   return(p2)
 }

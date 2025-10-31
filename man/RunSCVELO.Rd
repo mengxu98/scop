@@ -53,7 +53,8 @@ RunSCVELO(
   dpi = 300,
   dirpath = "./",
   fileprefix = "",
-  return_seurat = !is.null(srt)
+  return_seurat = !is.null(srt),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -158,6 +159,9 @@ Each cell in the grid can have, at most, one traversing streamline.}
 \item{fileprefix}{The file prefix to use for the plots.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
