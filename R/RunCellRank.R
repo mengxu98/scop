@@ -33,7 +33,8 @@ RunCellRank <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
+    return_seurat = !is.null(srt),
+    verbose = TRUE) {
   check_python("cellrank")
   if (isTRUE(magic_impute)) {
     check_python("magic-impute")
@@ -129,12 +130,12 @@ RunCellRank <- function(
   )
 
   log_message("Running {.pkg CellRank} analysis...")
-  scop_analysis <- reticulate::import_from_path(
-    "scop_analysis",
+  functions <- reticulate::import_from_path(
+    "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  adata <- do.call(scop_analysis$CellRank, args)
+  adata <- do.call(functions$CellRank, args)
   log_message(
     "{.pkg CellRank} analysis completed",
     message_type = "success"

@@ -22,6 +22,7 @@
 #' Default is `FALSE`.
 #' @param version A character vector specifying the version of the environment.
 #' Default is `"3.10-1"`.
+#'
 #' @export
 PrepareEnv <- function(
     conda = "auto",
@@ -470,7 +471,7 @@ exist_python_pkgs <- function(
   }
 
   log_message(
-    "Checking {.val {length(packages)}} packages in environment: {.file {envname}}"
+    "Checking {.val {length(packages)}} package{?s} in environment: {.file {envname}}"
   )
 
   all_installed <- tryCatch(

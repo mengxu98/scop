@@ -9,7 +9,7 @@ CellChatPlot(
   plot_type = "aggregate",
   condition = NULL,
   pathway = NULL,
-  output_dir = NULL,
+  dirpath = NULL,
   output_format = "pdf",
   top_n = 10,
   base_height = 1,
@@ -30,7 +30,7 @@ Options: \code{"aggregate"}, \code{"pathway"}, \code{"comparison"},
 \item{pathway}{Specific pathway to visualize (for pathway, bubble, and gene plots).
 If \code{NULL}, uses top pathways.}
 
-\item{output_dir}{Directory to save plots.}
+\item{dirpath}{Directory to save plots.}
 
 \item{output_format}{Format of output figure: \code{"png"} or \code{"pdf"}.
 Default: \code{"png"}.}
