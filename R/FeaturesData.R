@@ -55,6 +55,7 @@ GetFeaturesData.Assay5 <- function(
 #' @description
 #' Add features data to the `Assay`, `Assay5` or `Seurat` object.
 #'
+#' @md
 #' @inheritParams GetFeaturesData
 #' @param features Features data to add.
 #' @param ... Additional arguments passed to the method.
