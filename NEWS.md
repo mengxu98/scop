@@ -1,5 +1,18 @@
 # scop
 
+# scop 0.5.3
+
+* **func**:
+  * `PrepareDB()`: Changed default `Ensembl_version` parameter from `103` to `NULL` for more flexible version handling.
+  * Added *Python* version `log_message()` for Python-based functions (`RunSCVELO()`, `RunPAGA()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) and added `verbose` parameter inheritance and improved message formatting using cli-style formatting.
+
+* **refactor**:
+  * Delete `harmonizomeapi.py` file.
+  * Move `scop_analysis.py` into a single `functions.py` file in `inst/python/` for better code organization and maintainability.
+
+* **docs**:
+  * Improved parameter documentation consistency.
+
 # scop 0.5.1
 
 * **docs**:
@@ -21,7 +34,7 @@
   * Enhanced documentation for cell communication analysis functions.
   * Improved error messages and user guidance across integration functions.
 
-* **pack**:
+* **refactor**:
   * Removed some example figures to optimize package installation size.
 
 # scop 0.4.0
