@@ -1,6 +1,7 @@
 #' @title Run Palantir analysis
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @inheritParams RunPAGA
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
@@ -83,7 +84,8 @@ RunPalantir <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
+    return_seurat = !is.null(srt),
+    verbose = TRUE) {
   check_python("palantir")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -183,12 +185,12 @@ RunPalantir <- function(
     palcolor = palcolor
   )
 
-  scop_analysis <- reticulate::import_from_path(
-    "scop_analysis",
+  functions <- reticulate::import_from_path(
+    "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  adata <- do.call(scop_analysis$Palantir, args)
+  adata <- do.call(functions$Palantir, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
