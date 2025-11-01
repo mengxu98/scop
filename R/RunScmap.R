@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' data(panc8_sub)
+#' panc8_sub <- standard_scop(panc8_sub)
 #'
 #' genenames <- make.unique(
 #'   thisutils::capitalize(
@@ -92,7 +93,7 @@ RunScmap <- function(
   }
 
   status_query <- CheckDataType(
-    data = GetAssayData5(
+    object = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay
@@ -100,7 +101,7 @@ RunScmap <- function(
   )
   log_message("Detected srt_query data type: ", status_query)
   status_ref <- CheckDataType(
-    data = GetAssayData5(
+    object = GetAssayData5(
       srt_ref,
       layer = "data",
       assay = ref_assay
@@ -129,11 +130,8 @@ RunScmap <- function(
       layer = "data"
     )
   )
-  sce_query <- methods::as(
-    SummarizedExperiment::SummarizedExperiment(
-      assays = assays_query
-    ),
-    Class = "SingleCellExperiment"
+  sce_query <- SingleCellExperiment::SingleCellExperiment(
+    assays = assays_query
   )
   SummarizedExperiment::rowData(sce_query)[["feature_symbol"]] <- rownames(
     sce_query
@@ -155,11 +153,8 @@ RunScmap <- function(
       layer = "data"
     )
   )
-  sce_ref <- methods::as(
-    SummarizedExperiment::SummarizedExperiment(
-      assays = assays_ref
-    ),
-    Class = "SingleCellExperiment"
+  sce_ref <- SingleCellExperiment::SingleCellExperiment(
+    assays = assays_ref
   )
   SummarizedExperiment::rowData(sce_ref)[["feature_symbol"]] <- rownames(
     sce_ref

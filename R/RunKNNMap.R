@@ -24,6 +24,7 @@
 #'
 #' @examples
 #' data(panc8_sub)
+#' panc8_sub <- standard_scop(panc8_sub)
 #' srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 #' srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 #' srt_ref <- integration_scop(
@@ -181,14 +182,14 @@ RunKNNMap <- function(
   } else {
     log_message("Use the features to calculate distance metric")
     status_query <- CheckDataType(
-      data = GetAssayData5(
+      object = GetAssayData5(
         srt_query,
         layer = "data",
         assay = query_assay
       )
     )
     status_ref <- CheckDataType(
-      data = GetAssayData5(
+      object = GetAssayData5(
         srt_ref,
         layer = "data",
         assay = ref_assay
