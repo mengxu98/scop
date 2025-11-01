@@ -1,5 +1,11 @@
 # scop
 
+# scop 0.5.4
+
+* **bugs**:
+  * Fixed parameter name error in `CheckDataType()` function calls: changed `data` parameter to `object` in `RunKNNMap()`, `RunSymphonyMap()`, `RunScmap()`, `RunPCAMap()`, and `RunSingleR()` functions, see [#68](https://github.com/mengxu98/scop/issues/68).
+  * Fixed `SingleCellExperiment` object creation in `RunScmap()` and `RunSingleR()` functions: changed from coercing `SummarizedExperiment` to directly constructing `SingleCellExperiment` objects.
+
 # scop 0.5.3
 
 * **func**:
