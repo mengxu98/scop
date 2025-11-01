@@ -46,6 +46,7 @@ Annotate single cells using scmap.
 }
 \examples{
 data(panc8_sub)
+panc8_sub <- standard_scop(panc8_sub)
 
 genenames <- make.unique(
   thisutils::capitalize(
