@@ -1,6 +1,7 @@
 #' @title Run WOT analysis
 #'
 #' @md
+#' @inheritParams thisutils::log_message
 #' @inheritParams RunPAGA
 #' @param time_field A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.
 #' @param growth_iters A number of growth iterations to perform during the OT Model computation.
@@ -75,7 +76,8 @@ RunWOT <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
+    return_seurat = !is.null(srt),
+    verbose = TRUE) {
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -157,12 +159,12 @@ RunWOT <- function(
     palcolor = palcolor
   )
 
-  scop_analysis <- reticulate::import_from_path(
-    "scop_analysis",
+  functions <- reticulate::import_from_path(
+    "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  adata <- do.call(scop_analysis$WOT, args)
+  adata <- do.call(functions$WOT, args)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)

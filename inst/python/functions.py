@@ -1,3 +1,543 @@
+"""
+Python implementation of log_message function
+Provides formatted logging with timestamps, colors, and message types
+"""
+
+import sys
+import os
+import re
+import inspect
+from datetime import datetime
+from typing import Optional, List
+
+
+class LogMessage:
+    """Log message formatter with color and style support"""
+
+    # ANSI color codes
+    COLORS = {
+        "black": "\033[30m",
+        "red": "\033[31m",
+        "green": "\033[32m",
+        "yellow": "\033[33m",
+        "blue": "\033[34m",
+        "magenta": "\033[35m",
+        "cyan": "\033[36m",
+        "white": "\033[37m",
+        "grey": "\033[90m",
+        "orange": "\033[38;2;255;165;0m",
+        "br_red": "\033[91m",
+        "br_green": "\033[92m",
+        "br_yellow": "\033[93m",
+        "br_blue": "\033[94m",
+        "br_magenta": "\033[95m",
+        "br_cyan": "\033[96m",
+        "br_white": "\033[97m",
+        "none": "\033[0m",
+    }
+
+    # Background colors
+    BG_COLORS = {
+        "black": "\033[40m",
+        "red": "\033[41m",
+        "green": "\033[42m",
+        "yellow": "\033[43m",
+        "blue": "\033[44m",
+        "magenta": "\033[45m",
+        "cyan": "\033[46m",
+        "white": "\033[47m",
+        "none": "\033[0m",
+    }
+
+    # Text styles
+    STYLES = {
+        "bold": "\033[1m",
+        "dim": "\033[2m",
+        "italic": "\033[3m",
+        "underline": "\033[4m",
+        "strikethrough": "\033[9m",
+        "inverse": "\033[7m",
+    }
+
+    # Message type symbols and colors
+    MESSAGE_TYPES = {
+        "info": {"symbol": "ℹ", "color": "blue"},
+        "success": {"symbol": "✓", "color": "green"},
+        "warning": {"symbol": "!", "color": "yellow"},
+        "error": {"symbol": "✗", "color": "red"},
+        "running": {"symbol": "◌", "color": "orange"},
+    }
+
+    RESET = "\033[0m"
+
+    # Inline format styles (cli-style)
+    INLINE_FORMATS = {
+        ".pkg": {"color": "blue", "style": []},
+        ".code": {"color": "grey", "style": []},
+        ".val": {"color": "blue", "style": []},
+        ".arg": {"color": "none", "style": []},
+        ".fun": {"color": "none", "style": []},
+        ".file": {"color": "blue", "style": []},
+        ".path": {"color": "blue", "style": []},
+        ".field": {"color": "blue", "style": []},
+        ".emph": {"color": "none", "style": ["italic"]},
+        ".strong": {"color": "none", "style": ["bold"]},
+    }
+
+    def __init__(self):
+        self._check_color_support()
+
+    def _check_color_support(self):
+        """Check if colors should be enabled (prefer enabled unless NO_COLOR is set)."""
+        # disable colors (e.g., R's reticulate output), unless explicitly set NO_COLOR
+        self.color_support = os.environ.get("NO_COLOR") is None
+
+    def _hex_to_rgb(self, hex_color: str) -> tuple:
+        """Convert hex color to RGB tuple"""
+        hex_color = hex_color.lstrip("#")
+        if len(hex_color) != 6:
+            raise ValueError(f"Invalid hex color: #{hex_color}")
+        return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+
+    def _rgb_to_ansi(self, rgb: tuple, bg: bool = False) -> str:
+        """Convert RGB to ANSI color code"""
+        r, g, b = rgb
+        if bg:
+            return f"\033[48;2;{r};{g};{b}m"
+        else:
+            return f"\033[38;2;{r};{g};{b}m"
+
+    def _apply_color(self, text: str, color: Optional[str], bg: bool = False) -> str:
+        """Apply color to text"""
+        if not self.color_support or not color:
+            return text
+
+        # Handle hex colors
+        if color.startswith("#"):
+            try:
+                rgb = self._hex_to_rgb(color)
+                ansi_color = self._rgb_to_ansi(rgb, bg)
+                return f"{ansi_color}{text}{self.RESET}"
+            except ValueError:
+                return text
+
+        # Handle named colors
+        color_map = self.BG_COLORS if bg else self.COLORS
+        if color in color_map:
+            return f"{color_map[color]}{text}{self.RESET}"
+
+        return text
+
+    def _apply_style(self, text: str, styles: Optional[List[str]]) -> str:
+        """Apply text styles"""
+        if not self.color_support or not styles:
+            return text
+
+        style_codes = []
+        for style in styles:
+            if style in self.STYLES:
+                style_codes.append(self.STYLES[style])
+
+        if style_codes:
+            return f"{''.join(style_codes)}{text}{self.RESET}"
+
+        return text
+
+    def _get_indent(self, level: int, symbol: str) -> str:
+        """Generate indentation string"""
+        if symbol != "  ":
+            return symbol * level + " "
+        elif level > 1:
+            return "  " * (level - 1)
+        else:
+            return ""
+
+    def _format_message(
+        self,
+        message: str,
+        message_type: str = "info",
+        timestamp: bool = True,
+        timestamp_format: str = "%Y-%m-%d %H:%M:%S",
+        level: int = 1,
+        symbol: str = "  ",
+        text_color: Optional[str] = None,
+        back_color: Optional[str] = None,
+        text_style: Optional[List[str]] = None,
+        multiline_indent: bool = False,
+        timestamp_style: bool = True,
+    ) -> str:
+        """Format the complete message"""
+
+        # Get message type info
+        msg_info = self.MESSAGE_TYPES.get(message_type, self.MESSAGE_TYPES["info"])
+        msg_symbol = msg_info["symbol"]
+        msg_color = msg_info["color"]
+
+        # Build timestamp
+        timestamp_str = ""
+        if timestamp:
+            timestamp_str = f"[{datetime.now().strftime(timestamp_format)}] "
+
+        # Build indentation
+        indent = self._get_indent(level, symbol)
+
+        # Prepare message-type symbol (with color)
+        symbol_colored = (
+            self._apply_color(msg_symbol, msg_color)
+            if self.color_support
+            else msg_symbol
+        )
+        symbol_part = f"{symbol_colored} "
+
+        # Handle multiline messages
+        if "\n" in message:
+            lines = message.split("\n")
+            formatted_lines = []
+
+            for i, line in enumerate(lines):
+                if i == 0 or multiline_indent:
+                    # First line or multiline_indent=True: full formatting (symbol before timestamp)
+                    prefix = symbol_part + timestamp_str + indent
+                else:
+                    # Subsequent lines: alignment spaces + indent
+                    alignment_spaces = (
+                        (" " * (len(symbol_part) + len(timestamp_str)))
+                        if timestamp
+                        else (" " * len(symbol_part))
+                    )
+                    prefix = alignment_spaces + indent
+
+                # Apply formatting to line
+                formatted_line = self._apply_formatting(
+                    line, text_color, back_color, text_style, timestamp_style, prefix
+                )
+                formatted_lines.append(formatted_line)
+
+            return "\n".join(formatted_lines)
+
+        # Single line message (symbol before timestamp)
+        prefix = symbol_part + timestamp_str + indent
+
+        # Apply formatting
+        formatted_msg = self._apply_formatting(
+            message, text_color, back_color, text_style, timestamp_style, prefix
+        )
+
+        # Already added colored symbol in prefix
+        return formatted_msg
+
+    def _apply_formatting(
+        self,
+        text: str,
+        text_color: Optional[str],
+        back_color: Optional[str],
+        text_style: Optional[List[str]],
+        timestamp_style: bool,
+        prefix: str,
+    ) -> str:
+        """Apply all formatting to text"""
+
+        # Apply styles first
+        if text_style:
+            text = self._apply_style(text, text_style)
+
+        # Apply text color
+        if text_color:
+            text = self._apply_color(text, text_color)
+
+        # Apply background color
+        if back_color:
+            text = self._apply_color(text, back_color, bg=True)
+
+        return prefix + text
+
+    def _parse_inline_expressions(self, message: str, caller_frame=None) -> str:
+        """
+        Parse inline expressions with cli-style formatting
+
+        Supports:
+        - {.pkg package_name} / {pkg package_name}
+        - {.pkg {variable}} / {pkg {variable}}
+        - {.code some_code} / {code some_code}
+        - {.val {expression}} / {val {expression}}
+        - {expression}  # bare expression evaluation, no formatting
+        etc.
+        """
+        max_iterations = 15
+        iteration = 0
+
+        allowed_tags = set(t.lstrip(".") for t in self.INLINE_FORMATS.keys())
+
+        def eval_expression(expr: str) -> str:
+            expr = expr.strip()
+            if not expr:
+                return ""
+            if caller_frame is None:
+                return expr
+            try:
+                value = eval(expr, caller_frame.f_globals, caller_frame.f_locals)
+                return str(value)
+            except Exception:
+                return expr
+
+        while iteration < max_iterations:
+            iteration += 1
+
+            # 1) first parse the inline format: {.tag content} or {tag content}
+            # content can be non-curly brace text or single layer {expr}
+            format_match = re.search(
+                r"\{\.?([A-Za-z_][A-Za-z0-9_]*)\s+(\{[^{}]*\}|[^{}]+)\}", message
+            )
+
+            if format_match:
+                tag = format_match.group(1)
+                content = format_match.group(2)
+
+                # only process allowed tags
+                if tag in allowed_tags:
+                    if content.startswith("{") and content.endswith("}"):
+                        evaluated = eval_expression(content[1:-1])
+                    else:
+                        evaluated = content
+
+                    formatted = self._apply_inline_format(evaluated, f".{tag}")
+                    message = (
+                        message[: format_match.start()]
+                        + formatted
+                        + message[format_match.end() :]
+                    )
+                    # continue to next iteration
+                    continue
+                else:
+                    # non-supported tag, skip to bare expression stage
+                    pass
+
+            # 2) then parse the bare expression: {expr} (not starting with .tag or tag)
+            # to avoid conflict with format syntax, here exclude {.xxx ...} and {xxx ...}
+            bare_match = re.search(r"\{([^{}]+)\}", message)
+            if bare_match:
+                inner = bare_match.group(1).strip()
+                # if it looks like a format prefix (.tag or tag followed by space), skip this iteration
+                if re.match(r"^\.?[A-Za-z_][A-Za-z0-9_]*\s+", inner):
+                    # no bare expression to process, end loop
+                    break
+                evaluated = eval_expression(inner)
+                message = (
+                    message[: bare_match.start()]
+                    + evaluated
+                    + message[bare_match.end() :]
+                )
+                continue
+
+            # no content to parse, end loop
+            break
+
+        return message
+
+    def _apply_inline_format(self, text: str, format_type: str) -> str:
+        """Apply formatting to inline content"""
+        if format_type not in self.INLINE_FORMATS:
+            return text
+
+        fmt = self.INLINE_FORMATS[format_type]
+
+        # apply color
+        if fmt["color"] and fmt["color"] != "none":
+            text = self._apply_color(text, fmt["color"])
+
+        # apply style
+        if fmt["style"]:
+            text = self._apply_style(text, fmt["style"])
+
+        return text
+
+    def _format_traceback(self, depth: int = 1, skip_frames: int = 3) -> str:
+        """
+        Format traceback information for error messages
+
+        Parameters:
+        - depth: number of stack frames to show
+        - skip_frames: number of internal frames to skip
+
+        Returns:
+        - formatted stack information string
+        """
+        stack = inspect.stack()
+
+        # skip log_message internal call frames
+        # skip_frames: _format_traceback, log_message, _format_message, etc.
+        start_idx = skip_frames
+        end_idx = min(start_idx + depth, len(stack))
+
+        lines = []
+        for i in range(start_idx, end_idx):
+            frame_info = stack[i]
+            # format file location information
+            location = f'  File "{os.path.basename(frame_info.filename)}", line {frame_info.lineno}, in {frame_info.function}'
+            lines.append(location)
+
+            # show code line if available
+            if frame_info.code_context:
+                code_line = frame_info.code_context[0].strip()
+                lines.append(f"    {code_line}")
+
+        return "\n".join(lines) if lines else ""
+
+
+# Global instance
+_logger = LogMessage()
+
+
+def log_message(
+    *args,
+    verbose: bool = True,
+    message_type: str = "info",
+    timestamp: bool = True,
+    timestamp_format: str = "%Y-%m-%d %H:%M:%S",
+    level: int = 1,
+    symbol: str = "  ",
+    text_color: Optional[str] = None,
+    back_color: Optional[str] = None,
+    text_style: Optional[List[str]] = None,
+    multiline_indent: bool = False,
+    timestamp_style: bool = True,
+    show_traceback: bool = True,
+    traceback_depth: int = 1,
+) -> None:
+    """
+    Print formatted message with timestamp, colors, styling, and inline expressions
+
+    Parameters:
+    -----------
+    *args : str
+        Message parts to concatenate. Supports cli-style inline expressions:
+        - {.pkg package_name} - Package names (cyan + bold)
+        - {.code code_snippet} - Code snippets (grey)
+        - {.val variable_name} - Variable values (blue)
+        - {.arg parameter_name} - Function parameters (green)
+        - {.fun function_name} - Function names (magenta)
+        - {.file file_path} - File paths (underline)
+        - {.path directory_path} - Directory paths (underline)
+        - {.field field_name} - Object fields (cyan)
+        - {.emph text} - Emphasized text (italic)
+        - {.strong text} - Strong text (bold)
+
+        Expressions can be nested: {.pkg {package_name}}
+    verbose : bool, default True
+        Whether to print the message
+    message_type : str, default "info"
+        Type of message: "info", "success", "warning", "error", "running"
+    timestamp : bool, default True
+        Whether to show timestamp
+    timestamp_format : str, default "%Y-%m-%d %H:%M:%S"
+        Timestamp format string
+    level : int, default 1
+        Indentation level
+    symbol : str, default "  "
+        Symbol used for indentation
+    text_color : str, optional
+        Text color (named color or hex code)
+    back_color : str, optional
+        Background color (named color or hex code)
+    text_style : list, optional
+        Text styles: ["bold", "italic", "underline", "dim", "strikethrough", "inverse"]
+    multiline_indent : bool, default False
+        Whether to apply formatting to each line in multiline messages
+    timestamp_style : bool, default True
+        Whether to apply styling to timestamp
+    show_traceback : bool, default True
+        Whether to show traceback for error messages
+    traceback_depth : int, default 1
+        Number of stack frames to show in traceback
+
+    Returns:
+    --------
+    None
+    """
+
+    if not verbose:
+        return
+
+    # Validate message_type
+    valid_types = ["info", "success", "warning", "error", "running"]
+    if message_type not in valid_types:
+        message_type = "info"
+
+    # Get caller frame for inline expression evaluation and traceback
+    # Need to handle both direct calls and calls through convenience functions
+    current_frame = inspect.currentframe()
+    caller_frame = current_frame.f_back
+
+    # If called through convenience function (log_info, log_error, etc.), skip one more frame
+    if caller_frame and caller_frame.f_code.co_name in [
+        "log_info",
+        "log_success",
+        "log_warning",
+        "log_error",
+        "log_running",
+    ]:
+        caller_frame = caller_frame.f_back
+
+    # Build message from args
+    if not args:
+        message = ""
+    else:
+        message = "".join(str(arg) for arg in args)
+
+    # Parse inline expressions
+    message = _logger._parse_inline_expressions(message, caller_frame)
+
+    # Format and print message
+    formatted_message = _logger._format_message(
+        message=message,
+        message_type=message_type,
+        timestamp=timestamp,
+        timestamp_format=timestamp_format,
+        level=level,
+        symbol=symbol,
+        text_color=text_color,
+        back_color=back_color,
+        text_style=text_style,
+        multiline_indent=multiline_indent,
+        timestamp_style=timestamp_style,
+    )
+
+    # Add traceback for error messages
+    if message_type == "error" and show_traceback:
+        traceback_info = _logger._format_traceback(depth=traceback_depth)
+        if traceback_info:
+            formatted_message += "\n" + traceback_info
+
+    print(formatted_message)
+
+
+# Convenience functions for common message types
+def log_info(*args, **kwargs):
+    """Log info message"""
+    log_message(*args, message_type="info", **kwargs)
+
+
+def log_success(*args, **kwargs):
+    """Log success message"""
+    log_message(*args, message_type="success", **kwargs)
+
+
+def log_warning(*args, **kwargs):
+    """Log warning message"""
+    log_message(*args, message_type="warning", **kwargs)
+
+
+def log_error(*args, **kwargs):
+    """Log error message"""
+    log_message(*args, message_type="error", **kwargs)
+
+
+def log_running(*args, **kwargs):
+    """Log running message"""
+    log_message(*args, message_type="running", **kwargs)
+
+
+# SCVELO analysis function
 def SCVELO(
     adata=None,
     h5ad=None,
@@ -42,6 +582,7 @@ def SCVELO(
     dpi=300,
     dirpath="./",
     fileprefix="",
+    verbose=True,
 ):
     # Configure OpenMP settings to prevent conflicts
     import os
@@ -57,21 +598,30 @@ def SCVELO(
 
     # Check if running on M-series MacBook
     is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
-    
+
     if is_m_series:
-        print("M-series MacBook detected: Applying M-series specific configurations")
+        log_message(
+            "M-series MacBook detected: Applying M-series specific configurations",
+            message_type="info",
+            verbose=verbose,
+        )
         # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
-        
+
         # Configure NUMBA for M-series
         import numba
+
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)         # Force single thread
-        print("NUMBA configured for M-series MacBook")
+        numba.set_num_threads(1)  # Force single thread
+        log_message(
+            "NUMBA configured for M-series MacBook",
+            message_type="success",
+            verbose=verbose,
+        )
 
     import matplotlib
 
@@ -91,20 +641,23 @@ def SCVELO(
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
 
+    log_message(
+        "Starting {.pkg scVelo} analysis...", message_type="running", verbose=verbose
+    )
     try:
         # Input validation
         if adata is None and h5ad is None:
-            raise ValueError("Either 'adata' or 'h5ad' must be provided.")
+            raise ValueError("Either {.arg adata} or {.arg h5ad} must be provided")
 
         if adata is None:
             adata = scv.read(h5ad)
 
         if group_by is None:
-            raise ValueError("'group_by' must be provided.")
+            raise ValueError("{.arg group_by} must be provided")
 
         if linear_reduction is None and nonlinear_reduction is None:
             raise ValueError(
-                "At least one of 'linear_reduction' or 'nonlinear_reduction' must be provided."
+                "At least one of {.arg linear_reduction} or {.arg nonlinear_reduction} must be provided"
             )
 
         # Setup basis
@@ -116,8 +669,10 @@ def SCVELO(
                 elif f"X_{nonlinear_reduction}" in adata.obsm:
                     basis = f"X_{nonlinear_reduction}"
                 else:
-                    print(
-                        f"Warning: {nonlinear_reduction} not found in adata.obsm. Available keys: {list(adata.obsm.keys())}"
+                    log_message(
+                        "{.val {nonlinear_reduction}} not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
+                        message_type="warning",
+                        verbose=verbose,
                     )
                     basis = (
                         linear_reduction
@@ -133,16 +688,26 @@ def SCVELO(
 
         # Ensure the basis exists in obsm
         if basis not in adata.obsm:
-            print(
-                f"Warning: basis '{basis}' not found in adata.obsm. Available keys: {list(adata.obsm.keys())}"
+            log_message(
+                "basis '{.val {basis}}' not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
+                message_type="warning",
+                verbose=verbose,
             )
             # Try to find alternative basis
             if linear_reduction in adata.obsm:
                 basis = linear_reduction
-                print(f"Using {linear_reduction} as basis instead.")
+                log_message(
+                    "Using {.val {linear_reduction}} as basis instead",
+                    message_type="info",
+                    verbose=verbose,
+                )
             elif f"X_{linear_reduction}" in adata.obsm:
                 basis = f"X_{linear_reduction}"
-                print(f"Using X_{linear_reduction} as basis instead.")
+                log_message(
+                    "Using {.val {linear_reduction}} as basis instead",
+                    message_type="info",
+                    verbose=verbose,
+                )
             else:
                 # Create a 2D basis from linear reduction
                 if linear_reduction in adata.obsm:
@@ -153,36 +718,44 @@ def SCVELO(
                     basis = "basis"
                 else:
                     raise ValueError(
-                        f"Cannot find suitable basis. Available obsm keys: {list(adata.obsm.keys())}"
+                        "Cannot find suitable basis. Available obsm keys: {.val {list(adata.obsm.keys())}}"
                     )
 
-        print(f"Using basis: {basis}")
-        print(f"Available embeddings in adata.obsm: {list(adata.obsm.keys())}")
+        log_message("Using basis: {.val {basis}}", message_type="info", verbose=verbose)
+        log_message(
+            "Available embeddings in adata.obsm: {.val {list(adata.obsm.keys())}}",
+            message_type="info",
+            verbose=verbose,
+        )
 
         # Ensure group_by is categorical
         adata.obs[group_by] = adata.obs[group_by].astype("category")
 
-        # === PREPROCESSING PHASE ===
-        print("=== Starting preprocessing ===")
+        # PREPROCESSING PHASE
+        log_message("Starting preprocessing", message_type="running", verbose=verbose)
 
         # 1. Gene filtering (optional)
         if filter_genes:
-            print("Filtering genes...")
+            log_message("Filtering genes...", message_type="info", verbose=verbose)
             scv.pp.filter_genes(adata, min_counts=min_counts)
             scv.pp.filter_genes(adata, min_counts_u=min_counts_u)
 
         # 2. Normalization and transformation
         if normalize_per_cell:
-            print("Normalizing per cell...")
+            log_message("Normalizing per cell...", message_type="info", verbose=verbose)
             scv.pp.normalize_per_cell(adata)
 
         if log_transform:
-            print("Log transforming...")
+            log_message("Log transforming...", message_type="info", verbose=verbose)
             sc.pp.log1p(adata)
 
         # 3. Magic imputation (if requested)
         if magic_impute:
-            print("Performing MAGIC imputation...")
+            log_message(
+                "Performing {.pkg magic-impute} imputation...",
+                message_type="info",
+                verbose=verbose,
+            )
             try:
                 import magic
 
@@ -196,11 +769,19 @@ def SCVELO(
                     adata.layers["unspliced"]
                 )
             except ImportError:
-                print("Warning: magic-impute not installed. Skipping imputation.")
+                log_message(
+                    "{.pkg magic-impute} not installed. Skipping imputation",
+                    message_type="warning",
+                    verbose=verbose,
+                )
 
         # 4. Compute neighbors and moments with version compatibility
-        print("Computing neighbors and moments...")
-        
+        log_message(
+            "Computing {.pkg scvelo} neighbors and moments...",
+            message_type="info",
+            verbose=verbose,
+        )
+
         # Find the best representation for neighbors computation
         # Priority: PCA > other linear reductions > fallback to raw data
         use_rep = None
@@ -208,54 +789,88 @@ def SCVELO(
             rep_dims = adata.obsm[linear_reduction].shape[1]
             if rep_dims >= n_pcs:
                 use_rep = linear_reduction
-                print(f"Using {linear_reduction} with {rep_dims} dimensions")
+                log_message(
+                    "Using {.val {linear_reduction}} with {.val {rep_dims}} dimensions",
+                    message_type="info",
+                    verbose=verbose,
+                )
             else:
-                print(f"Warning: {linear_reduction} has only {rep_dims} dimensions, need {n_pcs}")
+                log_message(
+                    "{.val {linear_reduction}} has only {.val {rep_dims}} dimensions, need {.val {n_pcs}}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
         elif f"X_{linear_reduction}" in adata.obsm:
             rep_dims = adata.obsm[f"X_{linear_reduction}"].shape[1]
             if rep_dims >= n_pcs:
                 use_rep = f"X_{linear_reduction}"
-                print(f"Using X_{linear_reduction} with {rep_dims} dimensions")
+                log_message(
+                    "Using {.val {linear_reduction}} with {.val {rep_dims}} dimensions",
+                    message_type="info",
+                    verbose=verbose,
+                )
             else:
-                print(f"Warning: X_{linear_reduction} has only {rep_dims} dimensions, need {n_pcs}")
-        
+                log_message(
+                    "{.val {linear_reduction}} has only {.val {rep_dims}} dimensions, need {.val {n_pcs}}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
         # Try to find a suitable PCA representation
         if use_rep is None:
-            pca_candidates = [key for key in adata.obsm.keys() if 'pca' in key.lower() and 'umap' not in key.lower()]
+            pca_candidates = [
+                key
+                for key in adata.obsm.keys()
+                if "pca" in key.lower() and "umap" not in key.lower()
+            ]
             for candidate in pca_candidates:
                 rep_dims = adata.obsm[candidate].shape[1]
                 if rep_dims >= n_pcs:
                     use_rep = candidate
-                    print(f"Using PCA representation {candidate} with {rep_dims} dimensions")
+                    log_message(
+                        "Using PCA representation {.val {candidate}} with {.val {rep_dims}} dimensions",
+                        message_type="info",
+                        verbose=verbose,
+                    )
                     break
-        
+
         # If still no suitable representation, reduce n_pcs to available dimensions
         if use_rep is None:
             # Find the representation with the most dimensions
             max_dims = 0
             for key in adata.obsm.keys():
-                if 'pca' in key.lower() and 'umap' not in key.lower():
+                if "pca" in key.lower() and "umap" not in key.lower():
                     dims = adata.obsm[key].shape[1]
                     if dims > max_dims:
                         max_dims = dims
                         use_rep = key
-            
+
             if use_rep and max_dims > 0:
                 n_pcs = min(n_pcs, max_dims)
-                print(f"Reducing n_pcs to {n_pcs} to match available dimensions in {use_rep}")
+                log_message(
+                    "Reducing n_pcs to {.val {n_pcs}} to match available dimensions in {.val {use_rep}}",
+                    message_type="info",
+                    verbose=verbose,
+                )
             else:
                 # Fallback to raw data
                 use_rep = None
                 n_pcs = min(n_pcs, adata.X.shape[1])
-                print(f"Using raw data with n_pcs={n_pcs}")
-        
+                log_message(
+                    "Using raw data with n_pcs={.val {n_pcs}}",
+                    message_type="info",
+                    verbose=verbose,
+                )
+
         try:
             # Method 1: Try using scVelo's workflow
-            scv.pp.moments(
-                adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep
-            )
+            scv.pp.moments(adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep)
         except Exception as e:
-            print(f"Warning: scVelo moments failed ({e}), using manual computation...")
+            log_message(
+                "{.pkg scvelo} moments failed ({.val {e}}), using manual computation...",
+                message_type="warning",
+                verbose=verbose,
+            )
             # Method 2: Manual computation for compatibility
             sc.pp.neighbors(
                 adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep
@@ -273,16 +888,24 @@ def SCVELO(
             adata.layers["Ms"] = Ms
             adata.layers["Mu"] = Mu
 
-        # === VELOCITY ESTIMATION PHASE ===
-        print("=== Starting velocity estimation ===")
+        # VELOCITY ESTIMATION PHASE
+        log_message(
+            "Starting {.pkg velocity} estimation",
+            message_type="running",
+            verbose=verbose,
+        )
 
         # Process each mode
         for m in mode:
-            print(f"Processing mode: {m}")
+            log_message(f"Processing mode: {m}", message_type="info", verbose=verbose)
 
             if m == "dynamical":
                 # Dynamical modeling
-                print("Performing dynamical modeling...")
+                log_message(
+                    "Performing {.pkg velocity} dynamical modeling...",
+                    message_type="info",
+                    verbose=verbose,
+                )
                 gene_subset = (
                     adata.var[fitting_by + "_genes"]
                     if (fitting_by + "_genes") in adata.var.columns
@@ -297,34 +920,58 @@ def SCVELO(
                         n_jobs=n_jobs,
                     )
                 else:
-                    print(
-                        "Warning: No genes found for dynamical modeling. Using all genes."
+                    log_message(
+                        "No genes found for dynamical modeling. Using all genes",
+                        message_type="warning",
+                        verbose=verbose,
                     )
                     scv.tl.recover_dynamics(adata, use_raw=use_raw, n_jobs=n_jobs)
 
             # Compute velocity
-            print(f"Computing {m} velocity...")
+            log_message(
+                "Computing {.pkg velocity} {.val {m}} velocity...",
+                message_type="info",
+                verbose=verbose,
+            )
             scv.tl.velocity(adata, mode=m, diff_kinetics=diff_kinetics)
 
             # Compute velocity graph
-            print(f"Computing {m} velocity graph...")
+            log_message(
+                "Computing {.pkg velocity} {.val {m}} graph...",
+                message_type="info",
+                verbose=verbose,
+            )
             scv.tl.velocity_graph(adata, vkey=m, n_neighbors=n_neighbors, n_jobs=n_jobs)
 
-            # === DOWNSTREAM ANALYSIS ===
-            print(f"=== Downstream analysis for {m} ===")
+            # DOWNSTREAM ANALYSIS
+            log_message(
+                "Downstream analysis for {.pkg velocity} {.val {m}}",
+                message_type="running",
+                verbose=verbose,
+            )
 
             # Velocity embedding
-            print("Computing velocity embedding...")
+            log_message(
+                "Computing {.pkg velocity} embedding...",
+                message_type="info",
+                verbose=verbose,
+            )
             scv.tl.velocity_embedding(adata, basis=basis, vkey=m)
 
             # Velocity confidence (with error handling)
             if compute_velocity_confidence:
-                print("Computing velocity confidence...")
+                log_message(
+                    "Computing {.pkg velocity} confidence...",
+                    message_type="info",
+                    verbose=verbose,
+                )
                 try:
                     scv.tl.velocity_confidence(adata, vkey=m)
                 except Exception as e:
-                    print(
-                        f"Warning: velocity confidence failed ({e}), using default values..."
+                    log_message(
+                        "velocity confidence failed ({.val {e}}), using default values",
+                        message_type="warning",
+                        verbose=verbose,
                     )
                     n_obs = adata.n_obs
                     adata.obs[m + "_length"] = np.ones(n_obs) * 0.5
@@ -332,7 +979,9 @@ def SCVELO(
 
             # Terminal states
             if compute_terminal_states:
-                print("Computing terminal states...")
+                log_message(
+                    "Computing terminal states...", message_type="info", verbose=verbose
+                )
                 try:
                     scv.tl.terminal_states(adata, vkey=m)
                     # Rename for consistency
@@ -341,11 +990,19 @@ def SCVELO(
                             adata.obs[m + "_" + term] = adata.obs[term]
                             adata.obs.drop(term, axis=1, inplace=True)
                 except Exception as e:
-                    print(f"Warning: terminal states computation failed: {e}")
+                    log_message(
+                        "Terminal states computation failed: {.val {e}}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
             # Pseudotime
             if compute_pseudotime:
-                print("Computing velocity pseudotime...")
+                log_message(
+                    "Computing {.pkg velocity} pseudotime...",
+                    message_type="info",
+                    verbose=verbose,
+                )
                 try:
                     root_key = (
                         m + "_root_cells"
@@ -361,11 +1018,15 @@ def SCVELO(
                         adata, vkey=m, root_key=root_key, end_key=end_key
                     )
                 except Exception as e:
-                    print(f"Warning: pseudotime computation failed: {e}")
+                    log_message(
+                        "Pseudotime computation failed: {.val {e}}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
             # PAGA
             if compute_paga:
-                print("Computing PAGA...")
+                log_message("Computing PAGA...", message_type="info", verbose=verbose)
                 try:
                     # Ensure neighbors info is available
                     if "neighbors" not in adata.uns:
@@ -393,11 +1054,19 @@ def SCVELO(
                         end_key=end_key,
                     )
                 except Exception as e:
-                    print(f"Warning: PAGA computation failed: {e}")
+                    log_message(
+                        "PAGA computation failed ({.val {e}})",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
             # Velocity genes ranking
             if calculate_velocity_genes:
-                print("Ranking velocity genes...")
+                log_message(
+                    "Ranking {.pkg velocity} genes...",
+                    message_type="info",
+                    verbose=verbose,
+                )
                 try:
                     if m != "dynamical":
                         scv.tl.rank_velocity_genes(adata, vkey=m, groupby=group_by)
@@ -406,11 +1075,19 @@ def SCVELO(
                     else:
                         scv.tl.rank_dynamical_genes(adata, groupby=group_by)
                 except Exception as e:
-                    print(f"Warning: velocity genes ranking failed: {e}")
+                    log_message(
+                        "velocity genes ranking failed ({.val {e}})",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
-            # === VISUALIZATION ===
+            # VISUALIZATION
             if show_plot:
-                print(f"Generating plots for {m}...")
+                log_message(
+                    "Generating plots for {.pkg {m}}...",
+                    message_type="info",
+                    verbose=verbose,
+                )
 
                 # Setup palette
                 groups = (
@@ -439,7 +1116,11 @@ def SCVELO(
                         show=show_plot,
                     )
                 except Exception as e:
-                    print(f"Warning: stream plot failed: {e}")
+                    log_message(
+                        "stream plot failed ({.val {e}})",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
                 # Velocity arrow plot
                 try:
@@ -458,7 +1139,11 @@ def SCVELO(
                         show=show_plot,
                     )
                 except Exception as e:
-                    print(f"Warning: arrow plot failed: {e}")
+                    log_message(
+                        "arrow plot failed ({.val {e}})",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
 
                 # Confidence plots
                 if compute_velocity_confidence:
@@ -478,12 +1163,22 @@ def SCVELO(
                                     show=show_plot,
                                 )
                             except Exception as e:
-                                print(f"Warning: {metric} plot failed: {e}")
+                                log_message(
+                                    "{.pkg {metric}} plot failed ({.val {e}})",
+                                    message_type="warning",
+                                    verbose=verbose,
+                                )
 
-        print("=== scVelo analysis completed ===")
+        log_message(
+            "{.pkg scVelo} analysis completed", message_type="success", verbose=verbose
+        )
 
     except Exception as e:
-        print(f"Error in SCVELO analysis: {e}")
+        log_message(
+            "Error in {.pkg scVelo} analysis: {.val {e}}",
+            message_type="error",
+            verbose=verbose,
+        )
         raise
     finally:
         os.chdir(prevdir)
@@ -529,6 +1224,7 @@ def CellRank(
     save=False,
     dirpath="./",
     fileprefix="",
+    verbose=True,
 ):
     # Configure OpenMP settings to prevent conflicts
     import os
@@ -544,21 +1240,26 @@ def CellRank(
 
     # Check if running on M-series MacBook
     is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
-    
+
     if is_m_series:
-        print("M-series MacBook detected: Applying M-series specific configurations")
+        log_message(
+            "M-series MacBook detected: Applying M-series specific configurations",
+            message_type="info",
+            verbose=verbose,
+        )
         # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
-        
+
         # Configure NUMBA for M-series
         import numba
+
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)         # Force single thread
-        print("NUMBA configured for M-series MacBook")
+        numba.set_num_threads(1)  # Force single thread
+        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
 
     import matplotlib.pyplot as plt
     import scvelo as scv
@@ -589,7 +1290,7 @@ def CellRank(
 
     try:
         if adata is None and h5ad is None:
-            print("adata or h5ad must be provided.")
+            log_message("adata or h5ad must be provided.", message_type="error")
             exit()
 
         if adata is None:
@@ -597,12 +1298,13 @@ def CellRank(
         # del adata.uns
 
         if group_by is None:
-            print("group_by must be provided.")
+            log_message("group_by must be provided.", message_type="error")
             exit()
 
         if linear_reduction is None and nonlinear_reduction is None:
-            print(
-                "linear_reduction or nonlinear_reduction must be provided at least one."
+            log_message(
+                "linear_reduction or nonlinear_reduction must be provided at least one.",
+                message_type="error",
             )
             exit()
 
@@ -626,12 +1328,16 @@ def CellRank(
             mode.sort(key="dynamical".__eq__)
 
         if not fitting_by in ["deterministic", "stochastic"]:
-            print("'fitting_by' must be one of 'deterministic' and 'stochastic'.")
+            log_message(
+                "'fitting_by' must be one of 'deterministic' and 'stochastic'.",
+                message_type="error",
+            )
             exit()
 
         if not all([m in ["deterministic", "stochastic", "dynamical"] for m in mode]):
-            print(
-                "Invalid mode name! Must be the 'deterministic', 'stochastic' or 'dynamical'."
+            log_message(
+                "Invalid mode name! Must be the 'deterministic', 'stochastic' or 'dynamical'.",
+                message_type="error",
             )
             exit()
 
@@ -678,15 +1384,25 @@ def CellRank(
 
         # Check if dynamical mode was used, if not, run recover_dynamics for latent time
         if "dynamical" not in mode:
-            print("Running recover_dynamics for latent time computation...")
+            log_message(
+                "Running recover_dynamics for latent time computation...",
+                message_type="info",
+                verbose=verbose,
+            )
             try:
                 scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
             except Exception as e:
-                print(f"Warning: recover_dynamics failed ({e}), skipping latent time computation...")
+                log_message(
+                    f"recover_dynamics failed ({e}), skipping latent time computation...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
                 pass
             else:
                 scv.tl.recover_latent_time(
-                    adata, root_key="initial_states_probs", end_key="terminal_states_probs"
+                    adata,
+                    root_key="initial_states_probs",
+                    end_key="terminal_states_probs",
                 )
         else:
             scv.tl.recover_latent_time(
@@ -761,6 +1477,7 @@ def PAGA(
     save=False,
     dirpath="./",
     fileprefix="",
+    verbose=True,
 ):
     # Configure OpenMP settings to prevent conflicts
     import os
@@ -775,7 +1492,7 @@ def PAGA(
     os.environ["NUMEXPR_NUM_THREADS"] = "1"
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-    
+
     # Additional M-series specific configurations
     is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
     if is_m_series:
@@ -796,42 +1513,44 @@ def PAGA(
     # Import with error handling
     try:
         import matplotlib
+
         matplotlib.use("Agg")  # Use non-interactive backend
         import matplotlib.pyplot as plt
-        
+
         # Configure matplotlib for M-series
         if is_m_series:
-            plt.rcParams['figure.max_open_warning'] = 0
-            plt.rcParams['figure.dpi'] = 50  # Very low DPI for M-series
-            plt.rcParams['savefig.dpi'] = 50
-            plt.rcParams['figure.figsize'] = (4, 4)  # Small figures
-            plt.rcParams['axes.linewidth'] = 0.5
-            plt.rcParams['lines.linewidth'] = 0.5
-            plt.rcParams['font.size'] = 8
+            plt.rcParams["figure.max_open_warning"] = 0
+            plt.rcParams["figure.dpi"] = 50  # Very low DPI for M-series
+            plt.rcParams["savefig.dpi"] = 50
+            plt.rcParams["figure.figsize"] = (4, 4)  # Small figures
+            plt.rcParams["axes.linewidth"] = 0.5
+            plt.rcParams["lines.linewidth"] = 0.5
+            plt.rcParams["font.size"] = 8
     except Exception as e:
-        print(f"Warning: matplotlib setup failed: {e}")
+        log_message(f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose)
         plt = None
 
     # Set NUMBA threads before importing scanpy
     if is_m_series:
         try:
             import numba
+
             # Completely disable JIT compilation for M-series
             numba.config.DISABLE_JIT = True
             numba.set_num_threads(1)
         except:
             pass
-    
+
     try:
         import scanpy as sc
     except Exception as e:
-        print(f"Error: scanpy import failed: {e}")
+        log_message(f"scanpy import failed: {e}", message_type="error")
         raise
 
     try:
         import numpy as np
     except Exception as e:
-        print(f"Error: numpy import failed: {e}")
+        log_message(f"numpy import failed: {e}", message_type="error")
         raise
 
     import statistics
@@ -841,7 +1560,7 @@ def PAGA(
     warnings.simplefilter("ignore", category=UserWarning)
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
-    
+
     # Additional M-series configurations are already set above
 
     prevdir = os.getcwd()
@@ -862,19 +1581,20 @@ def PAGA(
 
     try:
         if adata is None and h5ad is None:
-            print("adata or h5ad must be provided.")
+            log_message("adata or h5ad must be provided.", message_type="error")
             return None
 
         if adata is None:
             adata = sc.read(h5ad)
 
         if group_by is None:
-            print("group_by must be provided.")
+            log_message("group_by must be provided.", message_type="error")
             return None
 
         if linear_reduction is None and nonlinear_reduction is None:
-            print(
-                "linear_reduction or nonlinear_reduction must be provided at least one."
+            log_message(
+                "linear_reduction or nonlinear_reduction must be provided at least one.",
+                message_type="error",
             )
             return None
 
@@ -893,7 +1613,9 @@ def PAGA(
             point_size = min(100000 / adata.shape[0], 20)
 
         if infer_pseudotime is True and root_cell is None and root_group is None:
-            print("root_cell or root_group should be provided.")
+            log_message(
+                "root_cell or root_group should be provided.", message_type="error"
+            )
             return None
 
         if use_rna_velocity is True:
@@ -950,7 +1672,10 @@ def PAGA(
 
         # For M-series MacBooks, do minimal plotting to generate required data structures
         if is_m_series:
-            print("M-series MacBook detected: Using minimal plotting to generate required data structures")
+            log_message(
+                "M-series MacBook detected: Using minimal plotting to generate required data structures",
+                message_type="info",
+            )
             try:
                 # Essential: Generate PAGA layout for draw_graph to work
                 sc.pl.paga(
@@ -962,12 +1687,17 @@ def PAGA(
                     save=False,
                     show=False,
                 )
-                print("PAGA layout generated successfully")
+                log_message(
+                    "PAGA layout generated successfully", message_type="success"
+                )
             except Exception as e:
-                print(f"Warning: PAGA layout generation failed ({e}), continuing...")
+                log_message(
+                    f"PAGA layout generation failed ({e}), continuing...",
+                    message_type="warning",
+                )
                 if plt is not None:
                     plt.clf()
-                    plt.close('all')
+                    plt.close("all")
         else:
             # Safe plotting with error handling for other systems
             try:
@@ -1002,22 +1732,25 @@ def PAGA(
                         save=False,
                         show=False,
                     )
-                
+
                 if show_plot is True:
                     plt.show()
-                
+
                 if save:
                     plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_compare.png"])), 
+                        ".".join(filter(None, [fileprefix, "paga_compare.png"])),
                         dpi=min(dpi, 150),
-                        bbox_inches='tight',
-                        facecolor='white'
+                        bbox_inches="tight",
+                        facecolor="white",
                     )
             except Exception as e:
-                print(f"Warning: PAGA compare plot failed ({e}), continuing...")
+                log_message(
+                    f"PAGA compare plot failed ({e}), continuing...",
+                    message_type="warning",
+                )
                 if plt is not None:
                     plt.clf()
-                    plt.close('all')
+                    plt.close("all")
 
         # PAGA layout plot - skip for M-series MacBooks
         if not is_m_series:
@@ -1031,28 +1764,33 @@ def PAGA(
                     save=False,
                     show=False,
                 )
-                
+
                 if show_plot is True:
                     plt.show()
-                
+
                 if save:
                     plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_layout.png"])), 
+                        ".".join(filter(None, [fileprefix, "paga_layout.png"])),
                         dpi=min(dpi, 150),
-                        bbox_inches='tight',
-                        facecolor='white'
+                        bbox_inches="tight",
+                        facecolor="white",
                     )
             except Exception as e:
-                print(f"Warning: PAGA layout plot failed ({e}), continuing...")
+                log_message(
+                    f"PAGA layout plot failed ({e}), continuing...",
+                    message_type="warning",
+                )
                 if plt is not None:
                     plt.clf()
-                    plt.close('all')
+                    plt.close("all")
 
         # draw_graph computation - always compute, but minimal plotting for M-series
         try:
             sc.tl.draw_graph(adata, init_pos="paga", layout=paga_layout)
-            print("draw_graph computation completed successfully")
-            
+            log_message(
+                "draw_graph computation completed successfully", message_type="success"
+            )
+
             if not is_m_series:
                 sc.pl.draw_graph(
                     adata,
@@ -1064,32 +1802,37 @@ def PAGA(
                     legend_loc="on data",
                     show=False,
                 )
-                
+
                 if show_plot is True:
                     plt.show()
-                
+
                 if save:
                     plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_graph.png"])), 
+                        ".".join(filter(None, [fileprefix, "paga_graph.png"])),
                         dpi=min(dpi, 150),
-                        bbox_inches='tight',
-                        facecolor='white'
+                        bbox_inches="tight",
+                        facecolor="white",
                     )
             else:
                 # For M-series, just ensure the computation is done without plotting
-                print("draw_graph computation completed for M-series (plotting skipped)")
+                log_message(
+                    "draw_graph computation completed for M-series (plotting skipped)",
+                    message_type="info",
+                )
         except Exception as e:
-            print(f"Warning: PAGA draw_graph failed ({e}), continuing...")
+            log_message(
+                f"PAGA draw_graph failed ({e}), continuing...", message_type="warning"
+            )
             if plt is not None:
                 plt.clf()
-                plt.close('all')
+                plt.close("all")
 
         if embedded_with_PAGA is True:
             # UMAP computation - always compute, but skip plotting for M-series
             try:
                 umap2d = sc.tl.umap(adata, init_pos="paga", n_components=2, copy=True)
                 adata.obsm["PAGAUMAP2D"] = umap2d.obsm["X_umap"]
-                
+
                 if not is_m_series:
                     sc.pl.paga_compare(
                         adata,
@@ -1102,22 +1845,24 @@ def PAGA(
                         save=False,
                         show=False,
                     )
-                    
+
                     if show_plot is True:
                         plt.show()
-                    
+
                     if save:
                         plt.savefig(
-                            ".".join(filter(None, [fileprefix, "paga_umap.png"])), 
+                            ".".join(filter(None, [fileprefix, "paga_umap.png"])),
                             dpi=min(dpi, 150),
-                            bbox_inches='tight',
-                            facecolor='white'
+                            bbox_inches="tight",
+                            facecolor="white",
                         )
             except Exception as e:
-                print(f"Warning: PAGA UMAP failed ({e}), continuing...")
+                log_message(
+                    f"PAGA UMAP failed ({e}), continuing...", message_type="warning"
+                )
                 if plt is not None:
                     plt.clf()
-                    plt.close('all')
+                    plt.close("all")
 
         if infer_pseudotime is True:
             if root_group is not None and root_cell is None:
@@ -1149,35 +1894,43 @@ def PAGA(
             if not is_m_series:
                 try:
                     sc.pl.embedding(
-                        adata, basis=basis, color="dpt_pseudotime", save=False, show=False
+                        adata,
+                        basis=basis,
+                        color="dpt_pseudotime",
+                        save=False,
+                        show=False,
                     )
-                    
+
                     if show_plot is True:
                         plt.show()
-                    
+
                     if save:
                         plt.savefig(
-                            ".".join(filter(None, [fileprefix, "dpt_pseudotime.png"])), 
+                            ".".join(filter(None, [fileprefix, "dpt_pseudotime.png"])),
                             dpi=min(dpi, 150),
-                            bbox_inches='tight',
-                            facecolor='white'
+                            bbox_inches="tight",
+                            facecolor="white",
                         )
                 except Exception as e:
-                    print(f"Warning: DPT pseudotime plot failed ({e}), continuing...")
+                    log_message(
+                        f"DPT pseudotime plot failed ({e}), continuing...",
+                        message_type="warning",
+                    )
                     if plt is not None:
                         plt.clf()
-                        plt.close('all')
+                        plt.close("all")
 
     finally:
         os.chdir(prevdir)
-        
+
         # Clean up matplotlib for M-series MacBooks
         if is_m_series and plt is not None:
             try:
                 plt.clf()
-                plt.close('all')
+                plt.close("all")
                 # Force garbage collection
                 import gc
+
                 gc.collect()
             except:
                 pass
@@ -1224,6 +1977,7 @@ def Palantir(
     save=False,
     dirpath="./",
     fileprefix="",
+    verbose=True,
 ):
     # Configure OpenMP settings to prevent conflicts
     import os
@@ -1239,21 +1993,26 @@ def Palantir(
 
     # Check if running on M-series MacBook
     is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
-    
+
     if is_m_series:
-        print("M-series MacBook detected: Applying M-series specific configurations")
+        log_message(
+            "M-series MacBook detected: Applying M-series specific configurations",
+            message_type="info",
+            verbose=verbose,
+        )
         # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
-        
+
         # Configure NUMBA for M-series
         import numba
+
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)         # Force single thread
-        print("NUMBA configured for M-series MacBook")
+        numba.set_num_threads(1)  # Force single thread
+        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -1286,7 +2045,7 @@ def Palantir(
 
     try:
         if adata is None and h5ad is None:
-            print("adata or h5ad must be provided.")
+            log_message("adata or h5ad must be provided.", message_type="error")
             exit()
 
         if adata is None:
@@ -1296,12 +2055,13 @@ def Palantir(
         if group_by is None and (
             early_group is not None or terminal_groups is not None
         ):
-            print("group_by must be provided.")
+            log_message("`group_by` must be provided", message_type="error")
             exit()
 
         if linear_reduction is None and nonlinear_reduction is None:
-            print(
-                "linear_reduction or nonlinear_reduction must be provided at least one."
+            log_message(
+                "`linear_reduction` or `nonlinear_reduction` must be provided at least one",
+                message_type="error",
             )
             exit()
 
@@ -1333,10 +2093,10 @@ def Palantir(
             early_cell = cell[dist.index(min(dist))]
 
         if early_cell is None:
-            print("early_cell must be provided.")
+            log_message("`early_cell` must be provided", message_type="error")
             exit()
         else:
-            print("early_cell: ", early_cell)
+            log_message(f"`early_cell`: {early_cell}", message_type="info", verbose=verbose)
 
         terminal_cells_dict = dict()
         if terminal_groups is not None and terminal_cells is None:
@@ -1363,9 +2123,9 @@ def Palantir(
             terminal_cells = list(terminal_cells_dict.keys())
 
         if terminal_cells is None:
-            print("terminal_cells: None")
+            log_message("`terminal_cells`: None", message_type="info", verbose=verbose)
         else:
-            print("terminal_cells: ", terminal_cells)
+            log_message(f"`terminal_cells`: {terminal_cells}", message_type="info", verbose=verbose)
 
         # if HVF is None:
         #   sc.pp.highly_variable_genes(adata, n_top_genes=2000)
@@ -1386,7 +2146,7 @@ def Palantir(
         pca_projections = pd.DataFrame(
             adata.obsm[linear_reduction][:, :n_pcs], index=adata.obs_names
         )
-        print("running diffusion maps")
+        log_message("Running diffusion maps", message_type="info", verbose=verbose)
         dm_res = palantir.utils.run_diffusion_maps(
             pca_projections,
             n_components=dm_n_components,
@@ -1394,7 +2154,7 @@ def Palantir(
             alpha=dm_alpha,
         )
         ms_data = palantir.utils.determine_multiscale_space(dm_res, n_eigs=dm_n_eigs)
-        print("running palantir")
+        log_message("Running palantir", message_type="info", verbose=verbose)
         pr_res = palantir.core.run_palantir(
             data=ms_data,
             early_cell=early_cell,
@@ -1519,6 +2279,7 @@ def WOT(
     save=False,
     dirpath="./",
     fileprefix="",
+    verbose=True,
 ):
     # Configure OpenMP settings to prevent conflicts
     import os
@@ -1534,21 +2295,26 @@ def WOT(
 
     # Check if running on M-series MacBook
     is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
-    
+
     if is_m_series:
-        print("M-series MacBook detected: Applying M-series specific configurations")
+        log_message(
+            "M-series MacBook detected: Applying M-series specific configurations",
+            message_type="info",
+            verbose=verbose,
+        )
         # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
-        
+
         # Configure NUMBA for M-series
         import numba
+
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)         # Force single thread
-        print("NUMBA configured for M-series MacBook")
+        numba.set_num_threads(1)  # Force single thread
+        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
 
     import matplotlib.pyplot as plt
     import scanpy as sc
@@ -1572,7 +2338,9 @@ def WOT(
     import platform
 
     if platform.system() == "Windows":
-        import sys, multiprocessing, re
+        import sys
+        import re
+        import multiprocessing
 
         if re.match(pattern=".*pythonw.exe$", string=sys.executable):
             pythonw = sys.executable
@@ -1584,18 +2352,18 @@ def WOT(
 
     try:
         if adata is None and h5ad is None:
-            print("adata or h5ad must be provided.")
+            log_message("adata or h5ad must be provided.", message_type="error")
             exit()
 
         if adata is None:
             adata = sc.read(h5ad)
 
         if group_by is None:
-            print("group_by must be provided.")
+            log_message("group_by must be provided.", message_type="error")
             exit()
 
         if time_field is None:
-            print("time_field must be provided.")
+            log_message("time_field must be provided.", message_type="error")
             exit()
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
@@ -1605,13 +2373,16 @@ def WOT(
             try:
                 adata.obs["time_field"] = adata.obs[time_field].astype("float")
             except ValueError:
-                print("Unable to convert column '" + time_field + "' to float type.")
+                log_message(
+                    f"Unable to convert column '{time_field}' to float type.",
+                    message_type="warning",
+                )
         else:
             adata.obs["time_field"] = adata.obs[time_field]
 
         time_dict = dict(zip(adata.obs[time_field], adata.obs["time_field"]))
         if time_from not in time_dict.keys():
-            print("'time_from' is incorrect")
+            log_message("'time_from' is incorrect", message_type="error")
             exit()
 
         ot_model = wot.ot.OTModel(
@@ -1658,11 +2429,14 @@ def WOT(
         fates_df = pd.concat([fates_df, new_df])
         adata.uns["fates_" + str(time_from)] = fates_df.reindex(adata.obs_names)
 
-        # obs_list = wot.tmap.trajectory_trends_from_trajectory(trajectory_ds = trajectory_ds, expression_ds = adata)
+        # obs_list = wot.tmap.trajectory_trends_from_trajectory(
+        #     trajectory_ds = trajectory_ds,
+        #     expression_ds = adata
+        # )
 
         if time_to is not None:
             if time_to not in time_dict.keys():
-                print("'time_to' is incorrect")
+                log_message("`time_to` is incorrect", message_type="error")
                 exit()
 
             to_populations = tmap_model.population_from_cell_sets(
