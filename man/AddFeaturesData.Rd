@@ -25,10 +25,10 @@ AddFeaturesData(object, ...)
 \item{assay}{Assay name to use. Default is \code{NULL}.}
 }
 \value{
-A `Assay`, `Assay5` or `Seurat` object.
+A \code{Assay}, \code{Assay5} or \code{Seurat} object.
 }
 \description{
-Add features data to the `Assay`, `Assay5` or `Seurat` object.
+Add features data to the \code{Assay}, \code{Assay5} or \code{Seurat} object.
 }
 \examples{
 data(pancreas_sub)

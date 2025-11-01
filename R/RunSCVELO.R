@@ -7,6 +7,7 @@
 #'
 #' @md
 #' @inheritParams RunPAGA
+#' @inheritParams thisutils::log_message
 #' @param mode Velocity estimation models to use.
 #' Can be a vector containing `"deterministic"`, `"stochastic"`, and/or `"dynamical"`.
 #' @param fitting_by Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".
@@ -149,10 +150,11 @@ RunSCVELO <- function(
     dpi = 300,
     dirpath = "./",
     fileprefix = "",
-    return_seurat = !is.null(srt)) {
-  check_python("scvelo")
+    return_seurat = !is.null(srt),
+    verbose = TRUE) {
+  check_python("scvelo", verbose = verbose)
   if (isTRUE(magic_impute)) {
-    check_python("magic-impute")
+    check_python("magic-impute", verbose = verbose)
   }
 
   if (all(is.null(srt), is.null(adata))) {
@@ -248,18 +250,14 @@ RunSCVELO <- function(
     palcolor = palcolor
   )
 
-  log_message("Running {.pkg scVelo} analysis...")
-  scop_analysis <- reticulate::import_from_path(
-    "scop_analysis",
+  functions <- reticulate::import_from_path(
+    "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
+    convert = FALSE
   )
 
-  adata <- do.call(scop_analysis$SCVELO, args)
-  log_message(
-    "{.pkg scVelo} analysis completed",
-    message_type = "success"
-  )
+  adata <- do.call(functions$SCVELO, args)
+
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
