@@ -18,16 +18,15 @@ RunCellChat(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing count data and metadata.}
+\item{srt}{A Seurat object.}
 
 \item{group.by}{Name of the metadata column in the Seurat object that contains cell annotations.}
 
-\item{species}{The species of the data, either 'human' or 'mouse'.}
+\item{species}{The species of the data, either 'human', 'mouse' or 'zebrafish'.}
 
 \item{split.by}{Name of the metadata column in the Seurat object that contains sample information.}
 
-\item{annotation_selected}{A vector of cell annotations of interest for running the CellChat analysis.
-If not provided, all cell types will be considered.}
+\item{annotation_selected}{A vector of cell annotations of interest for running the CellChat analysis. If not provided, all cell types will be considered.}
 
 \item{group_column}{Name of the metadata column in the Seurat object that defines conditions or groups.}
 
@@ -35,11 +34,14 @@ If not provided, all cell types will be considered.}
 
 \item{thresh}{The threshold for computing centrality scores.}
 
-\item{verbose}{Whether to show messages}
+\item{min.cells}{the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
-[RunCellChat] performs CellChat analysis on a Seurat object to investigate cell-to-cell communication.
-The results are stored in the Seurat object and can be visualized using [CellChatPlot].
+\link{RunCellChat} performs CellChat analysis on a Seurat object to investigate cell-to-cell communication.
+The results are stored in the Seurat object and can be visualized using \link{CellChatPlot}.
 }
 \examples{
 data(pancreas_sub)
@@ -53,9 +55,9 @@ pancreas_sub <- RunCellChat(
 CellChatPlot(pancreas_sub)
 }
 \references{
-[CellChat](https://github.com/jinworks/CellChat),
-[scDown::run_cellchatV2](https://htmlpreview.github.io/?https://raw.githubusercontent.com/BCH-RC/scDown/main/vignettes/scDown_CellChatV2.html)
+\href{https://github.com/jinworks/CellChat}{CellChat},
+\href{https://htmlpreview.github.io/?https://raw.githubusercontent.com/BCH-RC/scDown/main/vignettes/scDown_CellChatV2.html}{scDown::run_cellchatV2}
 }
 \seealso{
-[CellChatPlot]
+\link{CellChatPlot}
 }
