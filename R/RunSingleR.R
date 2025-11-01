@@ -133,7 +133,7 @@ RunSingleR <- function(
   }
 
   status_query <- CheckDataType(
-    data = GetAssayData5(
+    object = GetAssayData5(
       srt_query,
       layer = "data",
       assay = query_assay
@@ -141,7 +141,7 @@ RunSingleR <- function(
   )
   log_message("Detected srt_query data type: {.val {status_query}}")
   status_ref <- CheckDataType(
-    data = GetAssayData5(
+    object = GetAssayData5(
       srt_ref,
       layer = "data",
       assay = ref_assay
@@ -168,11 +168,8 @@ RunSingleR <- function(
       layer = "data"
     )
   )
-  sce_query <- methods::as(
-    SummarizedExperiment::SummarizedExperiment(
-      assays = assays_query
-    ),
-    Class = "SingleCellExperiment"
+  sce_query <- SingleCellExperiment::SingleCellExperiment(
+    assays = assays_query
   )
   metadata_query <- srt_query[[]]
   SummarizedExperiment::colData(x = sce_query) <- S4Vectors::DataFrame(
@@ -191,11 +188,8 @@ RunSingleR <- function(
       layer = "data"
     )
   )
-  sce_ref <- methods::as(
-    SummarizedExperiment::SummarizedExperiment(
-      assays = assays_ref
-    ),
-    Class = "SingleCellExperiment"
+  sce_ref <- SingleCellExperiment::SingleCellExperiment(
+    assays = assays_ref
   )
   metadata_ref <- srt_ref[[]]
   SummarizedExperiment::colData(x = sce_ref) <- S4Vectors::DataFrame(

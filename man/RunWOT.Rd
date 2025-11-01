@@ -26,7 +26,8 @@ RunWOT(
   dpi = 300,
   dirpath = "./",
   fileprefix = "",
-  return_seurat = !is.null(srt)
+  return_seurat = !is.null(srt),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -77,6 +78,9 @@ Default is FALSE.}
 \item{fileprefix}{The file prefix to use for the plots.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
+Default is \code{TRUE}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{

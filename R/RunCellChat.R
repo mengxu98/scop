@@ -4,16 +4,17 @@
 #' [RunCellChat] performs CellChat analysis on a Seurat object to investigate cell-to-cell communication.
 #' The results are stored in the Seurat object and can be visualized using [CellChatPlot].
 #'
-#' @param srt A Seurat object containing count data and metadata.
+#' @md
+#' @inheritParams thisutils::log_message
+#' @param srt A Seurat object.
 #' @param group.by Name of the metadata column in the Seurat object that contains cell annotations.
-#' @param species The species of the data, either 'human' or 'mouse'.
+#' @param species The species of the data, either 'human', 'mouse' or 'zebrafish'.
 #' @param split.by Name of the metadata column in the Seurat object that contains sample information.
-#' @param annotation_selected A vector of cell annotations of interest for running the CellChat analysis.
-#' If not provided, all cell types will be considered.
+#' @param annotation_selected A vector of cell annotations of interest for running the CellChat analysis. If not provided, all cell types will be considered.
 #' @param group_column Name of the metadata column in the Seurat object that defines conditions or groups.
 #' @param group_cmp A list of pairwise condition comparisons for differential CellChat analysis.
 #' @param thresh The threshold for computing centrality scores.
-#' @param verbose Whether to show messages
+#' @param min.cells the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis.
 #'
 #' @export
 #'
@@ -50,6 +51,8 @@ RunCellChat <- function(
     verbose = verbose
   )
 
+  check_r("jinworks/CellChat")
+  check_r("immunogenomics/presto")
   if (!group.by %in% colnames(srt@meta.data)) {
     log_message(
       "{.val {group.by}} does not exist in the seurat object meta data",
@@ -211,7 +214,8 @@ RunCellChat <- function(
   object <- CellChat::subsetData(object)
   object <- CellChat::identifyOverExpressedGenes(
     object,
-    thresh.p = thresh, min.cells = min.cells
+    thresh.p = thresh,
+    min.cells = min.cells
   )
   object <- CellChat::identifyOverExpressedInteractions(object)
   object <- CellChat::computeCommunProb(object)

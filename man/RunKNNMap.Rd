@@ -64,6 +64,7 @@ This function performs single-cell reference mapping using the K-nearest neighbo
 }
 \examples{
 data(panc8_sub)
+panc8_sub <- standard_scop(panc8_sub)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(

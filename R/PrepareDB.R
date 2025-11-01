@@ -185,7 +185,7 @@ PrepareDB <- function(
     db_version = "latest",
     db_update = FALSE,
     convert_species = TRUE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     biomart = NULL,
     max_tries = 5,
@@ -198,7 +198,7 @@ PrepareDB <- function(
   db_list <- list()
   for (sps in species) {
     log_message(
-      "Species: ", sps,
+      "Species: {.val {sps}}",
       verbose = verbose
     )
     default_id_types <- list(
@@ -267,10 +267,9 @@ PrepareDB <- function(
             ]
             if (is.na(pathname)) {
               log_message(
-                "There is no ",
-                db_version,
-                " version of the database. Use the latest version",
-                message_type = "warning"
+                "There is no {.val {db_version}} version of the database. Use the latest version",
+                message_type = "warning",
+                verbose = verbose
               )
               pathname <- dbinfo[
                 order(dbinfo[["timestamp"]], decreasing = TRUE)[1],
@@ -283,7 +282,8 @@ PrepareDB <- function(
             cached_version <- strsplit(header[["comment"]], "\\|")[[1]][1]
             timestamp <- format(header[["timestamp"]], "%Y-%m-%d %H:%M:%S")
             log_message(
-              "Loading cached: {.pkg {term}} version: {.pkg {cached_version}} created: {.val {timestamp}}"
+              "Loading cached: {.pkg {term}} version: {.pkg {cached_version}} created: {.pkg {timestamp}}",
+              verbose = verbose
             )
             db_loaded <- R.cache::loadCache(pathname = pathname)
             Sys.sleep(0.5)
@@ -410,7 +410,7 @@ PrepareDB <- function(
             all.x = TRUE
           )
           for (subterm in terms) {
-            log_message("Preparing database: {.pkg {subterm}}")
+            log_message("Preparing database: {.pkg {subterm}}", verbose = verbose)
             if (subterm == "GO") {
               TERM2GENE <- bg[, c("GOALL", org_key)]
               TERM2NAME <- bg[, c("GOALL", "TERM")]
@@ -469,7 +469,7 @@ PrepareDB <- function(
 
         ## KEGG -----------------
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: KEGG")
+          log_message("Preparing {.pkg KEGG} database", verbose = verbose)
           check_r("httr")
           orgs <- kegg_get("https://rest.kegg.jp/list/organism")
           kegg_sp <- orgs[
@@ -480,12 +480,14 @@ PrepareDB <- function(
             db_species_name <- db_species["KEGG"]
             log_message(
               "Failed to prepare the KEGG database for {.val {db_species_name}}",
-              message_type = "warning"
+              message_type = "warning",
+              verbose = verbose
             )
             if (isTRUE(convert_species) && db_species_name != "Homo_sapiens") {
               log_message(
                 "Use the human annotation to create the KEGG database for {.val {sps}}",
-                message_type = "warning"
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["KEGG"] <- "Homo_sapiens"
               kegg_sp <- "hsa"
@@ -605,7 +607,7 @@ PrepareDB <- function(
           any(db == "WikiPathway") &&
             (!"WikiPathway" %in% names(db_list[[sps]]))
         ) {
-          log_message("Preparing database: WikiPathway")
+          log_message("Preparing {.pkg WikiPathway} database", verbose = verbose)
           tempdir <- tempdir()
           gmt_files <- list.files(tempdir)[grep(
             ".gmt",
@@ -630,12 +632,14 @@ PrepareDB <- function(
             db_species_name <- db_species["WikiPathway"]
             log_message(
               "Failed to prepare the WikiPathway database for {.val {db_species_name}}",
-              message_type = "warning"
+              message_type = "warning",
+              verbose = verbose
             )
             if (isTRUE(convert_species) && db_species_name != "Homo_sapiens") {
               log_message(
                 "Use the human annotation to create the WikiPathway database for {.val {sps}}",
-                message_type = "warning"
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["WikiPathway"] <- "Homo_sapiens"
               wiki_sp <- "Homo_sapiens"
@@ -706,7 +710,7 @@ PrepareDB <- function(
 
         ## Reactome -----------------
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: {.pkg Reactome}")
+          log_message("Preparing {.pkg Reactome} database", verbose = verbose)
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
           df_all <- suppressMessages(
             AnnotationDbi::select(
@@ -729,7 +733,8 @@ PrepareDB <- function(
             ) {
               log_message(
                 "Use the human annotation to create the Reactome database for {.val {sps}}",
-                message_type = "warning"
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["Reactome"] <- "Homo_sapiens"
               reactome_sp <- gsub(
@@ -799,14 +804,16 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the CORUM database for {.val {sps}}",
-                message_type = "warning"
+                "Use the human annotation to create the {.pkg CORUM} database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["CORUM"] <- "Homo_sapiens"
             } else {
               log_message(
-                "CORUM database only support Homo_sapiens. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg CORUM} database only support Homo_sapiens. Consider using convert_species=TRUE",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
                 "Stop the preparation",
@@ -814,7 +821,7 @@ PrepareDB <- function(
               )
             }
           }
-          log_message("Preparing database: corum")
+          log_message("Preparing {.pkg CORUM} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/corum/gene_set_library_crisp.gmt.gz"
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
@@ -850,23 +857,24 @@ PrepareDB <- function(
           if (sps != "Mus_musculus") {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the mouse annotation to create the MP database for ",
-                sps,
-                message_type = "warning"
+                "Use the mouse annotation to create the MP database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["MP"] <- "Mus_musculus"
             } else {
               log_message(
-                "MP database only support Mus_musculus. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg MP} database only support Mus_musculus. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: MP")
+          log_message("Preparing {.pkg MP} database", verbose = verbose)
           temp <- tempfile()
           download(
             url = "http://www.informatics.jax.org/downloads/reports/",
@@ -950,7 +958,7 @@ PrepareDB <- function(
 
         ## DO -----------------
         if (any(db == "DO") && (!"DO" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: DO")
+          log_message("Preparing {.pkg DO} database", verbose = verbose)
           temp <- tempfile(fileext = ".tsv.gz")
           download(
             url = "https://fms.alliancegenome.org/download/DISEASE-ALLIANCE_COMBINED.tsv.gz",
@@ -984,9 +992,9 @@ PrepareDB <- function(
           if (nrow(do_df) == 0) {
             if (isTRUE(convert_species) && db_species["DO"] != "Homo_sapiens") {
               log_message(
-                "Use the human annotation to create the DO database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the DO database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["DO"] <- "Homo_sapiens"
               do_sp <- gsub(
@@ -1001,7 +1009,7 @@ PrepareDB <- function(
               ]
             } else {
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1033,22 +1041,23 @@ PrepareDB <- function(
 
         ## HPO -----------------
         if (any(db == "HPO") && (!"HPO" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: HPO")
+          log_message("Preparing {.pkg HPO} database", verbose = verbose)
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the HPO database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the HPO database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["HPO"] <- "Homo_sapiens"
             } else {
               log_message(
-                "HPO database only support Homo_sapiens. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg HPO} database only support Homo_sapiens. Consider using {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1108,13 +1117,12 @@ PrepareDB <- function(
 
         ## PFAM -----------------
         if (any(db == "PFAM") && (!"PFAM" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: PFAM")
+          log_message("Preparing {.pkg PFAM} database", verbose = verbose)
           if (!"PFAM" %in% AnnotationDbi::columns(orgdb)) {
             log_message(
-              "PFAM is not in the orgdb: ",
-              orgdb,
-              " . Skip the preparation.",
-              message_type = "warning"
+              "{.pkg PFAM} is not in the orgdb: {.val {orgdb}}. Skip this preparation",
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             bg <- suppressMessages(
@@ -1165,7 +1173,7 @@ PrepareDB <- function(
         if (
           any(db == "Chromosome") && (!"Chromosome" %in% names(db_list[[sps]]))
         ) {
-          log_message("Preparing database: Chromosome")
+          log_message("Preparing {.pkg Chromosome} database", verbose = verbose)
           orgdbCHR <- get(
             paste0(gsub(pattern = ".db", "", org_sp), "CHR")
           )
@@ -1211,13 +1219,12 @@ PrepareDB <- function(
 
         ## GeneType -----------------
         if (any(db == "GeneType") && (!"GeneType" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: GeneType")
+          log_message("Preparing {.pkg GeneType} database", verbose = verbose)
           if (!"GENETYPE" %in% AnnotationDbi::columns(orgdb)) {
             log_message(
-              "GENETYPE is not in the orgdb: ",
-              org_sp,
-              " . Skip the preparation.",
-              message_type = "warning"
+              "GENETYPE is not in the orgdb: {.val {org_sp}}. Skip this preparation",
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             bg <- suppressMessages(
@@ -1266,13 +1273,12 @@ PrepareDB <- function(
 
         ## Enzyme -----------------
         if (any(db == "Enzyme") && (!"Enzyme" %in% names(db_list[[sps]]))) {
-          log_message("Preparing database: Enzyme")
+          log_message("Preparing {.pkg Enzyme} database", verbose = verbose)
           if (!"ENZYME" %in% AnnotationDbi::columns(orgdb)) {
             log_message(
-              "ENZYME is not in the orgdb: ",
-              orgdb,
-              " . Skip the preparation.",
-              message_type = "warning"
+              "ENZYME is not in the orgdb: {.val {orgdb}}. Skip this preparation",
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             bg <- suppressMessages(
@@ -1381,7 +1387,12 @@ PrepareDB <- function(
                 sps,
                 "_TF"
               )
-              download(url = url, destfile = temp, use_httr = TRUE)
+              download(
+                url = url,
+                destfile = temp,
+                use_httr = TRUE,
+                extra = "--user-agent 'Mozilla/5.0'"
+              )
               tf <- utils::read.table(
                 temp,
                 header = TRUE,
@@ -1395,7 +1406,12 @@ PrepareDB <- function(
                 sps,
                 "_Cof"
               )
-              download(url = url, destfile = temp, use_httr = TRUE)
+              download(
+                url = url,
+                destfile = temp,
+                use_httr = TRUE,
+                extra = "--user-agent 'Mozilla/5.0'"
+              )
               tfco <- utils::read.table(
                 temp,
                 header = TRUE,
@@ -1485,8 +1501,7 @@ PrepareDB <- function(
             if (!"Symbol" %in% colnames(tf)) {
               if (isTRUE(convert_species) && db_species["TF"] != "Homo_sapiens") {
                 log_message(
-                  "Use the human annotation to create the TF database for ",
-                  sps,
+                  "Use the human annotation to create the TF database for {.val {sps}}",
                   message_type = "warning"
                 )
                 db_species["TF"] <- "Homo_sapiens"
@@ -1505,7 +1520,7 @@ PrepareDB <- function(
                 url <- paste0(
                   "https://raw.githubusercontent.com/GuoBioinfoLab/AnimalTFDB3/master/AnimalTFDB3/static/AnimalTFDB3/download/Homo_sapiens_TF_cofactors"
                 )
-                download(url = url, destfile = temp)
+                download(url = url, destfile = temp, use_httr = TRUE, extra = "--user-agent 'Mozilla/5.0'")
                 tfco <- utils::read.table(
                   temp,
                   header = TRUE,
@@ -1516,7 +1531,7 @@ PrepareDB <- function(
                 )
               } else {
                 log_message(
-                  "Stop the preparation.",
+                  "Stop the preparation",
                   message_type = "error"
                 )
               }
@@ -1561,18 +1576,17 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the CSPA database for ",
-                sps,
+                "Use the human annotation to create the CSPA database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["CSPA"] <- "Homo_sapiens"
             } else {
               log_message(
-                "CSPA database only support Homo_sapiens and Mus_musculus. Consider using convert_species=TRUE",
+                "{.pkg CSPA} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
                 message_type = "warning"
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1584,7 +1598,8 @@ PrepareDB <- function(
           download(
             url = url,
             destfile = temp,
-            mode = ifelse(.Platform$OS.type == "windows", "wb", "w")
+            mode = ifelse(.Platform$OS.type == "windows", "wb", "w"),
+            extra = "--no-check-certificate"
           )
           surfacepro <- openxlsx::read.xlsx(temp, sheet = 1)
           unlink(temp)
@@ -1635,18 +1650,17 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the Surfaceome database for ",
-                sps,
+                "Use the human annotation to create the Surfaceome database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["Surfaceome"] <- "Homo_sapiens"
             } else {
               log_message(
-                "Surfaceome database only support Homo_sapiens. Consider using convert_species=TRUE",
+                "{.pkg Surfaceome} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
                 message_type = "warning"
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1714,23 +1728,22 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the SPRomeDB database for ",
-                sps,
+                "Use the human annotation to create the SPRomeDB database for {.val {sps}}",
                 message_type = "warning"
               )
               db_species["SPRomeDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "SPRomeDB database only support Homo_sapiens. Consider using convert_species=TRUE",
+                "{.pkg SPRomeDB} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
                 message_type = "warning"
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: SPRomeDB")
+          log_message("Preparing {.pkg SPRomeDB} database", verbose = verbose)
           temp <- tempfile()
           url <- "http://119.3.41.228/SPRomeDB/files/download/secreted_proteins_SPRomeDB.csv"
           download(url = url, destfile = temp)
@@ -1801,25 +1814,24 @@ PrepareDB <- function(
           if (!tolower(sps) %in% verseda_sps) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the VerSeDa database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the VerSeDa database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["VerSeDa"] <- "Homo_sapiens"
             } else {
               log_message(
-                "VerSeDa database only support ",
-                paste0(verseda_sps, collapse = ","),
-                ". Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg VerSeDa} database only support {.val {verseda_sps}}. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: VerSeDa")
+          log_message("Preparing {.pkg VerSeDa} database", verbose = verbose)
           temp <- tempfile(fileext = ".zip")
           url <- paste0(
             "http://genomics.cicbiogune.es/VerSeDa/Downloads/",
@@ -1908,25 +1920,24 @@ PrepareDB <- function(
           if (!sps %in% tflink_sp) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the TFLink database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the TFLink database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["TFLink"] <- "Homo_sapiens"
             } else {
               log_message(
-                "TFLink database only support ",
-                paste0(tflink_sp, collapse = ","),
-                ". Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg TFLink} database only support {.val {tflink_sp}}. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: TFLink")
+          log_message("Preparing {.pkg TFLink} database", verbose = verbose)
           url <- paste0(
             "https://cdn.netbiol.org/tflink/download_files/TFLink_",
             db_species["TFLink"],
@@ -1971,23 +1982,24 @@ PrepareDB <- function(
           if (!sps %in% "Homo_sapiens") {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the hTFtarget database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the hTFtarget database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["hTFtarget"] <- "Homo_sapiens"
             } else {
               log_message(
-                "hTFtarget database only support Homo_sapiens. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg hTFtarget} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: hTFtarget")
+          log_message("Preparing {.pkg hTFtarget} database", verbose = verbose)
           url <- paste0(
             "http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"
           )
@@ -2034,23 +2046,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the TRRUST database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the TRRUST database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["TRRUST"] <- "Homo_sapiens"
             } else {
               log_message(
-                "hTFtarget database only support Homo_sapiens and Mus_musculus. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg TRRUST} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: TRRUST")
+          log_message("Preparing {.pkg TRRUST} database", verbose = verbose)
           url <- switch(db_species["TRRUST"],
             "Homo_sapiens" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.human.tsv",
             "Mus_musculus" = "https://raw.githubusercontent.com/bioinfonerd/Transcription-Factor-Databases/master/Ttrust_v2/trrust_rawdata.mouse.tsv.gz"
@@ -2109,23 +2122,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the JASPAR database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the JASPAR database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["JASPAR"] <- "Homo_sapiens"
             } else {
               log_message(
-                "JASPAR database only support Homo_sapiens. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg JASPAR} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: JASPAR")
+          log_message("Preparing {.pkg JASPAR} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/jasparpwm/gene_set_library_crisp.gmt.gz"
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
@@ -2165,23 +2179,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the ENCODE database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the ENCODE database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["ENCODE"] <- "Homo_sapiens"
             } else {
               log_message(
-                "ENCODE database only support Homo_sapiens. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg ENCODE} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: ENCODE")
+          log_message("Preparing {.pkg ENCODE} database", verbose = verbose)
           url <- "https://maayanlab.cloud/static/hdfs/harmonizome/data/encodetfppi/gene_set_library_crisp.gmt.gz"
           temp <- tempfile(fileext = ".gz")
           download(url = url, destfile = temp)
@@ -2223,23 +2238,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the MSigDB database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the MSigDB database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["MSigDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "MSigDB database only support Homo_sapiens and Mus_musculus. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg MSigDB} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: MSigDB")
+          log_message("Preparing {.pkg MSigDB} database", verbose = verbose)
 
           temp <- tempfile()
           download(
@@ -2260,7 +2276,6 @@ PrepareDB <- function(
             version,
             m = regexpr("(?<=href\\=\")\\S+(?=/\"\\>)", version, perl = TRUE)
           )
-          # version="2023.1.Hs" "2023.2.Hs"
 
           url <- paste0(
             "https://data.broadinstitute.org/gsea-msigdb/msigdb/release/",
@@ -2399,23 +2414,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the CellTalk database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the CellTalk database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["CellTalk"] <- "Homo_sapiens"
             } else {
               log_message(
-                "CellTalk database only support Homo_sapiens and Mus_musculus. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg CellTalk} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: CellTalk")
+          log_message("Preparing {.pkg CellTalk} database", verbose = verbose)
           url <- switch(db_species["CellTalk"],
             "Homo_sapiens" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/human_lr_pair.rds",
             "Mus_musculus" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/mouse_lr_pair.rds"
@@ -2483,23 +2499,24 @@ PrepareDB <- function(
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
               log_message(
-                "Use the human annotation to create the CellChat database for ",
-                sps,
-                message_type = "warning"
+                "Use the human annotation to create the CellChat database for {.val {sps}}",
+                message_type = "warning",
+                verbose = verbose
               )
               db_species["CellChat"] <- "Homo_sapiens"
             } else {
               log_message(
-                "CellChat database only support Homo_sapiens and Mus_musculus. Consider using convert_species=TRUE",
-                message_type = "warning"
+                "{.pkg CellChat} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
+                message_type = "warning",
+                verbose = verbose
               )
               log_message(
-                "Stop the preparation.",
+                "Stop the preparation",
                 message_type = "error"
               )
             }
           }
-          log_message("Preparing database: CellChat")
+          log_message("Preparing {.pkg CellChat} database", verbose = verbose)
           url <- paste0(
             "https://raw.githubusercontent.com/sqjin/CellChat/master/data/CellChatDB.",
             switch(db_species["CellChat"],
@@ -2613,24 +2630,18 @@ PrepareDB <- function(
         if (sps != custom_species) {
           if (isTRUE(convert_species)) {
             log_message(
-              "Use the ",
-              custom_species,
-              " annotation to create the ",
-              db,
-              " database for ",
-              sps,
-              message_type = "warning"
+              "Use the {.val {custom_species}} annotation to create the {.val {db}} database for {.val {sps}}",
+              message_type = "warning",
+              verbose = verbose
             )
           } else {
             log_message(
-              db,
-              " database only support ",
-              custom_species,
-              ". Consider using convert_species=TRUE",
-              message_type = "warning"
+              "{.pkg {db}} database only support {.val {custom_species}}. Consider using {.arg convert_species=TRUE}",
+              message_type = "warning",
+              verbose = verbose
             )
             log_message(
-              "Stop the preparation.",
+              "Stop the preparation",
               message_type = "error"
             )
           }
@@ -2670,7 +2681,7 @@ PrepareDB <- function(
     # Convert species
     if (!all(db_species == sps)) {
       for (term in names(db_species[db_species != sps])) {
-        log_message("Convert species for the database: ", term)
+        log_message("Convert species for the {.pkg {term}} database", verbose = verbose)
         sp_from <- db_species[term]
         db_info <- db_list[[sp_from]][[names(sp_from)]]
         TERM2GENE <- db_info[["TERM2GENE"]]
@@ -2704,9 +2715,9 @@ PrepareDB <- function(
           )
           if (is.null(res$geneID_res)) {
             log_message(
-              "Failed to convert species for the database: ",
-              term,
-              message_type = "warning"
+              "Failed to convert species for the database: {.val {term}}",
+              message_type = "warning",
+              verbose = verbose
             )
             next
           }
@@ -2762,7 +2773,10 @@ PrepareDB <- function(
         !db_IDtypes %in% colnames(db_list[[sps]][[term]][["TERM2GENE"]])
       ]
       if (length(IDtypes) > 0) {
-        log_message("Convert ID types for the database: ", term)
+        log_message(
+          "Convert ID types for the {.pkg {term}} database",
+          verbose = verbose
+        )
         TERM2GENE <- db_list[[sps]][[term]][["TERM2GENE"]]
         TERM2NAME <- db_list[[sps]][[term]][["TERM2NAME"]]
         if (is.na(default_id_types[term])) {
@@ -2792,9 +2806,9 @@ PrepareDB <- function(
           )
           if (is.null(res$geneID_res)) {
             log_message(
-              "Failed to convert ID types for the database: ",
-              term,
-              message_type = "warning"
+              "Failed to convert ID types for the database: {.val {term}}",
+              message_type = "warning",
+              verbose = verbose
             )
             next
           }
