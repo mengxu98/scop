@@ -7,13 +7,13 @@
 compute_velocity_on_grid(
   x_emb,
   v_emb,
-  density = NULL,
-  smooth = NULL,
-  n_neighbors = NULL,
-  min_mass = NULL,
+  density = 1,
+  smooth = 0.5,
+  n_neighbors = ceiling(n_obs/50),
+  min_mass = 1,
   scale = 1,
   adjust_for_stream = FALSE,
-  cutoff_perc = NULL
+  cutoff_perc = 5
 )
 }
 \arguments{
@@ -21,26 +21,26 @@ compute_velocity_on_grid(
 
 \item{v_emb}{A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.}
 
-\item{density}{An optional numeric value specifying the density of the grid points along each dimension.
-Default is `1`.}
+\item{density}{A numeric value specifying the density of the grid points along each dimension.
+Default is \code{1}.}
 
-\item{smooth}{An optional numeric value specifying the smoothing factor for the velocity vectors.
-Default is `0.5`.}
+\item{smooth}{A numeric value specifying the smoothing factor for the velocity vectors.
+Default is \code{0.5}.}
 
-\item{n_neighbors}{An optional numeric value specifying the number of nearest neighbors for each grid point.
-Default is `ceiling(n_obs / 50)`.}
+\item{n_neighbors}{A numeric value specifying the number of nearest neighbors for each grid point.
+Default is \code{ceiling(n_obs / 50)}.}
 
-\item{min_mass}{An optional numeric value specifying the minimum mass required for a grid point to be considered.
-Default is `1`.}
+\item{min_mass}{A numeric value specifying the minimum mass required for a grid point to be considered.
+Default is \code{1}.}
 
-\item{scale}{An optional numeric value specifying the scaling factor for the velocity vectors.
-Default is `1`.}
+\item{scale}{A numeric value specifying the scaling factor for the velocity vectors.
+Default is \code{1}.}
 
 \item{adjust_for_stream}{Whether to adjust the velocity vectors for streamlines.
-Default is `FALSE`.}
+Default is \code{FALSE}.}
 
-\item{cutoff_perc}{An optional numeric value specifying the percentile cutoff for removing low-density grid points.
-Default is `5`.}
+\item{cutoff_perc}{A numeric value specifying the percentile cutoff for removing low-density grid points.
+Default is \code{5}.}
 }
 \description{
 Compute velocity on grid
