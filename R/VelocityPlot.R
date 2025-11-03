@@ -142,7 +142,6 @@ VelocityPlot <- function(
   set.seed(seed)
 
   plot_type <- match.arg(plot_type)
-  check_r("metR")
   if (is.null(reduction)) {
     reduction <- DefaultReduction(srt)
   } else {
@@ -196,6 +195,10 @@ VelocityPlot <- function(
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
 
+    arrow_length <- grid::unit(
+      mean(df_field[["length_perc"]], na.rm = TRUE), "npc"
+    )
+
     if (!is.null(group_by)) {
       df_field[["group_by"]] <- srt@meta.data[
         rownames(df_field),
@@ -207,7 +210,7 @@ VelocityPlot <- function(
           data = df_field,
           aes(x = x, y = y, xend = x + u, yend = y + v, color = group_by),
           arrow = grid::arrow(
-            length = grid::unit(df_field[["length_perc"]], "npc"),
+            length = arrow_length,
             type = "closed",
             angle = arrow_angle
           ),
@@ -236,7 +239,7 @@ VelocityPlot <- function(
           aes(x = x, y = y, xend = x + u, yend = y + v),
           color = arrow_color,
           arrow = grid::arrow(
-            length = grid::unit(df_field[["length_perc"]], "npc"),
+            length = arrow_length,
             type = "closed",
             angle = arrow_angle
           ),
@@ -268,13 +271,17 @@ VelocityPlot <- function(
         max(df_field[["y"]], na.rm = TRUE)^2
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
+
+    arrow_length <- grid::unit(
+      mean(df_field[["length_perc"]], na.rm = TRUE), "npc"
+    )
     velocity_layer <- list(
       geom_segment(
         data = df_field,
         aes(x = x, y = y, xend = x + u, yend = y + v),
         color = arrow_color,
         arrow = grid::arrow(
-          length = grid::unit(df_field[["length_perc"]], "npc"),
+          length = arrow_length,
           type = "closed",
           angle = arrow_angle
         ),
@@ -465,23 +472,24 @@ VelocityPlot <- function(
   }
 }
 
-#' Compute velocity on grid
+#' @title Compute velocity on grid
 #'
+#' @md
 #' @param x_emb A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.
 #' @param v_emb A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.
-#' @param density An optional numeric value specifying the density of the grid points along each dimension.
+#' @param density A numeric value specifying the density of the grid points along each dimension.
 #' Default is `1`.
-#' @param smooth An optional numeric value specifying the smoothing factor for the velocity vectors.
+#' @param smooth A numeric value specifying the smoothing factor for the velocity vectors.
 #' Default is `0.5`.
-#' @param n_neighbors An optional numeric value specifying the number of nearest neighbors for each grid point.
+#' @param n_neighbors A numeric value specifying the number of nearest neighbors for each grid point.
 #' Default is `ceiling(n_obs / 50)`.
-#' @param min_mass An optional numeric value specifying the minimum mass required for a grid point to be considered.
+#' @param min_mass A numeric value specifying the minimum mass required for a grid point to be considered.
 #' Default is `1`.
-#' @param scale An optional numeric value specifying the scaling factor for the velocity vectors.
+#' @param scale A numeric value specifying the scaling factor for the velocity vectors.
 #' Default is `1`.
 #' @param adjust_for_stream Whether to adjust the velocity vectors for streamlines.
 #' Default is `FALSE`.
-#' @param cutoff_perc An optional numeric value specifying the percentile cutoff for removing low-density grid points.
+#' @param cutoff_perc A numeric value specifying the percentile cutoff for removing low-density grid points.
 #' Default is `5`.
 #'
 #' @references
@@ -491,29 +499,23 @@ VelocityPlot <- function(
 compute_velocity_on_grid <- function(
     x_emb,
     v_emb,
-    density = NULL,
-    smooth = NULL,
-    n_neighbors = NULL,
-    min_mass = NULL,
+    density = 1,
+    smooth = 0.5,
+    n_neighbors = ceiling(n_obs / 50),
+    min_mass = 1,
     scale = 1,
     adjust_for_stream = FALSE,
-    cutoff_perc = NULL) {
+    cutoff_perc = 5) {
   n_obs <- nrow(x_emb)
   n_dim <- ncol(x_emb)
 
-  density <- density %||% 1
-  smooth <- smooth %||% 0.5
-  n_neighbors <- n_neighbors %||% ceiling(n_obs / 50)
-  min_mass <- min_mass %||% 1
-  cutoff_perc <- cutoff_perc %||% 5
-
   grs <- list()
   for (dim_i in 1:n_dim) {
-    m <- min(x_emb[, dim_i], na.rm = TRUE)
-    M <- max(x_emb[, dim_i], na.rm = TRUE)
-    # m <- m - 0.01 * abs(M - m)
-    # M <- M + 0.01 * abs(M - m)
-    gr <- seq(m, M, length.out = ceiling(50 * density))
+    m1 <- min(x_emb[, dim_i], na.rm = TRUE)
+    m2 <- max(x_emb[, dim_i], na.rm = TRUE)
+    # m1 <- m1 - 0.01 * abs(m2 - m1)
+    # m2 <- m2 + 0.01 * abs(m2 - m1)
+    gr <- seq(m1, m2, length.out = ceiling(50 * density))
     grs <- c(grs, list(gr))
   }
   x_grid <- as_matrix(expand.grid(grs))
@@ -524,30 +526,42 @@ compute_velocity_on_grid <- function(
     method = "euclidean",
     use_nan = TRUE
   )
-  neighbors <- Matrix::t(as_matrix(apply(
-    d,
-    2,
-    function(x) order(x, decreasing = FALSE)[1:n_neighbors]
-  )))
-  dists <- Matrix::t(as_matrix(apply(
-    d,
-    2,
-    function(x) x[order(x, decreasing = FALSE)[1:n_neighbors]]
-  )))
+  neighbors <- Matrix::t(
+    as_matrix(
+      apply(
+        d,
+        2,
+        function(x) {
+          order(x, decreasing = FALSE)[1:n_neighbors]
+        }
+      )
+    )
+  )
+  dists <- Matrix::t(
+    as_matrix(
+      apply(
+        d,
+        2,
+        function(x) {
+          x[order(x, decreasing = FALSE)[1:n_neighbors]]
+        }
+      )
+    )
+  )
 
   weight <- stats::dnorm(
     dists,
     sd = mean(sapply(grs, function(g) g[2] - g[1])) * smooth
   )
-  p_mass <- p_mass_V <- Matrix::rowSums(weight)
-  p_mass_V[p_mass_V < 1] <- 1
+  p_mass <- p_mass_v <- Matrix::rowSums(weight)
+  p_mass_v[p_mass_v < 1] <- 1
 
   neighbors_emb <- array(
     v_emb[neighbors, seq_len(ncol(v_emb))],
     dim = c(dim(neighbors), dim(v_emb)[2])
   )
   v_grid <- apply((neighbors_emb * c(weight)), c(1, 3), sum)
-  v_grid <- v_grid / p_mass_V
+  v_grid <- v_grid / p_mass_v
 
   if (isTRUE(adjust_for_stream)) {
     x_grid <- matrix(
