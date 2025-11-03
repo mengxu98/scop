@@ -1,5 +1,10 @@
 # scop
 
+# scop 0.5.5
+
+* **bugs**:
+  * Fixed `VelocityPlot()` function error in `plot_type = "grid"` mode: replaced vectorized arrow length with fixed-length arrows (using mean length) to resolve `vapply()` error that occurred when `grid::arrow()` received a vector instead of a single value, see [#72](https://github.com/mengxu98/scop/issues/72), [#74](https://github.com/mengxu98/scop/issues/74).
+
 # scop 0.5.4
 
 * **bugs**:
