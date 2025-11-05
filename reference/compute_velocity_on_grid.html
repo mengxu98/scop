@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,13 +47,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">compute_velocity_on_grid</span><span class="op">(</span></span>
 <span>  <span class="va">x_emb</span>,</span>
 <span>  <span class="va">v_emb</span>,</span>
-<span>  density <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  smooth <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  n_neighbors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  min_mass <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  density <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  smooth <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  n_neighbors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">n_obs</span><span class="op">/</span><span class="fl">50</span><span class="op">)</span>,</span>
+<span>  min_mass <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  scale <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  adjust_for_stream <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  cutoff_perc <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  cutoff_perc <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,38 +70,38 @@
 
 
 <dt id="arg-density">density<a class="anchor" aria-label="anchor" href="#arg-density"></a></dt>
-<dd><p>An optional numeric value specifying the density of the grid points along each dimension.
-Default is `1`.</p></dd>
+<dd><p>A numeric value specifying the density of the grid points along each dimension.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-smooth">smooth<a class="anchor" aria-label="anchor" href="#arg-smooth"></a></dt>
-<dd><p>An optional numeric value specifying the smoothing factor for the velocity vectors.
-Default is `0.5`.</p></dd>
+<dd><p>A numeric value specifying the smoothing factor for the velocity vectors.
+Default is <code>0.5</code>.</p></dd>
 
 
 <dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
-<dd><p>An optional numeric value specifying the number of nearest neighbors for each grid point.
-Default is `ceiling(n_obs / 50)`.</p></dd>
+<dd><p>A numeric value specifying the number of nearest neighbors for each grid point.
+Default is <code>ceiling(n_obs / 50)</code>.</p></dd>
 
 
 <dt id="arg-min-mass">min_mass<a class="anchor" aria-label="anchor" href="#arg-min-mass"></a></dt>
-<dd><p>An optional numeric value specifying the minimum mass required for a grid point to be considered.
-Default is `1`.</p></dd>
+<dd><p>A numeric value specifying the minimum mass required for a grid point to be considered.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
-<dd><p>An optional numeric value specifying the scaling factor for the velocity vectors.
-Default is `1`.</p></dd>
+<dd><p>A numeric value specifying the scaling factor for the velocity vectors.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-adjust-for-stream">adjust_for_stream<a class="anchor" aria-label="anchor" href="#arg-adjust-for-stream"></a></dt>
 <dd><p>Whether to adjust the velocity vectors for streamlines.
-Default is `FALSE`.</p></dd>
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-cutoff-perc">cutoff_perc<a class="anchor" aria-label="anchor" href="#arg-cutoff-perc"></a></dt>
-<dd><p>An optional numeric value specifying the percentile cutoff for removing low-density grid points.
-Default is `5`.</p></dd>
+<dd><p>A numeric value specifying the percentile cutoff for removing low-density grid points.
+Default is <code>5</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

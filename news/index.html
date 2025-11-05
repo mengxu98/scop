@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,39 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.5" id="scop-055">scop 0.5.5<a class="anchor" aria-label="anchor" href="#scop-055"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>Fixed <code><a href="../reference/VelocityPlot.html">VelocityPlot()</a></code> function error in <code>plot_type = "grid"</code> mode: replaced vectorized arrow length with fixed-length arrows (using mean length) to resolve <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> error that occurred when <code><a href="https://rdrr.io/r/grid/arrow.html" class="external-link">grid::arrow()</a></code> received a vector instead of a single value, see <a href="https://github.com/mengxu98/scop/issues/72" class="external-link">#72</a>, <a href="https://github.com/mengxu98/scop/issues/74" class="external-link">#74</a>.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.4" id="scop-054">scop 0.5.4<a class="anchor" aria-label="anchor" href="#scop-054"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>Fixed parameter name error in <code><a href="../reference/CheckDataType.html">CheckDataType()</a></code> function calls: changed <code>data</code> parameter to <code>object</code> in <code><a href="../reference/RunKNNMap.html">RunKNNMap()</a></code>, <code><a href="../reference/RunSymphonyMap.html">RunSymphonyMap()</a></code>, <code><a href="../reference/RunScmap.html">RunScmap()</a></code>, <code><a href="../reference/RunPCAMap.html">RunPCAMap()</a></code>, and <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code> functions, see <a href="https://github.com/mengxu98/scop/issues/68" class="external-link">#68</a>.</li>
+<li>Fixed <code>SingleCellExperiment</code> object creation in <code><a href="../reference/RunScmap.html">RunScmap()</a></code> and <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code> functions: changed from coercing <code>SummarizedExperiment</code> to directly constructing <code>SingleCellExperiment</code> objects.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.3" id="scop-053">scop 0.5.3<a class="anchor" aria-label="anchor" href="#scop-053"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Changed default <code>Ensembl_version</code> parameter from <code>103</code> to <code>NULL</code> for more flexible version handling.</li>
+<li>Added <em>Python</em> version <code>log_message()</code> for Python-based functions (<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code>RunCellRank()</code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) and added <code>verbose</code> parameter inheritance and improved message formatting using cli-style formatting.</li>
+</ul></li>
+<li>
+<strong>refactor</strong>:
+<ul><li>Delete <code>harmonizomeapi.py</code> file.</li>
+<li>Move <code>scop_analysis.py</code> into a single <code>functions.py</code> file in <code>inst/python/</code> for better code organization and maintainability.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Improved parameter documentation consistency.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.1" id="scop-051">scop 0.5.1<a class="anchor" aria-label="anchor" href="#scop-051"></a></h2>
 <ul><li>
 <strong>docs</strong>:
@@ -66,7 +99,7 @@
 <li>Improved error messages and user guidance across integration functions.</li>
 </ul></li>
 <li>
-<strong>pack</strong>:
+<strong>refactor</strong>:
 <ul><li>Removed some example figures to optimize package installation size.</li>
 </ul></li>
 </ul></div>
