@@ -643,7 +643,7 @@ ht <- DynamicHeatmap(
     c("gold", "steelblue"), c("forestgreen")
   ),
   pseudotime_label = 25,
-  seudotime_label_color = "red",
+  pseudotime_label_color = "red",
   height = 5,
   width = 2
 )
