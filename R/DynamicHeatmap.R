@@ -265,7 +265,7 @@ DynamicHeatmap <- function(
     db_version = "latest",
     db_combine = FALSE,
     convert_species = FALSE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     db = "GO_BP",
     TERM2GENE = NULL,
