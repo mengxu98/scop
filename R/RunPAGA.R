@@ -6,12 +6,13 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
+#' @param srt A Seurat object. Default is `NULL`.
+#' If provided, `adata` will be ignored.
+#' @param adata An anndata object. Default is `NULL`.
 #' @param assay_x Assay to convert in the anndata object.
 #' @param layer_x Layer name for `assay_x` in the Seurat object.
 #' @param assay_y Assay to convert in the anndata object.
 #' @param layer_y Layer names for the `assay_y` in the Seurat object.
-#' @param adata An anndata object.
 #' @param group_by Variable to use for grouping cells in the Seurat object.
 #' @param linear_reduction Linear reduction method to use, e.g., `"PCA"`.
 #' @param nonlinear_reduction Non-linear reduction method to use, e.g., `"UMAP"`.
@@ -106,11 +107,11 @@
 #' }
 RunPAGA <- function(
     srt = NULL,
+    adata = NULL,
     assay_x = "RNA",
     layer_x = "counts",
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
-    adata = NULL,
     group_by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,

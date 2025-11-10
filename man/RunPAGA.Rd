@@ -6,11 +6,11 @@
 \usage{
 RunPAGA(
   srt = NULL,
+  adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
-  adata = NULL,
   group_by = NULL,
   linear_reduction = NULL,
   nonlinear_reduction = NULL,
@@ -41,7 +41,10 @@ RunPAGA(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A Seurat object. Default is \code{NULL}.
+If provided, \code{adata} will be ignored.}
+
+\item{adata}{An anndata object. Default is \code{NULL}.}
 
 \item{assay_x}{Assay to convert in the anndata object.}
 
@@ -50,8 +53,6 @@ RunPAGA(
 \item{assay_y}{Assay to convert in the anndata object.}
 
 \item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
-
-\item{adata}{An anndata object.}
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 
