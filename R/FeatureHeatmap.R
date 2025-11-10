@@ -176,7 +176,7 @@ FeatureHeatmap <- function(
     db_version = "latest",
     db_combine = FALSE,
     convert_species = FALSE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     db = "GO_BP",
     TERM2GENE = NULL,
@@ -1048,7 +1048,7 @@ FeatureHeatmap <- function(
           status <- tryCatch(check_r("e1071"), error = identity)
           if (inherits(status, "error")) {
             log_message(
-              "The e1071 package was not found. Switch split_method to 'kmeans'",
+              "The {.pkg e1071} package was not found. Switch split_method to 'kmeans'",
               message_type = "warning"
             )
             split_method <- "kmeans"
@@ -1082,7 +1082,6 @@ FeatureHeatmap <- function(
                 message_type = "error"
               )
             }
-            # mfuzz.plot(eset, cl,new.window = FALSE)
             row_split <- feature_split <- cl$cluster
           }
         }
@@ -1161,7 +1160,9 @@ FeatureHeatmap <- function(
   if (!is.null(row_split)) {
     if (isTRUE(cluster_row_slices)) {
       if (isFALSE(cluster_rows)) {
-        dend <- ComplexHeatmap::cluster_within_group(Matrix::t(mat_split), row_split_raw)
+        dend <- ComplexHeatmap::cluster_within_group(
+          Matrix::t(mat_split), row_split_raw
+        )
         cluster_rows <- dend
         row_split <- length(unique(row_split_raw))
       }
@@ -1299,7 +1300,7 @@ FeatureHeatmap <- function(
     drop <- setdiff(features_label, features_ordered)
     if (length(drop) > 0) {
       log_message(
-        paste0(paste0(drop, collapse = ","), "was not found in the features"),
+        "{.val {drop}} was not found in the features",
         message_type = "warning"
       )
     }
@@ -1415,7 +1416,10 @@ FeatureHeatmap <- function(
             names(anno_args)
           )]
         )
-        ha_feature <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
+        ha_feature <- do.call(
+          ComplexHeatmap::HeatmapAnnotation,
+          args = anno_args
+        )
         if (is.null(ha_right)) {
           ha_right <- ha_feature
         } else {
