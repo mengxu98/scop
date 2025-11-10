@@ -103,11 +103,11 @@
 #' }
 RunSCVELO <- function(
     srt = NULL,
+    adata = NULL,
     assay_x = "RNA",
     layer_x = "counts",
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
-    adata = NULL,
     group_by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
