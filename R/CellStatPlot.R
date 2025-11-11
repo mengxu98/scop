@@ -313,10 +313,10 @@ CellStatPlot <- function(
     force = FALSE,
     seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
-  meta.data <- srt@meta.data[cells, , drop = FALSE]
+  meta_data <- srt@meta.data[cells, , drop = FALSE]
 
   plot <- StatPlot(
-    meta.data = meta.data,
+    meta.data = meta_data,
     stat.by = stat.by,
     group.by = group.by,
     split.by = split.by,
@@ -1368,7 +1368,7 @@ StatPlot <- function(
         }
 
         dat <- suppressWarnings(
-          make_long(
+          ggsankey::make_long(
             dat_use,
             dplyr::all_of(stat.by)
           )
@@ -1384,7 +1384,7 @@ StatPlot <- function(
             fill = node
           )
         ) +
-          geom_sankey(
+          ggsankey::geom_sankey(
             color = "black",
             flow.alpha = alpha,
             show.legend = FALSE,
