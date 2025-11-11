@@ -43,7 +43,7 @@ heatmap_enrichment <- function(
   if (isTRUE(anno_keys) || isTRUE(anno_features) || isTRUE(anno_terms)) {
     if (isTRUE(flip)) {
       log_message(
-        "anno_keys, anno_features and anno_terms can only be used when flip is FALSE",
+        "{.arg anno_keys}, {.arg anno_features} and {.arg anno_terms} can only be used when {.arg flip = FALSE}",
         message_type = "error"
       )
     }
@@ -91,7 +91,7 @@ heatmap_enrichment <- function(
     }
     if (nrow(res$enrichment) == 0) {
       log_message(
-        "No enrichment result found.",
+        "No enrichment result found",
         message_type = "warning"
       )
     } else {
@@ -110,10 +110,9 @@ heatmap_enrichment <- function(
       df <- df[order(df[[metric]]), , drop = FALSE]
       if (nrow(df) == 0) {
         log_message(
-          "No term enriched using the threshold: ",
-          paste0("pvalueCutoff = ", pvalueCutoff),
-          "; ",
-          paste0("padjustCutoff = ", padjustCutoff),
+          "No term enriched using the threshold:\n",
+          "pvalueCutoff = {.pkg {pvalueCutoff}}\n",
+          "padjustCutoff = {.pkg {padjustCutoff}}",
           message_type = "warning"
         )
       } else {
@@ -127,12 +126,9 @@ heatmap_enrichment <- function(
           ]
           if (length(subdf_list) == 0) {
             log_message(
-              "No ",
-              enrich,
-              " term enriched using the threshold: ",
-              paste0("pvalueCutoff = ", pvalueCutoff),
-              "; ",
-              paste0("padjustCutoff = ", padjustCutoff),
+              "No {.pkg {enrich}} term enriched using the threshold:\n",
+              "pvalueCutoff = {.pkg {pvalueCutoff}}\n",
+              "padjustCutoff = {.pkg {padjustCutoff}}",
               message_type = "warning"
             )
             next
@@ -409,14 +405,13 @@ heatmap_enrichment <- function(
 }
 
 heatmap_fixsize <- function(
-  width,
-  width_sum,
-  height,
-  height_sum,
-  units,
-  ht_list,
-  legend_list
-) {
+    width,
+    width_sum,
+    height,
+    height_sum,
+    units,
+    ht_list,
+    legend_list) {
   ht <- ComplexHeatmap::draw(
     ht_list,
     annotation_legend_list = legend_list
@@ -578,14 +573,16 @@ heatmap_rendersize <- function(
     }
     if (!is.null(ha_left)) {
       width_annotation <- grid::convertWidth(
-        grid::unit(width_annotation, units) + ComplexHeatmap::width.HeatmapAnnotation(ha_left),
+        grid::unit(width_annotation, units) +
+          ComplexHeatmap::width.HeatmapAnnotation(ha_left),
         units,
         valueOnly = TRUE
       )
     }
     if (!is.null(ha_right)) {
       width_annotation <- grid::convertWidth(
-        grid::unit(width_annotation, units) + ComplexHeatmap::width.HeatmapAnnotation(ha_right),
+        grid::unit(width_annotation, units) +
+          ComplexHeatmap::width.HeatmapAnnotation(ha_right),
         units,
         valueOnly = TRUE
       )
@@ -609,7 +606,7 @@ heatmap_rendersize <- function(
     name_height <- max(ht@column_names_param$max_height, name_height)
   } else {
     log_message(
-      "ht_list is not a class of HeatmapList or Heatmap.",
+      "{.arg ht_list} is not a class of HeatmapList or Heatmap",
       message_type = "error"
     )
   }
@@ -656,6 +653,20 @@ heatmap_rendersize <- function(
   )
 }
 
+#' @title Cluster within group
+#'
+#' @param mat A matrix of data
+#' @param factor A factor
+#' @return A dendrogram with ordered leaves
+#'
+#' @export
+#'
+#' @examples
+#' mat <- matrix(rnorm(100), 10, 10)
+#' factor <- factor(rep(1:2, each = 5))
+#' dend <- cluster_within_group2(mat, factor)
+#' dend
+#' plot(dend)
 cluster_within_group2 <- function(mat, factor) {
   check_r("dendextend")
   if (!is.factor(factor)) {
@@ -681,8 +692,9 @@ cluster_within_group2 <- function(mat, factor) {
         )
       )
       dend_list[[le]] <- stats::as.dendrogram(hc1)
-      order_list[[le]] <- which(factor == le)[stats::order.dendrogram(dend_list[[le]])]
-      stats::order.dendrogram(dend_list[[le]]) <- order_list[[le]]
+      dend_order <- stats::order.dendrogram(dend_list[[le]])
+      order_list[[le]] <- which(factor == le)[dend_order]
+      dendextend::order.dendrogram(dend_list[[le]]) <- order_list[[le]]
     }
     attr(dend_list[[le]], ".class_label") <- le
   }
@@ -711,7 +723,7 @@ cluster_within_group2 <- function(mat, factor) {
   })
 
   dend <- ComplexHeatmap::merge_dendrogram(parent, dend_list)
-  stats::order.dendrogram(dend) <- unlist(
+  dendextend::order.dendrogram(dend) <- unlist(
     order_list[stats::order.dendrogram(parent)]
   )
   dend
