@@ -136,7 +136,9 @@ print.scop_logo <- function(x, ...) {
             return(invisible(NULL))
           }
           envname <- get_envname()
-          envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
+          envs_dir <- get_namespace_fun(
+            "reticulate", "conda_info"
+          )(conda = conda)$envs_dirs[1]
           env <- env_exist(
             conda = conda,
             envname = envname,

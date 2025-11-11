@@ -171,7 +171,8 @@ FindExpressedMarkers <- function(
   object <- data.use
   layer <- data_layer
 
-  Seurat:::ValidateCellGroups(
+  ValidateCellGroups <- get_namespace_fun("Seurat", "ValidateCellGroups")
+  ValidateCellGroups(
     object = object,
     cells.1 = cells.1,
     cells.2 = cells.2,
@@ -341,12 +342,7 @@ FindConservedMarkers2 <- function(
       if (!all(ident.use.1.exists)) {
         bad.ids <- ident.1[!ident.use.1.exists]
         log_message(
-          "Identity: ",
-          paste(bad.ids, collapse = ", "),
-          " not present in group ",
-          level.use,
-          ". Skipping ",
-          level.use,
+          "Identity: {.val {bad.ids}} not present in group {.val {level.use}}. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
@@ -355,13 +351,7 @@ FindConservedMarkers2 <- function(
       cells.1.use <- SeuratObject::WhichCells(object = object, idents = ident.use.1)
       if (length(cells.1.use) < min.cells.group) {
         log_message(
-          level.use,
-          " has fewer than ",
-          min.cells.group,
-          " cells in Identity: ",
-          paste(ident.1, collapse = ", "),
-          ". Skipping ",
-          level.use,
+          "{.val {level.use}} has fewer than {.val {min.cells.group}} cells in Identity: {.val {ident.1}}. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
@@ -383,7 +373,7 @@ FindConservedMarkers2 <- function(
         )
         if (length(x = ident.use.2) == 0) {
           log_message(
-            paste("Only one identity class present:", ident.1),
+            "Only one identity class present: {.val {ident.1}}",
             message_type = "error"
           )
         }
@@ -396,24 +386,14 @@ FindConservedMarkers2 <- function(
       }
       if (length(cells.2.use) < min.cells.group) {
         log_message(
-          level.use,
-          " has fewer than ",
-          min.cells.group,
-          " cells. Skipping ",
-          level.use,
+          "{.val {level.use}} has fewer than {.val {min.cells.group}} cells. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
       }
 
       log_message(
-        "Testing group ",
-        level.use,
-        ": (",
-        paste(ident.1, collapse = ", "),
-        ") vs (",
-        paste(ident.2, collapse = ", "),
-        ")",
+        "Testing group {.val {level.use}}: ({.val {ident.1}}) vs ({.val {ident.2}})",
         verbose = verbose
       )
 
@@ -421,12 +401,7 @@ FindConservedMarkers2 <- function(
       if (!all(ident.use.2.exists)) {
         bad.ids <- ident.2[!ident.use.2.exists]
         log_message(
-          "Identity: ",
-          paste(bad.ids, collapse = ", "),
-          " not present in group ",
-          level.use,
-          ". Skipping ",
-          level.use,
+          "Identity: {.val {bad.ids}} not present in group {.val {level.use}}. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
@@ -460,11 +435,7 @@ FindConservedMarkers2 <- function(
       cells.1.use <- intersect(cells[[i]], cells.1)
       if (length(cells.1.use) < min.cells.group) {
         log_message(
-          level.use,
-          " has fewer than ",
-          min.cells.group,
-          " cells. Skipping ",
-          level.use,
+          "{.val {level.use}} has fewer than {.val {min.cells.group}} cells. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
@@ -476,23 +447,13 @@ FindConservedMarkers2 <- function(
       }
       if (length(cells.2.use) < min.cells.group) {
         log_message(
-          level.use,
-          " has fewer than ",
-          min.cells.group,
-          " cells. Skipping ",
-          level.use,
+          "{.val {level.use}} has fewer than {.val {min.cells.group}} cells. Skipping {.val {level.use}}",
           message_type = "warning"
         )
         next
       }
       log_message(
-        "Testing group ",
-        level.use,
-        ": (",
-        paste("cells.1", collapse = ", "),
-        ") vs (",
-        paste("cells.2", collapse = ", "),
-        ")",
+        "Testing group {.val {level.use}}: ({.val {cells.1}}) vs ({.val {cells.2}})",
         verbose = verbose
       )
       marker.test[[level.use]] <- Seurat::FindMarkers(
