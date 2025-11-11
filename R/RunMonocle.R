@@ -250,6 +250,9 @@ orderCells <- function(
     root_state = NULL,
     num_paths = NULL,
     reverse = NULL) {
+  select_root_cell <- get_namespace_fun(
+    "monocle", "select_root_cell"
+  )
   if (class(cds)[1] != "CellDataSet") {
     log_message(
       "Error cds is not of type 'CellDataSet'",
@@ -268,7 +271,7 @@ orderCells <- function(
       message_type = "error"
     )
   }
-  root_cell <- monocle:::select_root_cell(cds, root_state, reverse)
+  root_cell <- select_root_cell(cds, root_state, reverse)
   cds@auxOrderingData <- new.env(hash = TRUE)
   if (cds@dim_reduce_type == "ICA") {
     if (is.null(num_paths)) {
@@ -281,13 +284,17 @@ orderCells <- function(
     dp_mst <- igraph::minimum.spanning.tree(gp)
     monocle::minSpanningTree(cds) <- dp_mst
     # next_node <- 0
-    res <- monocle:::pq_helper(
+    res <- get_namespace_fun(
+      "monocle", "pq_helper"
+    )(
       dp_mst,
       use_weights = FALSE,
       root_node = root_cell
     )
     cds@auxOrderingData[[cds@dim_reduce_type]]$root_cell <- root_cell
-    order_list <- monocle:::extract_good_branched_ordering(
+    order_list <- get_namespace_fun(
+      "monocle", "extract_good_branched_ordering"
+    )(
       res$subtree,
       res$root,
       monocle::cellPairwiseDistances(cds),
@@ -328,7 +335,9 @@ orderCells <- function(
     old_mst <- monocle::minSpanningTree(cds)
     old_A <- monocle::reducedDimA(cds)
     old_W <- monocle::reducedDimW(cds)
-    cds <- project2MST(cds, monocle:::project_point_to_line_segment)
+    cds <- project2MST(cds, get_namespace_fun(
+      "monocle", "project_point_to_line_segment"
+    ))
     monocle::minSpanningTree(cds) <- cds@auxOrderingData[[
       cds@dim_reduce_type
     ]]$pr_graph_cell_proj_tree
@@ -358,7 +367,7 @@ orderCells <- function(
       cells_mapped_to_graph_root %in% tip_leaves
     ][1]
     if (is.na(root_cell)) {
-      root_cell <- monocle:::select_root_cell(cds, root_state, reverse)
+      root_cell <- select_root_cell(cds, root_state, reverse)
     }
     cds@auxOrderingData[[cds@dim_reduce_type]]$root_cell <- root_cell
     cc_ordering_new_pseudotime <- extract_ddrtree_ordering(cds, root_cell)
@@ -403,7 +412,7 @@ project2MST <- function(cds, Projection_Method) {
   dp_mst <- monocle::minSpanningTree(cds)
   Z <- monocle::reducedDimS(cds)
   Y <- monocle::reducedDimK(cds)
-  cds <- monocle:::findNearestPointOnMST(cds)
+  cds <- get_namespace_fun("monocle", "findNearestPointOnMST")(cds)
   closest_vertex <- cds@auxOrderingData[[
     "DDRTree"
   ]]$pr_graph_cell_proj_closest_vertex
@@ -428,7 +437,9 @@ project2MST <- function(cds, Projection_Method) {
       Z_i <- Z[, i]
       for (neighbor in neighbors) {
         if (closest_vertex_names[i] %in% tip_leaves) {
-          tmp <- monocle:::projPointOnLine(
+          tmp <- get_namespace_fun(
+            "monocle", "projPointOnLine"
+          )(
             Z_i,
             Y[, c(closest_vertex_names[i], neighbor)]
           )
@@ -760,7 +771,9 @@ RunMonocle3 <- function(
         )
       )
       if (length(unique(cluster_result$optim_res$membership)) > 1) {
-        cluster_graph_res <- monocle3:::compute_partitions(
+        cluster_graph_res <- get_namespace_fun(
+          "monocle3", "compute_partitions"
+        )(
           cluster_result$g,
           cluster_result$optim_res,
           partition_qval
@@ -779,8 +792,11 @@ RunMonocle3 <- function(
         clusters = as.factor(srt[[clusters, drop = TRUE]])
       )
       cds[["clusters"]] <- cds[[clusters]]
-      cds <- monocle3:::add_citation(cds, "clusters")
-      cds <- monocle3:::add_citation(cds, "partitions")
+      add_citation <- get_namespace_fun(
+        "monocle3", "add_citation"
+      )
+      cds <- add_citation(cds, "clusters")
+      cds <- add_citation(cds, "partitions")
     } else {
       cds <- monocle3::cluster_cells(
         cds,
@@ -848,9 +864,15 @@ RunMonocle3 <- function(
   )
   edge_df[, c("x", "y")] <- reduced_dim_coords[edge_df[["from"]], 1:2]
   edge_df[, c("xend", "yend")] <- reduced_dim_coords[edge_df[["to"]], 1:2]
-  mst_branch_nodes <- monocle3:::branch_nodes(cds, "UMAP")
-  mst_leaf_nodes <- monocle3:::leaf_nodes(cds, "UMAP")
-  mst_root_nodes <- monocle3:::root_nodes(cds, "UMAP")
+  mst_branch_nodes <- get_namespace_fun(
+    "monocle3", "branch_nodes"
+  )(cds, "UMAP")
+  mst_leaf_nodes <- get_namespace_fun(
+    "monocle3", "leaf_nodes"
+  )(cds, "UMAP")
+  mst_root_nodes <- get_namespace_fun(
+    "monocle3", "root_nodes"
+  )(cds, "UMAP")
   pps <- c(mst_branch_nodes, mst_leaf_nodes, mst_root_nodes)
   point_df <- data.frame(
     nodes = names(pps),
