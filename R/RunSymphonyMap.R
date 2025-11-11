@@ -341,15 +341,25 @@ buildReferenceFromSeurat <- function(
   res$umap <- obj[[umap]]@misc$model
 
   ## Build Reference!
-  log_message("Calculate final L2 normalized reference centroids (Y_cos)", verbose = verbose)
+  log_message(
+    "Calculate final L2 normalized reference centroids (Y_cos)",
+    verbose = verbose
+  )
   res$centroids <- Matrix::t(
-    symphony:::cosine_normalize_cpp(
+    get_namespace_fun(
+      "symphony", "cosine_normalize_cpp"
+    )(
       V = res$R %*% Matrix::t(res$Z_corr),
       dim = 1
     )
   )
-  log_message("Calculate reference compression terms (Nr and C)", verbose = verbose)
-  res$cache <- symphony:::compute_ref_cache(
+  log_message(
+    "Calculate reference compression terms (Nr and C)",
+    verbose = verbose
+  )
+  res$cache <- get_namespace_fun(
+    "symphony", "compute_ref_cache"
+  )(
     Rr = res$R,
     Zr = res$Z_corr
   )

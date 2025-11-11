@@ -38,11 +38,15 @@ mapQuery <- function(
     "Clustering query cells to reference centroids",
     verbose = verbose
   )
-  Z_pca_query_cos <- symphony:::cosine_normalize_cpp(
+  Z_pca_query_cos <- get_namespace_fun(
+    "symphony", "cosine_normalize_cpp"
+  )(
     V = Z_pca_query,
     dim = 2
   )
-  R_query <- symphony:::soft_cluster(
+  R_query <- get_namespace_fun(
+    "symphony", "soft_cluster"
+  )(
     Y = ref_obj$centroids,
     Z = Z_pca_query_cos,
     sigma = sigma
@@ -69,7 +73,9 @@ mapQuery <- function(
       sparse = TRUE
     )
   }
-  Zq_corr <- symphony:::moe_correct_ref(
+  Zq_corr <- get_namespace_fun(
+    "symphony", "moe_correct_ref"
+  )(
     Zq = as_matrix(Z_pca_query),
     Xq = as_matrix(Xq),
     Rq = as_matrix(R_query),
