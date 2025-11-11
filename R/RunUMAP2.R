@@ -308,7 +308,9 @@ RunUMAP2.default <- function(
     umap.config$transform_state <- seed.use
     umap.config$verbose <- verbose
     if (is.na(umap.config$a) || is.na(umap.config$b)) {
-      umap.config[c("a", "b")] <- umap:::find.ab.params(
+      umap.config[c("a", "b")] <- get_namespace_fun(
+        "umap", "find.ab.params"
+      )(
         umap.config$spread,
         umap.config$min_dist
       )
@@ -316,7 +318,9 @@ RunUMAP2.default <- function(
     }
 
     if (inherits(x = object, what = "dist")) {
-      knn <- umap:::knn.from.dist(d = object, k = n.neighbors)
+      knn <- get_namespace_fun(
+        "umap", "knn.from.dist"
+      )(d = object, k = n.neighbors)
       out <- umap::umap(
         d = matrix(nrow = nrow(object)),
         config = umap.config,
@@ -391,17 +395,23 @@ RunUMAP2.default <- function(
       class(graph) <- "coo"
 
       umap.config$init <- "spectral"
-      initial <- umap:::make.initial.embedding(
+      initial <- get_namespace_fun(
+        "umap", "make.initial.embedding"
+      )(
         V = graph$n.elements,
         config = umap.config,
         g = graph
       )
-      embeddings <- umap:::naive.simplicial.set.embedding(
+      embeddings <- get_namespace_fun(
+        "umap", "naive.simplicial.set.embedding"
+      )(
         g = graph,
         embedding = initial,
         config = umap.config
       )
-      embeddings <- umap:::center.embedding(embeddings)
+      embeddings <- get_namespace_fun(
+        "umap", "center.embedding"
+      )(embeddings)
       rownames(x = embeddings) <- rownames(x = object)
       colnames(x = embeddings) <- paste0(reduction.key, 1:n.components)
       reduction <- SeuratObject::CreateDimReducObject(
@@ -457,7 +467,6 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        
         ret_model = FALSE
       )
       rownames(x = embeddings) <- attr(object, "Labels")
@@ -493,7 +502,6 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        
         ret_model = return.model
       )
       if (return.model) {
@@ -579,7 +587,6 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        
         ret_model = return.model
       )
       if (return.model) {
@@ -622,7 +629,6 @@ RunUMAP2.default <- function(
         negative_sample_rate = negative.sample.rate,
         a = a,
         b = b,
-        
         ret_model = return.model
       )
       if (return.model) {
