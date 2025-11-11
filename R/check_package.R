@@ -153,7 +153,7 @@ remove_python <- function(
     force = FALSE,
     verbose = TRUE) {
   envname <- get_envname(envname)
-
+  system2t <- get_namespace_fun("reticulate", "system2t")
   log_message(
     "Removing {.pkg {packages}} from environment: {.file {envname}}",
     verbose = verbose
@@ -240,7 +240,7 @@ remove_python <- function(
             "-m", "pip", "uninstall", "-y", pkg
           )
 
-          status <- reticulate:::system2t(python, shQuote(args))
+          status <- system2t(python, shQuote(args))
 
           if (status != 0L) {
             log_message(
@@ -274,10 +274,11 @@ remove_python <- function(
 
     result <- tryCatch(
       {
-        args <- reticulate:::conda_args("remove", envname)
+        conda_args <- get_namespace_fun("reticulate", "conda_args")
+        args <- conda_args("remove", envname)
         args <- c(args, packages)
 
-        status <- reticulate:::system2t(conda, shQuote(args))
+        status <- system2t(conda, shQuote(args))
 
         if (status != 0L) {
           log_message(
@@ -324,7 +325,7 @@ remove_python <- function(
               "-m", "pip", "uninstall", "-y", pkg
             )
 
-            status <- reticulate:::system2t(python, shQuote(args))
+            status <- system2t(python, shQuote(args))
 
             if (status != 0L) {
               log_message(
