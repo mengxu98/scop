@@ -36,7 +36,8 @@
 #' @rdname RunFR
 #'
 #' @examples
-#' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunFR(
 #'   object = pancreas_sub,
 #'   features = SeuratObject::VariableFeatures(pancreas_sub)

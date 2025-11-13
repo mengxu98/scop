@@ -19,6 +19,7 @@ A total of 1000 cells were downsampled to form the \code{pancreas_sub} dataset.
 if (interactive()) {
   library(Seurat)
   library(reticulate)
+  PrepareEnv()
   check_python("scvelo")
   scv <- import("scvelo")
   adata <- scv$datasets$pancreas()

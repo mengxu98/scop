@@ -59,7 +59,7 @@
 #' )
 #' p1
 #'
-#' panel_fix_overall(p1, height = 6)
+#' thisplot::panel_fix_overall(p1, height = 6)
 #'
 #' GSEAPlot(
 #'   pancreas_sub,
@@ -917,7 +917,7 @@ GSEAPlot <- function(
         plotlist <- lapply(plotlist[subplots], as_grob)
         rel_heights <- rel_heights[subplots]
         for (i in seq_along(plotlist)) {
-          plotlist[[i]] <- panel_fix_overall(
+          plotlist[[i]] <- thisplot::panel_fix_overall(
             plotlist[[i]],
             height = rel_heights[i],
             units = "null",
@@ -925,7 +925,7 @@ GSEAPlot <- function(
             respect = TRUE,
             return_grob = TRUE
           )
-          plotlist[[i]] <- panel_fix_overall(
+          plotlist[[i]] <- thisplot::panel_fix_overall(
             plotlist[[i]],
             width = rel_width,
             units = "null",

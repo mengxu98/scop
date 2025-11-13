@@ -1,4 +1,4 @@
-#' @title FindExpressedMarkers
+#' @title Find Expressed Markers
 #'
 #' @inheritParams Seurat::FindMarkers
 #' @param layer The layer used.
@@ -7,6 +7,8 @@
 #' @export
 #'
 #' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' markers <- FindExpressedMarkers(
 #'   pancreas_sub,
 #'   cells.1 = SeuratObject::WhichCells(
@@ -15,6 +17,7 @@
 #'   )
 #' )
 #' head(markers)
+#'
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   rownames(markers)[1],

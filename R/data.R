@@ -16,6 +16,7 @@
 #' if (interactive()) {
 #'   library(Seurat)
 #'   library(reticulate)
+#'   PrepareEnv()
 #'   check_python("scvelo")
 #'   scv <- import("scvelo")
 #'   adata <- scv$datasets$pancreas()
