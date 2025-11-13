@@ -31,7 +31,8 @@ RunWOT(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A Seurat object. Default is \code{NULL}.
+If provided, \code{adata} will be ignored.}
 
 \item{assay_x}{Assay to convert in the anndata object.}
 
@@ -41,7 +42,7 @@ RunWOT(
 
 \item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
-\item{adata}{An anndata object.}
+\item{adata}{An anndata object. Default is \code{NULL}.}
 
 \item{group_by}{Variable to use for grouping cells in the Seurat object.}
 

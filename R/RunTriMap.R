@@ -45,7 +45,9 @@
 #' @export
 #'
 #' @examples
-#' pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunTriMap(
 #'   object = pancreas_sub,
 #'   features = SeuratObject::VariableFeatures(pancreas_sub)
@@ -55,6 +57,7 @@
 #'   group.by = "CellType",
 #'   reduction = "trimap"
 #' )
+#' }
 RunTriMap <- function(object, ...) {
   UseMethod(generic = "RunTriMap", object = object)
 }
@@ -168,10 +171,9 @@ RunTriMap.default <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (!is.null(x = seed.use)) {
-    set.seed(seed = seed.use)
-  }
+  set.seed(seed = seed.use)
 
+  PrepareEnv()
   check_python("trimap")
   trimap <- reticulate::import("trimap")
 

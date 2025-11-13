@@ -2,7 +2,7 @@
 % Please edit documentation in R/FindExpressedMarkers.R
 \name{FindExpressedMarkers}
 \alias{FindExpressedMarkers}
-\title{FindExpressedMarkers}
+\title{Find Expressed Markers}
 \usage{
 FindExpressedMarkers(
   object,
@@ -156,9 +156,11 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{...}{Arguments passed to other methods and to specific DE methods}
 }
 \description{
-FindExpressedMarkers
+Find Expressed Markers
 }
 \examples{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -167,6 +169,7 @@ markers <- FindExpressedMarkers(
   )
 )
 head(markers)
+
 FeatureStatPlot(
   pancreas_sub,
   rownames(markers)[1],

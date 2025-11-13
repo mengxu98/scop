@@ -30,7 +30,7 @@
 #' srt_ref <- integration_scop(
 #'   srt_ref,
 #'   batch = "tech",
-#'   integration_method = "Seurat"
+#'   integration_method = "Uncorrected"
 #' )
 #' CellDimPlot(
 #'   srt_ref,
@@ -46,7 +46,7 @@
 #' srt_query <- RunKNNMap(
 #'   srt_query = srt_query,
 #'   srt_ref = srt_ref,
-#'   ref_umap = "SeuratUMAP2D"
+#'   ref_umap = "UncorrectedUMAP2D"
 #' )
 #' ProjectionPlot(
 #'   srt_query = srt_query,
@@ -79,7 +79,7 @@ RunKNNMap <- function(
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
         log_message(
-          "ref_group must be one of the column names in the meta.data",
+          "{.arg ref_group} must be one of the column names in the meta.data",
           message_type = "error"
         )
       } else {
@@ -87,7 +87,7 @@ RunKNNMap <- function(
       }
     } else {
       log_message(
-        "Length of ref_group must be one or length of srt_ref.",
+        "Length of {.arg ref_group} must be one or length of {.arg srt_ref}",
         message_type = "error"
       )
     }
@@ -103,16 +103,18 @@ RunKNNMap <- function(
     )[1]
     if (length(ref_umap) == 0) {
       log_message(
-        "Cannot find UMAP reduction in the srt_ref",
+        "Cannot find UMAP reduction in the {.arg srt_ref}",
         message_type = "error"
       )
     } else {
-      log_message("Set ref_umap to ", ref_umap)
+      log_message("Set {.arg ref_umap} to {.val {ref_umap}}")
     }
   }
   projection_method <- match.arg(projection_method)
   if (projection_method == "model" && !"model" %in% names(srt_ref[[ref_umap]]@misc)) {
-    log_message("No UMAP model detected. Set the projection_method to 'knn'")
+    log_message(
+      "No UMAP model detected. Set the {.arg projection_method} to {.val knn}"
+    )
     projection_method <- "knn"
   }
   distance_metrics <- c("euclidean", "cosine", "manhattan", "hamming")
@@ -208,23 +210,39 @@ RunKNNMap <- function(
       )
     }
     if (length(features) == 0) {
-      if (length(SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
+      vf_ref <- SeuratObject::VariableFeatures(
+        srt_ref,
+        assay = ref_assay
+      )
+      if (length(vf_ref) == 0) {
         srt_ref <- Seurat::FindVariableFeatures(
           srt_ref,
           nfeatures = nfeatures,
           assay = ref_assay
         )
+        vf_ref <- SeuratObject::VariableFeatures(
+          srt_ref,
+          assay = ref_assay
+        )
       }
-      if (length(SeuratObject::VariableFeatures(srt_query, assay = query_assay)) == 0) {
+      vf_query <- SeuratObject::VariableFeatures(
+        srt_query,
+        assay = query_assay
+      )
+      if (length(vf_query) == 0) {
         srt_query <- Seurat::FindVariableFeatures(
           srt_query,
           nfeatures = nfeatures,
           assay = query_assay
         )
+        vf_query <- SeuratObject::VariableFeatures(
+          srt_query,
+          assay = query_assay
+        )
       }
       features <- intersect(
-        SeuratObject::VariableFeatures(srt_query, assay = query_assay),
-        SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)
+        vf_query,
+        vf_ref
       )
     }
     features_common <- Reduce(
@@ -235,7 +253,9 @@ RunKNNMap <- function(
         rownames(srt_ref[[ref_assay]])
       )
     )
-    log_message("Use ", length(features_common), " features to calculate distance.")
+    log_message(
+      "Use {.val {length(features_common)}} features to calculate distance"
+    )
     query <- Matrix::t(
       GetAssayData5(
         srt_query,
@@ -277,25 +297,22 @@ RunKNNMap <- function(
       nn_method <- "raw"
     }
   }
-  log_message("Use '", nn_method, "' method to find neighbors.")
+  log_message("Use {.pkg {nn_method}} method to find neighbors")
   if (!nn_method %in% c("raw", "annoy", "rann")) {
     log_message(
-      "nn_method must be one of raw, rann and annoy",
+      "{.arg nn_method} must be one of {.val {c('raw', 'annoy', 'rann')}}",
       message_type = "error"
     )
   }
-  if (
-    nn_method == "annoy" &&
-      !distance_metric %in% c("euclidean", "cosine", "manhattan", "hamming")
-  ) {
+  if (nn_method == "annoy" && !distance_metric %in% distance_metrics) {
     log_message(
-      "distance_metric must be one of euclidean, cosine, manhattan, and hamming when nn_method='annoy'",
+      "{.arg distance_metric} must be one of {.val {distance_metrics}} when {.arg nn_method = 'annoy'}",
       message_type = "error"
     )
   }
 
   if (nn_method %in% c("annoy", "rann")) {
-    query.neighbor <- Seurat::FindNeighbors(
+    query_neighbor <- Seurat::FindNeighbors(
       query = query,
       object = ref,
       k.param = k,
@@ -303,14 +320,14 @@ RunKNNMap <- function(
       annoy.metric = distance_metric,
       return.neighbor = TRUE
     )
-    match_k <- query.neighbor@nn.idx
+    match_k <- query_neighbor@nn.idx
     rownames(match_k) <- rownames(query)
     match_k_cell <- apply(match_k, c(1, 2), function(x) rownames(ref)[x])
     knn_cells <- c(match_k_cell)
-    match_k_distance <- query.neighbor@nn.dist
+    match_k_distance <- query_neighbor@nn.dist
     rownames(match_k_distance) <- rownames(query)
     refumap_all <- srt_ref[[ref_umap]]@cell.embeddings[knn_cells, ]
-    group <- rep(query.neighbor@cell.names, ncol(query.neighbor@nn.idx))
+    group <- rep(query_neighbor@cell.names, ncol(query_neighbor@nn.idx))
   } else {
     if (distance_metric %in% c(simil_method, "pearson", "spearman")) {
       if (distance_metric %in% c("pearson", "spearman")) {
@@ -391,6 +408,48 @@ RunKNNMap <- function(
       )
       srt_query[["ref.embeddings"]]@misc[["reduction.model"]] <- ref_umap
     } else if ("embedding" %in% names(model)) {
+      match_k <- as_matrix(match_k)
+      match_k_distance <- as_matrix(match_k_distance)
+
+      invalid_idx <- match_k < 1 | match_k > nrow(ref) | is.na(match_k)
+      if (any(invalid_idx)) {
+        n_invalid <- sum(invalid_idx, na.rm = TRUE)
+        match_k[invalid_idx] <- sample(
+          seq_len(nrow(ref)),
+          size = n_invalid, replace = TRUE
+        )
+      }
+
+      if (any(is.na(match_k_distance))) {
+        global_max <- if (any(is.finite(match_k_distance))) {
+          max(match_k_distance, na.rm = TRUE)
+        } else {
+          1.0
+        }
+        for (i in seq_len(nrow(match_k_distance))) {
+          row_na <- is.na(match_k_distance[i, ])
+          if (any(row_na)) {
+            if (all(row_na)) {
+              match_k_distance[i, row_na] <- global_max
+            } else {
+              match_k_distance[i, row_na] <- max(
+                match_k_distance[i, !row_na],
+                na.rm = TRUE
+              )
+            }
+          }
+        }
+      }
+
+      if (any(!is.finite(match_k_distance))) {
+        finite_max <- if (any(is.finite(match_k_distance))) {
+          max(match_k_distance[is.finite(match_k_distance)], na.rm = TRUE)
+        } else {
+          1.0
+        }
+        match_k_distance[!is.finite(match_k_distance)] <- finite_max
+      }
+
       neighborlist <- list(idx = match_k, dist = match_k_distance)
       srt_query[["ref.embeddings"]] <- RunUMAP2(
         object = neighborlist,
@@ -414,7 +473,9 @@ RunKNNMap <- function(
   }
 
   if (!is.null(ref_group)) {
-    log_message("Predicting cell types based on ref_group.") ## slow
+    log_message(
+      "Predicting cell types based on ref_group"
+    )
     level <- as.character(unique(srt_ref[["ref_group", drop = TRUE]]))
     if (k == 1) {
       match_best <- srt_ref[["ref_group", drop = TRUE]][match_k_cell[, 1]]
@@ -429,7 +490,9 @@ RunKNNMap <- function(
       rownames(match_k_cell) <- rn
       match_freq <- apply(match_k_cell, 1, table)
       if (!inherits(match_freq, "list")) {
-        match_freq <- as.list(stats::setNames(object = rep(k, nrow(match_k_cell)), rn))
+        match_freq <- as.list(
+          stats::setNames(object = rep(k, nrow(match_k_cell)), rn)
+        )
         match_freq <- lapply(
           stats::setNames(names(match_freq), names(match_freq)),
           function(x) stats::setNames(k, match_k_cell[x, 1])
@@ -441,7 +504,7 @@ RunKNNMap <- function(
           x <- x / sum(x)
           return(x)
         }
-      ) %>%
+      ) |>
         dplyr::bind_rows()
       match_prob <- as_matrix(match_prob)
       rownames(match_prob) <- names(match_freq)

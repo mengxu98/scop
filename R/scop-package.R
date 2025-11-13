@@ -79,6 +79,8 @@ print.scop_logo <- function(x, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
+  options(scop_env_cache = NULL)
+
   verbose <- thisutils::get_verbose()
   if (isTRUE(verbose)) {
     version <- utils::packageDescription(
@@ -136,7 +138,9 @@ print.scop_logo <- function(x, ...) {
             return(invisible(NULL))
           }
           envname <- get_envname()
-          envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
+          envs_dir <- get_namespace_fun(
+            "reticulate", "conda_info"
+          )(conda = conda)$envs_dirs[1]
           env <- env_exist(
             conda = conda,
             envname = envname,

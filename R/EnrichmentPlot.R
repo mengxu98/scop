@@ -305,7 +305,7 @@
 #'   network_blendmode = "average",
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) |> panel_fix(height = 5)
+#' ) |> thisplot::panel_fix(height = 5)
 #'
 #' EnrichmentPlot(
 #'   pancreas_sub,
@@ -347,7 +347,7 @@
 #'   character_width = 10,
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) |> panel_fix(height = 4)
+#' ) |> thisplot::panel_fix(height = 4)
 #'
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
@@ -1089,6 +1089,7 @@ EnrichmentPlot <- function(
         )
       )
 
+      shadowtextGrob <- get_namespace_fun("shadowtext", "shadowtextGrob")
       draw_key_cust <- function(data, params, size) {
         data_text <- data
         data_text$label <- which(
@@ -1100,7 +1101,7 @@ EnrichmentPlot <- function(
         data_text$size <- 11 / ggplot2::.pt
         grid::grobTree(
           draw_key_point(data, list(color = "white", shape = 21)),
-          ggrepel:::shadowtextGrob(
+          shadowtextGrob(
             label = data_text$label,
             bg.colour = "black",
             bg.r = 0.1,
