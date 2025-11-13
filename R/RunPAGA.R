@@ -55,7 +55,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
@@ -139,6 +138,7 @@ RunPAGA <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "One of {.arg srt} or {.arg adata} must be provided",

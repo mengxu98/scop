@@ -28,7 +28,6 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
@@ -51,6 +50,7 @@ srt_to_adata <- function(
     convert_tools = FALSE,
     convert_misc = FALSE,
     verbose = TRUE) {
+  PrepareEnv()
   check_python(c("scanpy", "numpy"))
 
   if (!inherits(srt, "Seurat")) {

@@ -23,7 +23,6 @@ This function performs doublet-calling using the scrublet(python) package on a S
 \examples{
 \dontrun{
 data(pancreas_sub)
-PrepareEnv()
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- db_Scrublet(pancreas_sub)
 CellDimPlot(
