@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.5.6
-Date: 2025-11-05
+Version: 0.6.0
+Date: 2025-11-13
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -18,6 +18,7 @@ Depends:
     R (>= 4.1.0)
 biocViews: SingleCell, GeneExpression, SingleCellWorkflow, Visualization, ShinyApps
 Imports:
+    cli,
     ComplexHeatmap,
     dplyr,
     ggnewscale,
@@ -34,26 +35,22 @@ Imports:
     Signac,
     Seurat,
     SeuratObject,
+    thisplot,
     thisutils,
     uwot
 Suggests:
     AnnotationDbi,
     AUCell,
     batchelor,
-    Biobase,
-    BiocGenerics,
     data.table,
     biomaRt,
     CellChat,
     circlize,
-    cli,
     clusterProfiler,
-    concaveman,
     conos,
     cowplot,
     dendextend,
     destiny,
-    DDRTree,
     e1071,
     ggpubr,
     ggridges,
@@ -61,7 +58,6 @@ Suggests:
     ggupset,
     ggVennDiagram,
     ggwordcloud,
-    glmGamPoi,
     glmpca,
     GO.db,
     GOSemSim,
@@ -69,13 +65,11 @@ Suggests:
     grid,
     harmony,
     HDF5Array,
-    hexbin,
     htmlwidgets,
     httr,
     intrinsicDimension,
     limma,
     metR,
-    monocle,
     MatrixGenerics,
     MASS,
     NMF,
@@ -87,9 +81,7 @@ Suggests:
     purrr,
     PFAM.db,
     plotly,
-    png,
     proxyC,
-    ragg,
     reactome.db,
     RcppML,
     R.cache,
@@ -113,12 +105,12 @@ Suggests:
     SingleR,
     SingleCellExperiment,
     SummarizedExperiment,
-    tidyr,
     umap,
     UCell
 Remotes:
     jinworks/CellChat,
-    theislab/destiny
+    theislab/destiny,
+    mengxu98/thisplot
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3

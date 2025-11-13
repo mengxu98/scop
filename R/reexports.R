@@ -1,4 +1,4 @@
-#' @import ggplot2 Seurat thisutils
+#' @import ggplot2 Seurat thisutils thisplot
 #' @importFrom ggplot2 %+replace%
 #' @importFrom ComplexHeatmap %v%
 #' @importFrom grDevices palette
@@ -7,7 +7,8 @@
 #' @importFrom stats median
 #' @importFrom ggrepel GeomTextRepel
 #' @importFrom Signac RunSVD
-#' @importFrom thisutils wilkinsonp maximump minimump meanp votep sump
+#' @importFrom thisutils wilkinsonp maximump minimump meanp votep sump log_message
+#' @importFrom thisplot get_namespace_fun theme_this
 #' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
 #' @export
@@ -17,12 +18,16 @@ dplyr::`%>%`
 #' @export
 rlang::`%||%`
 
+get_namespace_fun <- thisplot::get_namespace_fun
+log_message <- thisutils::log_message
+theme_scop <- thisplot::theme_this
+
 utils::globalVariables(
   c(
     ":=", "Axis_1", "Axis_2", "X", "Y",
     "block_graphics", "celltype", "cluster",
     "color",
-    "colour", "combn", "count", "Count", "Database",
+    "colour", "combn", "conda_info", "count", "Count", "Database",
     "Description", "DescriptionP", "dim1", "dim2",
     "dx", "dy", "error", "fill",
     "Freq", "from_dim1", "from_dim2", "gene", "GeneName",
@@ -43,7 +48,6 @@ utils::globalVariables(
     "node",
     "next_node",
     "next_x",
-    "..r",
     "boot_CI_2.5", "boot_CI_97.5", "clusters",
     "obs_log2FD", "significance"
   )

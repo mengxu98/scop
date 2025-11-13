@@ -28,7 +28,6 @@
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata
 #'
@@ -51,6 +50,7 @@ srt_to_adata <- function(
     convert_tools = FALSE,
     convert_misc = FALSE,
     verbose = TRUE) {
+  PrepareEnv()
   check_python(c("scanpy", "numpy"))
 
   if (!inherits(srt, "Seurat")) {
@@ -234,25 +234,25 @@ srt_to_adata <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
 #'   adata = adata,
 #'   group_by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP"
+#'   linear_reduction = "X_pca",
+#'   nonlinear_reduction = "X_umap"
 #' )
 #' srt <- adata_to_srt(adata)
 #' srt
 #'
 #' # Or convert a h5ad file to Seurat object
-#' library(reticulate)
-#' check_python("scanpy")
-#' sc <- import("scanpy")
+#' sc <- reticulate::import("scanpy")
 #' adata <- sc$read_h5ad("pancreas.h5ad")
 #' srt <- adata_to_srt(adata)
 #' srt
+#' }
 adata_to_srt <- function(
     adata,
     verbose = TRUE) {
@@ -297,7 +297,7 @@ adata_to_srt <- function(
       layer <- py_to_r2(adata$layers[[k]])
       if (!inherits(layer, c("Matrix", "matrix"))) {
         log_message(
-           "The object in {.val {k}} layers is not a matrix: {.val {class(adata$layers[[k]])}}",
+          "The object in {.val {k}} layers is not a matrix: {.val {class(adata$layers[[k]])}}",
           message_type = "error"
         )
       }

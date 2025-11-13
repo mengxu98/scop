@@ -78,6 +78,7 @@ RunWOT <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
     log_message(

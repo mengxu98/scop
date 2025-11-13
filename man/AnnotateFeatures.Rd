@@ -12,7 +12,7 @@ AnnotateFeatures(
   db_update = FALSE,
   db_version = "latest",
   convert_species = TRUE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   gtf = NULL,
   merge_gtf_by = "gene_name",

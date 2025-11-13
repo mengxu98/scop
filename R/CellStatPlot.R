@@ -21,7 +21,7 @@
 #' )
 #' p1
 #'
-#' panel_fix(p1, height = 2, width = 3)
+#' thisplot::panel_fix(p1, height = 2, width = 3)
 #'
 #' CellStatPlot(
 #'   pancreas_sub,
@@ -313,10 +313,10 @@ CellStatPlot <- function(
     force = FALSE,
     seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
-  meta.data <- srt@meta.data[cells, , drop = FALSE]
+  meta_data <- srt@meta.data[cells, , drop = FALSE]
 
   plot <- StatPlot(
-    meta.data = meta.data,
+    meta.data = meta_data,
     stat.by = stat.by,
     group.by = group.by,
     split.by = split.by,
@@ -1305,6 +1305,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "sankey") {
+        check_r("davidsjoberg/ggsankey")
         colors <- palette_colors(
           c(
             unique(
@@ -1368,7 +1369,7 @@ StatPlot <- function(
         }
 
         dat <- suppressWarnings(
-          make_long(
+          get_namespace_fun("ggsankey", "make_long")(
             dat_use,
             dplyr::all_of(stat.by)
           )
@@ -1384,7 +1385,7 @@ StatPlot <- function(
             fill = node
           )
         ) +
-          geom_sankey(
+          get_namespace_fun("ggsankey", "geom_sankey")(
             color = "black",
             flow.alpha = alpha,
             show.legend = FALSE,
