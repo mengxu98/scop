@@ -21,7 +21,7 @@
 #' )
 #' p1
 #'
-#' panel_fix(p1, height = 2, width = 3)
+#' thisplot::panel_fix(p1, height = 2, width = 3)
 #'
 #' CellStatPlot(
 #'   pancreas_sub,

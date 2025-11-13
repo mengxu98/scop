@@ -41,8 +41,7 @@
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
-#'   reduction = "PCA",
-#'   dims = 1:10
+#'   reduction = "PCA"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -53,7 +52,6 @@
 #' )
 #'
 #' # 3D lineage
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
