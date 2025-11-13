@@ -50,7 +50,6 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
@@ -152,6 +151,7 @@ RunSCVELO <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   check_python("scvelo", verbose = verbose)
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)

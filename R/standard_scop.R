@@ -74,7 +74,6 @@
 #' @examples
 #' \dontrun{
 #' library(Matrix)
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot(
@@ -206,6 +205,7 @@ standard_scop <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
