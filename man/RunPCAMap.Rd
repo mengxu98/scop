@@ -52,12 +52,13 @@ Single-cell reference mapping with PCA method
 }
 \examples{
 data(panc8_sub)
+panc8_sub <- standard_scop(panc8_sub)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(
   srt_ref,
   batch = "tech",
-  integration_method = "Seurat"
+  integration_method = "Uncorrected"
 )
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
@@ -65,8 +66,8 @@ CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 srt_query <- RunPCAMap(
   srt_query = srt_query,
   srt_ref = srt_ref,
-  ref_pca = "Seuratpca",
-  ref_umap = "SeuratUMAP2D"
+  ref_pca = "Uncorrectedpca",
+  ref_umap = "UncorrectedUMAP2D"
 )
 ProjectionPlot(
   srt_query = srt_query,

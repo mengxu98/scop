@@ -8,24 +8,19 @@ RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
 }
 \arguments{
 \item{envname}{The name of the conda environment to remove.
-If NULL, uses the default scop environment name.}
+If \code{NULL}, uses the default scop environment name.}
 
-\item{conda}{The path to a conda executable. Use "auto" to allow
-reticulate to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow reticulate to automatically find an appropriate conda binary.}
 
 \item{force}{Whether to force removal without confirmation.
-Default is FALSE.}
+Default is \code{FALSE}.}
 }
 \value{
 Invisibly returns TRUE if successful, FALSE otherwise.
 }
 \description{
 Remove a conda environment
-}
-\details{
-This function removes a conda environment completely.
-This action cannot be undone, so use with caution.
-If the environment is currently active, it will be deactivated first.
 }
 \examples{
 \dontrun{
