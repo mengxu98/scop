@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -215,8 +215,192 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:S4Vectors’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     expand</span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunNMF</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in apply(X = data_use[features, ], MARGIN = 1, FUN = stats::var):</span> dim(X) must have a positive length</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:55] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:56] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span> object...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2025-11-13 12:28:56] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:58] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:58] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:58] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:59] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:59] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:28:59] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:00] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">louvain</span> and `cluster_resolution` = <span style="color: #0000BB;">0.6</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:00] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:00] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:00] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:00] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:05] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:29:05] UMAP will return its model</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-11-13 12:29:10] Run scop standard workflow done</span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunNMF</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-11-13 12:29:10] <span style="color: #0000BB;">zdebruine/RcppML</span> installed successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> iter |      tol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ---------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1 | 6.94e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2 | 9.76e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3 | 3.18e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4 | 1.49e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5 | 8.15e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    6 | 5.06e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    7 | 3.40e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    8 | 2.43e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    9 | 1.80e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   10 | 1.37e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   11 | 1.07e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   12 | 8.59e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   13 | 7.01e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   14 | 5.85e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   15 | 5.07e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   16 | 4.47e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   17 | 4.03e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   18 | 3.67e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19 | 3.32e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   20 | 2.98e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   21 | 2.72e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   22 | 2.48e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   23 | 2.28e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   24 | 2.11e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   25 | 1.99e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   26 | 1.91e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   27 | 1.85e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   28 | 1.76e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   29 | 1.72e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30 | 1.68e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   31 | 1.62e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   32 | 1.54e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   33 | 1.45e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34 | 1.35e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   35 | 1.24e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36 | 1.15e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   37 | 1.06e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   38 | 9.81e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   39 | 9.10e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   40 | 8.53e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   41 | 8.05e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   42 | 7.62e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   43 | 7.25e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   44 | 6.94e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   45 | 6.73e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   46 | 6.61e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   47 | 6.49e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   48 | 6.36e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   49 | 6.22e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   50 | 6.04e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   51 | 5.84e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   52 | 5.62e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   53 | 5.39e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   54 | 5.05e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   55 | 4.69e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   56 | 4.39e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   57 | 4.11e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   58 | 3.85e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   59 | 3.60e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   60 | 3.38e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   61 | 3.18e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   62 | 3.01e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   63 | 2.88e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   64 | 2.77e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   65 | 2.69e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   66 | 2.59e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   67 | 2.50e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   68 | 2.40e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   69 | 2.30e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   70 | 2.20e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   71 | 2.12e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   72 | 2.05e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   73 | 2.00e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   74 | 1.96e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   75 | 1.94e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   76 | 1.90e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   77 | 1.87e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   78 | 1.82e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   79 | 1.72e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   80 | 1.62e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   81 | 1.54e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   82 | 1.45e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   83 | 1.37e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   84 | 1.31e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   85 | 1.25e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   86 | 1.20e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   87 | 1.16e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   88 | 1.11e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   89 | 1.07e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   90 | 1.02e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   91 | 9.91e-06</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Sox9, Rpl12, Aldh1b1, Rplp1, Wfdc2, Krt18, Tkt, Aldoa, Hspe1, Ptma </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Tmem108, Poc1a, Epn3, Wipi1, Tmcc3, Nhsl1, Fgf12, Plekho1, Tecpr2, Zbtb4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Gm10941, Trf, Man1c1, Hmgcs1, Nipal1, Jam3, Pgap1, Alpl, Kcnip3, Tnr </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Gm15915, Rbp2, Cbfa2t2, Sh2d4a, Bbc3, Megf6, Naaladl2, Fam46d, Hist2h2ac, Tox2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Gsta3, Sparc, Vim, Atp1b1, Mt1, Dbi, Anxa2, Rps2, Id2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Rpl22l1, Rplp1, Mgst1, Clu, Sox9, Cldn6, Mdk, Pdzk1ip1, Bicc1, 1700011H14Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Rps12, S100a10, Cldn3, Rpl36a, Ppp1r1b, Adamts1, Serpinh1, Mt2, Ifitm2, Rpl39 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Rpa3, Aacs, Tmem108, Poc1a, Epn3, Wipi1, B830012L14Rik, Tmcc3, Wsb1, Plekho1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Ppp2r2b, Tecpr2, Zbtb4, Haus8, Trf, Gm5420, Man1c1, Hmgcs1, Nipal1, Jam3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Tcerg1, Pgap1, Snrpa1, Alpl, Larp1b, Kcnip3, Tnr, Lsm12, Ptbp3, Gm15915 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Cck, Mdk, Gadd45a, Neurog3, Selm, Sox4, Btbd17, Tmsb4x, Btg2, Cldn6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cotl1, Ptma, Jun, Ppp1r14a, Rps2, Ifitm2, Neurod2, Igfbpl1, Gnas, Krt7 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Nkx6-1, Aplp1, Ppp3ca, Lrpap1, Rplp1, Hn1, Rps12, Mfng, BC023829, Smarcd2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Elovl6, Tmem108, Poc1a, Epn3, Nop56, Wipi1, B830012L14Rik, Rrp15, Rfc1, Fgf12 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Slc20a1, Ppp2r2b, Lama1, Tecpr2, Zbtb4, Eif1ax, Fam162a, P4ha3, Gm10941, Tenm4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pde4b, Gm5420, Man1c1, Hmgcs1, Pgap1, Mgst2, Larp1b, Kcnip3, Tnr, Lsm12 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 4 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Cyr61, Krt18, Tpm1, Krt8, Myl12a, Vim, Jun, Anxa5, Tnfrsf12a </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Csrp1, Sparc, Cldn7, Nudt19, Anxa2, Clu, Myl9, Atp1b1, Cldn3, Tagln2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   S100a10, 1700011H14Rik, Cd24a, Rps2, Dbi, Id2, Lurap1l, Rplp1, Myl12b, Klf6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Rpa3, Elovl6, Aacs, Tmem108, Poc1a, Tmcc3, Rfc1, Plekho1, Slc20a1, Ppp2r2b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Lama1, Tecpr2, Gm10941, Tenm4, Pde4b, Man1c1, Nipal1, Jam3, Pgap1, Alpl </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Mgst2, Kcnip3, Tnr, Ptbp3, Gm15915, Cntln, Ocln, Fras1, Rbp2, Cbfa2t2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 5 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  2810417H13Rik, Rrm2, Hmgb2, Dut, Pcna, Lig1, H2afz, Tipin, Tuba1b, Tk1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Mcm5, Dek, Tyms, Gmnn, Ran, Tubb5, Rfc2, Srsf2, Ranbp1, Orc6 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Mcm3, Uhrf1, Gins2, Dnajc9, Mcm6, Siva1, Rfc3, Mcm7, Rpa2, Ptma </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 </span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -234,7 +418,7 @@ Default is <code>11</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

@@ -1,0 +1,424 @@
+# PAGA plot
+
+This function generates a PAGA plot based on the given Seurat object and
+PAGA result.
+
+## Usage
+
+``` r
+PAGAPlot(
+  srt,
+  paga = srt@misc$paga,
+  type = "connectivities",
+  reduction = NULL,
+  dims = c(1, 2),
+  cells = NULL,
+  show_transition = FALSE,
+  node_palette = "Paired",
+  node_palcolor = NULL,
+  node_size = 4,
+  node_alpha = 1,
+  node_highlight = NULL,
+  node_highlight_color = "red",
+  label = FALSE,
+  label.size = 3.5,
+  label.fg = "white",
+  label.bg = "black",
+  label.bg.r = 0.1,
+  label_insitu = FALSE,
+  label_repel = FALSE,
+  label_repulsion = 20,
+  label_point_size = 1,
+  label_point_color = "black",
+  label_segment_color = "black",
+  edge_threshold = 0.01,
+  edge_line = c("straight", "curved"),
+  edge_line_curvature = 0.3,
+  edge_line_angle = 90,
+  edge_size = c(0.2, 1),
+  edge_color = "grey40",
+  edge_alpha = 0.5,
+  edge_shorten = 0,
+  edge_offset = 0,
+  edge_highlight = NULL,
+  edge_highlight_color = "red",
+  transition_threshold = 0.01,
+  transition_line = c("straight", "curved"),
+  transition_line_curvature = 0.3,
+  transition_line_angle = 90,
+  transition_size = c(0.2, 1),
+  transition_color = "black",
+  transition_alpha = 1,
+  transition_arrow_type = "closed",
+  transition_arrow_angle = 20,
+  transition_arrow_length = grid::unit(0.02, "npc"),
+  transition_shorten = 0.05,
+  transition_offset = 0,
+  transition_highlight = NULL,
+  transition_highlight_color = "red",
+  aspect.ratio = 1,
+  title = "PAGA",
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  return_layer = FALSE
+)
+```
+
+## Arguments
+
+- srt:
+
+  A Seurat object containing a PAGA result.
+
+- paga:
+
+  The PAGA result from the Seurat object. Defaults to `srt\$misc\$paga`.
+
+- type:
+
+  The type of plot to generate. Possible values are "connectivities"
+  (default) and "connectivities_tree".
+
+- reduction:
+
+  The type of reduction to use for the plot. Defaults to the default
+  reduction in the Seurat object.
+
+- dims:
+
+  The dimensions of the reduction to use for the plot. Defaults to the
+  first two dimensions.
+
+- cells:
+
+  The cells to include in the plot. Defaults to all cells.
+
+- show_transition:
+
+  Whether to display transitions between different cell states. Defaults
+  to `FALSE`.
+
+- node_palette:
+
+  The color palette to use for node coloring. Defaults to "Paired".
+
+- node_palcolor:
+
+  A vector of colors to use for node coloring. Defaults to `NULL`.
+
+- node_size:
+
+  The size of the nodes in the plot. Defaults to 4.
+
+- node_alpha:
+
+  The transparency of the nodes in the plot. Defaults to 1.
+
+- node_highlight:
+
+  The group(s) to highlight in the plot. Defaults to `NULL`.
+
+- node_highlight_color:
+
+  The color to use for highlighting the nodes. Defaults to "red".
+
+- label:
+
+  Whether to display labels for the nodes. Defaults to `FALSE`.
+
+- label.size:
+
+  The size of the labels. Defaults to 3.5.
+
+- label.fg:
+
+  The color of the label text. Defaults to "white".
+
+- label.bg:
+
+  The background color of the labels. Defaults to "black".
+
+- label.bg.r:
+
+  The transparency of the label background color. Defaults to 0.1.
+
+- label_insitu:
+
+  Whether to use in-situ labeling for the nodes. Defaults to `FALSE`.
+
+- label_repel:
+
+  Whether to use repel mode for labeling nodes. Defaults to `FALSE`.
+
+- label_repulsion:
+
+  The repulsion factor for repel mode. Defaults to 20.
+
+- label_point_size:
+
+  The size of the points in the labels. Defaults to 1.
+
+- label_point_color:
+
+  The color of the points in the labels. Defaults to "black".
+
+- label_segment_color:
+
+  The color of the lines connecting the points in the labels. Defaults
+  to "black".
+
+- edge_threshold:
+
+  The threshold for including edges in the plot. Defaults to 0.01.
+
+- edge_line:
+
+  The type of line to use for the edges. Possible values are "straight"
+  and "curved". Defaults to "straight".
+
+- edge_line_curvature:
+
+  The curvature factor for curved edges. Defaults to 0.3.
+
+- edge_line_angle:
+
+  The angle for curved edges. Defaults to 90.
+
+- edge_size:
+
+  The size range for the edges. Defaults to c(0.2, 1).
+
+- edge_color:
+
+  The color of the edges. Defaults to "grey40".
+
+- edge_alpha:
+
+  The transparency of the edges. Defaults to 0.5.
+
+- edge_shorten:
+
+  The amount to shorten the edges. Defaults to 0.
+
+- edge_offset:
+
+  The offset for curved edges. Defaults to 0.
+
+- edge_highlight:
+
+  The group(s) to highlight in the plot. Defaults to `NULL`.
+
+- edge_highlight_color:
+
+  The color to use for highlighting the edges. Defaults to "red".
+
+- transition_threshold:
+
+  The threshold for including transitions in the plot. Defaults to 0.01.
+
+- transition_line:
+
+  The type of line to use for the transitions. Possible values are
+  "straight" and "curved". Defaults to "straight".
+
+- transition_line_curvature:
+
+  The curvature factor for curved transitions. Defaults to 0.3.
+
+- transition_line_angle:
+
+  The angle for curved transitions. Defaults to 90.
+
+- transition_size:
+
+  The size range for the transitions. Defaults to c(0.2, 1).
+
+- transition_color:
+
+  The color of the transitions. Defaults to "black".
+
+- transition_alpha:
+
+  The transparency of the transitions. Defaults to 1.
+
+- transition_arrow_type:
+
+  The type of arrow to use for the transitions. Possible values are
+  "closed", "open", and "triangle". Defaults to "closed".
+
+- transition_arrow_angle:
+
+  The angle of the arrow for transitions. Defaults to 20.
+
+- transition_arrow_length:
+
+  The length of the arrow for transitions. Defaults to unit(0.02,
+  "npc").
+
+- transition_shorten:
+
+  The amount to shorten the transitions. Defaults to 0.05.
+
+- transition_offset:
+
+  The offset for curved transitions. Defaults to 0.
+
+- transition_highlight:
+
+  The group(s) to highlight in the plot. Defaults to `NULL`.
+
+- transition_highlight_color:
+
+  The color to use for highlighting the transitions. Defaults to "red".
+
+- aspect.ratio:
+
+  The aspect ratio of the plot. Defaults to 1.
+
+- title:
+
+  The title of the plot. Defaults to "PAGA".
+
+- subtitle:
+
+  The subtitle of the plot. Defaults to `NULL`.
+
+- xlab:
+
+  The label for the x-axis. Defaults to `NULL`.
+
+- ylab:
+
+  The label for the y-axis. Defaults to `NULL`.
+
+- legend.position:
+
+  The position of the legend. Possible values are "right", "left",
+  "bottom", and "top". Defaults to "right".
+
+- legend.direction:
+
+  The direction of the legend. Possible values are "vertical" and
+  "horizontal". Defaults to "vertical".
+
+- theme_use:
+
+  The name of the theme to use for the plot. Defaults to "theme_scop".
+
+- theme_args:
+
+  A list of arguments to pass to the theme function. Defaults to an
+  empty list.
+
+- return_layer:
+
+  Whether to return the plot as a ggplot2 layer. Defaults to `FALSE`.
+
+## See also
+
+[RunPAGA](https://mengxu98.github.io/scop/reference/RunPAGA.md),
+[CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunPAGA(
+  pancreas_sub,
+  group_by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
+  return_seurat = TRUE
+)
+
+PAGAPlot(pancreas_sub)
+
+PAGAPlot(
+  pancreas_sub,
+  type = "connectivities_tree"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  reduction = "PCA"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  reduction = "PAGAUMAP2D"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  edge_shorten = 0.05
+)
+
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE
+)
+
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE,
+  label_insitu = TRUE
+)
+
+PAGAPlot(
+  pancreas_sub,
+  label = TRUE,
+  label_insitu = TRUE,
+  label_repel = TRUE
+)
+
+PAGAPlot(
+  pancreas_sub,
+  edge_line = "curved"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  node_size = "GroupSize"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  node_highlight = "Ductal"
+)
+
+PAGAPlot(
+  pancreas_sub,
+  edge_highlight = paste(
+    "Pre-endocrine",
+    levels(pancreas_sub$SubCellType),
+    sep = "-"
+  )
+)
+
+pancreas_sub <- RunSCVELO(
+  pancreas_sub,
+  group_by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
+  return_seurat = TRUE
+)
+
+PAGAPlot(
+  pancreas_sub,
+  show_transition = TRUE
+)
+
+PAGAPlot(
+  pancreas_sub,
+  show_transition = TRUE,
+  transition_offset = 0.02
+)
+} # }
+```

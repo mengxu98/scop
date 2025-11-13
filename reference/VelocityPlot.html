@@ -9,7 +9,7 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,147 +107,183 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>Cells to include in the plot. If `NULL`, all cells will be included.</p></dd>
+<dd><p>Cells to include in the plot.
+If `NULL`, all cells will be included.</p></dd>
 
 
 <dt id="arg-velocity">velocity<a class="anchor" aria-label="anchor" href="#arg-velocity"></a></dt>
-<dd><p>Name of the velocity to use for plotting. Default is `"stochastic"`.</p></dd>
+<dd><p>Name of the velocity to use for plotting.
+Default is `"stochastic"`.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>Type of plot to create. Can be `"raw"`, `"grid"`, or `"stream"`.</p></dd>
+<dd><p>Type of plot to create.
+Can be `"raw"`, `"grid"`, or `"stream"`.</p></dd>
 
 
 <dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of the column in the Seurat object metadata to group the cells by. Defaults is `NULL`.</p></dd>
+<dd><p>Name of the column in the Seurat object metadata to group the cells by.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-group-palette">group_palette<a class="anchor" aria-label="anchor" href="#arg-group-palette"></a></dt>
-<dd><p>Name of the palette to use for coloring the groups. Defaults is `"Paired"`.</p></dd>
+<dd><p>Name of the palette to use for coloring the groups.
+Defaults is `"Paired"`.</p></dd>
 
 
 <dt id="arg-group-palcolor">group_palcolor<a class="anchor" aria-label="anchor" href="#arg-group-palcolor"></a></dt>
-<dd><p>Colors to use for coloring the groups. Defaults is `NULL`.</p></dd>
+<dd><p>Colors to use for coloring the groups.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
-<dd><p>Number of neighbors to include for the density estimation. Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.</p></dd>
+<dd><p>Number of neighbors to include for the density estimation.
+Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.</p></dd>
 
 
 <dt id="arg-density">density<a class="anchor" aria-label="anchor" href="#arg-density"></a></dt>
-<dd><p>Propotion of cells to plot. Defaults is `1` (plot all cells).</p></dd>
+<dd><p>Propotion of cells to plot.
+Defaults is `1` (plot all cells).</p></dd>
 
 
 <dt id="arg-smooth">smooth<a class="anchor" aria-label="anchor" href="#arg-smooth"></a></dt>
-<dd><p>Smoothing parameter for density estimation. Defaults is `0.5`.</p></dd>
+<dd><p>Smoothing parameter for density estimation.
+Defaults is `0.5`.</p></dd>
 
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
-<dd><p>Scaling factor for the velocity vectors. Defaults is `1`.</p></dd>
+<dd><p>Scaling factor for the velocity vectors.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-min-mass">min_mass<a class="anchor" aria-label="anchor" href="#arg-min-mass"></a></dt>
-<dd><p>Minimum mass value for the density-based cutoff. Defaults is `1`.</p></dd>
+<dd><p>Minimum mass value for the density-based cutoff.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-cutoff-perc">cutoff_perc<a class="anchor" aria-label="anchor" href="#arg-cutoff-perc"></a></dt>
-<dd><p>Percentile value for the density-based cutoff. Defaults is `5`.</p></dd>
+<dd><p>Percentile value for the density-based cutoff.
+Defaults is `5`.</p></dd>
 
 
 <dt id="arg-arrow-angle">arrow_angle<a class="anchor" aria-label="anchor" href="#arg-arrow-angle"></a></dt>
-<dd><p>Angle of the arrowheads. Defaults is `20`.</p></dd>
+<dd><p>Angle of the arrowheads.
+Defaults is `20`.</p></dd>
 
 
 <dt id="arg-arrow-color">arrow_color<a class="anchor" aria-label="anchor" href="#arg-arrow-color"></a></dt>
-<dd><p>Color of the arrowheads. Defaults is `"black"`.</p></dd>
+<dd><p>Color of the arrowheads.
+Defaults is `"black"`.</p></dd>
 
 
 <dt id="arg-streamline-l">streamline_L<a class="anchor" aria-label="anchor" href="#arg-streamline-l"></a></dt>
-<dd><p>Length of the streamlines. Defaults is `5`.</p></dd>
+<dd><p>Length of the streamlines.
+Defaults is `5`.</p></dd>
 
 
 <dt id="arg-streamline-minl">streamline_minL<a class="anchor" aria-label="anchor" href="#arg-streamline-minl"></a></dt>
-<dd><p>Minimum length of the streamlines. Defaults is `1`.</p></dd>
+<dd><p>Minimum length of the streamlines.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-streamline-res">streamline_res<a class="anchor" aria-label="anchor" href="#arg-streamline-res"></a></dt>
-<dd><p>Resolution of the streamlines. Defaults is `1`.</p></dd>
+<dd><p>Resolution of the streamlines.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-streamline-n">streamline_n<a class="anchor" aria-label="anchor" href="#arg-streamline-n"></a></dt>
-<dd><p>Number of streamlines to plot. Defaults is `15`.</p></dd>
+<dd><p>Number of streamlines to plot.
+Defaults is `15`.</p></dd>
 
 
 <dt id="arg-streamline-width">streamline_width<a class="anchor" aria-label="anchor" href="#arg-streamline-width"></a></dt>
-<dd><p>Width of the streamlines. Defaults is `c(0, 0.8)`.</p></dd>
+<dd><p>Width of the streamlines.
+Defaults is `c(0, 0.8)`.</p></dd>
 
 
 <dt id="arg-streamline-alpha">streamline_alpha<a class="anchor" aria-label="anchor" href="#arg-streamline-alpha"></a></dt>
-<dd><p>Alpha transparency of the streamlines. Defaults is `1`.</p></dd>
+<dd><p>Alpha transparency of the streamlines.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-streamline-color">streamline_color<a class="anchor" aria-label="anchor" href="#arg-streamline-color"></a></dt>
-<dd><p>Color of the streamlines. Defaults is `NULL`.</p></dd>
+<dd><p>Color of the streamlines.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-streamline-palette">streamline_palette<a class="anchor" aria-label="anchor" href="#arg-streamline-palette"></a></dt>
-<dd><p>Name of the palette to use for coloring the streamlines. Defaults is `"RdYlBu"`.</p></dd>
+<dd><p>Name of the palette to use for coloring the streamlines.
+Defaults is `"RdYlBu"`.</p></dd>
 
 
 <dt id="arg-streamline-palcolor">streamline_palcolor<a class="anchor" aria-label="anchor" href="#arg-streamline-palcolor"></a></dt>
-<dd><p>Colors to use for coloring the streamlines. Defaults is `NULL`.</p></dd>
+<dd><p>Colors to use for coloring the streamlines.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-streamline-bg-color">streamline_bg_color<a class="anchor" aria-label="anchor" href="#arg-streamline-bg-color"></a></dt>
-<dd><p>Background color of the streamlines. Defaults is `"white"`.</p></dd>
+<dd><p>Background color of the streamlines.
+Defaults is `"white"`.</p></dd>
 
 
 <dt id="arg-streamline-bg-stroke">streamline_bg_stroke<a class="anchor" aria-label="anchor" href="#arg-streamline-bg-stroke"></a></dt>
-<dd><p>Stroke width of the streamlines background. Defaults is `0.5`.</p></dd>
+<dd><p>Stroke width of the streamlines background.
+Defaults is `0.5`.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>Aspect ratio of the plot. Defaults is 1.</p></dd>
+<dd><p>Aspect ratio of the plot.
+Defaults is `1`.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>Title of the plot. Defaults is `"Cell velocity"`.</p></dd>
+<dd><p>Title of the plot.
+Defaults is `"Cell velocity"`.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>Subtitle of the plot. Defaults is NULL.</p></dd>
+<dd><p>Subtitle of the plot.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>x-axis label. Defaults is NULL.</p></dd>
+<dd><p>x-axis label.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>y-axis label. Defaults is NULL.</p></dd>
+<dd><p>y-axis label.
+Defaults is `NULL`.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>Position of the legend. Defaults is `"right"`.</p></dd>
+<dd><p>Position of the legend.
+Defaults is `"right"`.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>Direction of the legend. Defaults is `"vertical"`.</p></dd>
+<dd><p>Direction of the legend.
+Defaults is `"vertical"`.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Name of the theme to use for plotting. Defaults is `"theme_scop"`.</p></dd>
+<dd><p>Name of the theme to use for plotting.
+Defaults is `"theme_scop"`.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>List of theme arguments for customization. Defaults is `list()`.</p></dd>
+<dd><p>List of theme arguments for customization.
+Defaults is `list()`.</p></dd>
 
 
 <dt id="arg-return-layer">return_layer<a class="anchor" aria-label="anchor" href="#arg-return-layer"></a></dt>
-<dd><p>Whether to return the plot layers as a list. Defaults is `FALSE`.</p></dd>
+<dd><p>Whether to return the plot layers as a list.
+Defaults is `FALSE`.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed for reproducibility. Defaults is `11`.</p></dd>
+<dd><p>Random seed for reproducibility.
+Defaults is `11`.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -258,7 +294,6 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSCVELO.html">RunSCVELO</a></span><span class="op">(</span></span></span>
@@ -317,7 +352,7 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

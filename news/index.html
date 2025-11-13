@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,40 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.0" id="scop-060">scop 0.6.0<a class="anchor" aria-label="anchor" href="#scop-060"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Enhanced with environment caching mechanism to avoid redundant environment preparation. Improved message formatting and error handling.</li>
+<li>Python-based functions (<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code>RunCellRank()</code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) now automatically call <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> internally, eliminating the need for users to manually prepare the Python environment before using these functions.</li>
+<li>
+<code><a href="../reference/cluster_within_group2.html">cluster_within_group2()</a></code>: New function for clustering within groups.</li>
+<li>Multiple plotting functions: Replaced <code>geom_sankey()</code> with <code><a href="https://rdrr.io/pkg/ggsankey/man/geom_sankey.html" class="external-link">ggsankey::geom_sankey()</a></code> for better Sankey diagram support.</li>
+<li>Multiple functions: Replaced <code>:::</code> operator with <code>get_namespace_fun()</code> for safer namespace access.</li>
+</ul></li>
+<li>
+<strong>refactor</strong>:
+<ul><li>Removed <code>RunMonocle()</code> function and related documentation (<code>RunMonocle2.Rd</code>, <code>RunMonocle3.Rd</code>).</li>
+<li>Removed <code>projection_functions.R</code> file (functions moved to other locations).</li>
+<li>Replaced custom theme functions with <code><a href="https://mengxu98.github.io/thisplot/reference/theme_this.html" class="external-link">thisplot::theme_this()</a></code> (exported as <code>theme_scop()</code>).</li>
+<li>Replaced direct <code>log_message()</code> calls with <code><a href="https://mengxu98.github.io/thisutils/reference/log_message.html" class="external-link">thisutils::log_message()</a></code> for consistency.</li>
+<li>Removed <code>palette_list</code> data object.</li>
+</ul></li>
+<li>
+<strong>deps</strong>:
+<ul><li>Moved <code>cli</code> from <code>Suggests</code> to <code>Imports</code> for better message formatting support.</li>
+<li>Added <code>thisplot</code> to <code>Imports</code> for theme and utility functions.</li>
+<li>Added <code>ggsankey</code> to <code>Suggests</code> for Sankey diagram support.</li>
+<li>Added remote dependencies: <code>theislab/destiny</code>, <code>mengxu98/thisplot</code>.</li>
+<li>Removed unused dependencies: <code>Biobase</code>, <code>BiocGenerics</code>, <code>concaveman</code>, <code>DDRTree</code>, <code>glmGamPoi</code>, <code>hexbin</code>, <code>monocle</code>, <code>png</code>, <code>ragg</code>, <code>tidyr</code>.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated documentation across multiple functions to reflect code refactoring.</li>
+<li>Improved code organization and maintainability.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.5" id="scop-055">scop 0.5.5<a class="anchor" aria-label="anchor" href="#scop-055"></a></h2>
 <ul><li>
@@ -241,7 +275,7 @@
 <h2 class="pkg-version" data-toc-text="0.2.5" id="scop-025">scop 0.2.5<a class="anchor" aria-label="anchor" href="#scop-025"></a></h2>
 <ul><li>
 <strong>func</strong>:
-<ul><li>Rename function: <code>palette_scop()</code> to <code><a href="../reference/palette_colors.html">palette_colors()</a></code>.</li>
+<ul><li>Rename function: <code>palette_scop()</code> to <code>palette_colors()</code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
@@ -337,7 +371,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

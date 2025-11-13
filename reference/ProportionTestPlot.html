@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -169,38 +169,47 @@ Options: "name" (alphabetical), "value" (by log2FD value).</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunProportionTest.html">RunProportionTest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  annotation_column <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  group_column <span class="op">=</span> <span class="st">"orig.ident"</span></span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RunProportionTest(pancreas_sub, annotation_column = "SubCellType",     group_column = "orig.ident"):</span> unused arguments (annotation_column = "SubCellType", group_column = "orig.ident")</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:01:42] Start proportion test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:01:42] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:01:49] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:01:56] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:03] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:09] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:16] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:23] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:30] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:36] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:43] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:50] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2025-11-13 12:02:56] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-11-13 12:03:02] Proportion test completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ProportionTestPlot</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ProportionTestPlot(pancreas_sub):</span> Cannot find the ProportionTest result. Perform `RunProportionTest()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> first</span>
+<span class="r-plt img"><img src="ProportionTestPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot specific comparisons</span></span></span>
 <span class="r-in"><span><span class="fu">ProportionTestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_vs_G1"</span>, <span class="st">"G2M_vs_S"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ProportionTestPlot(pancreas_sub, comparison = c("G2M_vs_G1",     "G2M_vs_S")):</span> Cannot find the ProportionTest result. Perform `RunProportionTest()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> first</span>
+<span class="r-plt img"><img src="ProportionTestPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot paired comparisons using list format</span></span></span>
 <span class="r-in"><span><span class="fu">ProportionTestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M"</span>, <span class="st">"G1"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ProportionTestPlot(pancreas_sub, comparison = list(c("G2M", "G1"))):</span> Cannot find the ProportionTest result. Perform `RunProportionTest()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> first</span>
+<span class="r-plt img"><img src="ProportionTestPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ProportionTestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  cols.sig <span class="op">=</span> <span class="st">"blue"</span>,</span></span>
 <span class="r-in"><span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M"</span>, <span class="st">"G1"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ProportionTestPlot(pancreas_sub, cols.sig = "blue", comparison = list(c("G2M",     "G1"))):</span> Cannot find the ProportionTest result. Perform `RunProportionTest()`</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> first</span>
+<span class="r-plt img"><img src="ProportionTestPlot-4.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -212,7 +221,7 @@ Options: "name" (alphabetical), "value" (by log2FD value).</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
