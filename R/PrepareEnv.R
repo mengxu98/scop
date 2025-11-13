@@ -25,12 +25,22 @@
 #'
 #' @export
 PrepareEnv <- function(
+    envname = NULL,
     conda = "auto",
     miniconda_repo = "https://repo.anaconda.com/miniconda",
-    envname = NULL,
     version = "3.10-1",
     force = FALSE,
     ...) {
+  env_cache <- getOption("scop_env_cache", default = NULL)
+  if (isTRUE(env_cache) && !isTRUE(force)) {
+    log_message(
+      "{cli::col_green('Python environment already prepared')}\n",
+      "{cli::col_grey('Until next loading, the environment will be cached')}",
+      message_type = "success"
+    )
+    return(invisible(NULL))
+  }
+
   log_message(
     "{cli::col_blue('Preparing scop Python Environment')}"
   )
@@ -124,7 +134,10 @@ PrepareEnv <- function(
     env <- file.exists(env_path)
 
     if (isFALSE(env)) {
-      log_message("Environment creation failed!")
+      log_message(
+        "Environment creation failed",
+        message_type = "warning"
+      )
       print(conda_info(conda = conda))
       print(reticulate::conda_list(conda = conda))
       log_message(
@@ -141,7 +154,10 @@ PrepareEnv <- function(
     }
   }
 
-  log_message("Checking and installing required packages...")
+  log_message(
+    "Checking and installing required packages...",
+    message_type = "running"
+  )
 
   install_methods <- requirements[["install_methods"]]
 
@@ -177,16 +193,19 @@ PrepareEnv <- function(
   }
   set_python_env(conda = conda, envname = envname)
   log_message(
-    "{cli::col_green('Python Environment Ready')}",
+    "{cli::col_green('Python Environment Ready')}\n",
+    "{cli::col_grey('Until next loading, the environment will be cached')}",
     message_type = "success"
   )
   env_info(conda, envname)
+
+  options(scop_env_cache = TRUE)
 }
 
 set_python_env <- function(conda, envname, verbose = TRUE) {
   Sys.unsetenv("RETICULATE_PYTHON")
 
-  options(reticulate.keras.backend = "tensorflow")
+  # options(reticulate.keras.backend = "tensorflow")
   options(reticulate.miniconda.enabled = FALSE)
 
   python_path <- conda_python(conda = conda, envname = envname)
@@ -297,7 +316,9 @@ install_miniconda2 <- function(miniconda_repo) {
 #' @param conda Conda binary path
 #' @param envname Environment name
 env_info <- function(conda, envname) {
-  envs_dir <- conda_info(conda = conda)$envs_dirs[1]
+  envs_dir <- get_namespace_fun(
+    "reticulate", "conda_info"
+  )(conda = conda)$envs_dirs[1]
 
   py_info <- utils::capture.output(reticulate::py_config())
 
@@ -309,7 +330,7 @@ env_info <- function(conda, envname) {
       "  conda:          ", conda
     ),
     cli::col_grey(
-      "  environment:    ", envs_dir, "/", get_envname()
+      "  environment:    ", envs_dir, "/", get_envname(envname)
     ),
     cli::col_blue(
       "python config: "
@@ -570,7 +591,7 @@ env_exist <- function(
     if (is.null(envs_dir)) {
       conda_info <- tryCatch(
         {
-          conda_info(conda = conda)
+          get_namespace_fun("reticulate", "conda_info")(conda = conda)
         },
         error = function(e) {
           log_message(
@@ -844,7 +865,7 @@ conda_python <- function(
   conda_envs <- conda_envs[
     grep(
       normalizePath(
-        conda_info(conda = conda)$envs_dirs[1],
+        get_namespace_fun("reticulate", "conda_info")(conda = conda)$envs_dirs[1],
         mustWork = FALSE
       ),
       x = normalizePath(conda_envs$python, mustWork = FALSE),
@@ -863,18 +884,15 @@ conda_python <- function(
   return(normalizePath(as.character(python), mustWork = FALSE))
 }
 
-#' Remove a conda environment
+#' @title Remove a conda environment
 #'
+#' @md
 #' @param envname The name of the conda environment to remove.
-#' If NULL, uses the default scop environment name.
-#' @param conda The path to a conda executable. Use "auto" to allow
-#' reticulate to automatically find an appropriate conda binary.
+#' If `NULL`, uses the default scop environment name.
+#' @param conda The path to a conda executable.
+#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
 #' @param force Whether to force removal without confirmation.
-#' Default is FALSE.
-#'
-#' @details This function removes a conda environment completely.
-#' This action cannot be undone, so use with caution.
-#' If the environment is currently active, it will be deactivated first.
+#' Default is `FALSE`.
 #'
 #' @return Invisibly returns TRUE if successful, FALSE otherwise.
 #'
@@ -924,8 +942,12 @@ RemoveEnv <- function(
   env_path <- file.path(envs_dir, envname)
 
   if (!force) {
-    log_message("Environment path: {.file {env_path}}")
-    log_message("This will permanently delete the environment and all its packages.")
+    log_message(
+      "Environment path: {.file {env_path}}"
+    )
+    log_message(
+      "This will permanently delete the environment and all its packages"
+    )
 
     if (interactive()) {
       response <- readline(
@@ -934,7 +956,10 @@ RemoveEnv <- function(
         )
       )
       if (!tolower(response) %in% c("y", "yes")) {
-        log_message("Environment removal cancelled.")
+        log_message(
+          "Environment removal cancelled",
+          message_type = "warning"
+        )
         return(invisible(FALSE))
       }
     } else {
