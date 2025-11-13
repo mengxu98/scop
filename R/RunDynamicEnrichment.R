@@ -69,7 +69,7 @@ RunDynamicEnrichment <- function(
     db_update = FALSE,
     db_version = "latest",
     convert_species = TRUE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     TERM2GENE = NULL,
     TERM2NAME = NULL,

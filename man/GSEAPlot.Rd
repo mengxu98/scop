@@ -256,7 +256,7 @@ p1 <- GSEAPlot(
 )
 p1
 
-panel_fix_overall(p1, height = 6)
+thisplot::panel_fix_overall(p1, height = 6)
 
 GSEAPlot(
   pancreas_sub,

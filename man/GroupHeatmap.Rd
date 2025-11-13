@@ -63,7 +63,7 @@ GroupHeatmap(
   db_version = "latest",
   db_combine = FALSE,
   convert_species = FALSE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   db = "GO_BP",
   TERM2GENE = NULL,
@@ -495,6 +495,8 @@ A list with the following elements:
 The Group Heatmap
 }
 \examples{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(
@@ -509,7 +511,7 @@ ht1 <- GroupHeatmap(
 )
 ht1$plot
 
-panel_fix(
+thisplot::panel_fix(
   ht1$plot,
   height = 4,
   width = 6,
@@ -519,9 +521,6 @@ panel_fix(
 
 \dontrun{
 library(dplyr)
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",

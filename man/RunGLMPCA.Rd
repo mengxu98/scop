@@ -121,7 +121,9 @@ Default is \code{11}.}
 Run GLMPCA (generalized version of principal components analysis)
 }
 \examples{
-pancreas_sub <- RunGLMPCA(object = pancreas_sub)
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunGLMPCA(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

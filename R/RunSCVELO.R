@@ -50,7 +50,6 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
@@ -103,11 +102,11 @@
 #' }
 RunSCVELO <- function(
     srt = NULL,
+    adata = NULL,
     assay_x = "RNA",
     layer_x = "counts",
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
-    adata = NULL,
     group_by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
@@ -152,6 +151,7 @@ RunSCVELO <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   check_python("scvelo", verbose = verbose)
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)

@@ -11,11 +11,11 @@
 #' @param scale_within_batch  Whether to scale data within each batch.
 #' Only valid when the `integration_method` is one of `"Uncorrected"`,
 #' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
-#' @param integration_method  A character string specifying the integration method to use.
+#' @param integration_method A character vector specifying the integration method to use.
 #' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"scVI"`, `"MNN"`, `"fastMNN"`,
 #' `"Harmony"`, `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
 #' Default is `"Uncorrected"`.
-#' @param append The integrated data will be appended to the original Seurat object (srt_merge).
+#' @param append Whether the integrated data will be appended to the original Seurat object (`srt_merge`).
 #' Default is `TRUE`.
 #' @param ... Additional arguments to be passed to the integration method function.
 #'
@@ -71,6 +71,7 @@
 #'   group.by = c("tech", "celltype")
 #' )
 #'
+#' \dontrun{
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
@@ -78,7 +79,6 @@
 #' )
 #' CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 #'
-#' \dontrun{
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
@@ -308,6 +308,7 @@ Uncorrected_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -643,6 +644,7 @@ Seurat_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -1111,6 +1113,7 @@ scVI_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
@@ -1131,6 +1134,7 @@ scVI_integrate <- function(
     ))
   }
 
+  PrepareEnv()
   check_python("scvi-tools")
   scvi <- reticulate::import("scvi")
   scipy <- reticulate::import("scipy")
@@ -1446,6 +1450,7 @@ MNN_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
@@ -1775,6 +1780,7 @@ fastMNN_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(tolower(cluster_algorithm),
@@ -1998,7 +2004,7 @@ fastMNN_integrate <- function(
 #' @inheritParams integration_scop
 #' @param harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
-#' @param RunHarmony_params A list of parameters for the harmony::RunHarmony function, default is an empty list.
+#' @param RunHarmony_params A list of parameters for [harmony::RunHarmony], default is an empty list.
 #'
 #' @export
 Harmony_integrate <- function(
@@ -2038,7 +2044,7 @@ Harmony_integrate <- function(
     seed = 11) {
   if (length(linear_reduction) > 1) {
     log_message(
-      "Only the first method in the {.arg linear_reduction} will be used",
+      "Only the first of {.val {linear_reduction}} will be used",
       message_type = "warning",
       verbose = verbose
     )
@@ -2054,10 +2060,7 @@ Harmony_integrate <- function(
       message_type = "error"
     )
   }
-  if (
-    !is.null(linear_reduction_dims_use) &&
-      max(linear_reduction_dims_use) > linear_reduction_dims
-  ) {
+  if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
   nonlinear_reductions <- c(
@@ -2085,9 +2088,11 @@ Harmony_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
-  cluster_algorithm_index <- switch(tolower(cluster_algorithm),
+  cluster_algorithm_index <- switch(
+    EXPR = tolower(cluster_algorithm),
     "louvain" = 1,
     "louvain_refined" = 2,
     "slm" = 3,
@@ -2098,7 +2103,7 @@ Harmony_integrate <- function(
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
@@ -2107,7 +2112,7 @@ Harmony_integrate <- function(
     cell2 <- sort(unique(colnames(srt_merge)))
     if (!identical(cell1, cell2)) {
       log_message(
-        "srt_list and srt_merge have different cells.",
+        "{.arg srt_list} and {.arg srt_merge} have different cells",
         message_type = "error"
       )
     }
@@ -2218,12 +2223,12 @@ Harmony_integrate <- function(
 
   log_message("Perform {.pkg Harmony} integration")
   log_message(
-    "Harmony integration using Reduction({.val {paste0('Harmony', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}}) as input"
+    "Harmony integration using {.val {paste0('Harmony', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}} as input"
   )
   params <- list(
     object = srt_merge,
     group.by.vars = batch,
-    assay.use = SeuratObject::DefaultAssay(srt_merge),
+    assay = SeuratObject::DefaultAssay(srt_merge),
     reduction = paste0("Harmony", linear_reduction),
     dims.use = linear_reduction_dims_use,
     reduction.save = "Harmony",
@@ -2389,6 +2394,8 @@ Scanorama_integrate <- function(
     Scanorama_params = list(),
     verbose = TRUE,
     seed = 11) {
+  PrepareEnv()
+
   nonlinear_reductions <- c(
     "umap",
     "umap-naive",
@@ -2697,6 +2704,8 @@ BBKNN_integrate <- function(
     bbknn_params = list(),
     verbose = TRUE,
     seed = 11) {
+  PrepareEnv()
+
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
@@ -3048,7 +3057,7 @@ BBKNN_integrate <- function(
 #' @inheritParams integration_scop
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
-#' @param CSS_params A list of parameters for the simspec::cluster_sim_spectrum function.
+#' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum] function.
 #' Default is an empty list.
 #'
 #' @export
@@ -3135,6 +3144,7 @@ CSS_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -3285,9 +3295,7 @@ CSS_integrate <- function(
     params[[nm]] <- CSS_params[[nm]]
   }
   srt_integrated <- invoke_fun(
-    get("cluster_sim_spectrum",
-      envir = getNamespace("simspec")
-    ),
+    get_namespace_fun("simspec", "cluster_sim_spectrum"),
     params
   )
 
@@ -3466,6 +3474,7 @@ LIGER_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -3825,6 +3834,7 @@ Conos_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(
@@ -4204,6 +4214,7 @@ ComBat_integrate <- function(
     )
   }
   if (cluster_algorithm == "leiden") {
+    PrepareEnv()
     check_python("leidenalg")
   }
   cluster_algorithm_index <- switch(

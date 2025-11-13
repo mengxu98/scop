@@ -159,7 +159,8 @@
 #'   srt_ref = panc8_sub,
 #'   ref_group = "celltype",
 #'   features_type = "DE",
-#'   feature_source = "ref"
+#'   feature_source = "ref",
+#'   DEtest_param = list(cores = 2)
 #' )
 #'
 #' CellDimPlot(
@@ -179,7 +180,8 @@
 #'   query_group = "SubCellType",
 #'   ref_group = "celltype",
 #'   features_type = "DE",
-#'   feature_source = "both"
+#'   feature_source = "both",
+#'   DEtest_param = list(cores = 2)
 #' )
 #'
 #' CellDimPlot(

@@ -61,7 +61,7 @@ FeatureHeatmap(
   db_version = "latest",
   db_combine = FALSE,
   convert_species = FALSE,
-  Ensembl_version = 103,
+  Ensembl_version = NULL,
   mirror = NULL,
   db = "GO_BP",
   TERM2GENE = NULL,
@@ -446,7 +446,7 @@ ht1 <- FeatureHeatmap(
 )
 ht1$plot
 
-panel_fix(
+thisplot::panel_fix(
   ht1$plot,
   height = 4,
   width = 6,
@@ -463,7 +463,8 @@ ht2 <- FeatureHeatmap(
   cluster_row_slices = TRUE,
   cluster_columns = TRUE,
   cluster_column_slices = TRUE,
-  ht_params = list(row_gap = grid::unit(0, "mm"))
+  ht_params = list(row_gap = grid::unit(0, "mm")),
+  use_raster = FALSE
 )
 ht2$plot
 

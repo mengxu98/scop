@@ -16,23 +16,23 @@ Default is \code{TRUE}.}
 Convert an anndata object to a seurat object using reticulate
 }
 \examples{
+\dontrun{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata <- RunPAGA(
   adata = adata,
   group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+  linear_reduction = "X_pca",
+  nonlinear_reduction = "X_umap"
 )
 srt <- adata_to_srt(adata)
 srt
 
 # Or convert a h5ad file to Seurat object
-library(reticulate)
-check_python("scanpy")
-sc <- import("scanpy")
+sc <- reticulate::import("scanpy")
 adata <- sc$read_h5ad("pancreas.h5ad")
 srt <- adata_to_srt(adata)
 srt
+}
 }

@@ -1,159 +1,3 @@
-#' Shorten and offset the segment
-#'
-#' This function takes a data frame representing segments in a plot and shortens
-#' and offsets them based on the provided arguments.
-#'
-#' @param data A data frame containing the segments.
-#' It should have columns 'x', 'y', 'xend', and 'yend' representing the start and end points of each segment.
-#' @param shorten_start The amount to shorten the start of each segment by.
-#' @param shorten_end The amount to shorten the end of each segment by.
-#' @param offset The amount to offset each segment by.
-#'
-#' @return The modified data frame with the shortened and offset segments.
-#'
-#' @export
-#'
-#' @examples
-#' library(ggplot2)
-#' temp_nodes <- data.frame(
-#'   "x" = c(10, 40),
-#'   "y" = c(10, 30)
-#' )
-#' data <- data.frame(
-#'   "x" = c(10, 40),
-#'   "y" = c(10, 30),
-#'   "xend" = c(40, 10),
-#'   "yend" = c(30, 10)
-#' )
-#'
-#' ggplot(temp_nodes, aes(x = x, y = y)) +
-#'   geom_point(size = 12) +
-#'   xlim(0, 50) +
-#'   ylim(0, 50) +
-#'   geom_segment(
-#'     data = data,
-#'     aes(x = x, xend = xend, y = y, yend = yend)
-#'   )
-#'
-#' ggplot(temp_nodes, aes(x = x, y = y)) +
-#'   geom_point(size = 12) +
-#'   xlim(0, 50) +
-#'   ylim(0, 50) +
-#'   geom_segment(
-#'     data = segements_df(
-#'       data,
-#'       shorten_start = 2,
-#'       shorten_end = 3,
-#'       offset = 1
-#'     ),
-#'     aes(x = x, xend = xend, y = y, yend = yend)
-#'   )
-segements_df <- function(
-    data,
-    shorten_start,
-    shorten_end, offset) {
-  data$dx <- data$xend - data$x
-  data$dy <- data$yend - data$y
-  data$dist <- sqrt(data$dx^2 + data$dy^2)
-  data$px <- data$dx / data$dist
-  data$py <- data$dy / data$dist
-
-  data$x <- data$x + data$px * shorten_start
-  data$y <- data$y + data$py * shorten_start
-  data$xend <- data$xend - data$px * shorten_end
-  data$yend <- data$yend - data$py * shorten_end
-  data$x <- data$x - data$py * offset
-  data$xend <- data$xend - data$py * offset
-  data$y <- data$y + data$px * offset
-  data$yend <- data$yend + data$px * offset
-
-  data
-}
-
-extractgrobs <- function(vlnplots, x_nm, y_nm, x, y) {
-  grobs <- vlnplots[paste0(x_nm[x], ":", y_nm[y])]
-  if (length(grobs) == 1) {
-    grobs <- grobs[[1]]
-  }
-  grobs
-}
-
-grid_draw <- function(groblist, x, y, width, height) {
-  if (grid::is.grob(groblist)) {
-    groblist <- list(groblist)
-  }
-  for (i in seq_along(groblist)) {
-    groblist[[i]]$vp <- grid::viewport(
-      x = x[i],
-      y = y[i],
-      width = width[i],
-      height = height[i]
-    )
-    grid::grid.draw(groblist[[i]])
-  }
-}
-
-cluster_within_group2 <- function(mat, factor) {
-  check_r("dendextend")
-  if (!is.factor(factor)) {
-    factor <- factor(factor, levels = unique(factor))
-  }
-  dend_list <- list()
-  order_list <- list()
-  for (le in unique(levels(factor))) {
-    m <- mat[, factor == le, drop = FALSE]
-    if (ncol(m) == 1) {
-      order_list[[le]] <- which(factor == le)
-      dend_list[[le]] <- structure(
-        which(factor == le),
-        class = "dendrogram",
-        leaf = TRUE, # height = 0,
-        label = 1,
-        members = 1
-      )
-    } else if (ncol(m) > 1) {
-      hc1 <- stats::hclust(
-        stats::as.dist(
-          proxyC::dist(Matrix::t(m))
-        )
-      )
-      dend_list[[le]] <- stats::as.dendrogram(hc1)
-      order_list[[le]] <- which(factor == le)[stats::order.dendrogram(dend_list[[le]])]
-      stats::order.dendrogram(dend_list[[le]]) <- order_list[[le]]
-    }
-    attr(dend_list[[le]], ".class_label") <- le
-  }
-  parent <- stats::as.dendrogram(
-    stats::hclust(
-      stats::as.dist(
-        proxyC::dist(
-          Matrix::t(sapply(
-            order_list,
-            function(x) rowMeans(mat[, x, drop = FALSE])
-          ))
-        )
-      )
-    )
-  )
-  dend_list <- lapply(dend_list, function(dend) {
-    stats::dendrapply(
-      dend,
-      function(node) {
-        if (is.null(attr(node, "height"))) {
-          attr(node, "height") <- 0
-        }
-        node
-      }
-    )
-  })
-
-  dend <- ComplexHeatmap::merge_dendrogram(parent, dend_list)
-  stats::order.dendrogram(dend) <- unlist(
-    order_list[stats::order.dendrogram(parent)]
-  )
-  dend
-}
-
 heatmap_enrichment <- function(
     geneID,
     geneID_groups,
@@ -176,7 +20,7 @@ heatmap_enrichment <- function(
     db_combine = FALSE,
     db_version = "latest",
     convert_species = FALSE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     db = "GO_BP",
     TERM2GENE = NULL,
@@ -199,7 +43,7 @@ heatmap_enrichment <- function(
   if (isTRUE(anno_keys) || isTRUE(anno_features) || isTRUE(anno_terms)) {
     if (isTRUE(flip)) {
       log_message(
-        "anno_keys, anno_features and anno_terms can only be used when flip is FALSE.",
+        "{.arg anno_keys}, {.arg anno_features} and {.arg anno_terms} can only be used when {.arg flip = FALSE}",
         message_type = "error"
       )
     }
@@ -247,7 +91,7 @@ heatmap_enrichment <- function(
     }
     if (nrow(res$enrichment) == 0) {
       log_message(
-        "No enrichment result found.",
+        "No enrichment result found",
         message_type = "warning"
       )
     } else {
@@ -266,10 +110,9 @@ heatmap_enrichment <- function(
       df <- df[order(df[[metric]]), , drop = FALSE]
       if (nrow(df) == 0) {
         log_message(
-          "No term enriched using the threshold: ",
-          paste0("pvalueCutoff = ", pvalueCutoff),
-          "; ",
-          paste0("padjustCutoff = ", padjustCutoff),
+          "No term enriched using the threshold:\n",
+          "pvalueCutoff = {.pkg {pvalueCutoff}}\n",
+          "padjustCutoff = {.pkg {padjustCutoff}}",
           message_type = "warning"
         )
       } else {
@@ -283,12 +126,9 @@ heatmap_enrichment <- function(
           ]
           if (length(subdf_list) == 0) {
             log_message(
-              "No ",
-              enrich,
-              " term enriched using the threshold: ",
-              paste0("pvalueCutoff = ", pvalueCutoff),
-              "; ",
-              paste0("padjustCutoff = ", padjustCutoff),
+              "No {.pkg {enrich}} term enriched using the threshold:\n",
+              "pvalueCutoff = {.pkg {pvalueCutoff}}\n",
+              "padjustCutoff = {.pkg {padjustCutoff}}",
               message_type = "warning"
             )
             next
@@ -435,7 +275,10 @@ heatmap_enrichment <- function(
                   df[["col"]],
                   function(x) blendcolors(c(x, "black"))
                 )
-                df[["fontsize"]] <- scales::rescale(df[, "count"], to = keys_fontsize)
+                df[["fontsize"]] <- scales::rescale(
+                  df[, "count"],
+                  to = keys_fontsize
+                )
                 return(df)
               } else {
                 return(NULL)
@@ -490,7 +333,11 @@ heatmap_enrichment <- function(
                 dplyr::distinct() %>%
                 dplyr::mutate(
                   angle = 90 *
-                    sample(c(0, 1), dplyr::n(), replace = TRUE, prob = c(60, 40))
+                    sample(
+                      c(0, 1),
+                      dplyr::n(),
+                      replace = TRUE, prob = c(60, 40)
+                    )
                 ) %>%
                 as.data.frame()
               df <- df[
@@ -507,7 +354,10 @@ heatmap_enrichment <- function(
                 df[["col"]],
                 function(x) blendcolors(c(x, "black"))
               )
-              df[["fontsize"]] <- scales::rescale(df[, "count"], to = features_fontsize)
+              df[["fontsize"]] <- scales::rescale(
+                df[, "count"],
+                to = features_fontsize
+              )
               return(df)
             })
             names(features_list) <- unlist(lapply(nm, function(x) x[[2]]))
@@ -554,242 +404,6 @@ heatmap_enrichment <- function(
   list(ha_right = ha_right, res = res)
 }
 
-heatmap_rendersize <- function(
-    width,
-    height,
-    units,
-    ha_top_list,
-    ha_left,
-    ha_right,
-    ht_list,
-    legend_list,
-    flip) {
-  width_annotation <- height_annotation <- 0
-  if (isTRUE(flip)) {
-    width_sum <- width[1] %||%
-      grid::convertWidth(
-        grid::unit(1, "in"),
-        units,
-        valueOnly = TRUE
-      )
-    height_sum <- sum(
-      height %||% grid::convertHeight(
-        grid::unit(1, "in"),
-        units,
-        valueOnly = TRUE
-      )
-    )
-    if (length(ha_top_list) > 0) {
-      width_annotation <- grid::convertWidth(
-        grid::unit(width_annotation, units) +
-          ComplexHeatmap::width.HeatmapAnnotation(ha_top_list[[1]]),
-        units,
-        valueOnly = TRUE
-      )
-    }
-    if (!is.null(ha_left)) {
-      height_annotation <- grid::convertHeight(
-        grid::unit(height_annotation, units) + ComplexHeatmap::height.HeatmapAnnotation(ha_left),
-        units,
-        valueOnly = TRUE
-      )
-    }
-    if (!is.null(ha_right)) {
-      height_annotation <- grid::convertHeight(
-        grid::unit(height_annotation, units) + ComplexHeatmap::height.HeatmapAnnotation(ha_right),
-        units,
-        valueOnly = TRUE
-      )
-    }
-  } else {
-    width_sum <- sum(
-      width %||% grid::convertWidth(
-        grid::unit(1, "in"),
-        units,
-        valueOnly = TRUE
-      )
-    )
-    height_sum <- height[1] %||%
-      grid::convertHeight(grid::unit(1, "in"), units, valueOnly = TRUE)
-    if (length(ha_top_list) > 0) {
-      height_annotation <- grid::convertHeight(
-        grid::unit(height_annotation, units) +
-          ComplexHeatmap::height.HeatmapAnnotation(ha_top_list[[1]]),
-        units,
-        valueOnly = TRUE
-      )
-    }
-    if (!is.null(ha_left)) {
-      width_annotation <- grid::convertWidth(
-        grid::unit(width_annotation, units) + ComplexHeatmap::width.HeatmapAnnotation(ha_left),
-        units,
-        valueOnly = TRUE
-      )
-    }
-    if (!is.null(ha_right)) {
-      width_annotation <- grid::convertWidth(
-        grid::unit(width_annotation, units) + ComplexHeatmap::width.HeatmapAnnotation(ha_right),
-        units,
-        valueOnly = TRUE
-      )
-    }
-  }
-  dend_width <- name_width <- NULL
-  dend_height <- name_height <- NULL
-  if (inherits(ht_list, "HeatmapList")) {
-    for (nm in names(ht_list@ht_list)) {
-      ht <- ht_list@ht_list[[nm]]
-      dend_width <- max(ht@row_dend_param$width, dend_width)
-      dend_height <- max(ht@column_dend_param$height, dend_height)
-      name_width <- max(ht@row_names_param$max_width, name_width)
-      name_height <- max(ht@column_names_param$max_height, name_height)
-    }
-  } else if (inherits(ht_list, "Heatmap")) {
-    ht <- ht_list
-    dend_width <- max(ht@row_dend_param$width, dend_width)
-    dend_height <- max(ht@column_dend_param$height, dend_height)
-    name_width <- max(ht@row_names_param$max_width, name_width)
-    name_height <- max(ht@column_names_param$max_height, name_height)
-  } else {
-    log_message(
-      "ht_list is not a class of HeatmapList or Heatmap.",
-      message_type = "error"
-    )
-  }
-
-  lgd_width <- grid::convertWidth(
-    grid::unit(
-      unlist(lapply(legend_list, ComplexHeatmap::width.Legends)),
-      grid::unitType(
-        ComplexHeatmap::width.Legends(legend_list[[1]])
-      )
-    ),
-    unitTo = units,
-    valueOnly = TRUE
-  )
-  width_sum <- grid::convertWidth(
-    grid::unit(width_sum, units) +
-      grid::unit(width_annotation, units) +
-      dend_width +
-      name_width,
-    units,
-    valueOnly = TRUE
-  ) +
-    sum(lgd_width)
-  height_sum <- max(
-    grid::convertHeight(
-      grid::unit(height_sum, units) +
-        grid::unit(height_annotation, units) +
-        dend_height +
-        name_height,
-      units,
-      valueOnly = TRUE
-    ),
-    grid::convertHeight(
-      grid::unit(0.95, "npc"),
-      units,
-      valueOnly = TRUE
-    )
-  )
-  return(
-    list(
-      width_sum = width_sum,
-      height_sum = height_sum
-    )
-  )
-}
-
-standardise <- function(data) {
-  data[] <- t(apply(data, 1, scale))
-  data
-}
-
-mestimate <- function(data) {
-  N <- nrow(data)
-  D <- ncol(data)
-  m.sj <- 1 +
-    (1418 / N + 22.05) * D^(-2) +
-    (12.33 / N + 0.243) *
-      D^(-0.0406 * log(N) - 0.1134)
-  m.sj
-}
-
-adjustlayout <- function(
-    graph,
-    layout,
-    width,
-    height = 2,
-    scale = 100,
-    iter = 100) {
-  w <- width / 2
-  layout[, 1] <- layout[, 1] / diff(range(layout[, 1])) * scale
-  layout[, 2] <- layout[, 2] / diff(range(layout[, 2])) * scale
-
-  adjusted <- c()
-  for (v in order(igraph::degree(graph), decreasing = TRUE)) {
-    adjusted <- c(adjusted, v)
-    neighbors <- as.numeric(
-      igraph::neighbors(
-        graph, igraph::V(graph)[v]
-      )
-    )
-    neighbors <- setdiff(neighbors, adjusted)
-    x <- layout[v, 1]
-    y <- layout[v, 2]
-    r <- w[v]
-    for (neighbor in neighbors) {
-      nx <- layout[neighbor, 1]
-      ny <- layout[neighbor, 2]
-      ndist <- sqrt((nx - x)^2 + (ny - y)^2)
-      nr <- w[neighbor]
-      expect <- r + nr
-      if (ndist < expect) {
-        dx <- (x - nx) * (expect - ndist) / ndist
-        dy <- (y - ny) * (expect - ndist) / ndist
-        layout[neighbor, 1] <- nx - dx
-        layout[neighbor, 2] <- ny - dy
-        adjusted <- c(adjusted, neighbor)
-      }
-    }
-  }
-
-  for (i in seq_len(iter)) {
-    dist_matrix <- as_matrix(
-      proxyC::dist(layout)
-    )
-    nearest_neighbors <- apply(
-      dist_matrix,
-      2,
-      function(x) which(x == min(x[x > 0])),
-      simplify = FALSE
-    )
-
-    for (v in sample(seq_len(nrow(layout)))) {
-      neighbors <- unique(nearest_neighbors[[v]])
-      x <- layout[v, 1]
-      y <- layout[v, 2]
-      r <- w[v]
-      for (neighbor in neighbors) {
-        nx <- layout[neighbor, 1]
-        ny <- layout[neighbor, 2]
-        nr <- w[neighbor]
-        if (abs(nx - x) < (r + nr) && abs(ny - y) < height) {
-          dx <- r + nr - (nx - x)
-          dy <- height - (ny - y)
-          if (sample(c(1, 0), 1) == 1) {
-            dx <- 0
-          } else {
-            dy <- 0
-          }
-          layout[neighbor, 1] <- nx - dx
-          layout[neighbor, 2] <- ny - dy
-        }
-      }
-    }
-  }
-  return(layout)
-}
-
 heatmap_fixsize <- function(
     width,
     width_sum,
@@ -802,8 +416,8 @@ heatmap_fixsize <- function(
     ht_list,
     annotation_legend_list = legend_list
   )
-  ht_width <- ComplexHeatmap:::width(ht)
-  ht_height <- ComplexHeatmap:::height(ht)
+  ht_width <- ht@ht_list_param$width
+  ht_height <- ht@ht_list_param$height
 
   if (grid::unitType(ht_width) == "npc") {
     ht_width <- grid::unit(width_sum, units = units)
@@ -888,4 +502,229 @@ heatmap_fixsize <- function(
     ht_width = ht_width,
     ht_height = ht_height
   )
+}
+
+heatmap_rendersize <- function(
+    width,
+    height,
+    units,
+    ha_top_list,
+    ha_left,
+    ha_right,
+    ht_list,
+    legend_list,
+    flip) {
+  width_annotation <- height_annotation <- 0
+  if (isTRUE(flip)) {
+    width_sum <- width[1] %||%
+      grid::convertWidth(
+        grid::unit(1, "in"),
+        units,
+        valueOnly = TRUE
+      )
+    height_sum <- sum(
+      height %||% grid::convertHeight(
+        grid::unit(1, "in"),
+        units,
+        valueOnly = TRUE
+      )
+    )
+    if (length(ha_top_list) > 0) {
+      width_annotation <- grid::convertWidth(
+        grid::unit(width_annotation, units) +
+          ComplexHeatmap::width.HeatmapAnnotation(ha_top_list[[1]]),
+        units,
+        valueOnly = TRUE
+      )
+    }
+    if (!is.null(ha_left)) {
+      height_annotation <- grid::convertHeight(
+        grid::unit(height_annotation, units) +
+          ComplexHeatmap::height.HeatmapAnnotation(ha_left),
+        units,
+        valueOnly = TRUE
+      )
+    }
+    if (!is.null(ha_right)) {
+      height_annotation <- grid::convertHeight(
+        grid::unit(height_annotation, units) +
+          ComplexHeatmap::height.HeatmapAnnotation(ha_right),
+        units,
+        valueOnly = TRUE
+      )
+    }
+  } else {
+    width_sum <- sum(
+      width %||% grid::convertWidth(
+        grid::unit(1, "in"),
+        units,
+        valueOnly = TRUE
+      )
+    )
+    height_sum <- height[1] %||%
+      grid::convertHeight(grid::unit(1, "in"), units, valueOnly = TRUE)
+    if (length(ha_top_list) > 0) {
+      height_annotation <- grid::convertHeight(
+        grid::unit(height_annotation, units) +
+          ComplexHeatmap::height.HeatmapAnnotation(ha_top_list[[1]]),
+        units,
+        valueOnly = TRUE
+      )
+    }
+    if (!is.null(ha_left)) {
+      width_annotation <- grid::convertWidth(
+        grid::unit(width_annotation, units) +
+          ComplexHeatmap::width.HeatmapAnnotation(ha_left),
+        units,
+        valueOnly = TRUE
+      )
+    }
+    if (!is.null(ha_right)) {
+      width_annotation <- grid::convertWidth(
+        grid::unit(width_annotation, units) +
+          ComplexHeatmap::width.HeatmapAnnotation(ha_right),
+        units,
+        valueOnly = TRUE
+      )
+    }
+  }
+  dend_width <- name_width <- NULL
+  dend_height <- name_height <- NULL
+  if (inherits(ht_list, "HeatmapList")) {
+    for (nm in names(ht_list@ht_list)) {
+      ht <- ht_list@ht_list[[nm]]
+      dend_width <- max(ht@row_dend_param$width, dend_width)
+      dend_height <- max(ht@column_dend_param$height, dend_height)
+      name_width <- max(ht@row_names_param$max_width, name_width)
+      name_height <- max(ht@column_names_param$max_height, name_height)
+    }
+  } else if (inherits(ht_list, "Heatmap")) {
+    ht <- ht_list
+    dend_width <- max(ht@row_dend_param$width, dend_width)
+    dend_height <- max(ht@column_dend_param$height, dend_height)
+    name_width <- max(ht@row_names_param$max_width, name_width)
+    name_height <- max(ht@column_names_param$max_height, name_height)
+  } else {
+    log_message(
+      "{.arg ht_list} is not a class of HeatmapList or Heatmap",
+      message_type = "error"
+    )
+  }
+
+  lgd_width <- grid::convertWidth(
+    grid::unit(
+      unlist(lapply(legend_list, ComplexHeatmap::width.Legends)),
+      grid::unitType(
+        ComplexHeatmap::width.Legends(legend_list[[1]])
+      )
+    ),
+    unitTo = units,
+    valueOnly = TRUE
+  )
+  width_sum <- grid::convertWidth(
+    grid::unit(width_sum, units) +
+      grid::unit(width_annotation, units) +
+      dend_width +
+      name_width,
+    units,
+    valueOnly = TRUE
+  ) +
+    sum(lgd_width)
+  height_sum <- max(
+    grid::convertHeight(
+      grid::unit(height_sum, units) +
+        grid::unit(height_annotation, units) +
+        dend_height +
+        name_height,
+      units,
+      valueOnly = TRUE
+    ),
+    grid::convertHeight(
+      grid::unit(0.95, "npc"),
+      units,
+      valueOnly = TRUE
+    )
+  )
+  return(
+    list(
+      width_sum = width_sum,
+      height_sum = height_sum
+    )
+  )
+}
+
+#' @title Cluster within group
+#'
+#' @param mat A matrix of data
+#' @param factor A factor
+#' @return A dendrogram with ordered leaves
+#'
+#' @export
+#'
+#' @examples
+#' mat <- matrix(rnorm(100), 10, 10)
+#' factor <- factor(rep(1:2, each = 5))
+#' dend <- cluster_within_group2(mat, factor)
+#' dend
+#' plot(dend)
+cluster_within_group2 <- function(mat, factor) {
+  check_r("dendextend")
+  if (!is.factor(factor)) {
+    factor <- factor(factor, levels = unique(factor))
+  }
+  dend_list <- list()
+  order_list <- list()
+  for (le in unique(levels(factor))) {
+    m <- mat[, factor == le, drop = FALSE]
+    if (ncol(m) == 1) {
+      order_list[[le]] <- which(factor == le)
+      dend_list[[le]] <- structure(
+        which(factor == le),
+        class = "dendrogram",
+        leaf = TRUE, # height = 0,
+        label = 1,
+        members = 1
+      )
+    } else if (ncol(m) > 1) {
+      hc1 <- stats::hclust(
+        stats::as.dist(
+          proxyC::dist(Matrix::t(m))
+        )
+      )
+      dend_list[[le]] <- stats::as.dendrogram(hc1)
+      dend_order <- stats::order.dendrogram(dend_list[[le]])
+      order_list[[le]] <- which(factor == le)[dend_order]
+      dendextend::order.dendrogram(dend_list[[le]]) <- order_list[[le]]
+    }
+    attr(dend_list[[le]], ".class_label") <- le
+  }
+  parent <- stats::as.dendrogram(
+    stats::hclust(
+      stats::as.dist(
+        proxyC::dist(
+          Matrix::t(sapply(
+            order_list,
+            function(x) rowMeans(mat[, x, drop = FALSE])
+          ))
+        )
+      )
+    )
+  )
+  dend_list <- lapply(dend_list, function(dend) {
+    stats::dendrapply(
+      dend,
+      function(node) {
+        if (is.null(attr(node, "height"))) {
+          attr(node, "height") <- 0
+        }
+        node
+      }
+    )
+  })
+
+  dend <- ComplexHeatmap::merge_dendrogram(parent, dend_list)
+  dendextend::order.dendrogram(dend) <- unlist(
+    order_list[stats::order.dendrogram(parent)]
+  )
+  dend
 }

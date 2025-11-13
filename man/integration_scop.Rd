@@ -46,14 +46,14 @@ integration_scop(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+\item{append}{Whether the integrated data will be appended to the original Seurat object (\code{srt_merge}).
 Default is \code{TRUE}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
 \item{assay}{The name of the assay to be used for downstream analysis.}
 
-\item{integration_method}{A character string specifying the integration method to use.
+\item{integration_method}{A character vector specifying the integration method to use.
 Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"},
 \code{"Harmony"}, \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
 Default is \code{"Uncorrected"}.}
@@ -190,6 +190,7 @@ CellDimPlot(
   group.by = c("tech", "celltype")
 )
 
+\dontrun{
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
@@ -197,7 +198,6 @@ panc8_sub <- integration_scop(
 )
 CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
-\dontrun{
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",

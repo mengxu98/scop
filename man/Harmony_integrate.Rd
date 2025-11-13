@@ -46,7 +46,7 @@ Harmony_integrate(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{append}{The integrated data will be appended to the original Seurat object (srt_merge).
+\item{append}{Whether the integrated data will be appended to the original Seurat object (\code{srt_merge}).
 Default is \code{TRUE}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
@@ -139,7 +139,7 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{RunHarmony_params}{A list of parameters for the harmony::RunHarmony function, default is an empty list.}
+\item{RunHarmony_params}{A list of parameters for [harmony::RunHarmony], default is an empty list.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

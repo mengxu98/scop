@@ -41,8 +41,7 @@
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
-#'   reduction = "PCA",
-#'   dims = 1:10
+#'   reduction = "PCA"
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
@@ -53,7 +52,6 @@
 #' )
 #'
 #' # 3D lineage
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSlingshot(
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
@@ -173,4 +171,16 @@ RunSlingshot <- function(
     }
   }
   return(srt)
+}
+
+select_cells <- function(obj, celltypes, group.by) {
+  metadata <- obj@meta.data
+  cells_c <- c()
+  for (celltype in celltypes) {
+    cells_c <- c(
+      cells_c,
+      rownames(metadata[metadata[[group.by]] == celltype, ])
+    )
+  }
+  cells_c
 }

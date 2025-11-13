@@ -136,7 +136,7 @@ RunGSEA <- function(
     db_version = "latest",
     db_combine = FALSE,
     convert_species = TRUE,
-    Ensembl_version = 103,
+    Ensembl_version = NULL,
     mirror = NULL,
     TERM2GENE = NULL,
     TERM2NAME = NULL,

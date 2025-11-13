@@ -71,25 +71,33 @@ PerformDE <- function(
       verbose = verbose,
       ...
     ),
-    "bimod" = Seurat:::DiffExpTest(
+    "bimod" = get_namespace_fun(
+      "Seurat", "DiffExpTest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
     ),
-    "roc" = Seurat:::MarkerTest(
+    "roc" = get_namespace_fun(
+      "Seurat", "MarkerTest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
     ),
-    "t" = Seurat:::DiffTTest(
+    "t" = get_namespace_fun(
+      "Seurat", "DiffTTest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose
     ),
-    "negbinom" = Seurat:::GLMDETest(
+    "negbinom" = get_namespace_fun(
+      "Seurat", "GLMDETest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
@@ -98,7 +106,9 @@ PerformDE <- function(
       test.use = test.use,
       verbose = verbose
     ),
-    "poisson" = Seurat:::GLMDETest(
+    "poisson" = get_namespace_fun(
+      "Seurat", "GLMDETest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
@@ -107,7 +117,9 @@ PerformDE <- function(
       test.use = test.use,
       verbose = verbose
     ),
-    "MAST" = Seurat:::MASTDETest(
+    "MAST" = get_namespace_fun(
+      "Seurat", "MASTDETest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
@@ -115,14 +127,18 @@ PerformDE <- function(
       verbose = verbose,
       ...
     ),
-    "DESeq2" = Seurat:::DESeq2DETest(
+    "DESeq2" = get_namespace_fun(
+      "Seurat", "DESeq2DETest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
       verbose = verbose,
       ...
     ),
-    "LR" = Seurat:::LRDETest(
+    "LR" = get_namespace_fun(
+      "Seurat", "LRDETest"
+    )(
       data.use = data.use,
       cells.1 = cells.1,
       cells.2 = cells.2,
@@ -130,7 +146,7 @@ PerformDE <- function(
       verbose = verbose
     ),
     log_message(
-      "Unknown test: ", test.use,
+      "Unknown test: {.pkg {test.use}}",
       message_type = "error"
     )
   )
@@ -247,7 +263,8 @@ WilcoxDETest <- function(
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",
-#'   markers_type = "paired"
+#'   markers_type = "paired",
+#'   cores = 2
 #' )
 #' PairedMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -265,7 +282,7 @@ WilcoxDETest <- function(
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Seurat"
+#'   integration_method = "Uncorrected"
 #' )
 #' CellDimPlot(
 #'   panc8_sub,
@@ -276,7 +293,8 @@ WilcoxDETest <- function(
 #'   srt = panc8_sub,
 #'   group_by = "celltype",
 #'   grouping.var = "tech",
-#'   markers_type = "conserved"
+#'   markers_type = "conserved",
+#'   cores = 2
 #' )
 #' ConservedMarkers1 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -297,7 +315,8 @@ WilcoxDETest <- function(
 #'   srt = panc8_sub,
 #'   group_by = "tech",
 #'   grouping.var = "celltype",
-#'   markers_type = "conserved"
+#'   markers_type = "conserved",
+#'   cores = 2
 #' )
 #' ConservedMarkers2 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
