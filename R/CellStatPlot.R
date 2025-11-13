@@ -1305,6 +1305,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "sankey") {
+        check_r("davidsjoberg/ggsankey")
         colors <- palette_colors(
           c(
             unique(
@@ -1368,7 +1369,7 @@ StatPlot <- function(
         }
 
         dat <- suppressWarnings(
-          ggsankey::make_long(
+          get_namespace_fun("ggsankey", "make_long")(
             dat_use,
             dplyr::all_of(stat.by)
           )
@@ -1384,7 +1385,7 @@ StatPlot <- function(
             fill = node
           )
         ) +
-          ggsankey::geom_sankey(
+          get_namespace_fun("ggsankey", "geom_sankey")(
             color = "black",
             flow.alpha = alpha,
             show.legend = FALSE,
