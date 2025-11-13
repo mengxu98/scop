@@ -59,7 +59,7 @@
 #' )
 #' p1
 #'
-#' panel_fix_overall(p1, height = 6)
+#' thisplot::panel_fix_overall(p1, height = 6)
 #'
 #' GSEAPlot(
 #'   pancreas_sub,
@@ -917,7 +917,7 @@ GSEAPlot <- function(
         plotlist <- lapply(plotlist[subplots], as_grob)
         rel_heights <- rel_heights[subplots]
         for (i in seq_along(plotlist)) {
-          plotlist[[i]] <- panel_fix_overall(
+          plotlist[[i]] <- thisplot::panel_fix_overall(
             plotlist[[i]],
             height = rel_heights[i],
             units = "null",
@@ -925,7 +925,7 @@ GSEAPlot <- function(
             respect = TRUE,
             return_grob = TRUE
           )
-          plotlist[[i]] <- panel_fix_overall(
+          plotlist[[i]] <- thisplot::panel_fix_overall(
             plotlist[[i]],
             width = rel_width,
             units = "null",
@@ -1234,6 +1234,7 @@ GSEAPlot <- function(
         "Description"
       ]]))
 
+      shadowtextGrob <- get_namespace_fun("shadowtext", "shadowtextGrob")
       draw_key_cust <- function(data, params, size) {
         data_text <- data
         data_text$label <- which(
@@ -1245,7 +1246,7 @@ GSEAPlot <- function(
         data_text$size <- 11 / .pt
         grid::grobTree(
           draw_key_point(data, list(color = "white", shape = 21)),
-          ggrepel:::shadowtextGrob(
+          shadowtextGrob(
             label = data_text$label,
             bg.colour = "black",
             bg.r = 0.1,

@@ -23,7 +23,6 @@ This function performs doublet-calling using the doubletdetection(python) packag
 \examples{
 \dontrun{
 data(pancreas_sub)
-PrepareEnv()
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- db_DoubletDetection(pancreas_sub)
 CellDimPlot(

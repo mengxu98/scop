@@ -147,8 +147,6 @@ reference:
 
 - subtitle: "Trajectory Analysis"
 - contents:
-  - RunMonocle2
-  - RunMonocle3
   - RunPAGA
   - RunPalantir
   - RunSlingshot
@@ -190,27 +188,9 @@ reference:
 
 - subtitle: "Plotting Functions"
 - contents:
-  - adjcolors
-  - blendcolors
   - compute_velocity_on_grid
-  - drop_data
-  - get_vars
-  - geom_alluvial
-  - geom_alluvial_label
-  - geom_sankey
-  - geom_sankey_bump
-  - geom_sankey_label
-  - make_long
-  - palette_colors
-  - palette_list
-  - panel_fix
+  - cluster_within_group2
   - print.scop_logo
-  - segements_df
-  - slim_data
-  - show_palettes
-  - theme_blank
-  - theme_scop
-  - theme_sankey
 
 - subtitle: "SCExplorer"
 - contents:

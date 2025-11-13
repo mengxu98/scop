@@ -24,7 +24,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPalantir(
@@ -86,6 +85,7 @@ RunPalantir <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   check_python("palantir")
   if (all(is.null(srt), is.null(adata))) {
     log_message(

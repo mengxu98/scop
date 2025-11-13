@@ -47,11 +47,11 @@ check_python <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "{.arg envname}: {.val {envname}} python environment does not exist. Create it with {.fn PrepareEnv}",
+      "{.arg envname}: {.val {envname}} python environment does not exist",
       message_type = "warning",
       verbose = verbose
     )
-    PrepareEnv()
+    PrepareEnv(envname = envname)
   }
 
   if (isTRUE(force)) {
@@ -153,7 +153,7 @@ remove_python <- function(
     force = FALSE,
     verbose = TRUE) {
   envname <- get_envname(envname)
-
+  system2t <- get_namespace_fun("reticulate", "system2t")
   log_message(
     "Removing {.pkg {packages}} from environment: {.file {envname}}",
     verbose = verbose
@@ -240,7 +240,7 @@ remove_python <- function(
             "-m", "pip", "uninstall", "-y", pkg
           )
 
-          status <- reticulate:::system2t(python, shQuote(args))
+          status <- system2t(python, shQuote(args))
 
           if (status != 0L) {
             log_message(
@@ -274,10 +274,11 @@ remove_python <- function(
 
     result <- tryCatch(
       {
-        args <- reticulate:::conda_args("remove", envname)
+        conda_args <- get_namespace_fun("reticulate", "conda_args")
+        args <- conda_args("remove", envname)
         args <- c(args, packages)
 
-        status <- reticulate:::system2t(conda, shQuote(args))
+        status <- system2t(conda, shQuote(args))
 
         if (status != 0L) {
           log_message(
@@ -324,7 +325,7 @@ remove_python <- function(
               "-m", "pip", "uninstall", "-y", pkg
             )
 
-            status <- reticulate:::system2t(python, shQuote(args))
+            status <- system2t(python, shQuote(args))
 
             if (status != 0L) {
               log_message(
@@ -404,7 +405,8 @@ check_r <- function(
     }
     check_pkg <- .check_pkg_status(
       pkg_name,
-      version = version, lib = lib
+      version = version,
+      lib = lib
     )
 
     force_update <- FALSE
@@ -417,6 +419,7 @@ check_r <- function(
     if (!check_pkg || force_update) {
       log_message(
         "Installing: {.pkg {pkg_name}}...",
+        message_type = "running",
         verbose = verbose
       )
       status_list[[pkg]] <- FALSE
@@ -437,7 +440,9 @@ check_r <- function(
         }
       )
       status_list[[pkg]] <- .check_pkg_status(
-        pkg_name, version = version, lib = lib
+        pkg_name,
+        version = version,
+        lib = lib
       )
     } else {
       status_list[[pkg]] <- TRUE
@@ -456,6 +461,7 @@ check_r <- function(
   } else {
     log_message(
       "{.pkg {packages}} installed successfully",
+      message_type = "success",
       verbose = verbose
     )
   }
@@ -504,6 +510,7 @@ remove_r <- function(
     } else {
       log_message(
         "{.pkg {pkg}} is not installed, skipping removal",
+        message_type = "warning",
         verbose = verbose
       )
       status_list[[pkg]] <- TRUE
@@ -522,6 +529,7 @@ remove_r <- function(
   } else {
     log_message(
       "{.pkg {packages}} removed successfully",
+      message_type = "success",
       verbose = verbose
     )
   }
