@@ -80,8 +80,8 @@ Generate proportion test plots based on the results from \link{RunProportionTest
 data(pancreas_sub)
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
-  annotation_column = "SubCellType",
-  group_column = "orig.ident"
+  group.by = "CellType",
+  split.by = "Phase"
 )
 
 ProportionTestPlot(pancreas_sub)

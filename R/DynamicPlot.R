@@ -137,7 +137,7 @@ DynamicPlot <- function(
   x_order <- match.arg(x_order)
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
     log_message(
-      paste0(group.by, " is not in the meta.data of srt object."),
+      "{.val {group.by}} is not in the meta.data of srt object",
       message_type = "error"
     )
   }
@@ -325,20 +325,20 @@ DynamicPlot <- function(
       upr_matrix <- upr_matrix
       lwr_matrix <- lwr_matrix
     } else if (exp_method == "zscore") {
-      center <- colMeans(raw_matrix)
+      center <- Matrix::colMeans(raw_matrix)
       sd <- MatrixGenerics::colSds(raw_matrix)
       raw_matrix <- scale(raw_matrix, center = center, scale = sd)
       fitted_matrix <- scale(fitted_matrix, center = center, scale = sd)
       upr_matrix <- scale(upr_matrix, center = center, scale = sd)
       lwr_matrix <- scale(lwr_matrix, center = center, scale = sd)
     } else if (exp_method == "fc") {
-      colm <- colMeans(raw_matrix)
+      colm <- Matrix::colMeans(raw_matrix)
       raw_matrix <- t(t(raw_matrix) / colm)
       fitted_matrix <- t(t(fitted_matrix) / colm)
       upr_matrix <- t(t(upr_matrix) / colm)
       lwr_matrix <- t(t(lwr_matrix) / colm)
     } else if (exp_method == "log2fc") {
-      colm <- colMeans(raw_matrix)
+      colm <- Matrix::colMeans(raw_matrix)
       raw_matrix <- t(log2(t(raw_matrix) / colm))
       fitted_matrix <- t(log2(t(fitted_matrix) / colm))
       upr_matrix <- t(log2(t(upr_matrix) / colm))

@@ -5,21 +5,21 @@
 \title{Prepare the virtual environment}
 \usage{
 PrepareEnv(
+  envname = NULL,
   conda = "auto",
   miniconda_repo = "https://repo.anaconda.com/miniconda",
-  envname = NULL,
   version = "3.10-1",
   force = FALSE,
   ...
 )
 }
 \arguments{
+\item{envname}{The name of a conda environment.}
+
 \item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{miniconda_repo}{Repositories for miniconda.
 Default is \url{https://repo.anaconda.com/miniconda}.}
-
-\item{envname}{The name of a conda environment.}
 
 \item{version}{A character vector specifying the version of the environment.
 Default is \code{"3.10-1"}.}

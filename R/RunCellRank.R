@@ -35,6 +35,7 @@ RunCellRank <- function(
     fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  PrepareEnv()
   check_python("cellrank")
   if (isTRUE(magic_impute)) {
     check_python("magic-impute")

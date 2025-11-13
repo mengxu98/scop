@@ -2159,7 +2159,7 @@ server <- function(input, output, session) {
           ncol = ncol1, byrow = byrow1, force = TRUE
         )
 
-        p1_dim <- scop::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
+        p1_dim <- thisplot::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p1_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2294,7 +2294,7 @@ server <- function(input, output, session) {
           ncol = ncol2, byrow = byrow2, force = TRUE
         )
 
-        p2_dim <- scop::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
+        p2_dim <- thisplot::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p2_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2446,9 +2446,9 @@ server <- function(input, output, session) {
         )
 
         if (flip3) {
-          p3 <- scop::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
+          p3 <- thisplot::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p3 <- scop::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
+          p3 <- thisplot::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
         }
         attr(p3, "dpi") <- 300
         return(p3)
@@ -2597,9 +2597,9 @@ server <- function(input, output, session) {
         )
 
         if (flip4) {
-          p4 <- scop::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
+          p4 <- thisplot::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p4 <- scop::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
+          p4 <- thisplot::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
         }
 
         attr(p4, "dpi") <- 300

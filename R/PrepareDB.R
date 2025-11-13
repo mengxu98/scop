@@ -2898,3 +2898,16 @@ ListDB <- function(
   rownames(dbinfo) <- NULL
   return(dbinfo)
 }
+
+kegg_get <- function(url) {
+  temp <- tempfile()
+  on.exit(unlink(temp))
+  download(url = url, destfile = temp)
+  content <- as.data.frame(
+    do.call(
+      rbind,
+      strsplit(readLines(temp), split = "\t")
+    )
+  )
+  content
+}
