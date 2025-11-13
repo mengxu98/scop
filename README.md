@@ -710,4 +710,4 @@ if (interactive()) {
 
 ![Example1](man/figures/Example-1.jpg) [**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg) [**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg) [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
 
-You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunMonocle3](https://mengxu98.github.io/scop/reference/RunMonocle3.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
+You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
