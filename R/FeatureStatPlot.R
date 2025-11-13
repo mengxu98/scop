@@ -177,7 +177,7 @@
 #'   pancreas_sub,
 #'   stat.by = c("G2M_score", "Fev"),
 #'   group.by = "SubCellType"
-#' ) %>% panel_fix(height = 1, width = 2)
+#' ) |> thisplot::panel_fix(height = 1, width = 2)
 #'
 #' FeatureStatPlot(
 #'   pancreas_sub,
@@ -333,7 +333,7 @@
 #'   plot_type = "box",
 #'   group.by = "SubCellType",
 #'   bg.by = "CellType", stack = TRUE, flip = TRUE
-#' ) %>% panel_fix_overall(
+#' ) |> thisplot::panel_fix_overall(
 #'   width = 8, height = 5
 #' )
 #' # As the plot is created by combining,
@@ -393,7 +393,7 @@
 #'   object = pancreas_sub,
 #'   layer = "scale.data",
 #'   assay = "RNA",
-#'   new.data = thisutils::as_matrix(data / rowMeans(data))
+#'   new.data = data / Matrix::rowMeans(data)
 #' )
 #' FeatureStatPlot(
 #'   pancreas_sub,

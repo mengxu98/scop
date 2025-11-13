@@ -190,9 +190,6 @@ CheckDataList <- function(
       message_type = "error"
     )
   }
-  if (normalization_method == "SCT") {
-    check_r("glmGamPoi")
-  }
   hvf_sources <- c("global", "separate")
   if (!HVF_source %in% hvf_sources) {
     log_message(
@@ -448,7 +445,8 @@ CheckDataList <- function(
       }
     }
 
-    if (normalization_method %in% c("SCT") && type == "RNA") {
+    if (normalization_method == "SCT" && type == "RNA") {
+      check_r("glmGamPoi")
       if (
         isTRUE(do_normalization) ||
           isTRUE(do_HVF_finding) ||
@@ -470,41 +468,36 @@ CheckDataList <- function(
       } else {
         SeuratObject::DefaultAssay(srt_list[[i]]) <- "SCT"
       }
-      if (
-        !"residual_variance" %in%
-          colnames(
-            GetFeaturesData(srt_list[[i]], assay = "SCT")
-          )
-      ) {
+      feature_attr_sct <- GetFeaturesData(srt_list[[i]], assay = "SCT")
+      if (!"residual_variance" %in% colnames(feature_attr_sct)) {
         if (length(srt_list[[i]]@assays$SCT@SCTModel.list) > 1) {
-          index <- which(sapply(
-            srt_list[[i]]@assays$SCT@SCTModel.list,
-            function(x) nrow(x@cell.attributes) == ncol(srt_list[[i]])
-          ))
+          index <- which(
+            sapply(
+              srt_list[[i]]@assays$SCT@SCTModel.list,
+              function(x) nrow(x@cell.attributes) == ncol(srt_list[[i]])
+            )
+          )
         } else {
           index <- 1
         }
         model <- srt_list[[i]]@assays$SCT@SCTModel.list[[index]]
-        feature.attr <- Seurat::SCTResults(
+        feature_attr_sct <- Seurat::SCTResults(
           object = model,
           slot = "feature.attributes"
         )
-      } else {
-        feature.attr <- GetFeaturesData(srt_list[[i]], assay = "SCT")
       }
-      nfeatures <- min(nHVF, nrow(x = feature.attr))
-      top.features <- rownames(x = feature.attr)[utils::head(
-        order(feature.attr$residual_variance, decreasing = TRUE),
+      nfeatures <- min(nHVF, nrow(x = feature_attr_sct))
+      top_features <- rownames(x = feature_attr_sct)[utils::head(
+        order(feature_attr_sct$residual_variance, decreasing = TRUE),
         n = nfeatures
       )]
       SeuratObject::VariableFeatures(
         srt_list[[i]],
         assay = SeuratObject::DefaultAssay(srt_list[[i]])
-      ) <- top.features
-      # srt_list[[i]]@assays$SCT@meta.features <- feature.attr
+      ) <- top_features
       srt_list[[i]] <- AddFeaturesData(
         srt_list[[i]],
-        features = feature.attr,
+        features = feature_attr_sct,
         assay = "SCT"
       )
     }

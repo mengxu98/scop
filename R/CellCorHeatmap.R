@@ -1737,7 +1737,7 @@ CellCorHeatmap <- function(
   }
 
   if (isTRUE(fix)) {
-    p <- panel_fix_overall(
+    p <- thisplot::panel_fix_overall(
       g_tree,
       width = as.numeric(ht_width),
       height = as.numeric(ht_height),

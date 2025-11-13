@@ -305,7 +305,7 @@
 #'   network_blendmode = "average",
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) |> panel_fix(height = 5)
+#' ) |> thisplot::panel_fix(height = 5)
 #'
 #' EnrichmentPlot(
 #'   pancreas_sub,
@@ -347,7 +347,7 @@
 #'   character_width = 10,
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
-#' ) |> panel_fix(height = 4)
+#' ) |> thisplot::panel_fix(height = 4)
 #'
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,

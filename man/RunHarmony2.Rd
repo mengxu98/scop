@@ -10,6 +10,7 @@ RunHarmony2(object, ...)
 \method{RunHarmony2}{Seurat}(
   object,
   group.by.vars,
+  assay = NULL,
   reduction = "pca",
   dims.use = 1:30,
   project.dim = TRUE,
@@ -26,6 +27,9 @@ RunHarmony2(object, ...)
 \item{...}{Additional arguments to be passed to \link[harmony:RunHarmony]{harmony::RunHarmony}.}
 
 \item{group.by.vars}{The batch variable name.}
+
+\item{assay}{The assay to be used.
+Default is \code{NULL}.}
 
 \item{reduction}{The reduction to be used.
 Default is \code{"pca"}.}
@@ -49,22 +53,44 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-This is a modified version of \link[harmony:RunHarmony]{harmony::RunHarmony} specifically designed for compatibility with RunSymphonyMap.
+This is a modified version of \link[harmony:RunHarmony]{harmony::RunHarmony} specifically designed for compatibility with \link{RunSymphonyMap}.
 }
 \examples{
+data(panc8_sub)
+panc8_sub <- standard_scop(panc8_sub)
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
   reduction = "pca"
 )
+
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
   reduction = "pca"
 )
+
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype"),
   reduction = "Harmony"
+)
+
+panc8_sub <- standard_scop(
+  panc8_sub,
+  prefix = "Harmony",
+  linear_reduction = "Harmony"
+)
+
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype"),
+  reduction = "StandardpcaUMAP2D"
+)
+
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype"),
+  reduction = "HarmonyUMAP2D"
 )
 }

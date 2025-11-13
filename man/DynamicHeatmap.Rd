@@ -497,7 +497,7 @@ ht1 <- DynamicHeatmap(
 )
 ht1$plot
 
-panel_fix(ht1$plot, raster = TRUE, dpi = 50)
+thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
@@ -513,7 +513,7 @@ ht2 <- DynamicHeatmap(
 )
 ht2$plot
 
-panel_fix(
+thisplot::panel_fix(
   ht2$plot,
   height = 5,
   width = 5,

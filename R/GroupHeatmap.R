@@ -249,6 +249,8 @@
 #' @export
 #'
 #' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' ht1 <- GroupHeatmap(
 #'   pancreas_sub,
 #'   features = c(
@@ -263,7 +265,7 @@
 #' )
 #' ht1$plot
 #'
-#' panel_fix(
+#' thisplot::panel_fix(
 #'   ht1$plot,
 #'   height = 4,
 #'   width = 6,
@@ -273,9 +275,6 @@
 #'
 #' \dontrun{
 #' library(dplyr)
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#'
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
@@ -2396,7 +2395,7 @@ GroupHeatmap <- function(
     wrap.grobs = TRUE
   )
   if (isTRUE(fix)) {
-    p <- panel_fix_overall(
+    p <- thisplot::panel_fix_overall(
       g_tree,
       width = as.numeric(ht_width),
       height = as.numeric(ht_height),

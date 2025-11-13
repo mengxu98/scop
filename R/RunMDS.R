@@ -32,7 +32,9 @@
 #' @export
 #'
 #' @examples
-#' pancreas_sub <- RunMDS(object = pancreas_sub)
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunMDS(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",

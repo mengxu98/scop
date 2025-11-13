@@ -1,5 +1,30 @@
 # scop
 
+# scop 0.6.0
+
+* **func**:
+  * `cluster_within_group2()`: New function for clustering within groups.
+  * Multiple plotting functions: Replaced `geom_sankey()` with `ggsankey::geom_sankey()` for better Sankey diagram support.
+  * Multiple functions: Replaced `:::` operator with `get_namespace_fun()` for safer namespace access.
+
+* **refactor**:
+  * **IMPORTANT**: Removed `RunMonocle()` function and related documentation (`RunMonocle2.Rd`, `RunMonocle3.Rd`).
+  * Removed `projection_functions.R` file (functions moved to other locations).
+  * Replaced custom theme functions with `thisplot::theme_this()` (exported as `theme_scop()`).
+  * Replaced direct `log_message()` calls with `thisutils::log_message()` for consistency.
+  * Removed `palette_list` data object.
+
+* **deps**:
+  * Moved `cli` from `Suggests` to `Imports` for better message formatting support.
+  * Added `thisplot` to `Imports` for theme and utility functions.
+  * Added `ggsankey` to `Suggests` for Sankey diagram support.
+  * Added remote dependencies: `theislab/destiny`, `davidsjoberg/ggsankey`, `mengxu98/thisplot`.
+  * Removed unused dependencies: `Biobase`, `BiocGenerics`, `concaveman`, `DDRTree`, `glmGamPoi`, `hexbin`, `monocle`, `png`, `ragg`, `tidyr`.
+
+* **docs**:
+  * Updated documentation across multiple functions to reflect code refactoring.
+  * Improved code organization and maintainability.
+
 # scop 0.5.5
 
 * **bugs**:

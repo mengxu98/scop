@@ -135,7 +135,9 @@ Run NMF (non-negative matrix factorization)
 }
 \examples{
 library(Matrix)
-pancreas_sub <- RunNMF(object = pancreas_sub)
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+pancreas_sub <- RunNMF(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

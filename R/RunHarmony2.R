@@ -1,11 +1,13 @@
 #' @title Run Harmony algorithm
 #'
 #' @description
-#' This is a modified version of [harmony::RunHarmony] specifically designed for compatibility with RunSymphonyMap.
+#' This is a modified version of [harmony::RunHarmony] specifically designed for compatibility with [RunSymphonyMap].
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param object A Seurat object.
+#' @param assay The assay to be used.
+#' Default is `NULL`.
 #' @param group.by.vars The batch variable name.
 #' @param reduction The reduction to be used.
 #' Default is `"pca"`.
@@ -25,20 +27,42 @@
 #' @export
 #'
 #' @examples
+#' data(panc8_sub)
+#' panc8_sub <- standard_scop(panc8_sub)
 #' panc8_sub <- RunHarmony2(
 #'   panc8_sub,
 #'   group.by.vars = "tech",
 #'   reduction = "pca"
 #' )
+#'
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype"),
 #'   reduction = "pca"
 #' )
+#'
 #' CellDimPlot(
 #'   panc8_sub,
 #'   group.by = c("tech", "celltype"),
 #'   reduction = "Harmony"
+#' )
+#'
+#' panc8_sub <- standard_scop(
+#'   panc8_sub,
+#'   prefix = "Harmony",
+#'   linear_reduction = "Harmony"
+#' )
+#'
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype"),
+#'   reduction = "StandardpcaUMAP2D"
+#' )
+#'
+#' CellDimPlot(
+#'   panc8_sub,
+#'   group.by = c("tech", "celltype"),
+#'   reduction = "HarmonyUMAP2D"
 #' )
 RunHarmony2 <- function(object, ...) {
   UseMethod(generic = "RunHarmony2", object = object)
@@ -50,6 +74,7 @@ RunHarmony2 <- function(object, ...) {
 RunHarmony2.Seurat <- function(
     object,
     group.by.vars,
+    assay = NULL,
     reduction = "pca",
     dims.use = 1:30,
     project.dim = TRUE,
@@ -64,28 +89,31 @@ RunHarmony2.Seurat <- function(
   }
   if (length(dims.use) == 1) {
     log_message(
-      "Only specified one dimension in dims.use",
+      "Only specified one dimension in {.arg dims.use}",
       message_type = "error"
     )
   }
-
-  data.use <- Seurat::Embeddings(object[[reduction]])
-  if (max(dims.use) > ncol(data.use)) {
+  reduction <- DefaultReduction(
+    object,
+    pattern = reduction
+  )
+  data_use <- Seurat::Embeddings(object, reduction = reduction)
+  if (max(dims.use) > ncol(data_use)) {
     log_message(
       "Trying to use more dimensions than computed",
       message_type = "error"
     )
   }
 
-  assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
+  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   metavars_df <- Seurat::FetchData(
     object,
     group.by.vars,
-    cells = rownames(data.use)
+    cells = rownames(data_use)
   )
 
   harmonyObject <- harmony::RunHarmony(
-    data_mat = data.use[, dims.use, drop = FALSE],
+    data_mat = data_use[, dims.use, drop = FALSE],
     meta_data = metavars_df,
     vars_use = group.by.vars,
     verbose = verbose,
@@ -94,7 +122,7 @@ RunHarmony2.Seurat <- function(
   )
 
   harmonyEmbed <- Matrix::t(as_matrix(harmonyObject$Z_corr))
-  rownames(harmonyEmbed) <- row.names(data.use)
+  rownames(harmonyEmbed) <- row.names(data_use)
   colnames(harmonyEmbed) <- paste0(
     reduction.name,
     "_",
@@ -102,7 +130,7 @@ RunHarmony2.Seurat <- function(
   )
 
   harmonyClusters <- Matrix::t(harmonyObject$R)
-  rownames(harmonyClusters) <- row.names(data.use)
+  rownames(harmonyClusters) <- row.names(data_use)
   colnames(harmonyClusters) <- paste0("R", seq_len(ncol(harmonyClusters)))
 
   object[[reduction.name]] <- Seurat::CreateDimReducObject(

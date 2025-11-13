@@ -7,42 +7,78 @@
 #' @param srt A Seurat object.
 #' @param reduction Name of the reduction in the Seurat object to use for plotting.
 #' @param dims Indices of the dimensions to use for plotting.
-#' @param cells Cells to include in the plot. If `NULL`, all cells will be included.
-#' @param velocity Name of the velocity to use for plotting. Default is `"stochastic"`.
-#' @param plot_type Type of plot to create. Can be `"raw"`, `"grid"`, or `"stream"`.
-#' @param group_by Name of the column in the Seurat object metadata to group the cells by. Defaults is `NULL`.
-#' @param group_palette Name of the palette to use for coloring the groups. Defaults is `"Paired"`.
-#' @param group_palcolor Colors to use for coloring the groups. Defaults is `NULL`.
-#' @param n_neighbors Number of neighbors to include for the density estimation. Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.
-#' @param density Propotion of cells to plot. Defaults is `1` (plot all cells).
-#' @param smooth Smoothing parameter for density estimation. Defaults is `0.5`.
-#' @param scale Scaling factor for the velocity vectors. Defaults is `1`.
-#' @param min_mass Minimum mass value for the density-based cutoff. Defaults is `1`.
-#' @param cutoff_perc Percentile value for the density-based cutoff. Defaults is `5`.
-#' @param arrow_angle Angle of the arrowheads. Defaults is `20`.
-#' @param arrow_color Color of the arrowheads. Defaults is `"black"`.
-#' @param streamline_L Length of the streamlines. Defaults is `5`.
-#' @param streamline_minL Minimum length of the streamlines. Defaults is `1`.
-#' @param streamline_res Resolution of the streamlines. Defaults is `1`.
-#' @param streamline_n Number of streamlines to plot. Defaults is `15`.
-#' @param streamline_width Width of the streamlines. Defaults is `c(0, 0.8)`.
-#' @param streamline_alpha Alpha transparency of the streamlines. Defaults is `1`.
-#' @param streamline_color Color of the streamlines. Defaults is `NULL`.
-#' @param streamline_palette Name of the palette to use for coloring the streamlines. Defaults is `"RdYlBu"`.
-#' @param streamline_palcolor Colors to use for coloring the streamlines. Defaults is `NULL`.
-#' @param streamline_bg_color Background color of the streamlines. Defaults is `"white"`.
-#' @param streamline_bg_stroke Stroke width of the streamlines background. Defaults is `0.5`.
-#' @param aspect.ratio Aspect ratio of the plot. Defaults is 1.
-#' @param title Title of the plot. Defaults is `"Cell velocity"`.
-#' @param subtitle Subtitle of the plot. Defaults is NULL.
-#' @param xlab x-axis label. Defaults is NULL.
-#' @param ylab y-axis label. Defaults is NULL.
-#' @param legend.position Position of the legend. Defaults is `"right"`.
-#' @param legend.direction Direction of the legend. Defaults is `"vertical"`.
-#' @param theme_use Name of the theme to use for plotting. Defaults is `"theme_scop"`.
-#' @param theme_args List of theme arguments for customization. Defaults is `list()`.
-#' @param return_layer Whether to return the plot layers as a list. Defaults is `FALSE`.
-#' @param seed Random seed for reproducibility. Defaults is `11`.
+#' @param cells Cells to include in the plot.
+#' If `NULL`, all cells will be included.
+#' @param velocity Name of the velocity to use for plotting.
+#' Default is `"stochastic"`.
+#' @param plot_type Type of plot to create.
+#' Can be `"raw"`, `"grid"`, or `"stream"`.
+#' @param group_by Name of the column in the Seurat object metadata to group the cells by.
+#' Defaults is `NULL`.
+#' @param group_palette Name of the palette to use for coloring the groups.
+#' Defaults is `"Paired"`.
+#' @param group_palcolor Colors to use for coloring the groups.
+#' Defaults is `NULL`.
+#' @param n_neighbors Number of neighbors to include for the density estimation.
+#' Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.
+#' @param density Propotion of cells to plot.
+#' Defaults is `1` (plot all cells).
+#' @param smooth Smoothing parameter for density estimation.
+#' Defaults is `0.5`.
+#' @param scale Scaling factor for the velocity vectors.
+#' Defaults is `1`.
+#' @param min_mass Minimum mass value for the density-based cutoff.
+#' Defaults is `1`.
+#' @param cutoff_perc Percentile value for the density-based cutoff.
+#' Defaults is `5`.
+#' @param arrow_angle Angle of the arrowheads.
+#' Defaults is `20`.
+#' @param arrow_color Color of the arrowheads.
+#' Defaults is `"black"`.
+#' @param streamline_L Length of the streamlines.
+#' Defaults is `5`.
+#' @param streamline_minL Minimum length of the streamlines.
+#' Defaults is `1`.
+#' @param streamline_res Resolution of the streamlines.
+#' Defaults is `1`.
+#' @param streamline_n Number of streamlines to plot.
+#' Defaults is `15`.
+#' @param streamline_width Width of the streamlines.
+#' Defaults is `c(0, 0.8)`.
+#' @param streamline_alpha Alpha transparency of the streamlines.
+#' Defaults is `1`.
+#' @param streamline_color Color of the streamlines.
+#' Defaults is `NULL`.
+#' @param streamline_palette Name of the palette to use for coloring the streamlines.
+#' Defaults is `"RdYlBu"`.
+#' @param streamline_palcolor Colors to use for coloring the streamlines.
+#' Defaults is `NULL`.
+#' @param streamline_bg_color Background color of the streamlines.
+#' Defaults is `"white"`.
+#' @param streamline_bg_stroke Stroke width of the streamlines background.
+#' Defaults is `0.5`.
+#' @param aspect.ratio Aspect ratio of the plot.
+#' Defaults is `1`.
+#' @param title Title of the plot.
+#' Defaults is `"Cell velocity"`.
+#' @param subtitle Subtitle of the plot.
+#' Defaults is `NULL`.
+#' @param xlab x-axis label.
+#' Defaults is `NULL`.
+#' @param ylab y-axis label.
+#' Defaults is `NULL`.
+#' @param legend.position Position of the legend.
+#' Defaults is `"right"`.
+#' @param legend.direction Direction of the legend.
+#' Defaults is `"vertical"`.
+#' @param theme_use Name of the theme to use for plotting.
+#' Defaults is `"theme_scop"`.
+#' @param theme_args List of theme arguments for customization.
+#' Defaults is `list()`.
+#' @param return_layer Whether to return the plot layers as a list.
+#' Defaults is `FALSE`.
+#' @param seed Random seed for reproducibility.
+#' Defaults is `11`.
 #'
 #' @seealso
 #' [RunSCVELO], [CellDimPlot]
@@ -51,7 +87,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' PrepareEnv()
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(

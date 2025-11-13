@@ -31,7 +31,7 @@
 #' )
 #' ht1$plot
 #'
-#' panel_fix(
+#' thisplot::panel_fix(
 #'   ht1$plot,
 #'   height = 4,
 #'   width = 6,
@@ -48,7 +48,8 @@
 #'   cluster_row_slices = TRUE,
 #'   cluster_columns = TRUE,
 #'   cluster_column_slices = TRUE,
-#'   ht_params = list(row_gap = grid::unit(0, "mm"))
+#'   ht_params = list(row_gap = grid::unit(0, "mm")),
+#'   use_raster = FALSE
 #' )
 #' ht2$plot
 #'
@@ -1721,7 +1722,7 @@ FeatureHeatmap <- function(
   }
 
   if (isTRUE(fix)) {
-    p <- panel_fix_overall(
+    p <- thisplot::panel_fix_overall(
       g_tree,
       width = as.numeric(ht_width),
       height = as.numeric(ht_height),
