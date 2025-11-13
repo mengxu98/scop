@@ -152,7 +152,7 @@
 #' )
 #' p1
 #'
-#' panel_fix(
+#' thisplot::panel_fix(
 #'   p1,
 #'   height = 2,
 #'   raster = TRUE,
@@ -418,6 +418,7 @@
 #'   lineages_span = 0.1
 #' )
 #'
+#' \dontrun{
 #' # Show PAGA results on the plot
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -539,6 +540,7 @@
 #'   legend.position = "none",
 #'   theme_use = "theme_blank"
 #' )
+#' }
 CellDimPlot <- function(
     srt,
     group.by,

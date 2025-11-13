@@ -263,7 +263,8 @@ WilcoxDETest <- function(
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",
-#'   markers_type = "paired"
+#'   markers_type = "paired",
+#'   cores = 2
 #' )
 #' PairedMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -281,7 +282,7 @@ WilcoxDETest <- function(
 #' panc8_sub <- integration_scop(
 #'   panc8_sub,
 #'   batch = "tech",
-#'   integration_method = "Seurat"
+#'   integration_method = "Uncorrected"
 #' )
 #' CellDimPlot(
 #'   panc8_sub,
@@ -292,7 +293,8 @@ WilcoxDETest <- function(
 #'   srt = panc8_sub,
 #'   group_by = "celltype",
 #'   grouping.var = "tech",
-#'   markers_type = "conserved"
+#'   markers_type = "conserved",
+#'   cores = 2
 #' )
 #' ConservedMarkers1 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -313,7 +315,8 @@ WilcoxDETest <- function(
 #'   srt = panc8_sub,
 #'   group_by = "tech",
 #'   grouping.var = "celltype",
-#'   markers_type = "conserved"
+#'   markers_type = "conserved",
+#'   cores = 2
 #' )
 #' ConservedMarkers2 <- dplyr::filter(
 #'   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,

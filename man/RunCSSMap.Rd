@@ -48,7 +48,9 @@ RunCSSMap(
 Single-cell reference mapping with CSS method
 }
 \examples{
+\dontrun{
 data(panc8_sub)
+panc8_sub <- standard_scop(panc8_sub)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(
@@ -71,4 +73,5 @@ ProjectionPlot(
   query_group = "celltype",
   ref_group = "celltype"
 )
+}
 }

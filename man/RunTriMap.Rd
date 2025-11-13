@@ -114,7 +114,9 @@ Default is \code{11}.}
 Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
 }
 \examples{
-pancreas_sub <- Seurat::FindVariableFeatures(pancreas_sub)
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunTriMap(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
@@ -124,4 +126,5 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "trimap"
 )
+}
 }

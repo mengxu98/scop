@@ -52,7 +52,6 @@ This function takes a Seurat object and converts it to an anndata object using t
 \examples{
 \dontrun{
 data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
 adata <- srt_to_adata(pancreas_sub)
 adata
 

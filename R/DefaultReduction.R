@@ -1,4 +1,3 @@
-
 #' @title Find the default reduction name in a Seurat object
 #'
 #' @param srt A Seurat object.
@@ -61,6 +60,8 @@ DefaultReduction <- function(
   if (length(reduc_all) == 1) {
     return(reduc_all)
   }
+
+  pattern_original <- pattern
   if (is.null(pattern)) {
     if (("Default_reduction" %in% names(srt@misc))) {
       pattern <- srt@misc[["Default_reduction"]]
@@ -100,16 +101,32 @@ DefaultReduction <- function(
     }
   }
   if (length(default_reduc) > 1) {
-    default_reduc <- default_reduc[unlist(sapply(
-      c(pattern_default, pattern_dim),
-      function(pat) {
-        grep(pattern = pat, x = default_reduc, ignore.case = TRUE)
+    if (!is.null(pattern_original) && length(pattern_original) == 1 &&
+      pattern_original %in% pattern_default) {
+      other_reductions <- setdiff(pattern_default, pattern_original)
+      default_reduc_clean <- default_reduc[!sapply(default_reduc, function(x) {
+        any(sapply(other_reductions, function(pr) {
+          grepl(pattern = pr, x = x, ignore.case = TRUE)
+        }))
+      })]
+      if (length(default_reduc_clean) > 0) {
+        default_reduc <- default_reduc_clean
       }
-    ))]
-    default_reduc <- default_reduc[which.min(sapply(
-      default_reduc,
-      function(x) dim(srt@reductions[[x]])[2]
-    ))]
+    }
+
+    if (length(default_reduc) > 1) {
+      default_reduc <- default_reduc[unlist(sapply(
+        c(pattern_default, pattern_dim),
+        function(pat) {
+          grep(pattern = pat, x = default_reduc, ignore.case = TRUE)
+        }
+      ))]
+      # 选择维度最小的
+      default_reduc <- default_reduc[which.min(sapply(
+        default_reduc,
+        function(x) dim(srt@reductions[[x]])[2]
+      ))]
+    }
   }
   return(default_reduc)
 }

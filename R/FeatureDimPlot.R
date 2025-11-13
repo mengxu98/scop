@@ -131,7 +131,7 @@
 #'   pancreas_sub,
 #'   features = "G2M_score",
 #'   reduction = "UMAP"
-#' ) %>% panel_fix(
+#' ) |> thisplot::panel_fix(
 #'   height = 2,
 #'   raster = TRUE,
 #'   dpi = 30

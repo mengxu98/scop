@@ -79,7 +79,7 @@
 #' )
 #' ht1$plot
 #'
-#' panel_fix(ht1$plot, raster = TRUE, dpi = 50)
+#' thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 #'
 #' ht2 <- DynamicHeatmap(
 #'   pancreas_sub,
@@ -95,7 +95,7 @@
 #' )
 #' ht2$plot
 #'
-#' panel_fix(
+#' thisplot::panel_fix(
 #'   ht2$plot,
 #'   height = 5,
 #'   width = 5,
@@ -2051,7 +2051,7 @@ DynamicHeatmap <- function(
   }
 
   if (isTRUE(fix)) {
-    p <- panel_fix_overall(
+    p <- thisplot::panel_fix_overall(
       g_tree,
       width = as.numeric(ht_width),
       height = as.numeric(ht_height),

@@ -138,18 +138,17 @@ Default is \code{11}.}
 Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
 }
 \examples{
-pancreas_sub <- Seurat::FindVariableFeatures(
-  pancreas_sub,
-  verbose = FALSE
-)
-features <- SeuratObject::VariableFeatures(pancreas_sub)
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPHATE(
-  pancreas_sub,
-  features = features
+  object = pancreas_sub,
+  features = SeuratObject::VariableFeatures(pancreas_sub)
 )
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "phate"
 )
+}
 }
