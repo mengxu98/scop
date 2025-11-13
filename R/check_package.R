@@ -47,11 +47,11 @@ check_python <- function(
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "{.arg envname}: {.val {envname}} python environment does not exist. Create it with {.fn PrepareEnv}",
+      "{.arg envname}: {.val {envname}} python environment does not exist",
       message_type = "warning",
       verbose = verbose
     )
-    PrepareEnv()
+    PrepareEnv(envname = envname)
   }
 
   if (isTRUE(force)) {
@@ -405,7 +405,8 @@ check_r <- function(
     }
     check_pkg <- .check_pkg_status(
       pkg_name,
-      version = version, lib = lib
+      version = version,
+      lib = lib
     )
 
     force_update <- FALSE
@@ -418,6 +419,7 @@ check_r <- function(
     if (!check_pkg || force_update) {
       log_message(
         "Installing: {.pkg {pkg_name}}...",
+        message_type = "running",
         verbose = verbose
       )
       status_list[[pkg]] <- FALSE
@@ -438,7 +440,9 @@ check_r <- function(
         }
       )
       status_list[[pkg]] <- .check_pkg_status(
-        pkg_name, version = version, lib = lib
+        pkg_name,
+        version = version,
+        lib = lib
       )
     } else {
       status_list[[pkg]] <- TRUE
@@ -457,6 +461,7 @@ check_r <- function(
   } else {
     log_message(
       "{.pkg {packages}} installed successfully",
+      message_type = "success",
       verbose = verbose
     )
   }
@@ -505,6 +510,7 @@ remove_r <- function(
     } else {
       log_message(
         "{.pkg {pkg}} is not installed, skipping removal",
+        message_type = "warning",
         verbose = verbose
       )
       status_list[[pkg]] <- TRUE
@@ -523,6 +529,7 @@ remove_r <- function(
   } else {
     log_message(
       "{.pkg {packages}} removed successfully",
+      message_type = "success",
       verbose = verbose
     )
   }
