@@ -214,7 +214,6 @@ db_scds <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' PrepareEnv()
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_Scrublet(pancreas_sub)
 #' CellDimPlot(
@@ -234,6 +233,7 @@ db_Scrublet <- function(
     assay = "RNA",
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
+  PrepareEnv()
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a Seurat object",
@@ -264,12 +264,18 @@ db_Scrublet <- function(
   predicted_doublets <- res[[2]]
 
   srt[["db.Scrublet_score"]] <- doublet_scores
-  srt[["db.Scrublet_class"]] <- sapply(predicted_doublets, function(i) {
-    switch(as.character(i),
-      "FALSE" = "singlet",
-      "TRUE" = "doublet"
-    )
-  })
+  srt[["db.Scrublet_class"]] <- sapply(
+    predicted_doublets, function(i) {
+      switch(as.character(i),
+        "FALSE" = "singlet",
+        "TRUE" = "doublet"
+      )
+    }
+  )
+  log_message(
+    "{.pkg Scrublet} doublet calling completed",
+    message_type = "success"
+  )
   return(srt)
 }
 
@@ -287,7 +293,6 @@ db_Scrublet <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' PrepareEnv()
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- db_DoubletDetection(pancreas_sub)
 #' CellDimPlot(
@@ -307,6 +312,10 @@ db_DoubletDetection <- function(
     assay = "RNA",
     db_rate = ncol(srt) / 1000 * 0.01,
     ...) {
+  Sys.setenv(NUMBA_NUM_THREADS = "1")
+  Sys.setenv(NUMBA_DISABLE_JIT = "0")
+  PrepareEnv()
+
   if (!inherits(srt, "Seurat")) {
     log_message(
       "'srt' is not a Seurat object.",
@@ -321,6 +330,31 @@ db_DoubletDetection <- function(
     )
   }
   check_python("doubletdetection")
+  reticulate::py_run_string("
+import os
+# Ensure environment variables are set
+os.environ['NUMBA_NUM_THREADS'] = '1'
+os.environ['NUMBA_DISABLE_JIT'] = '0'
+# Try to configure NUMBA if it's already imported
+try:
+    import numba
+    # Set thread count if NUMBA is already imported
+    if hasattr(numba, 'set_num_threads'):
+        try:
+            numba.set_num_threads(1)
+        except RuntimeError:
+            # NUMBA threads already launched, ignore
+            pass
+    # Also set via config if available
+    if hasattr(numba, 'config'):
+        numba.config.NUMBA_NUM_THREADS = 1
+except ImportError:
+    # NUMBA not imported yet, which is fine
+    pass
+except Exception:
+    # Any other error, ignore
+    pass
+")
   doubletdetection <- reticulate::import("doubletdetection")
   counts <- GetAssayData5(
     object = srt,
@@ -335,13 +369,52 @@ db_DoubletDetection <- function(
   labels <- clf$fit(Matrix::t(counts))$predict()
   scores <- clf$doublet_score()
 
-  srt[["db.DoubletDetection_score"]] <- scores
-  srt[["db.DoubletDetection_class"]] <- sapply(labels, function(i) {
-    switch(as.character(i),
-      "0" = "singlet",
-      "1" = "doublet"
+  labels <- as.integer(reticulate::py_to_r(labels))
+  scores <- as.numeric(reticulate::py_to_r(scores))
+
+  n_cells <- ncol(srt)
+  if (length(labels) != n_cells) {
+    log_message(
+      "Length of labels ({.val {length(labels)}}) does not match number of cells",
+      message_type = "error"
     )
-  })
+  }
+  if (length(scores) != n_cells) {
+    log_message(
+      "Length of scores ({.val {length(scores)}}) does not match number of cells",
+      message_type = "error"
+    )
+  }
+
+  cell_names <- colnames(srt)
+
+  if (!is.null(names(scores)) && !identical(names(scores), cell_names)) {
+    scores <- scores[cell_names]
+  }
+  if (!is.null(names(labels)) && !identical(names(labels), cell_names)) {
+    labels <- labels[cell_names]
+  }
+
+  scores <- unname(scores)
+  labels <- unname(labels)
+
+  class_labels <- sapply(
+    labels, function(i) {
+      switch(as.character(i),
+        "0" = "singlet",
+        "1" = "doublet"
+      )
+    }
+  )
+
+  # Add metadata directly to meta.data data frame
+  srt@meta.data$db.DoubletDetection_score <- scores
+  srt@meta.data$db.DoubletDetection_class <- class_labels
+
+  log_message(
+    "{.pkg DoubletDetection} doublet calling completed",
+    message_type = "success"
+  )
   return(srt)
 }
 
