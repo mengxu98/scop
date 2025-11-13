@@ -79,6 +79,8 @@ print.scop_logo <- function(x, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
+  options(scop_env_cache = NULL)
+
   verbose <- thisutils::get_verbose()
   if (isTRUE(verbose)) {
     version <- utils::packageDescription(
