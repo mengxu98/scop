@@ -14,12 +14,15 @@
 #' If `NULL`, uses top pathways.
 #' @param dirpath Directory to save plots.
 #' @param output_format Format of output figure: `"png"` or `"pdf"`.
-#' Default: `"png"`.
+#' Default is `"png"`.
 #' @param top_n Number of top pathways to use for plotting.
-#' Default: 10.
-#' @param base_height Base height multiplier for all plots. Default: 1.
-#' @param base_width Base width multiplier for all plots. Default: 1.
-#' @param res Resolution for PNG output. Default: 300.
+#' Default is `10`.
+#' @param base_height Base height multiplier for all plots.
+#' Default is `1`.
+#' @param base_width Base width multiplier for all plots.
+#' Default is `1`.
+#' @param res Resolution for PNG output.
+#' Default is `300`.
 #'
 #' @export
 #'

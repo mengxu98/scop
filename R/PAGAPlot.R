@@ -5,64 +5,75 @@
 #'
 #' @md
 #' @param srt A Seurat object containing a PAGA result.
-#' @param paga The PAGA result from the Seurat object. Defaults to \code{srt\$misc\$paga}.
-#' @param type The type of plot to generate. Possible values are "connectivities" (default) and "connectivities_tree".
-#' @param reduction The type of reduction to use for the plot. Defaults to the default reduction in the Seurat object.
-#' @param dims The dimensions of the reduction to use for the plot. Defaults to the first two dimensions.
-#' @param cells The cells to include in the plot. Defaults to all cells.
-#' @param show_transition Whether to display transitions between different cell states. Defaults to \code{FALSE}.
-#' @param node_palette The color palette to use for node coloring. Defaults to "Paired".
-#' @param node_palcolor A vector of colors to use for node coloring. Defaults to \code{NULL}.
-#' @param node_size The size of the nodes in the plot. Defaults to 4.
-#' @param node_alpha The transparency of the nodes in the plot. Defaults to 1.
-#' @param node_highlight The group(s) to highlight in the plot. Defaults to \code{NULL}.
-#' @param node_highlight_color The color to use for highlighting the nodes. Defaults to "red".
-#' @param label Whether to display labels for the nodes. Defaults to \code{FALSE}.
-#' @param label.size The size of the labels. Defaults to 3.5.
-#' @param label.fg The color of the label text. Defaults to "white".
-#' @param label.bg The background color of the labels. Defaults to "black".
-#' @param label.bg.r The transparency of the label background color. Defaults to 0.1.
-#' @param label_insitu Whether to use in-situ labeling for the nodes. Defaults to \code{FALSE}.
-#' @param label_repel Whether to use repel mode for labeling nodes. Defaults to \code{FALSE}.
-#' @param label_repulsion The repulsion factor for repel mode. Defaults to 20.
-#' @param label_point_size The size of the points in the labels. Defaults to 1.
-#' @param label_point_color The color of the points in the labels. Defaults to "black".
-#' @param label_segment_color The color of the lines connecting the points in the labels. Defaults to "black".
-#' @param edge_threshold The threshold for including edges in the plot. Defaults to 0.01.
-#' @param edge_line The type of line to use for the edges. Possible values are "straight" and "curved". Defaults to "straight".
-#' @param edge_line_curvature The curvature factor for curved edges. Defaults to 0.3.
-#' @param edge_line_angle The angle for curved edges. Defaults to 90.
-#' @param edge_size The size range for the edges. Defaults to c(0.2, 1).
-#' @param edge_color The color of the edges. Defaults to "grey40".
-#' @param edge_alpha The transparency of the edges. Defaults to 0.5.
-#' @param edge_shorten The amount to shorten the edges. Defaults to 0.
-#' @param edge_offset The offset for curved edges. Defaults to 0.
-#' @param edge_highlight The group(s) to highlight in the plot. Defaults to \code{NULL}.
-#' @param edge_highlight_color The color to use for highlighting the edges. Defaults to "red".
-#' @param transition_threshold The threshold for including transitions in the plot. Defaults to 0.01.
-#' @param transition_line The type of line to use for the transitions. Possible values are "straight" and "curved". Defaults to "straight".
-#' @param transition_line_curvature The curvature factor for curved transitions. Defaults to 0.3.
-#' @param transition_line_angle The angle for curved transitions. Defaults to 90.
-#' @param transition_size The size range for the transitions. Defaults to c(0.2, 1).
-#' @param transition_color The color of the transitions. Defaults to "black".
-#' @param transition_alpha The transparency of the transitions. Defaults to 1.
-#' @param transition_arrow_type The type of arrow to use for the transitions. Possible values are "closed", "open", and "triangle". Defaults to "closed".
-#' @param transition_arrow_angle The angle of the arrow for transitions. Defaults to 20.
-#' @param transition_arrow_length The length of the arrow for transitions. Defaults to unit(0.02, "npc").
-#' @param transition_shorten The amount to shorten the transitions. Defaults to 0.05.
-#' @param transition_offset The offset for curved transitions. Defaults to 0.
-#' @param transition_highlight The group(s) to highlight in the plot. Defaults to \code{NULL}.
-#' @param transition_highlight_color The color to use for highlighting the transitions. Defaults to "red".
-#' @param aspect.ratio The aspect ratio of the plot. Defaults to 1.
-#' @param title The title of the plot. Defaults to "PAGA".
-#' @param subtitle The subtitle of the plot. Defaults to \code{NULL}.
-#' @param xlab The label for the x-axis. Defaults to \code{NULL}.
-#' @param ylab The label for the y-axis. Defaults to \code{NULL}.
-#' @param legend.position The position of the legend. Possible values are "right", "left", "bottom", and "top". Defaults to "right".
-#' @param legend.direction The direction of the legend. Possible values are "vertical" and "horizontal". Defaults to "vertical".
-#' @param theme_use The name of the theme to use for the plot. Defaults to "theme_scop".
-#' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
-#' @param return_layer Whether to return the plot as a ggplot2 layer. Defaults to \code{FALSE}.
+#' @param paga The PAGA result from the Seurat object.
+#' Default is `srt@misc$paga`.
+#' @param type The type of plot to generate.
+#' Possible values are `"connectivities"` (default) and `"connectivities_tree"`.
+#' @param reduction The type of reduction to use for the plot.
+#' Default is the default reduction in the Seurat object.
+#' @param dims The dimensions of the reduction to use for the plot.
+#' Default is the first two dimensions.
+#' @param cells The cells to include in the plot.
+#' Default is all cells.
+#' @param show_transition Whether to display transitions between different cell states.
+#' Default is `FALSE`.
+#' @param node_palette The color palette to use for node coloring.
+#' Default is `"Paired"`.
+#' @param node_palcolor A vector of colors to use for node coloring.
+#' Default is `NULL`.
+#' @param node_size The size of the nodes in the plot.
+#' Default is `4`.
+#' @param label_point_size The size of the points in the labels.
+#' Default is `1`.
+#' @param label_point_color The color of the points in the labels.
+#' Default is `"black"`.
+#' @param label_segment_color The color of the lines connecting the points in the labels.
+#' Default is `"black"`.
+#' @param edge_threshold The threshold for including edges in the plot.
+#' Default is `0.01`.
+#' @param edge_line The type of line to use for the edges.
+#' Possible values are `"straight"` and `"curved"`.
+#' Default is `"straight"`.
+#' @param edge_line_curvature The curvature factor for curved edges.
+#' Default is `0.3`.
+#' @param edge_line_angle The angle for curved edges.
+#' Default is `90`.
+#' @param edge_size The size range for the edges.
+#' Default is `c(0.2, 1)`.
+#' @param edge_color The color of the edges.
+#' Default is `"grey40"`.
+#' @param edge_alpha The transparency of the edges.
+#' Default is `0.5`.
+#' @param edge_shorten The amount to shorten the edges.
+#' Default is `0`.
+#' @param edge_offset The offset for curved edges.
+#' Default is `0`.
+#' @param edge_highlight The group(s) to highlight in the plot.
+#' Default is `NULL`.
+#' @param edge_highlight_color The color to use for highlighting the edges.
+#' Default is `"red"`.
+#' @param aspect.ratio The aspect ratio of the plot.
+#' Default is `1`.
+#' @param title The title of the plot.
+#' Default is `"PAGA"`.
+#' @param subtitle The subtitle of the plot.
+#' Default is `NULL`.
+#' @param xlab The label for the x-axis.
+#' Default is `NULL`.
+#' @param ylab The label for the y-axis.
+#' Default is `NULL`.
+#' @param legend.position The position of the legend.
+#' Possible values are "right", "left", "bottom", and "top".
+#' Default is `"right"`.
+#' @param legend.direction The direction of the legend.
+#' Possible values are "vertical" and "horizontal".
+#' Default is `"vertical"`.
+#' @param theme_use The name of the theme to use for the plot.
+#' Default is `"theme_scop"`.
+#' @param theme_args A list of arguments to pass to the theme function.
+#' Default is `list()`.
+#' @param return_layer Whether to return the plot as a ggplot2 layer.
+#' Default is `FALSE`.
 #'
 #' @seealso [RunPAGA], [CellDimPlot]
 #'
