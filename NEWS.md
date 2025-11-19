@@ -1,5 +1,21 @@
 # scop
 
+# scop 0.6.1
+
+* **func**:
+  * `PrepareEnv()`: Improved message formatting and simplified log output for better user experience.
+  * Added `get_conda_envs_dir()` helper function to centralize conda environment directory retrieval.
+  * `integration_scop()`: Enhanced `integration_method` parameter definition with explicit method list for better code clarity.
+
+* **refactor**:
+  * Moved `exist_python_pkgs()` function to `check_package.R` for better code organization.
+  * Replaced direct `conda_info()$envs_dirs[1]` calls with `get_conda_envs_dir()` helper function for consistency.
+  * `RunSCExplorer()`: Updated to use `thisplot::palette_list` and `thisplot::slim_data()` instead of `scop::palette_list` and `scop::slim_data()`.
+  * Added `thisplot` to dependency checks in `RunSCExplorer()`.
+
+* **docs**:
+  * Updated documentation across multiple functions.
+
 # scop 0.6.0
 
 * **func**:
