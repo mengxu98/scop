@@ -77,247 +77,144 @@ PAGAPlot(
 
 - paga:
 
-  The PAGA result from the Seurat object. Defaults to `srt\$misc\$paga`.
+  The PAGA result from the Seurat object. Default is `srt@misc$paga`.
 
 - type:
 
-  The type of plot to generate. Possible values are "connectivities"
-  (default) and "connectivities_tree".
+  The type of plot to generate. Possible values are `"connectivities"`
+  (default) and `"connectivities_tree"`.
 
 - reduction:
 
-  The type of reduction to use for the plot. Defaults to the default
+  The type of reduction to use for the plot. Default is the default
   reduction in the Seurat object.
 
 - dims:
 
-  The dimensions of the reduction to use for the plot. Defaults to the
+  The dimensions of the reduction to use for the plot. Default is the
   first two dimensions.
 
 - cells:
 
-  The cells to include in the plot. Defaults to all cells.
+  The cells to include in the plot. Default is all cells.
 
 - show_transition:
 
-  Whether to display transitions between different cell states. Defaults
-  to `FALSE`.
+  Whether to display transitions between different cell states. Default
+  is `FALSE`.
 
 - node_palette:
 
-  The color palette to use for node coloring. Defaults to "Paired".
+  The color palette to use for node coloring. Default is `"Paired"`.
 
 - node_palcolor:
 
-  A vector of colors to use for node coloring. Defaults to `NULL`.
+  A vector of colors to use for node coloring. Default is `NULL`.
 
 - node_size:
 
-  The size of the nodes in the plot. Defaults to 4.
-
-- node_alpha:
-
-  The transparency of the nodes in the plot. Defaults to 1.
-
-- node_highlight:
-
-  The group(s) to highlight in the plot. Defaults to `NULL`.
-
-- node_highlight_color:
-
-  The color to use for highlighting the nodes. Defaults to "red".
-
-- label:
-
-  Whether to display labels for the nodes. Defaults to `FALSE`.
-
-- label.size:
-
-  The size of the labels. Defaults to 3.5.
-
-- label.fg:
-
-  The color of the label text. Defaults to "white".
-
-- label.bg:
-
-  The background color of the labels. Defaults to "black".
-
-- label.bg.r:
-
-  The transparency of the label background color. Defaults to 0.1.
-
-- label_insitu:
-
-  Whether to use in-situ labeling for the nodes. Defaults to `FALSE`.
-
-- label_repel:
-
-  Whether to use repel mode for labeling nodes. Defaults to `FALSE`.
-
-- label_repulsion:
-
-  The repulsion factor for repel mode. Defaults to 20.
+  The size of the nodes in the plot. Default is `4`.
 
 - label_point_size:
 
-  The size of the points in the labels. Defaults to 1.
+  The size of the points in the labels. Default is `1`.
 
 - label_point_color:
 
-  The color of the points in the labels. Defaults to "black".
+  The color of the points in the labels. Default is `"black"`.
 
 - label_segment_color:
 
-  The color of the lines connecting the points in the labels. Defaults
-  to "black".
+  The color of the lines connecting the points in the labels. Default is
+  `"black"`.
 
 - edge_threshold:
 
-  The threshold for including edges in the plot. Defaults to 0.01.
+  The threshold for including edges in the plot. Default is `0.01`.
 
 - edge_line:
 
-  The type of line to use for the edges. Possible values are "straight"
-  and "curved". Defaults to "straight".
+  The type of line to use for the edges. Possible values are
+  `"straight"` and `"curved"`. Default is `"straight"`.
 
 - edge_line_curvature:
 
-  The curvature factor for curved edges. Defaults to 0.3.
+  The curvature factor for curved edges. Default is `0.3`.
 
 - edge_line_angle:
 
-  The angle for curved edges. Defaults to 90.
+  The angle for curved edges. Default is `90`.
 
 - edge_size:
 
-  The size range for the edges. Defaults to c(0.2, 1).
+  The size range for the edges. Default is `c(0.2, 1)`.
 
 - edge_color:
 
-  The color of the edges. Defaults to "grey40".
+  The color of the edges. Default is `"grey40"`.
 
 - edge_alpha:
 
-  The transparency of the edges. Defaults to 0.5.
+  The transparency of the edges. Default is `0.5`.
 
 - edge_shorten:
 
-  The amount to shorten the edges. Defaults to 0.
+  The amount to shorten the edges. Default is `0`.
 
 - edge_offset:
 
-  The offset for curved edges. Defaults to 0.
+  The offset for curved edges. Default is `0`.
 
 - edge_highlight:
 
-  The group(s) to highlight in the plot. Defaults to `NULL`.
+  The group(s) to highlight in the plot. Default is `NULL`.
 
 - edge_highlight_color:
 
-  The color to use for highlighting the edges. Defaults to "red".
-
-- transition_threshold:
-
-  The threshold for including transitions in the plot. Defaults to 0.01.
-
-- transition_line:
-
-  The type of line to use for the transitions. Possible values are
-  "straight" and "curved". Defaults to "straight".
-
-- transition_line_curvature:
-
-  The curvature factor for curved transitions. Defaults to 0.3.
-
-- transition_line_angle:
-
-  The angle for curved transitions. Defaults to 90.
-
-- transition_size:
-
-  The size range for the transitions. Defaults to c(0.2, 1).
-
-- transition_color:
-
-  The color of the transitions. Defaults to "black".
-
-- transition_alpha:
-
-  The transparency of the transitions. Defaults to 1.
-
-- transition_arrow_type:
-
-  The type of arrow to use for the transitions. Possible values are
-  "closed", "open", and "triangle". Defaults to "closed".
-
-- transition_arrow_angle:
-
-  The angle of the arrow for transitions. Defaults to 20.
-
-- transition_arrow_length:
-
-  The length of the arrow for transitions. Defaults to unit(0.02,
-  "npc").
-
-- transition_shorten:
-
-  The amount to shorten the transitions. Defaults to 0.05.
-
-- transition_offset:
-
-  The offset for curved transitions. Defaults to 0.
-
-- transition_highlight:
-
-  The group(s) to highlight in the plot. Defaults to `NULL`.
-
-- transition_highlight_color:
-
-  The color to use for highlighting the transitions. Defaults to "red".
+  The color to use for highlighting the edges. Default is `"red"`.
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Defaults to 1.
+  The aspect ratio of the plot. Default is `1`.
 
 - title:
 
-  The title of the plot. Defaults to "PAGA".
+  The title of the plot. Default is `"PAGA"`.
 
 - subtitle:
 
-  The subtitle of the plot. Defaults to `NULL`.
+  The subtitle of the plot. Default is `NULL`.
 
 - xlab:
 
-  The label for the x-axis. Defaults to `NULL`.
+  The label for the x-axis. Default is `NULL`.
 
 - ylab:
 
-  The label for the y-axis. Defaults to `NULL`.
+  The label for the y-axis. Default is `NULL`.
 
 - legend.position:
 
   The position of the legend. Possible values are "right", "left",
-  "bottom", and "top". Defaults to "right".
+  "bottom", and "top". Default is `"right"`.
 
 - legend.direction:
 
   The direction of the legend. Possible values are "vertical" and
-  "horizontal". Defaults to "vertical".
+  "horizontal". Default is `"vertical"`.
 
 - theme_use:
 
-  The name of the theme to use for the plot. Defaults to "theme_scop".
+  The name of the theme to use for the plot. Default is `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to pass to the theme function. Defaults to an
-  empty list.
+  A list of arguments to pass to the theme function. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - return_layer:
 
-  Whether to return the plot as a ggplot2 layer. Defaults to `FALSE`.
+  Whether to return the plot as a ggplot2 layer. Default is `FALSE`.
 
 ## See also
 

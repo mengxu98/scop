@@ -173,16 +173,16 @@ library(Matrix)
 #>     expand
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:28:55] Start standard scop workflow...
-#> ℹ [2025-11-13 12:28:56] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:28:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:28:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:28:58] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:28:58] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:28:58] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:28:59] Finished check
-#> ℹ [2025-11-13 12:28:59] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:28:59] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:58:58] Start standard scop workflow...
+#> ℹ [2025-11-19 14:58:59] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:58:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:58:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:01] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:02] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:59:02] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:59:02] Finished check
+#> ℹ [2025-11-19 14:59:02] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:59:02] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -218,16 +218,16 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:29:00] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:29:00] Reorder clusters...
-#> ℹ [2025-11-13 12:29:00] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:29:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:29:00] UMAP will return its model
-#> ℹ [2025-11-13 12:29:05] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:29:05] UMAP will return its model
-#> ✔ [2025-11-13 12:29:10] Run scop standard workflow done
+#> ℹ [2025-11-19 14:59:03] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:59:04] Reorder clusters...
+#> ℹ [2025-11-19 14:59:04] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:59:04] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:59:04] UMAP will return its model
+#> ℹ [2025-11-19 14:59:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:59:08] UMAP will return its model
+#> ✔ [2025-11-19 14:59:13] Run scop standard workflow done
 pancreas_sub <- RunNMF(pancreas_sub)
-#> ✔ [2025-11-13 12:29:10] zdebruine/RcppML installed successfully
+#> ✔ [2025-11-19 14:59:13] zdebruine/RcppML installed successfully
 #> 
 #> iter |      tol 
 #> ---------------

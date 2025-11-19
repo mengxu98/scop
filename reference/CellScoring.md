@@ -166,16 +166,16 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 11:41:55] Start standard scop workflow...
-#> ℹ [2025-11-13 11:41:56] Checking a list of <Seurat> object...
-#> ! [2025-11-13 11:41:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 11:41:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:41:57] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:41:58] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 11:41:58] Number of available HVF: 2000
-#> ℹ [2025-11-13 11:41:58] Finished check
-#> ℹ [2025-11-13 11:41:58] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 11:41:59] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:11:42] Start standard scop workflow...
+#> ℹ [2025-11-19 14:11:43] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:11:43] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:11:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:11:44] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:11:45] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:11:45] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:11:45] Finished check
+#> ℹ [2025-11-19 14:11:45] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:11:46] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -211,14 +211,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 11:41:59] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 11:41:59] Reorder clusters...
-#> ℹ [2025-11-13 11:42:00] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 11:42:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:42:00] UMAP will return its model
-#> ℹ [2025-11-13 11:42:03] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:42:03] UMAP will return its model
-#> ✔ [2025-11-13 11:42:06] Run scop standard workflow done
+#> ℹ [2025-11-19 14:11:47] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:11:47] Reorder clusters...
+#> ℹ [2025-11-19 14:11:47] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:11:47] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:11:47] UMAP will return its model
+#> ℹ [2025-11-19 14:11:50] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:11:50] UMAP will return its model
+#> ✔ [2025-11-19 14:11:53] Run scop standard workflow done
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -229,15 +229,15 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ℹ [2025-11-13 11:42:06] Start cell scoring
-#> ℹ [2025-11-13 11:42:06] Data type is log-normalized
-#> ℹ [2025-11-13 11:42:07] Number of feature lists to be scored: 2
-#> ℹ [2025-11-13 11:42:07] Using 1 core
-#> ⠙ [2025-11-13 11:42:07] Running [1/2] ETA:  0s
-#> ✔ [2025-11-13 11:42:07] Completed 2 tasks in 131ms
+#> ℹ [2025-11-19 14:11:53] Start cell scoring
+#> ℹ [2025-11-19 14:11:53] Data type is log-normalized
+#> ℹ [2025-11-19 14:11:53] Number of feature lists to be scored: 2
+#> ℹ [2025-11-19 14:11:53] Using 1 core
+#> ⠙ [2025-11-19 14:11:53] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:11:53] Completed 2 tasks in 129ms
 #> 
-#> ℹ [2025-11-13 11:42:07] Building results
-#> ✔ [2025-11-13 11:42:07] Cell scoring completed
+#> ℹ [2025-11-19 14:11:53] Building results
+#> ✔ [2025-11-19 14:11:54] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 

@@ -9,7 +9,7 @@ and a list of packages with their corresponding versions."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ and a list of packages with their corresponding versions."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Python environment requirements</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
       <div class="d-none name"><code>env_requirements.Rd</code></div>
     </div>
 
@@ -55,8 +55,8 @@ and a list of packages with their corresponding versions.</p>
 
 
 <dl><dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>A character vector specifying the version of the environment.
-Default is "3.10-1".</p></dd>
+<dd><p>The Python version of the environment.
+Default is `"3.10-1"`.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -87,13 +87,13 @@ Default is "3.10-1".</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      "scanorama==1.7.4"     "scvi-tools==1.2.1"       "cellrank==2.0.7" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $install_methods</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     leidenalg           tbb python-igraph    matplotlib         numba </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "conda"       "conda"       "conda"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      llvmlite         numpy      palantir        pandas        scanpy </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     leidenalg           tbb python-igraph    scvi-tools    matplotlib </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "conda"       "conda"       "conda"       "conda"         "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         numba      llvmlite         numpy      palantir        pandas </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  scikit-learn         scipy        scvelo           wot        trimap </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        scanpy  scikit-learn         scipy        scvelo           wot </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        pacmap         phate         bbknn     scanorama    scvi-tools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        trimap        pacmap         phate         bbknn     scanorama </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cellrank </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip" </span>

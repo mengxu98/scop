@@ -165,16 +165,16 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:04:49] Start standard scop workflow...
-#> ℹ [2025-11-13 12:04:49] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:04:49] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:04:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:04:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:04:52] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:04:52] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:04:52] Finished check
-#> ℹ [2025-11-13 12:04:53] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:04:53] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:35:08] Start standard scop workflow...
+#> ℹ [2025-11-19 14:35:09] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:35:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:35:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:35:11] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:35:11] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:35:11] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:35:11] Finished check
+#> ℹ [2025-11-19 14:35:12] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:35:12] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -210,19 +210,19 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:04:54] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:04:54] Reorder clusters...
-#> ℹ [2025-11-13 12:04:54] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:04:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:04:54] UMAP will return its model
-#> ℹ [2025-11-13 12:04:58] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:04:58] UMAP will return its model
-#> ✔ [2025-11-13 12:05:02] Run scop standard workflow done
+#> ℹ [2025-11-19 14:35:13] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:35:13] Reorder clusters...
+#> ℹ [2025-11-19 14:35:13] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:35:13] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:35:13] UMAP will return its model
+#> ℹ [2025-11-19 14:35:17] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:35:17] UMAP will return its model
+#> ✔ [2025-11-19 14:35:21] Run scop standard workflow done
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2025-11-13 12:05:02] Data type is raw counts
-#> ℹ [2025-11-13 12:05:03] Data type is raw counts
-#> ℹ [2025-11-13 12:05:03] Data type is raw counts
-#> ◌ [2025-11-13 12:05:03] Installing: scDblFinder...
+#> ℹ [2025-11-19 14:35:21] Data type is raw counts
+#> ℹ [2025-11-19 14:35:21] Data type is raw counts
+#> ℹ [2025-11-19 14:35:22] Data type is raw counts
+#> ◌ [2025-11-19 14:35:22] Installing: scDblFinder...
 #>  
 #> → Will install 44 packages.
 #> → Will download 1 CRAN package (14.98 kB), cached: 43 (0 B).
@@ -273,29 +273,63 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ Getting 1 pkg (14.98 kB), 43 cached
-#> ✔ Cached copy of restfulr 0.0.16 (source) is the latest build
+#> ✔ Got bitops 1.0-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.02 kB)
+#> ✔ Got beeswarm 0.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.13 kB)
+#> ✔ Got Cairo 1.7-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (93.28 kB)
+#> ✔ Got BiocIO 1.20.0 (source) (232.37 kB)
+#> ✔ Got cigarillo 1.0.0 (source) (258.57 kB)
+#> ✔ Got BiocSingular 1.26.0 (source) (618.13 kB)
+#> ✔ Got dqrng 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (215.52 kB)
+#> ✔ Got beachmat 2.26.0 (source) (383.08 kB)
+#> ✔ Got pheatmap 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)
+#> ✔ Got UCSC.utils 1.6.0 (source) (236.81 kB)
+#> ✔ Got RcppAnnoy 0.0.22 (x86_64-pc-linux-gnu-ubuntu-24.04) (269.84 kB)
+#> ✔ Got DelayedArray 0.36.0 (source) (816.30 kB)
+#> ✔ Got SparseArray 1.10.1 (source) (476.30 kB)
+#> ✔ Got ragg 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)
+#> ✔ Got metapod 1.18.0 (source) (333.89 kB)
+#> ✔ Got locfit 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)
+#> ✔ Got S4Arrays 1.10.0 (source) (297.11 kB)
+#> ✔ Got uwot 0.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got ggbeeswarm 0.7.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.76 MB)
+#> ✔ Got Rtsne 0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (118.33 kB)
+#> ✔ Got RCurl 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)
+#> ✔ Got RcppML 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)
+#> ✔ Got restfulr 0.0.16 (source) (15.03 kB)
+#> ✔ Got SingleCellExperiment 1.32.0 (source) (987.98 kB)
+#> ✔ Got bluster 1.20.0 (source) (3.26 MB)
+#> ✔ Got ScaledMatrix 1.18.0 (source) (314.08 kB)
+#> ✔ Got ggrastr 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)
+#> ✔ Got scran 1.38.0 (source) (1.83 MB)
+#> ✔ Got edgeR 4.8.0 (source) (3.07 MB)
+#> ✔ Got scuttle 1.20.0 (source) (1.03 MB)
+#> ✔ Got GenomeInfoDb 1.46.0 (source) (3.65 MB)
+#> ✔ Got XML 3.99-0.20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.83 MB)
+#> ✔ Got xgboost 1.7.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)
+#> ✔ Got Rsamtools 2.26.0 (source) (1.92 MB)
+#> ✔ Got GenomicAlignments 1.46.0 (source) (2.26 MB)
+#> ✔ Got scater 1.38.0 (source) (4.57 MB)
+#> ✔ Got vipor 0.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.58 MB)
+#> ✔ Got GenomicRanges 1.62.0 (source) (1.38 MB)
+#> ✔ Got viridis 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.01 MB)
+#> ✔ Got scDblFinder 1.24.0 (source) (2.25 MB)
+#> ✔ Got SummarizedExperiment 1.40.0 (source) (690.87 kB)
+#> ✔ Got rsvd 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)
+#> ✔ Got rtracklayer 1.70.0 (source) (4.10 MB)
+#> ✔ Got Rhtslib 3.6.0 (source) (5.18 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-#> Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
-#> Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
-#> Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
-#> Hit:11 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
-#> Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-#> Get:12 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7140 B]
-#> Get:13 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [11.0 kB]
-#> Get:14 http://azure.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
-#> Get:15 http://azure.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
-#> Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [21.5 kB]
-#> Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
-#> Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
-#> Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
-#> Fetched 1025 kB in 0s (2582 kB/s)
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1588 kB]
+#> Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [300 kB]
+#> Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1500 kB]
+#> Fetched 3514 kB in 1s (6890 kB/s)
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libfreetype6-dev libjpeg-dev libpng-dev libtiff-dev libwebp-dev make libcurl4-openssl-dev libxml2-dev libbz2-dev liblzma-dev libssl-dev libglpk-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
 #> Reading package lists...
@@ -318,7 +352,7 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
 #> libfribidi-dev is already the newest version (1.0.13-3build1).
 #> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
 #> ℹ Building BiocIO 1.20.0
 #> ℹ Building bluster 1.20.0
 #> ℹ Building cigarillo 1.0.0
@@ -327,103 +361,105 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> ℹ Building metapod 1.18.0
 #> ✔ Built cigarillo 1.0.0 (9.8s)
 #> ℹ Building Rhtslib 3.6.0
-#> ✔ Built GenomicRanges 1.62.0 (21.3s)
+#> ✔ Built bluster 1.20.0 (22.3s)
 #> ℹ Building S4Arrays 1.10.0
-#> ✔ Built bluster 1.20.0 (23.8s)
+#> ✔ Built GenomicRanges 1.62.0 (22.2s)
 #> ℹ Building UCSC.utils 1.6.0
-#> ✔ Built UCSC.utils 1.6.0 (3.7s)
-#> ✔ Installed beeswarm 0.4.0  (26ms)
-#> ✔ Installed bitops 1.0-9  (41ms)
-#> ✔ Installed Cairo 1.7-0  (54ms)
-#> ✔ Installed dqrng 0.4.1  (1s)
-#> ✔ Installed ggbeeswarm 0.7.2  (1s)
-#> ✔ Built metapod 1.18.0 (25.9s)
-#> ✔ Installed ggrastr 1.0.2  (129ms)
-#> ✔ Installed locfit 1.5-9.12  (92ms)
+#> ✔ Built UCSC.utils 1.6.0 (4.1s)
+#> ✔ Installed beeswarm 0.4.0  (30ms)
+#> ✔ Installed bitops 1.0-9  (1s)
+#> ✔ Installed Cairo 1.7-0  (35ms)
+#> ✔ Installed dqrng 0.4.1  (46ms)
+#> ✔ Installed ggbeeswarm 0.7.2  (52ms)
+#> ✔ Installed ggrastr 1.0.2  (69ms)
+#> ✔ Installed locfit 1.5-9.12  (39ms)
 #> ℹ Building edgeR 4.8.0
-#> ✔ Installed pheatmap 1.0.13  (91ms)
-#> ✔ Installed ragg 1.5.0  (51ms)
-#> ✔ Installed RcppAnnoy 0.0.22  (39ms)
-#> ✔ Installed RcppML 0.3.7  (37ms)
+#> ✔ Built metapod 1.18.0 (24.1s)
+#> ✔ Installed pheatmap 1.0.13  (41ms)
+#> ✔ Installed ragg 1.5.0  (54ms)
+#> ✔ Installed RcppAnnoy 0.0.22  (1s)
+#> ✔ Installed RcppML 0.3.7  (1s)
 #> ✔ Installed RCurl 1.98-1.17  (1.1s)
-#> ✔ Installed restfulr 0.0.16  (35ms)
 #> ✔ Installed rsvd 1.0.5  (1.1s)
-#> ✔ Installed Rtsne 0.17  (100ms)
-#> ✔ Installed uwot 0.2.4  (52ms)
-#> ✔ Installed vipor 0.4.7  (77ms)
-#> ✔ Installed viridis 0.6.5  (1.1s)
-#> ✔ Installed xgboost 1.7.11.1  (85ms)
-#> ✔ Installed XML 3.99-0.20  (66ms)
-#> ✔ Installed BiocIO 1.20.0  (39ms)
-#> ✔ Installed bluster 1.20.0  (109ms)
-#> ✔ Installed cigarillo 1.0.0  (42ms)
-#> ✔ Installed GenomicRanges 1.62.0  (73ms)
-#> ✔ Installed metapod 1.18.0  (84ms)
-#> ✔ Installed UCSC.utils 1.6.0  (37ms)
-#> ℹ Building GenomeInfoDb 1.46.0
-#> ✔ Built S4Arrays 1.10.0 (15.8s)
-#> ✔ Installed S4Arrays 1.10.0  (52ms)
+#> ✔ Installed Rtsne 0.17  (1s)
+#> ✔ Installed uwot 0.2.4  (73ms)
+#> ✔ Installed vipor 0.4.7  (85ms)
+#> ✔ Installed viridis 0.6.5  (70ms)
+#> ✔ Installed xgboost 1.7.11.1  (156ms)
+#> ✔ Installed XML 3.99-0.20  (98ms)
+#> ℹ Building restfulr 0.0.16
+#> ✔ Built S4Arrays 1.10.0 (16.2s)
+#> ✔ Installed BiocIO 1.20.0  (41ms)
+#> ✔ Installed bluster 1.20.0  (1.1s)
+#> ✔ Installed cigarillo 1.0.0  (93ms)
+#> ✔ Installed GenomicRanges 1.62.0  (70ms)
+#> ✔ Installed metapod 1.18.0  (81ms)
+#> ✔ Installed S4Arrays 1.10.0  (51ms)
 #> ℹ Building SparseArray 1.10.1
-#> ✔ Built edgeR 4.8.0 (14.5s)
+#> ✔ Built restfulr 0.0.16 (7.5s)
+#> ✔ Installed restfulr 0.0.16  (31ms)
+#> ✔ Installed UCSC.utils 1.6.0  (35ms)
+#> ℹ Building GenomeInfoDb 1.46.0
+#> ✔ Built edgeR 4.8.0 (15s)
 #> ✔ Installed edgeR 4.8.0  (68ms)
-#> ✔ Built GenomeInfoDb 1.46.0 (9.5s)
+#> ✔ Built GenomeInfoDb 1.46.0 (7.5s)
 #> ✔ Installed GenomeInfoDb 1.46.0  (80ms)
-#> ✔ Built SparseArray 1.10.1 (23.5s)
-#> ✔ Installed SparseArray 1.10.1  (49ms)
+#> ✔ Built SparseArray 1.10.1 (23.2s)
+#> ✔ Installed SparseArray 1.10.1  (1s)
 #> ℹ Building DelayedArray 0.36.0
-#> ✔ Built DelayedArray 0.36.0 (16.3s)
-#> ✔ Installed DelayedArray 0.36.0  (1s)
+#> ✔ Built DelayedArray 0.36.0 (15.7s)
+#> ✔ Installed DelayedArray 0.36.0  (44ms)
 #> ℹ Building beachmat 2.26.0
 #> ℹ Building ScaledMatrix 1.18.0
 #> ℹ Building SummarizedExperiment 1.40.0
-#> ✔ Built Rhtslib 3.6.0 (1m 20.2s)
-#> ✔ Installed Rhtslib 3.6.0  (243ms)
-#> ℹ Building Rsamtools 2.26.0
 #> ✔ Built ScaledMatrix 1.18.0 (15.6s)
 #> ✔ Installed ScaledMatrix 1.18.0  (44ms)
-#> ✔ Built SummarizedExperiment 1.40.0 (24.5s)
-#> ✔ Installed SummarizedExperiment 1.40.0  (44ms)
+#> ✔ Built SummarizedExperiment 1.40.0 (23.7s)
+#> ✔ Installed SummarizedExperiment 1.40.0  (59ms)
 #> ℹ Building SingleCellExperiment 1.32.0
-#> ✔ Built SingleCellExperiment 1.32.0 (18.2s)
-#> ✔ Installed SingleCellExperiment 1.32.0  (62ms)
-#> ✔ Built Rsamtools 2.26.0 (36.5s)
-#> ✔ Installed Rsamtools 2.26.0  (99ms)
+#> ✔ Built SingleCellExperiment 1.32.0 (16.6s)
+#> ✔ Installed SingleCellExperiment 1.32.0  (47ms)
+#> ✔ Built Rhtslib 3.6.0 (1m 55s)
+#> ✔ Installed Rhtslib 3.6.0  (173ms)
+#> ℹ Building Rsamtools 2.26.0
+#> ✔ Built Rsamtools 2.26.0 (29.3s)
+#> ✔ Installed Rsamtools 2.26.0  (97ms)
 #> ℹ Building GenomicAlignments 1.46.0
 #> ✔ Built GenomicAlignments 1.46.0 (18.6s)
 #> ✔ Installed GenomicAlignments 1.46.0  (1s)
 #> ℹ Building rtracklayer 1.70.0
-#> ✔ Built rtracklayer 1.70.0 (28.9s)
-#> ✔ Installed rtracklayer 1.70.0  (1.1s)
-#> ✔ Built beachmat 2.26.0 (1m 38.5s)
-#> ✔ Installed beachmat 2.26.0  (194ms)
+#> ✔ Built beachmat 2.26.0 (1m 34.2s)
+#> ✔ Installed beachmat 2.26.0  (206ms)
 #> ℹ Building BiocSingular 1.26.0
 #> ℹ Building scuttle 1.20.0
-#> ✔ Built BiocSingular 1.26.0 (16.3s)
-#> ✔ Installed BiocSingular 1.26.0  (1s)
-#> ✔ Built scuttle 1.20.0 (43.6s)
+#> ✔ Built BiocSingular 1.26.0 (19.8s)
+#> ✔ Installed BiocSingular 1.26.0  (66ms)
+#> ✔ Built rtracklayer 1.70.0 (34s)
+#> ✔ Installed rtracklayer 1.70.0  (89ms)
+#> ✔ Built scuttle 1.20.0 (47.9s)
 #> ✔ Installed scuttle 1.20.0  (90ms)
 #> ℹ Building scater 1.38.0
 #> ℹ Building scran 1.38.0
-#> ✔ Built scater 1.38.0 (15.1s)
+#> ✔ Built scater 1.38.0 (15.3s)
 #> ✔ Installed scater 1.38.0  (70ms)
-#> ✔ Built scran 1.38.0 (45.9s)
-#> ✔ Installed scran 1.38.0  (94ms)
+#> ✔ Built scran 1.38.0 (44.7s)
+#> ✔ Installed scran 1.38.0  (99ms)
 #> ℹ Building scDblFinder 1.24.0
-#> ✔ Built scDblFinder 1.24.0 (20.9s)
-#> ✔ Installed scDblFinder 1.24.0  (55ms)
-#> ✔ 1 pkg + 111 deps: kept 68, added 44 [4m 55.1s]
-#> ✔ [2025-11-13 12:09:58] scDblFinder installed successfully
-#> ℹ [2025-11-13 12:10:07] >>> Total cells: 1000
-#> ℹ [2025-11-13 12:10:07] >>> Cells which are filtered out: 49
-#> ℹ [2025-11-13 12:10:07] >>> 26 potential doublets
-#> ℹ [2025-11-13 12:10:07] >>> 23 outlier cells
-#> ℹ [2025-11-13 12:10:07] >>> 0low-UMI cells
-#> ℹ [2025-11-13 12:10:07] >>> 0low-gene cells
-#> ℹ [2025-11-13 12:10:07] >>> 0high-mito cells
-#> ℹ [2025-11-13 12:10:07] >>> 0high-ribo cells
-#> ℹ [2025-11-13 12:10:07] >>> 0ribo_mito_ratio outlier cells
-#> ℹ [2025-11-13 12:10:07] >>> 0species-contaminated cells
-#> ℹ [2025-11-13 12:10:07] >>> Remained cells after filtering: 951
+#> ✔ Built scDblFinder 1.24.0 (21.4s)
+#> ✔ Installed scDblFinder 1.24.0  (54ms)
+#> ✔ 1 pkg + 111 deps: kept 68, added 44, dld 44 (64.16 MB) [4m 59.4s]
+#> ✔ [2025-11-19 14:40:21] scDblFinder installed successfully
+#> ℹ [2025-11-19 14:40:30] >>> Total cells: [1] 1000
+#> ℹ [2025-11-19 14:40:30] >>> Cells which are filtered out: [1] 49
+#> ℹ [2025-11-19 14:40:30] >>> [1] 26 potential doublets
+#> ℹ [2025-11-19 14:40:30] >>> [1] 23 outlier cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0low-UMI cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0low-gene cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0high-mito cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0high-ribo cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2025-11-19 14:40:30] >>> [1] 0species-contaminated cells
+#> ℹ [2025-11-19 14:40:30] >>> Remained cells after filtering: [1] 951
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
@@ -435,8 +471,8 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2025-11-13 12:10:07] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ✔ [2025-11-13 12:10:07] ggupset installed successfully
+#> ! [2025-11-19 14:40:30] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
+#> ✔ [2025-11-19 14:40:30] ggupset installed successfully
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.
@@ -454,37 +490,37 @@ ifnb_sub <- RunCellQC(
   UMI_threshold = 1000,
   gene_threshold = 550
 )
-#> ℹ [2025-11-13 12:10:08] Data type is raw counts
-#> ℹ [2025-11-13 12:10:08] Running QC for CTRL
-#> ℹ [2025-11-13 12:10:09] Data type is raw counts
-#> ℹ [2025-11-13 12:10:09] Data type is raw counts
-#> ✔ [2025-11-13 12:10:09] scDblFinder installed successfully
-#> ℹ [2025-11-13 12:10:15] >>> Total cells: 1000
-#> ℹ [2025-11-13 12:10:15] >>> Cells which are filtered out: 308
-#> ℹ [2025-11-13 12:10:15] >>> 47 potential doublets
-#> ℹ [2025-11-13 12:10:15] >>> 8 outlier cells
-#> ℹ [2025-11-13 12:10:15] >>> 28low-UMI cells
-#> ℹ [2025-11-13 12:10:15] >>> 250low-gene cells
-#> ℹ [2025-11-13 12:10:15] >>> 0high-mito cells
-#> ℹ [2025-11-13 12:10:15] >>> 0high-ribo cells
-#> ℹ [2025-11-13 12:10:15] >>> 0ribo_mito_ratio outlier cells
-#> ℹ [2025-11-13 12:10:15] >>> 0species-contaminated cells
-#> ℹ [2025-11-13 12:10:15] >>> Remained cells after filtering: 692
-#> ℹ [2025-11-13 12:10:15] Running QC for STIM
-#> ℹ [2025-11-13 12:10:15] Data type is raw counts
-#> ℹ [2025-11-13 12:10:15] Data type is raw counts
-#> ✔ [2025-11-13 12:10:15] scDblFinder installed successfully
-#> ℹ [2025-11-13 12:10:22] >>> Total cells: 1000
-#> ℹ [2025-11-13 12:10:22] >>> Cells which are filtered out: 302
-#> ℹ [2025-11-13 12:10:22] >>> 41 potential doublets
-#> ℹ [2025-11-13 12:10:22] >>> 12 outlier cells
-#> ℹ [2025-11-13 12:10:22] >>> 25low-UMI cells
-#> ℹ [2025-11-13 12:10:22] >>> 251low-gene cells
-#> ℹ [2025-11-13 12:10:22] >>> 0high-mito cells
-#> ℹ [2025-11-13 12:10:22] >>> 0high-ribo cells
-#> ℹ [2025-11-13 12:10:22] >>> 0ribo_mito_ratio outlier cells
-#> ℹ [2025-11-13 12:10:22] >>> 0species-contaminated cells
-#> ℹ [2025-11-13 12:10:22] >>> Remained cells after filtering: 698
+#> ℹ [2025-11-19 14:40:31] Data type is raw counts
+#> ℹ [2025-11-19 14:40:31] Running QC for CTRL
+#> ℹ [2025-11-19 14:40:32] Data type is raw counts
+#> ℹ [2025-11-19 14:40:32] Data type is raw counts
+#> ✔ [2025-11-19 14:40:32] scDblFinder installed successfully
+#> ℹ [2025-11-19 14:40:38] >>> Total cells: [1] 1000
+#> ℹ [2025-11-19 14:40:38] >>> Cells which are filtered out: [1] 308
+#> ℹ [2025-11-19 14:40:38] >>> [1] 47 potential doublets
+#> ℹ [2025-11-19 14:40:38] >>> [1] 8 outlier cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 28low-UMI cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 250low-gene cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 0high-mito cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 0high-ribo cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2025-11-19 14:40:38] >>> [1] 0species-contaminated cells
+#> ℹ [2025-11-19 14:40:38] >>> Remained cells after filtering: [1] 692
+#> ℹ [2025-11-19 14:40:38] Running QC for STIM
+#> ℹ [2025-11-19 14:40:38] Data type is raw counts
+#> ℹ [2025-11-19 14:40:38] Data type is raw counts
+#> ✔ [2025-11-19 14:40:38] scDblFinder installed successfully
+#> ℹ [2025-11-19 14:40:45] >>> Total cells: [1] 1000
+#> ℹ [2025-11-19 14:40:45] >>> Cells which are filtered out: [1] 302
+#> ℹ [2025-11-19 14:40:45] >>> [1] 41 potential doublets
+#> ℹ [2025-11-19 14:40:45] >>> [1] 12 outlier cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 25low-UMI cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 251low-gene cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 0high-mito cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 0high-ribo cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2025-11-19 14:40:45] >>> [1] 0species-contaminated cells
+#> ℹ [2025-11-19 14:40:45] >>> Remained cells after filtering: [1] 698
 CellStatPlot(
   srt = ifnb_sub,
   stat.by = c(
@@ -496,8 +532,8 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2025-11-13 12:10:22] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ✔ [2025-11-13 12:10:22] ggupset installed successfully
+#> ! [2025-11-19 14:40:45] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
+#> ✔ [2025-11-19 14:40:45] ggupset installed successfully
 
 
 table(ifnb_sub$CellQC)

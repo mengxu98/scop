@@ -149,16 +149,16 @@ RunGLMPCA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:23:04] Start standard scop workflow...
-#> ℹ [2025-11-13 12:23:05] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:23:05] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:23:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:23:07] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:23:07] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:23:08] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:23:08] Finished check
-#> ℹ [2025-11-13 12:23:08] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:23:08] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:53:11] Start standard scop workflow...
+#> ℹ [2025-11-19 14:53:12] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:53:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:53:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:53:14] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:53:14] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:53:14] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:53:15] Finished check
+#> ℹ [2025-11-19 14:53:15] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:53:15] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -194,25 +194,26 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:23:09] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:23:09] Reorder clusters...
-#> ℹ [2025-11-13 12:23:09] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:23:09] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:23:09] UMAP will return its model
-#> ℹ [2025-11-13 12:23:14] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:23:14] UMAP will return its model
-#> ✔ [2025-11-13 12:23:19] Run scop standard workflow done
+#> ℹ [2025-11-19 14:53:16] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:53:16] Reorder clusters...
+#> ℹ [2025-11-19 14:53:16] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:53:16] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:53:16] UMAP will return its model
+#> ℹ [2025-11-19 14:53:21] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:53:21] UMAP will return its model
+#> ✔ [2025-11-19 14:53:25] Run scop standard workflow done
 pancreas_sub <- RunGLMPCA(pancreas_sub)
-#> ◌ [2025-11-13 12:23:19] Installing: glmpca...
+#> ◌ [2025-11-19 14:53:26] Installing: glmpca...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
 #> + glmpca   0.2.0 
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got glmpca 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.79 kB)
 #> ✔ Installed glmpca 0.2.0  (1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1 [2s]
-#> ✔ [2025-11-13 12:23:21] glmpca installed successfully
+#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (230.79 kB) [2.6s]
+#> ✔ [2025-11-19 14:53:28] glmpca installed successfully
 #> ℹ GLMPC_ 1 
 #> ℹ Positive:  Barx2, Cartpt, Ptger3, Gm3448, Cypt3, Kng2, Gad1, 3930402G23Rik, Mesp1, Il1r2 
 #> ℹ      Dusp26, Cdkn2b, Aard, Platr26, Prl, Ucn3, Slc38a5, Pcdh8, Lrrc6, 4930426D05Rik 

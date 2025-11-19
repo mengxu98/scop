@@ -229,16 +229,16 @@ DynamicPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 11:53:45] Start standard scop workflow...
-#> ℹ [2025-11-13 11:53:45] Checking a list of <Seurat> object...
-#> ! [2025-11-13 11:53:46] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 11:53:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:53:48] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:53:48] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 11:53:48] Number of available HVF: 2000
-#> ℹ [2025-11-13 11:53:48] Finished check
-#> ℹ [2025-11-13 11:53:49] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 11:53:49] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:23:54] Start standard scop workflow...
+#> ℹ [2025-11-19 14:23:55] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:23:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:23:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:23:57] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:23:58] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:23:58] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:23:58] Finished check
+#> ℹ [2025-11-19 14:23:59] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:23:59] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -274,14 +274,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 11:53:50] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 11:53:50] Reorder clusters...
-#> ℹ [2025-11-13 11:53:50] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 11:53:50] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:53:50] UMAP will return its model
-#> ℹ [2025-11-13 11:53:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:53:54] UMAP will return its model
-#> ✔ [2025-11-13 11:53:58] Run scop standard workflow done
+#> ℹ [2025-11-19 14:24:00] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:24:00] Reorder clusters...
+#> ℹ [2025-11-19 14:24:00] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:24:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:24:00] UMAP will return its model
+#> ℹ [2025-11-19 14:24:04] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:24:04] UMAP will return its model
+#> ✔ [2025-11-19 14:24:07] Run scop standard workflow done
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -305,32 +305,32 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> ◌ [2025-11-13 11:54:01] Installing: MatrixGenerics...
+#> ◌ [2025-11-19 14:24:10] Installing: MatrixGenerics...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
 #> + MatrixGenerics   1.22.0 [bld]
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got MatrixGenerics 1.22.0 (source) (34.60 kB)
 #> ℹ Building MatrixGenerics 1.22.0
-#> ✔ Built MatrixGenerics 1.22.0 (2.4s)
-#> ✔ Installed MatrixGenerics 1.22.0  (1.1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1 [4.1s]
-#> ✔ [2025-11-13 11:54:05] MatrixGenerics installed successfully
-#> ℹ [2025-11-13 11:54:05] Start find dynamic features
-#> ✔ [2025-11-13 11:54:05] mgcv installed successfully
-#> ℹ [2025-11-13 11:54:05] Data type is raw counts
-#> ℹ [2025-11-13 11:54:06] Number of candidate features (union): 3
-#> ℹ [2025-11-13 11:54:06] Data type is raw counts
-#> ! [2025-11-13 11:54:06] Negative values detected
-#> ℹ [2025-11-13 11:54:06] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 11:54:06] Using 1 core
-#> ⠙ [2025-11-13 11:54:06] Running [1/3] ETA:  0s
-#> ⠹ [2025-11-13 11:54:06] Running [2/3] ETA:  0s
-#> ✔ [2025-11-13 11:54:06] Completed 3 tasks in 128ms
+#> ✔ Built MatrixGenerics 1.22.0 (2.3s)
+#> ✔ Installed MatrixGenerics 1.22.0  (1s)
+#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (34.60 kB) [4.3s]
+#> ✔ [2025-11-19 14:24:14] MatrixGenerics installed successfully
+#> ℹ [2025-11-19 14:24:14] Start find dynamic features
+#> ✔ [2025-11-19 14:24:14] mgcv installed successfully
+#> ℹ [2025-11-19 14:24:15] Data type is raw counts
+#> ℹ [2025-11-19 14:24:15] Number of candidate features (union): 3
+#> ℹ [2025-11-19 14:24:16] Data type is raw counts
+#> ! [2025-11-19 14:24:16] Negative values detected
+#> ℹ [2025-11-19 14:24:16] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:24:16] Using 1 core
+#> ⠙ [2025-11-19 14:24:16] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:24:16] Completed 3 tasks in 119ms
 #> 
-#> ℹ [2025-11-13 11:54:06] Building results
-#> ✔ [2025-11-13 11:54:07] Find dynamic features done
+#> ℹ [2025-11-19 14:24:16] Building results
+#> ✔ [2025-11-19 14:24:16] Find dynamic features done
 
 
 DynamicPlot(
@@ -341,30 +341,30 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ✔ [2025-11-13 11:54:07] MatrixGenerics installed successfully
-#> ℹ [2025-11-13 11:54:07] Start find dynamic features
-#> ✔ [2025-11-13 11:54:07] mgcv installed successfully
-#> ℹ [2025-11-13 11:54:08] Data type is raw counts
-#> ℹ [2025-11-13 11:54:08] Number of candidate features (union): 3
-#> ℹ [2025-11-13 11:54:09] Data type is raw counts
-#> ! [2025-11-13 11:54:09] Negative values detected
-#> ℹ [2025-11-13 11:54:09] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 11:54:09] Using 1 core
-#> ℹ [2025-11-13 11:54:09] Building results
-#> ✔ [2025-11-13 11:54:09] Find dynamic features done
-#> ℹ [2025-11-13 11:54:09] Start find dynamic features
-#> ✔ [2025-11-13 11:54:09] mgcv installed successfully
-#> ℹ [2025-11-13 11:54:09] Data type is raw counts
-#> ℹ [2025-11-13 11:54:10] Number of candidate features (union): 3
-#> ℹ [2025-11-13 11:54:10] Data type is raw counts
-#> ! [2025-11-13 11:54:10] Negative values detected
-#> ℹ [2025-11-13 11:54:10] Calculating dynamic features for "Lineage2"...
-#> ℹ [2025-11-13 11:54:10] Using 1 core
-#> ⠙ [2025-11-13 11:54:10] Running [1/3] ETA:  0s
-#> ✔ [2025-11-13 11:54:10] Completed 3 tasks in 128ms
+#> ✔ [2025-11-19 14:24:17] MatrixGenerics installed successfully
+#> ℹ [2025-11-19 14:24:17] Start find dynamic features
+#> ✔ [2025-11-19 14:24:17] mgcv installed successfully
+#> ℹ [2025-11-19 14:24:17] Data type is raw counts
+#> ℹ [2025-11-19 14:24:18] Number of candidate features (union): 3
+#> ℹ [2025-11-19 14:24:18] Data type is raw counts
+#> ! [2025-11-19 14:24:18] Negative values detected
+#> ℹ [2025-11-19 14:24:18] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:24:18] Using 1 core
+#> ℹ [2025-11-19 14:24:18] Building results
+#> ✔ [2025-11-19 14:24:18] Find dynamic features done
+#> ℹ [2025-11-19 14:24:18] Start find dynamic features
+#> ✔ [2025-11-19 14:24:18] mgcv installed successfully
+#> ℹ [2025-11-19 14:24:19] Data type is raw counts
+#> ℹ [2025-11-19 14:24:19] Number of candidate features (union): 3
+#> ℹ [2025-11-19 14:24:20] Data type is raw counts
+#> ! [2025-11-19 14:24:20] Negative values detected
+#> ℹ [2025-11-19 14:24:20] Calculating dynamic features for "Lineage2"...
+#> ℹ [2025-11-19 14:24:20] Using 1 core
+#> ⠙ [2025-11-19 14:24:20] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:24:20] Completed 3 tasks in 131ms
 #> 
-#> ℹ [2025-11-13 11:54:10] Building results
-#> ✔ [2025-11-13 11:54:11] Find dynamic features done
+#> ℹ [2025-11-19 14:24:20] Building results
+#> ✔ [2025-11-19 14:24:20] Find dynamic features done
 
 
 DynamicPlot(
@@ -375,28 +375,31 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ✔ [2025-11-13 11:54:12] MatrixGenerics installed successfully
-#> ℹ [2025-11-13 11:54:12] Start find dynamic features
-#> ✔ [2025-11-13 11:54:12] mgcv installed successfully
-#> ℹ [2025-11-13 11:54:12] Data type is raw counts
-#> ℹ [2025-11-13 11:54:13] Number of candidate features (union): 3
-#> ℹ [2025-11-13 11:54:14] Data type is raw counts
-#> ! [2025-11-13 11:54:14] Negative values detected
-#> ℹ [2025-11-13 11:54:14] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 11:54:14] Using 1 core
-#> ⠙ [2025-11-13 11:54:14] Running [1/3] ETA:  0s
-#> ✔ [2025-11-13 11:54:14] Completed 3 tasks in 121ms
+#> ✔ [2025-11-19 14:24:21] MatrixGenerics installed successfully
+#> ℹ [2025-11-19 14:24:21] Start find dynamic features
+#> ✔ [2025-11-19 14:24:21] mgcv installed successfully
+#> ℹ [2025-11-19 14:24:23] Data type is raw counts
+#> ℹ [2025-11-19 14:24:23] Number of candidate features (union): 3
+#> ℹ [2025-11-19 14:24:24] Data type is raw counts
+#> ! [2025-11-19 14:24:24] Negative values detected
+#> ℹ [2025-11-19 14:24:24] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:24:24] Using 1 core
+#> ⠙ [2025-11-19 14:24:24] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:24:24] Completed 3 tasks in 121ms
 #> 
-#> ℹ [2025-11-13 11:54:14] Building results
-#> ✔ [2025-11-13 11:54:14] Find dynamic features done
-#> ℹ [2025-11-13 11:54:14] Start find dynamic features
-#> ✔ [2025-11-13 11:54:14] mgcv installed successfully
-#> ℹ [2025-11-13 11:54:14] Data type is raw counts
-#> ℹ [2025-11-13 11:54:15] Number of candidate features (union): 3
-#> ℹ [2025-11-13 11:54:15] Data type is raw counts
-#> ! [2025-11-13 11:54:15] Negative values detected
-#> ℹ [2025-11-13 11:54:15] Calculating dynamic features for "Lineage2"...
-#> ℹ [2025-11-13 11:54:15] Using 1 core
-#> ℹ [2025-11-13 11:54:15] Building results
-#> ✔ [2025-11-13 11:54:15] Find dynamic features done
+#> ℹ [2025-11-19 14:24:24] Building results
+#> ✔ [2025-11-19 14:24:24] Find dynamic features done
+#> ℹ [2025-11-19 14:24:24] Start find dynamic features
+#> ✔ [2025-11-19 14:24:24] mgcv installed successfully
+#> ℹ [2025-11-19 14:24:25] Data type is raw counts
+#> ℹ [2025-11-19 14:24:25] Number of candidate features (union): 3
+#> ℹ [2025-11-19 14:24:25] Data type is raw counts
+#> ! [2025-11-19 14:24:25] Negative values detected
+#> ℹ [2025-11-19 14:24:25] Calculating dynamic features for "Lineage2"...
+#> ℹ [2025-11-19 14:24:25] Using 1 core
+#> ⠙ [2025-11-19 14:24:25] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:24:25] Completed 3 tasks in 132ms
+#> 
+#> ℹ [2025-11-19 14:24:25] Building results
+#> ✔ [2025-11-19 14:24:26] Find dynamic features done
 ```

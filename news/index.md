@@ -1,5 +1,33 @@
 # Changelog
 
+## scop 0.6.1
+
+- **func**:
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
+    Improved message formatting and simplified log output for better
+    user experience.
+  - Added `get_conda_envs_dir()` helper function to centralize conda
+    environment directory retrieval.
+  - [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md):
+    Enhanced `integration_method` parameter definition with explicit
+    method list for better code clarity.
+- **refactor**:
+  - Moved
+    [`exist_python_pkgs()`](https://mengxu98.github.io/scop/reference/exist_python_pkgs.md)
+    function to `check_package.R` for better code organization.
+  - Replaced direct `conda_info()$envs_dirs[1]` calls with
+    `get_conda_envs_dir()` helper function for consistency.
+  - [`RunSCExplorer()`](https://mengxu98.github.io/scop/reference/RunSCExplorer.md):
+    Updated to use
+    [`thisplot::palette_list`](https://mengxu98.github.io/thisplot/reference/palette_list.html)
+    and
+    [`thisplot::slim_data()`](https://mengxu98.github.io/thisplot/reference/slim_data.html)
+    instead of `scop::palette_list` and `scop::slim_data()`.
+  - Added `thisplot` to dependency checks in
+    [`RunSCExplorer()`](https://mengxu98.github.io/scop/reference/RunSCExplorer.md).
+- **docs**:
+  - Updated documentation across multiple functions.
+
 ## scop 0.6.0
 
 - **func**:

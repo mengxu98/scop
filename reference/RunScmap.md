@@ -68,16 +68,16 @@ RunScmap(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2025-11-13 12:30:28] Start standard scop workflow...
-#> ℹ [2025-11-13 12:30:28] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:30:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:30:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:31] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:32] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:30:32] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:30:32] Finished check
-#> ℹ [2025-11-13 12:30:32] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:30:33] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 15:00:31] Start standard scop workflow...
+#> ℹ [2025-11-19 15:00:32] Checking a list of <Seurat> object...
+#> ! [2025-11-19 15:00:32] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 15:00:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:34] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:35] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:00:35] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:00:35] Finished check
+#> ℹ [2025-11-19 15:00:35] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 15:00:36] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  CHGA, PCSK1N, G6PC2, PCSK1, IAPP, ARFGEF3, CRYBA2, PRUNE2, CDKN1C, SORL1 
 #>     EDN3, CADM1, FXYD2, ELMO1, HADH, PAPPA2, GRIA3, RBP4, DLK1, ANXA6 
@@ -113,14 +113,14 @@ panc8_sub <- standard_scop(panc8_sub)
 #> Negative:  CD93, PLVAP, PODXL, ACVRL1, ESAM, S1PR1, CXCR4, ECSCR, DYSF, CALCRL 
 #>     ADGRF5, STC1, CD34, AFAP1L1, IFI27, SH3BP5, ACKR3, ANGPT2, DLL4, MMRN2 
 #>     MCAM, PNP, IL3RA, SPARCL1, TCF4, FAM198B, RAPGEF5, ARHGAP31, P2RY6, F2RL3 
-#> ℹ [2025-11-13 12:30:34] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:30:34] Reorder clusters...
-#> ℹ [2025-11-13 12:30:34] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:30:34] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:30:34] UMAP will return its model
-#> ℹ [2025-11-13 12:30:39] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:30:39] UMAP will return its model
-#> ✔ [2025-11-13 12:30:45] Run scop standard workflow done
+#> ℹ [2025-11-19 15:00:37] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 15:00:37] Reorder clusters...
+#> ℹ [2025-11-19 15:00:37] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 15:00:37] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:00:37] UMAP will return its model
+#> ℹ [2025-11-19 15:00:42] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:00:42] UMAP will return its model
+#> ✔ [2025-11-19 15:00:47] Run scop standard workflow done
 
 genenames <- make.unique(
   thisutils::capitalize(
@@ -133,39 +133,39 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2025-11-13 12:30:45] Rename features for the assay: RNA
+#> ℹ [2025-11-19 15:00:47] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2025-11-13 12:30:45] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2025-11-13 12:30:46] Checking a list of <Seurat> object...
-#> ℹ [2025-11-13 12:30:46] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:30:46] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:47] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:30:47] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:47] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:30:47] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:48] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:30:48] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:48] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:30:48] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:49] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:30:49] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:30:49] Finished check
+#> ℹ [2025-11-19 15:00:48] Spliting `srt_merge` into `srt_list` by column "tech"...
+#> ℹ [2025-11-19 15:00:49] Checking a list of <Seurat> object...
+#> ℹ [2025-11-19 15:00:49] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 15:00:49] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:49] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 15:00:49] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:50] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 15:00:50] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:50] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 15:00:50] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:51] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 15:00:51] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:51] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:00:52] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:00:52] Finished check
 
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:30:51] Start standard scop workflow...
-#> ℹ [2025-11-13 12:30:52] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:30:52] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:30:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:55] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:30:55] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:30:55] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:30:55] Finished check
-#> ℹ [2025-11-13 12:30:56] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:30:56] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 15:00:54] Start standard scop workflow...
+#> ℹ [2025-11-19 15:00:55] Checking a list of <Seurat> object...
+#> ! [2025-11-19 15:00:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 15:00:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:57] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:00:58] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:00:58] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:00:58] Finished check
+#> ℹ [2025-11-19 15:00:58] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 15:00:59] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -201,21 +201,21 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:30:57] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:30:57] Reorder clusters...
-#> ℹ [2025-11-13 12:30:57] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:30:57] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:30:57] UMAP will return its model
-#> ℹ [2025-11-13 12:31:02] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:31:02] UMAP will return its model
-#> ✔ [2025-11-13 12:31:07] Run scop standard workflow done
+#> ℹ [2025-11-19 15:01:00] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 15:01:00] Reorder clusters...
+#> ℹ [2025-11-19 15:01:00] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 15:01:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:01:00] UMAP will return its model
+#> ℹ [2025-11-19 15:01:05] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:01:05] UMAP will return its model
+#> ✔ [2025-11-19 15:01:09] Run scop standard workflow done
 pancreas_sub <- RunScmap(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   ref_group = "celltype",
   method = "scmapCluster"
 )
-#> ◌ [2025-11-13 12:31:07] Installing: scmap...
+#> ◌ [2025-11-19 15:01:09] Installing: scmap...
 #>  
 #> → Will install 3 packages.
 #> → All 3 packages (0 B) are cached.
@@ -225,36 +225,39 @@ pancreas_sub <- RunScmap(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 3 pkgs are cached
+#> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
+#> ✔ Got scmap 1.32.0 (source) (2.34 MB)
+#> ✔ Got googleVis 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (498.39 kB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
-#> ✔ Installed googleVis 0.7.3  (35ms)
-#> ✔ Installed randomForest 4.7-1.2  (51ms)
+#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> ✔ Installed googleVis 0.7.3  (33ms)
+#> ✔ Installed randomForest 4.7-1.2  (48ms)
 #> ℹ Building scmap 1.32.0
-#> ✔ Built scmap 1.32.0 (23.2s)
-#> ✔ Installed scmap 1.32.0  (61ms)
-#> ✔ 1 pkg + 54 deps: kept 51, added 3 [29.3s]
-#> ✔ [2025-11-13 12:31:36] scmap installed successfully
-#> ℹ [2025-11-13 12:31:36] Data type is log-normalized
-#> ℹ [2025-11-13 12:31:36] Detected srt_query data type: log_normalized_counts
-#> ℹ [2025-11-13 12:31:38] Data type is log-normalized
-#> ℹ [2025-11-13 12:31:38] Detected srt_ref data type: log_normalized_counts
-#> ℹ [2025-11-13 12:31:41] Perform selectFeatures
-#> ℹ [2025-11-13 12:31:42] Perform indexCluster
-#> ℹ [2025-11-13 12:31:42] Perform scmapCluster
+#> ✔ Built scmap 1.32.0 (22.2s)
+#> ✔ Installed scmap 1.32.0  (1.1s)
+#> ✔ 1 pkg + 54 deps: kept 52, added 3, dld 3 (3.06 MB) [27.8s]
+#> ✔ [2025-11-19 15:01:37] scmap installed successfully
+#> ℹ [2025-11-19 15:01:37] Data type is log-normalized
+#> ℹ [2025-11-19 15:01:37] Detected srt_query data type: log_normalized_counts
+#> ℹ [2025-11-19 15:01:39] Data type is log-normalized
+#> ℹ [2025-11-19 15:01:39] Detected srt_ref data type: log_normalized_counts
+#> ℹ [2025-11-19 15:01:41] Perform selectFeatures
+#> ℹ [2025-11-19 15:01:41] Perform indexCluster
+#> ℹ [2025-11-19 15:01:42] Perform scmapCluster
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"
@@ -267,15 +270,15 @@ pancreas_sub <- RunScmap(
   ref_group = "celltype",
   method = "scmapCell"
 )
-#> ✔ [2025-11-13 12:31:43] scmap installed successfully
-#> ℹ [2025-11-13 12:31:43] Data type is log-normalized
-#> ℹ [2025-11-13 12:31:43] Detected srt_query data type: log_normalized_counts
-#> ℹ [2025-11-13 12:31:45] Data type is log-normalized
-#> ℹ [2025-11-13 12:31:45] Detected srt_ref data type: log_normalized_counts
-#> ℹ [2025-11-13 12:31:47] Perform selectFeatures
-#> ℹ [2025-11-13 12:31:47] Perform indexCell
-#> ℹ [2025-11-13 12:31:48] Perform scmapCell
-#> ℹ [2025-11-13 12:31:49] Perform scmapCell2Cluster
+#> ✔ [2025-11-19 15:01:42] scmap installed successfully
+#> ℹ [2025-11-19 15:01:43] Data type is log-normalized
+#> ℹ [2025-11-19 15:01:43] Detected srt_query data type: log_normalized_counts
+#> ℹ [2025-11-19 15:01:44] Data type is log-normalized
+#> ℹ [2025-11-19 15:01:44] Detected srt_ref data type: log_normalized_counts
+#> ℹ [2025-11-19 15:01:46] Perform selectFeatures
+#> ℹ [2025-11-19 15:01:47] Perform indexCell
+#> ℹ [2025-11-19 15:01:47] Perform scmapCell
+#> ℹ [2025-11-19 15:01:48] Perform scmapCell2Cluster
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"

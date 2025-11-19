@@ -605,16 +605,16 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 11:55:40] Start standard scop workflow...
-#> ℹ [2025-11-13 11:55:40] Checking a list of <Seurat> object...
-#> ! [2025-11-13 11:55:41] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 11:55:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:55:42] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:55:43] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 11:55:43] Number of available HVF: 2000
-#> ℹ [2025-11-13 11:55:43] Finished check
-#> ℹ [2025-11-13 11:55:43] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 11:55:44] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:25:49] Start standard scop workflow...
+#> ℹ [2025-11-19 14:25:50] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:25:50] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:25:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:25:52] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:25:52] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:25:53] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:25:53] Finished check
+#> ℹ [2025-11-19 14:25:53] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:25:53] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -650,28 +650,28 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 11:55:45] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 11:55:45] Reorder clusters...
-#> ℹ [2025-11-13 11:55:45] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 11:55:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:55:45] UMAP will return its model
-#> ℹ [2025-11-13 11:55:48] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:55:48] UMAP will return its model
-#> ✔ [2025-11-13 11:55:52] Run scop standard workflow done
+#> ℹ [2025-11-19 14:25:54] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:25:54] Reorder clusters...
+#> ℹ [2025-11-19 14:25:54] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:25:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:25:54] UMAP will return its model
+#> ℹ [2025-11-19 14:25:58] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:25:58] UMAP will return its model
+#> ✔ [2025-11-19 14:26:02] Run scop standard workflow done
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ✔ [2025-11-13 11:55:52] immunogenomics/presto installed successfully
-#> ℹ [2025-11-13 11:55:53] Data type is log-normalized
-#> ℹ [2025-11-13 11:55:53] Start differential expression test
-#> ℹ [2025-11-13 11:55:53] Find all markers(wilcox) among 5 groups...
-#> ℹ [2025-11-13 11:55:53] Using 1 core
-#> ⠙ [2025-11-13 11:55:53] Running [1/5] ETA:  1s
-#> ✔ [2025-11-13 11:55:53] Completed 5 tasks in 962ms
+#> ✔ [2025-11-19 14:26:02] immunogenomics/presto installed successfully
+#> ℹ [2025-11-19 14:26:02] Data type is log-normalized
+#> ℹ [2025-11-19 14:26:02] Start differential expression test
+#> ℹ [2025-11-19 14:26:02] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2025-11-19 14:26:02] Using 1 core
+#> ⠙ [2025-11-19 14:26:02] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-11-19 14:26:02] Completed 5 tasks in 944ms
 #> 
-#> ℹ [2025-11-13 11:55:53] Building results
-#> ✔ [2025-11-13 11:55:54] Differential expression test completed
+#> ℹ [2025-11-19 14:26:02] Building results
+#> ✔ [2025-11-19 14:26:03] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -718,9 +718,9 @@ ht2 <- FeatureHeatmap(
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 11:56:07] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2025-11-13 11:56:07] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2025-11-13 11:56:07] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2025-11-19 14:26:15] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2025-11-19 14:26:15] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2025-11-19 14:26:15] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht2$plot
 
@@ -739,29 +739,29 @@ ht3 <- FeatureHeatmap(
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 11:56:35] Start Enrichment analysis
-#> ✔ [2025-11-13 11:56:35] clusterProfiler installed successfully
-#> ℹ [2025-11-13 11:56:35] Species: "Mus_musculus"
-#> ℹ [2025-11-13 11:56:35] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2025-11-13 11:51:23
-#> ℹ [2025-11-13 11:56:37] Permform enrichment...
-#> ℹ [2025-11-13 11:56:37] Using 1 core
-#> ⠙ [2025-11-13 11:56:37] Running [1/5] ETA:  1m
-#> ⠹ [2025-11-13 11:56:37] Running [2/5] ETA: 50s
-#> ⠸ [2025-11-13 11:56:37] Running [3/5] ETA: 33s
-#> ⠼ [2025-11-13 11:56:37] Running [4/5] ETA: 16s
-#> ✔ [2025-11-13 11:56:37] Completed 5 tasks in 1m 14.5s
+#> ℹ [2025-11-19 14:26:42] Start Enrichment analysis
+#> ✔ [2025-11-19 14:26:42] clusterProfiler installed successfully
+#> ℹ [2025-11-19 14:26:42] Species: "Mus_musculus"
+#> ℹ [2025-11-19 14:26:43] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2025-11-19 14:21:38
+#> ℹ [2025-11-19 14:26:44] Permform enrichment...
+#> ℹ [2025-11-19 14:26:44] Using 1 core
+#> ⠙ [2025-11-19 14:26:44] Running [1/5] Processing: 1  ETA:  1m
+#> ⠹ [2025-11-19 14:26:44] Running [2/5] Processing: 2  ETA: 47s
+#> ⠸ [2025-11-19 14:26:44] Running [3/5] Processing: 3  ETA: 31s
+#> ⠼ [2025-11-19 14:26:44] Running [4/5] Processing: 4  ETA: 15s
+#> ✔ [2025-11-19 14:26:44] Completed 5 tasks in 1m 10.9s
 #> 
-#> ℹ [2025-11-13 11:56:37] Building results
-#> ✔ [2025-11-13 11:57:52] Enrichment analysis done
-#> ✔ [2025-11-13 11:57:52] simplifyEnrichment installed successfully
+#> ℹ [2025-11-19 14:26:44] Building results
+#> ✔ [2025-11-19 14:27:56] Enrichment analysis done
+#> ✔ [2025-11-19 14:27:56] simplifyEnrichment installed successfully
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 11:58:30] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2025-11-13 11:58:30] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2025-11-13 11:58:30] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2025-11-19 14:28:36] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2025-11-19 14:28:36] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2025-11-19 14:28:36] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 

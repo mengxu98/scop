@@ -550,16 +550,16 @@ RunLargeVis(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:25:48] Start standard scop workflow...
-#> ℹ [2025-11-13 12:25:49] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:25:49] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:25:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:25:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:25:52] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:25:52] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:25:52] Finished check
-#> ℹ [2025-11-13 12:25:52] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:25:53] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:55:53] Start standard scop workflow...
+#> ℹ [2025-11-19 14:55:54] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:55:54] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:55:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:55:56] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:55:57] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:55:57] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:55:57] Finished check
+#> ℹ [2025-11-19 14:55:57] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:55:58] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -595,26 +595,26 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:25:54] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:25:54] Reorder clusters...
-#> ℹ [2025-11-13 12:25:54] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:25:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:25:54] UMAP will return its model
-#> ℹ [2025-11-13 12:25:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:25:59] UMAP will return its model
-#> ✔ [2025-11-13 12:26:04] Run scop standard workflow done
+#> ℹ [2025-11-19 14:55:59] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:55:59] Reorder clusters...
+#> ℹ [2025-11-19 14:55:59] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:55:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:55:59] UMAP will return its model
+#> ℹ [2025-11-19 14:56:03] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:56:03] UMAP will return its model
+#> ✔ [2025-11-19 14:56:08] Run scop standard workflow done
 pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> 12:26:04 Read 1000 rows and found 2000 numeric columns
-#> 12:26:04 Normalizing by max-abs
-#> 12:26:04 Using FNN for neighbor search, n_neighbors = 150
-#> 12:26:07 Commencing calibration for perplexity = 50 using 2 threads
-#> 12:26:10 Initializing from random Gaussian with sd = 1e-4
-#> 12:26:10 Commencing optimization for 254033 epochs, with 194344 positive edges
-#> 12:26:10 Using rng type: pcg
-#> 12:28:36 Optimization finished
+#> 14:56:08 Read 1000 rows and found 2000 numeric columns
+#> 14:56:08 Normalizing by max-abs
+#> 14:56:08 Using FNN for neighbor search, n_neighbors = 150
+#> 14:56:11 Commencing calibration for perplexity = 50 using 2 threads
+#> 14:56:14 Initializing from random Gaussian with sd = 1e-4
+#> 14:56:14 Commencing optimization for 254033 epochs, with 194344 positive edges
+#> 14:56:14 Using rng type: pcg
+#> 14:58:40 Optimization finished
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
