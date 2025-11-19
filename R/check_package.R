@@ -110,6 +110,106 @@ check_python <- function(
   }
 }
 
+#' Check if the python package exists in the environment
+#'
+#' @inheritParams check_python
+#' @export
+exist_python_pkgs <- function(
+    packages,
+    envname = NULL,
+    conda = "auto") {
+  envname <- get_envname(envname)
+
+  if (identical(conda, "auto")) {
+    conda <- find_conda()
+  } else {
+    options(reticulate.conda_binary = conda)
+    conda <- find_conda()
+  }
+
+  if (is.null(conda)) {
+    log_message("Conda not found", message_type = "error")
+  }
+
+  env <- env_exist(conda = conda, envname = envname)
+  if (isFALSE(env)) {
+    log_message(
+      "Cannot find the conda environment: {.file {envname}}",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "Checking {.val {length(packages)}} package{?s} in environment: {.file {envname}}"
+  )
+
+  all_installed <- tryCatch(
+    {
+      installed_python_pkgs(envname = envname, conda = conda)
+    },
+    error = function(e) {
+      log_message(
+        "Failed to get installed packages: {.val {e$message}}",
+        message_type = "warning"
+      )
+    }
+  )
+
+  packages_installed <- stats::setNames(
+    rep(FALSE, length(packages)), packages
+  )
+
+  for (i in seq_along(packages)) {
+    pkg <- packages[i]
+
+    if (grepl("==", pkg)) {
+      pkg_info <- strsplit(pkg, split = "==")[[1]]
+      pkg_name <- names(pkg) %||% pkg_info[1]
+      pkg_version <- pkg_info[2]
+    } else if (grepl("git+", pkg)) {
+      pkg_info <- strsplit(pkg, "/")[[1]]
+      pkg_name <- names(pkg) %||% pkg_info[length(pkg_info)]
+      pkg_version <- NA
+    } else {
+      pkg_name <- names(pkg) %||% pkg
+      pkg_version <- NA
+    }
+
+    if (pkg_name %in% all_installed$package) {
+      if (!is.na(pkg_version)) {
+        installed_version <- all_installed$version[all_installed$package == pkg_name]
+        packages_installed[pkg] <- installed_version == pkg_version
+        if (packages_installed[pkg]) {
+          log_message(
+            "{.pkg {pkg_name}} {.pkg {pkg_version}}",
+            message_type = "success"
+          )
+        } else {
+          log_message(
+            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
+            message_type = "warning"
+          )
+        }
+      } else {
+        packages_installed[pkg] <- TRUE
+        installed_version <- all_installed$version[all_installed$package == pkg_name]
+        log_message(
+          "{.pkg {pkg_name}} version: {.pkg {installed_version}}",
+          message_type = "success"
+        )
+      }
+    } else {
+      packages_installed[pkg] <- FALSE
+      log_message(
+        "{.pkg {pkg_name}} not found",
+        message_type = "warning"
+      )
+    }
+  }
+
+  return(packages_installed)
+}
+
 #' @title Remove Python packages from conda environment
 #'
 #' @md
