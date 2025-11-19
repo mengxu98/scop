@@ -46,16 +46,16 @@ db_scds(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:44:33] Start standard scop workflow...
-#> ℹ [2025-11-13 12:44:33] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:44:33] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:44:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:44:36] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:44:36] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:44:36] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:44:37] Finished check
-#> ℹ [2025-11-13 12:44:37] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:44:37] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 15:14:18] Start standard scop workflow...
+#> ℹ [2025-11-19 15:14:18] Checking a list of <Seurat> object...
+#> ! [2025-11-19 15:14:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 15:14:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:14:21] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:14:21] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:14:21] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:14:21] Finished check
+#> ℹ [2025-11-19 15:14:22] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 15:14:22] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -91,17 +91,17 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:44:38] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:44:38] Reorder clusters...
-#> ℹ [2025-11-13 12:44:38] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:44:38] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:44:38] UMAP will return its model
-#> ℹ [2025-11-13 12:44:43] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:44:43] UMAP will return its model
-#> ✔ [2025-11-13 12:44:47] Run scop standard workflow done
+#> ℹ [2025-11-19 15:14:23] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 15:14:23] Reorder clusters...
+#> ℹ [2025-11-19 15:14:23] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 15:14:23] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:14:23] UMAP will return its model
+#> ℹ [2025-11-19 15:14:28] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:14:28] UMAP will return its model
+#> ✔ [2025-11-19 15:14:32] Run scop standard workflow done
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
-#> ℹ [2025-11-13 12:44:48] Data type is raw counts
-#> ◌ [2025-11-13 12:44:48] Installing: scds...
+#> ℹ [2025-11-19 15:14:33] Data type is raw counts
+#> ◌ [2025-11-19 15:14:33] Installing: scds...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -110,28 +110,30 @@ pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 2 pkgs are cached
+#> ✔ Got pROC 1.19.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (828.97 kB)
+#> ✔ Got scds 1.26.0 (source) (1.45 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install make`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> make is already the newest version (4.3-4.1build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
-#> ✔ Installed pROC 1.19.0.1  (1.1s)
+#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> ✔ Installed pROC 1.19.0.1  (1s)
 #> ℹ Building scds 1.26.0
-#> ✔ Built scds 1.26.0 (11.4s)
-#> ✔ Installed scds 1.26.0  (1s)
-#> ✔ 1 pkg + 37 deps: kept 36, added 2 [16.9s]
-#> ✔ [2025-11-13 12:45:05] scds installed successfully
+#> ✔ Built scds 1.26.0 (11s)
+#> ✔ Installed scds 1.26.0  (1.1s)
+#> ✔ 1 pkg + 37 deps: kept 36, added 2, dld 2 (2.28 MB) [16.8s]
+#> ✔ [2025-11-19 15:14:50] scds installed successfully
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore

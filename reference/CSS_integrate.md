@@ -204,7 +204,8 @@ CSS_integrate(
 
 - CSS_params:
 
-  A list of parameters for the \[simspec::cluster_sim_spectrum\]
+  A list of parameters for the
+  \[simspec::cluster_sim_spectrum\](https://github.com/quadbio/simspec)
   function. Default is an empty list.
 
 - verbose:

@@ -145,6 +145,7 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Seurat"
 )
+panc8_sub <- standard_scop(panc8_sub)
 
 PrepareSCExplorer(
   list(

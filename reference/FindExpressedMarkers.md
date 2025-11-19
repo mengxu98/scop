@@ -232,16 +232,16 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 11:59:59] Start standard scop workflow...
-#> ℹ [2025-11-13 11:59:59] Checking a list of <Seurat> object...
-#> ! [2025-11-13 11:59:59] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 11:59:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:00:01] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:00:02] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:00:02] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:00:02] Finished check
-#> ℹ [2025-11-13 12:00:03] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:00:03] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:30:17] Start standard scop workflow...
+#> ℹ [2025-11-19 14:30:18] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:30:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:30:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:30:20] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:30:20] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:30:21] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:30:21] Finished check
+#> ℹ [2025-11-19 14:30:21] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:30:21] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -277,14 +277,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:00:04] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:00:04] Reorder clusters...
-#> ℹ [2025-11-13 12:00:04] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:00:04] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:00:04] UMAP will return its model
-#> ℹ [2025-11-13 12:00:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:00:08] UMAP will return its model
-#> ✔ [2025-11-13 12:00:11] Run scop standard workflow done
+#> ℹ [2025-11-19 14:30:22] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:30:22] Reorder clusters...
+#> ℹ [2025-11-19 14:30:22] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:30:22] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:30:22] UMAP will return its model
+#> ℹ [2025-11-19 14:30:26] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:30:26] UMAP will return its model
+#> ✔ [2025-11-19 14:30:30] Run scop standard workflow done
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -292,7 +292,7 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ◌ [2025-11-13 12:00:12] Installing: limma...
+#> ◌ [2025-11-19 14:30:30] Installing: limma...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -300,18 +300,20 @@ markers <- FindExpressedMarkers(
 #> + statmod   1.5.1  
 #>   
 #> ℹ No downloads are needed, 2 pkgs are cached
+#> ✔ Got statmod 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (317.50 kB)
+#> ✔ Got limma 3.66.0 (source) (2.86 MB)
 #> ✔ Installed statmod 1.5.1  (1s)
 #> ℹ Building limma 3.66.0
-#> ✔ Built limma 3.66.0 (9.9s)
-#> ✔ Installed limma 3.66.0  (44ms)
-#> ✔ 1 pkg + 1 dep: added 2 [11.8s]
-#> ✔ [2025-11-13 12:00:24] limma installed successfully
-#> ℹ [2025-11-13 12:00:24] Using 1 core
-#> ⠙ [2025-11-13 12:00:24] Running [1/6145] ETA: 37s
-#> ⠹ [2025-11-13 12:00:24] Running [1263/6145] ETA:  3s
-#> ✔ [2025-11-13 12:00:24] Completed 6145 tasks in 3.4s
+#> ✔ Built limma 3.66.0 (9.8s)
+#> ✔ Installed limma 3.66.0  (1s)
+#> ✔ 1 pkg + 1 dep: added 2, dld 2 (3.17 MB) [13.3s]
+#> ✔ [2025-11-19 14:30:44] limma installed successfully
+#> ℹ [2025-11-19 14:30:44] Using 1 core
+#> ⠙ [2025-11-19 14:30:44] Running [1/6145] Processing: 1  ETA: 39s
+#> ⠹ [2025-11-19 14:30:44] Running [4354/6145] Processing: 4354  ETA:  1s
+#> ✔ [2025-11-19 14:30:44] Completed 6145 tasks in 3.4s
 #> 
-#> ℹ [2025-11-13 12:00:24] Building results
+#> ℹ [2025-11-19 14:30:44] Building results
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
 #> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33

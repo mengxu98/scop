@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>PAGA plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PAGAPlot.R" class="external-link"><code>R/PAGAPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/PAGAPlot.R" class="external-link"><code>R/PAGAPlot.R</code></a></small>
       <div class="d-none name"><code>PAGAPlot.Rd</code></div>
     </div>
 
@@ -116,235 +116,171 @@
 
 
 <dt id="arg-paga">paga<a class="anchor" aria-label="anchor" href="#arg-paga"></a></dt>
-<dd><p>The PAGA result from the Seurat object. Defaults to <code>srt\$misc\$paga</code>.</p></dd>
+<dd><p>The PAGA result from the Seurat object.
+Default is <code>srt@misc$paga</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>The type of plot to generate. Possible values are "connectivities" (default) and "connectivities_tree".</p></dd>
+<dd><p>The type of plot to generate.
+Possible values are <code>"connectivities"</code> (default) and <code>"connectivities_tree"</code>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>The type of reduction to use for the plot. Defaults to the default reduction in the Seurat object.</p></dd>
+<dd><p>The type of reduction to use for the plot.
+Default is the default reduction in the Seurat object.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>The dimensions of the reduction to use for the plot. Defaults to the first two dimensions.</p></dd>
+<dd><p>The dimensions of the reduction to use for the plot.
+Default is the first two dimensions.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>The cells to include in the plot. Defaults to all cells.</p></dd>
+<dd><p>The cells to include in the plot.
+Default is all cells.</p></dd>
 
 
 <dt id="arg-show-transition">show_transition<a class="anchor" aria-label="anchor" href="#arg-show-transition"></a></dt>
-<dd><p>Whether to display transitions between different cell states. Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Whether to display transitions between different cell states.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-node-palette">node_palette<a class="anchor" aria-label="anchor" href="#arg-node-palette"></a></dt>
-<dd><p>The color palette to use for node coloring. Defaults to "Paired".</p></dd>
+<dd><p>The color palette to use for node coloring.
+Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-node-palcolor">node_palcolor<a class="anchor" aria-label="anchor" href="#arg-node-palcolor"></a></dt>
-<dd><p>A vector of colors to use for node coloring. Defaults to <code>NULL</code>.</p></dd>
+<dd><p>A vector of colors to use for node coloring.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-node-size">node_size<a class="anchor" aria-label="anchor" href="#arg-node-size"></a></dt>
-<dd><p>The size of the nodes in the plot. Defaults to 4.</p></dd>
-
-
-<dt id="arg-node-alpha">node_alpha<a class="anchor" aria-label="anchor" href="#arg-node-alpha"></a></dt>
-<dd><p>The transparency of the nodes in the plot. Defaults to 1.</p></dd>
-
-
-<dt id="arg-node-highlight">node_highlight<a class="anchor" aria-label="anchor" href="#arg-node-highlight"></a></dt>
-<dd><p>The group(s) to highlight in the plot. Defaults to <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-node-highlight-color">node_highlight_color<a class="anchor" aria-label="anchor" href="#arg-node-highlight-color"></a></dt>
-<dd><p>The color to use for highlighting the nodes. Defaults to "red".</p></dd>
-
-
-<dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Whether to display labels for the nodes. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
-<dd><p>The size of the labels. Defaults to 3.5.</p></dd>
-
-
-<dt id="arg-label-fg">label.fg<a class="anchor" aria-label="anchor" href="#arg-label-fg"></a></dt>
-<dd><p>The color of the label text. Defaults to "white".</p></dd>
-
-
-<dt id="arg-label-bg">label.bg<a class="anchor" aria-label="anchor" href="#arg-label-bg"></a></dt>
-<dd><p>The background color of the labels. Defaults to "black".</p></dd>
-
-
-<dt id="arg-label-bg-r">label.bg.r<a class="anchor" aria-label="anchor" href="#arg-label-bg-r"></a></dt>
-<dd><p>The transparency of the label background color. Defaults to 0.1.</p></dd>
-
-
-<dt id="arg-label-insitu">label_insitu<a class="anchor" aria-label="anchor" href="#arg-label-insitu"></a></dt>
-<dd><p>Whether to use in-situ labeling for the nodes. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-label-repel">label_repel<a class="anchor" aria-label="anchor" href="#arg-label-repel"></a></dt>
-<dd><p>Whether to use repel mode for labeling nodes. Defaults to <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-label-repulsion">label_repulsion<a class="anchor" aria-label="anchor" href="#arg-label-repulsion"></a></dt>
-<dd><p>The repulsion factor for repel mode. Defaults to 20.</p></dd>
+<dd><p>The size of the nodes in the plot.
+Default is <code>4</code>.</p></dd>
 
 
 <dt id="arg-label-point-size">label_point_size<a class="anchor" aria-label="anchor" href="#arg-label-point-size"></a></dt>
-<dd><p>The size of the points in the labels. Defaults to 1.</p></dd>
+<dd><p>The size of the points in the labels.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-label-point-color">label_point_color<a class="anchor" aria-label="anchor" href="#arg-label-point-color"></a></dt>
-<dd><p>The color of the points in the labels. Defaults to "black".</p></dd>
+<dd><p>The color of the points in the labels.
+Default is <code>"black"</code>.</p></dd>
 
 
 <dt id="arg-label-segment-color">label_segment_color<a class="anchor" aria-label="anchor" href="#arg-label-segment-color"></a></dt>
-<dd><p>The color of the lines connecting the points in the labels. Defaults to "black".</p></dd>
+<dd><p>The color of the lines connecting the points in the labels.
+Default is <code>"black"</code>.</p></dd>
 
 
 <dt id="arg-edge-threshold">edge_threshold<a class="anchor" aria-label="anchor" href="#arg-edge-threshold"></a></dt>
-<dd><p>The threshold for including edges in the plot. Defaults to 0.01.</p></dd>
+<dd><p>The threshold for including edges in the plot.
+Default is <code>0.01</code>.</p></dd>
 
 
 <dt id="arg-edge-line">edge_line<a class="anchor" aria-label="anchor" href="#arg-edge-line"></a></dt>
-<dd><p>The type of line to use for the edges. Possible values are "straight" and "curved". Defaults to "straight".</p></dd>
+<dd><p>The type of line to use for the edges.
+Possible values are <code>"straight"</code> and <code>"curved"</code>.
+Default is <code>"straight"</code>.</p></dd>
 
 
 <dt id="arg-edge-line-curvature">edge_line_curvature<a class="anchor" aria-label="anchor" href="#arg-edge-line-curvature"></a></dt>
-<dd><p>The curvature factor for curved edges. Defaults to 0.3.</p></dd>
+<dd><p>The curvature factor for curved edges.
+Default is <code>0.3</code>.</p></dd>
 
 
 <dt id="arg-edge-line-angle">edge_line_angle<a class="anchor" aria-label="anchor" href="#arg-edge-line-angle"></a></dt>
-<dd><p>The angle for curved edges. Defaults to 90.</p></dd>
+<dd><p>The angle for curved edges.
+Default is <code>90</code>.</p></dd>
 
 
 <dt id="arg-edge-size">edge_size<a class="anchor" aria-label="anchor" href="#arg-edge-size"></a></dt>
-<dd><p>The size range for the edges. Defaults to c(0.2, 1).</p></dd>
+<dd><p>The size range for the edges.
+Default is <code>c(0.2, 1)</code>.</p></dd>
 
 
 <dt id="arg-edge-color">edge_color<a class="anchor" aria-label="anchor" href="#arg-edge-color"></a></dt>
-<dd><p>The color of the edges. Defaults to "grey40".</p></dd>
+<dd><p>The color of the edges.
+Default is <code>"grey40"</code>.</p></dd>
 
 
 <dt id="arg-edge-alpha">edge_alpha<a class="anchor" aria-label="anchor" href="#arg-edge-alpha"></a></dt>
-<dd><p>The transparency of the edges. Defaults to 0.5.</p></dd>
+<dd><p>The transparency of the edges.
+Default is <code>0.5</code>.</p></dd>
 
 
 <dt id="arg-edge-shorten">edge_shorten<a class="anchor" aria-label="anchor" href="#arg-edge-shorten"></a></dt>
-<dd><p>The amount to shorten the edges. Defaults to 0.</p></dd>
+<dd><p>The amount to shorten the edges.
+Default is <code>0</code>.</p></dd>
 
 
 <dt id="arg-edge-offset">edge_offset<a class="anchor" aria-label="anchor" href="#arg-edge-offset"></a></dt>
-<dd><p>The offset for curved edges. Defaults to 0.</p></dd>
+<dd><p>The offset for curved edges.
+Default is <code>0</code>.</p></dd>
 
 
 <dt id="arg-edge-highlight">edge_highlight<a class="anchor" aria-label="anchor" href="#arg-edge-highlight"></a></dt>
-<dd><p>The group(s) to highlight in the plot. Defaults to <code>NULL</code>.</p></dd>
+<dd><p>The group(s) to highlight in the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-edge-highlight-color">edge_highlight_color<a class="anchor" aria-label="anchor" href="#arg-edge-highlight-color"></a></dt>
-<dd><p>The color to use for highlighting the edges. Defaults to "red".</p></dd>
-
-
-<dt id="arg-transition-threshold">transition_threshold<a class="anchor" aria-label="anchor" href="#arg-transition-threshold"></a></dt>
-<dd><p>The threshold for including transitions in the plot. Defaults to 0.01.</p></dd>
-
-
-<dt id="arg-transition-line">transition_line<a class="anchor" aria-label="anchor" href="#arg-transition-line"></a></dt>
-<dd><p>The type of line to use for the transitions. Possible values are "straight" and "curved". Defaults to "straight".</p></dd>
-
-
-<dt id="arg-transition-line-curvature">transition_line_curvature<a class="anchor" aria-label="anchor" href="#arg-transition-line-curvature"></a></dt>
-<dd><p>The curvature factor for curved transitions. Defaults to 0.3.</p></dd>
-
-
-<dt id="arg-transition-line-angle">transition_line_angle<a class="anchor" aria-label="anchor" href="#arg-transition-line-angle"></a></dt>
-<dd><p>The angle for curved transitions. Defaults to 90.</p></dd>
-
-
-<dt id="arg-transition-size">transition_size<a class="anchor" aria-label="anchor" href="#arg-transition-size"></a></dt>
-<dd><p>The size range for the transitions. Defaults to c(0.2, 1).</p></dd>
-
-
-<dt id="arg-transition-color">transition_color<a class="anchor" aria-label="anchor" href="#arg-transition-color"></a></dt>
-<dd><p>The color of the transitions. Defaults to "black".</p></dd>
-
-
-<dt id="arg-transition-alpha">transition_alpha<a class="anchor" aria-label="anchor" href="#arg-transition-alpha"></a></dt>
-<dd><p>The transparency of the transitions. Defaults to 1.</p></dd>
-
-
-<dt id="arg-transition-arrow-type">transition_arrow_type<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-type"></a></dt>
-<dd><p>The type of arrow to use for the transitions. Possible values are "closed", "open", and "triangle". Defaults to "closed".</p></dd>
-
-
-<dt id="arg-transition-arrow-angle">transition_arrow_angle<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-angle"></a></dt>
-<dd><p>The angle of the arrow for transitions. Defaults to 20.</p></dd>
-
-
-<dt id="arg-transition-arrow-length">transition_arrow_length<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-length"></a></dt>
-<dd><p>The length of the arrow for transitions. Defaults to unit(0.02, "npc").</p></dd>
-
-
-<dt id="arg-transition-shorten">transition_shorten<a class="anchor" aria-label="anchor" href="#arg-transition-shorten"></a></dt>
-<dd><p>The amount to shorten the transitions. Defaults to 0.05.</p></dd>
-
-
-<dt id="arg-transition-offset">transition_offset<a class="anchor" aria-label="anchor" href="#arg-transition-offset"></a></dt>
-<dd><p>The offset for curved transitions. Defaults to 0.</p></dd>
-
-
-<dt id="arg-transition-highlight">transition_highlight<a class="anchor" aria-label="anchor" href="#arg-transition-highlight"></a></dt>
-<dd><p>The group(s) to highlight in the plot. Defaults to <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-transition-highlight-color">transition_highlight_color<a class="anchor" aria-label="anchor" href="#arg-transition-highlight-color"></a></dt>
-<dd><p>The color to use for highlighting the transitions. Defaults to "red".</p></dd>
+<dd><p>The color to use for highlighting the edges.
+Default is <code>"red"</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>The aspect ratio of the plot. Defaults to 1.</p></dd>
+<dd><p>The aspect ratio of the plot.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>The title of the plot. Defaults to "PAGA".</p></dd>
+<dd><p>The title of the plot.
+Default is <code>"PAGA"</code>.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>The subtitle of the plot. Defaults to <code>NULL</code>.</p></dd>
+<dd><p>The subtitle of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>The label for the x-axis. Defaults to <code>NULL</code>.</p></dd>
+<dd><p>The label for the x-axis.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>The label for the y-axis. Defaults to <code>NULL</code>.</p></dd>
+<dd><p>The label for the y-axis.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>The position of the legend. Possible values are "right", "left", "bottom", and "top". Defaults to "right".</p></dd>
+<dd><p>The position of the legend.
+Possible values are "right", "left", "bottom", and "top".
+Default is <code>"right"</code>.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>The direction of the legend. Possible values are "vertical" and "horizontal". Defaults to "vertical".</p></dd>
+<dd><p>The direction of the legend.
+Possible values are "vertical" and "horizontal".
+Default is <code>"vertical"</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>The name of the theme to use for the plot. Defaults to "theme_scop".</p></dd>
+<dd><p>The name of the theme to use for the plot.
+Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>A list of arguments to pass to the theme function. Defaults to an empty list.</p></dd>
+<dd><p>A list of arguments to pass to the theme function.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-return-layer">return_layer<a class="anchor" aria-label="anchor" href="#arg-return-layer"></a></dt>
-<dd><p>Whether to return the plot as a ggplot2 layer. Defaults to <code>FALSE</code>.</p></dd>
+<dd><p>Whether to return the plot as a ggplot2 layer.
+Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

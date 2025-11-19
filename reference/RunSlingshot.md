@@ -95,16 +95,16 @@ RunSlingshot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:41:24] Start standard scop workflow...
-#> ℹ [2025-11-13 12:41:24] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:41:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:41:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:41:27] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:41:27] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:41:27] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:41:28] Finished check
-#> ℹ [2025-11-13 12:41:28] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:41:28] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 15:11:03] Start standard scop workflow...
+#> ℹ [2025-11-19 15:11:03] Checking a list of <Seurat> object...
+#> ! [2025-11-19 15:11:03] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 15:11:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:11:06] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:11:06] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:11:06] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:11:06] Finished check
+#> ℹ [2025-11-19 15:11:07] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 15:11:07] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -140,14 +140,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:41:29] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:41:29] Reorder clusters...
-#> ℹ [2025-11-13 12:41:29] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:41:29] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:41:29] UMAP will return its model
-#> ℹ [2025-11-13 12:41:34] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:41:34] UMAP will return its model
-#> ✔ [2025-11-13 12:41:39] Run scop standard workflow done
+#> ℹ [2025-11-19 15:11:08] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 15:11:08] Reorder clusters...
+#> ℹ [2025-11-19 15:11:08] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 15:11:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:11:08] UMAP will return its model
+#> ℹ [2025-11-19 15:11:13] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:11:13] UMAP will return its model
+#> ✔ [2025-11-19 15:11:18] Run scop standard workflow done
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

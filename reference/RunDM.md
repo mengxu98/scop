@@ -117,16 +117,16 @@ RunDM(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:14:13] Start standard scop workflow...
-#> ℹ [2025-11-13 12:14:14] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:14:14] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:14:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:14:17] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:14:17] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:14:17] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:14:17] Finished check
-#> ℹ [2025-11-13 12:14:18] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:14:18] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:44:35] Start standard scop workflow...
+#> ℹ [2025-11-19 14:44:36] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:44:36] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:44:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:44:38] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:44:39] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:44:39] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:44:39] Finished check
+#> ℹ [2025-11-19 14:44:39] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:44:40] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -162,19 +162,19 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:14:19] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:14:19] Reorder clusters...
-#> ℹ [2025-11-13 12:14:19] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:14:19] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:14:19] UMAP will return its model
-#> ℹ [2025-11-13 12:14:24] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:14:24] UMAP will return its model
-#> ✔ [2025-11-13 12:14:29] Run scop standard workflow done
+#> ℹ [2025-11-19 14:44:41] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:44:41] Reorder clusters...
+#> ℹ [2025-11-19 14:44:41] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:44:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:44:41] UMAP will return its model
+#> ℹ [2025-11-19 14:44:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:44:46] UMAP will return its model
+#> ✔ [2025-11-19 14:44:50] Run scop standard workflow done
 pancreas_sub <- RunDM(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> ◌ [2025-11-13 12:14:29] Installing: destiny...
+#> ◌ [2025-11-19 14:44:50] Installing: destiny...
 #>  
 #> → Will install 18 packages.
 #> → All 18 packages (0 B) are cached.
@@ -199,16 +199,33 @@ pancreas_sub <- RunDM(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 18 pkgs are cached
+#> ✔ Got pcaMethods 2.2.0 (source) (1.05 MB)
+#> ✔ Got ggthemes 5.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (453.69 kB)
+#> ✔ Got lmtest 0.9-40 (x86_64-pc-linux-gnu-ubuntu-24.04) (403.49 kB)
+#> ✔ Got ranger 0.17.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (473.78 kB)
+#> ✔ Got ggplot.multistats 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)
 #> ✔ Got destiny 3.24.0 (source) (900.68 kB)
+#> ✔ Got smoother 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)
+#> ✔ Got RcppHNSW 0.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (217.19 kB)
+#> ✔ Got knn.covertree 1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (91.51 kB)
+#> ✔ Got zoo 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got xts 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)
+#> ✔ Got TTR 0.24.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (524.49 kB)
+#> ✔ Got DEoptimR 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)
+#> ✔ Got vcd 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
+#> ✔ Got robustbase 0.99-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.13 MB)
+#> ✔ Got laeken 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)
+#> ✔ Got sp 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.31 MB)
+#> ✔ Got VIM 6.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.77 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make cmake libicu-dev`
 #> Reading package lists...
@@ -219,32 +236,32 @@ pancreas_sub <- RunDM(
 #> make is already the newest version (4.3-4.1build2).
 #> cmake is already the newest version (3.28.3-1build7).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
 #> ℹ Building pcaMethods 2.2.0
-#> ✔ Installed DEoptimR 1.1-4  (113ms)
+#> ✔ Installed DEoptimR 1.1-4  (76ms)
 #> ✔ Installed ggplot.multistats 1.0.1  (116ms)
-#> ✔ Installed ggthemes 5.1.0  (187ms)
-#> ✔ Installed knn.covertree 1.0  (77ms)
-#> ✔ Installed laeken 0.5.3  (77ms)
-#> ✔ Installed lmtest 0.9-40  (74ms)
-#> ✔ Installed ranger 0.17.0  (84ms)
-#> ✔ Installed RcppHNSW 0.6.0  (90ms)
-#> ✔ Installed robustbase 0.99-6  (80ms)
-#> ✔ Installed smoother 1.3  (114ms)
-#> ✔ Installed sp 2.2-0  (120ms)
-#> ✔ Installed TTR 0.24.4  (77ms)
-#> ✔ Installed vcd 1.4-13  (77ms)
-#> ✔ Installed VIM 6.2.6  (87ms)
-#> ✔ Installed xts 0.14.1  (82ms)
-#> ✔ Installed zoo 1.8-14  (53ms)
-#> ✔ Built pcaMethods 2.2.0 (9s)
-#> ✔ Installed pcaMethods 2.2.0  (39ms)
+#> ✔ Installed ggthemes 5.1.0  (157ms)
+#> ✔ Installed knn.covertree 1.0  (85ms)
+#> ✔ Installed laeken 0.5.3  (122ms)
+#> ✔ Installed lmtest 0.9-40  (78ms)
+#> ✔ Installed ranger 0.17.0  (75ms)
+#> ✔ Installed RcppHNSW 0.6.0  (77ms)
+#> ✔ Installed robustbase 0.99-6  (88ms)
+#> ✔ Installed smoother 1.3  (77ms)
+#> ✔ Installed TTR 0.24.4  (1.1s)
+#> ✔ Installed sp 2.2-0  (1.2s)
+#> ✔ Installed vcd 1.4-13  (86ms)
+#> ✔ Installed VIM 6.2.6  (80ms)
+#> ✔ Installed xts 0.14.1  (85ms)
+#> ✔ Installed zoo 1.8-14  (52ms)
+#> ✔ Built pcaMethods 2.2.0 (8.9s)
+#> ✔ Installed pcaMethods 2.2.0  (41ms)
 #> ℹ Building destiny 3.24.0
-#> ✔ Built destiny 3.24.0 (29.1s)
-#> ✔ Installed destiny 3.24.0  (54ms)
-#> ✔ 1 pkg + 103 deps: kept 86, added 18, dld 1 (900.68 kB) [45.1s]
-#> ✔ [2025-11-13 12:15:14] destiny installed successfully
-#> finding knns......done. Time: 15.75s
+#> ✔ Built destiny 3.24.0 (27.6s)
+#> ✔ Installed destiny 3.24.0  (1.1s)
+#> ✔ 1 pkg + 103 deps: kept 86, added 18, dld 18 (22.16 MB) [45.1s]
+#> ✔ [2025-11-19 14:45:35] destiny installed successfully
+#> finding knns......done. Time: 15.51s
 #> Calculating transition probabilities......done. Time: 0.01s
 #> 
 #> 'as(<dsCMatrix>, "dgTMatrix")' is deprecated.

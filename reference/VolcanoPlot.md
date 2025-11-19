@@ -181,16 +181,16 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:43:57] Start standard scop workflow...
-#> ℹ [2025-11-13 12:43:58] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:43:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:43:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:44:00] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:44:00] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:44:00] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:44:01] Finished check
-#> ℹ [2025-11-13 12:44:01] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:44:01] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 15:13:39] Start standard scop workflow...
+#> ℹ [2025-11-19 15:13:40] Checking a list of <Seurat> object...
+#> ! [2025-11-19 15:13:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 15:13:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:13:42] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 15:13:42] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 15:13:42] Number of available HVF: 2000
+#> ℹ [2025-11-19 15:13:43] Finished check
+#> ℹ [2025-11-19 15:13:43] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 15:13:43] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -226,29 +226,28 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:44:02] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:44:02] Reorder clusters...
-#> ℹ [2025-11-13 12:44:02] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:44:02] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:44:02] UMAP will return its model
-#> ℹ [2025-11-13 12:44:07] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:44:07] UMAP will return its model
-#> ✔ [2025-11-13 12:44:12] Run scop standard workflow done
+#> ℹ [2025-11-19 15:13:44] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 15:13:44] Reorder clusters...
+#> ℹ [2025-11-19 15:13:44] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 15:13:44] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:13:44] UMAP will return its model
+#> ℹ [2025-11-19 15:13:49] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 15:13:49] UMAP will return its model
+#> ✔ [2025-11-19 15:13:54] Run scop standard workflow done
 pancreas_sub <- RunDEtest(
  pancreas_sub,
  group_by = "CellType"
 )
-#> ✔ [2025-11-13 12:44:12] immunogenomics/presto installed successfully
-#> ℹ [2025-11-13 12:44:12] Data type is log-normalized
-#> ℹ [2025-11-13 12:44:12] Start differential expression test
-#> ℹ [2025-11-13 12:44:12] Find all markers(wilcox) among 5 groups...
-#> ℹ [2025-11-13 12:44:12] Using 1 core
-#> ⠙ [2025-11-13 12:44:12] Running [1/5] ETA:  1s
-#> ⠹ [2025-11-13 12:44:12] Running [4/5] ETA:  0s
-#> ✔ [2025-11-13 12:44:12] Completed 5 tasks in 737ms
+#> ✔ [2025-11-19 15:13:54] immunogenomics/presto installed successfully
+#> ℹ [2025-11-19 15:13:54] Data type is log-normalized
+#> ℹ [2025-11-19 15:13:54] Start differential expression test
+#> ℹ [2025-11-19 15:13:54] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2025-11-19 15:13:54] Using 1 core
+#> ⠙ [2025-11-19 15:13:54] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-11-19 15:13:54] Completed 5 tasks in 726ms
 #> 
-#> ℹ [2025-11-13 12:44:12] Building results
-#> ✔ [2025-11-13 12:44:13] Differential expression test completed
+#> ℹ [2025-11-19 15:13:54] Building results
+#> ✔ [2025-11-19 15:13:55] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",

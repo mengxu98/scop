@@ -111,16 +111,16 @@ RunPCAMap(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2025-11-13 12:29:16] Start standard scop workflow...
-#> ℹ [2025-11-13 12:29:16] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:29:16] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:29:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:19] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:19] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:29:19] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:29:20] Finished check
-#> ℹ [2025-11-13 12:29:20] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:29:20] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:59:18] Start standard scop workflow...
+#> ℹ [2025-11-19 14:59:19] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:59:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:59:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:21] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:22] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:59:22] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:59:22] Finished check
+#> ℹ [2025-11-19 14:59:23] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:59:23] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  CHGA, PCSK1N, G6PC2, PCSK1, IAPP, ARFGEF3, CRYBA2, PRUNE2, CDKN1C, SORL1 
 #>     EDN3, CADM1, FXYD2, ELMO1, HADH, PAPPA2, GRIA3, RBP4, DLK1, ANXA6 
@@ -156,14 +156,14 @@ panc8_sub <- standard_scop(panc8_sub)
 #> Negative:  CD93, PLVAP, PODXL, ACVRL1, ESAM, S1PR1, CXCR4, ECSCR, DYSF, CALCRL 
 #>     ADGRF5, STC1, CD34, AFAP1L1, IFI27, SH3BP5, ACKR3, ANGPT2, DLL4, MMRN2 
 #>     MCAM, PNP, IL3RA, SPARCL1, TCF4, FAM198B, RAPGEF5, ARHGAP31, P2RY6, F2RL3 
-#> ℹ [2025-11-13 12:29:22] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:29:22] Reorder clusters...
-#> ℹ [2025-11-13 12:29:22] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:29:22] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:29:22] UMAP will return its model
-#> ℹ [2025-11-13 12:29:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:29:27] UMAP will return its model
-#> ✔ [2025-11-13 12:29:32] Run scop standard workflow done
+#> ℹ [2025-11-19 14:59:24] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:59:24] Reorder clusters...
+#> ℹ [2025-11-19 14:59:25] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:59:25] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:59:25] UMAP will return its model
+#> ℹ [2025-11-19 14:59:30] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:59:30] UMAP will return its model
+#> ✔ [2025-11-19 14:59:35] Run scop standard workflow done
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(
@@ -171,29 +171,29 @@ srt_ref <- integration_scop(
   batch = "tech",
   integration_method = "Uncorrected"
 )
-#> ◌ [2025-11-13 12:29:33] Run Uncorrected integration...
-#> ℹ [2025-11-13 12:29:33] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2025-11-13 12:29:34] Checking a list of <Seurat> object...
-#> ℹ [2025-11-13 12:29:34] Data 1/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:29:34] Perform `Seurat::FindVariableFeatures()` on the data 1/4 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:34] Data 2/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:29:34] Perform `Seurat::FindVariableFeatures()` on the data 2/4 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:35] Data 3/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:29:35] Perform `Seurat::FindVariableFeatures()` on the data 3/4 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:35] Data 4/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-13 12:29:35] Perform `Seurat::FindVariableFeatures()` on the data 4/4 of the `srt_list`...
-#> ℹ [2025-11-13 12:29:36] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:29:36] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:29:37] Finished check
-#> ℹ [2025-11-13 12:29:38] Perform Uncorrected integration
-#> ℹ [2025-11-13 12:29:39] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:29:39] Perform linear dimension reduction("pca")
-#> ℹ [2025-11-13 12:29:41] Perform FindClusters ("louvain")
-#> ℹ [2025-11-13 12:29:41] Reorder clusters...
-#> ℹ [2025-11-13 12:29:41] Perform nonlinear dimension reduction ("umap")
-#> ℹ [2025-11-13 12:29:41] Non-linear dimensionality reduction (umap) using (Uncorrectedpca) dims (1-10) as input
-#> ℹ [2025-11-13 12:29:46] Non-linear dimensionality reduction (umap) using (Uncorrectedpca) dims (1-10) as input
-#> ✔ [2025-11-13 12:29:53] Run Uncorrected integration done
+#> ◌ [2025-11-19 14:59:35] Run Uncorrected integration...
+#> ℹ [2025-11-19 14:59:35] Spliting `srt_merge` into `srt_list` by column "tech"...
+#> ℹ [2025-11-19 14:59:36] Checking a list of <Seurat> object...
+#> ℹ [2025-11-19 14:59:36] Data 1/4 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 14:59:36] Perform `Seurat::FindVariableFeatures()` on the data 1/4 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:37] Data 2/4 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 14:59:37] Perform `Seurat::FindVariableFeatures()` on the data 2/4 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:37] Data 3/4 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 14:59:37] Perform `Seurat::FindVariableFeatures()` on the data 3/4 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:38] Data 4/4 of the `srt_list` has been log-normalized
+#> ℹ [2025-11-19 14:59:38] Perform `Seurat::FindVariableFeatures()` on the data 4/4 of the `srt_list`...
+#> ℹ [2025-11-19 14:59:38] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:59:39] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:59:39] Finished check
+#> ℹ [2025-11-19 14:59:41] Perform Uncorrected integration
+#> ℹ [2025-11-19 14:59:41] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:59:42] Perform linear dimension reduction("pca")
+#> ℹ [2025-11-19 14:59:43] Perform Seurat::FindClusters ("louvain")
+#> ℹ [2025-11-19 14:59:43] Reorder clusters...
+#> ℹ [2025-11-19 14:59:43] Perform nonlinear dimension reduction ("umap")
+#> ℹ [2025-11-19 14:59:43] Non-linear dimensionality reduction (umap) using (Uncorrectedpca) dims (1-10) as input
+#> ℹ [2025-11-19 14:59:48] Non-linear dimensionality reduction (umap) using (Uncorrectedpca) dims (1-10) as input
+#> ✔ [2025-11-19 14:59:55] Run Uncorrected integration done
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 
@@ -204,16 +204,16 @@ srt_query <- RunPCAMap(
   ref_pca = "Uncorrectedpca",
   ref_umap = "UncorrectedUMAP2D"
 )
-#> ℹ [2025-11-13 12:29:53] Data type is log-normalized
-#> ℹ [2025-11-13 12:29:53] Detected srt_query data type: log_normalized_counts
-#> ℹ [2025-11-13 12:29:54] Data type is log-normalized
-#> ℹ [2025-11-13 12:29:54] Detected srt_ref data type: log_normalized_counts
-#> ℹ [2025-11-13 12:29:54] Run PCA projection
-#> ℹ [2025-11-13 12:29:54] Use 2000 features to calculate PC.
-#> ℹ [2025-11-13 12:29:55] Run UMAP projection
-#> ℹ [2025-11-13 12:29:55] Use the reduction to calculate distance metric
-#> ℹ [2025-11-13 12:29:55] Use raw method to find neighbors
-#> ℹ [2025-11-13 12:29:55] Running UMAP projection
+#> ℹ [2025-11-19 14:59:55] Data type is log-normalized
+#> ℹ [2025-11-19 14:59:55] Detected srt_query data type: log_normalized_counts
+#> ℹ [2025-11-19 14:59:56] Data type is log-normalized
+#> ℹ [2025-11-19 14:59:56] Detected srt_ref data type: log_normalized_counts
+#> ℹ [2025-11-19 14:59:56] Run PCA projection
+#> ℹ [2025-11-19 14:59:57] Use [1] 2000 features to calculate PC.
+#> ℹ [2025-11-19 14:59:57] Run UMAP projection
+#> ℹ [2025-11-19 14:59:57] Use the reduction to calculate distance metric
+#> ℹ [2025-11-19 14:59:57] Use raw method to find neighbors
+#> ℹ [2025-11-19 14:59:57] Running UMAP projection
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

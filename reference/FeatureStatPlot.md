@@ -460,16 +460,16 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 11:58:56] Start standard scop workflow...
-#> ℹ [2025-11-13 11:58:56] Checking a list of <Seurat> object...
-#> ! [2025-11-13 11:58:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 11:58:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:58:58] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 11:58:59] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 11:58:59] Number of available HVF: 2000
-#> ℹ [2025-11-13 11:58:59] Finished check
-#> ℹ [2025-11-13 11:58:59] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 11:59:00] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:29:01] Start standard scop workflow...
+#> ℹ [2025-11-19 14:29:01] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:29:01] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:29:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:29:03] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:29:04] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:29:04] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:29:04] Finished check
+#> ℹ [2025-11-19 14:29:04] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:29:05] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -505,14 +505,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 11:59:01] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 11:59:01] Reorder clusters...
-#> ℹ [2025-11-13 11:59:01] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 11:59:01] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:59:01] UMAP will return its model
-#> ℹ [2025-11-13 11:59:05] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 11:59:05] UMAP will return its model
-#> ✔ [2025-11-13 11:59:08] Run scop standard workflow done
+#> ℹ [2025-11-19 14:29:06] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:29:06] Reorder clusters...
+#> ℹ [2025-11-19 14:29:06] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:29:06] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:29:06] UMAP will return its model
+#> ℹ [2025-11-19 14:29:10] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:29:10] UMAP will return its model
+#> ✔ [2025-11-19 14:29:13] Run scop standard workflow done
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
@@ -623,9 +623,9 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ✔ [2025-11-13 11:59:21] ggpubr installed successfully
-#> ℹ [2025-11-13 11:59:21] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ℹ [2025-11-13 11:59:21] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ✔ [2025-11-19 14:29:26] ggpubr installed successfully
+#> ℹ [2025-11-19 14:29:26] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ℹ [2025-11-19 14:29:26] Detected more than 2 groups. Use "kruskal.test" for comparison
 
 
 FeatureStatPlot(
@@ -644,7 +644,7 @@ FeatureStatPlot(
   group.by = "SubCellType",
   multiplegroup_comparisons = TRUE
 )
-#> ✔ [2025-11-13 11:59:23] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:28] ggpubr installed successfully
 
 
 FeatureStatPlot(
@@ -653,7 +653,7 @@ FeatureStatPlot(
   group.by = "SubCellType",
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta"))
 )
-#> ✔ [2025-11-13 11:59:25] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:30] ggpubr installed successfully
 
 
 FeatureStatPlot(
@@ -663,7 +663,7 @@ FeatureStatPlot(
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta")),
   sig_label = "p.format"
 )
-#> ✔ [2025-11-13 11:59:26] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:31] ggpubr installed successfully
 
 
 FeatureStatPlot(
@@ -726,7 +726,7 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2025-11-13 11:59:39] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2025-11-19 14:29:43] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(
@@ -738,12 +738,12 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2025-11-13 11:59:40] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-#> ✔ [2025-11-13 11:59:40] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:40] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:41] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:41] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:41] ggpubr installed successfully
+#> ℹ [2025-11-19 14:29:45] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ✔ [2025-11-19 14:29:45] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:45] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:45] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:46] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:46] ggpubr installed successfully
 
 
 FeatureStatPlot(
@@ -754,12 +754,12 @@ FeatureStatPlot(
   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
   stack = TRUE
 )
-#> ℹ [2025-11-13 11:59:43] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-#> ✔ [2025-11-13 11:59:43] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:43] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:44] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:44] ggpubr installed successfully
-#> ✔ [2025-11-13 11:59:44] ggpubr installed successfully
+#> ℹ [2025-11-19 14:29:48] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ✔ [2025-11-19 14:29:48] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:48] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:48] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:49] ggpubr installed successfully
+#> ✔ [2025-11-19 14:29:49] ggpubr installed successfully
 
 
 FeatureStatPlot(pancreas_sub,
@@ -773,7 +773,7 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2025-11-13 11:59:46] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2025-11-19 14:29:51] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 data <- GetAssayData5(

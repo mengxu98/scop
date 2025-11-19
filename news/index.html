@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,32 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.1" id="scop-061">scop 0.6.1<a class="anchor" aria-label="anchor" href="#scop-061"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Improved message formatting and simplified log output for better user experience.</li>
+<li>Added <code>get_conda_envs_dir()</code> helper function to centralize conda environment directory retrieval.</li>
+<li>
+<code><a href="../reference/integration_scop.html">integration_scop()</a></code>: Enhanced <code>integration_method</code> parameter definition with explicit method list for better code clarity.</li>
+</ul></li>
+<li>
+<strong>refactor</strong>:
+<ul><li>Moved <code><a href="../reference/exist_python_pkgs.html">exist_python_pkgs()</a></code> function to <code>check_package.R</code> for better code organization.</li>
+<li>Replaced direct <code>conda_info()$envs_dirs[1]</code> calls with <code>get_conda_envs_dir()</code> helper function for consistency.</li>
+<li>
+<code><a href="../reference/RunSCExplorer.html">RunSCExplorer()</a></code>: Updated to use <code><a href="https://mengxu98.github.io/thisplot/reference/palette_list.html" class="external-link">thisplot::palette_list</a></code> and <code><a href="https://mengxu98.github.io/thisplot/reference/slim_data.html" class="external-link">thisplot::slim_data()</a></code> instead of <code>scop::palette_list</code> and <code>scop::slim_data()</code>.</li>
+<li>Added <code>thisplot</code> to dependency checks in <code><a href="../reference/RunSCExplorer.html">RunSCExplorer()</a></code>.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated documentation across multiple functions.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="scop-060">scop 0.6.0<a class="anchor" aria-label="anchor" href="#scop-060"></a></h2>
 <ul><li>

@@ -169,16 +169,16 @@ RunDynamicEnrichment(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:16:02] Start standard scop workflow...
-#> ℹ [2025-11-13 12:16:03] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:16:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:16:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:16:05] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:16:06] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:16:06] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:16:06] Finished check
-#> ℹ [2025-11-13 12:16:06] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:16:07] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:46:22] Start standard scop workflow...
+#> ℹ [2025-11-19 14:46:22] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:46:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:46:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:46:24] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:46:25] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:46:25] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:46:25] Finished check
+#> ℹ [2025-11-19 14:46:26] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:46:26] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -214,14 +214,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:16:08] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:16:08] Reorder clusters...
-#> ℹ [2025-11-13 12:16:08] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:16:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:16:08] UMAP will return its model
-#> ℹ [2025-11-13 12:16:13] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:16:13] UMAP will return its model
-#> ✔ [2025-11-13 12:16:18] Run scop standard workflow done
+#> ℹ [2025-11-19 14:46:27] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:46:27] Reorder clusters...
+#> ℹ [2025-11-19 14:46:27] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:46:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:46:27] UMAP will return its model
+#> ℹ [2025-11-19 14:46:32] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:46:32] UMAP will return its model
+#> ✔ [2025-11-19 14:46:36] Run scop standard workflow done
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -233,33 +233,33 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = "Lineage1",
   n_candidates = 200
 )
-#> ℹ [2025-11-13 12:16:20] Start find dynamic features
-#> ✔ [2025-11-13 12:16:20] mgcv installed successfully
-#> ℹ [2025-11-13 12:16:21] Data type is raw counts
-#> ℹ [2025-11-13 12:16:22] Number of candidate features (union): 200
-#> ℹ [2025-11-13 12:16:22] Data type is raw counts
-#> ℹ [2025-11-13 12:16:22] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 12:16:22] Using 1 core
-#> ⠙ [2025-11-13 12:16:22] Running [1/200] ETA:  8s
-#> ⠹ [2025-11-13 12:16:22] Running [59/200] ETA:  5s
-#> ⠸ [2025-11-13 12:16:22] Running [147/200] ETA:  2s
-#> ✔ [2025-11-13 12:16:22] Completed 200 tasks in 7.1s
+#> ℹ [2025-11-19 14:46:38] Start find dynamic features
+#> ✔ [2025-11-19 14:46:38] mgcv installed successfully
+#> ℹ [2025-11-19 14:46:39] Data type is raw counts
+#> ℹ [2025-11-19 14:46:40] Number of candidate features (union): 200
+#> ℹ [2025-11-19 14:46:40] Data type is raw counts
+#> ℹ [2025-11-19 14:46:40] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:46:41] Using 1 core
+#> ⠙ [2025-11-19 14:46:41] Running [1/200] Processing: 1  ETA:  8s
+#> ⠹ [2025-11-19 14:46:41] Running [70/200] Processing: 70  ETA:  5s
+#> ⠸ [2025-11-19 14:46:41] Running [158/200] Processing: 158  ETA:  1s
+#> ✔ [2025-11-19 14:46:41] Completed 200 tasks in 6.8s
 #> 
-#> ℹ [2025-11-13 12:16:22] Building results
-#> ✔ [2025-11-13 12:16:29] Find dynamic features done
+#> ℹ [2025-11-19 14:46:41] Building results
+#> ✔ [2025-11-19 14:46:47] Find dynamic features done
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 4
 )
-#> ℹ [2025-11-13 12:16:30] 148 features from Lineage1 passed the threshold (exp_ncells>20 & r.sq>0.2 & dev.expl>0.2 & padjust<0.05): 
+#> ℹ [2025-11-19 14:46:47] [1] 148 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Iapp,Pyy,Rbp4,Chgb,Slc38a5,Lrpprc,Cck,Chga,2810417H13Rik,Cdc20...
-#> ✔ [2025-11-13 12:16:30] e1071 installed successfully
+#> ✔ [2025-11-19 14:46:48] e1071 installed successfully
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 12:16:31] 
+#> ℹ [2025-11-19 14:46:48] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -274,46 +274,48 @@ pancreas_sub <- RunDynamicEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2025-11-13 12:16:32] Species: "Mus_musculus"
-#> ℹ [2025-11-13 12:16:32] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2025-11-13 11:51:23
-#> ℹ [2025-11-13 12:16:35] Start cell scoring
-#> ℹ [2025-11-13 12:16:35] Data type is log-normalized
-#> ℹ [2025-11-13 12:16:36] Number of feature lists to be scored: 2794
-#> ◌ [2025-11-13 12:16:36] Installing: UCell...
+#> ℹ [2025-11-19 14:46:50] Species: "Mus_musculus"
+#> ℹ [2025-11-19 14:46:50] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2025-11-19 14:21:38
+#> ℹ [2025-11-19 14:46:52] Start cell scoring
+#> ℹ [2025-11-19 14:46:53] Data type is log-normalized
+#> ℹ [2025-11-19 14:46:54] Number of feature lists to be scored: 2794
+#> ◌ [2025-11-19 14:46:54] Installing: UCell...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
 #> + UCell   2.14.0 [bld]
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
+#> ✔ Got UCell 2.14.0 (source) (2.41 MB)
 #> ℹ Building UCell 2.14.0
-#> ✔ Built UCell 2.14.0 (11.6s)
-#> ✔ Installed UCell 2.14.0  (53ms)
-#> ✔ 1 pkg + 28 deps: kept 28, added 1 [12.7s]
-#> ✔ [2025-11-13 12:16:49] UCell installed successfully
-#> ✔ [2025-11-13 12:19:31] Cell scoring completed
-#> ℹ [2025-11-13 12:19:31] Start find dynamic features
-#> ✔ [2025-11-13 12:19:31] mgcv installed successfully
-#> ℹ [2025-11-13 12:19:32] Data type is log-normalized
-#> ℹ [2025-11-13 12:19:32] Number of candidate features (union): 2794
-#> ℹ [2025-11-13 12:19:32] Data type is log-normalized
-#> ℹ [2025-11-13 12:19:32] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 12:19:32] Using 1 core
-#> ⠙ [2025-11-13 12:19:32] Running [1/2794] ETA:  1m
-#> ⠹ [2025-11-13 12:19:32] Running [129/2794] ETA: 27s
-#> ⠸ [2025-11-13 12:19:32] Running [439/2794] ETA: 23s
-#> ⠼ [2025-11-13 12:19:32] Running [746/2794] ETA: 20s
-#> ⠴ [2025-11-13 12:19:32] Running [1057/2794] ETA: 17s
-#> ⠦ [2025-11-13 12:19:32] Running [1367/2794] ETA: 14s
-#> ⠧ [2025-11-13 12:19:32] Running [1666/2794] ETA: 11s
-#> ⠇ [2025-11-13 12:19:32] Running [1969/2794] ETA:  8s
-#> ⠏ [2025-11-13 12:19:32] Running [2276/2794] ETA:  5s
-#> ⠋ [2025-11-13 12:19:32] Running [2584/2794] ETA:  2s
-#> ✔ [2025-11-13 12:19:32] Completed 2794 tasks in 27.4s
+#> ✔ Built UCell 2.14.0 (11.1s)
+#> ✔ Installed UCell 2.14.0  (1.1s)
+#> ✔ 1 pkg + 28 deps: kept 28, added 1, dld 1 (2.41 MB) [14.1s]
+#> ✔ [2025-11-19 14:47:08] UCell installed successfully
+#> ✔ [2025-11-19 14:49:44] Cell scoring completed
+#> ℹ [2025-11-19 14:49:44] Start find dynamic features
+#> ✔ [2025-11-19 14:49:44] mgcv installed successfully
+#> ℹ [2025-11-19 14:49:45] Data type is log-normalized
+#> ℹ [2025-11-19 14:49:45] Number of candidate features (union): 2794
+#> ℹ [2025-11-19 14:49:45] Data type is log-normalized
+#> ℹ [2025-11-19 14:49:45] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:49:45] Using 1 core
+#> ⠙ [2025-11-19 14:49:45] Running [1/2794] Processing: 1  ETA:  1m
+#> ⠹ [2025-11-19 14:49:45] Running [66/2794] Processing: 66  ETA: 26s
+#> ⠸ [2025-11-19 14:49:45] Running [349/2794] Processing: 349  ETA: 34s
+#> ⠼ [2025-11-19 14:49:45] Running [537/2794] Processing: 537  ETA: 28s
+#> ⠴ [2025-11-19 14:49:45] Running [850/2794] Processing: 850  ETA: 22s
+#> ⠦ [2025-11-19 14:49:45] Running [1158/2794] Processing: 1158  ETA: 18s
+#> ⠧ [2025-11-19 14:49:45] Running [1470/2794] Processing: 1470  ETA: 14s
+#> ⠇ [2025-11-19 14:49:45] Running [1781/2794] Processing: 1781  ETA: 11s
+#> ⠏ [2025-11-19 14:49:45] Running [2104/2794] Processing: 2104  ETA:  7s
+#> ⠋ [2025-11-19 14:49:45] Running [2414/2794] Processing: 2414  ETA:  4s
+#> ⠙ [2025-11-19 14:49:45] Running [2726/2794] Processing: 2726  ETA:  1s
+#> ✔ [2025-11-19 14:49:45] Completed 2794 tasks in 28.3s
 #> 
-#> ℹ [2025-11-13 12:19:32] Building results
-#> ✔ [2025-11-13 12:20:00] Find dynamic features done
-#> ✔ [2025-11-13 12:20:00] Dynamic enrichment analysis completed
+#> ℹ [2025-11-19 14:49:45] Building results
+#> ✔ [2025-11-19 14:50:14] Find dynamic features done
+#> ✔ [2025-11-19 14:50:14] Dynamic enrichment analysis completed
 ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",
@@ -322,13 +324,13 @@ ht2 <- DynamicHeatmap(
   n_split = 4,
   split_method = "kmeans-peaktime"
 )
-#> ℹ [2025-11-13 12:20:00] 1825 features from Lineage1_GO_BP passed the threshold (exp_ncells>20 & r.sq>0.2 & dev.expl>0.2 & padjust<0.05): 
+#> ℹ [2025-11-19 14:50:14] [1] 1825 features from Lineage1_GO_BP passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       GO-BP-2..deoxyribonucleotide.biosynthetic.process,GO-BP-2..deoxyribonucleotide.metabolic.process,GO-BP-ATP.biosynthetic.process,GO-BP-ATP.metabolic.process,GO-BP-ATP.synthesis.coupled.electron.transport,GO-BP-B.cell.activation,GO-BP-B.cell.apoptotic.process,GO-BP-B.cell.differentiation,GO-BP-B.cell.proliferation,GO-BP-BMP.signaling.pathway...
-#> ! [2025-11-13 12:20:00] The values in the 'counts' layer are non-integer. Set the library size to 1.
+#> ! [2025-11-19 14:50:14] The values in the 'counts' layer are non-integer. Set the library size to 1.
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 12:20:01] 
+#> ℹ [2025-11-19 14:50:15] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.

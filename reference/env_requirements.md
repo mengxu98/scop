@@ -13,8 +13,7 @@ env_requirements(version = "3.10-1")
 
 - version:
 
-  A character vector specifying the version of the environment. Default
-  is "3.10-1".
+  The Python version of the environment. Default is \`"3.10-1"\`.
 
 ## Value
 
@@ -44,13 +43,13 @@ env_requirements("3.10-1")
 #>      "scanorama==1.7.4"     "scvi-tools==1.2.1"       "cellrank==2.0.7" 
 #> 
 #> $install_methods
-#>     leidenalg           tbb python-igraph    matplotlib         numba 
-#>       "conda"       "conda"       "conda"         "pip"         "pip" 
-#>      llvmlite         numpy      palantir        pandas        scanpy 
+#>     leidenalg           tbb python-igraph    scvi-tools    matplotlib 
+#>       "conda"       "conda"       "conda"       "conda"         "pip" 
+#>         numba      llvmlite         numpy      palantir        pandas 
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
-#>  scikit-learn         scipy        scvelo           wot        trimap 
+#>        scanpy  scikit-learn         scipy        scvelo           wot 
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
-#>        pacmap         phate         bbknn     scanorama    scvi-tools 
+#>        trimap        pacmap         phate         bbknn     scanorama 
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
 #>      cellrank 
 #>         "pip" 

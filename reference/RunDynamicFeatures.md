@@ -114,16 +114,16 @@ stored in the tools slot.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-13 12:20:12] Start standard scop workflow...
-#> ℹ [2025-11-13 12:20:13] Checking a list of <Seurat> object...
-#> ! [2025-11-13 12:20:13] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-13 12:20:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:20:15] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-13 12:20:16] Use the separate HVF from srt_list
-#> ℹ [2025-11-13 12:20:16] Number of available HVF: 2000
-#> ℹ [2025-11-13 12:20:16] Finished check
-#> ℹ [2025-11-13 12:20:16] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-13 12:20:17] Perform pca linear dimension reduction
+#> ℹ [2025-11-19 14:50:26] Start standard scop workflow...
+#> ℹ [2025-11-19 14:50:27] Checking a list of <Seurat> object...
+#> ! [2025-11-19 14:50:27] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2025-11-19 14:50:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:50:29] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2025-11-19 14:50:30] Use the separate HVF from srt_list
+#> ℹ [2025-11-19 14:50:30] Number of available HVF: 2000
+#> ℹ [2025-11-19 14:50:30] Finished check
+#> ℹ [2025-11-19 14:50:30] Perform `Seurat::ScaleData()`
+#> ℹ [2025-11-19 14:50:31] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -159,14 +159,14 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-13 12:20:18] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-13 12:20:18] Reorder clusters...
-#> ℹ [2025-11-13 12:20:18] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-13 12:20:18] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:20:18] UMAP will return its model
-#> ℹ [2025-11-13 12:20:23] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-13 12:20:23] UMAP will return its model
-#> ✔ [2025-11-13 12:20:28] Run scop standard workflow done
+#> ℹ [2025-11-19 14:50:32] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
+#> ℹ [2025-11-19 14:50:32] Reorder clusters...
+#> ℹ [2025-11-19 14:50:32] Perform umap nonlinear dimension reduction
+#> ℹ [2025-11-19 14:50:32] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:50:32] UMAP will return its model
+#> ℹ [2025-11-19 14:50:37] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2025-11-19 14:50:37] UMAP will return its model
+#> ✔ [2025-11-19 14:50:41] Run scop standard workflow done
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -179,28 +179,28 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ℹ [2025-11-13 12:20:30] Start find dynamic features
-#> ✔ [2025-11-13 12:20:30] mgcv installed successfully
-#> ℹ [2025-11-13 12:20:30] Data type is raw counts
-#> ℹ [2025-11-13 12:20:32] Number of candidate features (union): 225
-#> ℹ [2025-11-13 12:20:33] Data type is raw counts
-#> ℹ [2025-11-13 12:20:33] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 12:20:33] Using 1 core
-#> ⠙ [2025-11-13 12:20:33] Running [1/225] ETA:  9s
-#> ⠹ [2025-11-13 12:20:33] Running [27/225] ETA:  7s
-#> ⠸ [2025-11-13 12:20:33] Running [110/225] ETA:  4s
-#> ⠼ [2025-11-13 12:20:33] Running [198/225] ETA:  1s
-#> ✔ [2025-11-13 12:20:33] Completed 225 tasks in 8.1s
+#> ℹ [2025-11-19 14:50:43] Start find dynamic features
+#> ✔ [2025-11-19 14:50:43] mgcv installed successfully
+#> ℹ [2025-11-19 14:50:44] Data type is raw counts
+#> ℹ [2025-11-19 14:50:46] Number of candidate features (union): 225
+#> ℹ [2025-11-19 14:50:46] Data type is raw counts
+#> ℹ [2025-11-19 14:50:46] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:50:46] Using 1 core
+#> ⠙ [2025-11-19 14:50:46] Running [1/225] Processing: 1  ETA:  9s
+#> ⠹ [2025-11-19 14:50:46] Running [85/225] Processing: 85  ETA:  5s
+#> ⠸ [2025-11-19 14:50:46] Running [172/225] Processing: 172  ETA:  2s
+#> ✔ [2025-11-19 14:50:46] Completed 225 tasks in 7.8s
 #> 
-#> ℹ [2025-11-13 12:20:33] Building results
-#> ℹ [2025-11-13 12:20:41] Calculating dynamic features for "Lineage2"...
-#> ℹ [2025-11-13 12:20:41] Using 1 core
-#> ⠙ [2025-11-13 12:20:41] Running [55/225] ETA:  6s
-#> ⠹ [2025-11-13 12:20:41] Running [147/225] ETA:  3s
-#> ✔ [2025-11-13 12:20:41] Completed 225 tasks in 7.6s
+#> ℹ [2025-11-19 14:50:46] Building results
+#> ℹ [2025-11-19 14:50:54] Calculating dynamic features for "Lineage2"...
+#> ℹ [2025-11-19 14:50:54] Using 1 core
+#> ⠙ [2025-11-19 14:50:54] Running [37/225] Processing: 37  ETA:  5s
+#> ⠹ [2025-11-19 14:50:54] Running [122/225] Processing: 122  ETA:  3s
+#> ⠸ [2025-11-19 14:50:54] Running [210/225] Processing: 210  ETA:  1s
+#> ✔ [2025-11-19 14:50:54] Completed 225 tasks in 7.6s
 #> 
-#> ℹ [2025-11-13 12:20:41] Building results
-#> ✔ [2025-11-13 12:20:48] Find dynamic features done
+#> ℹ [2025-11-19 14:50:54] Building results
+#> ✔ [2025-11-19 14:51:02] Find dynamic features done
 
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
@@ -231,13 +231,13 @@ ht <- DynamicHeatmap(
   n_split = 6,
   reverse_ht = "Lineage1"
 )
-#> ℹ [2025-11-13 12:20:49] 175 features from Lineage1,Lineage2 passed the threshold (exp_ncells>20 & r.sq>0.2 & dev.expl>0.2 & padjust<0.05): 
+#> ℹ [2025-11-19 14:51:02] [1] 175 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Iapp,Pyy,Rbp4,Chgb,Slc38a5,Lrpprc,Cck,Chga,2810417H13Rik,Cdc20...
-#> ✔ [2025-11-13 12:20:49] e1071 installed successfully
+#> ✔ [2025-11-19 14:51:03] e1071 installed successfully
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-13 12:20:50] 
+#> ℹ [2025-11-19 14:51:03] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -253,26 +253,26 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ✔ [2025-11-13 12:20:53] MatrixGenerics installed successfully
-#> ℹ [2025-11-13 12:20:53] Start find dynamic features
-#> ✔ [2025-11-13 12:20:53] mgcv installed successfully
-#> ℹ [2025-11-13 12:20:54] Data type is raw counts
-#> ℹ [2025-11-13 12:20:54] Number of candidate features (union): 2
-#> ℹ [2025-11-13 12:20:55] Data type is raw counts
-#> ℹ [2025-11-13 12:20:55] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-13 12:20:55] Using 1 core
-#> ⠙ [2025-11-13 12:20:55] Running [1/2] ETA:  0s
-#> ✔ [2025-11-13 12:20:55] Completed 2 tasks in 144ms
+#> ✔ [2025-11-19 14:51:06] MatrixGenerics installed successfully
+#> ℹ [2025-11-19 14:51:06] Start find dynamic features
+#> ✔ [2025-11-19 14:51:06] mgcv installed successfully
+#> ℹ [2025-11-19 14:51:07] Data type is raw counts
+#> ℹ [2025-11-19 14:51:07] Number of candidate features (union): 2
+#> ℹ [2025-11-19 14:51:08] Data type is raw counts
+#> ℹ [2025-11-19 14:51:08] Calculating dynamic features for "Lineage1"...
+#> ℹ [2025-11-19 14:51:08] Using 1 core
+#> ⠙ [2025-11-19 14:51:08] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-11-19 14:51:08] Completed 2 tasks in 144ms
 #> 
-#> ℹ [2025-11-13 12:20:55] Building results
-#> ✔ [2025-11-13 12:20:55] Find dynamic features done
-#> ℹ [2025-11-13 12:20:55] Start find dynamic features
-#> ✔ [2025-11-13 12:20:55] mgcv installed successfully
-#> ℹ [2025-11-13 12:20:56] Data type is raw counts
-#> ℹ [2025-11-13 12:20:56] Number of candidate features (union): 2
-#> ℹ [2025-11-13 12:20:57] Data type is raw counts
-#> ℹ [2025-11-13 12:20:57] Calculating dynamic features for "Lineage2"...
-#> ℹ [2025-11-13 12:20:57] Using 1 core
-#> ℹ [2025-11-13 12:20:57] Building results
-#> ✔ [2025-11-13 12:20:57] Find dynamic features done
+#> ℹ [2025-11-19 14:51:08] Building results
+#> ✔ [2025-11-19 14:51:08] Find dynamic features done
+#> ℹ [2025-11-19 14:51:08] Start find dynamic features
+#> ✔ [2025-11-19 14:51:08] mgcv installed successfully
+#> ℹ [2025-11-19 14:51:09] Data type is raw counts
+#> ℹ [2025-11-19 14:51:09] Number of candidate features (union): 2
+#> ℹ [2025-11-19 14:51:10] Data type is raw counts
+#> ℹ [2025-11-19 14:51:10] Calculating dynamic features for "Lineage2"...
+#> ℹ [2025-11-19 14:51:10] Using 1 core
+#> ℹ [2025-11-19 14:51:10] Building results
+#> ✔ [2025-11-19 14:51:10] Find dynamic features done
 ```
