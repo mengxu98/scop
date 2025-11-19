@@ -10,8 +10,9 @@ RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
 \item{envname}{The name of the conda environment to remove.
 If \code{NULL}, uses the default scop environment name.}
 
-\item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow reticulate to automatically find an appropriate conda binary.}
+\item{conda}{The path to a \code{conda} executable. Use \code{"auto"} to allow
+\code{reticulate} to automatically find an appropriate \code{conda} binary.
+See \strong{Finding Conda} and \code{\link[reticulate:conda_binary]{conda_binary()}} for more details.}
 
 \item{force}{Whether to force removal without confirmation.
 Default is \code{FALSE}.}
