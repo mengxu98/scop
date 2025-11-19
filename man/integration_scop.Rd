@@ -10,7 +10,8 @@ integration_scop(
   append = TRUE,
   srt_list = NULL,
   assay = NULL,
-  integration_method = "Uncorrected",
+  integration_method = c("Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
+    "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"),
   do_normalization = NULL,
   normalization_method = "LogNormalize",
   do_HVF_finding = TRUE,
@@ -147,7 +148,7 @@ Default is \code{11}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments to be passed to the integration method function.}
+\item{...}{Additional arguments to be passed to the integration method functions.}
 }
 \value{
 A \code{Seurat} object.

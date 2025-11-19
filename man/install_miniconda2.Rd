@@ -4,10 +4,13 @@
 \alias{install_miniconda2}
 \title{Enhanced miniconda installation}
 \usage{
-install_miniconda2(miniconda_repo)
+install_miniconda2(miniconda_repo, timeout = 600)
 }
 \arguments{
-\item{miniconda_repo}{Repository URL for miniconda}
+\item{miniconda_repo}{Repository URL for miniconda.}
+
+\item{timeout}{Timeout for the installation.
+Default is `600` seconds.}
 }
 \description{
 Enhanced miniconda installation
