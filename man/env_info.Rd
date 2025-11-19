@@ -7,9 +7,12 @@
 env_info(conda, envname)
 }
 \arguments{
-\item{conda}{Conda binary path}
+\item{conda}{The path to a \code{conda} executable. Use \code{"auto"} to allow
+\code{reticulate} to automatically find an appropriate \code{conda} binary.
+See \strong{Finding Conda} and \code{\link[reticulate:conda_binary]{conda_binary()}} for more details.}
 
-\item{envname}{Environment name}
+\item{envname}{The name of the conda environment to remove.
+If \code{NULL}, uses the default scop environment name.}
 }
 \description{
 Print environment information
