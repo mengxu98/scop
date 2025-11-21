@@ -474,6 +474,7 @@ Default is an empty list.}
 Heatmap plot for dynamic features along lineages
 }
 \examples{
+options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 

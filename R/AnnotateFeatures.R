@@ -12,7 +12,7 @@
 #' Default is `"symbol"`.
 #' @param db Vector of database names to be used for annotation.
 #' Default is `NULL`.
-#' @param db_update Logical value indicating whether to update the database.
+#' @param db_update Whether to update the database.
 #' Default is `FALSE`.
 #' @param db_version Version of the database to use.
 #' Default is `"latest"`.
@@ -31,7 +31,7 @@
 #' `"strand"`, `"gene_id"`, `"gene_name"`, `"gene_type"`.
 #' @param assays Character vector of assay names to be annotated.
 #' Default is `"RNA"`.
-#' @param overwrite Logical value indicating whether to overwrite existing metadata.
+#' @param overwrite Whether to overwrite existing metadata.
 #' Default is `FALSE`.
 #'
 #' @seealso
