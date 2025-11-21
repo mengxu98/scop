@@ -30,6 +30,7 @@
 #' [RunCellChat]
 #'
 #' @examples
+#' options(log_message.verbose = FALSE)
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellChat(
@@ -397,7 +398,7 @@ CellChatPlot <- function(
     CellChat::netVisual_aggregate(
       cellchat_object,
       signaling = pathway,
-      title.space = 4,
+      title.space = 3,
       layout = "chord"
     )
 
@@ -409,7 +410,7 @@ CellChatPlot <- function(
       cellchat_object,
       signaling = pathway,
       remove.isolate = FALSE,
-      font.size = 7
+      font.size = 6
     )
 
     if (!is.null(dirpath)) {
@@ -417,8 +418,8 @@ CellChatPlot <- function(
         dirpath, "/", pathway, "_",
         condition, "_LR_bubble_plot.", output_format
       )
-      bubble_height <- (2 + 0.4 * length(unique(p$data$interaction_name))) * base_height
-      bubble_width <- (2 + 25 / 300 * length(unique(p$data$source.target))) * base_width
+      bubble_height <- 1 + 0.3 * length(unique(p$data$interaction_name)) * base_height
+      bubble_width <- 1 + 0.3 * length(unique(p$data$source.target)) * base_width
 
       .create_output_device(
         bubble_filename,
