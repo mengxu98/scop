@@ -35,7 +35,7 @@ Default is \code{"symbol"}.}
 \item{db}{Vector of database names to be used for annotation.
 Default is \code{NULL}.}
 
-\item{db_update}{Logical value indicating whether to update the database.
+\item{db_update}{Whether to update the database.
 Default is \code{FALSE}.}
 
 \item{db_version}{Version of the database to use.
@@ -63,7 +63,7 @@ Default is \code{"seqname"}, \code{"feature"}, \code{"start"}, \code{"end"},
 \item{assays}{Character vector of assay names to be annotated.
 Default is \code{"RNA"}.}
 
-\item{overwrite}{Logical value indicating whether to overwrite existing metadata.
+\item{overwrite}{Whether to overwrite existing metadata.
 Default is \code{FALSE}.}
 }
 \description{
