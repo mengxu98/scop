@@ -139,7 +139,7 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{CSS_params}{A list of parameters for the [simspec::cluster_sim_spectrum] function.
+\item{CSS_params}{A list of parameters for the [simspec::cluster_sim_spectrum](https://github.com/quadbio/simspec) function.
 Default is an empty list.}
 
 \item{verbose}{Whether to print the message.

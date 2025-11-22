@@ -28,7 +28,7 @@ RunCSSMap(
 
 \item{ref_assay}{A character string specifying the assay name for the reference cells. If not provided, the default assay for the reference object will be used.}
 
-\item{ref_css}{A character string specifying the name of the CSS reduction in the reference object to use for calculating the distance metric.}
+\item{ref_css}{The name of the CSS reduction in the reference object to use for calculating the distance metric.}
 
 \item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object. If not provided, the first UMAP reduction found in the reference object will be used.}
 

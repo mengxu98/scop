@@ -935,6 +935,7 @@ CreateSeuratObject2 <- function(
 #'   batch = "tech",
 #'   integration_method = "Seurat"
 #' )
+#' panc8_sub <- standard_scop(panc8_sub)
 #'
 #' PrepareSCExplorer(
 #'   list(
@@ -1012,7 +1013,8 @@ RunSCExplorer <- function(
       "htmlwidgets",
       "plotly",
       "bslib",
-      "promises"
+      "promises",
+      "mengxu98/thisplot"
     )
   )
   DataFile_full <- paste0(base_dir, "/", data_file)
@@ -1100,7 +1102,7 @@ if (is.null(initial_raster)) {
   initial_raster <- length(all_cells) > 1e5
 }
 
-palette_list <- scop::palette_list
+palette_list <- thisplot::palette_list
 theme_list <- list(
   scop = c("theme_scop", "theme_blank"),
   ggplot2 = c(
@@ -2159,7 +2161,7 @@ server <- function(input, output, session) {
           ncol = ncol1, byrow = byrow1, force = TRUE
         )
 
-        p1_dim <- thisplot::panel_fix(scop::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
+        p1_dim <- thisplot::panel_fix(thisplot::slim_data(p1_dim), height = size1, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p1_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2294,7 +2296,7 @@ server <- function(input, output, session) {
           ncol = ncol2, byrow = byrow2, force = TRUE
         )
 
-        p2_dim <- thisplot::panel_fix(scop::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
+        p2_dim <- thisplot::panel_fix(thisplot::slim_data(p2_dim), height = size2, units = "in", raster = panel_raster, verbose = FALSE)
         attr(p2_dim, "dpi") <- 300
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
@@ -2446,9 +2448,9 @@ server <- function(input, output, session) {
         )
 
         if (flip3) {
-          p3 <- thisplot::panel_fix(scop::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
+          p3 <- thisplot::panel_fix(thisplot::slim_data(p3), width = size3, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p3 <- thisplot::panel_fix(scop::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
+          p3 <- thisplot::panel_fix(thisplot::slim_data(p3), height = size3, units = "in", raster = panel_raster, verbose = FALSE)
         }
         attr(p3, "dpi") <- 300
         return(p3)
@@ -2597,9 +2599,9 @@ server <- function(input, output, session) {
         )
 
         if (flip4) {
-          p4 <- thisplot::panel_fix(scop::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
+          p4 <- thisplot::panel_fix(thisplot::slim_data(p4), width = size4, units = "in", raster = panel_raster, verbose = FALSE)
         } else {
-          p4 <- thisplot::panel_fix(scop::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
+          p4 <- thisplot::panel_fix(thisplot::slim_data(p4), height = size4, units = "in", raster = panel_raster, verbose = FALSE)
         }
 
         attr(p4, "dpi") <- 300
@@ -2683,12 +2685,13 @@ server <- function(input, output, session) {
       pak::pak('mengxu98/scop')
     }",
     "options(scop_env_init = FALSE)",
-    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny@1.6.0', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'promises'))",
+    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'promises', 'mengxu98/thisplot'))",
     "library(shiny)",
     "library(bslib)",
     "library(promises)",
     "library(ggplot2)",
     "library(rlang)",
+    "library(thisplot)",
     args_code,
     "page_theme <- bs_theme(bootswatch = 'zephyr')",
     main_code,
