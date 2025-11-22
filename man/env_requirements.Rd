@@ -7,8 +7,8 @@
 env_requirements(version = "3.10-1")
 }
 \arguments{
-\item{version}{A character vector specifying the version of the environment.
-Default is "3.10-1".}
+\item{version}{The Python version of the environment.
+Default is `"3.10-1"`.}
 }
 \value{
 A list of requirements for the specified version.

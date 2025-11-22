@@ -17,7 +17,7 @@
 #' Default is `"Uncorrected"`.
 #' @param append Whether the integrated data will be appended to the original Seurat object (`srt_merge`).
 #' Default is `TRUE`.
-#' @param ... Additional arguments to be passed to the integration method function.
+#' @param ... Additional arguments to be passed to the integration method functions.
 #'
 #' @return A `Seurat` object.
 #'
@@ -138,7 +138,20 @@ integration_scop <- function(
     append = TRUE,
     srt_list = NULL,
     assay = NULL,
-    integration_method = "Uncorrected",
+    integration_method = c(
+      "Uncorrected",
+      "Seurat",
+      "scVI",
+      "MNN",
+      "fastMNN",
+      "Harmony",
+      "Scanorama",
+      "BBKNN",
+      "CSS",
+      "LIGER",
+      "Conos",
+      "ComBat"
+    ),
     do_normalization = NULL,
     normalization_method = "LogNormalize",
     do_HVF_finding = TRUE,
@@ -173,54 +186,34 @@ integration_scop <- function(
       message_type = "error"
     )
   }
-  methods <- c(
-    "Uncorrected",
-    "Seurat",
-    "scVI",
-    "MNN",
-    "fastMNN",
-    "Harmony",
-    "Scanorama",
-    "BBKNN",
-    "CSS",
-    "LIGER",
-    "Conos",
-    "ComBat"
+  integration_method <- match.arg(integration_method)
+
+  args <- as.list(match.call())[-1]
+  new_env <- new.env(parent = parent.frame())
+  args <- lapply(args, function(x) eval(x, envir = new_env))
+
+  formals <- mget(names(formals()))
+  formals <- formals[names(formals) != "..."]
+
+  args <- utils::modifyList(formals, args)
+
+  log_message(
+    "Run {.pkg {integration_method}} integration...",
+    message_type = "running",
+    verbose = verbose
   )
-  if (length(integration_method) == 1 && integration_method %in% methods) {
-    args <- as.list(match.call())[-1]
-    new_env <- new.env(parent = parent.frame())
-    args <- lapply(args, function(x) eval(x, envir = new_env))
+  integrate_fun <- paste0(integration_method, "_integrate")
+  srt_integrated <- invoke_fun(
+    integrate_fun,
+    args[names(args) %in% methods::formalArgs(integrate_fun)]
+  )
+  log_message(
+    "Run {.pkg {integration_method}} integration done",
+    message_type = "success",
+    verbose = verbose
+  )
 
-    formals <- mget(names(formals()))
-    formals <- formals[names(formals) != "..."]
-
-    args <- utils::modifyList(formals, args)
-
-    log_message(
-      "Run {.pkg {integration_method}} integration...",
-      message_type = "running",
-      verbose = verbose
-    )
-    srt_integrated <- invoke_fun(
-      paste0(integration_method, "_integrate"),
-      args[
-        names(args) %in% methods::formalArgs(paste0(integration_method, "_integrate"))
-      ]
-    )
-    log_message(
-      "Run {.pkg {integration_method}} integration done",
-      message_type = "success",
-      verbose = verbose
-    )
-
-    return(srt_integrated)
-  } else {
-    log_message(
-      "{.pkg {integration_method}} is not a supported integration method. Must be one of {.val {methods}}",
-      message_type = "error"
-    )
-  }
+  return(srt_integrated)
 }
 
 #' @title The Uncorrected integration function
@@ -452,25 +445,24 @@ Uncorrected_integrate <- function(
 
   srt_merge <- tryCatch(
     {
-      srt_merge <- FindNeighbors(
+      srt_merge <- Seurat::FindNeighbors(
         object = srt_merge,
         reduction = paste0("Uncorrected", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("Uncorrected_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_merge <- FindClusters(
+      srt_merge <- Seurat::FindClusters(
         object = srt_merge,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "Uncorrected_SNN",
         verbose = FALSE
       )
@@ -482,7 +474,7 @@ Uncorrected_integrate <- function(
         layer = "data"
       )
       srt_merge[["seurat_clusters"]] <- NULL
-      srt_merge[[paste0("Uncorrected", linear_reduction, "clusters")]] <- Idents(
+      srt_merge[[paste0("Uncorrected", linear_reduction, "clusters")]] <- SeuratObject::Idents(
         srt_merge
       )
       srt_merge
@@ -949,25 +941,24 @@ Seurat_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = paste0("Seurat", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("Seurat_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "Seurat_SNN",
         verbose = FALSE
       )
@@ -979,13 +970,13 @@ Seurat_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["Seuratclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["Seuratclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -1127,11 +1118,13 @@ scVI_integrate <- function(
     .Platform$OS.type == "windows" &&
       !exist_python_pkgs(packages = "scvi-tools")
   ) {
-    suppressWarnings(system2(
-      command = conda_python(),
-      args = "-m pip install jax[cpu]===0.3.20 -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver",
-      stdout = TRUE
-    ))
+    suppressWarnings(
+      system2(
+        command = conda_python(),
+        args = "-m pip install jax[cpu]===0.3.20 -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver",
+        stdout = TRUE
+      )
+    )
   }
 
   PrepareEnv()
@@ -1267,25 +1260,24 @@ scVI_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "scVI",
         dims = scVI_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("scVI_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "scVI_SNN",
         verbose = FALSE
       )
@@ -1297,13 +1289,13 @@ scVI_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["scVIclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["scVIclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -1506,7 +1498,9 @@ MNN_integrate <- function(
     type <- checked[["type"]]
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    srt_list <- SplitObject(object = srt_merge, split.by = batch)
+    srt_list <- Seurat::SplitObject(
+      object = srt_merge, split.by = batch
+    )
     checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
@@ -1624,25 +1618,24 @@ MNN_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = paste0("MNN", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("MNN_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ")")
+        paste0("Perform Seurat::FindClusters (", cluster_algorithm, ")")
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "MNN_SNN",
         verbose = FALSE
       )
@@ -1654,7 +1647,7 @@ MNN_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["MNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["MNNclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
@@ -1835,7 +1828,7 @@ fastMNN_integrate <- function(
     type <- checked[["type"]]
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    srt_list <- SplitObject(object = srt_merge, split.by = batch)
+    srt_list <- Seurat::SplitObject(object = srt_merge, split.by = batch)
     checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
@@ -1905,25 +1898,24 @@ fastMNN_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "fastMNN",
         dims = fastMNN_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("fastMNN", "_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ")")
+        paste0("Perform Seurat::FindClusters (", cluster_algorithm, ")")
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "fastMNN_SNN",
         verbose = FALSE
       )
@@ -1935,13 +1927,13 @@ fastMNN_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["fastMNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["fastMNNclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -2259,25 +2251,24 @@ Harmony_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "Harmony",
         dims = harmony_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("Harmony", "_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ")")
+        paste0("Perform Seurat::FindClusters (", cluster_algorithm, ")")
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "Harmony_SNN",
         verbose = FALSE
       )
@@ -2289,7 +2280,7 @@ Harmony_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["Harmonyclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["Harmonyclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
@@ -2477,7 +2468,7 @@ Scanorama_integrate <- function(
     type <- checked[["type"]]
   }
   if (is.null(srt_list) && !is.null(srt_merge)) {
-    srt_list <- SplitObject(object = srt_merge, split.by = batch)
+    srt_list <- Seurat::SplitObject(object = srt_merge, split.by = batch)
     checked <- CheckDataList(
       srt_list = srt_list,
       batch = batch,
@@ -2570,25 +2561,24 @@ Scanorama_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "Scanorama",
         dims = Scanorama_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("Scanorama_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ")")
+        paste0("Perform Seurat::FindClusters (", cluster_algorithm, ")")
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "Scanorama_SNN",
         verbose = FALSE
       )
@@ -2600,13 +2590,13 @@ Scanorama_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["Scanoramaclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["Scanoramaclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -2966,14 +2956,14 @@ BBKNN_integrate <- function(
   srt_integrated <- tryCatch(
     {
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         graph.name = "BBKNN",
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         verbose = FALSE
       )
       log_message("Reorder clusters...")
@@ -2984,13 +2974,13 @@ BBKNN_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["BBKNNclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["BBKNNclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -3057,7 +3047,7 @@ BBKNN_integrate <- function(
 #' @inheritParams integration_scop
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
-#' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum] function.
+#' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum](https://github.com/quadbio/simspec) function.
 #' Default is an empty list.
 #'
 #' @export
@@ -3096,6 +3086,73 @@ CSS_integrate <- function(
     CSS_params = list(),
     verbose = TRUE,
     seed = 11) {
+  if (is.null(srt_list) && is.null(srt_merge)) {
+    log_message(
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
+      message_type = "error"
+    )
+  }
+  if (!is.null(srt_list) && !is.null(srt_merge)) {
+    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
+    cell2 <- sort(unique(colnames(srt_merge)))
+    if (!identical(cell1, cell2)) {
+      log_message(
+        "{.arg srt_list} and {.arg srt_merge} have different cells",
+        message_type = "error"
+      )
+    }
+  }
+  if (!is.null(srt_merge)) {
+    srt_merge_raw <- srt_merge
+  } else {
+    srt_merge_raw <- NULL
+  }
+  if (!is.null(srt_list)) {
+    checked <- CheckDataList(
+      srt_list = srt_list,
+      batch = batch,
+      assay = assay,
+      do_normalization = do_normalization,
+      do_HVF_finding = do_HVF_finding,
+      normalization_method = normalization_method,
+      HVF_source = HVF_source,
+      HVF_method = HVF_method,
+      nHVF = nHVF,
+      HVF_min_intersection = HVF_min_intersection,
+      HVF = HVF,
+      vars_to_regress = vars_to_regress,
+      seed = seed
+    )
+    srt_list <- checked[["srt_list"]]
+    HVF <- checked[["HVF"]]
+    assay <- checked[["assay"]]
+    type <- checked[["type"]]
+    srt_merge <- Reduce(merge, srt_list)
+    SeuratObject::VariableFeatures(srt_merge) <- HVF
+  }
+  if (is.null(srt_list) && !is.null(srt_merge)) {
+    checked <- CheckDataMerge(
+      srt_merge = srt_merge,
+      batch = batch,
+      assay = assay,
+      do_normalization = do_normalization,
+      do_HVF_finding = do_HVF_finding,
+      normalization_method = normalization_method,
+      HVF_source = HVF_source,
+      HVF_method = HVF_method,
+      nHVF = nHVF,
+      HVF_min_intersection = HVF_min_intersection,
+      HVF = HVF,
+      vars_to_regress = vars_to_regress,
+      verbose = verbose,
+      seed = seed
+    )
+    srt_merge <- checked[["srt_merge"]]
+    HVF <- checked[["HVF"]]
+    assay <- checked[["assay"]]
+    type <- checked[["type"]]
+  }
+
   if (length(linear_reduction) > 1) {
     log_message(
       "Only the first method in the {.arg linear_reduction} will be used",
@@ -3158,73 +3215,6 @@ CSS_integrate <- function(
   check_r(c("quadbiolab/simspec", "qlcMatrix"))
   set.seed(seed)
 
-  if (is.null(srt_list) && is.null(srt_merge)) {
-    log_message(
-      "srt_list and srt_merge were all empty",
-      message_type = "error"
-    )
-  }
-  if (!is.null(srt_list) && !is.null(srt_merge)) {
-    cell1 <- sort(unique(unlist(lapply(srt_list, colnames))))
-    cell2 <- sort(unique(colnames(srt_merge)))
-    if (!identical(cell1, cell2)) {
-      log_message(
-        "srt_list and srt_merge have different cells",
-        message_type = "error"
-      )
-    }
-  }
-  if (!is.null(srt_merge)) {
-    srt_merge_raw <- srt_merge
-  } else {
-    srt_merge_raw <- NULL
-  }
-  if (!is.null(srt_list)) {
-    checked <- CheckDataList(
-      srt_list = srt_list,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      seed = seed
-    )
-    srt_list <- checked[["srt_list"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-    srt_merge <- Reduce(merge, srt_list)
-    SeuratObject::VariableFeatures(srt_merge) <- HVF
-  }
-  if (is.null(srt_list) && !is.null(srt_merge)) {
-    checked <- CheckDataMerge(
-      srt_merge = srt_merge,
-      batch = batch,
-      assay = assay,
-      do_normalization = do_normalization,
-      do_HVF_finding = do_HVF_finding,
-      normalization_method = normalization_method,
-      HVF_source = HVF_source,
-      HVF_method = HVF_method,
-      nHVF = nHVF,
-      HVF_min_intersection = HVF_min_intersection,
-      HVF = HVF,
-      vars_to_regress = vars_to_regress,
-      verbose = verbose,
-      seed = seed
-    )
-    srt_merge <- checked[["srt_merge"]]
-    HVF <- checked[["HVF"]]
-    assay <- checked[["assay"]]
-    type <- checked[["type"]]
-  }
-
   if (normalization_method == "TFIDF") {
     log_message(
       "{.arg normalization_method} is {.val TFIDF}. Use {.pkg lsi} workflow..."
@@ -3282,7 +3272,7 @@ CSS_integrate <- function(
     "Using Reduction({.val {paste0('CSS', linear_reduction)}}, dims:{.val {min(linear_reduction_dims_use)}}-{.val {max(linear_reduction_dims_use)}}) as input"
   )
   params <- list(
-    object = srt_merge,
+    object = SeuratObject::JoinLayers(srt_merge),
     use_dr = paste0("CSS", linear_reduction),
     dims_use = linear_reduction_dims_use,
     var_genes = HVF,
@@ -3313,25 +3303,24 @@ CSS_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "CSS",
         dims = CSS_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("CSS", "_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "CSS_SNN",
         verbose = FALSE
       )
@@ -3343,13 +3332,13 @@ CSS_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["CSSclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["CSSclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning")
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -3622,7 +3611,7 @@ LIGER_integrate <- function(
   )
 
   embeddings <- sapply(
-    X = SplitObject(object = srt_merge, split.by = batch),
+    X = Seurat::SplitObject(object = srt_merge, split.by = batch),
     FUN = function(x) {
       return(Embeddings(object = x[["iNMF_raw"]]))
     },
@@ -3658,25 +3647,24 @@ LIGER_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = "LIGER",
         dims = LIGER_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("LIGER", "_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        paste0("Perform FindClusters (", cluster_algorithm, ")")
+        paste0("Perform Seurat::FindClusters (", cluster_algorithm, ")")
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "LIGER_SNN",
         verbose = FALSE
       )
@@ -3688,13 +3676,13 @@ LIGER_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["LIGERclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["LIGERclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
       log_message(error, message_type = "warning", verbose = verbose)
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning",
         verbose = verbose
       )
@@ -4033,14 +4021,14 @@ Conos_integrate <- function(
   srt_integrated <- tryCatch(
     {
       log_message(
-        "Perform {.fn FindClusters} ({.val {cluster_algorithm}})"
+        "Perform {.fn Seurat::FindClusters} ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         graph.name = "Conos",
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         verbose = FALSE
       )
       log_message("Reorder clusters...")
@@ -4051,7 +4039,7 @@ Conos_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["Conosclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["Conosclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
@@ -4060,7 +4048,7 @@ Conos_integrate <- function(
         message_type = "warning"
       )
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated
@@ -4377,25 +4365,24 @@ ComBat_integrate <- function(
 
   srt_integrated <- tryCatch(
     {
-      srt_integrated <- FindNeighbors(
+      srt_integrated <- Seurat::FindNeighbors(
         object = srt_integrated,
         reduction = paste0("ComBat", linear_reduction),
         dims = linear_reduction_dims_use,
         annoy.metric = neighbor_metric,
         k.param = neighbor_k,
-        # force.recalc = TRUE,
         graph.name = paste0("ComBat_", c("KNN", "SNN")),
         verbose = FALSE
       )
 
       log_message(
-        "Perform FindClusters ({.val {cluster_algorithm}})"
+        "Perform Seurat::FindClusters ({.val {cluster_algorithm}})"
       )
-      srt_integrated <- FindClusters(
+      srt_integrated <- Seurat::FindClusters(
         object = srt_integrated,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,
-        method = "igraph",
+        leiden_method = "igraph",
         graph.name = "ComBat_SNN",
         verbose = FALSE
       )
@@ -4407,7 +4394,7 @@ ComBat_integrate <- function(
         layer = "data"
       )
       srt_integrated[["seurat_clusters"]] <- NULL
-      srt_integrated[["ComBatclusters"]] <- Idents(srt_integrated)
+      srt_integrated[["ComBatclusters"]] <- SeuratObject::Idents(srt_integrated)
       srt_integrated
     },
     error = function(error) {
@@ -4416,7 +4403,7 @@ ComBat_integrate <- function(
         message_type = "warning"
       )
       log_message(
-        "Error when performing {.fn FindClusters}. Skip this step",
+        "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning"
       )
       srt_integrated

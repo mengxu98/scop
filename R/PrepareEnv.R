@@ -42,7 +42,10 @@ PrepareEnv <- function(
   }
 
   log_message(
-    "{cli::col_blue('Preparing scop Python Environment')}"
+    "Preparing scop Python environment...",
+    text_color = "orange",
+    message_type = "running",
+    timestamp_style = FALSE
   )
   conda_info <- get_namespace_fun("reticulate", "conda_info")
 
@@ -51,19 +54,11 @@ PrepareEnv <- function(
   }
 
   envname <- get_envname(envname)
-  log_message(
-    "Environment name: {.file {envname}}"
-  )
 
   requirements <- env_requirements(version = version)
   python_version <- requirements[["python"]]
-  packages <- requirements[["packages"]]
-
   log_message(
-    "Python version: {.pkg {python_version}}"
-  )
-  log_message(
-    "Number of packages to install: {.val {length(packages)}}"
+    "Environment name: {.file {envname}} and Python version: {.pkg {python_version}}"
   )
 
   if (!is.null(conda)) {
@@ -83,7 +78,7 @@ PrepareEnv <- function(
       message_type = "warning"
     )
   } else {
-    envs_dir <- conda_info(conda = conda)$envs_dirs[1]
+    envs_dir <- get_conda_envs_dir(conda = conda)
     env <- env_exist(
       conda = conda,
       envname = envname,
@@ -129,7 +124,7 @@ PrepareEnv <- function(
       packages = c("pip", "setuptools", "wheel")
     )
 
-    envs_dir <- conda_info(conda = conda)$envs_dirs[1]
+    envs_dir <- get_conda_envs_dir(conda = conda)
     env_path <- paste0(envs_dir, "/", envname)
     env <- file.exists(env_path)
 
@@ -154,19 +149,18 @@ PrepareEnv <- function(
     }
   }
 
-  log_message(
-    "Checking and installing required packages...",
-    message_type = "running"
-  )
 
   install_methods <- requirements[["install_methods"]]
+  packages <- requirements[["packages"]]
 
   conda_packages <- packages[install_methods == "conda"]
   pip_packages <- packages[install_methods == "pip"]
-
+  log_message(
+    "{.val {length(packages)}} package{?s} to install, {.val {length(conda_packages)}} conda packages and {.val {length(pip_packages)}} pip packages"
+  )
   if (length(conda_packages) > 0) {
     log_message(
-      "Installing {.pkg conda} packages"
+      "Installing {.val {length(conda_packages)}} {.pkg conda} packages"
     )
     check_python(
       packages = conda_packages,
@@ -180,7 +174,7 @@ PrepareEnv <- function(
 
   if (length(pip_packages) > 0) {
     log_message(
-      "Installing {.pkg pip} packages"
+      "Installing {.val {length(pip_packages)}} {.pkg pip} packages"
     )
     check_python(
       packages = pip_packages,
@@ -204,53 +198,29 @@ PrepareEnv <- function(
 
 set_python_env <- function(conda, envname, verbose = TRUE) {
   Sys.unsetenv("RETICULATE_PYTHON")
-
-  # options(reticulate.keras.backend = "tensorflow")
   options(reticulate.miniconda.enabled = FALSE)
 
-  python_path <- conda_python(conda = conda, envname = envname)
-  reticulate::use_python(python_path, required = TRUE)
-
-  #   tryCatch(
-  #     {
-  #       reticulate::py_run_string("
-  # import os
-  # os.environ['OMP_NUM_THREADS'] = '1'
-  # os.environ['OPENBLAS_NUM_THREADS'] = '1'
-  # os.environ['MKL_NUM_THREADS'] = '1'
-  # os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
-  # os.environ['NUMEXPR_NUM_THREADS'] = '1'
-  # os.environ['KMP_WARNINGS'] = '0'
-  # ")
-
-  #       if (Sys.info()["sysname"] == "Darwin" && Sys.info()["machine"] == "arm64") {
-  #         Sys.setenv(NUMBA_NUM_THREADS = "1")
-  #         Sys.setenv(NUMBA_DISABLE_JIT = "1")
-  #         Sys.setenv(NUMBA_THREADING_LAYER = "tbb")
-  #         Sys.setenv(NUMBA_DEFAULT_NUM_THREADS = "1")
-  #         Sys.setenv(OMP_NUM_THREADS = "1")
-  #         Sys.setenv(OPENBLAS_NUM_THREADS = "1")
-  #         Sys.setenv(MKL_NUM_THREADS = "1")
-  #         Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
-  #         Sys.setenv(NUMEXPR_NUM_THREADS = "1")
-  #         Sys.setenv(NUMBA_CACHE_DIR = "/tmp/numba_cache")
-  #         Sys.setenv(NUMBA_DEBUG = "0")
-  #       }
-  #     },
-  #     error = function(e) {
-  #       cli::col_red(
-  #         "Could not set python environment variables"
-  #       )
-  #     }
-  #   )
+  python_path <- conda_python(
+    conda = conda,
+    envname = envname
+  )
+  reticulate::use_python(
+    python_path,
+    required = TRUE
+  )
 }
 
-#' Enhanced miniconda installation
-#' @param miniconda_repo Repository URL for miniconda
+#' @title Enhanced miniconda installation
+#' @param miniconda_repo Repository URL for miniconda.
+#' @param timeout Timeout for the installation.
+#' Default is `600` seconds.
+#'
 #' @export
-install_miniconda2 <- function(miniconda_repo) {
+install_miniconda2 <- function(
+    miniconda_repo,
+    timeout = 600) {
   log_message("Installing miniconda...")
-  options(timeout = 600)
+  options(timeout = timeout)
 
   info <- as.list(Sys.info())
 
@@ -312,31 +282,28 @@ install_miniconda2 <- function(miniconda_repo) {
   conda
 }
 
-#' Print environment information
-#' @param conda Conda binary path
-#' @param envname Environment name
+#' @title Print environment information
+#' @inheritParams RemoveEnv
 env_info <- function(conda, envname) {
-  envs_dir <- get_namespace_fun(
-    "reticulate", "conda_info"
-  )(conda = conda)$envs_dirs[1]
+  envs_dir <- get_conda_envs_dir(conda = conda)
 
   py_info <- utils::capture.output(reticulate::py_config())
 
   py_info_mesg <- c(
     cli::col_blue(
-      "conda environment: "
+      "Conda environment:"
     ),
     cli::col_grey(
-      "  conda:          ", conda
+      " Conda:         ", conda
     ),
     cli::col_grey(
-      "  environment:    ", envs_dir, "/", get_envname(envname)
+      " Environment:   ", envs_dir, "/", get_envname(envname)
     ),
     cli::col_blue(
-      "python config: "
+      "Python config:"
     ),
     cli::col_grey(
-      "  ", py_info
+      " ", py_info
     )
   )
   invisible(lapply(py_info_mesg, packageStartupMessage))
@@ -348,9 +315,11 @@ env_info <- function(conda, envname) {
 #' The function returns a list of requirements including the required Python version
 #' and a list of packages with their corresponding versions.
 #'
-#' @param version A character vector specifying the version of the environment.
-#' Default is "3.10-1".
-#' @return A list of requirements for the specified version.
+#' @param version The Python version of the environment.
+#' Default is `"3.10-1"`.
+#'
+#' @return
+#' A list of requirements for the specified version.
 #'
 #' @export
 #' @examples
@@ -364,6 +333,7 @@ env_requirements <- function(version = "3.10-1") {
     "leidenalg" = "conda",
     "tbb" = "conda",
     "python-igraph" = "conda",
+    "scvi-tools" = "conda",
     "matplotlib" = "pip",
     "numba" = "pip",
     "llvmlite" = "pip",
@@ -380,7 +350,6 @@ env_requirements <- function(version = "3.10-1") {
     "phate" = "pip",
     "bbknn" = "pip",
     "scanorama" = "pip",
-    "scvi-tools" = "pip",
     "cellrank" = "pip"
   )
 
@@ -470,106 +439,6 @@ installed_python_pkgs <- function(
   )
 }
 
-#' Check if the python package exists in the environment
-#'
-#' @inheritParams check_python
-#' @export
-exist_python_pkgs <- function(
-    packages,
-    envname = NULL,
-    conda = "auto") {
-  envname <- get_envname(envname)
-
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
-
-  if (is.null(conda)) {
-    log_message("Conda not found", message_type = "error")
-  }
-
-  env <- env_exist(conda = conda, envname = envname)
-  if (isFALSE(env)) {
-    log_message(
-      "Cannot find the conda environment: {.file {envname}}",
-      message_type = "error"
-    )
-  }
-
-  log_message(
-    "Checking {.val {length(packages)}} package{?s} in environment: {.file {envname}}"
-  )
-
-  all_installed <- tryCatch(
-    {
-      installed_python_pkgs(envname = envname, conda = conda)
-    },
-    error = function(e) {
-      log_message(
-        "Failed to get installed packages: {.val {e$message}}",
-        message_type = "warning"
-      )
-    }
-  )
-
-  packages_installed <- stats::setNames(
-    rep(FALSE, length(packages)), packages
-  )
-
-  for (i in seq_along(packages)) {
-    pkg <- packages[i]
-
-    if (grepl("==", pkg)) {
-      pkg_info <- strsplit(pkg, split = "==")[[1]]
-      pkg_name <- names(pkg) %||% pkg_info[1]
-      pkg_version <- pkg_info[2]
-    } else if (grepl("git+", pkg)) {
-      pkg_info <- strsplit(pkg, "/")[[1]]
-      pkg_name <- names(pkg) %||% pkg_info[length(pkg_info)]
-      pkg_version <- NA
-    } else {
-      pkg_name <- names(pkg) %||% pkg
-      pkg_version <- NA
-    }
-
-    if (pkg_name %in% all_installed$package) {
-      if (!is.na(pkg_version)) {
-        installed_version <- all_installed$version[all_installed$package == pkg_name]
-        packages_installed[pkg] <- installed_version == pkg_version
-        if (packages_installed[pkg]) {
-          log_message(
-            "{.pkg {pkg_name}} {.pkg {pkg_version}}",
-            message_type = "success"
-          )
-        } else {
-          log_message(
-            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
-            message_type = "warning"
-          )
-        }
-      } else {
-        packages_installed[pkg] <- TRUE
-        installed_version <- all_installed$version[all_installed$package == pkg_name]
-        log_message(
-          "{.pkg {pkg_name}} version: {.pkg {installed_version}}",
-          message_type = "success"
-        )
-      }
-    } else {
-      packages_installed[pkg] <- FALSE
-      log_message(
-        "{.pkg {pkg_name}} not found",
-        message_type = "warning"
-      )
-    }
-  }
-
-  return(packages_installed)
-}
-
 #' Check if a conda environment exists
 #'
 #' @param envs_dir Directories in which conda environments are located.
@@ -606,7 +475,10 @@ env_exist <- function(
         return(FALSE)
       }
 
-      envs_dir <- conda_info$envs_dirs[1]
+      envs_dir <- conda_info[["envs directories"]][1]
+      if (is.null(envs_dir) || length(envs_dir) == 0) {
+        envs_dir <- conda_info$envs_dirs[1]
+      }
     }
 
     env_path <- paste0(envs_dir, "/", envname)
@@ -638,8 +510,18 @@ get_envname <- function(envname = NULL) {
   return(envname)
 }
 
-#' Find an appropriate conda binary
-#'
+get_conda_envs_dir <- function(conda = "auto") {
+  conda_info <- get_namespace_fun(
+    "reticulate", "conda_info"
+  )(conda = conda)
+  envs_dir <- conda_info[["envs directories"]][1]
+  if (is.null(envs_dir) || length(envs_dir) == 0) {
+    envs_dir <- conda_info$envs_dirs[1]
+  }
+  return(envs_dir)
+}
+
+#' @title Find an appropriate conda binary
 #' @export
 find_conda <- function() {
   conda <- tryCatch(
@@ -862,10 +744,11 @@ conda_python <- function(
     )
   }
   conda_envs <- reticulate::conda_list(conda = conda)
+  envs_dir <- get_conda_envs_dir(conda = conda)
   conda_envs <- conda_envs[
     grep(
       normalizePath(
-        get_namespace_fun("reticulate", "conda_info")(conda = conda)$envs_dirs[1],
+        envs_dir,
         mustWork = FALSE
       ),
       x = normalizePath(conda_envs$python, mustWork = FALSE),
@@ -875,6 +758,14 @@ conda_python <- function(
   ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
+    env_path <- file.path(envs_dir, envname)
+    suffix <- if (.is_windows()) "python.exe" else "bin/python"
+    python_path <- file.path(env_path, suffix)
+
+    if (file.exists(python_path)) {
+      return(normalizePath(python_path, mustWork = FALSE))
+    }
+
     log_message(
       "{.val {envname}} environment not found",
       message_type = "error"
@@ -887,10 +778,9 @@ conda_python <- function(
 #' @title Remove a conda environment
 #'
 #' @md
+#' @inheritParams conda_python
 #' @param envname The name of the conda environment to remove.
 #' If `NULL`, uses the default scop environment name.
-#' @param conda The path to a conda executable.
-#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
 #' @param force Whether to force removal without confirmation.
 #' Default is `FALSE`.
 #'
@@ -938,7 +828,7 @@ RemoveEnv <- function(
     return(invisible(FALSE))
   }
 
-  envs_dir <- conda_info(conda)$envs_dirs[1]
+  envs_dir <- get_conda_envs_dir(conda = conda)
   env_path <- file.path(envs_dir, envname)
 
   if (!force) {
@@ -1054,13 +944,54 @@ RemoveEnv <- function(
 #' @title List conda environments
 #'
 #' @md
-#' @param conda The path to a conda executable.
-#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
-#'
+#' @inheritParams conda_python
 #' @return A data frame of conda environments.
 #' @export
 ListEnv <- function(conda = "auto") {
-  reticulate::conda_list(conda = conda)
+  if (identical(conda, "auto")) {
+    conda <- find_conda()
+  } else {
+    options(reticulate.conda_binary = conda)
+    conda <- find_conda()
+  }
+
+  if (is.null(conda)) {
+    log_message("Conda not found", message_type = "error")
+    return(data.frame(name = character(), python = character()))
+  }
+
+  conda_envs <- reticulate::conda_list(conda = conda)
+
+  envs_dir <- get_conda_envs_dir(conda = conda)
+  if (!is.null(envs_dir) && dir.exists(envs_dir)) {
+    existing_names <- conda_envs$name
+
+    env_dirs <- list.dirs(envs_dir, full.names = FALSE, recursive = FALSE)
+
+    for (env_dir in env_dirs) {
+      if (!env_dir %in% existing_names) {
+        env_path <- file.path(envs_dir, env_dir)
+        python_path <- file.path(
+          env_path, if (.is_windows()) "python.exe" else "bin/python"
+        )
+
+        if (dir.exists(file.path(env_path, "conda-meta")) && file.exists(python_path)) {
+          new_row <- data.frame(
+            name = env_dir,
+            python = normalizePath(python_path, mustWork = FALSE),
+            stringsAsFactors = FALSE
+          )
+          conda_envs <- rbind(conda_envs, new_row)
+        }
+      }
+    }
+  }
+
+  if (nrow(conda_envs) > 0) {
+    conda_envs <- conda_envs[order(conda_envs$name), , drop = FALSE]
+  }
+
+  return(conda_envs)
 }
 
 .is_windows <- function() {

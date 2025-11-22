@@ -33,16 +33,19 @@ If \code{NULL}, uses top pathways.}
 \item{dirpath}{Directory to save plots.}
 
 \item{output_format}{Format of output figure: \code{"png"} or \code{"pdf"}.
-Default: \code{"png"}.}
+Default is \code{"png"}.}
 
 \item{top_n}{Number of top pathways to use for plotting.
-Default: 10.}
+Default is \code{10}.}
 
-\item{base_height}{Base height multiplier for all plots. Default: 1.}
+\item{base_height}{Base height multiplier for all plots.
+Default is \code{1}.}
 
-\item{base_width}{Base width multiplier for all plots. Default: 1.}
+\item{base_width}{Base width multiplier for all plots.
+Default is \code{1}.}
 
-\item{res}{Resolution for PNG output. Default: 300.}
+\item{res}{Resolution for PNG output.
+Default is \code{300}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -51,6 +54,7 @@ Default is \code{TRUE}.}
 \link{CellChatPlot} creates various visualizations for CellChat analysis results stored in a Seurat object.
 }
 \examples{
+options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
