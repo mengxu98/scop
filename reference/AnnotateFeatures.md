@@ -47,8 +47,7 @@ AnnotateFeatures(
 
 - db_update:
 
-  Logical value indicating whether to update the database. Default is
-  `FALSE`.
+  Whether to update the database. Default is `FALSE`.
 
 - db_version:
 
@@ -87,8 +86,7 @@ AnnotateFeatures(
 
 - overwrite:
 
-  Logical value indicating whether to overwrite existing metadata.
-  Default is `FALSE`.
+  Whether to overwrite existing metadata. Default is `FALSE`.
 
 ## See also
 

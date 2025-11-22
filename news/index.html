@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,27 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.2" id="scop-062">scop 0.6.2<a class="anchor" aria-label="anchor" href="#scop-062"></a></h2>
+<ul><li>
+<strong>refactor</strong>:
+<ul><li>Moved example figures from <code>man/figures/</code> to <code>figures/</code> directory for better package organization.</li>
+<li>Updated README.md to reference figures from the new location.</li>
+<li>Added <code>figures/</code> directory to <code>.Rbuildignore</code> to exclude example figures from package builds.</li>
+</ul></li>
+<li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/CellChatPlot.html">CellChatPlot()</a></code>: Adjusted the size of saved figures for better file size optimization.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated README.md to remove references to Monocle2 and Monocle3 (deprecated functions).</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.1" id="scop-061">scop 0.6.1<a class="anchor" aria-label="anchor" href="#scop-061"></a></h2>
 <ul><li>

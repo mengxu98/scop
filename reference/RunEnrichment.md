@@ -220,16 +220,6 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:51:15] Start standard scop workflow...
-#> ℹ [2025-11-19 14:51:16] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:51:16] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:51:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:51:18] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:51:19] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:51:19] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:51:19] Finished check
-#> ℹ [2025-11-19 14:51:19] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:51:20] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -265,29 +255,13 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:51:21] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:51:21] Reorder clusters...
-#> ℹ [2025-11-19 14:51:21] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:51:21] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:51:21] UMAP will return its model
-#> ℹ [2025-11-19 14:51:25] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:51:25] UMAP will return its model
-#> ✔ [2025-11-19 14:51:30] Run scop standard workflow done
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ✔ [2025-11-19 14:51:30] immunogenomics/presto installed successfully
-#> ℹ [2025-11-19 14:51:31] Data type is log-normalized
-#> ℹ [2025-11-19 14:51:31] Start differential expression test
-#> ℹ [2025-11-19 14:51:31] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2025-11-19 14:51:31] Using 1 core
-#> ⠙ [2025-11-19 14:51:31] Running [1/5] Processing: Ductal  ETA:  1s
-#> ⠹ [2025-11-19 14:51:31] Running [4/5] Processing: Ngn3-low-EP  ETA:  0s
-#> ✔ [2025-11-19 14:51:31] Completed 5 tasks in 766ms
+#> ⠙ [2025-11-22 02:48:21] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-11-22 02:48:21] Completed 5 tasks in 769ms
 #> 
-#> ℹ [2025-11-19 14:51:31] Building results
-#> ✔ [2025-11-19 14:51:31] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group_by = "CellType",
@@ -295,20 +269,12 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2025-11-19 14:51:31] Start Enrichment analysis
-#> ✔ [2025-11-19 14:51:31] clusterProfiler installed successfully
-#> ℹ [2025-11-19 14:51:31] Species: "Mus_musculus"
-#> ℹ [2025-11-19 14:51:31] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2025-11-19 14:21:38
-#> ℹ [2025-11-19 14:51:33] Permform enrichment...
-#> ℹ [2025-11-19 14:51:33] Using 1 core
-#> ⠙ [2025-11-19 14:51:33] Running [1/5] Processing: 1  ETA:  1m
-#> ⠹ [2025-11-19 14:51:33] Running [2/5] Processing: 2  ETA:  1m
-#> ⠸ [2025-11-19 14:51:33] Running [3/5] Processing: 3  ETA: 33s
-#> ⠼ [2025-11-19 14:51:33] Running [4/5] Processing: 4  ETA: 16s
-#> ✔ [2025-11-19 14:51:33] Completed 5 tasks in 1m 16.2s
+#> ⠙ [2025-11-22 02:48:45] Running [1/5] Processing: 1  ETA:  2m
+#> ⠹ [2025-11-22 02:48:45] Running [2/5] Processing: 2  ETA:  1m
+#> ⠸ [2025-11-22 02:48:45] Running [3/5] Processing: 3  ETA: 34s
+#> ⠼ [2025-11-22 02:48:45] Running [4/5] Processing: 4  ETA: 17s
+#> ✔ [2025-11-22 02:48:45] Completed 5 tasks in 1m 18.8s
 #> 
-#> ℹ [2025-11-19 14:51:33] Building results
-#> ✔ [2025-11-19 14:52:49] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",

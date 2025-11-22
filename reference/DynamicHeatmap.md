@@ -678,18 +678,9 @@ DynamicHeatmap(
 ## Examples
 
 ``` r
+options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:13:52] Start standard scop workflow...
-#> ℹ [2025-11-19 14:13:53] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:13:53] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:13:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:13:54] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:13:55] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:13:55] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:13:55] Finished check
-#> ℹ [2025-11-19 14:13:56] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:13:56] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -725,14 +716,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:13:57] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:13:57] Reorder clusters...
-#> ℹ [2025-11-19 14:13:57] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:13:57] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:13:57] UMAP will return its model
-#> ℹ [2025-11-19 14:14:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:14:00] UMAP will return its model
-#> ✔ [2025-11-19 14:14:04] Run scop standard workflow done
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -745,8 +728,6 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ℹ [2025-11-19 14:14:06] Start find dynamic features
-#> ◌ [2025-11-19 14:14:06] Installing: mgcv...
 #>  
 #> → Will update 1 package.
 #> → The package (0 B) is cached.
@@ -754,28 +735,19 @@ pancreas_sub <- RunDynamicFeatures(
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got mgcv 1.9-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.63 MB)
-#> ✔ Installed mgcv 1.9-4  (1s)
-#> ✔ 1 pkg + 3 deps: kept 3, upd 1, dld 1 (3.63 MB) [2.5s]
-#> ✔ [2025-11-19 14:14:08] mgcv installed successfully
-#> ℹ [2025-11-19 14:14:09] Data type is raw counts
-#> ℹ [2025-11-19 14:14:11] Number of candidate features (union): 225
-#> ℹ [2025-11-19 14:14:11] Data type is raw counts
-#> ℹ [2025-11-19 14:14:11] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-19 14:14:11] Using 1 core
-#> ⠙ [2025-11-19 14:14:11] Running [1/225] Processing: 1  ETA: 22s
-#> ⠹ [2025-11-19 14:14:11] Running [48/225] Processing: 48  ETA:  7s
-#> ⠸ [2025-11-19 14:14:11] Running [138/225] Processing: 138  ETA:  3s
-#> ✔ [2025-11-19 14:14:11] Completed 225 tasks in 7.7s
+#> ✔ Installed mgcv 1.9-4  (1.1s)
+#> ✔ 1 pkg + 3 deps: kept 3, upd 1, dld 1 (3.63 MB) [2.6s]
+#> ⠙ [2025-11-22 02:10:41] Running [1/225] Processing: 1  ETA: 20s
+#> ⠹ [2025-11-22 02:10:41] Running [3/225] Processing: 3  ETA: 12s
+#> ⠸ [2025-11-22 02:10:41] Running [88/225] Processing: 88  ETA:  5s
+#> ⠼ [2025-11-22 02:10:41] Running [171/225] Processing: 171  ETA:  2s
+#> ✔ [2025-11-22 02:10:41] Completed 225 tasks in 8.2s
 #> 
-#> ℹ [2025-11-19 14:14:11] Building results
-#> ℹ [2025-11-19 14:14:19] Calculating dynamic features for "Lineage2"...
-#> ℹ [2025-11-19 14:14:19] Using 1 core
-#> ⠙ [2025-11-19 14:14:19] Running [101/225] Processing: 101  ETA:  4s
-#> ⠹ [2025-11-19 14:14:19] Running [194/225] Processing: 194  ETA:  1s
-#> ✔ [2025-11-19 14:14:19] Completed 225 tasks in 7.1s
+#> ⠙ [2025-11-22 02:10:51] Running [32/225] Processing: 32  ETA:  6s
+#> ⠹ [2025-11-22 02:10:51] Running [123/225] Processing: 123  ETA:  3s
+#> ⠸ [2025-11-22 02:10:51] Running [210/225] Processing: 210  ETA:  0s
+#> ✔ [2025-11-22 02:10:51] Completed 225 tasks in 7.5s
 #> 
-#> ℹ [2025-11-19 14:14:19] Building results
-#> ✔ [2025-11-19 14:14:26] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -784,15 +756,9 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> ℹ [2025-11-19 14:14:26] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Iapp,Pyy,Rbp4,Chgb,Slc38a5,Lrpprc,Cck,Chga,2810417H13Rik,Cdc20...
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-19 14:14:27] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht1$plot
 
@@ -812,22 +778,9 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2025-11-19 14:14:29] Start find dynamic features
-#> ✔ [2025-11-19 14:14:29] mgcv installed successfully
-#> ℹ [2025-11-19 14:14:30] Data type is raw counts
-#> ℹ [2025-11-19 14:14:30] Number of candidate features (union): 2
-#> ℹ [2025-11-19 14:14:31] Data type is raw counts
-#> ! [2025-11-19 14:14:31] Negative values detected
-#> ! [2025-11-19 14:14:31] Negative values detected
-#> ℹ [2025-11-19 14:14:31] Calculating dynamic features for "Lineage1"...
-#> ℹ [2025-11-19 14:14:31] Using 1 core
-#> ⠙ [2025-11-19 14:14:31] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-11-19 14:14:31] Completed 2 tasks in 47ms
+#> ⠙ [2025-11-22 02:11:02] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-11-22 02:11:02] Completed 2 tasks in 45ms
 #> 
-#> ℹ [2025-11-19 14:14:31] Building results
-#> ✔ [2025-11-19 14:14:31] Find dynamic features done
-#> ℹ [2025-11-19 14:14:31] Some features were missing in at least one lineage: 
-#> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
@@ -851,15 +804,9 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> ℹ [2025-11-19 14:14:33] [1] 175 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Iapp,Pyy,Rbp4,Chgb,Slc38a5,Lrpprc,Cck,Chga,2810417H13Rik,Cdc20...
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-19 14:14:34] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
@@ -877,9 +824,6 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2025-11-19 14:14:37] [1] 175 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Iapp,Pyy,Rbp4,Chgb,Slc38a5,Lrpprc,Cck,Chga,2810417H13Rik,Cdc20...
-#> ◌ [2025-11-19 14:14:38] Installing: e1071...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -889,10 +833,9 @@ ht4 <- DynamicHeatmap(
 #> ℹ No downloads are needed, 2 pkgs are cached
 #> ✔ Got proxy 0.4-27 (x86_64-pc-linux-gnu-ubuntu-24.04) (175.47 kB)
 #> ✔ Got e1071 1.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (596.57 kB)
-#> ✔ Installed e1071 1.7-16  (33ms)
-#> ✔ Installed proxy 0.4-27  (43ms)
+#> ✔ Installed e1071 1.7-16  (35ms)
+#> ✔ Installed proxy 0.4-27  (46ms)
 #> ✔ 1 pkg + 3 deps: kept 2, added 2, dld 2 (772.04 kB) [1.2s]
-#> ✔ [2025-11-19 14:14:39] e1071 installed successfully
 #> Registered S3 methods overwritten by 'proxy':
 #>   method               from    
 #>   print.registry_field registry
@@ -900,8 +843,6 @@ ht4 <- DynamicHeatmap(
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2025-11-19 14:14:40] Start Enrichment analysis
-#> ◌ [2025-11-19 14:14:40] Installing: clusterProfiler...
 #>  
 #> → Will install 35 packages.
 #> → All 35 packages (0 B) are cached.
@@ -943,49 +884,49 @@ ht4 <- DynamicHeatmap(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 35 pkgs are cached
-#> ✔ Got fastmatch 1.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.95 kB)
+#> ✔ Got ggtree 4.0.1 (source) (370.24 kB)
+#> ✔ Got R.methodsS3 1.8.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (82.67 kB)
 #> ✔ Got cpp11 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (289.40 kB)
 #> ✔ Got clusterProfiler 4.18.1 (source) (628.26 kB)
-#> ✔ Got ggtree 4.0.1 (source) (370.24 kB)
 #> ✔ Got GOSemSim 2.36.0 (source) (610.99 kB)
 #> ✔ Got fontBitstreamVera 0.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (699.47 kB)
 #> ✔ Got BiocParallel 1.44.0 (source) (1.11 MB)
-#> ✔ Got tweenr 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (461.68 kB)
-#> ✔ Got formatR 1.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.65 kB)
-#> ✔ Got lambda.r 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (110.01 kB)
 #> ✔ Got treeio 1.34.0 (source) (701.64 kB)
-#> ✔ Got ggtangle 0.0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (258.11 kB)
-#> ✔ Got ggiraph 0.9.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
+#> ✔ Got ggnewscale 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (351.15 kB)
+#> ✔ Got snow 0.4-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (97.07 kB)
+#> ✔ Got R.utils 2.13.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.45 MB)
+#> ✔ Got lambda.r 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (110.01 kB)
 #> ✔ Got gdtools 0.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (203.79 kB)
+#> ✔ Got tweenr 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (461.68 kB)
 #> ✔ Got scatterpie 0.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (150.90 kB)
 #> ✔ Got fontquiver 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.28 MB)
+#> ✔ Got futile.options 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.42 kB)
 #> ✔ Got tidytree 0.4.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (343.02 kB)
 #> ✔ Got polyclip 1.10-7 (x86_64-pc-linux-gnu-ubuntu-24.04) (120.02 kB)
-#> ✔ Got futile.options 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.42 kB)
-#> ✔ Got snow 0.4-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (97.07 kB)
-#> ✔ Got futile.logger 1.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (96.77 kB)
-#> ✔ Got ggnewscale 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (351.15 kB)
-#> ✔ Got gson 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (232.54 kB)
-#> ✔ Got R.methodsS3 1.8.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (82.67 kB)
-#> ✔ Got ape 5.8-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.97 MB)
-#> ✔ Got R.oo 1.27.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.09 kB)
 #> ✔ Got qvalue 2.42.0 (source) (2.77 MB)
+#> ✔ Got formatR 1.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.65 kB)
+#> ✔ Got R.oo 1.27.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.09 kB)
+#> ✔ Got fastmatch 1.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.95 kB)
+#> ✔ Got ggiraph 0.9.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
+#> ✔ Got gson 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (232.54 kB)
+#> ✔ Got futile.logger 1.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (96.77 kB)
+#> ✔ Got ape 5.8-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.97 MB)
+#> ✔ Got ggtangle 0.0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (258.11 kB)
 #> ✔ Got fontLiberation 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.54 MB)
-#> ✔ Got R.utils 2.13.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.45 MB)
-#> ✔ Got ggforce 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.95 MB)
 #> ✔ Got DOSE 4.4.0 (source) (5.75 MB)
+#> ✔ Got ggforce 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.95 MB)
 #> ✔ Got fgsea 1.36.0 (source) (6.17 MB)
 #> ✔ Got BH 1.87.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (13.35 MB)
 #> ✔ Got GO.db 3.22.0 (source) (25.25 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libcurl4-openssl-dev libssl-dev make libglpk-dev libxml2-dev pandoc libicu-dev`
 #> Reading package lists...
@@ -1002,66 +943,63 @@ ht4 <- DynamicHeatmap(
 #> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
 #> pandoc is already the newest version (3.1.3+ds-2).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
 #> ℹ Building qvalue 2.42.0
 #> ℹ Building GO.db 3.22.0
-#> ✔ Installed ape 5.8-1  (123ms)
-#> ✔ Installed cpp11 0.5.2  (94ms)
-#> ✔ Installed fastmatch 1.1-6  (27ms)
-#> ✔ Installed fontBitstreamVera 0.1.1  (127ms)
-#> ✔ Installed fontLiberation 0.1.0  (100ms)
-#> ✔ Installed fontquiver 0.2.1  (66ms)
-#> ✔ Installed formatR 1.14  (35ms)
-#> ✔ Installed futile.logger 1.4.3  (34ms)
-#> ✔ Installed futile.options 1.0.1  (1s)
-#> ✔ Installed BH 1.87.0-1  (2.3s)
-#> ✔ Installed gdtools 0.4.4  (126ms)
-#> ✔ Installed ggforce 0.5.0  (114ms)
-#> ✔ Installed ggiraph 0.9.2  (94ms)
-#> ✔ Installed ggnewscale 0.5.2  (115ms)
-#> ✔ Installed ggtangle 0.0.8  (109ms)
-#> ✔ Installed gson 0.1.0  (76ms)
-#> ✔ Installed lambda.r 1.2.4  (75ms)
-#> ✔ Installed polyclip 1.10-7  (77ms)
-#> ✔ Installed R.methodsS3 1.8.2  (81ms)
-#> ✔ Installed R.oo 1.27.1  (86ms)
-#> ✔ Installed R.utils 2.13.0  (81ms)
-#> ✔ Installed scatterpie 0.2.6  (110ms)
-#> ✔ Installed snow 0.4-4  (76ms)
+#> ✔ Installed ape 5.8-1  (113ms)
+#> ✔ Installed cpp11 0.5.2  (1s)
+#> ✔ Installed fastmatch 1.1-6  (31ms)
+#> ✔ Installed fontBitstreamVera 0.1.1  (36ms)
+#> ✔ Installed BH 1.87.0-1  (1.6s)
+#> ✔ Installed fontLiberation 0.1.0  (138ms)
+#> ✔ Installed fontquiver 0.2.1  (110ms)
+#> ✔ Installed formatR 1.14  (111ms)
+#> ✔ Installed futile.logger 1.4.3  (110ms)
+#> ✔ Installed futile.options 1.0.1  (109ms)
+#> ✔ Installed gdtools 0.4.4  (111ms)
+#> ✔ Installed ggforce 0.5.0  (201ms)
+#> ✔ Installed ggiraph 0.9.2  (201ms)
+#> ✔ Installed ggnewscale 0.5.2  (125ms)
+#> ✔ Installed ggtangle 0.0.8  (160ms)
+#> ✔ Installed gson 0.1.0  (131ms)
+#> ✔ Installed lambda.r 1.2.4  (111ms)
+#> ✔ Installed polyclip 1.10-7  (110ms)
+#> ✔ Installed R.methodsS3 1.8.2  (183ms)
+#> ✔ Installed R.oo 1.27.1  (137ms)
+#> ✔ Installed R.utils 2.13.0  (116ms)
+#> ✔ Installed scatterpie 0.2.6  (108ms)
+#> ✔ Installed snow 0.4-4  (99ms)
 #> ℹ Building BiocParallel 1.44.0
-#> ✔ Installed tidytree 0.4.6  (104ms)
+#> ✔ Installed tidytree 0.4.6  (130ms)
 #> ℹ Building treeio 1.34.0
-#> ✔ Built qvalue 2.42.0 (4.3s)
+#> ✔ Built qvalue 2.42.0 (4.4s)
 #> ✔ Installed tweenr 2.0.3  (40ms)
-#> ✔ Installed qvalue 2.42.0  (55ms)
-#> ✔ Built treeio 1.34.0 (6.7s)
-#> ✔ Installed treeio 1.34.0  (1s)
+#> ✔ Installed qvalue 2.42.0  (54ms)
+#> ✔ Built treeio 1.34.0 (6.1s)
+#> ✔ Installed treeio 1.34.0  (64ms)
 #> ℹ Building ggtree 4.0.1
-#> ✔ Built BiocParallel 1.44.0 (14.7s)
-#> ✔ Installed BiocParallel 1.44.0  (124ms)
+#> ✔ Built BiocParallel 1.44.0 (13.9s)
+#> ✔ Installed BiocParallel 1.44.0  (63ms)
 #> ℹ Building fgsea 1.36.0
-#> ✔ Built ggtree 4.0.1 (10.3s)
-#> ✔ Installed ggtree 4.0.1  (43ms)
-#> ✔ Built GO.db 3.22.0 (40.1s)
-#> ✔ Installed GO.db 3.22.0  (1.5s)
+#> ✔ Built ggtree 4.0.1 (10.4s)
+#> ✔ Installed ggtree 4.0.1  (45ms)
+#> ✔ Built GO.db 3.22.0 (40.8s)
+#> ✔ Installed GO.db 3.22.0  (494ms)
 #> ℹ Building GOSemSim 2.36.0
-#> ✔ Built fgsea 1.36.0 (26.9s)
-#> ✔ Installed fgsea 1.36.0  (119ms)
-#> ✔ Built GOSemSim 2.36.0 (13.4s)
-#> ✔ Installed GOSemSim 2.36.0  (38ms)
+#> ✔ Built fgsea 1.36.0 (28.3s)
+#> ✔ Installed fgsea 1.36.0  (121ms)
+#> ✔ Built GOSemSim 2.36.0 (13.7s)
+#> ✔ Installed GOSemSim 2.36.0  (41ms)
 #> ℹ Building DOSE 4.4.0
-#> ✔ Built DOSE 4.4.0 (11.7s)
-#> ✔ Installed DOSE 4.4.0  (50ms)
+#> ✔ Built DOSE 4.4.0 (11.9s)
+#> ✔ Installed DOSE 4.4.0  (55ms)
 #> ℹ Building enrichplot 1.30.3
-#> ✔ Built enrichplot 1.30.3 (11.5s)
-#> ✔ Installed enrichplot 1.30.3  (1s)
+#> ✔ Built enrichplot 1.30.3 (11.9s)
+#> ✔ Installed enrichplot 1.30.3  (24ms)
 #> ℹ Building clusterProfiler 4.18.1
-#> ✔ Built clusterProfiler 4.18.1 (12s)
-#> ✔ Installed clusterProfiler 4.18.1  (28ms)
-#> ✔ 1 pkg + 125 deps: kept 90, added 35, dld 34 (76.27 MB) [1m 43.7s]
-#> ✔ [2025-11-19 14:16:24] clusterProfiler installed successfully
-#> ℹ [2025-11-19 14:16:24] Species: "Mus_musculus"
-#> ◌ [2025-11-19 14:16:24] Installing: org.Mm.eg.db...
+#> ✔ Built clusterProfiler 4.18.1 (12.7s)
+#> ✔ Installed clusterProfiler 4.18.1  (32ms)
+#> ✔ 1 pkg + 125 deps: kept 91, added 35, dld 34 (76.27 MB) [1m 44.5s]
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
@@ -1073,11 +1011,11 @@ ht4 <- DynamicHeatmap(
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev libpng-dev`
@@ -1087,40 +1025,20 @@ ht4 <- DynamicHeatmap(
 #> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
 #> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
 #> libpng-dev is already the newest version (1.6.43-5build1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
 #> ℹ Building org.Mm.eg.db 3.22.0
-#> ✔ Built org.Mm.eg.db 3.22.0 (3m 35.2s)
-#> ✔ Installed org.Mm.eg.db 3.22.0  (2.9s)
-#> ✔ 1 pkg + 34 deps: kept 34, added 1, dld 1 (92.82 MB) [3m 52.6s]
-#> ✔ [2025-11-19 14:20:16] org.Mm.eg.db, GO.db, and GOSemSim installed successfully
-#> ℹ [2025-11-19 14:20:50] Preparing database: GO_BP
-#> ℹ [2025-11-19 14:21:11] Convert ID types for the GO_BP database
-#> ✔ [2025-11-19 14:21:11] biomaRt installed successfully
-#> ℹ [2025-11-19 14:21:11] Connect to the Ensembl archives...
-#> ℹ [2025-11-19 14:21:11] Using the 115 version of ensembl database...
-#> ℹ [2025-11-19 14:21:11] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2025-11-19 14:21:14] Searching the dataset mmusculus ...
-#> ℹ [2025-11-19 14:21:14] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2025-11-19 14:21:16] Converting the geneIDs...
-#> ℹ [2025-11-19 14:21:23] 23214 genes mapped with "entrez_id"
-#> ℹ [2025-11-19 14:21:23] ==============================
-#> ℹ                       23214 genes mapped
-#> ℹ                       2516 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2025-11-19 14:21:39] Permform enrichment...
-#> ℹ [2025-11-19 14:21:39] Using 1 core
+#> ✔ Built org.Mm.eg.db 3.22.0 (3m 33.5s)
+#> ✔ Installed org.Mm.eg.db 3.22.0  (2s)
+#> ✔ 1 pkg + 34 deps: kept 34, added 1, dld 1 (92.82 MB) [3m 51.3s]
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ⠙ [2025-11-19 14:21:39] Running [1/5] Processing: 1  ETA: 21s
-#> ⠹ [2025-11-19 14:21:39] Running [2/5] Processing: 2  ETA: 17s
-#> ⠸ [2025-11-19 14:21:39] Running [3/5] Processing: 3  ETA: 11s
-#> ⠼ [2025-11-19 14:21:39] Running [4/5] Processing: 4  ETA:  6s
-#> ✔ [2025-11-19 14:21:39] Completed 5 tasks in 27.8s
+#> ⠙ [2025-11-22 02:18:13] Running [1/5] Processing: 1  ETA: 22s
+#> ⠹ [2025-11-22 02:18:13] Running [2/5] Processing: 2  ETA: 18s
+#> ⠸ [2025-11-22 02:18:13] Running [3/5] Processing: 3  ETA: 12s
+#> ⠼ [2025-11-22 02:18:13] Running [4/5] Processing: 4  ETA:  6s
+#> ✔ [2025-11-22 02:18:13] Completed 5 tasks in 29.5s
 #> 
-#> ℹ [2025-11-19 14:21:39] Building results
-#> ✔ [2025-11-19 14:22:06] Enrichment analysis done
-#> ◌ [2025-11-19 14:22:07] Installing: simplifyEnrichment...
 #>  
 #> → Will install 7 packages.
 #> → All 7 packages (0 B) are cached.
@@ -1134,22 +1052,22 @@ ht4 <- DynamicHeatmap(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 7 pkgs are cached
-#> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
 #> ✔ Got scatterplot3d 0.3-44 (x86_64-pc-linux-gnu-ubuntu-24.04) (348.15 kB)
+#> ✔ Got simona 1.8.0 (source) (971.58 kB)
+#> ✔ Got simplifyEnrichment 2.4.0 (source) (1.08 MB)
+#> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
 #> ✔ Got NLP 0.3-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (381.71 kB)
 #> ✔ Got tm 0.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (638.54 kB)
 #> ✔ Got Polychrome 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (684.84 kB)
-#> ✔ Got simona 1.8.0 (source) (971.58 kB)
-#> ✔ Got simplifyEnrichment 2.4.0 (source) (1.08 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install perl libcurl4-openssl-dev libssl-dev make zlib1g-dev libglpk-dev libxml2-dev libpng-dev`
 #> Reading package lists...
@@ -1163,24 +1081,19 @@ ht4 <- DynamicHeatmap(
 #> libglpk-dev is already the newest version (5.0-1build2).
 #> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
 #> libpng-dev is already the newest version (1.6.43-5build1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
-#> ✔ Installed NLP 0.3-2  (60ms)
-#> ✔ Installed Polychrome 1.5.4  (76ms)
-#> ✔ Installed scatterplot3d 0.3-44  (95ms)
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
+#> ✔ Installed NLP 0.3-2  (67ms)
+#> ✔ Installed Polychrome 1.5.4  (83ms)
+#> ✔ Installed scatterplot3d 0.3-44  (137ms)
 #> ℹ Building simona 1.8.0
-#> ✔ Installed slam 0.1-55  (140ms)
-#> ✔ Installed tm 0.7-16  (37ms)
-#> ✔ Built simona 1.8.0 (48.3s)
-#> ✔ Installed simona 1.8.0  (106ms)
+#> ✔ Installed slam 0.1-55  (183ms)
+#> ✔ Installed tm 0.7-16  (39ms)
+#> ✔ Built simona 1.8.0 (51s)
+#> ✔ Installed simona 1.8.0  (108ms)
 #> ℹ Building simplifyEnrichment 2.4.0
-#> ✔ Built simplifyEnrichment 2.4.0 (8s)
-#> ✔ Installed simplifyEnrichment 2.4.0  (1s)
-#> ✔ 1 pkg + 81 deps: kept 75, added 7, dld 7 (4.29 MB) [1m 2.4s]
-#> ✔ [2025-11-19 14:23:09] simplifyEnrichment installed successfully
-#> ℹ [2025-11-19 14:23:46] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ✔ Built simplifyEnrichment 2.4.0 (8.4s)
+#> ✔ Installed simplifyEnrichment 2.4.0  (28ms)
+#> ✔ 1 pkg + 81 deps: kept 75, added 7, dld 7 (4.29 MB) [1m 5.1s]
 
 ht4$plot
 

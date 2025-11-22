@@ -645,16 +645,6 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:10:46] Start standard scop workflow...
-#> ℹ [2025-11-19 14:10:47] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:10:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:10:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:10:48] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:10:49] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:10:49] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:10:49] Finished check
-#> ℹ [2025-11-19 14:10:49] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:10:50] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -690,14 +680,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:10:50] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:10:51] Reorder clusters...
-#> ℹ [2025-11-19 14:10:51] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:10:51] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:10:51] UMAP will return its model
-#> ℹ [2025-11-19 14:10:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:10:54] UMAP will return its model
-#> ✔ [2025-11-19 14:10:57] Run scop standard workflow done
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -923,7 +905,6 @@ CellDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> ◌ [2025-11-19 14:11:07] Installing: hexbin...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
@@ -933,7 +914,6 @@ CellDimPlot(
 #> ✔ Got hexbin 1.28.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.60 MB)
 #> ✔ Installed hexbin 1.28.5  (1s)
 #> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (1.60 MB) [2.1s]
-#> ✔ [2025-11-19 14:11:09] hexbin installed successfully
 
 
 CellDimPlot(
@@ -943,7 +923,6 @@ CellDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> ✔ [2025-11-19 14:11:09] hexbin installed successfully
 
 
 CellDimPlot(
@@ -953,20 +932,10 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
-#> ✔ [2025-11-19 14:11:09] hexbin installed successfully
 
 
 # Show neighbors graphs on the plot
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:11:09] Start standard scop workflow...
-#> ℹ [2025-11-19 14:11:09] Checking a list of <Seurat> object...
-#> ℹ [2025-11-19 14:11:10] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-19 14:11:10] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:11:10] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:11:11] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:11:11] Finished check
-#> ℹ [2025-11-19 14:11:11] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:11:11] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -1002,14 +971,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:11:12] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:11:12] Reorder clusters...
-#> ℹ [2025-11-19 14:11:12] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:11:12] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:11:12] UMAP will return its model
-#> ℹ [2025-11-19 14:11:15] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:11:15] UMAP will return its model
-#> ✔ [2025-11-19 14:11:18] Run scop standard workflow done
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

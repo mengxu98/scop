@@ -504,16 +504,6 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:09:01] Start standard scop workflow...
-#> ℹ [2025-11-19 14:09:02] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:09:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:03] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:04] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:09:04] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:09:04] Finished check
-#> ℹ [2025-11-19 14:09:04] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:09:05] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -549,27 +539,12 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:09:06] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:09:06] Reorder clusters...
-#> ℹ [2025-11-19 14:09:06] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:09:06] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:09:06] UMAP will return its model
-#> ℹ [2025-11-19 14:09:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:09:08] UMAP will return its model
-#> ✔ [2025-11-19 14:09:11] Run scop standard workflow done
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
 )
-#> ℹ [2025-11-19 14:09:11] Use the HVF to calculate distance metric
-#> ℹ [2025-11-19 14:09:11] Use [1] 2000 features to calculate distance.
 #> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
 #> This message is displayed once per session.
-#> ℹ [2025-11-19 14:09:11] Detected query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:11] Detected reference data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:11] Calculate similarity...
-#> ℹ [2025-11-19 14:09:11] Use raw method to find neighbors
-#> ℹ [2025-11-19 14:09:11] Predict cell type...
 ht1$plot
 
 
@@ -586,31 +561,10 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2025-11-19 14:09:13] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2025-11-19 14:09:13] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2025-11-19 14:09:14] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:09:14] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:15] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
-#> ! [2025-11-19 14:09:15] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:16] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
-#> ! [2025-11-19 14:09:17] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:18] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
-#> ! [2025-11-19 14:09:18] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:19] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
-#> ! [2025-11-19 14:09:19] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:09:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:20] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
-#> ℹ [2025-11-19 14:09:21] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:09:21] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:09:21] Finished check
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -624,13 +578,6 @@ ht2 <- CellCorHeatmap(
   ref_annotation = "tech",
   ref_annotation_palette = "Set3"
 )
-#> ℹ [2025-11-19 14:09:25] Use the HVF to calculate distance metric
-#> ℹ [2025-11-19 14:09:25] Use [1] 632 features to calculate distance.
-#> ℹ [2025-11-19 14:09:25] Detected query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:25] Detected reference data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:25] Calculate similarity...
-#> ℹ [2025-11-19 14:09:25] Use raw method to find neighbors
-#> ℹ [2025-11-19 14:09:25] Predict cell type...
 ht2$plot
 
 
@@ -644,13 +591,6 @@ ht3 <- CellCorHeatmap(
   ref_collapsing = FALSE,
   cluster_columns = TRUE
 )
-#> ℹ [2025-11-19 14:09:33] Use the HVF to calculate distance metric
-#> ℹ [2025-11-19 14:09:33] Use [1] 632 features to calculate distance.
-#> ℹ [2025-11-19 14:09:35] Detected query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:35] Detected reference data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:35] Calculate similarity...
-#> ℹ [2025-11-19 14:09:35] Use raw method to find neighbors
-#> ℹ [2025-11-19 14:09:36] Predict cell type...
 ht3$plot
 
 
@@ -668,12 +608,5 @@ ht4 <- CellCorHeatmap(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   )
 )
-#> ℹ [2025-11-19 14:09:49] Use the HVF to calculate distance metric
-#> ℹ [2025-11-19 14:09:49] Use [1] 632 features to calculate distance.
-#> ℹ [2025-11-19 14:09:49] Detected query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:49] Detected reference data type: "log_normalized_counts"
-#> ℹ [2025-11-19 14:09:49] Calculate similarity...
-#> ℹ [2025-11-19 14:09:49] Use raw method to find neighbors
-#> ℹ [2025-11-19 14:09:49] Predict cell type...
 ht4$plot
 ```

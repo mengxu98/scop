@@ -117,16 +117,6 @@ RunFR(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:52:50] Start standard scop workflow...
-#> ℹ [2025-11-19 14:52:50] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:52:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:52:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:52:53] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:52:53] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:52:53] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:52:53] Finished check
-#> ℹ [2025-11-19 14:52:54] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:52:54] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -162,21 +152,10 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:52:55] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:52:55] Reorder clusters...
-#> ℹ [2025-11-19 14:52:55] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:52:55] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:52:55] UMAP will return its model
-#> ℹ [2025-11-19 14:53:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:53:00] UMAP will return its model
-#> ✔ [2025-11-19 14:53:04] Run scop standard workflow done
 pancreas_sub <- RunFR(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> ℹ [2025-11-19 14:53:04] Running force-directed layout
-#> ℹ [2025-11-19 14:53:05] Computing nearest neighbor graph and SNN
-#> ℹ [2025-11-19 14:53:10] Force-directed layout computed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

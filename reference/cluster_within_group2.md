@@ -28,7 +28,6 @@ A dendrogram with ordered leaves
 mat <- matrix(rnorm(100), 10, 10)
 factor <- factor(rep(1:2, each = 5))
 dend <- cluster_within_group2(mat, factor)
-#> ◌ [2025-11-19 15:14:13] Installing: dendextend...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
@@ -37,8 +36,7 @@ dend <- cluster_within_group2(mat, factor)
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got dendextend 1.19.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.05 MB)
 #> ✔ Installed dendextend 1.19.1  (1.1s)
-#> ✔ 1 pkg + 19 deps: kept 19, added 1, dld 1 (5.05 MB) [3.1s]
-#> ✔ [2025-11-19 15:14:16] dendextend installed successfully
+#> ✔ 1 pkg + 19 deps: kept 19, added 1, dld 1 (5.05 MB) [3.4s]
 dend
 #> 'dendrogram' with 2 branches and 10 members total, at height 7.730525 
 plot(dend)

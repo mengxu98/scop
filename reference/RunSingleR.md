@@ -137,45 +137,14 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2025-11-19 15:02:33] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2025-11-19 15:02:34] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2025-11-19 15:02:34] Checking a list of <Seurat> object...
-#> ! [2025-11-19 15:02:34] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:36] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
-#> ! [2025-11-19 15:02:36] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:38] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
-#> ! [2025-11-19 15:02:38] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:40] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
-#> ! [2025-11-19 15:02:40] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:42] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
-#> ! [2025-11-19 15:02:42] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:44] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:45] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 15:02:45] Number of available HVF: 2000
-#> ℹ [2025-11-19 15:02:46] Finished check
 
 # Annotation
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 15:02:48] Start standard scop workflow...
-#> ℹ [2025-11-19 15:02:49] Checking a list of <Seurat> object...
-#> ! [2025-11-19 15:02:49] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:02:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:02:51] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 15:02:51] Number of available HVF: 2000
-#> ℹ [2025-11-19 15:02:52] Finished check
-#> ℹ [2025-11-19 15:02:52] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 15:02:52] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -211,22 +180,12 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 15:02:53] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 15:02:53] Reorder clusters...
-#> ℹ [2025-11-19 15:02:53] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 15:02:53] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:02:53] UMAP will return its model
-#> ℹ [2025-11-19 15:02:58] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:02:58] UMAP will return its model
-#> ✔ [2025-11-19 15:03:03] Run scop standard workflow done
 pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = "Standardpca_SNN_res.0.6",
   ref_group = "celltype"
 )
-#> ℹ [2025-11-19 15:03:03] Start SingleR annotation
-#> ◌ [2025-11-19 15:03:03] Installing: SingleR...
 #>  
 #> → Will install 3 packages.
 #> → All 3 packages (0 B) are cached.
@@ -236,19 +195,18 @@ pancreas_sub <- RunSingleR(
 #>   
 #> ℹ No downloads are needed, 3 pkgs are cached
 #> ✔ Got DelayedMatrixStats 1.32.0 (source) (274.35 kB)
-#> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
 #> ✔ Got SingleR 2.12.0 (source) (695.24 kB)
+#> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
 #> ℹ Building sparseMatrixStats 1.22.0
-#> ✔ Built sparseMatrixStats 1.22.0 (16.8s)
-#> ✔ Installed sparseMatrixStats 1.22.0  (1.1s)
+#> ✔ Built sparseMatrixStats 1.22.0 (17.7s)
+#> ✔ Installed sparseMatrixStats 1.22.0  (59ms)
 #> ℹ Building DelayedMatrixStats 1.32.0
-#> ✔ Built DelayedMatrixStats 1.32.0 (10.4s)
-#> ✔ Installed DelayedMatrixStats 1.32.0  (1s)
+#> ✔ Built DelayedMatrixStats 1.32.0 (10.8s)
+#> ✔ Installed DelayedMatrixStats 1.32.0  (29ms)
 #> ℹ Building SingleR 2.12.0
-#> ✔ Built SingleR 2.12.0 (39.5s)
-#> ✔ Installed SingleR 2.12.0  (84ms)
-#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 10.8s]
-#> ◌ [2025-11-19 15:04:13] Installing: scrapper...
+#> ✔ Built SingleR 2.12.0 (42s)
+#> ✔ Installed SingleR 2.12.0  (88ms)
+#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 12.6s]
 #>  
 #> → Will install 4 packages.
 #> → All 4 packages (0 B) are cached.
@@ -258,30 +216,23 @@ pancreas_sub <- RunSingleR(
 #> + scrapper     1.4.0  [bld][cmp]
 #>   
 #> ℹ No downloads are needed, 4 pkgs are cached
-#> ✔ Got dir.expiry 1.18.0 (source) (308.96 kB)
 #> ✔ Got biocmake 1.2.0 (source) (229.12 kB)
+#> ✔ Got dir.expiry 1.18.0 (source) (308.96 kB)
 #> ✔ Got scrapper 1.4.0 (source) (958.15 kB)
 #> ✔ Got Rigraphlib 1.2.0 (source) (4.53 MB)
 #> ℹ Building dir.expiry 1.18.0
-#> ✔ Built dir.expiry 1.18.0 (992ms)
+#> ✔ Built dir.expiry 1.18.0 (1s)
 #> ✔ Installed dir.expiry 1.18.0  (1s)
 #> ℹ Building biocmake 1.2.0
-#> ✔ Built biocmake 1.2.0 (998ms)
-#> ✔ Installed biocmake 1.2.0  (1s)
+#> ✔ Built biocmake 1.2.0 (1s)
+#> ✔ Installed biocmake 1.2.0  (22ms)
 #> ℹ Building Rigraphlib 1.2.0
-#> ✔ Built Rigraphlib 1.2.0 (2m 13.9s)
-#> ✔ Installed Rigraphlib 1.2.0  (1.3s)
+#> ✔ Built Rigraphlib 1.2.0 (2m 13.5s)
+#> ✔ Installed Rigraphlib 1.2.0  (255ms)
 #> ℹ Building scrapper 1.4.0
-#> ✔ Built scrapper 1.4.0 (4m 5.9s)
-#> ✔ Installed scrapper 1.4.0  (693ms)
-#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 28.4s]
-#> ✔ [2025-11-19 15:10:42] SingleR and scrapper installed successfully
-#> ℹ [2025-11-19 15:10:42] Data type is log-normalized
-#> ℹ [2025-11-19 15:10:42] Detected srt_query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:10:44] Data type is log-normalized
-#> ℹ [2025-11-19 15:10:44] Detected srt_ref data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:10:49] Perform "SingleRCluster"
-#> ✔ [2025-11-19 15:10:50] SingleR annotation completed
+#> ✔ Built scrapper 1.4.0 (4m 20.5s)
+#> ✔ Installed scrapper 1.4.0  (692ms)
+#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 40.5s]
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
@@ -294,14 +245,6 @@ pancreas_sub <- RunSingleR(
   query_group = NULL,
   ref_group = "celltype"
 )
-#> ℹ [2025-11-19 15:10:51] Start SingleR annotation
-#> ✔ [2025-11-19 15:10:51] SingleR and scrapper installed successfully
-#> ℹ [2025-11-19 15:10:51] Data type is log-normalized
-#> ℹ [2025-11-19 15:10:51] Detected srt_query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:10:54] Data type is log-normalized
-#> ℹ [2025-11-19 15:10:54] Detected srt_ref data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:10:57] Perform "SingleRCell"
-#> ✔ [2025-11-19 15:11:01] SingleR annotation completed
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")

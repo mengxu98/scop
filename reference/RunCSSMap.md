@@ -44,8 +44,8 @@ RunCSSMap(
 
 - ref_css:
 
-  A character string specifying the name of the CSS reduction in the
-  reference object to use for calculating the distance metric.
+  The name of the CSS reduction in the reference object to use for
+  calculating the distance metric.
 
 - ref_umap:
 
