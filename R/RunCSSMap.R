@@ -1,6 +1,7 @@
-#' Single-cell reference mapping with CSS method
+#' @title Single-cell reference mapping with CSS method
+#'
 #' @inheritParams RunKNNMap
-#' @param ref_css A character string specifying the name of the CSS reduction in the reference object to use for calculating the distance metric.
+#' @param ref_css The name of the CSS reduction in the reference object to use for calculating the distance metric.
 #'
 #' @export
 #'
