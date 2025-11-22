@@ -96,6 +96,28 @@ Default is \code{NULL}.}
 \item{node_size}{The size of the nodes in the plot.
 Default is \code{4}.}
 
+\item{node_alpha}{A numeric value or column name of \code{node} specifying the transparency of the nodes.}
+
+\item{node_highlight}{A character vector specifying the names of nodes to highlight.}
+
+\item{node_highlight_color}{A character vector specifying the color for highlighting nodes.}
+
+\item{label}{Whether to show labels for the nodes.}
+
+\item{label.size}{The size of the labels.}
+
+\item{label.fg}{A character vector specifying the foreground color of the labels.}
+
+\item{label.bg}{A character vector specifying the background color of the labels.}
+
+\item{label.bg.r}{The background color transparency of the labels.}
+
+\item{label_insitu}{Whether to display the node group labels in situ or as numeric values.}
+
+\item{label_repel}{Whether to use force-directed label repulsion.}
+
+\item{label_repulsion}{The repulsion force for labels.}
+
 \item{label_point_size}{The size of the points in the labels.
 Default is \code{1}.}
 
@@ -138,6 +160,34 @@ Default is \code{NULL}.}
 
 \item{edge_highlight_color}{The color to use for highlighting the edges.
 Default is \code{"red"}.}
+
+\item{transition_threshold}{The threshold for removing transitions.}
+
+\item{transition_line}{A character vector specifying the type of line for transitions (straight, curved).}
+
+\item{transition_line_curvature}{The curvature of curved transitions.}
+
+\item{transition_line_angle}{The angle of curved transitions.}
+
+\item{transition_size}{A numeric vector specifying the range of transition sizes.}
+
+\item{transition_color}{A character vector specifying the color of the transitions.}
+
+\item{transition_alpha}{The transparency of the transitions.}
+
+\item{transition_arrow_type}{A character vector specifying the type of arrow for transitions (closed, open).}
+
+\item{transition_arrow_angle}{The angle of the transition arrow.}
+
+\item{transition_arrow_length}{The length of the transition arrow.}
+
+\item{transition_shorten}{The length of the transition shorten.}
+
+\item{transition_offset}{The length of the transition offset.}
+
+\item{transition_highlight}{A character vector specifying the names of transitions to highlight.}
+
+\item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
 
 \item{aspect.ratio}{The aspect ratio of the plot.
 Default is \code{1}.}
@@ -271,5 +321,5 @@ PAGAPlot(
 }
 }
 \seealso{
-\link{RunPAGA}, \link{CellDimPlot}
+\link{RunPAGA}, \link{CellDimPlot}, \link{GraphPlot}
 }

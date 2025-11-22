@@ -4,6 +4,7 @@
 #' This function generates a PAGA plot based on the given Seurat object and PAGA result.
 #'
 #' @md
+#' @inheritParams GraphPlot
 #' @param srt A Seurat object containing a PAGA result.
 #' @param paga The PAGA result from the Seurat object.
 #' Default is `srt@misc$paga`.
@@ -75,7 +76,8 @@
 #' @param return_layer Whether to return the plot as a ggplot2 layer.
 #' Default is `FALSE`.
 #'
-#' @seealso [RunPAGA], [CellDimPlot]
+#' @seealso
+#' [RunPAGA], [CellDimPlot], [GraphPlot]
 #'
 #' @export
 #'
