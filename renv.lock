@@ -1109,7 +1109,7 @@
     },
     "GOSemSim": {
       "Package": "GOSemSim",
-      "Version": "2.34.0",
+      "Version": "2.36.0",
       "Source": "Bioconductor",
       "Type": "Package",
       "Title": "GO-terms Semantic Similarity Measures",
@@ -1132,7 +1132,7 @@
         "R.utils",
         "stats",
         "utils",
-        "yulab.utils (>= 0.1.6)"
+        "yulab.utils (>= 0.2.1)"
       ],
       "Suggests": [
         "AnnotationHub",
@@ -1142,7 +1142,6 @@
         "knitr",
         "org.Hs.eg.db",
         "prettydoc",
-        "rappdirs",
         "readr",
         "rmarkdown",
         "testthat",
@@ -1159,10 +1158,10 @@
       "biocViews": "Annotation, GO, Clustering, Pathways, Network, Software",
       "RoxygenNote": "7.3.2",
       "git_url": "https://git.bioconductor.org/packages/GOSemSim",
-      "git_branch": "RELEASE_3_21",
-      "git_last_commit": "21ee191",
-      "git_last_commit_date": "2025-04-15",
-      "Repository": "Bioconductor 3.21",
+      "git_branch": "RELEASE_3_22",
+      "git_last_commit": "c1bf5c5",
+      "git_last_commit_date": "2025-10-29",
+      "Repository": "Bioconductor 3.22",
       "NeedsCompilation": "yes",
       "Author": "Guangchuang Yu [aut, cre], Alexey Stukalov [ctb], Pingfan Guo [ctb], Chuanle Xiao [ctb], Lluís Revilla Sancho [ctb]"
     },
@@ -10164,14 +10163,14 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.9-3",
+      "Version": "1.9-4",
       "Source": "Repository",
       "Authors@R": "person(given = \"Simon\", family = \"Wood\", role = c(\"aut\", \"cre\"), email = \"simon.wood@r-project.org\")",
       "Title": "Mixed GAM Computation Vehicle with Automatic Smoothness Estimation",
-      "Description": "Generalized additive (mixed) models, some of their extensions and  other generalized ridge regression with multiple smoothing  parameter estimation by (Restricted) Marginal Likelihood,  Generalized Cross Validation and similar, or using iterated  nested Laplace approximation for fully Bayesian inference. See  Wood (2017) <doi:10.1201/9781315370279> for an overview.  Includes a gam() function, a wide variety of smoothers, 'JAGS'  support and distributions beyond the exponential family.",
+      "Description": "Generalized additive (mixed) models, some of their extensions and  other generalized ridge regression with multiple smoothing  parameter estimation by (Restricted) Marginal Likelihood,  Cross Validation and similar, or using iterated nested Laplace approximation for fully Bayesian inference. See Wood (2025) <doi:10.1146/annurev-statistics-112723-034249> for an overview. Includes a gam() function, a wide variety of smoothers, 'JAGS' support and distributions beyond the exponential family.",
       "Priority": "recommended",
       "Depends": [
-        "R (>= 3.6.0)",
+        "R (>= 4.4.0)",
         "nlme (>= 3.1-64)"
       ],
       "Imports": [
@@ -14777,15 +14776,15 @@
     },
     "thisutils": {
       "Package": "thisutils",
-      "Version": "0.2.0",
+      "Version": "0.3.1",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Collection of Utility Functions for Data Analysis and Computing",
-      "Date": "2025-10-06",
+      "Date": "2025-11-17",
       "Authors@R": "person(\"Meng\", \"Xu\", email = \"mengxu98@qq.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-8300-1054\"))",
       "Maintainer": "Meng Xu <mengxu98@qq.com>",
       "Description": "Provides utility functions for data analysis and scientific computing. Includes functions for parallel processing, and other computational tasks to streamline workflows.",
-      "License": "MIT+ file LICENSE",
+      "License": "MIT + file LICENSE",
       "URL": "https://mengxu98.github.io/thisutils/",
       "BugReports": "https://github.com/mengxu98/thisutils/issues",
       "Depends": [
@@ -14799,7 +14798,8 @@
         "parallel",
         "Rcpp",
         "rlang",
-        "stats"
+        "stats",
+        "utils"
       ],
       "LinkingTo": [
         "Rcpp"
@@ -15919,7 +15919,7 @@
     },
     "yulab.utils": {
       "Package": "yulab.utils",
-      "Version": "0.2.0",
+      "Version": "0.2.1",
       "Source": "Repository",
       "Title": "Supporting Functions for Packages Maintained by 'YuLab-SMU'",
       "Authors@R": "c(person(\"Guangchuang\", \"Yu\", email = \"guangchuangyu@gmail.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-6485-8781\")))",
@@ -15931,6 +15931,7 @@
         "cli",
         "digest",
         "fs",
+        "rappdirs",
         "rlang",
         "tools",
         "utils"
@@ -15938,8 +15939,7 @@
       "Suggests": [
         "httr2",
         "jsonlite",
-        "openssl",
-        "rappdirs"
+        "openssl"
       ],
       "ByteCompile": "true",
       "License": "Artistic-2.0",
@@ -15948,7 +15948,7 @@
       "Encoding": "UTF-8",
       "RoxygenNote": "7.3.2",
       "NeedsCompilation": "no",
-      "Author": "Guangchuang Yu [aut, cre] (<https://orcid.org/0000-0002-6485-8781>)",
+      "Author": "Guangchuang Yu [aut, cre] (ORCID: <https://orcid.org/0000-0002-6485-8781>)",
       "Maintainer": "Guangchuang Yu <guangchuangyu@gmail.com>",
       "Repository": "CRAN"
     },
