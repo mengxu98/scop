@@ -133,20 +133,6 @@ pancreas_sub <- RunProportionTest(
   group.by = "CellType",
   split.by = "Phase"
 )
-#> ℹ [2025-11-19 14:32:00] Start proportion test
-#> ℹ [2025-11-19 14:32:00] Running comparison: "G1" vs "S"
-#> ℹ [2025-11-19 14:32:07] Running comparison: "S" vs "G1"
-#> ℹ [2025-11-19 14:32:14] Running comparison: "G1" vs "G2M"
-#> ℹ [2025-11-19 14:32:21] Running comparison: "G2M" vs "G1"
-#> ℹ [2025-11-19 14:32:28] Running comparison: "S" vs "G1"
-#> ℹ [2025-11-19 14:32:35] Running comparison: "G1" vs "S"
-#> ℹ [2025-11-19 14:32:42] Running comparison: "S" vs "G2M"
-#> ℹ [2025-11-19 14:32:48] Running comparison: "G2M" vs "S"
-#> ℹ [2025-11-19 14:32:55] Running comparison: "G2M" vs "G1"
-#> ℹ [2025-11-19 14:33:02] Running comparison: "G1" vs "G2M"
-#> ℹ [2025-11-19 14:33:09] Running comparison: "G2M" vs "S"
-#> ℹ [2025-11-19 14:33:15] Running comparison: "S" vs "G2M"
-#> ✔ [2025-11-19 14:33:22] Proportion test completed
 
 ProportionTestPlot(pancreas_sub)
 

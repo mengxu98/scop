@@ -234,16 +234,6 @@ StatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 15:13:01] Start standard scop workflow...
-#> ℹ [2025-11-19 15:13:02] Checking a list of <Seurat> object...
-#> ! [2025-11-19 15:13:02] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:13:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:13:04] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:13:05] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 15:13:05] Number of available HVF: 2000
-#> ℹ [2025-11-19 15:13:05] Finished check
-#> ℹ [2025-11-19 15:13:05] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 15:13:06] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -279,14 +269,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 15:13:07] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 15:13:07] Reorder clusters...
-#> ℹ [2025-11-19 15:13:07] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 15:13:07] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:13:07] UMAP will return its model
-#> ℹ [2025-11-19 15:13:12] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:13:12] UMAP will return its model
-#> ✔ [2025-11-19 15:13:16] Run scop standard workflow done
 head(pancreas_sub@meta.data)
 #>                     orig.ident nCount_RNA nFeature_RNA     S_score  G2M_score
 #> AAACCTGAGCCTTGAT SeuratProject       7071         2613 -0.01470664 -0.2326104

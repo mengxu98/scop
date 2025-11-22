@@ -109,16 +109,6 @@ RunSymphonyMap(
 ``` r
 data(panc8_sub)
 panc8_sub <- standard_scop(panc8_sub)
-#> ℹ [2025-11-19 15:11:25] Start standard scop workflow...
-#> ℹ [2025-11-19 15:11:26] Checking a list of <Seurat> object...
-#> ! [2025-11-19 15:11:26] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 15:11:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:28] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:29] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 15:11:29] Number of available HVF: 2000
-#> ℹ [2025-11-19 15:11:29] Finished check
-#> ℹ [2025-11-19 15:11:29] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 15:11:30] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  CHGA, PCSK1N, G6PC2, PCSK1, IAPP, ARFGEF3, CRYBA2, PRUNE2, CDKN1C, SORL1 
 #>     EDN3, CADM1, FXYD2, ELMO1, HADH, PAPPA2, GRIA3, RBP4, DLK1, ANXA6 
@@ -154,14 +144,6 @@ panc8_sub <- standard_scop(panc8_sub)
 #> Negative:  CD93, PLVAP, PODXL, ACVRL1, ESAM, S1PR1, CXCR4, ECSCR, DYSF, CALCRL 
 #>     ADGRF5, STC1, CD34, AFAP1L1, IFI27, SH3BP5, ACKR3, ANGPT2, DLL4, MMRN2 
 #>     MCAM, PNP, IL3RA, SPARCL1, TCF4, FAM198B, RAPGEF5, ARHGAP31, P2RY6, F2RL3 
-#> ℹ [2025-11-19 15:11:31] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 15:11:31] Reorder clusters...
-#> ℹ [2025-11-19 15:11:31] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 15:11:31] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:11:31] UMAP will return its model
-#> ℹ [2025-11-19 15:11:36] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 15:11:36] UMAP will return its model
-#> ✔ [2025-11-19 15:11:41] Run scop standard workflow done
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
 srt_ref <- integration_scop(
@@ -169,31 +151,6 @@ srt_ref <- integration_scop(
   batch = "tech",
   integration_method = "Harmony"
 )
-#> ◌ [2025-11-19 15:11:42] Run Harmony integration...
-#> ℹ [2025-11-19 15:11:42] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2025-11-19 15:11:43] Checking a list of <Seurat> object...
-#> ℹ [2025-11-19 15:11:43] Data 1/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-19 15:11:43] Perform `Seurat::FindVariableFeatures()` on the data 1/4 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:43] Data 2/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-19 15:11:43] Perform `Seurat::FindVariableFeatures()` on the data 2/4 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:44] Data 3/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-19 15:11:44] Perform `Seurat::FindVariableFeatures()` on the data 3/4 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:45] Data 4/4 of the `srt_list` has been log-normalized
-#> ℹ [2025-11-19 15:11:45] Perform `Seurat::FindVariableFeatures()` on the data 4/4 of the `srt_list`...
-#> ℹ [2025-11-19 15:11:45] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 15:11:45] Number of available HVF: 2000
-#> ℹ [2025-11-19 15:11:46] Finished check
-#> ℹ [2025-11-19 15:11:48] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 15:11:48] Perform linear dimension reduction("pca")
-#> ℹ [2025-11-19 15:11:49] Perform Harmony integration
-#> ℹ [2025-11-19 15:11:49] Harmony integration using "Harmonypca", dims:1-10 as input
-#> ✔ [2025-11-19 15:11:50] harmony installed successfully
-#> ℹ [2025-11-19 15:11:50] Perform Seurat::FindClusters (louvain)
-#> ℹ [2025-11-19 15:11:50] Reorder clusters...
-#> ℹ [2025-11-19 15:11:51] Perform nonlinear dimension reduction (umap)
-#> ℹ [2025-11-19 15:11:51] Non-linear dimensionality reduction (umap) using (Harmony) dims (1-10) as input
-#> ℹ [2025-11-19 15:11:56] Non-linear dimensionality reduction (umap) using (Harmony) dims (1-10) as input
-#> ✔ [2025-11-19 15:12:02] Run Harmony integration done
 CellDimPlot(srt_ref, group.by = c("celltype", "tech"))
 
 
@@ -205,7 +162,6 @@ srt_query <- RunSymphonyMap(
   ref_harmony = "Harmony",
   ref_umap = "HarmonyUMAP2D"
 )
-#> ◌ [2025-11-19 15:12:03] Installing: symphony...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -220,49 +176,25 @@ srt_query <- RunSymphonyMap(
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
 #> ✔ Installed RANN 2.6.2  (1s)
 #> ℹ Packaging symphony 0.1.2
-#> ✔ Packaged symphony 0.1.2 (676ms)
+#> ✔ Packaged symphony 0.1.2 (774ms)
 #> ℹ Building symphony 0.1.2
-#> ✔ Built symphony 0.1.2 (19.6s)
-#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (1s)
-#> ✔ 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) [32.5s]
-#> ✔ [2025-11-19 15:12:35] immunogenomics/symphony installed successfully
-#> ℹ [2025-11-19 15:12:35] Data type is log-normalized
-#> ℹ [2025-11-19 15:12:35] Detected srt_query data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:12:36] Data type is log-normalized
-#> ℹ [2025-11-19 15:12:36] Detected srt_ref data type: "log_normalized_counts"
-#> ℹ [2025-11-19 15:12:36] Build reference
-#> ℹ [2025-11-19 15:12:36] Saved embeddings
-#> ℹ [2025-11-19 15:12:36] Saved soft cluster assignments
-#> ℹ [2025-11-19 15:12:36] Saved variable gene information for 2000 genes
-#> ℹ [2025-11-19 15:12:36] Saved PCA loadings
-#> ℹ [2025-11-19 15:12:36] Saved metadata
-#> ℹ [2025-11-19 15:12:36] Calculate final L2 normalized reference centroids (Y_cos)
-#> ℹ [2025-11-19 15:12:36] Calculate reference compression terms (Nr and C)
-#> ℹ [2025-11-19 15:12:36] Run mapQuery
-#> ℹ [2025-11-19 15:12:36] Scaling and synchronizing query gene expression
-#> ℹ [2025-11-19 15:12:36] Found 2000 reference variable genes in query dataset
-#> ℹ [2025-11-19 15:12:36] Project query cells using reference gene loadings
-#> ℹ [2025-11-19 15:12:36] Clustering query cells to reference centroids
-#> ℹ [2025-11-19 15:12:36] Correcting query batch effects
-#> ℹ [2025-11-19 15:12:36] Run UMAP projection
-#> ℹ [2025-11-19 15:12:36] Use the reduction to calculate distance metric
-#> ℹ [2025-11-19 15:12:36] Use raw method to find neighbors
-#> ℹ [2025-11-19 15:12:37] Running UMAP projection
-#> ℹ [2025-11-19 15:12:37] Run SymphonyMap finished
+#> ✔ Built symphony 0.1.2 (21s)
+#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (48ms)
+#> ✔ 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) [33.1s]
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

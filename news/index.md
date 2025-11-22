@@ -1,5 +1,21 @@
 # Changelog
 
+## scop 0.6.2
+
+- **refactor**:
+  - Moved example figures from `man/figures/` to `figures/` directory
+    for better package organization.
+  - Updated README.md to reference figures from the new location.
+  - Added `figures/` directory to `.Rbuildignore` to exclude example
+    figures from package builds.
+- **func**:
+  - [`CellChatPlot()`](https://mengxu98.github.io/scop/reference/CellChatPlot.md):
+    Adjusted the size of saved figures for better file size
+    optimization.
+- **docs**:
+  - Updated README.md to remove references to Monocle2 and Monocle3
+    (deprecated functions).
+
 ## scop 0.6.1
 
 - **func**:

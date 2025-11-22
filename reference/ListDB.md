@@ -40,7 +40,7 @@ ListDB(species = "Mus_musculus", db = "GO_BP")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1763562099 2025-11-19 14:21:38.542627
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1763777887 2025-11-22 02:18:07.383587
 #>           db_version            db_name
 #> 1 3.22.0 nterm:15169 Mus_musculus-GO_BP
 #>                                                                    file

@@ -56,8 +56,6 @@ A list of S-phase and G2M-phase genes.
 
 ``` r
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2025-11-19 14:12:40] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2025-11-19 14:12:40] Cell cycle gene prefetching completed "Homo_sapiens"
 str(ccgenes)
 #> List of 3
 #>  $ res: NULL
@@ -65,8 +63,6 @@ str(ccgenes)
 #>  $ G2M: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...
 
 ccgenes <- CycGenePrefetch("Mus_musculus")
-#> ℹ [2025-11-19 14:12:40] Prefetching cell cycle genes for "Mus_musculus" ...
-#> ◌ [2025-11-19 14:12:40] Installing: biomaRt...
 #>  
 #> → Will install 19 packages.
 #> → All 19 packages (0 B) are cached.
@@ -93,19 +89,19 @@ ccgenes <- CycGenePrefetch("Mus_musculus")
 #>   
 #> ℹ No downloads are needed, 19 pkgs are cached
 #> ✔ Got KEGGREST 1.50.0 (source) (239.73 kB)
-#> ✔ Got Seqinfo 1.0.0 (source) (254.66 kB)
-#> ✔ Got XVector 0.50.0 (source) (71.42 kB)
-#> ✔ Got BiocFileCache 3.0.0 (source) (744.19 kB)
 #> ✔ Got blob 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (47.47 kB)
 #> ✔ Got filelock 1.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (24.70 kB)
-#> ✔ Got progress 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (87.00 kB)
+#> ✔ Got Seqinfo 1.0.0 (source) (254.66 kB)
 #> ✔ Got prettyunits 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.62 kB)
-#> ✔ Got hms 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.38 kB)
+#> ✔ Got XVector 0.50.0 (source) (71.42 kB)
 #> ✔ Got bit64 4.6.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (492.54 kB)
+#> ✔ Got BiocFileCache 3.0.0 (source) (744.19 kB)
 #> ✔ Got bit 4.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (628.10 kB)
-#> ✔ Got httr2 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)
+#> ✔ Got hms 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.38 kB)
+#> ✔ Got progress 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (87.00 kB)
 #> ✔ Got biomaRt 2.66.0 (source) (909.34 kB)
 #> ✔ Got DBI 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (916.93 kB)
+#> ✔ Got httr2 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)
 #> ✔ Got dbplyr 2.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.24 MB)
 #> ✔ Got RSQLite 2.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.35 MB)
 #> ✔ Got AnnotationDbi 1.72.0 (source) (4.38 MB)
@@ -113,8 +109,8 @@ ccgenes <- CycGenePrefetch("Mus_musculus")
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
@@ -129,55 +125,41 @@ ccgenes <- CycGenePrefetch("Mus_musculus")
 #> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
 #> libpng-dev is already the newest version (1.6.43-5build1).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
 #> ℹ Building Seqinfo 1.0.0
 #> ℹ Building XVector 0.50.0
-#> ✔ Installed bit 4.6.0  (86ms)
-#> ✔ Installed bit64 4.6.0-1  (105ms)
-#> ✔ Installed blob 1.2.4  (110ms)
-#> ✔ Installed DBI 1.2.3  (204ms)
-#> ✔ Installed dbplyr 2.5.1  (96ms)
-#> ✔ Installed filelock 1.0.3  (71ms)
-#> ✔ Installed hms 1.1.4  (91ms)
-#> ✔ Installed httr2 1.2.1  (107ms)
-#> ✔ Installed prettyunits 1.2.0  (107ms)
-#> ✔ Installed progress 1.2.3  (104ms)
-#> ✔ Installed RSQLite 2.4.4  (110ms)
+#> ✔ Installed bit 4.6.0  (92ms)
+#> ✔ Installed bit64 4.6.0-1  (136ms)
+#> ✔ Installed blob 1.2.4  (168ms)
+#> ✔ Installed DBI 1.2.3  (117ms)
+#> ✔ Installed dbplyr 2.5.1  (101ms)
+#> ✔ Installed filelock 1.0.3  (77ms)
+#> ✔ Installed hms 1.1.4  (75ms)
+#> ✔ Installed httr2 1.2.1  (80ms)
+#> ✔ Installed prettyunits 1.2.0  (73ms)
+#> ✔ Installed progress 1.2.3  (77ms)
+#> ✔ Installed RSQLite 2.4.4  (121ms)
 #> ℹ Building BiocFileCache 3.0.0
-#> ✔ Installed xml2 1.5.0  (184ms)
-#> ✔ Built BiocFileCache 3.0.0 (5.6s)
-#> ✔ Installed BiocFileCache 3.0.0  (35ms)
-#> ✔ Built Seqinfo 1.0.0 (7.1s)
-#> ✔ Installed Seqinfo 1.0.0  (1s)
-#> ✔ Built XVector 0.50.0 (10.4s)
-#> ✔ Installed XVector 0.50.0  (1s)
+#> ✔ Installed xml2 1.5.0  (102ms)
+#> ✔ Built BiocFileCache 3.0.0 (6.6s)
+#> ✔ Installed BiocFileCache 3.0.0  (48ms)
+#> ✔ Built Seqinfo 1.0.0 (8.1s)
+#> ✔ Installed Seqinfo 1.0.0  (28ms)
+#> ✔ Built XVector 0.50.0 (10.3s)
+#> ✔ Installed XVector 0.50.0  (28ms)
 #> ℹ Building Biostrings 2.78.0
-#> ✔ Built Biostrings 2.78.0 (18.3s)
-#> ✔ Installed Biostrings 2.78.0  (1.1s)
+#> ✔ Built Biostrings 2.78.0 (19.3s)
+#> ✔ Installed Biostrings 2.78.0  (161ms)
 #> ℹ Building KEGGREST 1.50.0
-#> ✔ Built KEGGREST 1.50.0 (4.5s)
+#> ✔ Built KEGGREST 1.50.0 (4.9s)
 #> ✔ Installed KEGGREST 1.50.0  (1s)
 #> ℹ Building AnnotationDbi 1.72.0
-#> ✔ Built AnnotationDbi 1.72.0 (11.5s)
-#> ✔ Installed AnnotationDbi 1.72.0  (63ms)
+#> ✔ Built AnnotationDbi 1.72.0 (12.1s)
+#> ✔ Installed AnnotationDbi 1.72.0  (72ms)
 #> ℹ Building biomaRt 2.66.0
-#> ✔ Built biomaRt 2.66.0 (7.6s)
-#> ✔ Installed biomaRt 2.66.0  (1s)
-#> ✔ 1 pkg + 54 deps: kept 36, added 19, dld 18 (25.25 MB) [1m 3.2s]
-#> ✔ [2025-11-19 14:13:43] biomaRt installed successfully
-#> ℹ [2025-11-19 14:13:43] Connect to the Ensembl archives...
-#> ℹ [2025-11-19 14:13:46] Using the 115 version of ensembl database...
-#> ℹ [2025-11-19 14:13:46] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2025-11-19 14:13:47] Searching the dataset hsapiens ...
-#> ℹ [2025-11-19 14:13:47] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2025-11-19 14:13:49] Converting the geneIDs...
-#> ℹ [2025-11-19 14:13:51] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2025-11-19 14:13:51] ==============================
-#> ℹ                       97 genes mapped
-#> ℹ                       0 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2025-11-19 14:13:51] Cached conversion results for "Mus_musculus"
-#> ✔ [2025-11-19 14:13:51] Cell cycle gene prefetching completed "Mus_musculus"
+#> ✔ Built biomaRt 2.66.0 (8.2s)
+#> ✔ Installed biomaRt 2.66.0  (76ms)
+#> ✔ 1 pkg + 54 deps: kept 36, added 19, dld 18 (25.25 MB) [1m 3.7s]
 str(ccgenes)
 #> List of 3
 #>  $ res:List of 7

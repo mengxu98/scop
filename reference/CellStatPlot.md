@@ -238,16 +238,6 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2025-11-19 14:11:55] Start standard scop workflow...
-#> ℹ [2025-11-19 14:11:55] Checking a list of <Seurat> object...
-#> ! [2025-11-19 14:11:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2025-11-19 14:11:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:11:57] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2025-11-19 14:11:57] Use the separate HVF from srt_list
-#> ℹ [2025-11-19 14:11:58] Number of available HVF: 2000
-#> ℹ [2025-11-19 14:11:58] Finished check
-#> ℹ [2025-11-19 14:11:58] Perform `Seurat::ScaleData()`
-#> ℹ [2025-11-19 14:11:58] Perform pca linear dimension reduction
 #> StandardPC_ 1 
 #> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
 #>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
@@ -283,14 +273,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-#> ℹ [2025-11-19 14:11:59] Perform `Seurat::FindClusters()` with louvain and `cluster_resolution` = 0.6
-#> ℹ [2025-11-19 14:11:59] Reorder clusters...
-#> ℹ [2025-11-19 14:11:59] Perform umap nonlinear dimension reduction
-#> ℹ [2025-11-19 14:11:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:11:59] UMAP will return its model
-#> ℹ [2025-11-19 14:12:02] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2025-11-19 14:12:02] UMAP will return its model
-#> ✔ [2025-11-19 14:12:05] Run scop standard workflow done
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -508,8 +490,6 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2025-11-19 14:12:12] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ◌ [2025-11-19 14:12:12] Installing: ggsankey...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -523,27 +503,26 @@ CellStatPlot(
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
-#> ✔ Installed forcats 1.0.1  (1.2s)
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
+#> ✔ Installed forcats 1.0.1  (28ms)
 #> ℹ Packaging ggsankey 0.0.99999
-#> ✔ Packaged ggsankey 0.0.99999 (525ms)
+#> ✔ Packaged ggsankey 0.0.99999 (568ms)
 #> ℹ Building ggsankey 0.0.99999
-#> ✔ Built ggsankey 0.0.99999 (2.2s)
+#> ✔ Built ggsankey 0.0.99999 (2.4s)
 #> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (1s)
-#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (NA B) [9.1s]
-#> ✔ [2025-11-19 14:12:21] davidsjoberg/ggsankey installed successfully
+#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (NA B) [8.8s]
 
 
 CellStatPlot(
@@ -551,7 +530,6 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2025-11-19 14:12:22] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
 
 
 CellStatPlot(
@@ -563,8 +541,6 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2025-11-19 14:12:23] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ◌ [2025-11-19 14:12:23] Installing: ggVennDiagram...
 #>  
 #> → Will install 8 packages.
 #> → All 8 packages (0 B) are cached.
@@ -580,11 +556,11 @@ CellStatPlot(
 #>   
 #> ℹ No downloads are needed, 8 pkgs are cached
 #> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
-#> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
-#> ✔ Got yulab.utils 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (119.17 kB)
-#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
-#> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
 #> ✔ Got ggfun 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (250.63 kB)
+#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
+#> ✔ Got yulab.utils 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (119.17 kB)
+#> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
+#> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
 #> ✔ Got venn 1.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (308.02 kB)
 #> ✔ Got ggVennDiagram 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.27 MB)
 #> ℹ Installing system requirements
@@ -602,17 +578,16 @@ CellStatPlot(
 #> Building dependency tree...
 #> Reading state information...
 #> make is already the newest version (4.3-4.1build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 31 not upgraded.
-#> ✔ Installed admisc 0.39  (60ms)
-#> ✔ Installed aplot 0.2.9  (72ms)
-#> ✔ Installed ggfun 0.2.0  (93ms)
-#> ✔ Installed ggplotify 0.1.3  (125ms)
-#> ✔ Installed ggVennDiagram 1.5.4  (102ms)
-#> ✔ Installed gridGraphics 0.5-1  (63ms)
-#> ✔ Installed venn 1.12  (60ms)
-#> ✔ Installed yulab.utils 0.2.1  (44ms)
-#> ✔ 1 pkg + 36 deps: kept 29, added 8, dld 8 (6.82 MB) [5s]
-#> ✔ [2025-11-19 14:12:28] ggVennDiagram installed successfully
+#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
+#> ✔ Installed admisc 0.39  (65ms)
+#> ✔ Installed aplot 0.2.9  (81ms)
+#> ✔ Installed ggfun 0.2.0  (147ms)
+#> ✔ Installed ggplotify 0.1.3  (179ms)
+#> ✔ Installed gridGraphics 0.5-1  (22ms)
+#> ✔ Installed ggVennDiagram 1.5.4  (132ms)
+#> ✔ Installed venn 1.12  (69ms)
+#> ✔ Installed yulab.utils 0.2.1  (47ms)
+#> ✔ 1 pkg + 36 deps: kept 29, added 8, dld 8 (6.82 MB) [5.3s]
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -635,8 +610,6 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2025-11-19 14:12:29] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ✔ [2025-11-19 14:12:29] ggVennDiagram installed successfully
 
 
 CellStatPlot(
@@ -647,8 +620,6 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2025-11-19 14:12:29] Stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset
-#> ◌ [2025-11-19 14:12:29] Installing: ggupset...
 #>  
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
@@ -656,9 +627,8 @@ CellStatPlot(
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got ggupset 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.59 MB)
-#> ✔ Installed ggupset 0.4.1  (1s)
-#> ✔ 1 pkg + 21 deps: kept 21, added 1, dld 1 (2.59 MB) [2.8s]
-#> ✔ [2025-11-19 14:12:32] ggupset installed successfully
+#> ✔ Installed ggupset 0.4.1  (56ms)
+#> ✔ 1 pkg + 21 deps: kept 21, added 1, dld 1 (2.59 MB) [2.1s]
 
 
 sum(
