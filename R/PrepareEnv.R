@@ -200,6 +200,16 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
   Sys.unsetenv("RETICULATE_PYTHON")
   options(reticulate.miniconda.enabled = FALSE)
 
+  # Set R environment variables to prevent crashes when calling Python
+  Sys.setenv(OMP_NUM_THREADS = "1")
+  Sys.setenv(OPENBLAS_NUM_THREADS = "1")
+  Sys.setenv(MKL_NUM_THREADS = "1")
+  Sys.setenv(VECLIB_MAXIMUM_THREADS = "1")
+  Sys.setenv(NUMEXPR_NUM_THREADS = "1")
+  Sys.setenv(KMP_WARNINGS = "0")
+  Sys.setenv(KMP_DUPLICATE_LIB_OK = "TRUE")
+  Sys.setenv(NUMBA_NUM_THREADS = "1")
+
   python_path <- conda_python(
     conda = conda,
     envname = envname
@@ -207,6 +217,40 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
   reticulate::use_python(
     python_path,
     required = TRUE
+  )
+
+  # Configure Python environment variables after Python is initialized
+  tryCatch(
+    {
+      reticulate::py_run_string("
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
+os.environ['KMP_WARNINGS'] = '0'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+os.environ['NUMBA_NUM_THREADS'] = '1'
+try:
+    import numba
+    if hasattr(numba, 'set_num_threads'):
+        try:
+            numba.set_num_threads(1)
+        except RuntimeError:
+            pass
+    if hasattr(numba, 'config'):
+        numba.config.NUMBA_NUM_THREADS = 1
+except ImportError:
+    pass
+except Exception:
+    pass
+")
+    },
+    error = function(e) {
+      # Silently ignore errors if Python is not yet initialized
+      # This can happen during package loading
+    }
   )
 }
 
