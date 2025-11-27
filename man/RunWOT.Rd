@@ -21,7 +21,7 @@ RunWOT(
   recalculate = FALSE,
   palette = "Paired",
   palcolor = NULL,
-  show_plot = TRUE,
+  show_plot = FALSE,
   save = FALSE,
   dpi = 300,
   dirpath = "./",
@@ -59,16 +59,17 @@ Default is 3.}
 If not provided, only trajectory and fate analysis for the specified \code{time_from} will be performed.}
 
 \item{get_coupling}{Whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{recalculate}{Whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{palette}{The palette to use for coloring cells.}
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
-\item{show_plot}{Whether to show the plot.}
+\item{show_plot}{Whether to show the plot.
+Default is \code{FALSE}.}
 
 \item{save}{Whether to save the plots.}
 
@@ -123,6 +124,10 @@ pancreas_sub <- RunWOT(
   tmap_out = "tmaps/custom_tmap"
 )
 }
+}
+\references{
+\href{https://doi.org/10.1016/j.cell.2019.01.006}{Geoffrey et al. (2019) Cell},
+\href{https://github.com/broadinstitute/wot}{GitHub}
 }
 \seealso{
 \link{srt_to_adata}
