@@ -4,6 +4,7 @@
 #' This function creates a velocity plot for a given Seurat object.
 #' The plot shows the velocity vectors of the cells in a specified reduction space.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param reduction Name of the reduction in the Seurat object to use for plotting.
 #' @param dims Indices of the dimensions to use for plotting.
@@ -359,7 +360,7 @@ VelocityPlot <- function(
           min.L = streamline_minL,
           res = streamline_res,
           n = streamline_n,
-          size = max(streamline_width, na.rm = TRUE) + streamline_bg_stroke,
+          linewidth = max(streamline_width, na.rm = TRUE) + streamline_bg_stroke,
           color = streamline_bg_color,
           alpha = streamline_alpha,
           arrow.type = "closed",
@@ -375,7 +376,7 @@ VelocityPlot <- function(
           min.L = streamline_minL,
           res = streamline_res,
           n = streamline_n,
-          size = max(streamline_width, na.rm = TRUE),
+          linewidth = max(streamline_width, na.rm = TRUE),
           color = streamline_color,
           alpha = streamline_alpha,
           arrow.type = "closed",
@@ -409,7 +410,7 @@ VelocityPlot <- function(
           min.L = streamline_minL,
           res = streamline_res,
           n = streamline_n,
-          size = max(streamline_width, na.rm = TRUE) + streamline_bg_stroke,
+          linewidth = max(streamline_width, na.rm = TRUE) + streamline_bg_stroke,
           color = streamline_bg_color,
           alpha = streamline_alpha,
           arrow.type = "closed",
@@ -425,7 +426,7 @@ VelocityPlot <- function(
             y = y,
             dx = u,
             dy = v,
-            size = after_stat(step),
+            linewidth = after_stat(step),
             color = sqrt(after_stat(dx)^2 + after_stat(dy)^2)
           ),
           L = streamline_L,
@@ -466,7 +467,7 @@ VelocityPlot <- function(
             order = 1
           )
         ),
-        scale_size(range = range(streamline_width), guide = "none")
+        scale_linewidth(range = range(streamline_width), guide = "none")
       )
     }
   }
