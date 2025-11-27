@@ -178,7 +178,7 @@ RunPaCMAP.default <- function(
   }
 
   PrepareEnv()
-  check_python("pacmap")
+  check_python("pacmap", verbose = verbose)
   pacmap <- reticulate::import("pacmap")
 
   operator <- pacmap$PaCMAP(

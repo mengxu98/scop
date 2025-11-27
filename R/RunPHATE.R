@@ -197,7 +197,7 @@ RunPHATE.default <- function(
     ...) {
   set.seed(seed = seed.use)
   PrepareEnv()
-  check_python("phate")
+  check_python("phate", verbose = verbose)
   phate <- reticulate::import("phate")
 
   if (is.numeric(knn_max) && length(knn_max) > 0) {
