@@ -31,7 +31,7 @@ RunPAGA(
   min_group_size = 0.01,
   palette = "Paired",
   palcolor = NULL,
-  show_plot = TRUE,
+  show_plot = FALSE,
   save = FALSE,
   dpi = 300,
   dirpath = "./",
@@ -101,7 +101,8 @@ Edges for weights below this threshold will not be drawn.}
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
-\item{show_plot}{Whether to show the plot.}
+\item{show_plot}{Whether to show the plot.
+Default is \code{FALSE}.}
 
 \item{save}{Whether to save the plots.}
 
