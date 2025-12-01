@@ -32,7 +32,7 @@ PrepareEnv <- function(
     force = FALSE,
     ...) {
   env_cache <- getOption("scop_env_cache", default = NULL)
-  if (isTRUE(env_cache) && !isTRUE(force)) {
+  if (isTRUE(env_cache) && isFALSE(force)) {
     log_message(
       "{cli::col_green('Python environment already prepared')}\n",
       "{cli::col_grey('Until next loading, the environment will be cached')}",
@@ -116,6 +116,8 @@ PrepareEnv <- function(
     log_message(
       "Creating conda environment with Python {.val {python_version}}..."
     )
+
+    accept_conda_tos(conda = conda)
 
     python_path <- reticulate::conda_create(
       conda = conda,
@@ -278,11 +280,11 @@ install_miniconda2 <- function(
       "reticulate", "miniconda_installer_arch"
     )(info)
 
-    name <- if (.is_windows()) {
+    name <- if (is_windows()) {
       sprintf("Miniconda%s-latest-Windows-%s.exe", version, arch)
-    } else if (.is_osx()) {
+    } else if (is_osx()) {
       sprintf("Miniconda%s-latest-MacOSX-%s.sh", version, arch)
-    } else if (.is_linux()) {
+    } else if (is_linux()) {
       sprintf("Miniconda%s-latest-Linux-%s.sh", version, arch)
     } else {
       log_message(
@@ -670,7 +672,10 @@ conda_install <- function(
   )
 
   if (inherits(python, "error") || !file.exists(python)) {
-    log_message("Environment doesn't exist, creating: {.file {envname}}")
+    log_message(
+      "Python environment does not exist, creating: {.file {envname}}"
+    )
+    accept_conda_tos(conda = conda)
     reticulate::conda_create(
       envname = envname,
       packages = python_package %||% "python",
@@ -679,11 +684,15 @@ conda_install <- function(
       conda = conda
     )
     python <- conda_python(envname = envname, conda = conda)
-    log_message("Environment created with Python: {.pkg {python}}")
+    log_message(
+      "Environment created with python: {.pkg {python}}"
+    )
   }
 
   if (!is.null(python_version)) {
-    log_message("Updating Python to version: {.pkg {python_version}}")
+    log_message(
+      "Updating python version to: {.pkg {python_version}}"
+    )
     args <- conda_args("install", envname, python_package)
     status <- system2t(conda, shQuote(args))
     if (status != 0L) {
@@ -777,7 +786,7 @@ conda_python <- function(
     "reticulate", "python_environment_resolve"
   )(envname)
   if (grepl("[/\\\\]", envname)) {
-    suffix <- if (.is_windows()) "python.exe" else "bin/python"
+    suffix <- if (is_windows()) "python.exe" else "bin/python"
     path <- file.path(envname, suffix)
     if (file.exists(path)) {
       return(path)
@@ -803,7 +812,7 @@ conda_python <- function(
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
   if (nrow(env) == 0) {
     env_path <- file.path(envs_dir, envname)
-    suffix <- if (.is_windows()) "python.exe" else "bin/python"
+    suffix <- if (is_windows()) "python.exe" else "bin/python"
     python_path <- file.path(env_path, suffix)
 
     if (file.exists(python_path)) {
@@ -828,19 +837,19 @@ conda_python <- function(
 #' @param force Whether to force removal without confirmation.
 #' Default is `FALSE`.
 #'
-#' @return Invisibly returns TRUE if successful, FALSE otherwise.
+#' @return Invisibly returns `TRUE` if successful, `FALSE` otherwise.
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Remove the default scop environment
+#' # Remove default environment
 #' RemoveEnv()
 #'
 #' # Remove a specific environment
 #' RemoveEnv("my_old_env")
 #'
-#' # Force removal without confirmation
+#' # Removal without confirmation
 #' RemoveEnv("my_old_env", force = TRUE)
 #' }
 RemoveEnv <- function(
@@ -849,7 +858,9 @@ RemoveEnv <- function(
     force = FALSE) {
   envname <- get_envname(envname)
 
-  log_message("Removing conda environment: {.val {envname}}")
+  log_message(
+    "Removing conda environment: {.file {envname}}"
+  )
 
   if (identical(conda, "auto")) {
     conda <- find_conda()
@@ -1001,7 +1012,6 @@ ListEnv <- function(conda = "auto") {
 
   if (is.null(conda)) {
     log_message("Conda not found", message_type = "error")
-    return(data.frame(name = character(), python = character()))
   }
 
   conda_envs <- reticulate::conda_list(conda = conda)
@@ -1016,7 +1026,7 @@ ListEnv <- function(conda = "auto") {
       if (!env_dir %in% existing_names) {
         env_path <- file.path(envs_dir, env_dir)
         python_path <- file.path(
-          env_path, if (.is_windows()) "python.exe" else "bin/python"
+          env_path, if (is_windows()) "python.exe" else "bin/python"
         )
 
         if (dir.exists(file.path(env_path, "conda-meta")) && file.exists(python_path)) {
@@ -1038,14 +1048,60 @@ ListEnv <- function(conda = "auto") {
   return(conda_envs)
 }
 
-.is_windows <- function() {
-  identical(.Platform$OS.type, "windows")
+accept_conda_tos <- function(conda = "auto") {
+  if (identical(conda, "auto")) {
+    conda <- find_conda()
+  } else {
+    options(reticulate.conda_binary = conda)
+    conda <- find_conda()
+  }
+
+  if (is.null(conda)) {
+    return(invisible(FALSE))
+  }
+
+  system2t <- get_namespace_fun("reticulate", "system2t")
+
+  channels <- c(
+    "https://repo.anaconda.com/pkgs/main",
+    "https://repo.anaconda.com/pkgs/r",
+    "https://repo.anaconda.com/pkgs/msys2"
+  )
+
+  log_message("Accepting conda Terms of Service for required channels...")
+
+  for (channel in channels) {
+    tryCatch(
+      {
+        args <- c("tos", "accept", "--override-channels", "--channel", channel)
+        status <- system2t(conda, shQuote(args))
+        if (status == 0L) {
+          log_message(
+            "Accepted ToS for channel: {.val {channel}}",
+            message_type = "success"
+          )
+        }
+      },
+      error = function(e) {
+        log_message(
+          "Failed to accept ToS for channel: {.val {channel}}",
+          message_type = "error"
+        )
+      }
+    )
+  }
+
+  return(invisible(TRUE))
 }
 
-.is_osx <- function() {
+is_linux <- function() {
+  identical(tolower(Sys.info()[["sysname"]]), "linux")
+}
+
+is_osx <- function() {
   Sys.info()[["sysname"]] == "Darwin"
 }
 
-.is_linux <- function() {
-  identical(tolower(Sys.info()[["sysname"]]), "linux")
+is_windows <- function() {
+  identical(.Platform$OS.type, "windows")
 }
