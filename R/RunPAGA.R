@@ -41,6 +41,7 @@
 #' @param palette The palette to use for coloring cells.
 #' @param palcolor A vector of colors to use as the palette.
 #' @param show_plot Whether to show the plot.
+#' Default is `FALSE`.
 #' @param dpi The DPI (dots per inch) for saving the plot.
 #' @param save Whether to save the plots.
 #' @param dirpath The directory to save the plots.
@@ -131,7 +132,7 @@ RunPAGA <- function(
     min_group_size = 0.01,
     palette = "Paired",
     palcolor = NULL,
-    show_plot = TRUE,
+    show_plot = FALSE,
     save = FALSE,
     dpi = 300,
     dirpath = "./",
@@ -231,11 +232,12 @@ RunPAGA <- function(
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  log_message("Running {.pkg PAGA} analysis...")
+  log_message("Running {.pkg PAGA} analysis...", verbose = verbose)
   adata <- do.call(functions$PAGA, args)
   log_message(
     "{.pkg PAGA} analysis completed",
-    message_type = "success"
+    message_type = "success",
+    verbose = verbose
   )
 
   if (isTRUE(return_seurat)) {

@@ -174,7 +174,7 @@ RunTriMap.default <- function(
   set.seed(seed = seed.use)
 
   PrepareEnv()
-  check_python("trimap")
+  check_python("trimap", verbose = verbose)
   trimap <- reticulate::import("trimap")
 
   operator <- trimap$TRIMAP(
