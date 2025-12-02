@@ -40,6 +40,7 @@
 #'   object = pancreas_sub,
 #'   features = SeuratObject::VariableFeatures(pancreas_sub)
 #' )
+#'
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -68,9 +69,14 @@ RunDM.Seurat <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  if (!is.null(x = features)) {
+  log_message(
+    "Running {.pkg destiny::DiffusionMap}",
+    message_type = "running",
+    verbose = verbose
+  )
+  if (!is.null(features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
-    data.use <- as_matrix(
+    data_use <- as_matrix(
       Matrix::t(
         GetAssayData5(
           object = object,
@@ -79,37 +85,36 @@ RunDM.Seurat <- function(
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < ndcs) {
+    if (ncol(data_use) < ndcs) {
       log_message(
-        "Please provide as many or more features than ndcs: ",
-        length(x = features),
-        " features provided, ",
-        ndcs,
-        " Diffusion components requested",
+        "Please provide as many or more features than ndcs: {.val {length(features)}}",
+        " features provided, {.val {ndcs}} Diffusion components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
-    data.use <- SeuratObject::Embeddings(object[[reduction]])[, dims]
+  } else if (!is.null(dims)) {
+    reduction <- DefaultReduction(
+      object,
+      pattern = reduction
+    )
+    data_use <- SeuratObject::Embeddings(object[[reduction]])[, dims]
     assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
-    if (length(x = dims) < ndcs) {
+    if (length(dims) < ndcs) {
       log_message(
-        "Please provide as many or more dims than ndcs: ",
-        length(x = dims),
-        " dims provided, ",
-        ndcs,
-        " DiffusionMap components requested",
+        "Please provide as many or more dims than ndcs: {.val {length(dims)}}",
+        " dims provided, {.val {ndcs}} DiffusionMap components requested",
         message_type = "error"
       )
     }
   } else {
     log_message(
-      "Please specify one of dims, features",
+      "Please specify one of {.arg dims} and {.arg features}",
       message_type = "error"
     )
   }
-  reduction.data <- RunDM(
-    object = data.use,
+
+  object[[reduction.name]] <- RunDM(
+    object = data_use,
     assay = assay,
     layer = layer,
     ndcs = ndcs,
@@ -121,8 +126,13 @@ RunDM.Seurat <- function(
     verbose = verbose,
     ...
   )
-  object[[reduction.name]] <- reduction.data
   object <- Seurat::LogSeuratCommand(object = object)
+  log_message(
+    "{.pkg destiny::DiffusionMap} computed successfully and set {.val {reduction.name}} reduction",
+    message_type = "success",
+    verbose = verbose
+  )
+
   return(object)
 }
 
@@ -141,29 +151,30 @@ RunDM.default <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  check_r("destiny")
-  if (!is.null(x = seed.use)) {
-    set.seed(seed = seed.use)
-  }
+  check_r("destiny", verbose = verbose)
 
-  dm.results <- destiny::DiffusionMap(
-    data = as_matrix(object),
+  set.seed(seed = seed.use)
+  dm_results <- destiny::DiffusionMap(
+    data = object,
     n_eigs = ndcs,
     sigma = sigma,
     k = k,
     distance = dist.method,
-    verbose = verbose,
+    verbose = FALSE,
     ...
   )
 
-  cell.embeddings <- dm.results@eigenvectors
-  rownames(x = cell.embeddings) <- rownames(object)
-  colnames(x = cell.embeddings) <- paste0(reduction.key, 1:ndcs)
+  embeddings <- dm_results@eigenvectors
+  rownames(embeddings) <- rownames(object)
+  colnames(embeddings) <- paste0(reduction.key, 1:ndcs)
   reduction <- SeuratObject::CreateDimReducObject(
-    embeddings = cell.embeddings,
+    embeddings = embeddings,
     assay = assay,
     key = reduction.key,
-    misc = list(slot = layer, dm.results = dm.results)
+    misc = list(
+      slot = layer,
+      dm.results = dm_results
+    )
   )
   return(reduction)
 }

@@ -596,29 +596,27 @@ def SCVELO(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on M-series MacBook
-    is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
+    # Check if running on Apple silicon
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
-    if is_m_series:
+    if is_apple_silicon:
         log_message(
-            "M-series MacBook detected: Applying M-series specific configurations",
+            "Apple silicon detected: Applying specific configurations",
             message_type="info",
             verbose=verbose,
         )
-        # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
 
-        # Configure NUMBA for M-series
         import numba
 
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
         numba.set_num_threads(1)  # Force single thread
         log_message(
-            "NUMBA configured for M-series MacBook",
+            "NUMBA configured for Apple silicon",
             message_type="success",
             verbose=verbose,
         )
@@ -888,19 +886,16 @@ def SCVELO(
             adata.layers["Ms"] = Ms
             adata.layers["Mu"] = Mu
 
-        # VELOCITY ESTIMATION PHASE
         log_message(
             "Starting {.pkg velocity} estimation",
             message_type="running",
             verbose=verbose,
         )
 
-        # Process each mode
         for m in mode:
             log_message(f"Processing mode: {m}", message_type="info", verbose=verbose)
 
             if m == "dynamical":
-                # Dynamical modeling
                 log_message(
                     "Performing {.pkg velocity} dynamical modeling...",
                     message_type="info",
@@ -927,7 +922,6 @@ def SCVELO(
                     )
                     scv.tl.recover_dynamics(adata, use_raw=use_raw, n_jobs=n_jobs)
 
-            # Compute velocity
             log_message(
                 "Computing {.pkg velocity} {.val {m}} velocity...",
                 message_type="info",
@@ -935,7 +929,6 @@ def SCVELO(
             )
             scv.tl.velocity(adata, mode=m, diff_kinetics=diff_kinetics)
 
-            # Compute velocity graph
             log_message(
                 "Computing {.pkg velocity} {.val {m}} graph...",
                 message_type="info",
@@ -943,14 +936,12 @@ def SCVELO(
             )
             scv.tl.velocity_graph(adata, vkey=m, n_neighbors=n_neighbors, n_jobs=n_jobs)
 
-            # DOWNSTREAM ANALYSIS
             log_message(
                 "Downstream analysis for {.pkg velocity} {.val {m}}",
                 message_type="running",
                 verbose=verbose,
             )
 
-            # Velocity embedding
             log_message(
                 "Computing {.pkg velocity} embedding...",
                 message_type="info",
@@ -1028,7 +1019,6 @@ def SCVELO(
             if compute_paga:
                 log_message("Computing PAGA...", message_type="info", verbose=verbose)
                 try:
-                    # Ensure neighbors info is available
                     if "neighbors" not in adata.uns:
                         adata.uns["neighbors"] = {}
                     adata.uns["neighbors"]["distances"] = adata.obsp["distances"]
@@ -1060,7 +1050,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-            # Velocity genes ranking
             if calculate_velocity_genes:
                 log_message(
                     "Ranking {.pkg velocity} genes...",
@@ -1081,7 +1070,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-            # VISUALIZATION
             if show_plot:
                 log_message(
                     "Generating plots for {.pkg {m}}...",
@@ -1100,7 +1088,6 @@ def SCVELO(
                         zip(groups, plt.cm.tab10(np.linspace(0, 1, len(groups))))
                     )
 
-                # Velocity stream plot
                 try:
                     scv.pl.velocity_embedding_stream(
                         adata,
@@ -1112,7 +1099,7 @@ def SCVELO(
                         smooth=stream_smooth,
                         density=stream_density,
                         legend_loc="right margin",
-                        save=f"{fileprefix}_{m}_stream.png" if save else False,
+                        save=f"{fileprefix}_{m}_stream.pdf" if save else False,
                         show=show_plot,
                     )
                 except Exception as e:
@@ -1122,7 +1109,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-                # Velocity arrow plot
                 try:
                     scv.pl.velocity_embedding(
                         adata,
@@ -1135,7 +1121,7 @@ def SCVELO(
                         arrow_size=arrow_size,
                         density=arrow_density,
                         linewidth=0.3,
-                        save=f"{fileprefix}_{m}_arrow.png" if save else False,
+                        save=f"{fileprefix}_{m}_arrow.pdf" if save else False,
                         show=show_plot,
                     )
                 except Exception as e:
@@ -1145,7 +1131,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-                # Confidence plots
                 if compute_velocity_confidence:
                     for metric in ["length", "confidence"]:
                         color_key = f"{m}_{metric}"
@@ -1157,7 +1142,7 @@ def SCVELO(
                                     color=color_key,
                                     title=f"{m} {metric}",
                                     cmap="viridis",
-                                    save=f"{fileprefix}_{m}_{metric}.png"
+                                    save=f"{fileprefix}_{m}_{metric}.pdf"
                                     if save
                                     else False,
                                     show=show_plot,
@@ -1183,7 +1168,6 @@ def SCVELO(
     finally:
         os.chdir(prevdir)
 
-    # Clean up adata for return
     try:
         if hasattr(adata, "_raw") and adata._raw is not None:
             if hasattr(adata._raw, "_var"):
@@ -1238,28 +1222,30 @@ def CellRank(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on M-series MacBook
-    is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
+    # Check if running on Apple silicon
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
-    if is_m_series:
+    if is_apple_silicon:
         log_message(
-            "M-series MacBook detected: Applying M-series specific configurations",
+            "Apple silicon detected: Applying specific configurations",
             message_type="info",
             verbose=verbose,
         )
-        # Set M-series specific environment variables
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
 
-        # Configure NUMBA for M-series
         import numba
 
-        numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)  # Force single thread
-        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
+        numba.config.DISABLE_JIT = True # Disable JIT compilation
+        numba.set_num_threads(1) # Force single thread
+        log_message(
+            "NUMBA configured for Apple silicon",
+            message_type="success",
+            verbose=verbose,
+        )
 
     import matplotlib.pyplot as plt
     import scvelo as scv
@@ -1484,7 +1470,7 @@ def PAGA(
     import platform
     import sys
 
-    # Enhanced thread configuration for M-series MacBooks
+    # Enhanced thread configuration for Apple silicon MacBooks
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     os.environ["MKL_NUM_THREADS"] = "1"
@@ -1493,14 +1479,14 @@ def PAGA(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Additional M-series specific configurations
-    is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
-    if is_m_series:
+    # Additional Apple silicon specific configurations
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
+    if is_apple_silicon:
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
-        # Disable problematic features for M-series
+        # Disable problematic features for Apple silicon
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
         # Force single-threaded execution - set early
@@ -1517,25 +1503,25 @@ def PAGA(
         matplotlib.use("Agg")  # Use non-interactive backend
         import matplotlib.pyplot as plt
 
-        # Configure matplotlib for M-series
-        if is_m_series:
+        # Configure matplotlib for Apple silicon
+        if is_apple_silicon:
             plt.rcParams["figure.max_open_warning"] = 0
-            plt.rcParams["figure.dpi"] = 50  # Very low DPI for M-series
-            plt.rcParams["savefig.dpi"] = 50
             plt.rcParams["figure.figsize"] = (4, 4)  # Small figures
             plt.rcParams["axes.linewidth"] = 0.5
             plt.rcParams["lines.linewidth"] = 0.5
             plt.rcParams["font.size"] = 8
     except Exception as e:
-        log_message(f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose)
+        log_message(
+            f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
+        )
         plt = None
 
     # Set NUMBA threads before importing scanpy
-    if is_m_series:
+    if is_apple_silicon:
         try:
             import numba
 
-            # Completely disable JIT compilation for M-series
+            # Completely disable JIT compilation for Apple silicon
             numba.config.DISABLE_JIT = True
             numba.set_num_threads(1)
         except:
@@ -1561,7 +1547,7 @@ def PAGA(
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
-    # Additional M-series configurations are already set above
+    # Additional Apple silicon configurations are already set above
 
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
@@ -1670,154 +1656,108 @@ def PAGA(
         # Core PAGA computation - this is the essential part
         sc.tl.paga(adata, groups=group_by, use_rna_velocity=use_rna_velocity)
 
-        # For M-series MacBooks, do minimal plotting to generate required data structures
-        if is_m_series:
+        # PAGA compare plot with error handling
+        try:
+            if use_rna_velocity is True:
+                sc.pl.paga_compare(
+                    adata,
+                    basis=basis,
+                    palette=palette,
+                    threshold=threshold,
+                    size=point_size,
+                    min_edge_width=1,
+                    node_size_scale=1,
+                    dashed_edges="connectivities",
+                    solid_edges="transitions_confidence",
+                    transitions="transitions_confidence",
+                    title=basis,
+                    frameon=False,
+                    edges=True,
+                    save=False,
+                    show=show_plot,
+                )
+            else:
+                sc.pl.paga_compare(
+                    adata,
+                    basis=basis,
+                    palette=palette,
+                    threshold=threshold,
+                    size=point_size,
+                    title=basis,
+                    frameon=False,
+                    edges=True,
+                    save=False,
+                    show=show_plot,
+                )
+
+            if save:
+                plt.savefig(
+                    ".".join(filter(None, [fileprefix, "paga_compare.pdf"])),
+                    dpi=dpi,
+                    bbox_inches="tight",
+                    facecolor="white",
+                )
+        except Exception as e:
             log_message(
-                "M-series MacBook detected: Using minimal plotting to generate required data structures",
-                message_type="info",
+                f"PAGA compare plot failed ({e}), continuing...",
+                message_type="warning",
             )
-            try:
-                # Essential: Generate PAGA layout for draw_graph to work
-                sc.pl.paga(
-                    adata,
-                    threshold=threshold,
-                    layout=paga_layout,
-                    title="PAGA layout: " + paga_layout,
-                    frameon=False,
-                    save=False,
-                    show=False,
-                )
-                log_message(
-                    "PAGA layout generated successfully", message_type="success"
-                )
-            except Exception as e:
-                log_message(
-                    f"PAGA layout generation failed ({e}), continuing...",
-                    message_type="warning",
-                )
-                if plt is not None:
-                    plt.clf()
-                    plt.close("all")
-        else:
-            # Safe plotting with error handling for other systems
-            try:
-                if use_rna_velocity is True:
-                    sc.pl.paga_compare(
-                        adata,
-                        basis=basis,
-                        palette=palette,
-                        threshold=threshold,
-                        size=point_size,
-                        min_edge_width=1,
-                        node_size_scale=1,
-                        dashed_edges="connectivities",
-                        solid_edges="transitions_confidence",
-                        transitions="transitions_confidence",
-                        title=basis,
-                        frameon=False,
-                        edges=True,
-                        save=False,
-                        show=False,
-                    )
-                else:
-                    sc.pl.paga_compare(
-                        adata,
-                        basis=basis,
-                        palette=palette,
-                        threshold=threshold,
-                        size=point_size,
-                        title=basis,
-                        frameon=False,
-                        edges=True,
-                        save=False,
-                        show=False,
-                    )
+            if plt is not None:
+                plt.clf()
+                plt.close("all")
 
-                if show_plot is True:
-                    plt.show()
+        # PAGA layout plot
+        try:
+            sc.pl.paga(
+                adata,
+                threshold=threshold,
+                layout=paga_layout,
+                title="PAGA layout: " + paga_layout,
+                frameon=False,
+                save=False,
+                show=show_plot,
+            )
 
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_compare.png"])),
-                        dpi=min(dpi, 150),
-                        bbox_inches="tight",
-                        facecolor="white",
-                    )
-            except Exception as e:
-                log_message(
-                    f"PAGA compare plot failed ({e}), continuing...",
-                    message_type="warning",
+            if save:
+                plt.savefig(
+                    ".".join(filter(None, [fileprefix, "paga_layout.pdf"])),
+                    dpi=dpi,
+                    bbox_inches="tight",
+                    facecolor="white",
                 )
-                if plt is not None:
-                    plt.clf()
-                    plt.close("all")
+        except Exception as e:
+            log_message(
+                f"PAGA layout plot failed ({e}), continuing...",
+                message_type="warning",
+            )
+            if plt is not None:
+                plt.clf()
+                plt.close("all")
 
-        # PAGA layout plot - skip for M-series MacBooks
-        if not is_m_series:
-            try:
-                sc.pl.paga(
-                    adata,
-                    threshold=threshold,
-                    layout=paga_layout,
-                    title="PAGA layout: " + paga_layout,
-                    frameon=False,
-                    save=False,
-                    show=False,
-                )
-
-                if show_plot is True:
-                    plt.show()
-
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_layout.png"])),
-                        dpi=min(dpi, 150),
-                        bbox_inches="tight",
-                        facecolor="white",
-                    )
-            except Exception as e:
-                log_message(
-                    f"PAGA layout plot failed ({e}), continuing...",
-                    message_type="warning",
-                )
-                if plt is not None:
-                    plt.clf()
-                    plt.close("all")
-
-        # draw_graph computation - always compute, but minimal plotting for M-series
+        # draw_graph computation and plotting
         try:
             sc.tl.draw_graph(adata, init_pos="paga", layout=paga_layout)
             log_message(
                 "draw_graph computation completed successfully", message_type="success"
             )
 
-            if not is_m_series:
-                sc.pl.draw_graph(
-                    adata,
-                    color=group_by,
-                    palette=palette,
-                    title="PAGA layout: " + paga_layout,
-                    layout=paga_layout,
-                    frameon=False,
-                    legend_loc="on data",
-                    show=False,
-                )
+            sc.pl.draw_graph(
+                adata,
+                color=group_by,
+                palette=palette,
+                title="PAGA layout: " + paga_layout,
+                layout=paga_layout,
+                frameon=False,
+                legend_loc="on data",
+                show=show_plot,
+            )
 
-                if show_plot is True:
-                    plt.show()
-
-                if save:
-                    plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_graph.png"])),
-                        dpi=min(dpi, 150),
-                        bbox_inches="tight",
-                        facecolor="white",
-                    )
-            else:
-                # For M-series, just ensure the computation is done without plotting
-                log_message(
-                    "draw_graph computation completed for M-series (plotting skipped)",
-                    message_type="info",
+            if save:
+                plt.savefig(
+                    ".".join(filter(None, [fileprefix, "paga_graph.pdf"])),
+                    dpi=dpi,
+                    bbox_inches="tight",
+                    facecolor="white",
                 )
         except Exception as e:
             log_message(
@@ -1828,34 +1768,30 @@ def PAGA(
                 plt.close("all")
 
         if embedded_with_PAGA is True:
-            # UMAP computation - always compute, but skip plotting for M-series
+            # UMAP computation and plotting
             try:
                 umap2d = sc.tl.umap(adata, init_pos="paga", n_components=2, copy=True)
                 adata.obsm["PAGAUMAP2D"] = umap2d.obsm["X_umap"]
 
-                if not is_m_series:
-                    sc.pl.paga_compare(
-                        adata,
-                        basis="PAGAUMAP2D",
-                        palette=palette,
-                        threshold=threshold,
-                        size=point_size,
-                        title="PAGA-initialized UMAP",
-                        edges=True,
-                        save=False,
-                        show=False,
+                sc.pl.paga_compare(
+                    adata,
+                    basis="PAGAUMAP2D",
+                    palette=palette,
+                    threshold=threshold,
+                    size=point_size,
+                    title="PAGA-initialized UMAP",
+                    edges=True,
+                    save=False,
+                    show=show_plot,
+                )
+
+                if save:
+                    plt.savefig(
+                        ".".join(filter(None, [fileprefix, "paga_umap.pdf"])),
+                        dpi=dpi,
+                        bbox_inches="tight",
+                        facecolor="white",
                     )
-
-                    if show_plot is True:
-                        plt.show()
-
-                    if save:
-                        plt.savefig(
-                            ".".join(filter(None, [fileprefix, "paga_umap.png"])),
-                            dpi=min(dpi, 150),
-                            bbox_inches="tight",
-                            facecolor="white",
-                        )
             except Exception as e:
                 log_message(
                     f"PAGA UMAP failed ({e}), continuing...", message_type="warning"
@@ -1890,41 +1826,37 @@ def PAGA(
                 min_group_size=min_group_size,
             )
 
-            # Pseudotime plotting - skip for M-series MacBooks
-            if not is_m_series:
-                try:
-                    sc.pl.embedding(
-                        adata,
-                        basis=basis,
-                        color="dpt_pseudotime",
-                        save=False,
-                        show=False,
-                    )
+            # Pseudotime plotting
+            try:
+                sc.pl.embedding(
+                    adata,
+                    basis=basis,
+                    color="dpt_pseudotime",
+                    save=False,
+                    show=show_plot,
+                )
 
-                    if show_plot is True:
-                        plt.show()
-
-                    if save:
-                        plt.savefig(
-                            ".".join(filter(None, [fileprefix, "dpt_pseudotime.png"])),
-                            dpi=min(dpi, 150),
-                            bbox_inches="tight",
-                            facecolor="white",
-                        )
-                except Exception as e:
-                    log_message(
-                        f"DPT pseudotime plot failed ({e}), continuing...",
-                        message_type="warning",
+                if save:
+                    plt.savefig(
+                        ".".join(filter(None, [fileprefix, "dpt_pseudotime.pdf"])),
+                        dpi=dpi,
+                        bbox_inches="tight",
+                        facecolor="white",
                     )
-                    if plt is not None:
-                        plt.clf()
-                        plt.close("all")
+            except Exception as e:
+                log_message(
+                    f"DPT pseudotime plot failed ({e}), continuing...",
+                    message_type="warning",
+                )
+                if plt is not None:
+                    plt.clf()
+                    plt.close("all")
 
     finally:
         os.chdir(prevdir)
 
-        # Clean up matplotlib for M-series MacBooks
-        if is_m_series and plt is not None:
+        # Clean up matplotlib for Apple silicon MacBooks
+        if is_apple_silicon and plt is not None:
             try:
                 plt.clf()
                 plt.close("all")
@@ -1991,28 +1923,31 @@ def Palantir(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on M-series MacBook
-    is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
+    # Check if running on M-series machine
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
-    if is_m_series:
+    if is_apple_silicon:
         log_message(
-            "M-series MacBook detected: Applying M-series specific configurations",
+            "Apple silicon detected: Applying specific configurations",
             message_type="info",
             verbose=verbose,
         )
-        # Set M-series specific environment variables
+
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
 
-        # Configure NUMBA for M-series
         import numba
 
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
         numba.set_num_threads(1)  # Force single thread
-        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
+        log_message(
+            "NUMBA configured for Apple silicon",
+            message_type="success",
+            verbose=verbose,
+        )
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -2096,7 +2031,9 @@ def Palantir(
             log_message("`early_cell` must be provided", message_type="error")
             exit()
         else:
-            log_message(f"`early_cell`: {early_cell}", message_type="info", verbose=verbose)
+            log_message(
+                f"`early_cell`: {early_cell}", message_type="info", verbose=verbose
+            )
 
         terminal_cells_dict = dict()
         if terminal_groups is not None and terminal_cells is None:
@@ -2125,7 +2062,11 @@ def Palantir(
         if terminal_cells is None:
             log_message("`terminal_cells`: None", message_type="info", verbose=verbose)
         else:
-            log_message(f"`terminal_cells`: {terminal_cells}", message_type="info", verbose=verbose)
+            log_message(
+                f"`terminal_cells`: {terminal_cells}",
+                message_type="info",
+                verbose=verbose,
+            )
 
         # if HVF is None:
         #   sc.pp.highly_variable_genes(adata, n_top_genes=2000)
@@ -2220,19 +2161,27 @@ def Palantir(
         adata.obs = adata.obs.join(pr_res.branch_probs)
 
         sc.pl.embedding(
-            adata, basis=basis, color="palantir_pseudotime", size=point_size
+            adata,
+            basis=basis,
+            color="palantir_pseudotime",
+            size=point_size,
+            show=show_plot,
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_pseudotime.png"])), dpi=dpi
+                ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])), dpi=dpi
             )
 
         sc.pl.embedding(
-            adata, basis=basis, color="palantir_diff_potential", size=point_size
+            adata,
+            basis=basis,
+            color="palantir_diff_potential",
+            size=point_size,
+            show=show_plot,
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_diff_potential.png"])),
+                ".".join(filter(None, [fileprefix, "palantir_diff_potential.pdf"])),
                 dpi=dpi,
             )
 
@@ -2241,11 +2190,27 @@ def Palantir(
             basis=basis,
             color=pr_res.branch_probs.columns.values,
             size=point_size,
+            show=show_plot,
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_probs.png"])), dpi=dpi
+                ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])), dpi=dpi
             )
+
+        if group_by is not None:
+            sc.pl.embedding(
+                adata,
+                basis=basis,
+                color=group_by,
+                size=point_size,
+                palette=palette,
+                show=show_plot,
+            )
+            if save:
+                plt.savefig(
+                    ".".join(filter(None, [fileprefix, "palantir_group_by.pdf"])),
+                    dpi=dpi,
+                )
 
     finally:
         os.chdir(prevdir)
@@ -2293,28 +2258,31 @@ def WOT(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on M-series MacBook
-    is_m_series = platform.system() == "Darwin" and platform.machine() == "arm64"
+    # Check if running on Apple silicon
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
-    if is_m_series:
+    if is_apple_silicon:
         log_message(
-            "M-series MacBook detected: Applying M-series specific configurations",
+            "Apple silicon detected: Applying specific configurations",
             message_type="info",
             verbose=verbose,
         )
-        # Set M-series specific environment variables
+
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
 
-        # Configure NUMBA for M-series
         import numba
 
         numba.config.DISABLE_JIT = True  # Disable JIT compilation
         numba.set_num_threads(1)  # Force single thread
-        log_message("NUMBA configured for M-series MacBook", message_type="success", verbose=verbose)
+        log_message(
+            "NUMBA configured for Apple silicon",
+            message_type="success",
+            verbose=verbose,
+        )
 
     import matplotlib.pyplot as plt
     import scanpy as sc

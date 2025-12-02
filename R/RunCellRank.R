@@ -36,9 +36,9 @@ RunCellRank <- function(
     return_seurat = !is.null(srt),
     verbose = TRUE) {
   PrepareEnv()
-  check_python("cellrank")
+  check_python("cellrank", verbose = verbose)
   if (isTRUE(magic_impute)) {
-    check_python("magic-impute")
+    check_python("magic-impute", verbose = verbose)
   }
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -82,20 +82,22 @@ RunCellRank <- function(
   }
 
   args <- mget(names(formals()))
-  args <- lapply(args, function(x) {
-    if (is.numeric(x)) {
-      y <- ifelse(grepl("\\.", as.character(x)), as.double(x), as.integer(x))
-    } else {
-      y <- x
+  args <- lapply(
+    args, function(x) {
+      if (is.numeric(x)) {
+        y <- ifelse(grepl("\\.", as.character(x)), as.double(x), as.integer(x))
+      } else {
+        y <- x
+      }
+      return(y)
     }
-    return(y)
-  })
-  call.envir <- parent.frame(1)
+  )
+  call_envir <- parent.frame(1)
   args <- lapply(args, function(arg) {
     if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
+      eval(arg, envir = call_envir)
     } else {
       arg
     }
@@ -130,7 +132,7 @@ RunCellRank <- function(
     palcolor = palcolor
   )
 
-  log_message("Running {.pkg CellRank} analysis...")
+  log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
   functions <- reticulate::import_from_path(
     "functions",
     path = system.file("python", package = "scop", mustWork = TRUE),
@@ -139,7 +141,8 @@ RunCellRank <- function(
   adata <- do.call(functions$CellRank, args)
   log_message(
     "{.pkg CellRank} analysis completed",
-    message_type = "success"
+    message_type = "success",
+    verbose = verbose
   )
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
