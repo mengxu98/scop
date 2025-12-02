@@ -18,20 +18,20 @@ See \strong{Finding Conda} and \code{\link[reticulate:conda_binary]{conda_binary
 Default is \code{FALSE}.}
 }
 \value{
-Invisibly returns TRUE if successful, FALSE otherwise.
+Invisibly returns \code{TRUE} if successful, \code{FALSE} otherwise.
 }
 \description{
 Remove a conda environment
 }
 \examples{
 \dontrun{
-# Remove the default scop environment
+# Remove default environment
 RemoveEnv()
 
 # Remove a specific environment
 RemoveEnv("my_old_env")
 
-# Force removal without confirmation
+# Removal without confirmation
 RemoveEnv("my_old_env", force = TRUE)
 }
 }
