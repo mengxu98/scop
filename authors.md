@@ -13,12 +13,12 @@ Source:
 [`DESCRIPTION`](https://github.com/mengxu98/scop/blob/main/DESCRIPTION)
 
 Meng X, Zhang H (2025). *scop: Single Cell Omics analysis Pipeline*. R
-package version 0.6.2, <https://mengxu98.github.io/scop/>.
+package version 0.6.5, <https://mengxu98.github.io/scop/>.
 
     @Manual{,
       title = {scop: Single Cell Omics analysis Pipeline},
       author = {Xu Meng and Hao Zhang},
       year = {2025},
-      note = {R package version 0.6.2},
+      note = {R package version 0.6.5},
       url = {https://mengxu98.github.io/scop/},
     }

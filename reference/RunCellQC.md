@@ -208,7 +208,7 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> + BiocSingular           1.26.1    [bld][cmp]
 #> + Cairo                  1.7-0      + ✔ libcairo2-dev
 #> + DelayedArray           0.36.0    [bld][cmp]
-#> + GenomeInfoDb           1.46.0    [bld]
+#> + GenomeInfoDb           1.46.1    [bld]
 #> + GenomicAlignments      1.46.0    [bld][cmp]
 #> + GenomicRanges          1.62.0    [bld][cmp]
 #> + RCurl                  1.98-1.17  + ✔ make, ✔ libcurl4-openssl-dev
@@ -220,7 +220,7 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> + S4Arrays               1.10.0    [bld][cmp]
 #> + ScaledMatrix           1.18.0    [bld]
 #> + SingleCellExperiment   1.32.0    [bld]
-#> + SparseArray            1.10.2    [bld][cmp]
+#> + SparseArray            1.10.3    [bld][cmp]
 #> + SummarizedExperiment   1.40.0    [bld]
 #> + UCSC.utils             1.6.0     [bld]
 #> + XML                    3.99-0.20  + ✔ libxml2-dev
@@ -231,7 +231,7 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> + cigarillo              1.0.0     [bld][cmp]
 #> + dqrng                  0.4.1     
 #> + edgeR                  4.8.0     [bld][cmp]
-#> + ggbeeswarm             0.7.2     
+#> + ggbeeswarm             0.7.3     
 #> + ggrastr                1.0.2     
 #> + locfit                 1.5-9.12  
 #> + metapod                1.18.0    [bld][cmp]
@@ -251,48 +251,47 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ Getting 1 pkg (14.98 kB), 43 cached
-#> ✔ Got BiocIO 1.20.0 (source) (232.37 kB)
 #> ✔ Got cigarillo 1.0.0 (source) (258.57 kB)
+#> ✔ Got BiocIO 1.20.0 (source) (232.37 kB)
 #> ✔ Got beachmat 2.26.0 (source) (383.08 kB)
 #> ✔ Got bitops 1.0-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.02 kB)
-#> ✔ Got beeswarm 0.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.13 kB)
 #> ✔ Got Cairo 1.7-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (93.28 kB)
-#> ✔ Got pheatmap 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)
+#> ✔ Got BiocSingular 1.26.1 (source) (618.28 kB)
 #> ✔ Got DelayedArray 0.36.0 (source) (816.30 kB)
 #> ✔ Got dqrng 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (215.52 kB)
-#> ✔ Got SummarizedExperiment 1.40.0 (source) (690.87 kB)
-#> ✔ Got locfit 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)
-#> ✔ Got ggbeeswarm 0.7.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.76 MB)
-#> ✔ Got edgeR 4.8.0 (source) (3.07 MB)
-#> ✔ Got xgboost 1.7.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)
-#> ✔ Got scDblFinder 1.24.0 (source) (2.25 MB)
-#> ✔ Got ggrastr 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)
+#> ✔ Got RcppML 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)
+#> ✔ Got scran 1.38.0 (source) (1.83 MB)
+#> ✔ Got Rsamtools 2.26.0 (source) (1.92 MB)
+#> ✔ Got beeswarm 0.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.13 kB)
+#> ✔ Got XML 3.99-0.20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.83 MB)
+#> ✔ Got GenomicAlignments 1.46.0 (source) (2.26 MB)
 #> ✔ Got bluster 1.20.0 (source) (3.26 MB)
 #> ✔ Got Rtsne 0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (118.33 kB)
-#> ✔ Got ragg 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)
-#> ✔ Got scuttle 1.20.0 (source) (1.03 MB)
-#> ✔ Got rsvd 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)
-#> ✔ Got GenomeInfoDb 1.46.0 (source) (3.65 MB)
-#> ✔ Got rtracklayer 1.70.0 (source) (4.10 MB)
-#> ✔ Got RCurl 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)
-#> ✔ Got uwot 0.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got ggrastr 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)
+#> ✔ Got pheatmap 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)
 #> ✔ Got restfulr 0.0.16 (source) (15.03 kB)
+#> ✔ Got scuttle 1.20.0 (source) (1.03 MB)
 #> ✔ Got RcppAnnoy 0.0.22 (x86_64-pc-linux-gnu-ubuntu-24.04) (269.84 kB)
-#> ✔ Got GenomicRanges 1.62.0 (source) (1.38 MB)
-#> ✔ Got S4Arrays 1.10.0 (source) (297.11 kB)
-#> ✔ Got RcppML 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)
-#> ✔ Got XML 3.99-0.20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.83 MB)
-#> ✔ Got UCSC.utils 1.6.0 (source) (236.81 kB)
-#> ✔ Got vipor 0.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.58 MB)
-#> ✔ Got metapod 1.18.0 (source) (333.89 kB)
-#> ✔ Got SingleCellExperiment 1.32.0 (source) (987.98 kB)
-#> ✔ Got ScaledMatrix 1.18.0 (source) (314.08 kB)
-#> ✔ Got Rsamtools 2.26.0 (source) (1.92 MB)
-#> ✔ Got Rhtslib 3.6.0 (source) (5.18 MB)
-#> ✔ Got scran 1.38.0 (source) (1.83 MB)
+#> ✔ Got edgeR 4.8.0 (source) (3.07 MB)
 #> ✔ Got viridis 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.01 MB)
-#> ✔ Got GenomicAlignments 1.46.0 (source) (2.26 MB)
+#> ✔ Got metapod 1.18.0 (source) (333.89 kB)
+#> ✔ Got ScaledMatrix 1.18.0 (source) (314.08 kB)
+#> ✔ Got xgboost 1.7.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)
+#> ✔ Got locfit 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)
+#> ✔ Got ragg 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)
+#> ✔ Got SingleCellExperiment 1.32.0 (source) (987.98 kB)
+#> ✔ Got GenomicRanges 1.62.0 (source) (1.38 MB)
+#> ✔ Got UCSC.utils 1.6.0 (source) (236.81 kB)
+#> ✔ Got uwot 0.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got S4Arrays 1.10.0 (source) (297.11 kB)
+#> ✔ Got RCurl 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)
+#> ✔ Got SummarizedExperiment 1.40.0 (source) (690.87 kB)
+#> ✔ Got Rhtslib 3.6.0 (source) (5.18 MB)
+#> ✔ Got scDblFinder 1.24.0 (source) (2.25 MB)
+#> ✔ Got rsvd 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)
 #> ✔ Got scater 1.38.0 (source) (4.57 MB)
+#> ✔ Got rtracklayer 1.70.0 (source) (4.10 MB)
+#> ✔ Got vipor 0.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.58 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
@@ -324,102 +323,102 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
 #> libfribidi-dev is already the newest version (1.0.13-3build1).
 #> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ℹ Building BiocIO 1.20.0
 #> ℹ Building bluster 1.20.0
 #> ℹ Building cigarillo 1.0.0
 #> ℹ Building GenomicRanges 1.62.0
-#> ✔ Built BiocIO 1.20.0 (4.6s)
+#> ✔ Built BiocIO 1.20.0 (4.1s)
 #> ℹ Building metapod 1.18.0
-#> ✔ Built cigarillo 1.0.0 (10.1s)
+#> ✔ Built cigarillo 1.0.0 (9.9s)
 #> ℹ Building Rhtslib 3.6.0
-#> ✔ Built GenomicRanges 1.62.0 (22.8s)
+#> ✔ Built bluster 1.20.0 (21.9s)
 #> ℹ Building S4Arrays 1.10.0
-#> ✔ Built bluster 1.20.0 (23.6s)
+#> ✔ Built GenomicRanges 1.62.0 (21.9s)
 #> ℹ Building UCSC.utils 1.6.0
-#> ✔ Built UCSC.utils 1.6.0 (3.9s)
-#> ✔ Installed beeswarm 0.4.0  (32ms)
-#> ✔ Installed bitops 1.0-9  (83ms)
-#> ✔ Installed Cairo 1.7-0  (30ms)
-#> ✔ Installed dqrng 0.4.1  (1s)
-#> ✔ Installed ggbeeswarm 0.7.2  (1.1s)
-#> ✔ Installed ggrastr 1.0.2  (70ms)
-#> ✔ Built metapod 1.18.0 (25.8s)
-#> ✔ Installed locfit 1.5-9.12  (72ms)
+#> ✔ Built UCSC.utils 1.6.0 (3.8s)
+#> ✔ Installed beeswarm 0.4.0  (29ms)
+#> ✔ Installed bitops 1.0-9  (30ms)
+#> ✔ Installed Cairo 1.7-0  (32ms)
+#> ✔ Installed dqrng 0.4.1  (70ms)
+#> ✔ Installed ggbeeswarm 0.7.3  (49ms)
+#> ✔ Installed ggrastr 1.0.2  (1.1s)
+#> ✔ Installed locfit 1.5-9.12  (39ms)
 #> ℹ Building edgeR 4.8.0
-#> ✔ Installed pheatmap 1.0.13  (98ms)
-#> ✔ Installed ragg 1.5.0  (79ms)
-#> ✔ Installed RcppAnnoy 0.0.22  (42ms)
-#> ✔ Installed RcppML 0.3.7  (105ms)
-#> ✔ Installed RCurl 1.98-1.17  (57ms)
-#> ✔ Installed rsvd 1.0.5  (64ms)
-#> ✔ Installed Rtsne 0.17  (38ms)
-#> ✔ Installed uwot 0.2.4  (72ms)
-#> ✔ Installed vipor 0.4.7  (85ms)
-#> ✔ Installed viridis 0.6.5  (73ms)
-#> ✔ Installed xgboost 1.7.11.1  (146ms)
+#> ✔ Built metapod 1.18.0 (24s)
+#> ✔ Installed pheatmap 1.0.13  (30ms)
+#> ✔ Installed ragg 1.5.0  (1s)
+#> ✔ Installed RcppAnnoy 0.0.22  (41ms)
+#> ✔ Installed RcppML 0.3.7  (1s)
+#> ✔ Installed RCurl 1.98-1.17  (52ms)
+#> ✔ Installed rsvd 1.0.5  (58ms)
+#> ✔ Installed Rtsne 0.17  (85ms)
+#> ✔ Installed uwot 0.2.4  (52ms)
+#> ✔ Installed vipor 0.4.7  (78ms)
+#> ✔ Installed viridis 0.6.5  (71ms)
+#> ✔ Installed xgboost 1.7.11.1  (1.1s)
 #> ✔ Installed XML 3.99-0.20  (67ms)
 #> ℹ Building restfulr 0.0.16
-#> ✔ Built S4Arrays 1.10.0 (17.5s)
-#> ✔ Installed BiocIO 1.20.0  (39ms)
-#> ✔ Built restfulr 0.0.16 (8.5s)
-#> ✔ Installed restfulr 0.0.16  (25ms)
-#> ✔ Installed bluster 1.20.0  (205ms)
-#> ✔ Installed cigarillo 1.0.0  (110ms)
-#> ✔ Installed GenomicRanges 1.62.0  (101ms)
-#> ✔ Installed metapod 1.18.0  (102ms)
-#> ✔ Installed S4Arrays 1.10.0  (85ms)
-#> ℹ Building SparseArray 1.10.2
-#> ✔ Installed UCSC.utils 1.6.0  (102ms)
-#> ℹ Building GenomeInfoDb 1.46.0
-#> ✔ Built edgeR 4.8.0 (16.6s)
-#> ✔ Installed edgeR 4.8.0  (75ms)
-#> ✔ Built GenomeInfoDb 1.46.0 (9.3s)
-#> ✔ Installed GenomeInfoDb 1.46.0  (79ms)
-#> ✔ Built SparseArray 1.10.2 (23.8s)
-#> ✔ Installed SparseArray 1.10.2  (64ms)
+#> ✔ Built S4Arrays 1.10.0 (16.4s)
+#> ✔ Installed BiocIO 1.20.0  (41ms)
+#> ✔ Installed bluster 1.20.0  (101ms)
+#> ✔ Installed cigarillo 1.0.0  (63ms)
+#> ✔ Installed GenomicRanges 1.62.0  (67ms)
+#> ✔ Installed metapod 1.18.0  (1.1s)
+#> ✔ Installed S4Arrays 1.10.0  (44ms)
+#> ℹ Building SparseArray 1.10.3
+#> ✔ Built restfulr 0.0.16 (7.9s)
+#> ✔ Installed restfulr 0.0.16  (30ms)
+#> ✔ Installed UCSC.utils 1.6.0  (39ms)
+#> ℹ Building GenomeInfoDb 1.46.1
+#> ✔ Built edgeR 4.8.0 (15.1s)
+#> ✔ Installed edgeR 4.8.0  (1.1s)
+#> ✔ Built GenomeInfoDb 1.46.1 (7.6s)
+#> ✔ Installed GenomeInfoDb 1.46.1  (82ms)
+#> ✔ Built SparseArray 1.10.3 (22.9s)
+#> ✔ Installed SparseArray 1.10.3  (50ms)
 #> ℹ Building DelayedArray 0.36.0
-#> ✔ Built DelayedArray 0.36.0 (16.8s)
-#> ✔ Installed DelayedArray 0.36.0  (45ms)
+#> ✔ Built DelayedArray 0.36.0 (16s)
+#> ✔ Installed DelayedArray 0.36.0  (1s)
 #> ℹ Building beachmat 2.26.0
 #> ℹ Building ScaledMatrix 1.18.0
 #> ℹ Building SummarizedExperiment 1.40.0
-#> ✔ Built Rhtslib 3.6.0 (1m 24.9s)
-#> ✔ Installed Rhtslib 3.6.0  (245ms)
+#> ✔ Built ScaledMatrix 1.18.0 (16.3s)
+#> ✔ Installed ScaledMatrix 1.18.0  (39ms)
+#> ✔ Built Rhtslib 3.6.0 (1m 28.6s)
+#> ✔ Installed Rhtslib 3.6.0  (207ms)
 #> ℹ Building Rsamtools 2.26.0
-#> ✔ Built ScaledMatrix 1.18.0 (16.6s)
-#> ✔ Installed ScaledMatrix 1.18.0  (94ms)
-#> ✔ Built SummarizedExperiment 1.40.0 (22.7s)
-#> ✔ Installed SummarizedExperiment 1.40.0  (47ms)
+#> ✔ Built SummarizedExperiment 1.40.0 (22.9s)
+#> ✔ Installed SummarizedExperiment 1.40.0  (56ms)
 #> ℹ Building SingleCellExperiment 1.32.0
-#> ✔ Built SingleCellExperiment 1.32.0 (18.7s)
-#> ✔ Installed SingleCellExperiment 1.32.0  (63ms)
-#> ✔ Built Rsamtools 2.26.0 (36s)
-#> ✔ Installed Rsamtools 2.26.0  (100ms)
+#> ✔ Built SingleCellExperiment 1.32.0 (17.7s)
+#> ✔ Installed SingleCellExperiment 1.32.0  (47ms)
+#> ✔ Built Rsamtools 2.26.0 (33.3s)
+#> ✔ Installed Rsamtools 2.26.0  (95ms)
 #> ℹ Building GenomicAlignments 1.46.0
-#> ✔ Built GenomicAlignments 1.46.0 (19s)
-#> ✔ Installed GenomicAlignments 1.46.0  (45ms)
+#> ✔ Built GenomicAlignments 1.46.0 (18.2s)
+#> ✔ Installed GenomicAlignments 1.46.0  (1s)
 #> ℹ Building rtracklayer 1.70.0
-#> ✔ Built beachmat 2.26.0 (1m 38.4s)
-#> ✔ Installed beachmat 2.26.0  (209ms)
+#> ✔ Built beachmat 2.26.0 (1m 33.9s)
+#> ✔ Installed beachmat 2.26.0  (211ms)
 #> ℹ Building BiocSingular 1.26.1
 #> ℹ Building scuttle 1.20.0
-#> ✔ Built rtracklayer 1.70.0 (30.1s)
-#> ✔ Installed rtracklayer 1.70.0  (99ms)
-#> ✔ Built BiocSingular 1.26.1 (16.8s)
-#> ✔ Installed BiocSingular 1.26.1  (51ms)
-#> ✔ Built scuttle 1.20.0 (45.4s)
-#> ✔ Installed scuttle 1.20.0  (100ms)
+#> ✔ Built rtracklayer 1.70.0 (31.5s)
+#> ✔ Installed rtracklayer 1.70.0  (89ms)
+#> ✔ Built BiocSingular 1.26.1 (17.3s)
+#> ✔ Installed BiocSingular 1.26.1  (49ms)
+#> ✔ Built scuttle 1.20.0 (43.6s)
+#> ✔ Installed scuttle 1.20.0  (92ms)
 #> ℹ Building scater 1.38.0
 #> ℹ Building scran 1.38.0
-#> ✔ Built scater 1.38.0 (15.8s)
-#> ✔ Installed scater 1.38.0  (75ms)
-#> ✔ Built scran 1.38.0 (47.5s)
-#> ✔ Installed scran 1.38.0  (105ms)
+#> ✔ Built scater 1.38.0 (16.2s)
+#> ✔ Installed scater 1.38.0  (1.1s)
+#> ✔ Built scran 1.38.0 (44.9s)
+#> ✔ Installed scran 1.38.0  (100ms)
 #> ℹ Building scDblFinder 1.24.0
-#> ✔ Built scDblFinder 1.24.0 (21.7s)
-#> ✔ Installed scDblFinder 1.24.0  (56ms)
-#> ✔ 1 pkg + 111 deps: kept 68, added 44, dld 42 (63.06 MB) [5m 5.9s]
+#> ✔ Built scDblFinder 1.24.0 (20.3s)
+#> ✔ Installed scDblFinder 1.24.0  (1.1s)
+#> ✔ 1 pkg + 111 deps: kept 68, added 44, dld 41 (58.28 MB) [4m 53.8s]
 CellStatPlot(
   pancreas_sub,
   stat.by = c(

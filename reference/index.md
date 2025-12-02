@@ -308,7 +308,7 @@
 - [`CreateDataFile()`](https://mengxu98.github.io/scop/reference/CreateDataFile.md)
   : Create data file
 - [`CreateMetaFile()`](https://mengxu98.github.io/scop/reference/CreateMetaFile.md)
-  : Create Meta File
+  : Create Meta File in HDF5 format from Seurat object
 - [`FetchH5()`](https://mengxu98.github.io/scop/reference/FetchH5.md) :
   Fetch data from the hdf5 file
 - [`PrepareSCExplorer()`](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md)

@@ -90,29 +90,29 @@ pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got scds 1.26.0 (source) (1.45 MB)
 #> ✔ Got pROC 1.19.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (828.97 kB)
+#> ✔ Got scds 1.26.0 (source) (1.45 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install make`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> make is already the newest version (4.3-4.1build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ✔ Installed pROC 1.19.0.1  (1s)
 #> ℹ Building scds 1.26.0
-#> ✔ Built scds 1.26.0 (11.4s)
-#> ✔ Installed scds 1.26.0  (32ms)
-#> ✔ 1 pkg + 37 deps: kept 36, added 2, dld 2 (2.28 MB) [16.3s]
+#> ✔ Built scds 1.26.0 (11.2s)
+#> ✔ Installed scds 1.26.0  (1s)
+#> ✔ 1 pkg + 37 deps: kept 36, added 2, dld 2 (2.28 MB) [16.9s]
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore

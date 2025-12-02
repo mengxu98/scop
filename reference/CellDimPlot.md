@@ -913,7 +913,7 @@ CellDimPlot(
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got hexbin 1.28.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.60 MB)
 #> ✔ Installed hexbin 1.28.5  (1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (1.60 MB) [2.1s]
+#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (1.60 MB) [2.3s]
 
 
 CellDimPlot(

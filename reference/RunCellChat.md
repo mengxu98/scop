@@ -129,8 +129,8 @@ pancreas_sub <- RunCellChat(
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2025-11-22 02:30:26.597986]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2025-11-22 02:31:36.7135]"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2025-12-02 04:24:57.383531]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2025-12-02 04:26:06.385345]"
 
 CellChatPlot(pancreas_sub)
 

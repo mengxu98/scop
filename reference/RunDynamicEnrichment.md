@@ -215,11 +215,10 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = "Lineage1",
   n_candidates = 200
 )
-#> ⠙ [2025-11-22 02:43:08] Running [1/200] Processing: 1  ETA:  7s
-#> ⠹ [2025-11-22 02:43:08] Running [7/200] Processing: 7  ETA:  7s
-#> ⠸ [2025-11-22 02:43:08] Running [86/200] Processing: 86  ETA:  4s
-#> ⠼ [2025-11-22 02:43:08] Running [168/200] Processing: 168  ETA:  1s
-#> ✔ [2025-11-22 02:43:08] Completed 200 tasks in 7.5s
+#> ⠙ [2025-12-02 04:37:08] Running [1/200] Processing: 1  ETA:  7s
+#> ⠹ [2025-12-02 04:37:08] Running [47/200] Processing: 47  ETA:  5s
+#> ⠸ [2025-12-02 04:37:08] Running [137/200] Processing: 137  ETA:  2s
+#> ✔ [2025-12-02 04:37:08] Completed 200 tasks in 6.8s
 #> 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -249,21 +248,20 @@ pancreas_sub <- RunDynamicEnrichment(
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got UCell 2.14.0 (source) (2.41 MB)
 #> ℹ Building UCell 2.14.0
-#> ✔ Built UCell 2.14.0 (11.7s)
-#> ✔ Installed UCell 2.14.0  (74ms)
-#> ✔ 1 pkg + 28 deps: kept 28, added 1, dld 1 (2.41 MB) [13.7s]
-#> ⠙ [2025-11-22 02:46:27] Running [1/2794] Processing: 1  ETA: 36s
-#> ⠹ [2025-11-22 02:46:27] Running [185/2794] Processing: 185  ETA: 30s
-#> ⠸ [2025-11-22 02:46:27] Running [468/2794] Processing: 468  ETA: 25s
-#> ⠼ [2025-11-22 02:46:27] Running [734/2794] Processing: 734  ETA: 23s
-#> ⠴ [2025-11-22 02:46:27] Running [1003/2794] Processing: 1003  ETA: 20s
-#> ⠦ [2025-11-22 02:46:27] Running [1283/2794] Processing: 1283  ETA: 17s
-#> ⠧ [2025-11-22 02:46:27] Running [1542/2794] Processing: 1542  ETA: 14s
-#> ⠇ [2025-11-22 02:46:27] Running [1810/2794] Processing: 1810  ETA: 11s
-#> ⠏ [2025-11-22 02:46:27] Running [2066/2794] Processing: 2066  ETA:  8s
-#> ⠋ [2025-11-22 02:46:27] Running [2321/2794] Processing: 2321  ETA:  5s
-#> ⠙ [2025-11-22 02:46:27] Running [2589/2794] Processing: 2589  ETA:  2s
-#> ✔ [2025-11-22 02:46:27] Completed 2794 tasks in 31.5s
+#> ✔ Built UCell 2.14.0 (10.9s)
+#> ✔ Installed UCell 2.14.0  (1s)
+#> ✔ 1 pkg + 28 deps: kept 28, added 1, dld 1 (2.41 MB) [13.5s]
+#> ⠙ [2025-12-02 04:40:16] Running [1/2794] Processing: 1  ETA: 36s
+#> ⠹ [2025-12-02 04:40:16] Running [304/2794] Processing: 304  ETA: 24s
+#> ⠸ [2025-12-02 04:40:16] Running [618/2794] Processing: 618  ETA: 21s
+#> ⠼ [2025-12-02 04:40:16] Running [932/2794] Processing: 932  ETA: 18s
+#> ⠴ [2025-12-02 04:40:16] Running [1256/2794] Processing: 1256  ETA: 15s
+#> ⠦ [2025-12-02 04:40:16] Running [1567/2794] Processing: 1567  ETA: 12s
+#> ⠧ [2025-12-02 04:40:16] Running [1879/2794] Processing: 1879  ETA:  9s
+#> ⠇ [2025-12-02 04:40:16] Running [2172/2794] Processing: 2172  ETA:  6s
+#> ⠏ [2025-12-02 04:40:16] Running [2363/2794] Processing: 2363  ETA:  4s
+#> ⠋ [2025-12-02 04:40:16] Running [2676/2794] Processing: 2676  ETA:  1s
+#> ✔ [2025-12-02 04:40:16] Completed 2794 tasks in 28s
 #> 
 ht2 <- DynamicHeatmap(
   pancreas_sub,

@@ -269,44 +269,9 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
-head(pancreas_sub@meta.data)
-#>                     orig.ident nCount_RNA nFeature_RNA     S_score  G2M_score
-#> AAACCTGAGCCTTGAT SeuratProject       7071         2613 -0.01470664 -0.2326104
-#> AAACCTGGTAAGTGGC SeuratProject       5026         2211 -0.17998111 -0.1260295
-#> AAACGGGAGATATGGT SeuratProject       6194         2486 -0.16794573 -0.1666881
-#> AAACGGGCAAAGAATC SeuratProject       6370         2581 -0.17434505 -0.2216024
-#> AAACGGGGTACAGTTC SeuratProject       9182         2906 -0.18656224 -0.1571970
-#> AAACGGGTCAGCTCTC SeuratProject       5892         2282 -0.12347911 -0.2298337
-#>                  nCount_spliced nFeature_spliced nCount_unspliced
-#> AAACCTGAGCCTTGAT           7071             2613              953
-#> AAACCTGGTAAGTGGC           5026             2211             1000
-#> AAACGGGAGATATGGT           6194             2486              721
-#> AAACGGGCAAAGAATC           6370             2581             1544
-#> AAACGGGGTACAGTTC           9182             2906             2262
-#> AAACGGGTCAGCTCTC           5892             2282              935
-#>                  nFeature_unspliced     CellType  SubCellType Phase
-#> AAACCTGAGCCTTGAT                638       Ductal       Ductal    G1
-#> AAACCTGGTAAGTGGC                623 Ngn3-high-EP Ngn3-high-EP    G1
-#> AAACGGGAGATATGGT                550       Ductal       Ductal    G1
-#> AAACGGGCAAAGAATC               1015    Endocrine         Beta    G1
-#> AAACGGGGTACAGTTC               1096    Endocrine         Beta    G1
-#> AAACGGGTCAGCTCTC                712  Ngn3-low-EP  Ngn3-low-EP    G1
-#>                  Standardpca_SNN_res.0.6 ident Standardpcaclusters
-#> AAACCTGAGCCTTGAT                       0  <NA>                <NA>
-#> AAACCTGGTAAGTGGC                       3  <NA>                <NA>
-#> AAACGGGAGATATGGT                       0  <NA>                <NA>
-#> AAACGGGCAAAGAATC                       1  <NA>                <NA>
-#> AAACGGGGTACAGTTC                       1  <NA>                <NA>
-#> AAACGGGTCAGCTCTC                       0  <NA>                <NA>
-#>                  Standardclusters
-#> AAACCTGAGCCTTGAT             <NA>
-#> AAACCTGGTAAGTGGC             <NA>
-#> AAACGGGAGATATGGT             <NA>
-#> AAACGGGCAAAGAATC             <NA>
-#> AAACGGGGTACAGTTC             <NA>
-#> AAACGGGTCAGCTCTC             <NA>
+meta.data <- pancreas_sub@meta.data
 StatPlot(
-  pancreas_sub@meta.data,
+  meta.data,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "bar",
@@ -315,13 +280,13 @@ StatPlot(
 
 
 StatPlot(
-  pancreas_sub[["RNA"]]@meta.data,
+  meta.data,
   stat.by = "highly_variable_genes",
   plot_type = "ring",
   label = TRUE,
   NA_stat = FALSE
 )
-
+#> Error in StatPlot(meta.data, stat.by = "highly_variable_genes", plot_type = "ring",     label = TRUE, NA_stat = FALSE): Highly_variable_genes is not in the meta.data.
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(

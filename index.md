@@ -33,9 +33,7 @@ following facilities:
   identification of dynamic features,
   [PAGA](https://github.com/theislab/paga), [RNA
   velocity](https://github.com/theislab/scvelo),
-  [Palantir](https://github.com/dpeerlab/Palantir),
-  [Monocle2](http://cole-trapnell-lab.github.io/monocle-release),
-  [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
+  [Palantir](https://github.com/dpeerlab/Palantir), etc.
 - Multiple methods for automatic annotation of single-cell data and
   methods for projection between single-cell datasets.
 - High-quality data visualization methods.

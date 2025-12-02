@@ -220,8 +220,8 @@ pancreas_sub <- RunDEtest(
  pancreas_sub,
  group_by = "CellType"
 )
-#> ⠙ [2025-11-22 03:11:13] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-11-22 03:11:13] Completed 5 tasks in 756ms
+#> ⠙ [2025-12-02 05:04:02] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-02 05:04:02] Completed 5 tasks in 723ms
 #> 
 VolcanoPlot(
   pancreas_sub,

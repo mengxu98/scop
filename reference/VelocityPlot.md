@@ -66,155 +66,157 @@ VelocityPlot(
 
 - cells:
 
-  Cells to include in the plot. If \`NULL\`, all cells will be included.
+  Cells to include in the plot. If `NULL`, all cells will be included.
 
 - velocity:
 
-  Name of the velocity to use for plotting. Default is \`"stochastic"\`.
+  Name of the velocity to use for plotting. Default is `"stochastic"`.
 
 - plot_type:
 
-  Type of plot to create. Can be \`"raw"\`, \`"grid"\`, or \`"stream"\`.
+  Type of plot to create. Can be `"raw"`, `"grid"`, or `"stream"`.
 
 - group_by:
 
   Name of the column in the Seurat object metadata to group the cells
-  by. Defaults is \`NULL\`.
+  by. Defaults is `NULL`.
 
 - group_palette:
 
   Name of the palette to use for coloring the groups. Defaults is
-  \`"Paired"\`.
+  `"Paired"`.
 
 - group_palcolor:
 
-  Colors to use for coloring the groups. Defaults is \`NULL\`.
+  Colors to use for coloring the groups. Defaults is `NULL`.
 
 - n_neighbors:
 
   Number of neighbors to include for the density estimation. Defaults is
-  \`ceiling(ncol(srt@assays\[\[1\]\]) / 50)\`.
+  `ceiling(ncol(srt@assays[[1]]) / 50)`.
 
 - density:
 
-  Propotion of cells to plot. Defaults is \`1\` (plot all cells).
+  Propotion of cells to plot. Defaults is `1` (plot all cells).
 
 - smooth:
 
-  Smoothing parameter for density estimation. Defaults is \`0.5\`.
+  Smoothing parameter for density estimation. Defaults is `0.5`.
 
 - scale:
 
-  Scaling factor for the velocity vectors. Defaults is \`1\`.
+  Scaling factor for the velocity vectors. Defaults is `1`.
 
 - min_mass:
 
-  Minimum mass value for the density-based cutoff. Defaults is \`1\`.
+  Minimum mass value for the density-based cutoff. Defaults is `1`.
 
 - cutoff_perc:
 
-  Percentile value for the density-based cutoff. Defaults is \`5\`.
+  Percentile value for the density-based cutoff. Defaults is `5`.
 
 - arrow_angle:
 
-  Angle of the arrowheads. Defaults is \`20\`.
+  Angle of the arrowheads. Defaults is `20`.
 
 - arrow_color:
 
-  Color of the arrowheads. Defaults is \`"black"\`.
+  Color of the arrowheads. Defaults is `"black"`.
 
 - streamline_L:
 
-  Length of the streamlines. Defaults is \`5\`.
+  Length of the streamlines. Defaults is `5`.
 
 - streamline_minL:
 
-  Minimum length of the streamlines. Defaults is \`1\`.
+  Minimum length of the streamlines. Defaults is `1`.
 
 - streamline_res:
 
-  Resolution of the streamlines. Defaults is \`1\`.
+  Resolution of the streamlines. Defaults is `1`.
 
 - streamline_n:
 
-  Number of streamlines to plot. Defaults is \`15\`.
+  Number of streamlines to plot. Defaults is `15`.
 
 - streamline_width:
 
-  Width of the streamlines. Defaults is \`c(0, 0.8)\`.
+  Width of the streamlines. Defaults is `c(0, 0.8)`.
 
 - streamline_alpha:
 
-  Alpha transparency of the streamlines. Defaults is \`1\`.
+  Alpha transparency of the streamlines. Defaults is `1`.
 
 - streamline_color:
 
-  Color of the streamlines. Defaults is \`NULL\`.
+  Color of the streamlines. Defaults is `NULL`.
 
 - streamline_palette:
 
   Name of the palette to use for coloring the streamlines. Defaults is
-  \`"RdYlBu"\`.
+  `"RdYlBu"`.
 
 - streamline_palcolor:
 
-  Colors to use for coloring the streamlines. Defaults is \`NULL\`.
+  Colors to use for coloring the streamlines. Defaults is `NULL`.
 
 - streamline_bg_color:
 
-  Background color of the streamlines. Defaults is \`"white"\`.
+  Background color of the streamlines. Defaults is `"white"`.
 
 - streamline_bg_stroke:
 
-  Stroke width of the streamlines background. Defaults is \`0.5\`.
+  Stroke width of the streamlines background. Defaults is `0.5`.
 
 - aspect.ratio:
 
-  Aspect ratio of the plot. Defaults is \`1\`.
+  Aspect ratio of the plot. Defaults is `1`.
 
 - title:
 
-  Title of the plot. Defaults is \`"Cell velocity"\`.
+  Title of the plot. Defaults is `"Cell velocity"`.
 
 - subtitle:
 
-  Subtitle of the plot. Defaults is \`NULL\`.
+  Subtitle of the plot. Defaults is `NULL`.
 
 - xlab:
 
-  x-axis label. Defaults is \`NULL\`.
+  x-axis label. Defaults is `NULL`.
 
 - ylab:
 
-  y-axis label. Defaults is \`NULL\`.
+  y-axis label. Defaults is `NULL`.
 
 - legend.position:
 
-  Position of the legend. Defaults is \`"right"\`.
+  Position of the legend. Defaults is `"right"`.
 
 - legend.direction:
 
-  Direction of the legend. Defaults is \`"vertical"\`.
+  Direction of the legend. Defaults is `"vertical"`.
 
 - theme_use:
 
-  Name of the theme to use for plotting. Defaults is \`"theme_scop"\`.
+  Name of the theme to use for plotting. Defaults is `"theme_scop"`.
 
 - theme_args:
 
-  List of theme arguments for customization. Defaults is \`list()\`.
+  List of theme arguments for customization. Defaults is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - return_layer:
 
-  Whether to return the plot layers as a list. Defaults is \`FALSE\`.
+  Whether to return the plot layers as a list. Defaults is `FALSE`.
 
 - seed:
 
-  Random seed for reproducibility. Defaults is \`11\`.
+  Random seed for reproducibility. Defaults is `11`.
 
 ## See also
 
-\[RunSCVELO\], \[CellDimPlot\]
+[RunSCVELO](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
+[CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
 
 ## Examples
 

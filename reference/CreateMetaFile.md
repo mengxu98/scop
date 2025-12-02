@@ -1,6 +1,6 @@
-# Create Meta File
+# Create Meta File in HDF5 format from Seurat object
 
-Creates a meta file in HDF5 format from a Seurat object.
+Create Meta File in HDF5 format from Seurat object
 
 ## Usage
 
@@ -60,6 +60,6 @@ CreateMetaFile(
 ## See also
 
 [CreateDataFile](https://mengxu98.github.io/scop/reference/CreateDataFile.md),
-[PrepareSCExplorer](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md),
 [FetchH5](https://mengxu98.github.io/scop/reference/FetchH5.md),
+[PrepareSCExplorer](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md),
 [RunSCExplorer](https://mengxu98.github.io/scop/reference/RunSCExplorer.md)

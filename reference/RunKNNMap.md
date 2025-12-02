@@ -33,11 +33,11 @@ RunKNNMap(
 
 - srt_query:
 
-  An object of class Seurat storing the query cells.
+  A Seurat object storing the query cells.
 
 - srt_ref:
 
-  An object of class Seurat storing the reference cells.
+  A Seurat object storing the reference cells.
 
 - query_assay:
 
@@ -132,6 +132,13 @@ RunKNNMap(
   "median", "sum", "min", "max", "sd", "var", etc. If not provided, the
   default is "mean".
 
+## Value
+
+A Seurat object with the projection results stored in the
+"ref.embeddings" reduction. If `ref_group` is provided, the function
+will also add a new metadata column called "predicted_ref_group" to the
+query object.
+
 ## Examples
 
 ``` r
@@ -199,7 +206,8 @@ srt_query <- RunKNNMap(
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,
-  query_group = "celltype", ref_group = "celltype"
+  query_group = "celltype",
+  ref_group = "celltype"
 )
 #> Scale for x is already present.
 #> Adding another scale for x, which will replace the existing scale.

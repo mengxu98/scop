@@ -644,8 +644,9 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-11-22 02:22:37] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-11-22 02:22:37] Completed 5 tasks in 940ms
+#> ⠙ [2025-12-02 04:17:07] Running [1/5] Processing: Ductal  ETA:  1s
+#> ⠹ [2025-12-02 04:17:07] Running [3/5] Processing: Endocrine  ETA:  0s
+#> ✔ [2025-12-02 04:17:07] Completed 5 tasks in 945ms
 #> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -711,11 +712,11 @@ ht3 <- FeatureHeatmap(
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ⠙ [2025-11-22 02:23:40] Running [1/5] Processing: 1  ETA:  1m
-#> ⠹ [2025-11-22 02:23:40] Running [2/5] Processing: 2  ETA: 47s
-#> ⠸ [2025-11-22 02:23:40] Running [3/5] Processing: 3  ETA: 32s
-#> ⠼ [2025-11-22 02:23:40] Running [4/5] Processing: 4  ETA: 16s
-#> ✔ [2025-11-22 02:23:40] Completed 5 tasks in 1m 13.3s
+#> ⠙ [2025-12-02 04:18:08] Running [1/5] Processing: 1  ETA:  1m
+#> ⠹ [2025-12-02 04:18:08] Running [2/5] Processing: 2  ETA: 48s
+#> ⠸ [2025-12-02 04:18:08] Running [3/5] Processing: 3  ETA: 31s
+#> ⠼ [2025-12-02 04:18:08] Running [4/5] Processing: 4  ETA: 15s
+#> ✔ [2025-12-02 04:18:08] Completed 5 tasks in 1m 11.8s
 #> 
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting

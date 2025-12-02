@@ -22,7 +22,7 @@ RunWOT(
   recalculate = FALSE,
   palette = "Paired",
   palcolor = NULL,
-  show_plot = TRUE,
+  show_plot = FALSE,
   save = FALSE,
   dpi = 300,
   dirpath = "./",
@@ -91,12 +91,12 @@ RunWOT(
 - get_coupling:
 
   Whether to compute and store the coupling matrix between the specified
-  `time_from` and `time_to`. Default is FALSE.
+  `time_from` and `time_to`. Default is `FALSE`.
 
 - recalculate:
 
   Whether to recalculate the transport maps even if they already exist
-  at the specified `tmap_out` location. Default is FALSE.
+  at the specified `tmap_out` location. Default is `FALSE`.
 
 - palette:
 
@@ -108,7 +108,7 @@ RunWOT(
 
 - show_plot:
 
-  Whether to show the plot.
+  Whether to show the plot. Default is `FALSE`.
 
 - save:
 
@@ -134,6 +134,12 @@ RunWOT(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+## References
+
+[Geoffrey et al. (2019)
+Cell](https://doi.org/10.1016/j.cell.2019.01.006),
+[GitHub](https://github.com/broadinstitute/wot)
 
 ## See also
 

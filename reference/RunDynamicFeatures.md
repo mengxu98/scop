@@ -161,15 +161,15 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2025-11-22 02:47:36] Running [1/225] Processing: 1  ETA:  8s
-#> ⠹ [2025-11-22 02:47:36] Running [59/225] Processing: 59  ETA:  6s
-#> ⠸ [2025-11-22 02:47:36] Running [142/225] Processing: 142  ETA:  3s
-#> ⠼ [2025-11-22 02:47:36] Running [220/225] Processing: 220  ETA:  0s
-#> ✔ [2025-11-22 02:47:36] Completed 225 tasks in 8.5s
+#> ⠙ [2025-12-02 04:41:17] Running [1/225] Processing: 1  ETA:  8s
+#> ⠹ [2025-12-02 04:41:17] Running [63/225] Processing: 63  ETA:  5s
+#> ⠸ [2025-12-02 04:41:17] Running [155/225] Processing: 155  ETA:  2s
+#> ✔ [2025-12-02 04:41:17] Completed 225 tasks in 7.6s
 #> 
-#> ⠙ [2025-11-22 02:47:48] Running [81/225] Processing: 81  ETA:  5s
-#> ⠹ [2025-11-22 02:47:48] Running [166/225] Processing: 166  ETA:  2s
-#> ✔ [2025-11-22 02:47:48] Completed 225 tasks in 8.1s
+#> ⠙ [2025-12-02 04:41:25] Running [17/225] Processing: 17  ETA:  7s
+#> ⠹ [2025-12-02 04:41:25] Running [111/225] Processing: 111  ETA:  4s
+#> ⠸ [2025-12-02 04:41:25] Running [204/225] Processing: 204  ETA:  1s
+#> ✔ [2025-12-02 04:41:25] Completed 225 tasks in 7.3s
 #> 
 
 names(
@@ -216,10 +216,7 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2025-11-22 02:47:59] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-11-22 02:47:59] Completed 2 tasks in 133ms
-#> 
-#> ⠙ [2025-11-22 02:48:01] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-11-22 02:48:01] Completed 2 tasks in 145ms
+#> ⠙ [2025-12-02 04:41:38] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-12-02 04:41:38] Completed 2 tasks in 124ms
 #> 
 ```
