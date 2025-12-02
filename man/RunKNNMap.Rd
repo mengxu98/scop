@@ -25,19 +25,23 @@ RunKNNMap(
 )
 }
 \arguments{
-\item{srt_query}{An object of class Seurat storing the query cells.}
+\item{srt_query}{A Seurat object storing the query cells.}
 
-\item{srt_ref}{An object of class Seurat storing the reference cells.}
+\item{srt_ref}{A Seurat object storing the reference cells.}
 
-\item{query_assay}{A character string specifying the assay name for the query cells. If not provided, the default assay for the query object will be used.}
+\item{query_assay}{A character string specifying the assay name for the query cells.
+If not provided, the default assay for the query object will be used.}
 
-\item{ref_assay}{A character string specifying the assay name for the reference cells. If not provided, the default assay for the reference object will be used.}
+\item{ref_assay}{A character string specifying the assay name for the reference cells.
+If not provided, the default assay for the reference object will be used.}
 
-\item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object. If not provided, the first UMAP reduction found in the reference object will be used.}
+\item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object.
+If not provided, the first UMAP reduction found in the reference object will be used.}
 
 \item{ref_group}{A character string specifying a metadata column name in the reference object to use for grouping.}
 
-\item{features}{A character vector specifying the features to be used for calculating the distance metric. If not provided, the function will use the variable features calculated by the Seurat package.}
+\item{features}{A character vector specifying the features to be used for calculating the distance metric.
+If not provided, the function will use the variable features calculated by the Seurat package.}
 
 \item{nfeatures}{A integer specifying the number of highly variable features to be calculated if \code{features} is not provided.}
 
@@ -49,18 +53,35 @@ RunKNNMap(
 
 \item{ref_dims}{A numeric vector specifying the dimension indices from the reference reduction to be used for calculating the distance metric.}
 
-\item{projection_method}{A character string specifying the projection method to use. Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection. If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
+\item{projection_method}{A character string specifying the projection method to use.
+Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
+If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
 
-\item{nn_method}{A character string specifying the nearest neighbor search method to use. Options are "raw", "annoy", and "rann". If "raw" is selected, the function will use the brute-force method to find the nearest neighbors. If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search. If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search. If not provided, the function will choose the search method based on the size of the query and reference datasets.}
+\item{nn_method}{A character string specifying the nearest neighbor search method to use.
+Options are "raw", "annoy", and "rann".
+If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
+If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
+If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
+If not provided, the function will choose the search method based on the size of the query and reference datasets.}
 
 \item{k}{A number of nearest neighbors to find for each cell in the query object.}
 
-\item{distance_metric}{A character string specifying the distance metric to use for calculating the pairwise distances between cells. Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
+\item{distance_metric}{A character string specifying the distance metric to use for calculating the pairwise distances between cells.
+Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching",
+and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
-\item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object. Options are "mean", "median", "sum", "min", "max", "sd", "var", etc. If not provided, the default is "mean".}
+\item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
+Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
+If not provided, the default is "mean".}
+}
+\value{
+A Seurat object with the projection results stored in the "ref.embeddings" reduction.
+If \code{ref_group} is provided, the function will also add a new metadata column called "predicted_ref_group" to the query object.
 }
 \description{
-This function performs single-cell reference mapping using the K-nearest neighbor (KNN) method. It takes two single-cell datasets as input: srt_query and srt_ref. The function maps cells from the srt_query dataset to the srt_ref dataset based on their similarity or distance.
+This function performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
+It takes two single-cell datasets as input: srt_query and srt_ref.
+The function maps cells from the srt_query dataset to the srt_ref dataset based on their similarity or distance.
 }
 \examples{
 data(panc8_sub)
@@ -91,6 +112,7 @@ srt_query <- RunKNNMap(
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,
-  query_group = "celltype", ref_group = "celltype"
+  query_group = "celltype",
+  ref_group = "celltype"
 )
 }

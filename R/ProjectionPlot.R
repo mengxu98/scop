@@ -1,17 +1,23 @@
-#' Projection Plot
+#' @title Projection Plot
 #'
-#' This function generates a projection plot, which can be used to compare two groups of cells in a dimensionality reduction space.
+#' @description
+#' This function generates a projection plot,
+#' which can be used to compare two groups of cells in a dimensionality reduction space.
 #'
-#' @param srt_query An object of class Seurat storing the query group cells.
-#' @param srt_ref An object of class Seurat storing the reference group cells.
+#' @md
+#' @inheritParams RunKNNMap
 #' @param query_group The grouping variable for the query group cells.
 #' @param ref_group The grouping variable for the reference group cells.
 #' @param query_reduction The name of the reduction in the query group cells.
 #' @param ref_reduction The name of the reduction in the reference group cells.
-#' @param query_param A list of parameters for customizing the query group plot. Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).
-#' @param ref_param A list of parameters for customizing the reference group plot. Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).
-#' @param xlim The x-axis limits for the plot. If not provided, the limits will be calculated based on the data.
-#' @param ylim The y-axis limits for the plot. If not provided, the limits will be calculated based on the data.
+#' @param query_param A list of parameters for customizing the query group plot.
+#' Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).
+#' @param ref_param A list of parameters for customizing the reference group plot.
+#' Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).
+#' @param xlim The x-axis limits for the plot.
+#' If not provided, the limits will be calculated based on the data.
+#' @param ylim The y-axis limits for the plot.
+#' If not provided, the limits will be calculated based on the data.
 #' @param pt.size The size of the points in the plot.
 #' @param stroke.highlight The size of the stroke highlight for cells.
 #'
