@@ -95,6 +95,7 @@ pancreas_sub <- RunDM(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
+
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

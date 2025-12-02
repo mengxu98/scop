@@ -11,12 +11,16 @@
 #' @param time_to The ending time point for trajectory and fate analysis.
 #' If not provided, only trajectory and fate analysis for the specified `time_from` will be performed.
 #' @param get_coupling Whether to compute and store the coupling matrix between the specified `time_from` and `time_to`.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #' @param recalculate Whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #'
 #' @seealso [srt_to_adata]
 #' @export
+#'
+#' @references
+#' \href{https://doi.org/10.1016/j.cell.2019.01.006}{Geoffrey et al. (2019) Cell},
+#' \href{https://github.com/broadinstitute/wot}{GitHub}
 #'
 #' @examples
 #' \dontrun{
@@ -71,7 +75,7 @@ RunWOT <- function(
     recalculate = FALSE,
     palette = "Paired",
     palcolor = NULL,
-    show_plot = TRUE,
+    show_plot = FALSE,
     save = FALSE,
     dpi = 300,
     dirpath = "./",
@@ -82,54 +86,60 @@ RunWOT <- function(
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
     log_message(
-      "One of 'srt', 'adata' must be provided.",
+      "One of {.arg srt} or {.arg adata} must be provided",
       message_type = "error"
     )
   }
   if (is.null(group_by)) {
     log_message(
-      "'group_by' must be provided.",
+      "{.arg group_by} must be provided",
       message_type = "error"
     )
   }
   if (is.null(time_field)) {
     log_message(
-      "'time_field' must be provided.",
+      "{.arg time_field} must be provided",
       message_type = "error"
     )
   }
   if (is.null(time_from)) {
     log_message(
-      "'time_from' must be provided.",
+      "{.arg time_from} must be provided",
       message_type = "error"
     )
   }
   if (isTRUE(get_coupling) && is.null(time_to)) {
     log_message(
-      "The 'get_coupling' paramter is only valid when 'time_to' is specified.",
+      "The {.arg get_coupling} paramter is only valid when {.arg time_to} is specified",
       message_type = "warning"
     )
   }
 
   args <- mget(names(formals()))
-  args <- lapply(args, function(x) {
-    if (is.numeric(x)) {
-      y <- ifelse(grepl("\\.", as.character(x)), as.double(x), as.integer(x))
-    } else {
-      y <- x
+  args <- lapply(
+    args, function(x) {
+      if (is.numeric(x)) {
+        y <- ifelse(
+          grepl("\\.", as.character(x)), as.double(x), as.integer(x)
+        )
+      } else {
+        y <- x
+      }
+      return(y)
     }
-    return(y)
-  })
+  )
   call.envir <- parent.frame(1)
-  args <- lapply(args, function(arg) {
-    if (is.symbol(arg)) {
-      eval(arg, envir = call.envir)
-    } else if (is.call(arg)) {
-      eval(arg, envir = call.envir)
-    } else {
-      arg
+  args <- lapply(
+    args, function(arg) {
+      if (is.symbol(arg)) {
+        eval(arg, envir = call.envir)
+      } else if (is.call(arg)) {
+        eval(arg, envir = call.envir)
+      } else {
+        arg
+      }
     }
-  })
+  )
   args <- args[
     !names(args) %in%
       c(
@@ -162,7 +172,11 @@ RunWOT <- function(
 
   functions <- reticulate::import_from_path(
     "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
+    path = system.file(
+      "python",
+      package = "scop",
+      mustWork = TRUE
+    ),
     convert = TRUE
   )
   adata <- do.call(functions$WOT, args)
