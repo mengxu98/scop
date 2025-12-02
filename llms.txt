@@ -33,9 +33,7 @@ following facilities:
   identification of dynamic features,
   [PAGA](https://github.com/theislab/paga), [RNA
   velocity](https://github.com/theislab/scvelo),
-  [Palantir](https://github.com/dpeerlab/Palantir),
-  [Monocle2](http://cole-trapnell-lab.github.io/monocle-release),
-  [Monocle3](https://cole-trapnell-lab.github.io/monocle3), etc.
+  [Palantir](https://github.com/dpeerlab/Palantir), etc.
 - Multiple methods for automatic annotation of single-cell data and
   methods for projection between single-cell datasets.
 - High-quality data visualization methods.
@@ -1091,7 +1089,7 @@ etc.
 - [`CreateDataFile()`](https://mengxu98.github.io/scop/reference/CreateDataFile.md)
   : Create data file
 - [`CreateMetaFile()`](https://mengxu98.github.io/scop/reference/CreateMetaFile.md)
-  : Create Meta File
+  : Create Meta File in HDF5 format from Seurat object
 - [`FetchH5()`](https://mengxu98.github.io/scop/reference/FetchH5.md) :
   Fetch data from the hdf5 file
 - [`PrepareSCExplorer()`](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md)

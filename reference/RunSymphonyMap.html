@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,19 +66,21 @@
 
 
 <dl><dt id="arg-srt-query">srt_query<a class="anchor" aria-label="anchor" href="#arg-srt-query"></a></dt>
-<dd><p>An object of class Seurat storing the query cells.</p></dd>
+<dd><p>A Seurat object storing the query cells.</p></dd>
 
 
 <dt id="arg-srt-ref">srt_ref<a class="anchor" aria-label="anchor" href="#arg-srt-ref"></a></dt>
-<dd><p>An object of class Seurat storing the reference cells.</p></dd>
+<dd><p>A Seurat object storing the reference cells.</p></dd>
 
 
 <dt id="arg-query-assay">query_assay<a class="anchor" aria-label="anchor" href="#arg-query-assay"></a></dt>
-<dd><p>A character string specifying the assay name for the query cells. If not provided, the default assay for the query object will be used.</p></dd>
+<dd><p>A character string specifying the assay name for the query cells.
+If not provided, the default assay for the query object will be used.</p></dd>
 
 
 <dt id="arg-ref-assay">ref_assay<a class="anchor" aria-label="anchor" href="#arg-ref-assay"></a></dt>
-<dd><p>A character string specifying the assay name for the reference cells. If not provided, the default assay for the reference object will be used.</p></dd>
+<dd><p>A character string specifying the assay name for the reference cells.
+If not provided, the default assay for the reference object will be used.</p></dd>
 
 
 <dt id="arg-ref-pca">ref_pca<a class="anchor" aria-label="anchor" href="#arg-ref-pca"></a></dt>
@@ -90,7 +92,8 @@
 
 
 <dt id="arg-ref-umap">ref_umap<a class="anchor" aria-label="anchor" href="#arg-ref-umap"></a></dt>
-<dd><p>A character string specifying the name of the UMAP reduction in the reference object. If not provided, the first UMAP reduction found in the reference object will be used.</p></dd>
+<dd><p>A character string specifying the name of the UMAP reduction in the reference object.
+If not provided, the first UMAP reduction found in the reference object will be used.</p></dd>
 
 
 <dt id="arg-ref-group">ref_group<a class="anchor" aria-label="anchor" href="#arg-ref-group"></a></dt>
@@ -98,11 +101,18 @@
 
 
 <dt id="arg-projection-method">projection_method<a class="anchor" aria-label="anchor" href="#arg-projection-method"></a></dt>
-<dd><p>A character string specifying the projection method to use. Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection. If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.</p></dd>
+<dd><p>A character string specifying the projection method to use.
+Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
+If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.</p></dd>
 
 
 <dt id="arg-nn-method">nn_method<a class="anchor" aria-label="anchor" href="#arg-nn-method"></a></dt>
-<dd><p>A character string specifying the nearest neighbor search method to use. Options are "raw", "annoy", and "rann". If "raw" is selected, the function will use the brute-force method to find the nearest neighbors. If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search. If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search. If not provided, the function will choose the search method based on the size of the query and reference datasets.</p></dd>
+<dd><p>A character string specifying the nearest neighbor search method to use.
+Options are "raw", "annoy", and "rann".
+If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
+If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
+If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
+If not provided, the function will choose the search method based on the size of the query and reference datasets.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -110,11 +120,15 @@
 
 
 <dt id="arg-distance-metric">distance_metric<a class="anchor" aria-label="anchor" href="#arg-distance-metric"></a></dt>
-<dd><p>A character string specifying the distance metric to use for calculating the pairwise distances between cells. Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching", and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.</p></dd>
+<dd><p>A character string specifying the distance metric to use for calculating the pairwise distances between cells.
+Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching",
+and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.</p></dd>
 
 
 <dt id="arg-vote-fun">vote_fun<a class="anchor" aria-label="anchor" href="#arg-vote-fun"></a></dt>
-<dd><p>A character string specifying the function to be used for aggregating the nearest neighbors in the reference object. Options are "mean", "median", "sum", "min", "max", "sd", "var", etc. If not provided, the default is "mean".</p></dd>
+<dd><p>A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
+Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
+If not provided, the default is "mean".</p></dd>
 
 </dl></div>
 
@@ -190,24 +204,24 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install libicu-dev`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">RANN</span> 2.6.2  <span style="color: #9E9E9E;">(1s)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Packaging <span style="color: #0000BB;">symphony</span> 0.1.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Packaged <span style="color: #0000BB;">symphony</span> 0.1.2 <span style="color: #9E9E9E;">(774ms)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Packaged <span style="color: #0000BB;">symphony</span> 0.1.2 <span style="color: #9E9E9E;">(669ms)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">symphony</span> 0.1.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">symphony</span> 0.1.2 <span style="color: #9E9E9E;">(21s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">symphony</span> 0.1.2 (github::immunogenomics/symphony@91e2ca1) <span style="color: #9E9E9E;">(48ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) <span style="color: #B2B2B2;">[33.1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">symphony</span> 0.1.2 <span style="color: #9E9E9E;">(19.4s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">symphony</span> 0.1.2 (github::immunogenomics/symphony@91e2ca1) <span style="color: #9E9E9E;">(1s)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) <span style="color: #B2B2B2;">[26.8s]</span></span>
 <span class="r-in"><span><span class="fu"><a href="ProjectionPlot.html">ProjectionPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">srt_query</span>,</span></span>
 <span class="r-in"><span>  srt_ref <span class="op">=</span> <span class="va">srt_ref</span>,</span></span>

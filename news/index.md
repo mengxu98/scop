@@ -1,5 +1,28 @@
 # Changelog
 
+## scop 0.6.5
+
+- **func**:
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
+    - Added comprehensive environment variable configuration to prevent
+      crashes when calling Python functions, including setting thread
+      limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This
+      improves stability on all platforms, especially Apple silicon
+      Macs.
+    - Added `accept_conda_tos()` function to automatically accept conda
+      Terms of Service for required channels, improving the conda
+      environment setup process.
+  - Multiple Python-based functions (`RunPAGA`, `RunSCVELO`,
+    `RunPalantir`, `RunCellRank`, `RunWOT`, `RunPHATE`, `RunPaCMAP`,
+    `RunTriMap`): Enhanced message formatting and code improvements.
+- **refactor**:
+  - Improved code formatting and consistency across multiple functions.
+  - Enhanced Python functions in `inst/python/functions.py` with better
+    error handling and message formatting.
+- **docs**:
+  - Updated documentation for multiple functions to reflect code
+    improvements.
+
 ## scop 0.6.2
 
 - **refactor**:

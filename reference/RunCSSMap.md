@@ -25,11 +25,11 @@ RunCSSMap(
 
 - srt_query:
 
-  An object of class Seurat storing the query cells.
+  A Seurat object storing the query cells.
 
 - srt_ref:
 
-  An object of class Seurat storing the reference cells.
+  A Seurat object storing the reference cells.
 
 - query_assay:
 

@@ -192,8 +192,8 @@ pancreas_sub <- RunGLMPCA(pancreas_sub)
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got glmpca 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.79 kB)
-#> ✔ Installed glmpca 0.2.0  (1.2s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (230.79 kB) [2.5s]
+#> ✔ Installed glmpca 0.2.0  (1s)
+#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (230.79 kB) [2s]
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

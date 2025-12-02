@@ -246,7 +246,7 @@ RunSCVELO(
 
 - show_plot:
 
-  Whether to show the plot.
+  Whether to show the plot. Default is `FALSE`.
 
 - save:
 

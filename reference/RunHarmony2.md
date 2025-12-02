@@ -130,8 +130,8 @@ panc8_sub <- RunHarmony2(
 #> ✔ Got RhpcBLASctl 0.23-42 (x86_64-pc-linux-gnu-ubuntu-24.04) (14.56 kB)
 #> ✔ Got harmony 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.80 MB)
 #> ✔ Installed RhpcBLASctl 0.23-42  (1s)
-#> ✔ Installed harmony 1.2.4  (1.1s)
-#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (4.81 MB) [3.4s]
+#> ✔ Installed harmony 1.2.4  (1s)
+#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (4.81 MB) [3.1s]
 #> Transposing data matrix
 #> Initializing state using k-means centroids initialization
 #> Harmony 1/10

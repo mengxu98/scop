@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,27 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.5" id="scop-065">scop 0.6.5<a class="anchor" aria-label="anchor" href="#scop-065"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>:
+<ul><li>Added comprehensive environment variable configuration to prevent crashes when calling Python functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.</li>
+<li>Added <code>accept_conda_tos()</code> function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.</li>
+</ul></li>
+<li>Multiple Python-based functions (<code>RunPAGA</code>, <code>RunSCVELO</code>, <code>RunPalantir</code>, <code>RunCellRank</code>, <code>RunWOT</code>, <code>RunPHATE</code>, <code>RunPaCMAP</code>, <code>RunTriMap</code>): Enhanced message formatting and code improvements.</li>
+</ul></li>
+<li>
+<strong>refactor</strong>:
+<ul><li>Improved code formatting and consistency across multiple functions.</li>
+<li>Enhanced Python functions in <code>inst/python/functions.py</code> with better error handling and message formatting.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated documentation for multiple functions to reflect code improvements.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.2" id="scop-062">scop 0.6.2<a class="anchor" aria-label="anchor" href="#scop-062"></a></h2>
 <ul><li>

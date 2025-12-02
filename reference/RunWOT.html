@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
 <span>  recalculate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  show_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  dirpath <span class="op">=</span> <span class="st">"./"</span>,</span>
@@ -128,12 +128,12 @@ If not provided, only trajectory and fate analysis for the specified <code>time_
 
 <dt id="arg-get-coupling">get_coupling<a class="anchor" aria-label="anchor" href="#arg-get-coupling"></a></dt>
 <dd><p>Whether to compute and store the coupling matrix between the specified <code>time_from</code> and <code>time_to</code>.
-Default is FALSE.</p></dd>
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-recalculate">recalculate<a class="anchor" aria-label="anchor" href="#arg-recalculate"></a></dt>
 <dd><p>Whether to recalculate the transport maps even if they already exist at the specified <code>tmap_out</code> location.
-Default is FALSE.</p></dd>
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
@@ -145,7 +145,8 @@ Default is FALSE.</p></dd>
 
 
 <dt id="arg-show-plot">show_plot<a class="anchor" aria-label="anchor" href="#arg-show-plot"></a></dt>
-<dd><p>Whether to show the plot.</p></dd>
+<dd><p>Whether to show the plot.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-save">save<a class="anchor" aria-label="anchor" href="#arg-save"></a></dt>
@@ -174,6 +175,11 @@ Default is <code>TRUE</code>.</p></dd>
 Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p><a href="https://doi.org/10.1016/j.cell.2019.01.006" class="external-link">Geoffrey et al. (2019) Cell</a>,
+<a href="https://github.com/broadinstitute/wot" class="external-link">GitHub</a></p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a></p></div>

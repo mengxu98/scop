@@ -33,7 +33,7 @@ RunPAGA(
   min_group_size = 0.01,
   palette = "Paired",
   palcolor = NULL,
-  show_plot = TRUE,
+  show_plot = FALSE,
   save = FALSE,
   dpi = 300,
   dirpath = "./",
@@ -159,7 +159,7 @@ RunPAGA(
 
 - show_plot:
 
-  Whether to show the plot.
+  Whether to show the plot. Default is `FALSE`.
 
 - save:
 

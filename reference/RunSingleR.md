@@ -198,15 +198,15 @@ pancreas_sub <- RunSingleR(
 #> ✔ Got SingleR 2.12.0 (source) (695.24 kB)
 #> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
 #> ℹ Building sparseMatrixStats 1.22.0
-#> ✔ Built sparseMatrixStats 1.22.0 (17.7s)
-#> ✔ Installed sparseMatrixStats 1.22.0  (59ms)
+#> ✔ Built sparseMatrixStats 1.22.0 (16.7s)
+#> ✔ Installed sparseMatrixStats 1.22.0  (1.1s)
 #> ℹ Building DelayedMatrixStats 1.32.0
-#> ✔ Built DelayedMatrixStats 1.32.0 (10.8s)
-#> ✔ Installed DelayedMatrixStats 1.32.0  (29ms)
+#> ✔ Built DelayedMatrixStats 1.32.0 (10.3s)
+#> ✔ Installed DelayedMatrixStats 1.32.0  (1s)
 #> ℹ Building SingleR 2.12.0
-#> ✔ Built SingleR 2.12.0 (42s)
-#> ✔ Installed SingleR 2.12.0  (88ms)
-#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 12.6s]
+#> ✔ Built SingleR 2.12.0 (39.2s)
+#> ✔ Installed SingleR 2.12.0  (1.1s)
+#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 11.1s]
 #>  
 #> → Will install 4 packages.
 #> → All 4 packages (0 B) are cached.
@@ -221,18 +221,18 @@ pancreas_sub <- RunSingleR(
 #> ✔ Got scrapper 1.4.0 (source) (958.15 kB)
 #> ✔ Got Rigraphlib 1.2.0 (source) (4.53 MB)
 #> ℹ Building dir.expiry 1.18.0
-#> ✔ Built dir.expiry 1.18.0 (1s)
+#> ✔ Built dir.expiry 1.18.0 (970ms)
 #> ✔ Installed dir.expiry 1.18.0  (1s)
 #> ℹ Building biocmake 1.2.0
-#> ✔ Built biocmake 1.2.0 (1s)
-#> ✔ Installed biocmake 1.2.0  (22ms)
+#> ✔ Built biocmake 1.2.0 (988ms)
+#> ✔ Installed biocmake 1.2.0  (1s)
 #> ℹ Building Rigraphlib 1.2.0
-#> ✔ Built Rigraphlib 1.2.0 (2m 13.5s)
-#> ✔ Installed Rigraphlib 1.2.0  (255ms)
+#> ✔ Built Rigraphlib 1.2.0 (2m 11.2s)
+#> ✔ Installed Rigraphlib 1.2.0  (1.2s)
 #> ℹ Building scrapper 1.4.0
-#> ✔ Built scrapper 1.4.0 (4m 20.5s)
-#> ✔ Installed scrapper 1.4.0  (692ms)
-#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 40.5s]
+#> ✔ Built scrapper 1.4.0 (4m 3.1s)
+#> ✔ Installed scrapper 1.4.0  (1.7s)
+#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 23.6s]
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
