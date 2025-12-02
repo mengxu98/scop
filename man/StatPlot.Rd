@@ -156,9 +156,9 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 \examples{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-head(pancreas_sub@meta.data)
+meta.data <- pancreas_sub@meta.data
 StatPlot(
-  pancreas_sub@meta.data,
+  meta.data,
   stat.by = "Phase",
   group.by = "CellType",
   plot_type = "bar",
@@ -166,7 +166,7 @@ StatPlot(
 )
 
 StatPlot(
-  pancreas_sub[["RNA"]]@meta.data,
+  meta.data,
   stat.by = "highly_variable_genes",
   plot_type = "ring",
   label = TRUE,
