@@ -436,9 +436,9 @@ CellStatPlot <- function(
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' head(pancreas_sub@meta.data)
+#' meta.data <- pancreas_sub@meta.data
 #' StatPlot(
-#'   pancreas_sub@meta.data,
+#'   meta.data,
 #'   stat.by = "Phase",
 #'   group.by = "CellType",
 #'   plot_type = "bar",
@@ -446,7 +446,7 @@ CellStatPlot <- function(
 #' )
 #'
 #' StatPlot(
-#'   pancreas_sub[["RNA"]]@meta.data,
+#'   meta.data,
 #'   stat.by = "highly_variable_genes",
 #'   plot_type = "ring",
 #'   label = TRUE,
@@ -599,10 +599,11 @@ StatPlot <- function(
     }
   }
 
+  plot_types <- c("sankey", "chord", "venn", "upset")
   if (length(stat.by) >= 2) {
-    if (!plot_type %in% c("sankey", "chord", "venn", "upset")) {
+    if (!plot_type %in% plot_types) {
       log_message(
-        "plot_type must be one of 'sankey', 'chord', 'venn' and 'upset' whtn multiple 'stat.by' provided.",
+        "plot_type must be one of {.val {plot_types}} when multiple {.arg stat.by} provided.",
         message_type = "error"
       )
     }
@@ -667,21 +668,15 @@ StatPlot <- function(
     aspect.ratio <- 1
   }
 
-  if (
-    any(group.by != "All.groups") &&
-      plot_type %in% c("sankey", "chord", "venn", "upset")
-  ) {
+  if (any(group.by != "All.groups") && plot_type %in% plot_types) {
     log_message(
-      "group.by is not used when plot sankey, chord, venn or upset",
+      "{.arg group.by} is not used when plot {.val {plot_types}}",
       message_type = "warning"
     )
   }
-  if (
-    stat_type == "percent" &&
-      plot_type %in% c("sankey", "chord", "venn", "upset")
-  ) {
+  if (stat_type == "percent" && plot_type %in% plot_types) {
     log_message(
-      "stat_type is forcibly set to 'count' when plot sankey, chord, venn or upset",
+      "{.arg stat_type} is forcibly set to {.val count} when plot {.val {plot_types}}",
       message_type = "warning"
     )
     stat_type <- "count"
@@ -695,10 +690,7 @@ StatPlot <- function(
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
-      paste0(
-        "The following variables have more than 100 levels: ",
-        paste(names(nlev), collapse = ",")
-      ),
+      "The following variables have more than 100 levels: {.val {names(nlev)}}",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)

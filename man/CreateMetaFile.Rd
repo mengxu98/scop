@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{CreateMetaFile}
 \alias{CreateMetaFile}
-\title{Create Meta File}
+\title{Create Meta File in HDF5 format from Seurat object}
 \usage{
 CreateMetaFile(
   srt,
@@ -40,8 +40,8 @@ Default is \code{6}.}
 Default is \code{TRUE}.}
 }
 \description{
-Creates a meta file in HDF5 format from a Seurat object.
+Create Meta File in HDF5 format from Seurat object
 }
 \seealso{
-\link{CreateDataFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}
+\link{CreateDataFile}, \link{FetchH5}, \link{PrepareSCExplorer}, \link{RunSCExplorer}
 }

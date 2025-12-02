@@ -38,7 +38,7 @@ CreateDataFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    log_message("Set the dataset name to ", name)
+    log_message("Set the dataset name to {.file {name}}")
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -167,10 +167,7 @@ CreateDataFile <- function(
   return(invisible(NULL))
 }
 
-#' @title Create Meta File
-#'
-#' @description
-#' Creates a meta file in HDF5 format from a Seurat object.
+#' @title Create Meta File in HDF5 format from Seurat object
 #'
 #' @md
 #' @param srt A Seurat object.
@@ -190,7 +187,7 @@ CreateDataFile <- function(
 #' Default is `TRUE`.
 #'
 #' @seealso
-#' [CreateDataFile], [PrepareSCExplorer], [FetchH5], [RunSCExplorer]
+#' [CreateDataFile], [FetchH5], [PrepareSCExplorer], [RunSCExplorer]
 #'
 #' @export
 CreateMetaFile <- function(
@@ -210,7 +207,7 @@ CreateMetaFile <- function(
   }
   if (is.null(name)) {
     name <- srt@project.name
-    log_message("Set the dataset name to ", name)
+    log_message("Set the dataset name to {.file {name}}")
   }
   if (substr(name, 1, 1) != "/") {
     name <- paste0("/", name)
@@ -374,7 +371,7 @@ CreateMetaFile <- function(
   }
   if (paste0(name, "/reductions.stat") %in% rhdf5::h5ls(meta_file)$group) {
     log_message(
-      "Group ", paste0(name, "/reductions.stat"), " already exists in the ", meta_file
+      "Group {.file {paste0(name, '/reductions.stat')}} already exists in the {.file {meta_file}}"
     )
   } else {
     rhdf5::h5createGroup(
@@ -401,7 +398,7 @@ CreateMetaFile <- function(
     }
     if (paste0(name, "/misc") %in% rhdf5::h5ls(meta_file)$group) {
       log_message(
-        "Group ", paste0(name, "/misc"), " already exists in the ", meta_file
+        "Group {.file {paste0(name, '/misc')}} already exists in the {.file {meta_file}}"
       )
     } else {
       rhdf5::h5write(
@@ -424,7 +421,7 @@ CreateMetaFile <- function(
     }
     if (paste0(name, "/tools") %in% rhdf5::h5ls(meta_file)$group) {
       log_message(
-        "Group ", paste0(name, "/tools"), " already exists in the ", meta_file
+        "Group {.file {paste0(name, '/tools')}} already exists in the {.file {meta_file}}"
       )
     } else {
       rhdf5::h5write(
@@ -488,19 +485,21 @@ PrepareSCExplorer <- function(
   }
   if (any(sapply(object, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "'object' must be one Seurat object or a list of Seurat object.",
+      "{.arg object} must be one Seurat object or a list of Seurat object",
       message_type = "error"
     )
   }
   if (length(names(object)) > 0 && length(names(object)) != length(object)) {
     log_message(
-      "The object is named, but the name length is not equal to the number of elements.",
+      "The object is named, but the name length is not equal to the number of elements",
       message_type = "error"
     )
   }
   if (length(names(object)) == 0) {
     names(object) <- make.names(sapply(object, function(x) x@project.name), unique = TRUE)
-    log_message("Set the project name of each seurat object to their dataset name")
+    log_message(
+      "Set the project name of each Seurat object to their dataset name"
+    )
   }
 
   for (i in seq_along(object)) {
@@ -509,19 +508,19 @@ PrepareSCExplorer <- function(
     log_message("Prepare data for object: {.val {nm}}")
     if (length(SeuratObject::Reductions(srt)) == 0) {
       log_message(
-        "No reduction found in the Seurat object {.val {i}}",
+        "No reduction found in the Seurat object {.val {nm}}",
         message_type = "error"
       )
     }
     if (!any(assays %in% SeuratObject::Assays(srt))) {
       log_message(
-        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in the Seurat object {.val {i}}",
+        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in the Seurat object {.val {nm}}",
         message_type = "warning"
       )
       assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
         log_message(
-          "No assays found in the Seurat object {.val {i}}. Use the default assay to create data file.",
+          "No assays found in the Seurat object {.val {nm}}. Use the default assay to create data file",
           message_type = "warning"
         )
         assays <- SeuratObject::DefaultAssay(srt)
@@ -614,7 +613,7 @@ FetchH5 <- function(
     reduction = NULL) {
   if (missing(data_file) || missing(meta_file)) {
     log_message(
-      "'data_file', 'meta_file' must be provided.",
+      "{.arg data_file} and {.arg meta_file} must be provided",
       message_type = "error"
     )
   }
@@ -668,18 +667,18 @@ FetchH5 <- function(
   }
   gene_features <- features[features %in% c(all_features)]
   meta_features <- features[features %in% c(meta_features_name)]
-
-  if (!is.null(metanames) && any(!metanames %in% c(meta_features_name, meta_groups_name))) {
+  metanames_available <- metanames %in% c(meta_features_name, meta_groups_name)
+  if (!is.null(metanames) && any(!metanames_available)) {
     log_message(
-      "Can not find the meta information: {.val {metanames[!metanames %in% c(meta_features_name, meta_groups_name)]}}",
+      "Can not find the meta information: {.val {metanames[!metanames_available]}}",
       message_type = "warning"
     )
   }
-  metanames <- metanames[metanames %in% c(meta_features_name, meta_groups_name)]
+  metanames <- metanames[metanames_available]
 
   if (length(gene_features) == 0 && length(meta_features) == 0 && length(metanames) == 0) {
     log_message(
-      "No features or meta information found.",
+      "No features or meta information found",
       message_type = "error"
     )
   }
@@ -726,12 +725,12 @@ FetchH5 <- function(
         "dgCMatrix"
       )
     )
-    AssayObject <- SeuratObject::CreateAssayObject(
+    assay_object <- SeuratObject::CreateAssayObject(
       counts = counts
     )
     srt_tmp <- CreateSeuratObject2(
       assay = assay %||% "RNA",
-      counts = AssayObject
+      counts = assay_object
     )
   } else {
     counts <- matrix(
@@ -739,12 +738,12 @@ FetchH5 <- function(
       ncol = length(all_cells),
       dimnames = list("empty", all_cells)
     )
-    AssayObject <- SeuratObject::CreateAssayObject(
+    assay_object <- SeuratObject::CreateAssayObject(
       counts = counts
     )
     srt_tmp <- CreateSeuratObject2(
       assay = assay %||% "RNA",
-      counts = AssayObject
+      counts = assay_object
     )
   }
 
@@ -823,7 +822,7 @@ CreateSeuratObject2 <- function(
     }
     if (length(setdiff(rownames(meta.data), colnames(counts)))) {
       log_message(
-        "Some cells in meta.data not present in provided counts matrix.",
+        "Some cells in meta.data not present in provided counts matrix",
         message_type = "warning"
       )
       meta.data <- meta.data[intersect(rownames(meta.data), colnames(counts)), , drop = FALSE]
@@ -1007,7 +1006,7 @@ RunSCExplorer <- function(
     c(
       "rhdf5",
       "HDF5Array",
-      "shiny@1.6.0",
+      "shiny",
       "ggplot2",
       "ragg",
       "htmlwidgets",
@@ -2681,16 +2680,25 @@ server <- function(input, output, session) {
   app_code <- c(
     "# !/usr/bin/env Rscript",
     "if (!requireNamespace('scop', quietly = TRUE)) {
-      if (!requireNamespace('pak', quietly = TRUE)) {install.packages('pak')}
+      if (!requireNamespace('pak', quietly = TRUE)) {
+        install.packages('pak')
+      }
       pak::pak('mengxu98/scop')
     }",
     "options(scop_env_init = FALSE)",
-    "scop::check_r(c('rhdf5', 'HDF5Array', 'shiny', 'ggplot2', 'ragg', 'htmlwidgets', 'plotly', 'bslib', 'promises', 'mengxu98/thisplot'))",
+    "scop::check_r(
+       c(
+         'rhdf5', 'HDF5Array', 'shiny', 'ggplot2', 'ragg',
+         'htmlwidgets', 'plotly', 'bslib', 'promises',
+         'mengxu98/thisplot', 'thisutils'
+       )
+    )",
     "library(shiny)",
     "library(bslib)",
     "library(promises)",
     "library(ggplot2)",
     "library(rlang)",
+    "library(thisutils)",
     "library(thisplot)",
     args_code,
     "page_theme <- bs_theme(bootswatch = 'zephyr')",

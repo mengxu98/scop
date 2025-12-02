@@ -68,10 +68,11 @@ RunDimReduction <- function(
   linear_reductions <- c(
     "pca", "svd", "ica", "nmf", "mds", "glmpca"
   )
+  reduction_exist <- SeuratObject::Reductions(srt)
   if (!is.null(linear_reduction)) {
-    if (any(!linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt))) || length(linear_reduction) > 1) {
+    if (any(!linear_reduction %in% c(linear_reductions, reduction_exist)) || length(linear_reduction) > 1) {
       log_message(
-        "'linear_reduction' must be one of {.val {linear_reductions}}",
+        "{.arg linear_reduction} must be one of {.val {linear_reductions}}",
         message_type = "error"
       )
     }
@@ -80,9 +81,9 @@ RunDimReduction <- function(
     "umap", "umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
   )
   if (!is.null(nonlinear_reduction)) {
-    if (any(!nonlinear_reduction %in% c(nonlinear_reductions, SeuratObject::Reductions(srt))) || length(nonlinear_reduction) > 1) {
+    if (any(!nonlinear_reduction %in% c(nonlinear_reductions, reduction_exist)) || length(nonlinear_reduction) > 1) {
       log_message(
-        "'nonlinear_reduction' must be one of {.val {nonlinear_reductions}}",
+        "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
         message_type = "error"
       )
     }
@@ -135,7 +136,7 @@ RunDimReduction <- function(
 
   if (!is.null(linear_reduction)) {
     if (isFALSE(force_linear_reduction)) {
-      if (linear_reduction %in% SeuratObject::Reductions(srt)) {
+      if (linear_reduction %in% reduction_exist) {
         if (srt[[linear_reduction]]@assay.used == assay) {
           log_message(
             "{.arg linear_reduction} {.pkg {linear_reduction}} is already existed. Skip calculation"
@@ -279,7 +280,7 @@ RunDimReduction <- function(
     srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
   } else if (!is.null(nonlinear_reduction)) {
     if (isFALSE(force_nonlinear_reduction)) {
-      if (nonlinear_reduction %in% SeuratObject::Reductions(srt)) {
+      if (nonlinear_reduction %in% reduction_exist) {
         if (srt[[nonlinear_reduction]]@assay.used == assay) {
           log_message(
             "{.arg nonlinear_reduction} {.pkg {nonlinear_reduction}} is already existed. Skip calculation"
@@ -365,7 +366,7 @@ RunDimReduction <- function(
         nonlinear_reduction_dims,
         "D_"
       ),
-      verbose = verbose,
+      verbose = FALSE,
       seed.use = seed
     )
     if (!is.null(neighbor_use)) {

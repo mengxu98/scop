@@ -330,31 +330,6 @@ db_DoubletDetection <- function(
     )
   }
   check_python("doubletdetection")
-  reticulate::py_run_string("
-import os
-# Ensure environment variables are set
-os.environ['NUMBA_NUM_THREADS'] = '1'
-os.environ['NUMBA_DISABLE_JIT'] = '0'
-# Try to configure NUMBA if it's already imported
-try:
-    import numba
-    # Set thread count if NUMBA is already imported
-    if hasattr(numba, 'set_num_threads'):
-        try:
-            numba.set_num_threads(1)
-        except RuntimeError:
-            # NUMBA threads already launched, ignore
-            pass
-    # Also set via config if available
-    if hasattr(numba, 'config'):
-        numba.config.NUMBA_NUM_THREADS = 1
-except ImportError:
-    # NUMBA not imported yet, which is fine
-    pass
-except Exception:
-    # Any other error, ignore
-    pass
-")
   doubletdetection <- reticulate::import("doubletdetection")
   counts <- GetAssayData5(
     object = srt,

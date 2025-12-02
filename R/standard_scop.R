@@ -167,7 +167,7 @@ standard_scop <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "{.arg srt} is not a Seurat object",
+      "{.arg srt} is not a {.cls Seurat} object",
       message_type = "error"
     )
   }
@@ -259,13 +259,15 @@ standard_scop <- function(
         "Perform {.fn Seurat::ScaleData}",
         verbose = verbose
       )
-      srt <- Seurat::ScaleData(
-        object = srt,
-        assay = assay,
-        features = HVF,
-        vars.to.regress = vars_to_regress,
-        model.use = regression_model,
-        verbose = FALSE
+      srt <- suppressWarnings(
+        Seurat::ScaleData(
+          object = srt,
+          assay = assay,
+          features = HVF,
+          vars.to.regress = vars_to_regress,
+          model.use = regression_model,
+          verbose = FALSE
+        )
       )
     }
   }
@@ -289,10 +291,6 @@ standard_scop <- function(
     )
 
     if (is.null(linear_reduction_dims_use)) {
-      # linear_reduction_dims_use_current <- srt@reductions[[paste0(
-      #   prefix,
-      #   lr
-      # )]]@misc[["dims_estimate"]]
       linear_reduction_dims_use_current <- 1:ncol(
         srt@reductions[[paste0(
           prefix,
@@ -316,13 +314,12 @@ standard_scop <- function(
           dims = linear_reduction_dims_use_current,
           annoy.metric = neighbor_metric,
           k.param = neighbor_k,
-          # force.recalc = TRUE,
           graph.name = paste0(prefix, lr, "_", c("KNN", "SNN")),
           verbose = FALSE
         )
 
         log_message(
-          "Perform {.fn Seurat::FindClusters} with {.pkg {cluster_algorithm}} and {.arg cluster_resolution} = {.val {cluster_resolution}}",
+          "Perform {.fn Seurat::FindClusters} with {.arg cluster_algorithm = '{cluster_algorithm}'} and {.arg cluster_resolution = {cluster_resolution}}",
           verbose = verbose
         )
         srt <- Seurat::FindClusters(
