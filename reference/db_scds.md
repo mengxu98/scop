@@ -110,9 +110,9 @@ pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ✔ Installed pROC 1.19.0.1  (1s)
 #> ℹ Building scds 1.26.0
-#> ✔ Built scds 1.26.0 (11.2s)
+#> ✔ Built scds 1.26.0 (11s)
 #> ✔ Installed scds 1.26.0  (1s)
-#> ✔ 1 pkg + 37 deps: kept 36, added 2, dld 2 (2.28 MB) [16.9s]
+#> ✔ 1 pkg + 37 deps: kept 36, added 2, dld 2 (2.28 MB) [16.5s]
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore

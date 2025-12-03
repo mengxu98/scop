@@ -35,7 +35,7 @@
 - [`ListEnv()`](https://mengxu98.github.io/scop/reference/ListEnv.md) :
   List conda environments
 - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
-  : Prepare the virtual environment
+  : Prepare the python environment
 - [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md)
   : Remove Python packages from conda environment
 - [`remove_r()`](https://mengxu98.github.io/scop/reference/remove_r.md)

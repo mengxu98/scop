@@ -84,37 +84,36 @@ ccgenes <- CycGenePrefetch("Mus_musculus")
 #> + httr2           1.2.1   
 #> + prettyunits     1.2.0   
 #> + progress        1.2.3   
-#> + xml2            1.5.0    + ✔ libxml2-dev
+#> + xml2            1.5.1    + ✔ libxml2-dev
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 19 pkgs are cached
-#> ✔ Got filelock 1.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (24.70 kB)
 #> ✔ Got blob 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (47.47 kB)
-#> ✔ Got Seqinfo 1.0.0 (source) (254.66 kB)
-#> ✔ Got KEGGREST 1.50.0 (source) (239.73 kB)
-#> ✔ Got hms 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.38 kB)
-#> ✔ Got XVector 0.50.0 (source) (71.42 kB)
+#> ✔ Got filelock 1.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (24.70 kB)
 #> ✔ Got progress 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (87.00 kB)
+#> ✔ Got hms 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.38 kB)
+#> ✔ Got KEGGREST 1.50.0 (source) (239.73 kB)
+#> ✔ Got Seqinfo 1.0.0 (source) (254.66 kB)
+#> ✔ Got XVector 0.50.0 (source) (71.42 kB)
+#> ✔ Got prettyunits 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.62 kB)
 #> ✔ Got bit64 4.6.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (492.54 kB)
 #> ✔ Got BiocFileCache 3.0.0 (source) (744.19 kB)
 #> ✔ Got bit 4.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (628.10 kB)
-#> ✔ Got xml2 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (281.34 kB)
-#> ✔ Got prettyunits 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.62 kB)
 #> ✔ Got biomaRt 2.66.0 (source) (909.34 kB)
-#> ✔ Got httr2 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)
 #> ✔ Got DBI 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (916.93 kB)
+#> ✔ Got httr2 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)
 #> ✔ Got dbplyr 2.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.24 MB)
 #> ✔ Got AnnotationDbi 1.72.0 (source) (4.38 MB)
 #> ✔ Got Biostrings 2.78.0 (source) (12.82 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libxml2-dev libcurl4-openssl-dev libssl-dev libpng-dev libicu-dev`
 #> Reading package lists...
@@ -128,38 +127,38 @@ ccgenes <- CycGenePrefetch("Mus_musculus")
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ℹ Building Seqinfo 1.0.0
 #> ℹ Building XVector 0.50.0
-#> ✔ Installed bit 4.6.0  (89ms)
-#> ✔ Installed bit64 4.6.0-1  (141ms)
-#> ✔ Installed blob 1.2.4  (117ms)
-#> ✔ Installed DBI 1.2.3  (152ms)
-#> ✔ Installed dbplyr 2.5.1  (138ms)
-#> ✔ Installed filelock 1.0.3  (104ms)
-#> ✔ Installed hms 1.1.4  (97ms)
-#> ✔ Installed httr2 1.2.1  (160ms)
-#> ✔ Installed prettyunits 1.2.0  (159ms)
-#> ✔ Installed progress 1.2.3  (94ms)
-#> ✔ Installed RSQLite 2.4.5  (110ms)
+#> ✔ Installed bit 4.6.0  (99ms)
+#> ✔ Installed bit64 4.6.0-1  (172ms)
+#> ✔ Installed blob 1.2.4  (128ms)
+#> ✔ Installed DBI 1.2.3  (160ms)
+#> ✔ Installed dbplyr 2.5.1  (144ms)
+#> ✔ Installed filelock 1.0.3  (112ms)
+#> ✔ Installed hms 1.1.4  (83ms)
+#> ✔ Installed httr2 1.2.1  (75ms)
+#> ✔ Installed prettyunits 1.2.0  (71ms)
+#> ✔ Installed progress 1.2.3  (165ms)
+#> ✔ Installed RSQLite 2.4.5  (90ms)
 #> ℹ Building BiocFileCache 3.0.0
-#> ✔ Installed xml2 1.5.0  (138ms)
-#> ✔ Built BiocFileCache 3.0.0 (5.7s)
+#> ✔ Installed xml2 1.5.1  (103ms)
+#> ✔ Built BiocFileCache 3.0.0 (4.7s)
 #> ✔ Installed BiocFileCache 3.0.0  (1s)
-#> ✔ Built Seqinfo 1.0.0 (8s)
+#> ✔ Built Seqinfo 1.0.0 (7.6s)
 #> ✔ Installed Seqinfo 1.0.0  (1s)
-#> ✔ Built XVector 0.50.0 (10.3s)
+#> ✔ Built XVector 0.50.0 (10.8s)
 #> ✔ Installed XVector 0.50.0  (1s)
 #> ℹ Building Biostrings 2.78.0
-#> ✔ Built Biostrings 2.78.0 (18s)
+#> ✔ Built Biostrings 2.78.0 (18.3s)
 #> ✔ Installed Biostrings 2.78.0  (1.1s)
 #> ℹ Building KEGGREST 1.50.0
 #> ✔ Built KEGGREST 1.50.0 (4.5s)
-#> ✔ Installed KEGGREST 1.50.0  (1s)
+#> ✔ Installed KEGGREST 1.50.0  (37ms)
 #> ℹ Building AnnotationDbi 1.72.0
 #> ✔ Built AnnotationDbi 1.72.0 (11.4s)
 #> ✔ Installed AnnotationDbi 1.72.0  (1.1s)
 #> ℹ Building biomaRt 2.66.0
-#> ✔ Built biomaRt 2.66.0 (7.3s)
-#> ✔ Installed biomaRt 2.66.0  (46ms)
-#> ✔ 1 pkg + 54 deps: kept 36, added 19, dld 18 (24.18 MB) [1m 2.2s]
+#> ✔ Built biomaRt 2.66.0 (7.5s)
+#> ✔ Installed biomaRt 2.66.0  (1s)
+#> ✔ 1 pkg + 54 deps: kept 36, added 19, dld 17 (23.90 MB) [1m 3.2s]
 str(ccgenes)
 #> List of 3
 #>  $ res:List of 7

@@ -13,7 +13,7 @@ env_requirements(version = "3.10-1")
 
 - version:
 
-  The Python version of the environment. Default is \`"3.10-1"\`.
+  The Python version of the environment. Default is `"3.10-1"`.
 
 ## Value
 
@@ -30,7 +30,7 @@ env_requirements("3.10-1")
 #>               leidenalg                     tbb           python-igraph 
 #>     "leidenalg==0.10.2"         "tbb==2022.2.0" "python-igraph==0.11.9" 
 #>              matplotlib                   numba                llvmlite 
-#>    "matplotlib==3.10.3"         "numba==0.59.1"      "llvmlite==0.42.0" 
+#>    "matplotlib==3.10.7"         "numba==0.59.1"      "llvmlite==0.42.0" 
 #>                   numpy                palantir                  pandas 
 #>         "numpy==1.26.4"       "palantir==1.4.1"         "pandas==2.0.3" 
 #>                  scanpy            scikit-learn                   scipy 

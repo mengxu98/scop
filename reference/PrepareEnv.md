@@ -1,7 +1,7 @@
-# Prepare the virtual environment
+# Prepare the python environment
 
-Prepare the virtual environment by installing the required dependencies
-and setting up the environment. This function prepares the virtual
+Prepare the python environment by installing the required dependencies
+and setting up the environment. This function prepares the python
 environment by checking if conda is installed, creating a new conda
 environment if needed, installing the required packages, and setting up
 the Python environment for use with scop. In order to create the
@@ -53,8 +53,3 @@ PrepareEnv(
 
   Whether to force a new environment to be created. If `TRUE`, the
   existing environment will be recreated. Default is `FALSE`.
-
-- ...:
-
-  Other arguments passed to
-  [reticulate::conda_install](https://rstudio.github.io/reticulate/reference/conda-tools.html)

@@ -518,11 +518,11 @@ CellStatPlot(
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ✔ Installed forcats 1.0.1  (1s)
 #> ℹ Packaging ggsankey 0.0.99999
-#> ✔ Packaged ggsankey 0.0.99999 (552ms)
+#> ✔ Packaged ggsankey 0.0.99999 (525ms)
 #> ℹ Building ggsankey 0.0.99999
-#> ✔ Built ggsankey 0.0.99999 (2.1s)
-#> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (1s)
-#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (NA B) [8.5s]
+#> ✔ Built ggsankey 0.0.99999 (2.2s)
+#> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (26ms)
+#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (NA B) [7.9s]
 
 
 CellStatPlot(
@@ -551,16 +551,15 @@ CellStatPlot(
 #> + ggplotify       0.1.3 
 #> + gridGraphics    0.5-1 
 #> + venn            1.12  
-#> + yulab.utils     0.2.1 
+#> + yulab.utils     0.2.2 
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 8 pkgs are cached
+#> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
+#> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
+#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
 #> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
 #> ✔ Got ggfun 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (250.63 kB)
-#> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
-#> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
-#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
-#> ✔ Got yulab.utils 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (119.17 kB)
 #> ✔ Got venn 1.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (308.02 kB)
 #> ✔ Got ggVennDiagram 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.27 MB)
 #> ℹ Installing system requirements
@@ -579,15 +578,15 @@ CellStatPlot(
 #> Reading state information...
 #> make is already the newest version (4.3-4.1build2).
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed admisc 0.39  (87ms)
-#> ✔ Installed aplot 0.2.9  (99ms)
-#> ✔ Installed ggfun 0.2.0  (118ms)
-#> ✔ Installed ggplotify 0.1.3  (146ms)
+#> ✔ Installed admisc 0.39  (59ms)
+#> ✔ Installed aplot 0.2.9  (71ms)
+#> ✔ Installed ggfun 0.2.0  (90ms)
+#> ✔ Installed ggplotify 0.1.3  (119ms)
 #> ✔ Installed gridGraphics 0.5-1  (1s)
 #> ✔ Installed ggVennDiagram 1.5.4  (1.1s)
-#> ✔ Installed venn 1.12  (88ms)
-#> ✔ Installed yulab.utils 0.2.1  (71ms)
-#> ✔ 1 pkg + 36 deps: kept 29, added 8, dld 8 (6.82 MB) [5.5s]
+#> ✔ Installed venn 1.12  (59ms)
+#> ✔ Installed yulab.utils 0.2.2  (41ms)
+#> ✔ 1 pkg + 36 deps: kept 29, added 8, dld 7 (6.70 MB) [5.7s]
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -627,7 +626,7 @@ CellStatPlot(
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got ggupset 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.59 MB)
-#> ✔ Installed ggupset 0.4.1  (1.1s)
+#> ✔ Installed ggupset 0.4.1  (1s)
 #> ✔ 1 pkg + 21 deps: kept 21, added 1, dld 1 (2.59 MB) [2.6s]
 
 

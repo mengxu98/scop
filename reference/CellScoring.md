@@ -211,8 +211,8 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ⠙ [2025-12-02 04:03:13] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-12-02 04:03:13] Completed 2 tasks in 122ms
+#> ⠙ [2025-12-03 09:26:18] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-12-03 09:26:18] Completed 2 tasks in 124ms
 #> 
 CellDimPlot(pancreas_sub, "test_classification")
 

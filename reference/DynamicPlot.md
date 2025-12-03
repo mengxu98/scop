@@ -297,9 +297,9 @@ DynamicPlot(
 #> ℹ Building MatrixGenerics 1.22.0
 #> ✔ Built MatrixGenerics 1.22.0 (2.3s)
 #> ✔ Installed MatrixGenerics 1.22.0  (1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (34.60 kB) [4.3s]
-#> ⠙ [2025-12-02 04:15:24] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-02 04:15:24] Completed 3 tasks in 113ms
+#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (34.60 kB) [4.2s]
+#> ⠙ [2025-12-03 09:38:47] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-12-03 09:38:47] Completed 3 tasks in 118ms
 #> 
 
 
@@ -311,8 +311,8 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2025-12-02 04:15:26] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-02 04:15:26] Completed 3 tasks in 113ms
+#> ⠙ [2025-12-03 09:38:49] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-12-03 09:38:49] Completed 3 tasks in 119ms
 #> 
 
 
@@ -324,10 +324,10 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ⠙ [2025-12-02 04:15:30] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-02 04:15:30] Completed 3 tasks in 114ms
+#> ⠙ [2025-12-03 09:38:53] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-12-03 09:38:53] Completed 3 tasks in 116ms
 #> 
-#> ⠙ [2025-12-02 04:15:32] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-02 04:15:32] Completed 3 tasks in 124ms
+#> ⠙ [2025-12-03 09:38:55] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2025-12-03 09:38:55] Completed 3 tasks in 126ms
 #> 
 ```

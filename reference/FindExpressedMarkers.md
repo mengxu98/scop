@@ -285,12 +285,12 @@ markers <- FindExpressedMarkers(
 #> ✔ Got limma 3.66.0 (source) (2.86 MB)
 #> ✔ Installed statmod 1.5.1  (1s)
 #> ℹ Building limma 3.66.0
-#> ✔ Built limma 3.66.0 (9.6s)
-#> ✔ Installed limma 3.66.0  (1s)
-#> ✔ 1 pkg + 1 dep: added 2, dld 2 (3.17 MB) [13s]
-#> ⠙ [2025-12-02 04:21:46] Running [1/6145] Processing: 1  ETA: 36s
-#> ⠹ [2025-12-02 04:21:46] Running [5133/6145] Processing: 5133  ETA:  1s
-#> ✔ [2025-12-02 04:21:46] Completed 6145 tasks in 3.5s
+#> ✔ Built limma 3.66.0 (9.7s)
+#> ✔ Installed limma 3.66.0  (53ms)
+#> ✔ 1 pkg + 1 dep: added 2, dld 2 (3.17 MB) [12.2s]
+#> ⠙ [2025-12-03 09:45:00] Running [1/6145] Processing: 1  ETA: 16s
+#> ⠹ [2025-12-03 09:45:00] Running [5120/6145] Processing: 5120  ETA:  1s
+#> ✔ [2025-12-03 09:45:00] Completed 6145 tasks in 3.4s
 #> 
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj

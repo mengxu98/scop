@@ -12,9 +12,21 @@
     - Added `accept_conda_tos()` function to automatically accept conda
       Terms of Service for required channels, improving the conda
       environment setup process.
+    - Fixed conda Terms of Service acceptance issue in
+      [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md).
+      The function now automatically accepts conda Terms of Service for
+      required channels, eliminating the need for manual acceptance.
+      This addresses the issue reported in
+      [\#85](https://github.com/mengxu98/scop/issues/85).
   - Multiple Python-based functions (`RunPAGA`, `RunSCVELO`,
     `RunPalantir`, `RunCellRank`, `RunWOT`, `RunPHATE`, `RunPaCMAP`,
     `RunTriMap`): Enhanced message formatting and code improvements.
+  - [`PrepareSCExplorer()`](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md):
+    Fixed package version dependency issues with `shiny` and `bslib`
+    compatibility. The function now properly handles `bslib` theme
+    configuration to work with both `shiny` 1.6.0 and 1.7.0+, addressing
+    compatibility errors reported in
+    [\#87](https://github.com/mengxu98/scop/issues/87).
 - **refactor**:
   - Improved code formatting and consistency across multiple functions.
   - Enhanced Python functions in `inst/python/functions.py` with better
@@ -25,12 +37,6 @@
 
 ## scop 0.6.2
 
-- **refactor**:
-  - Moved example figures from `man/figures/` to `figures/` directory
-    for better package organization.
-  - Updated README.md to reference figures from the new location.
-  - Added `figures/` directory to `.Rbuildignore` to exclude example
-    figures from package builds.
 - **func**:
   - [`CellChatPlot()`](https://mengxu98.github.io/scop/reference/CellChatPlot.md):
     Adjusted the size of saved figures for better file size

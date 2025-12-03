@@ -35,8 +35,8 @@ dend <- cluster_within_group2(mat, factor)
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got dendextend 1.19.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.05 MB)
-#> ✔ Installed dendextend 1.19.1  (73ms)
-#> ✔ 1 pkg + 19 deps: kept 19, added 1, dld 1 (5.05 MB) [1.9s]
+#> ✔ Installed dendextend 1.19.1  (1.1s)
+#> ✔ 1 pkg + 19 deps: kept 19, added 1, dld 1 (5.05 MB) [3.4s]
 dend
 #> 'dendrogram' with 2 branches and 10 members total, at height 7.730525 
 plot(dend)
