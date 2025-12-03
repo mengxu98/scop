@@ -176,10 +176,10 @@ srt_query <- RunSymphonyMap(
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
@@ -190,11 +190,11 @@ srt_query <- RunSymphonyMap(
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ✔ Installed RANN 2.6.2  (1s)
 #> ℹ Packaging symphony 0.1.2
-#> ✔ Packaged symphony 0.1.2 (669ms)
+#> ✔ Packaged symphony 0.1.2 (675ms)
 #> ℹ Building symphony 0.1.2
-#> ✔ Built symphony 0.1.2 (19.4s)
-#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (1s)
-#> ✔ 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) [26.8s]
+#> ✔ Built symphony 0.1.2 (19.7s)
+#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (1.1s)
+#> ✔ 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) [27.7s]
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

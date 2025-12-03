@@ -234,7 +234,7 @@ CellDensityPlot(
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got ggridges 0.5.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.25 MB)
 #> ✔ Installed ggridges 0.5.7  (1s)
-#> ✔ 1 pkg + 16 deps: kept 16, added 1, dld 1 (2.25 MB) [2.6s]
+#> ✔ 1 pkg + 16 deps: kept 16, added 1, dld 1 (2.25 MB) [2.5s]
 #> Picking joint bandwidth of 0.209
 
 

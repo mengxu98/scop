@@ -12,13 +12,9 @@ env_info(conda, envname)
 
 - conda:
 
-  The path to a `conda` executable. Use `"auto"` to allow `reticulate`
-  to automatically find an appropriate `conda` binary. See **Finding
-  Conda** and
-  [`conda_binary()`](https://rstudio.github.io/reticulate/reference/conda-tools.html)
-  for more details.
+  The path to a conda executable. Use `"auto"` to allow scop to
+  automatically find an appropriate conda binary.
 
 - envname:
 
-  The name of the conda environment to remove. If `NULL`, uses the
-  default scop environment name.
+  The name of a conda environment.

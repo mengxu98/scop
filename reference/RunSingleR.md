@@ -195,18 +195,18 @@ pancreas_sub <- RunSingleR(
 #>   
 #> ℹ No downloads are needed, 3 pkgs are cached
 #> ✔ Got DelayedMatrixStats 1.32.0 (source) (274.35 kB)
-#> ✔ Got SingleR 2.12.0 (source) (695.24 kB)
 #> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
+#> ✔ Got SingleR 2.12.0 (source) (695.24 kB)
 #> ℹ Building sparseMatrixStats 1.22.0
-#> ✔ Built sparseMatrixStats 1.22.0 (16.7s)
-#> ✔ Installed sparseMatrixStats 1.22.0  (1.1s)
+#> ✔ Built sparseMatrixStats 1.22.0 (16.8s)
+#> ✔ Installed sparseMatrixStats 1.22.0  (56ms)
 #> ℹ Building DelayedMatrixStats 1.32.0
 #> ✔ Built DelayedMatrixStats 1.32.0 (10.3s)
-#> ✔ Installed DelayedMatrixStats 1.32.0  (1s)
+#> ✔ Installed DelayedMatrixStats 1.32.0  (1.1s)
 #> ℹ Building SingleR 2.12.0
-#> ✔ Built SingleR 2.12.0 (39.2s)
-#> ✔ Installed SingleR 2.12.0  (1.1s)
-#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 11.1s]
+#> ✔ Built SingleR 2.12.0 (39.7s)
+#> ✔ Installed SingleR 2.12.0  (83ms)
+#> ✔ 1 pkg + 30 deps: kept 28, added 3, dld 3 (1.68 MB) [1m 9.6s]
 #>  
 #> → Will install 4 packages.
 #> → All 4 packages (0 B) are cached.
@@ -216,23 +216,23 @@ pancreas_sub <- RunSingleR(
 #> + scrapper     1.4.0  [bld][cmp]
 #>   
 #> ℹ No downloads are needed, 4 pkgs are cached
-#> ✔ Got biocmake 1.2.0 (source) (229.12 kB)
 #> ✔ Got dir.expiry 1.18.0 (source) (308.96 kB)
+#> ✔ Got biocmake 1.2.0 (source) (229.12 kB)
 #> ✔ Got scrapper 1.4.0 (source) (958.15 kB)
 #> ✔ Got Rigraphlib 1.2.0 (source) (4.53 MB)
 #> ℹ Building dir.expiry 1.18.0
-#> ✔ Built dir.expiry 1.18.0 (970ms)
+#> ✔ Built dir.expiry 1.18.0 (998ms)
 #> ✔ Installed dir.expiry 1.18.0  (1s)
 #> ℹ Building biocmake 1.2.0
-#> ✔ Built biocmake 1.2.0 (988ms)
+#> ✔ Built biocmake 1.2.0 (1s)
 #> ✔ Installed biocmake 1.2.0  (1s)
 #> ℹ Building Rigraphlib 1.2.0
-#> ✔ Built Rigraphlib 1.2.0 (2m 11.2s)
+#> ✔ Built Rigraphlib 1.2.0 (2m 11.5s)
 #> ✔ Installed Rigraphlib 1.2.0  (1.2s)
 #> ℹ Building scrapper 1.4.0
-#> ✔ Built scrapper 1.4.0 (4m 3.1s)
+#> ✔ Built scrapper 1.4.0 (4m 5.7s)
 #> ✔ Installed scrapper 1.4.0  (1.7s)
-#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 23.6s]
+#> ✔ 1 pkg + 21 deps: kept 18, added 4, dld 4 (6.03 MB) [6m 26.5s]
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")

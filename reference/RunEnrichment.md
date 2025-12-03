@@ -259,8 +259,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-12-02 04:41:59] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-02 04:41:59] Completed 5 tasks in 759ms
+#> ⠙ [2025-12-03 10:05:23] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-03 10:05:23] Completed 5 tasks in 753ms
 #> 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -269,11 +269,11 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ⠙ [2025-12-02 04:42:23] Running [1/5] Processing: 1  ETA:  1m
-#> ⠹ [2025-12-02 04:42:23] Running [2/5] Processing: 2  ETA:  1m
-#> ⠸ [2025-12-02 04:42:23] Running [3/5] Processing: 3  ETA: 35s
-#> ⠼ [2025-12-02 04:42:23] Running [4/5] Processing: 4  ETA: 17s
-#> ✔ [2025-12-02 04:42:23] Completed 5 tasks in 1m 19.3s
+#> ⠙ [2025-12-03 10:05:45] Running [1/5] Processing: 1  ETA:  1m
+#> ⠹ [2025-12-03 10:05:45] Running [2/5] Processing: 2  ETA: 49s
+#> ⠸ [2025-12-03 10:05:45] Running [3/5] Processing: 3  ETA: 32s
+#> ⠼ [2025-12-03 10:05:45] Running [4/5] Processing: 4  ETA: 15s
+#> ✔ [2025-12-03 10:05:45] Completed 5 tasks in 1m 13.5s
 #> 
 EnrichmentPlot(
   pancreas_sub,

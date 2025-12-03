@@ -178,12 +178,16 @@ pancreas_sub <- RunScmap(
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [73.4 kB]
+#> Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [55.2 kB]
+#> Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.2 kB]
+#> Fetched 143 kB in 0s (397 kB/s)
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
 #> Reading package lists...
@@ -191,12 +195,12 @@ pancreas_sub <- RunScmap(
 #> Reading state information...
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed googleVis 0.7.3  (30ms)
-#> ✔ Installed randomForest 4.7-1.2  (48ms)
+#> ✔ Installed googleVis 0.7.3  (31ms)
+#> ✔ Installed randomForest 4.7-1.2  (45ms)
 #> ℹ Building scmap 1.32.0
-#> ✔ Built scmap 1.32.0 (22.3s)
-#> ✔ Installed scmap 1.32.0  (59ms)
-#> ✔ 1 pkg + 54 deps: kept 52, added 3, dld 3 (3.06 MB) [26.3s]
+#> ✔ Built scmap 1.32.0 (22.5s)
+#> ✔ Installed scmap 1.32.0  (1.1s)
+#> ✔ 1 pkg + 54 deps: kept 52, added 3, dld 3 (3.06 MB) [29.7s]
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"

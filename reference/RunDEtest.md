@@ -308,8 +308,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "SubCellType"
 )
-#> ⠙ [2025-12-02 04:31:53] Running [1/8] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-02 04:31:53] Completed 8 tasks in 1.2s
+#> ⠙ [2025-12-03 09:55:10] Running [1/8] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-03 09:55:10] Completed 8 tasks in 1.2s
 #> 
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -353,8 +353,8 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ⠙ [2025-12-02 04:32:04] Running [28/56] Processing: 1, 3, 5, 7, 9, 11, 13, 15, …
-#> ✔ [2025-12-02 04:32:04] Completed 56 tasks in 4.2s
+#> ⠙ [2025-12-03 09:55:21] Running [28/56] Processing: 1, 3, 5, 7, 9, 11, 13, 15, …
+#> ✔ [2025-12-03 09:55:21] Completed 56 tasks in 6.3s
 #> 
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -392,8 +392,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-02 04:33:30] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-02 04:33:30] Completed 13 tasks in 6.2s
+#> ⠙ [2025-12-03 09:56:53] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-03 09:56:53] Completed 13 tasks in 6.3s
 #> 
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -432,8 +432,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-02 04:33:56] Running [3/5] Processing: celseq, smartseq2, indrop  ET…
-#> ✔ [2025-12-02 04:33:56] Completed 5 tasks in 5.5s
+#> ⠙ [2025-12-03 09:57:19] Running [3/5] Processing: celseq, smartseq2, indrop  ET…
+#> ✔ [2025-12-03 09:57:19] Completed 5 tasks in 5.2s
 #> 
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
@@ -461,8 +461,8 @@ panc8_sub <- RunDEtest(
   markers_type = "disturbed",
   cores = 2
 )
-#> ⠙ [2025-12-02 04:34:13] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-02 04:34:13] Completed 13 tasks in 12.5s
+#> ⠙ [2025-12-03 09:57:36] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-03 09:57:36] Completed 13 tasks in 13.4s
 #> 
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,

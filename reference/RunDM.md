@@ -181,31 +181,31 @@ pancreas_sub <- RunDM(
 #>   
 #> ℹ No downloads are needed, 18 pkgs are cached
 #> ✔ Got DEoptimR 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)
-#> ✔ Got ggplot.multistats 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)
-#> ✔ Got knn.covertree 1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (91.51 kB)
-#> ✔ Got smoother 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)
 #> ✔ Got RcppHNSW 0.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (217.19 kB)
 #> ✔ Got lmtest 0.9-40 (x86_64-pc-linux-gnu-ubuntu-24.04) (403.49 kB)
-#> ✔ Got ranger 0.17.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (473.78 kB)
-#> ✔ Got destiny 3.24.0 (source) (900.68 kB)
 #> ✔ Got pcaMethods 2.2.0 (source) (1.05 MB)
 #> ✔ Got TTR 0.24.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (524.49 kB)
+#> ✔ Got knn.covertree 1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (91.51 kB)
+#> ✔ Got destiny 3.24.0 (source) (900.68 kB)
+#> ✔ Got ranger 0.17.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (473.78 kB)
+#> ✔ Got ggplot.multistats 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)
 #> ✔ Got xts 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)
 #> ✔ Got vcd 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
-#> ✔ Got zoo 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
-#> ✔ Got robustbase 0.99-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.13 MB)
-#> ✔ Got laeken 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)
+#> ✔ Got smoother 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)
 #> ✔ Got VIM 6.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.77 MB)
+#> ✔ Got zoo 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got laeken 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)
+#> ✔ Got robustbase 0.99-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.13 MB)
 #> ✔ Got sp 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.31 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make cmake libicu-dev`
 #> Reading package lists...
@@ -218,28 +218,28 @@ pancreas_sub <- RunDM(
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
 #> ℹ Building pcaMethods 2.2.0
-#> ✔ Installed DEoptimR 1.1-4  (120ms)
-#> ✔ Installed ggplot.multistats 1.0.1  (104ms)
-#> ✔ Installed ggthemes 5.2.0  (119ms)
-#> ✔ Installed knn.covertree 1.0  (112ms)
-#> ✔ Installed laeken 0.5.3  (121ms)
-#> ✔ Installed lmtest 0.9-40  (72ms)
-#> ✔ Installed ranger 0.17.0  (73ms)
-#> ✔ Installed RcppHNSW 0.6.0  (73ms)
-#> ✔ Installed robustbase 0.99-6  (80ms)
-#> ✔ Installed smoother 1.3  (83ms)
-#> ✔ Installed sp 2.2-0  (130ms)
-#> ✔ Installed TTR 0.24.4  (89ms)
-#> ✔ Installed vcd 1.4-13  (74ms)
-#> ✔ Installed VIM 6.2.6  (79ms)
-#> ✔ Installed xts 0.14.1  (77ms)
-#> ✔ Installed zoo 1.8-14  (52ms)
-#> ✔ Built pcaMethods 2.2.0 (8.4s)
+#> ✔ Installed DEoptimR 1.1-4  (66ms)
+#> ✔ Installed ggplot.multistats 1.0.1  (90ms)
+#> ✔ Installed ggthemes 5.2.0  (165ms)
+#> ✔ Installed knn.covertree 1.0  (68ms)
+#> ✔ Installed laeken 0.5.3  (69ms)
+#> ✔ Installed lmtest 0.9-40  (66ms)
+#> ✔ Installed ranger 0.17.0  (68ms)
+#> ✔ Installed RcppHNSW 0.6.0  (66ms)
+#> ✔ Installed robustbase 0.99-6  (152ms)
+#> ✔ Installed smoother 1.3  (151ms)
+#> ✔ Installed TTR 0.24.4  (27ms)
+#> ✔ Installed sp 2.2-0  (144ms)
+#> ✔ Installed vcd 1.4-13  (70ms)
+#> ✔ Installed VIM 6.2.6  (75ms)
+#> ✔ Installed xts 0.14.1  (71ms)
+#> ✔ Installed zoo 1.8-14  (49ms)
+#> ✔ Built pcaMethods 2.2.0 (8.5s)
 #> ✔ Installed pcaMethods 2.2.0  (1s)
 #> ℹ Building destiny 3.24.0
-#> ✔ Built destiny 3.24.0 (27.2s)
+#> ✔ Built destiny 3.24.0 (27.4s)
 #> ✔ Installed destiny 3.24.0  (1.1s)
-#> ✔ 1 pkg + 103 deps: kept 86, added 18, dld 17 (21.71 MB) [44.3s]
+#> ✔ 1 pkg + 103 deps: kept 84, added 18, dld 17 (21.71 MB) [45s]
 #> 'as(<dsCMatrix>, "dgTMatrix")' is deprecated.
 #> Use 'as(as(., "generalMatrix"), "TsparseMatrix")' instead.
 #> See help("Deprecated") and help("Matrix-deprecated").
