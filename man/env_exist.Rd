@@ -7,7 +7,8 @@
 env_exist(conda = "auto", envname = NULL, envs_dir = NULL)
 }
 \arguments{
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{envname}{The name of a conda environment.}
 
