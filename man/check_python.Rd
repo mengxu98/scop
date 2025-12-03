@@ -21,7 +21,8 @@ Use \code{"<package>==<version>"} to request the installation of a specific vers
 
 \item{envname}{The name of a conda environment.}
 
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 
 \item{force}{Whether to force package installation.
 Default is \code{FALSE}.}

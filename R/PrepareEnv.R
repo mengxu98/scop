@@ -1,8 +1,8 @@
-#' @title Prepare the virtual environment
+#' @title Prepare the python environment
 #'
 #' @description
-#' Prepare the virtual environment by installing the required dependencies and setting up the environment.
-#' This function prepares the virtual environment by checking if conda is installed,
+#' Prepare the python environment by installing the required dependencies and setting up the environment.
+#' This function prepares the python environment by checking if conda is installed,
 #' creating a new conda environment if needed, installing the required packages,
 #' and setting up the Python environment for use with scop.
 #' In order to create the environment, this function requires the path to the conda binary.
@@ -14,7 +14,9 @@
 #' The function also checks if the package versions in the environment meet the requirements specified by the `version` parameter.
 #'
 #' @md
-#' @inheritParams check_python
+#' @param envname The name of a conda environment.
+#' @param conda The path to a conda executable.
+#' Use `"auto"` to allow scop to automatically find an appropriate conda binary.
 #' @param miniconda_repo Repositories for miniconda.
 #' Default is \url{https://repo.anaconda.com/miniconda}.
 #' @param force Whether to force a new environment to be created.
@@ -329,7 +331,8 @@ install_miniconda2 <- function(
 }
 
 #' @title Print environment information
-#' @inheritParams RemoveEnv
+#' @inheritParams PrepareEnv
+#' @md
 env_info <- function(conda, envname) {
   envs_dir <- get_conda_envs_dir(conda = conda)
 
@@ -337,7 +340,7 @@ env_info <- function(conda, envname) {
 
   py_info_mesg <- c(
     cli::col_blue(
-      "Conda environment:"
+      "Conda config:"
     ),
     cli::col_grey(
       " Conda:         ", conda
@@ -361,6 +364,7 @@ env_info <- function(conda, envname) {
 #' The function returns a list of requirements including the required Python version
 #' and a list of packages with their corresponding versions.
 #'
+#' @md
 #' @param version The Python version of the environment.
 #' Default is `"3.10-1"`.
 #'
@@ -403,7 +407,7 @@ env_requirements <- function(version = "3.10-1") {
     "leidenalg" = "leidenalg==0.10.2",
     "tbb" = "tbb==2022.2.0",
     "python-igraph" = "python-igraph==0.11.9",
-    "matplotlib" = "matplotlib==3.10.3",
+    "matplotlib" = "matplotlib==3.10.7",
     "numba" = "numba==0.59.1",
     "llvmlite" = "llvmlite==0.42.0",
     "numpy" = "numpy==1.26.4",
@@ -432,9 +436,10 @@ env_requirements <- function(version = "3.10-1") {
   return(requirements)
 }
 
-#' Show all the python packages in the environment
+#' @title Show all the python packages in the environment
 #'
-#' @inheritParams check_python
+#' @md
+#' @inheritParams PrepareEnv
 #' @export
 installed_python_pkgs <- function(
     envname = NULL,
@@ -485,10 +490,11 @@ installed_python_pkgs <- function(
   )
 }
 
-#' Check if a conda environment exists
+#' @title Check if a conda environment exists
 #'
+#' @md
+#' @inheritParams PrepareEnv
 #' @param envs_dir Directories in which conda environments are located.
-#' @inheritParams check_python
 env_exist <- function(
     conda = "auto",
     envname = NULL,

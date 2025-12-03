@@ -9,7 +9,8 @@ installed_python_pkgs(envname = NULL, conda = "auto")
 \arguments{
 \item{envname}{The name of a conda environment.}
 
-\item{conda}{The path to a conda executable. Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+\item{conda}{The path to a conda executable.
+Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
 }
 \description{
 Show all the python packages in the environment

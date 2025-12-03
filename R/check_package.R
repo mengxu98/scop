@@ -2,10 +2,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams PrepareEnv
 #' @param packages A character vector, indicating package names which should be installed or removed.
 #' Use `"<package>==<version>"` to request the installation of a specific version of a package.
-#' @param envname The name of a conda environment.
-#' @param conda The path to a conda executable. Use `"auto"` to allow scop to automatically find an appropriate conda binary.
 #' @param force Whether to force package installation.
 #' Default is `FALSE`.
 #' @param pip Whether to use pip for package installation.
@@ -112,7 +111,7 @@ check_python <- function(
 
 #' Check if the python package exists in the environment
 #'
-#' @inheritParams check_python
+#' @inheritParams PrepareEnv
 #' @export
 exist_python_pkgs <- function(
     packages,
