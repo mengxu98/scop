@@ -154,3 +154,6 @@ CellDensityPlot(
   flip = TRUE
 )
 }
+\seealso{
+\link{CellStatPlot}
+}

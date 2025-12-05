@@ -131,19 +131,19 @@ Can be one of the predefined themes or a custom theme.}
 \item{theme_args}{A list of arguments to be passed to the theme function.}
 
 \item{combine}{Whether to combine multiple plots into a single plot.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{nrow}{The number of rows in the combined plot.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{ncol}{The number of columns in the combined plot.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{byrow}{Whether to fill the plot by row or by column.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{force}{Whether to force the plot even if some variables have more than 100 levels.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{seed}{The random seed to use for reproducible results.
 Default is \code{11}.}

@@ -7,12 +7,12 @@
 #' @param node A data frame representing the nodes of the graph.
 #' @param edge A matrix representing the edges of the graph.
 #' @param transition A matrix representing the transitions between nodes.
-#' @param node_coord A character vector specifying the names of the columns in \code{node} that represent the x and y coordinates.
-#' @param node_group A character vector specifying the name of the column in \code{node} that represents the grouping of the nodes.
+#' @param node_coord A character vector specifying the names of the columns in `node` that represent the x and y coordinates.
+#' @param node_group A character vector specifying the name of the column in `node` that represents the grouping of the nodes.
 #' @param node_palette A character vector specifying the name of the color palette for node groups.
 #' @param node_palcolor A character vector specifying the names of the colors for each node group.
-#' @param node_size A numeric value or column name of \code{node} specifying the size of the nodes.
-#' @param node_alpha A numeric value or column name of \code{node} specifying the transparency of the nodes.
+#' @param node_size A numeric value or column name of `node` specifying the size of the nodes.
+#' @param node_alpha A numeric value or column name of `node` specifying the transparency of the nodes.
 #' @param node_highlight A character vector specifying the names of nodes to highlight.
 #' @param node_highlight_color A character vector specifying the color for highlighting nodes.
 #' @param label Whether to show labels for the nodes.

@@ -80,7 +80,7 @@ This argument is only used if \code{srt} is specified.}
 If provided, 'srt', 'test.use' and 'group_by' are ignored.}
 
 \item{plot_type}{The type of plot to generate.
-Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is "line".}
+Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is \code{"line"}.}
 
 \item{group_use}{The group(s) to be used for enrichment plot.
 Default is \code{NULL}.}
@@ -99,7 +99,7 @@ Default is \code{0.05}.}
 Default is \code{6}, or \code{100} if \code{plot_type} is \code{"enrichmap"}.}
 
 \item{direction}{The direction of enrichment to include in the plot.
-Must be one of "pos", "neg", or "both". The default value is "both".}
+Must be one of "pos", "neg", or "both". Default is \code{"both"}.}
 
 \item{compare_only_sig}{Whether to compare only significant terms.
 Default is \code{FALSE}.}
@@ -114,7 +114,7 @@ Default is \code{"term"}.}
 \item{word_size}{The size range for words in wordcloud. Default is \code{c(2, 8)}.}
 
 \item{words_excluded}{Words to be excluded from the wordcloud.
-The default value is \code{NULL}, which means that the built-in words (\link{words_excluded}) will be used.}
+Default is \code{NULL}, which means that the built-in words (\link{words_excluded}) will be used.}
 
 \item{line_width}{The linewidth for the line plot.}
 
@@ -207,16 +207,16 @@ Default is \code{"vertical"}.}
 Default is \code{"theme_scop"}.}
 
 \item{theme_args}{The arguments to pass to the theme.
-Default is an empty list.}
+Default is \code{list()}.}
 
 \item{combine}{Whether to combine multiple plots into a single plot.
 Default is \code{TRUE}.}
 
 \item{nrow}{The number of rows in the combined plot.
-Default is NULL, calculated based on the number of plots.}
+Default is \code{NULL}, calculated based on the number of plots.}
 
 \item{ncol}{The number of columns in the combined plot.
-Default is NULL, calculated based on the number of plots.}
+Default is \code{NULL}, calculated based on the number of plots.}
 
 \item{byrow}{Whether to fill the combined plot by row.
 Default is \code{TRUE}.}

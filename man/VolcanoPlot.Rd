@@ -87,7 +87,7 @@ Default is \code{"black"}.}
 Default is \code{"white"}.}
 
 \item{label.bg.r}{The radius of the rounding of the labels' background.
-Default is 0.1.}
+Default is \code{0.1}.}
 
 \item{label.size}{The size of the labels.
 Default is \code{4}.}
@@ -105,7 +105,7 @@ Default is \code{"-log10(p-adjust)"}.}
 Default is \code{"theme_scop"}.}
 
 \item{theme_args}{A list of theme arguments to pass to the \code{theme_use} function.
-Default is an empty list.}
+Default is \code{list()}.}
 
 \item{combine}{Whether to combine the plots for each group into a single plot.
 Default is \code{TRUE}.}

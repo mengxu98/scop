@@ -8,7 +8,7 @@
 #' @param force Whether to force package installation.
 #' Default is `FALSE`.
 #' @param pip Whether to use pip for package installation.
-#' Default is TRUE, packages are installed from the active conda channels.
+#' Default is `TRUE`, packages are installed from the active conda channels.
 #' @param pip_options An optional character vector of additional command line arguments to be passed to `pip`.
 #' Only relevant when `pip = TRUE`.
 #' @param ... Other arguments passed to [reticulate::conda_install]
@@ -476,18 +476,23 @@ remove_python <- function(
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param packages Package to be installed.
-#' Package source can be CRAN, Bioconductor or Github.
+#' Package source can be *CRAN*, *Bioconductor* or *Github*.
 #' By default, the package name is extracted according to the `packages` parameter.
 #' @param lib The location of the library directories where to install the packages.
+#' @param dependencies Whether to install dependencies of the packages.
+#' Default is `TRUE`.
 #' @param force Whether to force the installation of packages.
 #' Default is `FALSE`.
 #'
+#' @return Package installation status.
+#'
 #' @export
 #' @examples
-#' check_r(c("Seurat", "reticulate"))
+#' check_r(c("ggplot2", "dplyr"))
 check_r <- function(
     packages,
     lib = .libPaths()[1],
+    dependencies = TRUE,
     force = FALSE,
     verbose = TRUE) {
   status_list <- list()
@@ -502,7 +507,7 @@ check_r <- function(
         version <- pkg_info[[2]]
       }
     }
-    check_pkg <- .check_pkg_status(
+    check_pkg <- check_pkg_status(
       pkg_name,
       version = version,
       lib = lib
@@ -526,7 +531,23 @@ check_r <- function(
         expr = {
           old_lib_paths <- .libPaths()
           .libPaths(lib)
-          pak::pak(pkg, lib = lib)
+          if (isTRUE(verbose)) {
+            pak::pak(
+              pkg,
+              lib = lib,
+              dependencies = dependencies
+            )
+          } else {
+            invisible(
+              suppressMessages(
+                pak::pak(
+                  pkg,
+                  lib = lib,
+                  dependencies = dependencies
+                )
+              )
+            )
+          }
           .libPaths(old_lib_paths)
         },
         error = function(e) {
@@ -538,7 +559,7 @@ check_r <- function(
           )
         }
       )
-      status_list[[pkg]] <- .check_pkg_status(
+      status_list[[pkg]] <- check_pkg_status(
         pkg_name,
         version = version,
         lib = lib
@@ -582,7 +603,7 @@ remove_r <- function(
     verbose = TRUE) {
   status_list <- list()
   for (pkg in packages) {
-    pkg_installed <- .check_pkg_status(pkg, lib = lib)
+    pkg_installed <- check_pkg_status(pkg, lib = lib)
 
     if (pkg_installed) {
       log_message(
@@ -605,7 +626,7 @@ remove_r <- function(
           )
         }
       )
-      status_list[[pkg]] <- !.check_pkg_status(pkg, lib = lib)
+      status_list[[pkg]] <- !check_pkg_status(pkg, lib = lib)
     } else {
       log_message(
         "{.pkg {pkg}} is not installed, skipping removal",
@@ -636,7 +657,7 @@ remove_r <- function(
   return(invisible(status_list))
 }
 
-.check_pkg_status <- function(pkg, version = NULL, lib = .libPaths()[1]) {
+check_pkg_status <- function(pkg, version = NULL, lib = .libPaths()[1]) {
   installed_pkgs_info <- utils::installed.packages(lib.loc = lib)
   installed_pkgs <- installed_pkgs_info[, "Package"]
   installed_pkgs_version <- installed_pkgs_info[, "Version"]
