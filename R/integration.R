@@ -544,11 +544,11 @@ Uncorrected_integrate <- function(
 #'
 #' @inheritParams integration_scop
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function.
-#' Default is an empty list.
+#' Default is `list()`.
 #'
 #' @export
 Seurat_integrate <- function(
@@ -1041,13 +1041,13 @@ Seurat_integrate <- function(
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used.
 #' Options are "SCVI" and "PEAKVI".
-#' Default is "SCVI".
+#' Default is `"SCVI"`.
 #' @param SCVI_params A list of parameters for the SCVI model.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param PEAKVI_params A list of parameters for the PEAKVI model.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param num_threads An integer setting the number of threads for scVI.
-#' Default is 8.
+#' Default is `8`.
 #'
 #' @export
 scVI_integrate <- function(
@@ -2350,9 +2350,9 @@ Harmony_integrate <- function(
 #' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param return_corrected Logical indicating whether to return the corrected data.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #' @param Scanorama_params A list of parameters for the scanorama.correct function.
-#' Default is an empty list.
+#' Default is `list()`.
 #'
 #' @export
 Scanorama_integrate <- function(
@@ -3048,7 +3048,7 @@ BBKNN_integrate <- function(
 #' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum](https://github.com/quadbio/simspec) function.
-#' Default is an empty list.
+#' Default is `list()`.
 #'
 #' @export
 CSS_integrate <- function(
@@ -3403,9 +3403,9 @@ CSS_integrate <- function(
 #' @param LIGER_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param optimizeALS_params A list of parameters for the [rliger::optimizeALS] function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param quantilenorm_params A list of parameters for the [rliger::quantile_norm] function.
-#' Default is an empty list.
+#' Default is `list()`.
 #'
 #' @export
 LIGER_integrate <- function(
@@ -3746,9 +3746,9 @@ LIGER_integrate <- function(
 #'
 #' @inheritParams integration_scop
 #' @param buildGraph_params A list of parameters for the buildGraph function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param num_threads  An integer setting the number of threads for Conos.
-#' Default is 2.
+#' Default is `2`.
 #'
 #' @export
 Conos_integrate <- function(
@@ -4116,7 +4116,7 @@ Conos_integrate <- function(
 #'
 #' @inheritParams integration_scop
 #' @param ComBat_params A list of parameters for the sva::ComBat function.
-#' Default is an empty list.
+#' Default is `list()`.
 #'
 #' @export
 ComBat_integrate <- function(

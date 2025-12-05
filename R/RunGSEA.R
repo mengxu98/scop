@@ -9,18 +9,18 @@
 #' By default ("std") the enrichment score is computed as in the original GSEA.
 #' The "pos" and "neg" score types are intended to be used for one-tailed tests
 #' (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).
-#' @returns
+#' @return
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
 #'
 #' If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
 #'
 #' Enrichment result is a list with the following component:
 #' \itemize{
-#'  \item \code{enrichment}: A data.frame containing all enrichment results.
-#'  \item \code{results}: A list of \code{gseaResult} objects from the DOSE package.
-#'  \item \code{geneMap}: A data.frame containing the ID mapping table for input gene IDs.
-#'  \item \code{input}: A data.frame containing the input gene IDs and gene ID groups.
-#'  \item \code{DE_threshold}: A specific threshold for differential expression analysis (only returned if input is a Seurat object).
+#'  \item `enrichment`: A data.frame containing all enrichment results.
+#'  \item `results`: A list of `gseaResult` objects from the DOSE package.
+#'  \item `geneMap`: A data.frame containing the ID mapping table for input gene IDs.
+#'  \item `input`: A data.frame containing the input gene IDs and gene ID groups.
+#'  \item `DE_threshold`: A specific threshold for differential expression analysis (only returned if input is a Seurat object).
 #' }
 #'
 #' @seealso

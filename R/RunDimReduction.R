@@ -23,6 +23,9 @@
 #' @param force_nonlinear_reduction Whether force to do nonlinear dimensionality reduction.
 #' @param seed Set a seed. Default is `11`.
 #'
+#' @seealso
+#' [DefaultReduction]
+#'
 #' @export
 RunDimReduction <- function(
     srt,

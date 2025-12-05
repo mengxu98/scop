@@ -20,7 +20,7 @@
 #' Default is `"bar"`.
 #' @param split_by The splitting variable(s) for the plot.
 #' Can be `"Database"`, `"Groups"`, or both.
-#' Default is c("Database", "Groups") for plots.
+#' Default is `c("Database", "Groups")` for plots.
 #' @param color_by The variable used for coloring.
 #' Default is `"Database"`.
 #' @param group_use The group(s) to be used for enrichment plot.
@@ -43,7 +43,7 @@
 #' Default is `"term"`.
 #' @param word_size The size range for words in wordcloud. Default is `c(2, 8)`.
 #' @param words_excluded Words to be excluded from the wordcloud.
-#' The default value is `NULL`, which means that the built-in words ([words_excluded]) will be used.
+#' Default is `NULL`, which means that the built-in words ([words_excluded]) will be used.
 #' @param network_layout The layout algorithm to use for network plot.
 #' Options are `"fr"`, `"kk"`, `"random"`, `"circle"`, `"tree"`, `"grid"`, or other algorithm from `igraph` package.
 #' Default is `"fr"`.
@@ -93,13 +93,13 @@
 #' @param theme_use The theme to use for the plot.
 #' Default is `"theme_scop"`.
 #' @param theme_args The arguments to pass to the theme.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param combine Whether to combine multiple plots into a single plot.
 #' Default is `TRUE`.
 #' @param nrow The number of rows in the combined plot.
-#' Default is NULL, calculated based on the number of plots.
+#' Default is `NULL`, calculated based on the number of plots.
 #' @param ncol The number of columns in the combined plot.
-#' Default is NULL, calculated based on the number of plots.
+#' Default is `NULL`, calculated based on the number of plots.
 #' @param byrow  Whether to fill the combined plot by row.
 #' Default is `TRUE`.
 #' @param seed The random seed to use. Default is `11`.

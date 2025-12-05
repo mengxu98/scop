@@ -38,7 +38,7 @@
 #' @param label.bg A character string specifying the color for the labels' background.
 #' Default is `"white"`.
 #' @param label.bg.r The radius of the rounding of the labels' background.
-#' Default is 0.1.
+#' Default is `0.1`.
 #' @param label.size The size of the labels.
 #' Default is `4`.
 #' @param aspect.ratio The aspect ratio of the plot.
@@ -50,7 +50,7 @@
 #' @param theme_use A character string specifying the theme to use for the plot.
 #' Default is `"theme_scop"`.
 #' @param theme_args A list of theme arguments to pass to the `theme_use` function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param combine Whether to combine the plots for each group into a single plot.
 #' Default is `TRUE`.
 #' @param nrow An integer value specifying the number of rows in the combined plot.

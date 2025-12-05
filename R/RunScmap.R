@@ -3,12 +3,15 @@
 #' @inheritParams RunKNNPredict
 #' @param method The method to be used for scmap analysis.
 #' Can be any of "scmapCluster" or "scmapCell".
-#' The default value is "scmapCluster".
+#' Default is `"scmapCluster"`.
 #' @param nfeatures The number of top features to be selected.
-#' The default value is 500.
+#' Default is `500`.
 #' @param threshold The threshold value on similarity to determine if a cell is assigned to a cluster.
-#' This should be a value between 0 and 1. The default value is 0.5.
+#' This should be a value between 0 and 1. Default is `0.5`.
 #' @param k Number of clusters per group for k-means clustering when method is "scmapCell".
+#'
+#' @seealso
+#' [RunKNNPredict]
 #'
 #' @export
 #'

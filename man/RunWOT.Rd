@@ -49,7 +49,7 @@ If provided, \code{adata} will be ignored.}
 \item{time_field}{A character string specifying the column name in \code{adata.obs} or \code{srt@meta.data} that contains the time information.}
 
 \item{growth_iters}{A number of growth iterations to perform during the OT Model computation.
-Default is 3.}
+Default is \code{3}.}
 
 \item{tmap_out}{A character string specifying the path to store the computed transport maps.}
 

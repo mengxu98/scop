@@ -44,7 +44,7 @@ If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is \code{TRUE}.}
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
@@ -76,9 +76,9 @@ Default is \code{TRUE}.}
 \value{
 A list containing the prepared gene annotation databases:
 \itemize{
-\item \code{TERM2GENE:} mapping of gene identifiers to terms.
-\item \code{TERM2NAME:} mapping of terms to their names.
-\item \code{semData:} semantic similarity data for gene sets (only for Gene Ontology terms).
+\item \code{TERM2GENE}: mapping of gene identifiers to terms.
+\item \code{TERM2NAME}: mapping of terms to their names.
+\item \code{semData}: semantic similarity data for gene sets (only for Gene Ontology terms).
 }
 }
 \description{

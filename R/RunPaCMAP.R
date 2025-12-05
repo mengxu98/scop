@@ -16,8 +16,8 @@
 #' @param n_components The number of PaCMAP components.
 #' Default is `2`.
 #' @param n.neighbors A number of neighbors considered in the k-Nearest Neighbor graph.
-#' Default to 10 for dataset whose sample size is smaller than 10000.
-#' For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).
+#' Default is `10` for dataset whose sample size is smaller than 10000.
+#' For large dataset whose sample size (n) is larger than 10000, the default value is: `10 + 15 * (log10(n) - 4)`.
 #' @param MN_ratio The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
 #' Default is `0.5`.
 #' @param FP_ratio The ratio of the ratio of the number of further pairs to the number of neighbors.

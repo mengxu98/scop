@@ -26,33 +26,33 @@ RunSlingshot(
 \item{group.by}{The variable to group the cells by.}
 
 \item{reduction}{The reduction technique to use for dimensionality reduction.
-Default is NULL, which uses the default reduction for the Seurat object.}
+Default is \code{NULL}, which uses the default reduction for the Seurat object.}
 
 \item{dims}{The dimensions to use for the Slingshot algorithm.
-Default is NULL, which uses first two dimensions.}
+Default is \code{NULL}, which uses first two dimensions.}
 
 \item{start}{The starting group for the Slingshot algorithm.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{end}{The ending group for the Slingshot algorithm.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{prefix}{The prefix to add to the column names of the resulting pseudotime variable.
-Default is NULL.}
+Default is \code{NULL}.}
 
 \item{reverse}{Logical value indicating whether to reverse the pseudotime variable.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{align_start}{Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{show_plot}{Logical value indicating whether to show the dimensionality plot.
-Default is TRUE.}
+Default is \code{TRUE}.}
 
 \item{lineage_palette}{The color palette to use for the lineages in the plot.
-Default is "Dark2".}
+Default is \code{"Dark2"}.}
 
-\item{seed}{The random seed to use for reproducibility. Default is 11.}
+\item{seed}{The random seed to use for reproducibility. Default is \code{11}.}
 
 \item{...}{Additional arguments to be passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 }
