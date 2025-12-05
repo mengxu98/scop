@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.6.5
-Date: 2025-12-02
+Version: 0.6.6
+Date: 2025-12-05
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -36,7 +36,7 @@ Imports:
     Seurat,
     SeuratObject,
     thisplot,
-    thisutils,
+    thisutils (>= 0.3.1),
     uwot
 Suggests:
     AnnotationDbi,
