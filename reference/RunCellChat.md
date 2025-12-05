@@ -124,13 +124,224 @@ pancreas_sub <- RunCellChat(
   group.by = "CellType",
   species = "mouse"
 )
+#>  
+#> → Will install 51 packages.
+#> → Will download 1 CRAN package (1.68 MB), cached: 50 (0 B).
+#> + BiocNeighbors    2.4.0     [bld][cmp]
+#> + CellChat         2.2.0     [bld][cmp] (GitHub: 623f48f)
+#> + ComplexHeatmap   2.26.0    [bld]
+#> + GetoptLong       1.1.0      + ✔ perl
+#> + GlobalOptions    0.1.3     
+#> + NMF              0.28      [bld][cmp][dl] (1.68 MB)
+#> + RcppEigen        0.3.4.0.2 
+#> + assorthead       1.4.0     [bld]
+#> + brew             1.0-10    
+#> + bsicons          0.1.2     
+#> + cellranger       1.1.0     
+#> + circlize         0.4.16    
+#> + clue             0.3-66    
+#> + coda             0.19-4.1  
+#> + conflicted       1.2.0     
+#> + doParallel       1.0.17    
+#> + dtplyr           1.3.2     
+#> + foreach          1.5.2     
+#> + gargle           1.6.0     
+#> + gg.gap           1.3       
+#> + ggalluvial       0.12.5    
+#> + ggnetwork        0.5.14    
+#> + googledrive      2.1.2     
+#> + googlesheets4    1.1.2     
+#> + gridBase         0.4-7     
+#> + haven            2.5.5      + ✔ make, ✔ zlib1g-dev
+#> + ids              1.0.1     
+#> + iterators        1.0.14    
+#> + lubridate        1.9.4     
+#> + network          1.19.0    
+#> + ragg             1.5.0      + ✔ libfreetype6-dev, ✔ libjpeg-dev, ✔ libpng-dev, ✔ libtiff-dev, ✔ libwebp-dev
+#> + readxl           1.4.5     
+#> + registry         0.5-1     
+#> + rematch          2.0.0     
+#> + rematch2         2.1.2     
+#> + reprex           2.1.1      + ✔ pandoc
+#> + rjson            0.2.23    
+#> + rngtools         1.5.2     
+#> + roxygen2         7.3.3     
+#> + rvest            1.0.5     
+#> + selectr          0.5-0     
+#> + shape            1.4.6.1   
+#> + sna              2.8       
+#> + statnet.common   4.12.0    
+#> + svglite          2.2.2      + ✔ libpng-dev
+#> + textshaping      1.0.4      + ✔ libfreetype6-dev, ✔ libfribidi-dev, ✔ libharfbuzz-dev
+#> + tidyverse        2.0.0     
+#> + timechange       0.3.0     
+#> + uuid             1.2-1     
+#> + wordcloud        2.6       
+#> + xml2             1.5.1      + ✔ libxml2-dev
+#> ✔ All system requirements are already installed.
+#>   
+#> ℹ Getting 1 pkg (1.68 MB), 50 cached
+#> ✔ Got brew 1.0-10 (x86_64-pc-linux-gnu-ubuntu-24.04) (76.35 kB)
+#> ✔ Got cellranger 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.66 kB)
+#> ✔ Got BiocNeighbors 2.4.0 (source) (338.98 kB)
+#> ✔ Got foreach 1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.65 kB)
+#> ✔ Got bsicons 0.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (253.96 kB)
+#> ✔ Got selectr 0.5-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (570.89 kB)
+#> ✔ Got coda 0.19-4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (327.75 kB)
+#> ✔ Got googlesheets4 1.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (515.22 kB)
+#> ✔ Got rematch 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (16.20 kB)
+#> ✔ Got rjson 0.2.23 (x86_64-pc-linux-gnu-ubuntu-24.04) (113.12 kB)
+#> ✔ Got rvest 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (301.36 kB)
+#> ✔ Got ComplexHeatmap 2.26.0 (source) (1.47 MB)
+#> ✔ Got textshaping 1.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (189.59 kB)
+#> ✔ Got statnet.common 4.12.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (313.83 kB)
+#> ✔ Got uuid 1.2-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (48.94 kB)
+#> ✔ Got roxygen2 7.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (729.96 kB)
+#> ✔ Got assorthead 1.4.0 (source) (1.91 MB)
+#> ✔ Got wordcloud 2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (107.74 kB)
+#> ✔ Got haven 2.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (393.30 kB)
+#> ✔ Got clue 0.3-66 (x86_64-pc-linux-gnu-ubuntu-24.04) (998.14 kB)
+#> ✔ Got GetoptLong 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.41 MB)
+#> ✔ Got registry 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (194.47 kB)
+#> ✔ Got rematch2 2.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (46.02 kB)
+#> ✔ Got gridBase 0.4-7 (x86_64-pc-linux-gnu-ubuntu-24.04) (162.00 kB)
+#> ✔ Got reprex 2.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (495.27 kB)
+#> ✔ Got tidyverse 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (425.82 kB)
+#> ✔ Got ids 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.46 kB)
+#> ✔ Got googledrive 2.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.92 MB)
+#> ✔ Got doParallel 1.0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (188.11 kB)
+#> ✔ Got lubridate 1.9.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (990.67 kB)
+#> ✔ Got gg.gap 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (20.48 kB)
+#> ✔ Got circlize 0.4.16 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.32 MB)
+#> ✔ Got rngtools 1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.03 kB)
+#> ✔ Got gargle 1.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (618.93 kB)
+#> ✔ Got sna 2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.28 MB)
+#> ✔ Got timechange 0.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (174.23 kB)
+#> ✔ Got conflicted 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (55.04 kB)
+#> ✔ Got iterators 1.0.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (346.57 kB)
+#> ✔ Got ggalluvial 0.12.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.66 MB)
+#> ✔ Got RcppEigen 0.3.4.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.85 MB)
+#> ✔ Got svglite 2.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (239.34 kB)
+#> ✔ Got readxl 1.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (412.32 kB)
+#> ✔ Got xml2 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (282.14 kB)
+#> ✔ Got shape 1.4.6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (749.97 kB)
+#> ✔ Got dtplyr 1.3.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (409.84 kB)
+#> ✔ Got network 1.19.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (823.12 kB)
+#> ✔ Got ragg 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)
+#> ✔ Got GlobalOptions 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (483.55 kB)
+#> ✔ Got NMF 0.28 (source) (1.68 MB)
+#> ✔ Got ggnetwork 0.5.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.97 MB)
+#> ✔ Got CellChat 2.2.0 (source) (29.82 MB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install perl make zlib1g-dev libfreetype6-dev libjpeg-dev libpng-dev libtiff-dev libwebp-dev pandoc libfribidi-dev libharfbuzz-dev libxml2-dev libx11-dev libcurl4-openssl-dev libssl-dev libglpk-dev cmake python3 libicu-dev libfontconfig1-dev`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> perl is already the newest version (5.38.2-3.2ubuntu0.2).
+#> make is already the newest version (4.3-4.1build2).
+#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
+#> libjpeg-dev is already the newest version (8c-2ubuntu11).
+#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
+#> libwebp-dev is already the newest version (1.3.2-0.4build3).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libfribidi-dev is already the newest version (1.0.13-3build1).
+#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
+#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
+#> libx11-dev is already the newest version (2:1.8.7-1build1).
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> libglpk-dev is already the newest version (5.0-1build2).
+#> cmake is already the newest version (3.28.3-1build7).
+#> python3 is already the newest version (3.12.3-0ubuntu2.1).
+#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ℹ Building assorthead 1.4.0
+#> ✔ Installed brew 1.0-10  (85ms)
+#> ✔ Installed bsicons 0.1.2  (111ms)
+#> ✔ Installed cellranger 1.1.0  (201ms)
+#> ✔ Installed circlize 0.4.16  (103ms)
+#> ✔ Installed clue 0.3-66  (77ms)
+#> ✔ Installed coda 0.19-4.1  (74ms)
+#> ✔ Installed conflicted 1.2.0  (75ms)
+#> ✔ Installed doParallel 1.0.17  (78ms)
+#> ✔ Installed dtplyr 1.3.2  (139ms)
+#> ✔ Installed foreach 1.5.2  (97ms)
+#> ✔ Installed gargle 1.6.0  (84ms)
+#> ✔ Installed GetoptLong 1.1.0  (82ms)
+#> ✔ Installed gg.gap 1.3  (77ms)
+#> ✔ Installed ggalluvial 0.12.5  (84ms)
+#> ✔ Installed ggnetwork 0.5.14  (145ms)
+#> ✔ Installed GlobalOptions 0.1.3  (112ms)
+#> ✔ Installed googledrive 2.1.2  (92ms)
+#> ✔ Installed googlesheets4 1.1.2  (90ms)
+#> ✔ Installed gridBase 0.4-7  (116ms)
+#> ✔ Installed haven 2.5.5  (143ms)
+#> ✔ Installed ids 1.0.1  (104ms)
+#> ✔ Installed iterators 1.0.14  (79ms)
+#> ✔ Installed lubridate 1.9.4  (82ms)
+#> ✔ Installed network 1.19.0  (84ms)
+#> ✔ Installed ragg 1.5.0  (92ms)
+#> ✔ Installed RcppEigen 0.3.4.0.2  (167ms)
+#> ✔ Installed readxl 1.4.5  (95ms)
+#> ✔ Installed registry 0.5-1  (78ms)
+#> ✔ Installed rematch 2.0.0  (72ms)
+#> ✔ Installed rematch2 2.1.2  (75ms)
+#> ✔ Installed reprex 2.1.1  (115ms)
+#> ✔ Installed rjson 0.2.23  (131ms)
+#> ✔ Installed rngtools 1.5.2  (78ms)
+#> ℹ Building NMF 0.28
+#> ✔ Installed roxygen2 7.3.3  (94ms)
+#> ✔ Installed rvest 1.0.5  (1s)
+#> ✔ Built assorthead 1.4.0 (3.7s)
+#> ! Failed to add assorthead 1.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) to the cache
+#> ✔ Installed selectr 0.5-0  (74ms)
+#> ✔ Installed shape 1.4.6.1  (134ms)
+#> ℹ Building ComplexHeatmap 2.26.0
+#> ✔ Installed sna 2.8  (100ms)
+#> ✔ Installed statnet.common 4.12.0  (59ms)
+#> ✔ Installed svglite 2.2.2  (1s)
+#> ✔ Installed textshaping 1.0.4  (54ms)
+#> ✔ Installed tidyverse 2.0.0  (113ms)
+#> ✔ Installed timechange 0.3.0  (128ms)
+#> ✔ Installed uuid 1.2-1  (120ms)
+#> ✔ Installed wordcloud 2.6  (195ms)
+#> ✔ Installed xml2 1.5.1  (135ms)
+#> ✔ Installed assorthead 1.4.0  (125ms)
+#> ℹ Building BiocNeighbors 2.4.0
+#> ✔ Built ComplexHeatmap 2.26.0 (19.3s)
+#> ! Failed to add ComplexHeatmap 2.26.0 (x86_64-pc-linux-gnu-ubuntu-24.04) to the cache
+#> ✔ Installed ComplexHeatmap 2.26.0  (61ms)
+#> ✔ Built NMF 0.28 (21.2s)
+#> ! Failed to add NMF 0.28 (x86_64-pc-linux-gnu-ubuntu-24.04) to the cache
+#> ✔ Installed NMF 0.28  (1s)
+#> ✔ Built BiocNeighbors 2.4.0 (30.4s)
+#> ! Failed to add BiocNeighbors 2.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) to the cache
+#> ✔ Installed BiocNeighbors 2.4.0  (80ms)
+#> ℹ Packaging CellChat 2.2.0
+#> ✔ Packaged CellChat 2.2.0 (4.1s)
+#> ℹ Building CellChat 2.2.0
+#> ✔ Built CellChat 2.2.0 (24.3s)
+#> ✔ Installed CellChat 2.2.0 (github::jinworks/CellChat@623f48f) (60ms)
+#> ✔ 1 pkg + 260 deps: kept 210, added 51, dld 51 (NA B) [1m 21.9s]
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2025-12-03 09:48:12.352864]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2025-12-03 09:49:22.21386]"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2025-12-05 08:42:31.257924]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2025-12-05 08:43:39.994071]"
 
 CellChatPlot(pancreas_sub)
 

@@ -9,7 +9,7 @@ and a list of packages with their corresponding versions."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,28 +75,30 @@ Default is <code>"3.10-1"</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     "leidenalg==0.10.2"         "tbb==2022.2.0" "python-igraph==0.11.9" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              matplotlib                   numba                llvmlite </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    "matplotlib==3.10.7"         "numba==0.59.1"      "llvmlite==0.42.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   numpy                palantir                  pandas </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "numpy==1.26.4"       "palantir==1.4.1"         "pandas==2.0.3" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  scanpy            scikit-learn                   scipy </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        "scanpy==1.11.3"   "scikit-learn==1.7.0"         "scipy==1.15.3" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  scvelo                     wot                  trimap </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "scvelo==0.3.3"      "wot==1.0.8.post2"         "trimap==1.1.4" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  pacmap                   phate                   bbknn </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pacmap==0.8.0"         "phate==1.0.11"          "bbknn==1.6.0" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               scanorama              scvi-tools                cellrank </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      "scanorama==1.7.4"     "scvi-tools==1.2.1"       "cellrank==2.0.7" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   numpy               packaging                palantir </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "numpy==1.26.4"       "packaging&gt;=24.0"       "palantir==1.4.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  pandas                  scanpy            scikit-learn </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "pandas==2.0.3"        "scanpy==1.11.3"   "scikit-learn==1.7.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   scipy                  scvelo                     wot </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "scipy==1.15.3"         "scvelo==0.3.3"      "wot==1.0.8.post2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  trimap                  pacmap                   phate </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "trimap==1.1.4"         "pacmap==0.8.0"         "phate==1.0.11" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   bbknn               scanorama              scvi-tools </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          "bbknn==1.6.0"      "scanorama==1.7.4"     "scvi-tools==1.2.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                cellrank </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "cellrank==2.0.7" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $install_methods</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     leidenalg           tbb python-igraph    scvi-tools    matplotlib </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       "conda"       "conda"       "conda"       "conda"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         numba      llvmlite         numpy      palantir        pandas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         numba      llvmlite         numpy     packaging      palantir </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        scanpy  scikit-learn         scipy        scvelo           wot </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        pandas        scanpy  scikit-learn         scipy        scvelo </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        trimap        pacmap         phate         bbknn     scanorama </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           wot        trimap        pacmap         phate         bbknn </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip"         "pip"         "pip"         "pip" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      cellrank </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     scanorama      cellrank </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "pip"         "pip" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

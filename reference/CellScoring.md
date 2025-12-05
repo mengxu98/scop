@@ -48,17 +48,18 @@ CellScoring(
 
 - layer:
 
-  The layer of the Seurat object to use for scoring. Defaults to "data".
+  The layer of the Seurat object to use for scoring. Default is
+  `"data"`.
 
 - assay:
 
-  The assay of the Seurat object to use for scoring. Defaults to NULL,
+  The assay of the Seurat object to use for scoring. Default is `NULL`,
   in which case the default assay of the object is used.
 
 - split.by:
 
   A cell metadata variable used for splitting the Seurat object into
-  subsets and performing scoring on each subset. Defaults to NULL.
+  subsets and performing scoring on each subset. Default is `NULL`.
 
 - IDtype:
 
@@ -78,25 +79,25 @@ CellScoring(
 
 - termnames:
 
-  A vector of term names to be used from the database. Defaults to NULL,
-  in which case all features from the database are used.
+  A vector of term names to be used from the database. Default is
+  `NULL`, in which case all features from the database are used.
 
 - db_update:
 
   Whether the gene annotation databases should be forcefully updated. If
   set to FALSE, the function will attempt to load the cached databases
-  instead. Default is FALSE.
+  instead. Default is `FALSE`.
 
 - db_version:
 
   A character vector specifying the version of the database to be used.
   This argument is ignored if `db_update` is `TRUE`. Default is
-  "latest".
+  `"latest"`.
 
 - convert_species:
 
   Whether to use a species-converted database when the annotation is
-  missing for the specified species. The default value is TRUE.
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 
@@ -120,26 +121,26 @@ CellScoring(
 - method:
 
   The method to use for scoring. Can be "Seurat", "AUCell", or "UCell".
-  Defaults to "Seurat".
+  Default is `"Seurat"`.
 
 - classification:
 
-  Whether to perform classification based on the scores. Defaults to
-  TRUE.
+  Whether to perform classification based on the scores. Default is
+  `TRUE`.
 
 - name:
 
   The name of the assay to store the scores in. Only used if new_assay
-  is TRUE. Defaults to an empty string.
+  is TRUE. Default is `""`.
 
 - new_assay:
 
-  Whether to create a new assay for storing the scores. Defaults to
-  FALSE.
+  Whether to create a new assay for storing the scores. Default is
+  `FALSE`.
 
 - seed:
 
-  The random seed for reproducibility. Defaults to 11.
+  The random seed for reproducibility. Default is `11`.
 
 - cores:
 
@@ -211,10 +212,12 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ⠙ [2025-12-03 09:26:18] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:26:18] Completed 2 tasks in 124ms
+#> ⠙ [2025-12-05 08:28:27] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2025-12-05 08:28:27] Completed 2 tasks in 133ms
 #> 
 CellDimPlot(pancreas_sub, "test_classification")
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 FeatureDimPlot(pancreas_sub, "test_A")

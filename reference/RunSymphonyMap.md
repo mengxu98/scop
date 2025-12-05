@@ -163,14 +163,12 @@ srt_query <- RunSymphonyMap(
   ref_umap = "HarmonyUMAP2D"
 )
 #>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + RANN       2.6.2 
+#> → Will install 1 package.
+#> → The package (0 B) is cached.
 #> + symphony   0.1.2 [bld][cmp] (GitHub: 91e2ca1)
 #> ✔ All system requirements are already installed.
 #>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got RANN 2.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (43.84 kB)
+#> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got symphony 0.1.2 (source) (4.19 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
@@ -182,19 +180,29 @@ srt_query <- RunSymphonyMap(
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
+#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev make pandoc libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
+#> libcairo2-dev is already the newest version (1.18.0-3build1).
+#> make is already the newest version (4.3-4.1build2).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
+#> libjpeg-dev is already the newest version (8c-2ubuntu11).
+#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
+#> libwebp-dev is already the newest version (1.3.2-0.4build3).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed RANN 2.6.2  (1s)
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> libfribidi-dev is already the newest version (1.0.13-3build1).
+#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
 #> ℹ Packaging symphony 0.1.2
-#> ✔ Packaged symphony 0.1.2 (675ms)
+#> ✔ Packaged symphony 0.1.2 (702ms)
 #> ℹ Building symphony 0.1.2
-#> ✔ Built symphony 0.1.2 (19.7s)
-#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (1.1s)
-#> ✔ 1 pkg + 44 deps: kept 43, added 2, dld 2 (NA B) [27.7s]
+#> ✔ Built symphony 0.1.2 (20.2s)
+#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (48ms)
+#> ✔ 1 pkg + 89 deps: kept 89, added 1, dld 1 (NA B) [27.5s]
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

@@ -100,13 +100,13 @@ RunEnrichment(
 
   Whether the gene annotation databases should be forcefully updated. If
   set to FALSE, the function will attempt to load the cached databases
-  instead. Default is FALSE.
+  instead. Default is `FALSE`.
 
 - db_version:
 
   A character vector specifying the version of the database to be used.
   This argument is ignored if `db_update` is `TRUE`. Default is
-  "latest".
+  `"latest"`.
 
 - db_combine:
 
@@ -116,7 +116,7 @@ RunEnrichment(
 - convert_species:
 
   Whether to use a species-converted database when the annotation is
-  missing for the specified species. The default value is TRUE.
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 
@@ -259,8 +259,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-12-03 10:05:23] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-03 10:05:23] Completed 5 tasks in 753ms
+#> ⠙ [2025-12-05 09:01:08] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-05 09:01:08] Completed 5 tasks in 749ms
 #> 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -269,19 +269,14 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ⠙ [2025-12-03 10:05:45] Running [1/5] Processing: 1  ETA:  1m
-#> ⠹ [2025-12-03 10:05:45] Running [2/5] Processing: 2  ETA: 49s
-#> ⠸ [2025-12-03 10:05:45] Running [3/5] Processing: 3  ETA: 32s
-#> ⠼ [2025-12-03 10:05:45] Running [4/5] Processing: 4  ETA: 15s
-#> ✔ [2025-12-03 10:05:45] Completed 5 tasks in 1m 13.5s
-#> 
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
   group_by = "CellType",
   plot_type = "comparison"
 )
-
+#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group_by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- RunEnrichment(

@@ -202,95 +202,125 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 pancreas_sub <- RunCellQC(pancreas_sub)
 #>  
-#> → Will install 44 packages.
-#> → Will download 1 CRAN package (14.98 kB), cached: 43 (0 B).
-#> + BiocIO                 1.20.0    [bld]
-#> + BiocSingular           1.26.1    [bld][cmp]
-#> + Cairo                  1.7-0      + ✔ libcairo2-dev
-#> + DelayedArray           0.36.0    [bld][cmp]
-#> + GenomeInfoDb           1.46.1    [bld]
-#> + GenomicAlignments      1.46.0    [bld][cmp]
-#> + GenomicRanges          1.62.0    [bld][cmp]
-#> + RCurl                  1.98-1.17  + ✔ make, ✔ libcurl4-openssl-dev
-#> + RcppAnnoy              0.0.22    
-#> + RcppML                 0.3.7     
-#> + Rhtslib                3.6.0     [bld][cmp] + ✔ libbz2-dev, ✔ libcurl4-openssl-dev, ✔ liblzma-dev
-#> + Rsamtools              2.26.0    [bld][cmp] + ✔ make
-#> + Rtsne                  0.17      
-#> + S4Arrays               1.10.0    [bld][cmp]
-#> + ScaledMatrix           1.18.0    [bld]
-#> + SingleCellExperiment   1.32.0    [bld]
-#> + SparseArray            1.10.3    [bld][cmp]
-#> + SummarizedExperiment   1.40.0    [bld]
-#> + UCSC.utils             1.6.0     [bld]
-#> + XML                    3.99-0.20  + ✔ libxml2-dev
-#> + beachmat               2.26.0    [bld][cmp]
-#> + beeswarm               0.4.0     
-#> + bitops                 1.0-9     
-#> + bluster                1.20.0    [bld][cmp]
-#> + cigarillo              1.0.0     [bld][cmp]
-#> + dqrng                  0.4.1     
-#> + edgeR                  4.8.0     [bld][cmp]
-#> + ggbeeswarm             0.7.3     
-#> + ggrastr                1.0.2     
-#> + locfit                 1.5-9.12  
-#> + metapod                1.18.0    [bld][cmp]
-#> + pheatmap               1.0.13    
-#> + ragg                   1.5.0      + ✔ libfreetype6-dev, ✔ libjpeg-dev, ✔ libpng-dev, ✔ libtiff-dev, ✔ libwebp-dev
-#> + restfulr               0.0.16    [bld][cmp][dl] (14.98 kB)
-#> + rsvd                   1.0.5     
-#> + rtracklayer            1.70.0    [bld][cmp]
-#> + scDblFinder            1.24.0    [bld]
-#> + scater                 1.38.0    [bld]
-#> + scran                  1.38.0    [bld][cmp]
-#> + scuttle                1.20.0    [bld][cmp]
-#> + uwot                   0.2.4     
-#> + vipor                  0.4.7     
-#> + viridis                0.6.5     
-#> + xgboost                1.7.11.1   + ✔ make
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ Getting 1 pkg (14.98 kB), 43 cached
-#> ✔ Got BiocIO 1.20.0 (source) (232.37 kB)
-#> ✔ Got bitops 1.0-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.02 kB)
-#> ✔ Got cigarillo 1.0.0 (source) (258.57 kB)
-#> ✔ Got beachmat 2.26.0 (source) (383.08 kB)
-#> ✔ Got Cairo 1.7-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (93.28 kB)
-#> ✔ Got dqrng 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (215.52 kB)
-#> ✔ Got pheatmap 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)
+#> → Will install 57 packages.
+#> → Will download 1 CRAN package (14.98 kB), cached: 56 (0 B).
+#> + AnnotationFilter    1.34.0    [bld]
+#> + BiocIO              1.20.0    [bld]
+#> + BiocSingular        1.26.1    [bld][cmp]
+#> + Cairo               1.7-0      + ✔ libcairo2-dev
+#> + ClusterR            1.3.5     
+#> + ExperimentHub       3.0.0     [bld]
+#> + GenomeInfoDb        1.46.1    [bld]
+#> + GenomicAlignments   1.46.0    [bld][cmp]
+#> + GenomicFeatures     1.62.0    [bld]
+#> + HDF5Array           1.38.0    [bld] + ✔ make
+#> + ProtGenerics        1.42.0    [bld]
+#> + RCurl               1.98-1.17  + ✔ make, ✔ libcurl4-openssl-dev
+#> + RcppML              0.3.7     
+#> + Rhdf5lib            1.32.0    [bld][cmp] + ✔ make
+#> + Rhtslib             3.6.0     [bld][cmp] + ✔ libbz2-dev, ✔ libcurl4-openssl-dev, ✔ liblzma-dev
+#> + Rsamtools           2.26.0    [bld][cmp] + ✔ make
+#> + ScaledMatrix        1.18.0    [bld]
+#> + UCSC.utils          1.6.0     [bld]
+#> + V8                  8.0.1      + ✖ libnode-dev
+#> + XML                 3.99-0.20  + ✔ libxml2-dev
+#> + alabaster.base      1.10.0    [bld][cmp] + ✔ make
+#> + alabaster.matrix    1.10.0    [bld][cmp]
+#> + alabaster.ranges    1.10.0    [bld]
+#> + alabaster.sce       1.10.0    [bld]
+#> + alabaster.schemas   1.10.0    [bld]
+#> + alabaster.se        1.10.0    [bld]
+#> + beachmat            2.26.0    [bld][cmp]
+#> + beeswarm            0.4.0     
+#> + benchmarkme         1.0.8     
+#> + benchmarkmeData     1.0.4     
+#> + bluster             1.20.0    [bld][cmp]
+#> + cigarillo           1.0.0     [bld][cmp]
+#> + dqrng               0.4.1     
+#> + edgeR               4.8.0     [bld][cmp]
+#> + ensembldb           2.34.0    [bld]
+#> + ggbeeswarm          0.7.3     
+#> + ggrastr             1.0.2     
+#> + gmp                 0.7-5      + ✖ libgmp3-dev
+#> + gypsum              1.6.0     [bld]
+#> + h5mread             1.2.1     [bld][cmp]
+#> + jsonvalidate        1.5.0     
+#> + mbkmeans            1.26.0    [bld][cmp]
+#> + metapod             1.18.0    [bld][cmp]
+#> + pheatmap            1.0.13    
+#> + restfulr            0.0.16    [bld][cmp][dl] (14.98 kB)
+#> + rhdf5               2.54.0    [bld][cmp] + ✔ make
+#> + rhdf5filters        1.22.0    [bld][cmp] + ✔ make
+#> + rsvd                1.0.5     
+#> + rtracklayer         1.70.0    [bld][cmp]
+#> + scDblFinder         1.24.0    [bld]
+#> + scRNAseq            2.24.0    [bld]
+#> + scater              1.38.0    [bld]
+#> + scran               1.38.0    [bld][cmp]
+#> + scuttle             1.20.0    [bld][cmp]
+#> + vipor               0.4.7     
+#> + viridis             0.6.5     
+#> + xgboost             3.1.2.1    + ✔ make
+#> → Will install 2 system packages:
+#> + libgmp3-dev  - gmp
+#> + libnode-dev  - V8 
+#> ℹ Getting 1 pkg (14.98 kB), 56 cached
+#> ✔ Got alabaster.sce 1.10.0 (source) (226.14 kB)
+#> ✔ Got alabaster.ranges 1.10.0 (source) (232.01 kB)
+#> ✔ Got alabaster.se 1.10.0 (source) (231.15 kB)
+#> ✔ Got alabaster.matrix 1.10.0 (source) (282.83 kB)
+#> ✔ Got alabaster.schemas 1.10.0 (source) (247.50 kB)
 #> ✔ Got restfulr 0.0.16 (source) (15.03 kB)
-#> ✔ Got DelayedArray 0.36.0 (source) (816.30 kB)
-#> ✔ Got locfit 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)
-#> ✔ Got RcppAnnoy 0.0.22 (x86_64-pc-linux-gnu-ubuntu-24.04) (269.84 kB)
+#> ✔ Got dqrng 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (215.52 kB)
 #> ✔ Got beeswarm 0.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.13 kB)
-#> ✔ Got xgboost 1.7.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)
-#> ✔ Got XML 3.99-0.20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.83 MB)
-#> ✔ Got GenomicAlignments 1.46.0 (source) (2.26 MB)
-#> ✔ Got scDblFinder 1.24.0 (source) (2.25 MB)
-#> ✔ Got ggrastr 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)
-#> ✔ Got viridis 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.01 MB)
-#> ✔ Got bluster 1.20.0 (source) (3.26 MB)
-#> ✔ Got RcppML 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)
-#> ✔ Got S4Arrays 1.10.0 (source) (297.11 kB)
-#> ✔ Got metapod 1.18.0 (source) (333.89 kB)
-#> ✔ Got RCurl 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)
-#> ✔ Got ragg 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (743.50 kB)
-#> ✔ Got edgeR 4.8.0 (source) (3.07 MB)
-#> ✔ Got rtracklayer 1.70.0 (source) (4.10 MB)
-#> ✔ Got SummarizedExperiment 1.40.0 (source) (690.87 kB)
-#> ✔ Got Rtsne 0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (118.33 kB)
-#> ✔ Got GenomicRanges 1.62.0 (source) (1.38 MB)
-#> ✔ Got ScaledMatrix 1.18.0 (source) (314.08 kB)
+#> ✔ Got alabaster.base 1.10.0 (source) (342.94 kB)
+#> ✔ Got Cairo 1.7-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (93.28 kB)
 #> ✔ Got UCSC.utils 1.6.0 (source) (236.81 kB)
+#> ✔ Got ScaledMatrix 1.18.0 (source) (314.08 kB)
+#> ✔ Got gypsum 1.6.0 (source) (284.67 kB)
+#> ✔ Got benchmarkme 1.0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.90 kB)
+#> ✔ Got benchmarkmeData 1.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (282.00 kB)
+#> ✔ Got ClusterR 1.3.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.20 MB)
+#> ✔ Got RCurl 1.98-1.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.07 MB)
 #> ✔ Got scuttle 1.20.0 (source) (1.03 MB)
-#> ✔ Got scater 1.38.0 (source) (4.57 MB)
-#> ✔ Got uwot 0.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
-#> ✔ Got rsvd 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)
-#> ✔ Got SingleCellExperiment 1.32.0 (source) (987.98 kB)
-#> ✔ Got scran 1.38.0 (source) (1.83 MB)
 #> ✔ Got Rsamtools 2.26.0 (source) (1.92 MB)
+#> ✔ Got GenomicAlignments 1.46.0 (source) (2.26 MB)
+#> ✔ Got edgeR 4.8.0 (source) (3.07 MB)
+#> ✔ Got pheatmap 1.0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.32 kB)
+#> ✔ Got jsonvalidate 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (177.69 kB)
+#> ✔ Got AnnotationFilter 1.34.0 (source) (325.42 kB)
+#> ✔ Got gmp 0.7-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (330.19 kB)
+#> ✔ Got scater 1.38.0 (source) (4.57 MB)
+#> ✔ Got BiocSingular 1.26.1 (source) (618.28 kB)
+#> ✔ Got scran 1.38.0 (source) (1.83 MB)
+#> ✔ Got ExperimentHub 3.0.0 (source) (503.09 kB)
+#> ✔ Got ProtGenerics 1.42.0 (source) (11.78 kB)
+#> ✔ Got mbkmeans 1.26.0 (source) (300.82 kB)
+#> ✔ Got GenomicFeatures 1.62.0 (source) (574.45 kB)
+#> ✔ Got RcppML 0.3.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.79 kB)
+#> ✔ Got ggbeeswarm 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.77 MB)
+#> ✔ Got rtracklayer 1.70.0 (source) (4.10 MB)
+#> ✔ Got beachmat 2.26.0 (source) (383.08 kB)
+#> ✔ Got cigarillo 1.0.0 (source) (258.57 kB)
+#> ✔ Got rhdf5filters 1.22.0 (source) (1.19 MB)
+#> ✔ Got metapod 1.18.0 (source) (333.89 kB)
+#> ✔ Got ggrastr 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.68 MB)
+#> ✔ Got BiocIO 1.20.0 (source) (232.37 kB)
+#> ✔ Got scDblFinder 1.24.0 (source) (2.25 MB)
+#> ✔ Got scRNAseq 2.24.0 (source) (311.65 kB)
+#> ✔ Got HDF5Array 1.38.0 (source) (8.36 MB)
+#> ✔ Got rsvd 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.59 MB)
+#> ✔ Got h5mread 1.2.1 (source) (2.48 MB)
+#> ✔ Got XML 3.99-0.20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.83 MB)
+#> ✔ Got GenomeInfoDb 1.46.1 (source) (3.65 MB)
+#> ✔ Got viridis 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.01 MB)
 #> ✔ Got vipor 0.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.58 MB)
+#> ✔ Got rhdf5 2.54.0 (source) (1.31 MB)
+#> ✔ Got ensembldb 2.34.0 (source) (3.54 MB)
 #> ✔ Got Rhtslib 3.6.0 (source) (5.18 MB)
+#> ✔ Got V8 8.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (12.16 MB)
+#> ✔ Got bluster 1.20.0 (source) (3.26 MB)
+#> ✔ Got Rhdf5lib 1.32.0 (source) (12.07 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
@@ -301,123 +331,256 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libfreetype6-dev libjpeg-dev libpng-dev libtiff-dev libwebp-dev make libcurl4-openssl-dev libxml2-dev libbz2-dev liblzma-dev libssl-dev libglpk-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
+#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libgmp3-dev make libcurl4-openssl-dev libnode-dev libxml2-dev libbz2-dev liblzma-dev perl pandoc libssl-dev libglpk-dev libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libjpeg-dev is already the newest version (8c-2ubuntu11).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
-#> libwebp-dev is already the newest version (1.3.2-0.4build3).
 #> make is already the newest version (4.3-4.1build2).
 #> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
 #> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
 #> libbz2-dev is already the newest version (1.0.8-5.1build0.1).
 #> liblzma-dev is already the newest version (5.6.1+really5.4.5-1ubuntu0.2).
+#> perl is already the newest version (5.38.2-3.2ubuntu0.2).
+#> pandoc is already the newest version (3.1.3+ds-2).
 #> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
 #> libglpk-dev is already the newest version (5.0-1build2).
+#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
+#> libjpeg-dev is already the newest version (8c-2ubuntu11).
+#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
+#> libwebp-dev is already the newest version (1.3.2-0.4build3).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
 #> libfribidi-dev is already the newest version (1.0.13-3build1).
 #> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ℹ Building BiocIO 1.20.0
-#> ℹ Building bluster 1.20.0
-#> ℹ Building cigarillo 1.0.0
-#> ℹ Building GenomicRanges 1.62.0
-#> ✔ Built BiocIO 1.20.0 (4.2s)
-#> ℹ Building metapod 1.18.0
-#> ✔ Built cigarillo 1.0.0 (10s)
-#> ℹ Building Rhtslib 3.6.0
-#> ✔ Built GenomicRanges 1.62.0 (21.2s)
-#> ℹ Building S4Arrays 1.10.0
-#> ✔ Built bluster 1.20.0 (21.9s)
-#> ℹ Building UCSC.utils 1.6.0
-#> ✔ Built UCSC.utils 1.6.0 (3.6s)
-#> ✔ Installed beeswarm 0.4.0  (26ms)
-#> ✔ Installed bitops 1.0-9  (23ms)
-#> ✔ Installed Cairo 1.7-0  (55ms)
-#> ✔ Installed dqrng 0.4.1  (39ms)
-#> ✔ Installed ggbeeswarm 0.7.3  (49ms)
-#> ✔ Installed ggrastr 1.0.2  (1.1s)
-#> ✔ Installed locfit 1.5-9.12  (35ms)
-#> ℹ Building edgeR 4.8.0
-#> ✔ Built metapod 1.18.0 (24.3s)
-#> ✔ Installed pheatmap 1.0.13  (29ms)
-#> ✔ Installed ragg 1.5.0  (52ms)
-#> ✔ Installed RcppAnnoy 0.0.22  (1s)
-#> ✔ Installed RcppML 0.3.7  (39ms)
-#> ✔ Installed RCurl 1.98-1.17  (50ms)
-#> ✔ Installed rsvd 1.0.5  (1.1s)
-#> ✔ Installed Rtsne 0.17  (31ms)
-#> ✔ Installed uwot 0.2.4  (1s)
-#> ✔ Installed vipor 0.4.7  (76ms)
-#> ✔ Installed viridis 0.6.5  (104ms)
-#> ✔ Installed xgboost 1.7.11.1  (1.1s)
-#> ✔ Installed XML 3.99-0.20  (1.1s)
-#> ℹ Building restfulr 0.0.16
-#> ✔ Built S4Arrays 1.10.0 (16.3s)
-#> ✔ Installed BiocIO 1.20.0  (41ms)
-#> ✔ Installed bluster 1.20.0  (163ms)
-#> ✔ Installed cigarillo 1.0.0  (42ms)
-#> ✔ Installed GenomicRanges 1.62.0  (71ms)
-#> ✔ Installed metapod 1.18.0  (81ms)
-#> ✔ Installed S4Arrays 1.10.0  (48ms)
-#> ℹ Building SparseArray 1.10.3
-#> ✔ Built edgeR 4.8.0 (14.8s)
-#> ✔ Installed edgeR 4.8.0  (66ms)
-#> ✔ Installed UCSC.utils 1.6.0  (39ms)
-#> ℹ Building GenomeInfoDb 1.46.1
-#> ✔ Built restfulr 0.0.16 (8s)
-#> ✔ Installed restfulr 0.0.16  (31ms)
-#> ✔ Built GenomeInfoDb 1.46.1 (7.8s)
-#> ✔ Installed GenomeInfoDb 1.46.1  (61ms)
-#> ✔ Built SparseArray 1.10.3 (23s)
-#> ✔ Installed SparseArray 1.10.3  (48ms)
-#> ℹ Building DelayedArray 0.36.0
-#> ✔ Built DelayedArray 0.36.0 (15.9s)
-#> ✔ Installed DelayedArray 0.36.0  (44ms)
+#> The following additional packages will be installed:
+#> libnode109 libuv1-dev node-acorn node-busboy node-cjs-module-lexer
+#>   node-undici node-xtend nodejs nodejs-doc
+#> Suggested packages:
+#>   npm
+#> The following NEW packages will be installed:
+#> libgmp3-dev libnode-dev libnode109 libuv1-dev node-acorn node-busboy
+#>   node-cjs-module-lexer node-undici node-xtend nodejs nodejs-doc
+#> 0 upgraded, 11 newly installed, 0 to remove and 49 not upgraded.
+#> Need to get 16.6 MB of archives.
+#> After this operation, 74.2 MB of additional disk space will be used.
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgmp3-dev amd64 2:6.3.0+dfsg-2ubuntu6.1 [2310 B]
+#> Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libuv1-dev amd64 1.48.0-1.1build1 [136 kB]
+#> Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 node-xtend all 4.0.2-3 [3902 B]
+#> Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 nodejs amd64 18.19.1+dfsg-6ubuntu5 [306 kB]
+#> Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 node-acorn all 8.8.1+ds+~cs25.17.7-2 [115 kB]
+#> Get:7 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 node-cjs-module-lexer all 1.2.3+dfsg-1 [32.1 kB]
+#> Get:8 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 node-busboy all 1.6.0+~cs2.6.0-2 [17.3 kB]
+#> Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 node-undici all 5.26.3+dfsg1+~cs23.10.12-2 [325 kB]
+#> Get:10 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libnode109 amd64 18.19.1+dfsg-6ubuntu5 [11.6 MB]
+#> Get:11 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libnode-dev amd64 18.19.1+dfsg-6ubuntu5 [501 kB]
+#> Get:12 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 nodejs-doc all 18.19.1+dfsg-6ubuntu5 [3552 kB]
+#> Fetched 16.6 MB in 0s (111 MB/s)
+#> Selecting previously unselected package libgmp3-dev:amd64.
+#> (Reading database ...
+#> (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%
+#> (Reading database ... 60%
+#> (Reading database ... 65%
+#> (Reading database ... 70%
+#> (Reading database ... 75%
+#> (Reading database ... 80%
+#> (Reading database ... 85%
+#> (Reading database ... 90%
+#> (Reading database ... 95%
+#> (Reading database ... 100%(Reading database ... 255135 files and directories currently installed.)
+#> Preparing to unpack .../00-libgmp3-dev_2%3a6.3.0+dfsg-2ubuntu6.1_amd64.deb ...
+#> Unpacking libgmp3-dev:amd64 (2:6.3.0+dfsg-2ubuntu6.1) ...
+#> Selecting previously unselected package libuv1-dev:amd64.
+#> Preparing to unpack .../01-libuv1-dev_1.48.0-1.1build1_amd64.deb ...
+#> Unpacking libuv1-dev:amd64 (1.48.0-1.1build1) ...
+#> Selecting previously unselected package node-xtend.
+#> Preparing to unpack .../02-node-xtend_4.0.2-3_all.deb ...
+#> Unpacking node-xtend (4.0.2-3) ...
+#> Selecting previously unselected package nodejs.
+#> Preparing to unpack .../03-nodejs_18.19.1+dfsg-6ubuntu5_amd64.deb ...
+#> Unpacking nodejs (18.19.1+dfsg-6ubuntu5) ...
+#> Selecting previously unselected package node-acorn.
+#> Preparing to unpack .../04-node-acorn_8.8.1+ds+~cs25.17.7-2_all.deb ...
+#> Unpacking node-acorn (8.8.1+ds+~cs25.17.7-2) ...
+#> Selecting previously unselected package node-cjs-module-lexer.
+#> Preparing to unpack .../05-node-cjs-module-lexer_1.2.3+dfsg-1_all.deb ...
+#> Unpacking node-cjs-module-lexer (1.2.3+dfsg-1) ...
+#> Selecting previously unselected package node-busboy.
+#> Preparing to unpack .../06-node-busboy_1.6.0+~cs2.6.0-2_all.deb ...
+#> Unpacking node-busboy (1.6.0+~cs2.6.0-2) ...
+#> Selecting previously unselected package node-undici.
+#> Preparing to unpack .../07-node-undici_5.26.3+dfsg1+~cs23.10.12-2_all.deb ...
+#> Unpacking node-undici (5.26.3+dfsg1+~cs23.10.12-2) ...
+#> Selecting previously unselected package libnode109:amd64.
+#> Preparing to unpack .../08-libnode109_18.19.1+dfsg-6ubuntu5_amd64.deb ...
+#> Unpacking libnode109:amd64 (18.19.1+dfsg-6ubuntu5) ...
+#> Selecting previously unselected package libnode-dev.
+#> Preparing to unpack .../09-libnode-dev_18.19.1+dfsg-6ubuntu5_amd64.deb ...
+#> Unpacking libnode-dev (18.19.1+dfsg-6ubuntu5) ...
+#> Selecting previously unselected package nodejs-doc.
+#> Preparing to unpack .../10-nodejs-doc_18.19.1+dfsg-6ubuntu5_all.deb ...
+#> Unpacking nodejs-doc (18.19.1+dfsg-6ubuntu5) ...
+#> Setting up libuv1-dev:amd64 (1.48.0-1.1build1) ...
+#> Setting up node-cjs-module-lexer (1.2.3+dfsg-1) ...
+#> Setting up nodejs-doc (18.19.1+dfsg-6ubuntu5) ...
+#> Setting up libgmp3-dev:amd64 (2:6.3.0+dfsg-2ubuntu6.1) ...
+#> Setting up node-xtend (4.0.2-3) ...
+#> Setting up node-busboy (1.6.0+~cs2.6.0-2) ...
+#> Setting up node-undici (5.26.3+dfsg1+~cs23.10.12-2) ...
+#> Setting up node-acorn (8.8.1+ds+~cs25.17.7-2) ...
+#> Setting up libnode109:amd64 (18.19.1+dfsg-6ubuntu5) ...
+#> Setting up nodejs (18.19.1+dfsg-6ubuntu5) ...
+#> update-alternatives: using /usr/bin/nodejs to provide /usr/bin/js (js) in auto mode
+#> Setting up libnode-dev (18.19.1+dfsg-6ubuntu5) ...
+#> Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
+#> Processing triggers for man-db (2.12.0-4build2) ...
+#> Not building database; man-db/auto-update is not 'true'.
+#> Running kernel seems to be up-to-date.
+#> 
+#> Restarting services...
+#> Service restarts being deferred:
+#>  systemctl restart networkd-dispatcher.service
+#> No containers need to be restarted.
+#> 
+#> No user sessions are running outdated binaries.
+#> 
+#> No VM guests are running outdated hypervisor (qemu) binaries on this host.
+#> ℹ Building alabaster.schemas 1.10.0
+#> ℹ Building AnnotationFilter 1.34.0
 #> ℹ Building beachmat 2.26.0
+#> ℹ Building BiocIO 1.20.0
+#> ✔ Built alabaster.schemas 1.10.0 (1.3s)
+#> ℹ Building bluster 1.20.0
+#> ✔ Built BiocIO 1.20.0 (4.6s)
+#> ℹ Building cigarillo 1.0.0
+#> ✔ Built AnnotationFilter 1.34.0 (9.1s)
+#> ℹ Building edgeR 4.8.0
+#> ✔ Built cigarillo 1.0.0 (9.7s)
+#> ℹ Building ExperimentHub 3.0.0
+#> ✔ Built bluster 1.20.0 (22.2s)
+#> ℹ Building gypsum 1.6.0
+#> ✔ Built edgeR 4.8.0 (14.9s)
+#> ℹ Building metapod 1.18.0
+#> ✔ Built ExperimentHub 3.0.0 (11.1s)
+#> ℹ Building ProtGenerics 1.42.0
+#> ✔ Built gypsum 1.6.0 (3.7s)
+#> ℹ Building Rhdf5lib 1.32.0
+#> ✔ Built ProtGenerics 1.42.0 (4.3s)
+#> ℹ Building Rhtslib 3.6.0
+#> ✔ Built metapod 1.18.0 (24s)
 #> ℹ Building ScaledMatrix 1.18.0
-#> ℹ Building SummarizedExperiment 1.40.0
 #> ✔ Built ScaledMatrix 1.18.0 (16.6s)
-#> ✔ Installed ScaledMatrix 1.18.0  (39ms)
-#> ✔ Built Rhtslib 3.6.0 (1m 29s)
-#> ✔ Installed Rhtslib 3.6.0  (167ms)
+#> ℹ Building UCSC.utils 1.6.0
+#> ✔ Built UCSC.utils 1.6.0 (3.8s)
+#> ✔ Installed beeswarm 0.4.0  (31ms)
+#> ✔ Installed benchmarkme 1.0.8  (35ms)
+#> ✔ Installed benchmarkmeData 1.0.4  (35ms)
+#> ✔ Installed Cairo 1.7-0  (33ms)
+#> ✔ Installed ClusterR 1.3.5  (59ms)
+#> ✔ Installed dqrng 0.4.1  (44ms)
+#> ✔ Installed ggbeeswarm 0.7.3  (52ms)
+#> ✔ Installed ggrastr 1.0.2  (68ms)
+#> ✔ Installed gmp 0.7-5  (38ms)
+#> ✔ Installed jsonvalidate 1.5.0  (1.1s)
+#> ✔ Installed pheatmap 1.0.13  (32ms)
+#> ✔ Installed RcppML 0.3.7  (37ms)
+#> ✔ Installed RCurl 1.98-1.17  (55ms)
+#> ✔ Installed rsvd 1.0.5  (59ms)
+#> ✔ Installed V8 8.0.1  (379ms)
+#> ✔ Installed vipor 0.4.7  (129ms)
+#> ✔ Installed viridis 0.6.5  (63ms)
+#> ✔ Installed xgboost 3.1.2.1  (122ms)
+#> ✔ Installed XML 3.99-0.20  (73ms)
+#> ℹ Building restfulr 0.0.16
+#> ✔ Built restfulr 0.0.16 (7.9s)
+#> ✔ Installed restfulr 0.0.16  (54ms)
+#> ✔ Installed alabaster.schemas 1.10.0  (43ms)
+#> ✔ Installed AnnotationFilter 1.34.0  (47ms)
+#> ✔ Installed BiocIO 1.20.0  (44ms)
+#> ✔ Installed bluster 1.20.0  (109ms)
+#> ✔ Installed cigarillo 1.0.0  (45ms)
+#> ✔ Installed edgeR 4.8.0  (87ms)
+#> ✔ Installed ExperimentHub 3.0.0  (43ms)
+#> ✔ Installed gypsum 1.6.0  (1s)
+#> ✔ Installed metapod 1.18.0  (83ms)
+#> ✔ Installed ProtGenerics 1.42.0  (33ms)
+#> ✔ Installed ScaledMatrix 1.18.0  (44ms)
+#> ✔ Installed UCSC.utils 1.6.0  (37ms)
+#> ℹ Building GenomeInfoDb 1.46.1
+#> ✔ Built GenomeInfoDb 1.46.1 (9.4s)
+#> ✔ Installed GenomeInfoDb 1.46.1  (98ms)
+#> ✔ Built Rhtslib 3.6.0 (1m 31.1s)
+#> ✔ Installed Rhtslib 3.6.0  (209ms)
 #> ℹ Building Rsamtools 2.26.0
-#> ✔ Built SummarizedExperiment 1.40.0 (24.1s)
-#> ✔ Installed SummarizedExperiment 1.40.0  (81ms)
-#> ℹ Building SingleCellExperiment 1.32.0
-#> ✔ Built SingleCellExperiment 1.32.0 (18.8s)
-#> ✔ Installed SingleCellExperiment 1.32.0  (61ms)
-#> ✔ Built Rsamtools 2.26.0 (32.9s)
-#> ✔ Installed Rsamtools 2.26.0  (99ms)
-#> ℹ Building GenomicAlignments 1.46.0
-#> ✔ Built GenomicAlignments 1.46.0 (18.4s)
-#> ✔ Installed GenomicAlignments 1.46.0  (1s)
-#> ℹ Building rtracklayer 1.70.0
-#> ✔ Built beachmat 2.26.0 (1m 35.1s)
-#> ✔ Installed beachmat 2.26.0  (201ms)
+#> ✔ Built beachmat 2.26.0 (2m 3s)
+#> ✔ Installed beachmat 2.26.0  (256ms)
 #> ℹ Building BiocSingular 1.26.1
 #> ℹ Building scuttle 1.20.0
-#> ✔ Built rtracklayer 1.70.0 (30.2s)
-#> ✔ Installed rtracklayer 1.70.0  (97ms)
-#> ✔ Built BiocSingular 1.26.1 (18.1s)
-#> ✔ Installed BiocSingular 1.26.1  (1s)
-#> ✔ Built scuttle 1.20.0 (45.3s)
-#> ✔ Installed scuttle 1.20.0  (91ms)
+#> ✔ Built BiocSingular 1.26.1 (26.6s)
+#> ✔ Installed BiocSingular 1.26.1  (70ms)
+#> ✔ Built Rsamtools 2.26.0 (41.1s)
+#> ✔ Installed Rsamtools 2.26.0  (126ms)
+#> ℹ Building GenomicAlignments 1.46.0
+#> ✔ Built scuttle 1.20.0 (58.6s)
+#> ✔ Installed scuttle 1.20.0  (122ms)
 #> ℹ Building scater 1.38.0
 #> ℹ Building scran 1.38.0
-#> ✔ Built scater 1.38.0 (15.1s)
-#> ✔ Installed scater 1.38.0  (70ms)
-#> ✔ Built scran 1.38.0 (44.5s)
-#> ✔ Installed scran 1.38.0  (134ms)
+#> ✔ Built GenomicAlignments 1.46.0 (27.3s)
+#> ✔ Installed GenomicAlignments 1.46.0  (73ms)
+#> ℹ Building rtracklayer 1.70.0
+#> ✔ Built scater 1.38.0 (24.9s)
+#> ✔ Installed scater 1.38.0  (105ms)
+#> ✔ Built rtracklayer 1.70.0 (44.9s)
+#> ✔ Installed rtracklayer 1.70.0  (1.1s)
+#> ℹ Building GenomicFeatures 1.62.0
+#> ✔ Built scran 1.38.0 (1m 6.6s)
+#> ✔ Installed scran 1.38.0  (120ms)
 #> ℹ Building scDblFinder 1.24.0
-#> ✔ Built scDblFinder 1.24.0 (20.5s)
-#> ✔ Installed scDblFinder 1.24.0  (1s)
-#> ✔ 1 pkg + 111 deps: kept 68, added 44, dld 40 (57.66 MB) [4m 53.9s]
+#> ✔ Built GenomicFeatures 1.62.0 (22.9s)
+#> ✔ Installed GenomicFeatures 1.62.0  (37ms)
+#> ℹ Building ensembldb 2.34.0
+#> ✔ Built Rhdf5lib 1.32.0 (4m 1.4s)
+#> ✔ Installed Rhdf5lib 1.32.0  (1.4s)
+#> ℹ Building mbkmeans 1.26.0
+#> ℹ Building rhdf5filters 1.22.0
+#> ✔ Built scDblFinder 1.24.0 (32.2s)
+#> ✔ Installed scDblFinder 1.24.0  (1.1s)
+#> ✔ Built rhdf5filters 1.22.0 (14.2s)
+#> ✔ Installed rhdf5filters 1.22.0  (43ms)
+#> ℹ Building rhdf5 2.54.0
+#> ✔ Built ensembldb 2.34.0 (31.1s)
+#> ✔ Installed ensembldb 2.34.0  (79ms)
+#> ✔ Built rhdf5 2.54.0 (12.1s)
+#> ✔ Installed rhdf5 2.54.0  (144ms)
+#> ℹ Building alabaster.base 1.10.0
+#> ℹ Building h5mread 1.2.1
+#> ✔ Built mbkmeans 1.26.0 (39.9s)
+#> ✔ Installed mbkmeans 1.26.0  (75ms)
+#> ✔ Built h5mread 1.2.1 (15.9s)
+#> ✔ Installed h5mread 1.2.1  (1.1s)
+#> ℹ Building HDF5Array 1.38.0
+#> ✔ Built HDF5Array 1.38.0 (12s)
+#> ✔ Installed HDF5Array 1.38.0  (92ms)
+#> ✔ Built alabaster.base 1.10.0 (1m 5.2s)
+#> ✔ Installed alabaster.base 1.10.0  (1.2s)
+#> ℹ Building alabaster.matrix 1.10.0
+#> ℹ Building alabaster.ranges 1.10.0
+#> ✔ Built alabaster.ranges 1.10.0 (5.6s)
+#> ✔ Installed alabaster.ranges 1.10.0  (35ms)
+#> ✔ Built alabaster.matrix 1.10.0 (15.6s)
+#> ✔ Installed alabaster.matrix 1.10.0  (33ms)
+#> ℹ Building alabaster.se 1.10.0
+#> ✔ Built alabaster.se 1.10.0 (12.9s)
+#> ✔ Installed alabaster.se 1.10.0  (23ms)
+#> ℹ Building alabaster.sce 1.10.0
+#> ✔ Built alabaster.sce 1.10.0 (13.6s)
+#> ✔ Installed alabaster.sce 1.10.0  (37ms)
+#> ℹ Building scRNAseq 2.24.0
+#> ✔ Built scRNAseq 2.24.0 (21.3s)
+#> ✔ Installed scRNAseq 2.24.0  (26ms)
+#> ✔ 1 pkg + 202 deps: kept 145, added 57, dld 56 (101.78 MB) [7m 25.9s]
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
@@ -437,7 +600,7 @@ CellStatPlot(
 table(pancreas_sub$CellQC)
 #> 
 #> Pass Fail 
-#>  951   49 
+#>  955   45 
 
 data(ifnb_sub)
 ifnb_sub <- RunCellQC(
@@ -462,5 +625,5 @@ CellStatPlot(
 table(ifnb_sub$CellQC)
 #> 
 #> Pass Fail 
-#> 1390  610 
+#> 1382  618 
 ```

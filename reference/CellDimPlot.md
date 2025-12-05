@@ -222,7 +222,7 @@ CellDimPlot(
 
 - label_repulsion:
 
-  Force of repulsion between overlapping text labels. Defaults to 20.
+  Force of repulsion between overlapping text labels. Default is `20`.
 
 - label_point_size:
 
@@ -283,7 +283,7 @@ CellDimPlot(
 - mark_type:
 
   Type of mark to add around cell groups. One of "hull", "ellipse",
-  "rect", or "circle". Default is "hull".
+  "rect", or "circle". Default is `"hull"`.
 
 - mark_expand:
 
@@ -292,11 +292,11 @@ CellDimPlot(
 
 - mark_alpha:
 
-  Transparency of the mark. Default is 0.1.
+  Transparency of the mark. Default is `0.1`.
 
 - mark_linetype:
 
-  Line type of the mark border. Default is 1 (solid line).
+  Line type of the mark border. Default is `1` (solid line).
 
 - lineages:
 
@@ -368,7 +368,7 @@ CellDimPlot(
 
 - stat_plot_size:
 
-  Set the statistical plot size. Defaults to 0.1
+  Set the statistical plot size. Default is `0.1`.
 
 - stat_plot_palette:
 
@@ -569,7 +569,7 @@ CellDimPlot(
 - raster.dpi:
 
   Pixel resolution for rasterized plots, passed to geom_scattermore().
-  Default is c(512, 512).
+  Default is `c(512, 512)`.
 
 - aspect.ratio:
 
@@ -686,6 +686,8 @@ p1 <- CellDimPlot(
   reduction = "UMAP"
 )
 p1
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 thisplot::panel_fix(
@@ -694,6 +696,8 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 30
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -702,6 +706,8 @@ CellDimPlot(
   reduction = "UMAP",
   theme_use = "theme_blank"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -711,6 +717,8 @@ CellDimPlot(
   theme_use = ggplot2::theme_classic,
   theme_args = list(base_size = 16)
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Highlight cells
@@ -722,6 +730,8 @@ CellDimPlot(
     pancreas_sub
   )[pancreas_sub$SubCellType == "Epsilon"]
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -733,6 +743,12 @@ CellDimPlot(
   theme_use = "theme_blank",
   legend.position = "none"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Add group labels
@@ -742,6 +758,8 @@ CellDimPlot(
   reduction = "UMAP",
   label = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -753,6 +771,8 @@ CellDimPlot(
   label.bg = "red",
   label.size = 5
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -762,6 +782,8 @@ CellDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -773,6 +795,8 @@ CellDimPlot(
   label_repel = TRUE,
   label_segment_color = "red"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Add various shape of marks
@@ -782,7 +806,7 @@ CellDimPlot(
   reduction = "UMAP",
   add_mark = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -791,7 +815,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_expand = grid::unit(1, "mm")
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -800,7 +824,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_alpha = 0.3
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -809,7 +833,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_linetype = 2
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -818,7 +842,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "ellipse"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -827,7 +851,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "rect"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -836,7 +860,7 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "circle"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 # Add a density layer
 CellDimPlot(
@@ -845,6 +869,8 @@ CellDimPlot(
   reduction = "UMAP",
   add_density = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -854,7 +880,7 @@ CellDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 CellDimPlot(
   pancreas_sub,
@@ -865,7 +891,7 @@ CellDimPlot(
   density_filled_palette = "Blues",
   cells.highlight = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 # Add statistical charts
 CellDimPlot(
@@ -874,6 +900,14 @@ CellDimPlot(
   reduction = "UMAP",
   stat.by = "Phase"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -885,6 +919,38 @@ CellDimPlot(
   stat_plot_label = TRUE,
   stat_plot_size = 0.15
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -896,6 +962,14 @@ CellDimPlot(
   stat_type = "count",
   stat_plot_position = "dodge"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Chane the plot type from point to the hexagonal bin
@@ -906,14 +980,62 @@ CellDimPlot(
   hex = TRUE
 )
 #>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + hexbin   1.28.5 
+#> → Will install 7 packages.
+#> → All 7 packages (0 B) are cached.
+#> + affy             1.88.0 [bld][cmp]
+#> + affyio           1.80.0 [bld][cmp]
+#> + hexbin           1.28.5 
+#> + limma            3.66.0 [bld][cmp]
+#> + marray           1.88.0 [bld]
+#> + preprocessCore   1.72.0 [bld][cmp]
+#> + statmod          1.5.1  
+#> ✔ All system requirements are already installed.
 #>   
-#> ℹ No downloads are needed, 1 pkg is cached
+#> ℹ No downloads are needed, 7 pkgs are cached
+#> ✔ Got preprocessCore 1.72.0 (source) (131.03 kB)
+#> ✔ Got affyio 1.80.0 (source) (111.72 kB)
+#> ✔ Got statmod 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (317.50 kB)
+#> ✔ Got affy 1.88.0 (source) (1.77 MB)
 #> ✔ Got hexbin 1.28.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.60 MB)
-#> ✔ Installed hexbin 1.28.5  (38ms)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (1.60 MB) [1.2s]
+#> ✔ Got limma 3.66.0 (source) (2.86 MB)
+#> ✔ Got marray 1.88.0 (source) (5.91 MB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Fetched 126 kB in 0s (348 kB/s)
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install pandoc`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ℹ Building affyio 1.80.0
+#> ℹ Building preprocessCore 1.72.0
+#> ✔ Installed hexbin 1.28.5  (73ms)
+#> ✔ Installed statmod 1.5.1  (65ms)
+#> ℹ Building limma 3.66.0
+#> ✔ Built affyio 1.80.0 (8.4s)
+#> ✔ Installed affyio 1.80.0  (23ms)
+#> ✔ Built preprocessCore 1.72.0 (9s)
+#> ✔ Installed preprocessCore 1.72.0  (23ms)
+#> ℹ Building affy 1.88.0
+#> ✔ Built limma 3.66.0 (13.5s)
+#> ✔ Installed limma 3.66.0  (45ms)
+#> ℹ Building marray 1.88.0
+#> ✔ Built affy 1.88.0 (5.3s)
+#> ✔ Installed affy 1.88.0  (1s)
+#> ✔ Built marray 1.88.0 (5.6s)
+#> ✔ Installed marray 1.88.0  (91ms)
+#> ✔ 1 pkg + 16 deps: kept 10, added 7, dld 7 (12.70 MB) [24.1s]
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
 
 
 CellDimPlot(
@@ -923,6 +1045,8 @@ CellDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
 
 
 CellDimPlot(
@@ -932,6 +1056,8 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
 
 
 # Show neighbors graphs on the plot
@@ -971,12 +1097,16 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
+#> Warning: Key ‘StandardpcaUMAP2D_’ taken, using ‘standardpcaumap2d_’ instead
+#> Warning: Key ‘StandardpcaUMAP3D_’ taken, using ‘standardpcaumap3d_’ instead
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "UMAP",
   graph = "Standardpca_SNN"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 CellDimPlot(
@@ -986,6 +1116,8 @@ CellDimPlot(
   graph = "Standardpca_SNN",
   edge_color = "grey80"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Show lineages based on the pseudotime
@@ -995,13 +1127,14 @@ pancreas_sub <- RunSlingshot(
   reduction = "UMAP",
   show_plot = FALSE
 )
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 FeatureDimPlot(
   pancreas_sub,
   features = paste0("Lineage", 1:2),
   reduction = "UMAP"
 )
-
+#> Error in FeatureDimPlot(pancreas_sub, features = paste0("Lineage", 1:2),     reduction = "UMAP"): There are no valid features present.
 
 CellDimPlot(
   pancreas_sub,
@@ -1009,7 +1142,7 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2)): Lineage1 is not in the meta.data of srt object.
 
 CellDimPlot(
   pancreas_sub,
@@ -1018,7 +1151,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_whiskers = TRUE): Lineage1 is not in the meta.data of srt object.
 
 CellDimPlot(
   pancreas_sub,
@@ -1027,7 +1160,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage1 is not in the meta.data of srt object.
 
 if (FALSE) { # \dontrun{
 # Show PAGA results on the plot

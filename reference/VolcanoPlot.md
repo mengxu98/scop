@@ -122,7 +122,8 @@ VolcanoPlot(
 
 - label.bg.r:
 
-  The radius of the rounding of the labels' background. Default is 0.1.
+  The radius of the rounding of the labels' background. Default is
+  `0.1`.
 
 - label.size:
 
@@ -150,7 +151,7 @@ VolcanoPlot(
 - theme_args:
 
   A list of theme arguments to pass to the `theme_use` function. Default
-  is an empty list.
+  is [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
@@ -220,8 +221,8 @@ pancreas_sub <- RunDEtest(
  pancreas_sub,
  group_by = "CellType"
 )
-#> ⠙ [2025-12-03 10:27:21] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-03 10:27:21] Completed 5 tasks in 722ms
+#> ⠙ [2025-12-05 09:20:08] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-05 09:20:08] Completed 5 tasks in 723ms
 #> 
 VolcanoPlot(
   pancreas_sub,

@@ -604,7 +604,7 @@ DynamicHeatmap(
 - feature_annotation_params:
 
   A list specifying additional parameters for feature annotations.
-  Default is an empty list.
+  Default is [`list()`](https://rdrr.io/r/base/list.html).
 
 - separate_annotation:
 
@@ -668,7 +668,7 @@ DynamicHeatmap(
 
   A list specifying additional parameters passed to the
   [ComplexHeatmap::Heatmap](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html)
-  function. Default is an empty list.
+  function. Default is [`list()`](https://rdrr.io/r/base/list.html).
 
 ## See also
 
@@ -722,7 +722,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -736,17 +736,8 @@ pancreas_sub <- RunDynamicFeatures(
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got mgcv 1.9-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.63 MB)
 #> ✔ Installed mgcv 1.9-4  (1s)
-#> ✔ 1 pkg + 3 deps: kept 3, upd 1, dld 1 (3.63 MB) [2.5s]
-#> ⠙ [2025-12-03 09:28:46] Running [1/225] Processing: 1  ETA: 19s
-#> ⠹ [2025-12-03 09:28:46] Running [52/225] Processing: 52  ETA:  6s
-#> ⠸ [2025-12-03 09:28:46] Running [145/225] Processing: 145  ETA:  3s
-#> ✔ [2025-12-03 09:28:46] Completed 225 tasks in 7.4s
-#> 
-#> ⠙ [2025-12-03 09:28:54] Running [12/225] Processing: 12  ETA:  5s
-#> ⠹ [2025-12-03 09:28:54] Running [112/225] Processing: 112  ETA:  3s
-#> ⠸ [2025-12-03 09:28:54] Running [209/225] Processing: 209  ETA:  0s
-#> ✔ [2025-12-03 09:28:54] Completed 225 tasks in 6.9s
-#> 
+#> ✔ 1 pkg + 5 deps: kept 5, upd 1, dld 1 (3.63 MB) [2.4s]
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -755,15 +746,12 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", n_split = 5,     split_method = "kmeans-peaktime", cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
-
+#> Error: object 'ht1' not found
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
@@ -777,14 +765,9 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ⠙ [2025-12-03 09:29:05] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:29:05] Completed 2 tasks in 42ms
-#> 
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", features = c("Sox9",     "Neurod2", "Isl1", "Rbp4", "Pyy", "S_score", "G2M_score"),     cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 thisplot::panel_fix(
   ht2$plot,
@@ -793,7 +776,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-
+#> Error: object 'ht2' not found
 
 ht3 <- DynamicHeatmap(
   pancreas_sub,
@@ -803,12 +786,9 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     n_split = 5, split_method = "kmeans", cluster_rows = TRUE,     cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
@@ -823,278 +803,9 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + e1071   1.7-16 
-#> + proxy   0.4-27 
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got e1071 1.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (596.57 kB)
-#> ✔ Got proxy 0.4-27 (x86_64-pc-linux-gnu-ubuntu-24.04) (175.47 kB)
-#> ✔ Installed e1071 1.7-16  (31ms)
-#> ✔ Installed proxy 0.4-27  (43ms)
-#> ✔ 1 pkg + 3 deps: kept 2, added 2, dld 2 (772.04 kB) [1.1s]
-#> Registered S3 methods overwritten by 'proxy':
-#>   method               from    
-#>   print.registry_field registry
-#>   print.registry_entry registry
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#>  
-#> → Will install 35 packages.
-#> → All 35 packages (0 B) are cached.
-#> + BH                  1.87.0-1 
-#> + BiocParallel        1.44.0   [bld][cmp]
-#> + DOSE                4.4.0    [bld]
-#> + GO.db               3.22.0   [bld]
-#> + GOSemSim            2.36.0   [bld][cmp]
-#> + R.methodsS3         1.8.2    
-#> + R.oo                1.27.1   
-#> + R.utils             2.13.0   
-#> + ape                 5.8-1    
-#> + clusterProfiler     4.18.2   [bld]
-#> + cpp11               0.5.2    
-#> + enrichplot          1.30.3   [bld]
-#> + fastmatch           1.1-6    
-#> + fgsea               1.36.0   [bld][cmp]
-#> + fontBitstreamVera   0.1.1    
-#> + fontLiberation      0.1.0    
-#> + fontquiver          0.2.1    
-#> + formatR             1.14     
-#> + futile.logger       1.4.3    
-#> + futile.options      1.0.1    
-#> + gdtools             0.4.4     + ✔ libcairo2-dev, ✔ libfontconfig1-dev, ✔ libfreetype6-dev
-#> + ggforce             0.5.0    
-#> + ggiraph             0.9.2     + ✔ libpng-dev
-#> + ggnewscale          0.5.2    
-#> + ggtangle            0.0.9    
-#> + ggtree              4.0.1    [bld]
-#> + gson                0.1.0    
-#> + lambda.r            1.2.4    
-#> + polyclip            1.10-7   
-#> + qvalue              2.42.0   [bld]
-#> + scatterpie          0.2.6    
-#> + snow                0.4-4    
-#> + tidytree            0.4.6    
-#> + treeio              1.34.0   [bld]
-#> + tweenr              2.0.3    
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 35 pkgs are cached
-#> ✔ Got enrichplot 1.30.3 (source) (100.35 kB)
-#> ✔ Got fastmatch 1.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.95 kB)
-#> ✔ Got ggtree 4.0.1 (source) (370.24 kB)
-#> ✔ Got cpp11 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (289.40 kB)
-#> ✔ Got formatR 1.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.65 kB)
-#> ✔ Got GOSemSim 2.36.0 (source) (610.99 kB)
-#> ✔ Got snow 0.4-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (97.07 kB)
-#> ✔ Got futile.options 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.42 kB)
-#> ✔ Got scatterpie 0.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (150.90 kB)
-#> ✔ Got fontBitstreamVera 0.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (699.47 kB)
-#> ✔ Got polyclip 1.10-7 (x86_64-pc-linux-gnu-ubuntu-24.04) (120.02 kB)
-#> ✔ Got BiocParallel 1.44.0 (source) (1.11 MB)
-#> ✔ Got ggnewscale 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (351.15 kB)
-#> ✔ Got treeio 1.34.0 (source) (701.64 kB)
-#> ✔ Got R.oo 1.27.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.09 kB)
-#> ✔ Got ggiraph 0.9.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
-#> ✔ Got gdtools 0.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (203.79 kB)
-#> ✔ Got gson 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (232.54 kB)
-#> ✔ Got futile.logger 1.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (96.77 kB)
-#> ✔ Got qvalue 2.42.0 (source) (2.77 MB)
-#> ✔ Got ape 5.8-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.97 MB)
-#> ✔ Got R.methodsS3 1.8.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (82.67 kB)
-#> ✔ Got lambda.r 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (110.01 kB)
-#> ✔ Got fontquiver 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.28 MB)
-#> ✔ Got tidytree 0.4.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (343.02 kB)
-#> ✔ Got tweenr 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (461.68 kB)
-#> ✔ Got R.utils 2.13.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.45 MB)
-#> ✔ Got fontLiberation 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.54 MB)
-#> ✔ Got ggforce 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.95 MB)
-#> ✔ Got DOSE 4.4.0 (source) (5.75 MB)
-#> ✔ Got fgsea 1.36.0 (source) (6.17 MB)
-#> ✔ Got BH 1.87.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (13.35 MB)
-#> ✔ Got GO.db 3.22.0 (source) (25.25 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libcurl4-openssl-dev libssl-dev make libglpk-dev libxml2-dev pandoc libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ℹ Building qvalue 2.42.0
-#> ℹ Building GO.db 3.22.0
-#> ✔ Installed ape 5.8-1  (118ms)
-#> ✔ Installed cpp11 0.5.2  (43ms)
-#> ✔ Installed fastmatch 1.1-6  (30ms)
-#> ✔ Installed fontBitstreamVera 0.1.1  (86ms)
-#> ✔ Installed fontLiberation 0.1.0  (104ms)
-#> ✔ Installed fontquiver 0.2.1  (62ms)
-#> ✔ Installed formatR 1.14  (35ms)
-#> ✔ Installed futile.logger 1.4.3  (31ms)
-#> ✔ Installed futile.options 1.0.1  (26ms)
-#> ✔ Installed gdtools 0.4.4  (1s)
-#> ✔ Installed BH 1.87.0-1  (2.4s)
-#> ✔ Installed ggforce 0.5.0  (132ms)
-#> ✔ Installed ggiraph 0.9.2  (169ms)
-#> ✔ Installed ggnewscale 0.5.2  (114ms)
-#> ✔ Installed ggtangle 0.0.9  (149ms)
-#> ✔ Installed gson 0.1.0  (104ms)
-#> ✔ Installed lambda.r 1.2.4  (102ms)
-#> ✔ Installed polyclip 1.10-7  (106ms)
-#> ✔ Installed R.methodsS3 1.8.2  (99ms)
-#> ✔ Installed R.oo 1.27.1  (105ms)
-#> ✔ Installed R.utils 2.13.0  (106ms)
-#> ✔ Installed scatterpie 0.2.6  (150ms)
-#> ✔ Installed snow 0.4-4  (142ms)
-#> ℹ Building BiocParallel 1.44.0
-#> ✔ Installed tidytree 0.4.6  (122ms)
-#> ℹ Building treeio 1.34.0
-#> ✔ Built qvalue 2.42.0 (4.1s)
-#> ✔ Installed tweenr 2.0.3  (40ms)
-#> ✔ Installed qvalue 2.42.0  (1s)
-#> ✔ Built treeio 1.34.0 (6s)
-#> ✔ Installed treeio 1.34.0  (40ms)
-#> ℹ Building ggtree 4.0.1
-#> ✔ Built BiocParallel 1.44.0 (12.5s)
-#> ✔ Installed BiocParallel 1.44.0  (61ms)
-#> ℹ Building fgsea 1.36.0
-#> ✔ Built ggtree 4.0.1 (9.9s)
-#> ✔ Installed ggtree 4.0.1  (52ms)
-#> ✔ Built GO.db 3.22.0 (41.2s)
-#> ✔ Built fgsea 1.36.0 (25.4s)
-#> ✔ Installed GO.db 3.22.0  (480ms)
-#> ℹ Building GOSemSim 2.36.0
-#> ✔ Installed fgsea 1.36.0  (136ms)
-#> ✔ Built GOSemSim 2.36.0 (12.4s)
-#> ✔ Installed GOSemSim 2.36.0  (1.1s)
-#> ℹ Building DOSE 4.4.0
-#> ✔ Built DOSE 4.4.0 (11s)
-#> ✔ Installed DOSE 4.4.0  (48ms)
-#> ℹ Building enrichplot 1.30.3
-#> ✔ Built enrichplot 1.30.3 (10.9s)
-#> ✔ Installed enrichplot 1.30.3  (1.1s)
-#> ℹ Building clusterProfiler 4.18.2
-#> ✔ Built clusterProfiler 4.18.2 (11.7s)
-#> ✔ Installed clusterProfiler 4.18.2  (1s)
-#> ✔ 1 pkg + 125 deps: kept 91, added 35, dld 33 (75.48 MB) [1m 42.6s]
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + org.Mm.eg.db   3.22.0 [bld]
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got org.Mm.eg.db 3.22.0 (source) (92.82 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev libpng-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ℹ Building org.Mm.eg.db 3.22.0
-#> ✔ Built org.Mm.eg.db 3.22.0 (3m 29.6s)
-#> ✔ Installed org.Mm.eg.db 3.22.0  (3s)
-#> ✔ 1 pkg + 34 deps: kept 34, added 1, dld 1 (92.82 MB) [3m 46.8s]
-#> Registered S3 method overwritten by 'ggtree':
-#>   method         from     
-#>   fortify.igraph ggnetwork
-#> ⠙ [2025-12-03 09:36:14] Running [1/5] Processing: 1  ETA: 21s
-#> ⠹ [2025-12-03 09:36:14] Running [2/5] Processing: 2  ETA: 19s
-#> ⠸ [2025-12-03 09:36:14] Running [3/5] Processing: 3  ETA: 12s
-#> ⠼ [2025-12-03 09:36:14] Running [4/5] Processing: 4  ETA:  6s
-#> ✔ [2025-12-03 09:36:14] Completed 5 tasks in 28.2s
-#> 
-#>  
-#> → Will install 7 packages.
-#> → All 7 packages (0 B) are cached.
-#> + NLP                  0.3-2  
-#> + Polychrome           1.5.4  
-#> + scatterplot3d        0.3-44 
-#> + simona               1.8.0  [bld][cmp]
-#> + simplifyEnrichment   2.4.0  [bld]
-#> + slam                 0.1-55 
-#> + tm                   0.7-16 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 7 pkgs are cached
-#> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
-#> ✔ Got tm 0.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (638.54 kB)
-#> ✔ Got scatterplot3d 0.3-44 (x86_64-pc-linux-gnu-ubuntu-24.04) (348.15 kB)
-#> ✔ Got NLP 0.3-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (381.71 kB)
-#> ✔ Got Polychrome 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (684.84 kB)
-#> ✔ Got simplifyEnrichment 2.4.0 (source) (1.08 MB)
-#> ✔ Got simona 1.8.0 (source) (971.58 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install perl libcurl4-openssl-dev libssl-dev make zlib1g-dev libglpk-dev libxml2-dev libpng-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> perl is already the newest version (5.38.2-3.2ubuntu0.2).
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed NLP 0.3-2  (54ms)
-#> ✔ Installed Polychrome 1.5.4  (70ms)
-#> ✔ Installed scatterplot3d 0.3-44  (125ms)
-#> ℹ Building simona 1.8.0
-#> ✔ Installed slam 0.1-55  (167ms)
-#> ✔ Installed tm 0.7-16  (39ms)
-#> ✔ Built simona 1.8.0 (48.2s)
-#> ✔ Installed simona 1.8.0  (106ms)
-#> ℹ Building simplifyEnrichment 2.4.0
-#> ✔ Built simplifyEnrichment 2.4.0 (7.9s)
-#> ✔ Installed simplifyEnrichment 2.4.0  (1s)
-#> ✔ 1 pkg + 81 deps: kept 75, added 7, dld 7 (4.29 MB) [1m 2s]
-
+#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     reverse_ht = "Lineage1", cell_annotation = "SubCellType",     n_split = 5, split_method = "mfuzz", species = "Mus_musculus",     db = "GO_BP", anno_terms = TRUE, anno_keys = TRUE, anno_features = TRUE): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(

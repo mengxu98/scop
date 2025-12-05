@@ -95,8 +95,7 @@ ComBat_integrate(
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
-  times in order to be considered as highly variable. The default value
-  is `1`.
+  times in order to be considered as highly variable. Default is `1`.
 
 - HVF:
 
@@ -197,8 +196,8 @@ ComBat_integrate(
 
 - ComBat_params:
 
-  A list of parameters for the sva::ComBat function. Default is an empty
-  list.
+  A list of parameters for the sva::ComBat function. Default is
+  \`list()\`.
 
 - verbose:
 

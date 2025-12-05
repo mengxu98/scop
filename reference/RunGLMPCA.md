@@ -186,14 +186,49 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 pancreas_sub <- RunGLMPCA(pancreas_sub)
 #>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + glmpca   0.2.0 
+#> → Will install 6 packages.
+#> → All 6 packages (0 B) are cached.
+#> + covr          3.6.5 
+#> + glmpca        0.2.0 
+#> + litedown      0.8   
+#> + logisticPCA   0.2   
+#> + markdown      2.0   
+#> + rex           1.2.1 
+#> ✔ All system requirements are already installed.
 #>   
-#> ℹ No downloads are needed, 1 pkg is cached
+#> ℹ No downloads are needed, 6 pkgs are cached
+#> ✔ Got markdown 2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.28 kB)
+#> ✔ Got rex 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (126.59 kB)
+#> ✔ Got covr 3.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (344.29 kB)
+#> ✔ Got litedown 0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.68 kB)
 #> ✔ Got glmpca 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.79 kB)
-#> ✔ Installed glmpca 0.2.0  (1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (230.79 kB) [2.2s]
+#> ✔ Got logisticPCA 0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (384.47 kB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make pandoc`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> make is already the newest version (4.3-4.1build2).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed covr 3.6.5  (83ms)
+#> ✔ Installed glmpca 0.2.0  (122ms)
+#> ✔ Installed litedown 0.8  (144ms)
+#> ✔ Installed logisticPCA 0.2  (175ms)
+#> ✔ Installed markdown 2.0  (58ms)
+#> ✔ Installed rex 1.2.1  (44ms)
+#> ✔ 1 pkg + 54 deps: kept 49, added 6, dld 6 (1.52 MB) [4.7s]
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

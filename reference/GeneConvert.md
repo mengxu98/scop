@@ -73,26 +73,30 @@ GeneConvert(
 
 A list with the following elements:
 
-- `geneID_res:` A data.frame contains the all gene IDs mapped in the
+- `geneID_res`: A data.frame contains the all gene IDs mapped in the
   database with columns: `"from_IDtype"`, `"from_geneID"`,
   `"to_IDtype"`, `"to_geneID"`.
 
-- `geneID_collapse:` The data.frame contains all the successfully
+- `geneID_collapse`: The data.frame contains all the successfully
   converted gene IDs, and the output gene IDs are collapsed into a list.
   As a result, the `"from_geneID"` column (which is set as the row
   names) of the data.frame is unique.
 
-- `geneID_expand:` The data.frame contains all the successfully
+- `geneID_expand`: The data.frame contains all the successfully
   converted gene IDs, and the output gene IDs are expanded.
 
-- `Ensembl_version:` Ensembl database version.
+- `Ensembl_version`: Ensembl database version.
 
-- `Datasets:` Datasets available in the selected BioMart database.
+- `Datasets`: Datasets available in the selected BioMart database.
 
-- `Attributes:` Attributes available in the selected BioMart database.
+- `Attributes`: Attributes available in the selected BioMart database.
 
-- `geneID_unmapped:` A character vector of gene IDs that are unmapped in
+- `geneID_unmapped`: A character vector of gene IDs that are unmapped in
   the database.
+
+## See also
+
+[AnnotateFeatures](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md)
 
 ## Examples
 

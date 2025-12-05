@@ -115,13 +115,13 @@ RunGSEA(
 
   Whether the gene annotation databases should be forcefully updated. If
   set to FALSE, the function will attempt to load the cached databases
-  instead. Default is FALSE.
+  instead. Default is `FALSE`.
 
 - db_version:
 
   A character vector specifying the version of the database to be used.
   This argument is ignored if `db_update` is `TRUE`. Default is
-  "latest".
+  `"latest"`.
 
 - db_combine:
 
@@ -131,7 +131,7 @@ RunGSEA(
 - convert_species:
 
   Whether to use a species-converted database when the annotation is
-  missing for the specified species. The default value is TRUE.
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 

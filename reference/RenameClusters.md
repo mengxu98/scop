@@ -51,6 +51,8 @@ pancreas_sub <- RenameClusters(
   nameslist = letters[1:8]
 )
 CellDimPlot(pancreas_sub, "newclusters")
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Rename specified clusters
@@ -59,6 +61,8 @@ pancreas_sub <- RenameClusters(pancreas_sub,
   nameslist = list("a" = "Alpha", "b" = "Beta")
 )
 CellDimPlot(pancreas_sub, "newclusters")
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 
 
 # Merge and rename clusters
@@ -72,4 +76,6 @@ pancreas_sub <- RenameClusters(
   keep_levels = TRUE
 )
 CellDimPlot(pancreas_sub, "Merged")
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 ```

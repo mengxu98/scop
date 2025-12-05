@@ -184,7 +184,7 @@ CellCorHeatmap(
 - nfeatures:
 
   The maximum number of features to include in the heatmap. Default is
-  2000.
+  `2000`.
 
 - DEtest_param:
 
@@ -205,25 +205,25 @@ CellCorHeatmap(
   The distance metric to use for calculating similarities between cells.
   This can be any of the following: `"cosine"`, `"pearson"`,
   `"spearman"`, `"correlation"`, `"jaccard"`, `"ejaccard"`, `"dice"`,
-  `"edice"`, `"hamman"`, `"simple matching"`, or `"faith"`. Dhe default
-  is `"cosine"`.
+  `"edice"`, `"hamman"`, `"simple matching"`, or `"faith"`. Default is
+  `"cosine"`.
 
 - k:
 
   The number of nearest neighbors to use for calculating similarities.
-  Default is 30.
+  Default is `30`.
 
 - filter_lowfreq:
 
   The minimum frequency threshold for selecting query dataset features.
   Features with a frequency below this threshold will be excluded from
-  the heatmap. Default is 0.
+  the heatmap. Default is `0`.
 
 - prefix:
 
   The prefix to use for the KNNPredict tool layer in the query dataset.
   This can be used to avoid conflicts with other tools in the Seurat
-  object. The default is `"KNNPredict"`.
+  object. Default is `"KNNPredict"`.
 
 - exp_legend_title:
 
@@ -320,12 +320,12 @@ CellCorHeatmap(
 
   The maximum number of labels to show on each side of the heatmap. If
   set to 0, no labels will be shown. This can be useful for reducing
-  clutter in large heatmaps. Default is 0.
+  clutter in large heatmaps. Default is `0`.
 
 - label_cutoff:
 
   The similarity cutoff for showing labels. Only cells with similarity
-  values above this cutoff will have labels. Default is 0.
+  values above this cutoff will have labels. Default is `0`.
 
 - label_by:
 
@@ -483,16 +483,16 @@ CellCorHeatmap(
 
 A list with the following elements:
 
-- `plot:` The heatmap plot as a ggplot object.
+- `plot`: The heatmap plot as a ggplot object.
 
-- `features:` The features used in the heatmap.
+- `features`: The features used in the heatmap.
 
-- `simil_matrix:` The similarity matrix used to generate the heatmap.
+- `simil_matrix`: The similarity matrix used to generate the heatmap.
 
-- `simil_name:` The name of the similarity metric used to generate the
+- `simil_name`: The name of the similarity metric used to generate the
   heatmap.
 
-- `cell_metadata:` The cell metadata used to generate the heatmap.
+- `cell_metadata`: The cell metadata used to generate the heatmap.
 
 ## See also
 
@@ -608,5 +608,250 @@ ht4 <- CellCorHeatmap(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   )
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Computation failed in `stat_ydensity()`.
+#> Caused by error in `$<-.data.frame`:
+#> ! replacement has 1 row, data has 0
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Computation failed in `stat_ydensity()`.
+#> Caused by error in `$<-.data.frame`:
+#> ! replacement has 1 row, data has 0
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Computation failed in `stat_ydensity()`.
+#> Caused by error in `$<-.data.frame`:
+#> ! replacement has 1 row, data has 0
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Computation failed in `stat_ydensity()`.
+#> Caused by error in `$<-.data.frame`:
+#> ! replacement has 1 row, data has 0
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Computation failed in `stat_ydensity()`.
+#> Caused by error in `$<-.data.frame`:
+#> ! replacement has 1 row, data has 0
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ht4$plot
 ```

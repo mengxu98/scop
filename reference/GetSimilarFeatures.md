@@ -38,7 +38,7 @@ GetSimilarFeatures(
 
 - anticorr:
 
-  Whether to allow negatively correlated genes. Default is FALSE.
+  Whether to allow negatively correlated genes. Default is `FALSE`.
 
 - aggregator:
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## scop 0.6.6
+
+- **docs**:
+  - Unified documentation format across all R functions:
+    - Standardized return value tags: Changed all `@returns` to
+      `@return` for consistency.
+    - Unified parameter documentation: Replaced all `\code{value}` with
+      Markdown backticks `` `value` `` format.
+    - Standardized default value descriptions.
+    - Added `@md` tags: Added `@md` tags to all functions using Markdown
+      syntax in documentation.
+    - Enhanced cross-references: Added `@seealso` links to related
+      functions where appropriate.
+
 ## scop 0.6.5
 
 - **func**:

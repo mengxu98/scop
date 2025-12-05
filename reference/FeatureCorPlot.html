@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,11 +116,11 @@
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer in the Seurat object to use. Defaults to "data".</p></dd>
+<dd><p>A character string specifying the layer in the Seurat object to use. Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to use. Defaults to the default assay in the Seurat object.</p></dd>
+<dd><p>A character string specifying the assay to use. Default is the default assay in the Seurat object.</p></dd>
 
 
 <dt id="arg-cor-method">cor_method<a class="anchor" aria-label="anchor" href="#arg-cor-method"></a></dt>
@@ -128,47 +128,47 @@
 
 
 <dt id="arg-adjust">adjust<a class="anchor" aria-label="anchor" href="#arg-adjust"></a></dt>
-<dd><p>The adjustment factor for the width of the violin plots. Defaults to 1.</p></dd>
+<dd><p>The adjustment factor for the width of the violin plots. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-margin">margin<a class="anchor" aria-label="anchor" href="#arg-margin"></a></dt>
-<dd><p>The margin size for the plot. Defaults to 1.</p></dd>
+<dd><p>The margin size for the plot. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-reverse">reverse<a class="anchor" aria-label="anchor" href="#arg-reverse"></a></dt>
-<dd><p>Whether to reverse the order of the features in the plot. Defaults to FALSE.</p></dd>
+<dd><p>Whether to reverse the order of the features in the plot. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-add-equation">add_equation<a class="anchor" aria-label="anchor" href="#arg-add-equation"></a></dt>
-<dd><p>Whether to add the equation of the linear regression line to each scatter plot. Defaults to FALSE.</p></dd>
+<dd><p>Whether to add the equation of the linear regression line to each scatter plot. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-add-r-">add_r2<a class="anchor" aria-label="anchor" href="#arg-add-r-"></a></dt>
-<dd><p>Whether to add the R-squared value of the linear regression line to each scatter plot. Defaults to TRUE.</p></dd>
+<dd><p>Whether to add the R-squared value of the linear regression line to each scatter plot. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-add-pvalue">add_pvalue<a class="anchor" aria-label="anchor" href="#arg-add-pvalue"></a></dt>
-<dd><p>Whether to add the p-value of the linear regression line to each scatter plot. Defaults to TRUE.</p></dd>
+<dd><p>Whether to add the p-value of the linear regression line to each scatter plot. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-add-smooth">add_smooth<a class="anchor" aria-label="anchor" href="#arg-add-smooth"></a></dt>
-<dd><p>Whether to add a smoothed line to each scatter plot. Defaults to TRUE.</p></dd>
+<dd><p>Whether to add a smoothed line to each scatter plot. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>A character string specifying the name of the color palette to use for the groups. Defaults to "Paired".</p></dd>
+<dd><p>A character string specifying the name of the color palette to use for the groups. Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>A character string specifying the color for the groups. Defaults to NULL.</p></dd>
+<dd><p>A character string specifying the color for the groups. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-cor-palette">cor_palette<a class="anchor" aria-label="anchor" href="#arg-cor-palette"></a></dt>
-<dd><p>A character string specifying the name of the color palette to use for the correlation. Defaults to "RuBu".</p></dd>
+<dd><p>A character string specifying the name of the color palette to use for the correlation. Default is <code>"RuBu"</code>.</p></dd>
 
 
 <dt id="arg-cor-palcolor">cor_palcolor<a class="anchor" aria-label="anchor" href="#arg-cor-palcolor"></a></dt>
-<dd><p>A character string specifying the color for the correlation. Defaults to "RuBu".</p></dd>
+<dd><p>A character string specifying the color for the correlation. Default is <code>"RuBu"</code>.</p></dd>
 
 
 <dt id="arg-cor-range">cor_range<a class="anchor" aria-label="anchor" href="#arg-cor-range"></a></dt>
@@ -180,51 +180,51 @@
 
 
 <dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Defaults to 1.</p></dd>
+<dd><p>A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
-<dd><p>A logical value or a character vector specifying the cells to highlight in the scatter plots. If TRUE, all cells will be highlighted. Defaults to NULL.</p></dd>
+<dd><p>A logical value or a character vector specifying the cells to highlight in the scatter plots. If TRUE, all cells will be highlighted. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-cols-highlight">cols.highlight<a class="anchor" aria-label="anchor" href="#arg-cols-highlight"></a></dt>
-<dd><p>A character string specifying the color for the highlighted cells. Defaults to "black".</p></dd>
+<dd><p>A character string specifying the color for the highlighted cells. Default is <code>"black"</code>.</p></dd>
 
 
 <dt id="arg-sizes-highlight">sizes.highlight<a class="anchor" aria-label="anchor" href="#arg-sizes-highlight"></a></dt>
-<dd><p>The size of the highlighted cells in the scatter plots. Defaults to 1.</p></dd>
+<dd><p>The size of the highlighted cells in the scatter plots. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-alpha-highlight">alpha.highlight<a class="anchor" aria-label="anchor" href="#arg-alpha-highlight"></a></dt>
-<dd><p>A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Defaults to 1.</p></dd>
+<dd><p>A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-stroke-highlight">stroke.highlight<a class="anchor" aria-label="anchor" href="#arg-stroke-highlight"></a></dt>
-<dd><p>The stroke size of the highlighted cells in the scatter plots. Defaults to 0.5.</p></dd>
+<dd><p>The stroke size of the highlighted cells in the scatter plots. Default is <code>0.5</code>.</p></dd>
 
 
 <dt id="arg-calculate-coexp">calculate_coexp<a class="anchor" aria-label="anchor" href="#arg-calculate-coexp"></a></dt>
-<dd><p>Whether to calculate the co-expression of selected features. Defaults to FALSE.</p></dd>
+<dd><p>Whether to calculate the co-expression of selected features. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-raster">raster<a class="anchor" aria-label="anchor" href="#arg-raster"></a></dt>
-<dd><p>Whether to use raster graphics for scatter plots. Defaults to NULL.</p></dd>
+<dd><p>Whether to use raster graphics for scatter plots. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-raster-dpi">raster.dpi<a class="anchor" aria-label="anchor" href="#arg-raster-dpi"></a></dt>
-<dd><p>A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Defaults to c(512, 512).</p></dd>
+<dd><p>A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Default is <code>c(512, 512)</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>The aspect ratio of the scatter plots. Defaults to 1.</p></dd>
+<dd><p>The aspect ratio of the scatter plots. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>A character string specifying the title for the correlation plot. Defaults to NULL.</p></dd>
+<dd><p>A character string specifying the title for the correlation plot. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>A character string specifying the subtitle for the correlation plot. Defaults to NULL.</p></dd>
+<dd><p>A character string specifying the subtitle for the correlation plot. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
@@ -236,15 +236,15 @@
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>A character string specifying the name of the theme to use for the plot. Defaults to "theme_scop".</p></dd>
+<dd><p>A character string specifying the name of the theme to use for the plot. Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>A list of arguments to pass to the theme function. Defaults to an empty list.</p></dd>
+<dd><p>A list of arguments to pass to the theme function. Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine the plots into a single plot. Defaults to TRUE.</p></dd>
+<dd><p>Whether to combine the plots into a single plot. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
@@ -256,17 +256,21 @@
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Whether to fill the combined plot byrow (top to bottom, left to right). Defaults to TRUE.</p></dd>
+<dd><p>Whether to fill the combined plot byrow (top to bottom, left to right). Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
-<dd><p>Whether to force the creation of the plot, even if it contains more than 50 subplots. Defaults to FALSE.</p></dd>
+<dd><p>Whether to force the creation of the plot, even if it contains more than 50 subplots. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>The random seed for reproducibility. Defaults to 11.</p></dd>
+<dd><p>The random seed for reproducibility. Default is <code>11</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="FeatureStatPlot.html">FeatureStatPlot</a></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -328,6 +332,10 @@
 <span class="r-in"><span>  cor_palette <span class="op">=</span> <span class="st">"Greys"</span>,</span></span>
 <span class="r-in"><span>  cor_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>essentially perfect fit: summary may be unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>essentially perfect fit: summary may be unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>essentially perfect fit: summary may be unreliable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>essentially perfect fit: summary may be unreliable</span>
 <span class="r-plt img"><img src="FeatureCorPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureCorPlot</span><span class="op">(</span></span></span>

@@ -206,24 +206,25 @@ CellStatPlot(
 
 - combine:
 
-  Whether to combine multiple plots into a single plot. Default is TRUE.
+  Whether to combine multiple plots into a single plot. Default is
+  `TRUE`.
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL.
+  The number of rows in the combined plot. Default is `NULL`.
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL.
+  The number of columns in the combined plot. Default is `NULL`.
 
 - byrow:
 
-  Whether to fill the plot by row or by column. Default is TRUE.
+  Whether to fill the plot by row or by column. Default is `TRUE`.
 
 - force:
 
   Whether to force the plot even if some variables have more than 100
-  levels. Default is FALSE.
+  levels. Default is `FALSE`.
 
 - seed:
 
@@ -325,6 +326,8 @@ CellStatPlot(
   stat.by = "Phase",
   plot_type = "ring"
 )
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
 
 
 CellStatPlot(
@@ -363,6 +366,8 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "ring"
 )
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
 
 
 CellStatPlot(
@@ -423,6 +428,8 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
 
 
 CellStatPlot(
@@ -483,6 +490,10 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
 
 
 CellStatPlot(
@@ -503,26 +514,27 @@ CellStatPlot(
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
+#> ℹ Executing `sudo sh -c apt-get -y install make libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
+#> make is already the newest version (4.3-4.1build2).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
 #> ✔ Installed forcats 1.0.1  (1s)
 #> ℹ Packaging ggsankey 0.0.99999
-#> ✔ Packaged ggsankey 0.0.99999 (525ms)
+#> ✔ Packaged ggsankey 0.0.99999 (587ms)
 #> ℹ Building ggsankey 0.0.99999
 #> ✔ Built ggsankey 0.0.99999 (2.2s)
-#> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (26ms)
-#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (NA B) [7.9s]
+#> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (1s)
+#> ✔ 1 pkg + 45 deps: kept 44, added 2, dld 2 (NA B) [9.3s]
 
 
 CellStatPlot(
@@ -555,11 +567,12 @@ CellStatPlot(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 8 pkgs are cached
+#> ✔ Got yulab.utils 0.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (145.09 kB)
 #> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
-#> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
-#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
-#> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
 #> ✔ Got ggfun 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (250.63 kB)
+#> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
+#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
+#> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
 #> ✔ Got venn 1.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (308.02 kB)
 #> ✔ Got ggVennDiagram 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.27 MB)
 #> ℹ Installing system requirements
@@ -567,26 +580,31 @@ CellStatPlot(
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install make`
+#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make zlib1g-dev pandoc libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
 #> make is already the newest version (4.3-4.1build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed admisc 0.39  (59ms)
-#> ✔ Installed aplot 0.2.9  (71ms)
-#> ✔ Installed ggfun 0.2.0  (90ms)
-#> ✔ Installed ggplotify 0.1.3  (119ms)
+#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed admisc 0.39  (60ms)
+#> ✔ Installed aplot 0.2.9  (75ms)
+#> ✔ Installed ggfun 0.2.0  (134ms)
+#> ✔ Installed ggplotify 0.1.3  (165ms)
 #> ✔ Installed gridGraphics 0.5-1  (1s)
 #> ✔ Installed ggVennDiagram 1.5.4  (1.1s)
-#> ✔ Installed venn 1.12  (59ms)
-#> ✔ Installed yulab.utils 0.2.2  (41ms)
-#> ✔ 1 pkg + 36 deps: kept 29, added 8, dld 7 (6.70 MB) [5.7s]
+#> ✔ Installed venn 1.12  (103ms)
+#> ✔ Installed yulab.utils 0.2.2  (45ms)
+#> ✔ 1 pkg + 90 deps: kept 83, added 8, dld 8 (6.85 MB) [7.3s]
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -623,11 +641,32 @@ CellStatPlot(
 #> → Will install 1 package.
 #> → The package (0 B) is cached.
 #> + ggupset   0.4.1 
+#> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got ggupset 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.59 MB)
-#> ✔ Installed ggupset 0.4.1  (1s)
-#> ✔ 1 pkg + 21 deps: kept 21, added 1, dld 1 (2.59 MB) [2.6s]
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install make`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> make is already the newest version (4.3-4.1build2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed ggupset 0.4.1  (38ms)
+#> ✔ 1 pkg + 37 deps: kept 37, added 1, dld 1 (2.59 MB) [4.1s]
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> ℹ The deprecated feature was likely used in the ggupset package.
+#>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
 
 
 sum(

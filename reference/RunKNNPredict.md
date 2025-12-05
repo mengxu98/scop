@@ -49,49 +49,49 @@ RunKNNPredict(
 
   A cell atlas matrix, where cell types are represented by columns and
   genes are represented by rows, for example, scop::ref_scHCL. Either
-  \`srt_ref\` or \`bulk_ref\` must be provided.
+  `srt_ref` or `bulk_ref` must be provided.
 
 - query_group:
 
-  A character vector specifying the column name in the \`srt_query\`
+  A character vector specifying the column name in the `srt_query`
   metadata that represents the cell grouping.
 
 - ref_group:
 
-  A character vector specifying the column name in the \`srt_ref\`
+  A character vector specifying the column name in the `srt_ref`
   metadata that represents the cell grouping.
 
 - query_assay:
 
   A character vector specifying the assay to be used for the query data.
-  Defaults to the default assay of the \`srt_query\` object.
+  Default is the default assay of the `srt_query` object.
 
 - ref_assay:
 
   A character vector specifying the assay to be used for the reference
-  data. Defaults to the default assay of the \`srt_ref\` object.
+  data. Default is the default assay of the `srt_ref` object.
 
 - query_reduction:
 
   A character vector specifying the dimensionality reduction method used
   for the query data. If NULL, the function will use the default
-  reduction method specified in the \`srt_query\` object.
+  reduction method specified in the `srt_query` object.
 
 - ref_reduction:
 
   A character vector specifying the dimensionality reduction method used
   for the reference data. If NULL, the function will use the default
-  reduction method specified in the \`srt_ref\` object.
+  reduction method specified in the `srt_ref` object.
 
 - query_dims:
 
   A numeric vector specifying the dimensions to be used for the query
-  data. Defaults to the first 30 dimensions.
+  data. Default is the first `30` dimensions.
 
 - ref_dims:
 
   A numeric vector specifying the dimensions to be used for the
-  reference data. Defaults to the first 30 dimensions.
+  reference data. Default is the first `30` dimensions.
 
 - query_collapsing:
 
@@ -127,59 +127,65 @@ RunKNNPredict(
 
   A character vector specifying the type of features to be used for the
   KNN prediction. Must be one of "HVF" (highly variable features) or
-  "DE" (differentially expressed features). Defaults to "HVF".
+  "DE" (differentially expressed features). Default is `"HVF"`.
 
 - feature_source:
 
   A character vector specifying the source of the features to be used
   for the KNN prediction. Must be one of "both", "query", or "ref".
-  Defaults to "both".
+  Default is `"both"`.
 
 - nfeatures:
 
   An integer specifying the maximum number of features to be used for
-  the KNN prediction. Defaults to 2000.
+  the KNN prediction. Default is `2000`.
 
 - DEtest_param:
 
   A list of parameters to be passed to the differential expression test
-  function if \`features_type\` is set to "DE". Defaults to
-  \`list(max.cells.per.ident = 200, test.use = "wilcox")\`.
+  function if `features_type` is set to "DE". Default is
+  `list(max.cells.per.ident = 200, test.use = "wilcox")`.
 
 - DE_threshold:
 
-  Threshold used to filter the DE features. Default is \`"p_val \<
-  0.05"\`. If using "roc" test, `DE_threshold` should be needs to be
-  reassigned. e.g. "power \> 0.5".
+  Threshold used to filter the DE features. Default is `"p_val < 0.05"`.
+  If using "roc" test, `DE_threshold` should be needs to be reassigned.
+  e.g. "power \> 0.5".
 
 - nn_method:
 
   A character vector specifying the method to be used for finding
-  nearest neighbors. Must be one of "raw", "rann", or "annoy". Defaults
-  to "raw".
+  nearest neighbors. Must be one of "raw", "rann", or "annoy". Default
+  is `"raw"`.
 
 - distance_metric:
 
   A character vector specifying the distance metric to be used for
   calculating similarity between cells. Must be one of "cosine",
-  "euclidean", "manhattan", or "hamming". Defaults to "cosine".
+  "euclidean", "manhattan", or "hamming". Default is `"cosine"`.
 
 - k:
 
   A number of nearest neighbors to be considered for the KNN prediction.
-  Defaults to 30.
+  Default is `30`.
 
 - filter_lowfreq:
 
   An integer specifying the threshold for filtering low-frequency cell
   types from the predicted results. Cell types with a frequency lower
-  than \`filter_lowfreq\` will be labelled as "unreliable". Defaults to
-  0, which means no filtering will be performed.
+  than `filter_lowfreq` will be labelled as "unreliable". Default is
+  `0`, which means no filtering will be performed.
 
 - prefix:
 
   A character vector specifying the prefix to be added to the resulting
-  annotations. Defaults to "KNNPredict".
+  annotations. Default is `"KNNPredict"`.
+
+## See also
+
+[RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.md),
+[RunSingleR](https://mengxu98.github.io/scop/reference/RunSingleR.md),
+[CellCorHeatmap](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md)
 
 ## Examples
 
@@ -347,8 +353,8 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "ref",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2025-12-03 10:09:23] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-03 10:09:23] Completed 13 tasks in 4.2s
+#> ⠙ [2025-12-05 09:03:49] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-05 09:03:49] Completed 13 tasks in 7.2s
 #> 
 
 CellDimPlot(
@@ -373,11 +379,11 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "both",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2025-12-03 10:09:27] Running [4/8] Processing: Ductal, Beta, Pre-endocrine, …
-#> ✔ [2025-12-03 10:09:27] Completed 8 tasks in 1.5s
+#> ⠙ [2025-12-05 09:03:56] Running [4/8] Processing: Ductal, Beta, Pre-endocrine, …
+#> ✔ [2025-12-05 09:03:56] Completed 8 tasks in 1.4s
 #> 
-#> ⠙ [2025-12-03 10:09:34] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-03 10:09:34] Completed 13 tasks in 9.4s
+#> ⠙ [2025-12-05 09:04:00] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-05 09:04:00] Completed 13 tasks in 3.2s
 #> 
 
 CellDimPlot(

@@ -99,238 +99,233 @@ FeatureStatPlot(
 - group.by:
 
   A character vector specifying the groups to group by. Default is
-  \`NULL\`.
+  `NULL`.
 
 - split.by:
 
   A character vector specifying the variable to split the plot by.
-  Default is \`NULL\`.
+  Default is `NULL`.
 
 - bg.by:
 
   A character vector specifying the variable to use as the background
-  color. Default is \`NULL\`.
+  color. Default is `NULL`.
 
 - plot.by:
 
   A character vector specifying how to plot the data, by group or
-  feature. Possible values are \`"group"\` or \`"feature"\`. Default is
-  \`"group"\`.
+  feature. Possible values are `"group"` or `"feature"`. Default is
+  `"group"`.
 
 - fill.by:
 
   A string specifying what to fill the plot by. Possible values are
-  \`"group"\`, \`"feature"\`, or \`"expression"\`. Default is
-  \`"group"\`.
+  `"group"`, `"feature"`, or `"expression"`. Default is `"group"`.
 
 - cells:
 
   A character vector specifying the cells to include in the plot.
-  Default is \`NULL\`.
+  Default is `NULL`.
 
 - layer:
 
   A string specifying which layer of the Seurat object to use. Default
-  is \`"data"\`.
+  is `"data"`.
 
 - assay:
 
-  A string specifying which assay to use. Default is \`NULL\`.
+  A string specifying which assay to use. Default is `NULL`.
 
 - keep_empty:
 
-  Whether to keep empty levels in the plot. Default is \`FALSE\`.
+  Whether to keep empty levels in the plot. Default is `FALSE`.
 
 - individual:
 
-  Whether to create individual plots for each group. Default is
-  \`FALSE\`.
+  Whether to create individual plots for each group. Default is `FALSE`.
 
 - plot_type:
 
   A string specifying the type of plot to create. Possible values are
-  \`"violin"\`, \`"box"\`, \`"bar"\`, \`"dot"\`, or \`"col"\`. Default
-  is \`"violin"\`.
+  `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`. Default is
+  `"violin"`.
 
 - palette:
 
   A string specifying the color palette to use for filling. Default is
-  \`"Paired"\`.
+  `"Paired"`.
 
 - palcolor:
 
   A character vector specifying specific colors to use for filling.
-  Default is \`NULL\`.
+  Default is `NULL`.
 
 - alpha:
 
-  The transparency of the plot. Default is \`1\`.
+  The transparency of the plot. Default is `1`.
 
 - bg_palette:
 
   A string specifying the color palette to use for the background.
-  Default is \`"Paired"\`.
+  Default is `"Paired"`.
 
 - bg_palcolor:
 
   A character vector specifying specific colors to use for the
-  background. Default is \`NULL\`.
+  background. Default is `NULL`.
 
 - bg_alpha:
 
-  The transparency of the background. Default is \`0.2\`.
+  The transparency of the background. Default is `0.2`.
 
 - add_box:
 
-  Whether to add a box plot to the plot. Default is \`FALSE\`.
+  Whether to add a box plot to the plot. Default is `FALSE`.
 
 - box_color:
 
-  A string specifying the color of the box plot. Default is \`"black"\`.
+  A string specifying the color of the box plot. Default is `"black"`.
 
 - box_width:
 
-  The width of the box plot. Default is \`0.1\`.
+  The width of the box plot. Default is `0.1`.
 
 - box_ptsize:
 
-  The size of the points of the box plot. Default is \`2\`.
+  The size of the points of the box plot. Default is `2`.
 
 - add_point:
 
-  Whether to add individual data points to the plot. Default is
-  \`FALSE\`.
+  Whether to add individual data points to the plot. Default is `FALSE`.
 
 - pt.color:
 
   A string specifying the color of the data points. Default is
-  \`"grey30"\`.
+  `"grey30"`.
 
 - pt.size:
 
   The size of the data points. If NULL, the size is automatically
-  determined. Default is \`NULL\`.
+  determined. Default is `NULL`.
 
 - pt.alpha:
 
-  The transparency of the data points. Default is \`1\`.
+  The transparency of the data points. Default is `1`.
 
 - jitter.width:
 
-  The width of the jitter. Default is \`0.5\`.
+  The width of the jitter. Default is `0.5`.
 
 - jitter.height:
 
-  The height of the jitter. Default is \`0.1\`.
+  The height of the jitter. Default is `0.1`.
 
 - add_trend:
 
-  Whether to add a trend line to the plot. Default is \`FALSE\`.
+  Whether to add a trend line to the plot. Default is `FALSE`.
 
 - trend_color:
 
-  A string specifying the color of the trend line. Default is
-  \`"black"\`.
+  A string specifying the color of the trend line. Default is `"black"`.
 
 - trend_linewidth:
 
-  The width of the trend line. Default is \`1\`.
+  The width of the trend line. Default is `1`.
 
 - trend_ptsize:
 
-  The size of the points of the trend line. Default is \`2\`.
+  The size of the points of the trend line. Default is `2`.
 
 - add_stat:
 
   A string specifying which statistical summary to add to the plot.
-  Possible values are \`"none"\`, \`"mean"\`, or \`"median"\`. Default
-  is \`"none"\`.
+  Possible values are `"none"`, `"mean"`, or `"median"`. Default is
+  `"none"`.
 
 - stat_color:
 
   A string specifying the color of the statistical summary. Default is
-  \`"black"\`.
+  `"black"`.
 
 - stat_size:
 
-  The size of the statistical summary. Default is \`1\`.
+  The size of the statistical summary. Default is `1`.
 
 - stat_stroke:
 
-  The stroke width of the statistical summary. Default is \`1\`.
+  The stroke width of the statistical summary. Default is `1`.
 
 - stat_shape:
 
-  The shape of the statistical summary. Default is \`25\`.
+  The shape of the statistical summary. Default is `25`.
 
 - add_line:
 
-  The y-intercept for adding a horizontal line. Default is \`NULL\`.
+  The y-intercept for adding a horizontal line. Default is `NULL`.
 
 - line_color:
 
   A string specifying the color of the horizontal line. Default is
-  \`"red"\`.
+  `"red"`.
 
 - line_size:
 
-  The width of the horizontal line. Default is \`1\`.
+  The width of the horizontal line. Default is `1`.
 
 - line_type:
 
-  The type of the horizontal line. Default is \`1\`.
+  The type of the horizontal line. Default is `1`.
 
 - cells.highlight:
 
   A logical or character vector specifying the cells to highlight in the
   plot. If TRUE, all cells are highlighted. If FALSE, no cells are
-  highlighted. Default is \`NULL\`.
+  highlighted. Default is `NULL`.
 
 - cols.highlight:
 
   A string specifying the color of the highlighted cells. Default is
-  \`"red"\`.
+  `"red"`.
 
 - sizes.highlight:
 
-  The size of the highlighted cells. Default is \`1\`.
+  The size of the highlighted cells. Default is `1`.
 
 - alpha.highlight:
 
-  The transparency of the highlighted cells. Default is \`1\`.
+  The transparency of the highlighted cells. Default is `1`.
 
 - calculate_coexp:
 
-  Whether to calculate co-expression values. Default is \`FALSE\`.
+  Whether to calculate co-expression values. Default is `FALSE`.
 
 - same.y.lims:
 
   Whether to use the same y-axis limits for all plots. Default is
-  \`FALSE\`.
+  `FALSE`.
 
 - y.min:
 
   A numeric or character value specifying the minimum y-axis limit. If a
   character value is provided, it must be of the form "qN" where N is a
   number between 0 and 100 (inclusive) representing the quantile to use
-  for the limit. Default is \`NULL\`.
+  for the limit. Default is `NULL`.
 
 - y.max:
 
   A numeric or character value specifying the maximum y-axis limit. If a
   character value is provided, it must be of the form "qN" where N is a
   number between 0 and 100 (inclusive) representing the quantile to use
-  for the limit. Default is \`NULL\`.
+  for the limit. Default is `NULL`.
 
 - y.trans:
 
   A string specifying the transformation to apply to the y-axis.
-  Possible values are \`"identity"\` or \`"log2"\`. Default is
-  \`"identity"\`.
+  Possible values are `"identity"` or `"log2"`. Default is `"identity"`.
 
 - y.nbreaks:
 
-  A number of breaks to use for the y-axis. Default is \`5\`.
+  A number of breaks to use for the y-axis. Default is `5`.
 
 - sort:
 
@@ -338,17 +333,17 @@ FeatureStatPlot(
   the x-axis. If TRUE, groups are sorted in increasing order. If FALSE,
   groups are not sorted. If "increasing", groups are sorted in
   increasing order. If "decreasing", groups are sorted in decreasing
-  order. Default is \`FALSE\`.
+  order. Default is `FALSE`.
 
 - stack:
 
   A logical specifying whether to stack the plots on top of each other.
-  Default is \`FALSE\`.
+  Default is `FALSE`.
 
 - flip:
 
   A logical specifying whether to flip the plot vertically. Default is
-  \`FALSE\`.
+  `FALSE`.
 
 - comparisons:
 
@@ -359,101 +354,106 @@ FeatureStatPlot(
 - ref_group:
 
   A string specifying the reference group for pairwise comparisons.
-  Default is \`NULL\`.
+  Default is `NULL`.
 
 - pairwise_method:
 
-  Method to use for pairwise comparisons. Default is \`"wilcox.test"\`.
+  Method to use for pairwise comparisons. Default is `"wilcox.test"`.
 
 - multiplegroup_comparisons:
 
   Whether to add multiple group comparisons to the plot. Default is
-  \`FALSE\`.
+  `FALSE`.
 
 - multiple_method:
 
   Method to use for multiple group comparisons. Default is
-  \`"kruskal.test"\`.
+  `"kruskal.test"`.
 
 - sig_label:
 
   A string specifying the label to use for significant comparisons.
-  Possible values are \`"p.signif"\` or \`"p.format"\`. Default is
-  \`"p.format"\`.
+  Possible values are `"p.signif"` or `"p.format"`. Default is
+  `"p.format"`.
 
 - sig_labelsize:
 
-  The size of the significant comparison labels. Default is \`3.5\`.
+  The size of the significant comparison labels. Default is `3.5`.
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Default is \`NULL\`.
+  The aspect ratio of the plot. Default is `NULL`.
 
 - title:
 
-  A string specifying the title of the plot. Default is \`NULL\`.
+  A string specifying the title of the plot. Default is `NULL`.
 
 - subtitle:
 
-  A string specifying the subtitle of the plot. Default is \`NULL\`.
+  A string specifying the subtitle of the plot. Default is `NULL`.
 
 - xlab:
 
-  A string specifying the label of the x-axis. Default is \`NULL\`.
+  A string specifying the label of the x-axis. Default is `NULL`.
 
 - ylab:
 
-  A string specifying the label of the y-axis. Default is \`"Expression
-  level"\`.
+  A string specifying the label of the y-axis. Default is
+  `"Expression level"`.
 
 - legend.position:
 
   A string specifying the position of the legend. Possible values are
-  \`"right"\`, \`"left"\`, \`"top"\`, \`"bottom"\`, or \`"none"\`.
-  Default is \`"right"\`.
+  `"right"`, `"left"`, `"top"`, `"bottom"`, or `"none"`. Default is
+  `"right"`.
 
 - legend.direction:
 
   A string specifying the direction of the legend. Possible values are
-  \`"vertical"\` or \`"horizontal"\`. Default is \`"vertical"\`.
+  `"vertical"` or `"horizontal"`. Default is `"vertical"`.
 
 - theme_use:
 
   A string specifying the theme to use for the plot. Default is
-  \`"theme_scop"\`.
+  `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to pass to the theme function. Default is an empty
-  list.
+  A list of arguments to pass to the theme function. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
   Whether to combine the individual plots into a single plot. Default is
-  \`TRUE\`.
+  `TRUE`.
 
 - nrow:
 
-  A number of rows for the combined plot. Default is \`NULL\`.
+  A number of rows for the combined plot. Default is `NULL`.
 
 - ncol:
 
-  A number of columns for the combined plot. Default is \`NULL\`.
+  A number of columns for the combined plot. Default is `NULL`.
 
 - byrow:
 
   Whether to fill the combined plot by row or by column. Default is
-  \`TRUE\`.
+  `TRUE`.
 
 - force:
 
   Whether to force the plot creation even if there are more than 100
-  levels in a variable. Default is \`FALSE\`.
+  levels in a variable. Default is `FALSE`.
 
 - seed:
 
   An integer specifying the random seed to use for generating jitter.
-  Default is \`11\`.
+  Default is `11`.
+
+## See also
+
+[CellStatPlot](https://mengxu98.github.io/scop/reference/CellStatPlot.md),
+[StatPlot](https://mengxu98.github.io/scop/reference/StatPlot.md)
 
 ## Examples
 
@@ -500,6 +500,10 @@ FeatureStatPlot(
   stat.by = c("G2M_score", "Fev"),
   group.by = "SubCellType"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -507,6 +511,10 @@ FeatureStatPlot(
   stat.by = c("G2M_score", "Fev"),
   group.by = "SubCellType"
 ) |> thisplot::panel_fix(height = 1, width = 2)
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -515,6 +523,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "box"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -523,6 +535,22 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "bar"
 )
+#> Warning: Computation failed in `stat_summary()`.
+#> Caused by error in `fun.data()`:
+#> ! The package "Hmisc" is required.
+#> Warning: Computation failed in `stat_summary()`.
+#> Caused by error in `fun.data()`:
+#> ! The package "Hmisc" is required.
+#> Warning: Computation failed in `stat_summary()`.
+#> Caused by error in `fun.data()`:
+#> ! The package "Hmisc" is required.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Computation failed in `stat_summary()`.
+#> Caused by error in `fun.data()`:
+#> ! The package "Hmisc" is required.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -531,6 +559,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "dot"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 FeatureStatPlot(
   pancreas_sub,
@@ -538,6 +570,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "col"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -546,6 +582,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_box = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -554,6 +594,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_point = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 FeatureStatPlot(
   pancreas_sub,
@@ -561,6 +605,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_trend = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -569,6 +617,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_stat = "mean"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -578,6 +630,10 @@ FeatureStatPlot(
   add_line = 0.2,
   line_type = 2
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -586,6 +642,18 @@ FeatureStatPlot(
   group.by = "SubCellType",
   split.by = "Phase"
 )
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -596,6 +664,26 @@ FeatureStatPlot(
   add_box = TRUE,
   add_trend = TRUE
 )
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -605,6 +693,147 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
+#>  
+#> → Will install 34 packages.
+#> → All 34 packages (0 B) are cached.
+#> + Deriv            4.2.0      
+#> + Formula          1.2-5      
+#> + MatrixModels     0.5-4      
+#> + Rdpack           2.6.4      
+#> + SparseM          1.84-2     
+#> + TTR              0.24.4     
+#> + car              3.1-3      
+#> + carData          3.0-5      
+#> + colorspace       2.1-2      
+#> + corrplot         0.95       
+#> + doBy             4.7.1      
+#> + forecast         8.24.0     
+#> + fracdiff         1.5-3      
+#> + ggpubr           0.6.2      
+#> + ggsci            4.1.0      
+#> + ggsignif         0.6.4      
+#> + lme4             1.1-38     
+#> + microbenchmark   1.5.0      
+#> + minqa            1.2.8       + ✔ make
+#> + modelr           0.1.11     
+#> + nloptr           2.2.1       + ✔ cmake
+#> + numDeriv         2016.8-1.1 
+#> + pbkrtest         0.5.5      
+#> + polynom          1.4-1      
+#> + quadprog         1.5-8      
+#> + quantmod         0.4.28     
+#> + quantreg         6.1        
+#> + rbibutils        2.4        
+#> + reformulas       0.4.2      
+#> + rstatix          0.7.3      
+#> + timeDate         4051.111   
+#> + tseries          0.10-58    
+#> + urca             1.3-4      
+#> + xts              0.14.1     
+#> ✔ All system requirements are already installed.
+#>   
+#> ℹ No downloads are needed, 34 pkgs are cached
+#> ✔ Got Deriv 4.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.58 kB)
+#> ✔ Got MatrixModels 0.5-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (408.50 kB)
+#> ✔ Got Rdpack 2.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (637.80 kB)
+#> ✔ Got nloptr 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (567.65 kB)
+#> ✔ Got reformulas 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.23 kB)
+#> ✔ Got carData 3.0-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.70 MB)
+#> ✔ Got microbenchmark 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (65.96 kB)
+#> ✔ Got xts 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)
+#> ✔ Got minqa 1.2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.60 kB)
+#> ✔ Got car 3.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.54 MB)
+#> ✔ Got Formula 1.2-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (159.13 kB)
+#> ✔ Got numDeriv 2016.8-1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (114.36 kB)
+#> ✔ Got TTR 0.24.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (524.49 kB)
+#> ✔ Got colorspace 2.1-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.64 MB)
+#> ✔ Got pbkrtest 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.06 kB)
+#> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
+#> ✔ Got rstatix 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (615.19 kB)
+#> ✔ Got corrplot 0.95 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.82 MB)
+#> ✔ Got rbibutils 2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.15 MB)
+#> ✔ Got modelr 0.1.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (200.70 kB)
+#> ✔ Got polynom 1.4-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (406.99 kB)
+#> ✔ Got quantreg 6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.46 MB)
+#> ✔ Got ggsignif 0.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (602.07 kB)
+#> ✔ Got ggsci 4.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.30 MB)
+#> ✔ Got ggpubr 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.13 MB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install make cmake libcurl4-openssl-dev libssl-dev pandoc libicu-dev`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> make is already the newest version (4.3-4.1build2).
+#> cmake is already the newest version (3.28.3-1build7).
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed car 3.1-3  (73ms)
+#> ✔ Installed carData 3.0-5  (90ms)
+#> ✔ Installed colorspace 2.1-2  (134ms)
+#> ✔ Installed corrplot 0.95  (197ms)
+#> ✔ Installed Deriv 4.2.0  (143ms)
+#> ✔ Installed doBy 4.7.1  (66ms)
+#> ✔ Installed forecast 8.24.0  (67ms)
+#> ✔ Installed Formula 1.2-5  (65ms)
+#> ✔ Installed fracdiff 1.5-3  (65ms)
+#> ✔ Installed ggpubr 0.6.2  (69ms)
+#> ✔ Installed ggsci 4.1.0  (123ms)
+#> ✔ Installed ggsignif 0.6.4  (73ms)
+#> ✔ Installed lme4 1.1-38  (71ms)
+#> ✔ Installed MatrixModels 0.5-4  (68ms)
+#> ✔ Installed microbenchmark 1.5.0  (65ms)
+#> ✔ Installed minqa 1.2.8  (67ms)
+#> ✔ Installed modelr 0.1.11  (67ms)
+#> ✔ Installed nloptr 2.2.1  (119ms)
+#> ✔ Installed numDeriv 2016.8-1.1  (68ms)
+#> ✔ Installed pbkrtest 0.5.5  (65ms)
+#> ✔ Installed polynom 1.4-1  (63ms)
+#> ✔ Installed quadprog 1.5-8  (63ms)
+#> ✔ Installed quantmod 0.4.28  (69ms)
+#> ✔ Installed quantreg 6.1  (71ms)
+#> ✔ Installed rbibutils 2.4  (123ms)
+#> ✔ Installed Rdpack 2.6.4  (72ms)
+#> ✔ Installed reformulas 0.4.2  (67ms)
+#> ✔ Installed rstatix 0.7.3  (68ms)
+#> ✔ Installed SparseM 1.84-2  (69ms)
+#> ✔ Installed timeDate 4051.111  (69ms)
+#> ✔ Installed tseries 0.10-58  (363ms)
+#> ✔ Installed TTR 0.24.4  (356ms)
+#> ✔ Installed urca 1.3-4  (65ms)
+#> ✔ Installed xts 0.14.1  (47ms)
+#> ✔ 1 pkg + 99 deps: kept 66, added 34, dld 25 (23.79 MB) [10.2s]
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: Groups with fewer than two datapoints have been dropped.
+#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -623,6 +852,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   multiplegroup_comparisons = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -631,6 +864,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta"))
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -640,6 +877,10 @@ FeatureStatPlot(
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta")),
   sig_label = "p.format"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -694,6 +935,12 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "group"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -702,6 +949,16 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -713,6 +970,16 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 
 
 FeatureStatPlot(
@@ -749,6 +1016,7 @@ pancreas_sub <- SeuratObject::SetAssayData(
   assay = "RNA",
   new.data = data / Matrix::rowMeans(data)
 )
+#> Warning: Different features in new layer data than already exists for scale.data
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("Neurog3", "Rbp4"),
@@ -758,4 +1026,8 @@ FeatureStatPlot(
   same.y.lims = TRUE,
   y.max = 4
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ```

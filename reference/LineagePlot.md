@@ -202,14 +202,16 @@ pancreas_sub <- RunSlingshot(
   reduction = "UMAP",
   show_plot = FALSE
 )
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2)
 )
-
+#> Error in `[.data.frame`(srt@meta.data, , unique(lineages), drop = FALSE): undefined columns selected
 LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2),
   whiskers = TRUE
 )
+#> Error in `[.data.frame`(srt@meta.data, , unique(lineages), drop = FALSE): undefined columns selected
 ```

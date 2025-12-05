@@ -40,8 +40,8 @@ check_python(
 
 - pip:
 
-  Whether to use pip for package installation. Default is TRUE, packages
-  are installed from the active conda channels.
+  Whether to use pip for package installation. Default is `TRUE`,
+  packages are installed from the active conda channels.
 
 - pip_options:
 

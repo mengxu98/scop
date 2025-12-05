@@ -135,6 +135,18 @@ pancreas_sub <- RunProportionTest(
 )
 
 ProportionTestPlot(pancreas_sub)
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
 
 
 # Plot specific comparisons
@@ -142,6 +154,10 @@ ProportionTestPlot(
   pancreas_sub,
   comparison = c("G2M_vs_G1", "G2M_vs_S")
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_segment()`).
 
 
 # Plot paired comparisons using list format
@@ -149,6 +165,10 @@ ProportionTestPlot(
   pancreas_sub,
   comparison = list(c("G2M", "G1"))
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
 
 
 ProportionTestPlot(
@@ -156,4 +176,8 @@ ProportionTestPlot(
   cols.sig = "blue",
   comparison = list(c("G2M", "G1"))
 )
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
 ```

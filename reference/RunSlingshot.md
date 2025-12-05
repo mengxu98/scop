@@ -35,54 +35,53 @@ RunSlingshot(
 - reduction:
 
   The reduction technique to use for dimensionality reduction. Default
-  is NULL, which uses the default reduction for the Seurat object.
+  is `NULL`, which uses the default reduction for the Seurat object.
 
 - dims:
 
-  The dimensions to use for the Slingshot algorithm. Default is NULL,
+  The dimensions to use for the Slingshot algorithm. Default is `NULL`,
   which uses first two dimensions.
 
 - start:
 
-  The starting group for the Slingshot algorithm. Default is NULL.
+  The starting group for the Slingshot algorithm. Default is `NULL`.
 
 - end:
 
-  The ending group for the Slingshot algorithm. Default is NULL.
+  The ending group for the Slingshot algorithm. Default is `NULL`.
 
 - prefix:
 
   The prefix to add to the column names of the resulting pseudotime
-  variable. Default is NULL.
+  variable. Default is `NULL`.
 
 - reverse:
 
   Logical value indicating whether to reverse the pseudotime variable.
-  Default is FALSE.
+  Default is `FALSE`.
 
 - align_start:
 
   Logical value indicating whether to align the starting pseudotime
-  values at the maximum pseudotime. Default is FALSE.
+  values at the maximum pseudotime. Default is `FALSE`.
 
 - show_plot:
 
   Logical value indicating whether to show the dimensionality plot.
-  Default is TRUE.
+  Default is `TRUE`.
 
 - lineage_palette:
 
   The color palette to use for the lineages in the plot. Default is
-  "Dark2".
+  `"Dark2"`.
 
 - seed:
 
-  The random seed to use for reproducibility. Default is 11.
+  The random seed to use for reproducibility. Default is `11`.
 
 - ...:
 
-  Additional arguments to be passed to the
-  [slingshot::slingshot](https://rdrr.io/pkg/slingshot/man/slingshot.html)
+  Additional arguments to be passed to the slingshot::slingshot
   function.
 
 ## See also
@@ -135,13 +134,13 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "PCA"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -149,7 +148,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage1 is not in the meta.data of srt object.
 
 # 3D lineage
 pancreas_sub <- RunSlingshot(
@@ -157,6 +156,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
 )
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -165,4 +165,5 @@ CellDimPlot(
   lineages_span = 0.1,
   lineages_trim = c(0.05, 0.95)
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1, lineages_trim = c(0.05,         0.95)): Lineage1 is not in the meta.data of srt object.
 ```

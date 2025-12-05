@@ -82,12 +82,12 @@ FeatureCorPlot(
 - layer:
 
   A character string specifying the layer in the Seurat object to use.
-  Defaults to "data".
+  Default is `"data"`.
 
 - assay:
 
-  A character string specifying the assay to use. Defaults to the
-  default assay in the Seurat object.
+  A character string specifying the assay to use. Default is the default
+  assay in the Seurat object.
 
 - cor_method:
 
@@ -96,56 +96,57 @@ FeatureCorPlot(
 
 - adjust:
 
-  The adjustment factor for the width of the violin plots. Defaults to
-  1.
+  The adjustment factor for the width of the violin plots. Default is
+  `1`.
 
 - margin:
 
-  The margin size for the plot. Defaults to 1.
+  The margin size for the plot. Default is `1`.
 
 - reverse:
 
-  Whether to reverse the order of the features in the plot. Defaults to
-  FALSE.
+  Whether to reverse the order of the features in the plot. Default is
+  `FALSE`.
 
 - add_equation:
 
   Whether to add the equation of the linear regression line to each
-  scatter plot. Defaults to FALSE.
+  scatter plot. Default is `FALSE`.
 
 - add_r2:
 
   Whether to add the R-squared value of the linear regression line to
-  each scatter plot. Defaults to TRUE.
+  each scatter plot. Default is `TRUE`.
 
 - add_pvalue:
 
   Whether to add the p-value of the linear regression line to each
-  scatter plot. Defaults to TRUE.
+  scatter plot. Default is `TRUE`.
 
 - add_smooth:
 
-  Whether to add a smoothed line to each scatter plot. Defaults to TRUE.
+  Whether to add a smoothed line to each scatter plot. Default is
+  `TRUE`.
 
 - palette:
 
   A character string specifying the name of the color palette to use for
-  the groups. Defaults to "Paired".
+  the groups. Default is `"Paired"`.
 
 - palcolor:
 
-  A character string specifying the color for the groups. Defaults to
-  NULL.
+  A character string specifying the color for the groups. Default is
+  `NULL`.
 
 - cor_palette:
 
   A character string specifying the name of the color palette to use for
-  the correlation. Defaults to "RuBu".
+  the correlation. Default is `"RuBu"`.
 
 - cor_palcolor:
 
-  A character string specifying the color for the correlation. Defaults
-  to "RuBu".
+  A character string specifying the color for the correlation. Default
+  is `"RuBu"`.
 
 - cor_range:
 
@@ -159,60 +160,61 @@ FeatureCorPlot(
 - pt.alpha:
 
   A numeric value between 0 and 1 specifying the transparency of the
-  points in the scatter plots. Defaults to 1.
+  points in the scatter plots. Default is `1`.
 
 - cells.highlight:
 
   A logical value or a character vector specifying the cells to
   highlight in the scatter plots. If TRUE, all cells will be
-  highlighted. Defaults to NULL.
+  highlighted. Default is `NULL`.
 
 - cols.highlight:
 
   A character string specifying the color for the highlighted cells.
-  Defaults to "black".
+  Default is `"black"`.
 
 - sizes.highlight:
 
-  The size of the highlighted cells in the scatter plots. Defaults to 1.
+  The size of the highlighted cells in the scatter plots. Default is
+  `1`.
 
 - alpha.highlight:
 
   A numeric value between 0 and 1 specifying the transparency of the
-  highlighted cells in the scatter plots. Defaults to 1.
+  highlighted cells in the scatter plots. Default is `1`.
 
 - stroke.highlight:
 
-  The stroke size of the highlighted cells in the scatter plots.
-  Defaults to 0.5.
+  The stroke size of the highlighted cells in the scatter plots. Default
+  is `0.5`.
 
 - calculate_coexp:
 
-  Whether to calculate the co-expression of selected features. Defaults
-  to FALSE.
+  Whether to calculate the co-expression of selected features. Default
+  is `FALSE`.
 
 - raster:
 
-  Whether to use raster graphics for scatter plots. Defaults to NULL.
+  Whether to use raster graphics for scatter plots. Default is `NULL`.
 
 - raster.dpi:
 
   A numeric vector specifying the dpi (dots per inch) resolution for
-  raster graphics in the scatter plots. Defaults to c(512, 512).
+  raster graphics in the scatter plots. Default is `c(512, 512)`.
 
 - aspect.ratio:
 
-  The aspect ratio of the scatter plots. Defaults to 1.
+  The aspect ratio of the scatter plots. Default is `1`.
 
 - title:
 
   A character string specifying the title for the correlation plot.
-  Defaults to NULL.
+  Default is `NULL`.
 
 - subtitle:
 
   A character string specifying the subtitle for the correlation plot.
-  Defaults to NULL.
+  Default is `NULL`.
 
 - legend.position:
 
@@ -227,16 +229,16 @@ FeatureCorPlot(
 - theme_use:
 
   A character string specifying the name of the theme to use for the
-  plot. Defaults to "theme_scop".
+  plot. Default is `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to pass to the theme function. Defaults to an
-  empty list.
+  A list of arguments to pass to the theme function. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
-  Whether to combine the plots into a single plot. Defaults to TRUE.
+  Whether to combine the plots into a single plot. Default is `TRUE`.
 
 - nrow:
 
@@ -251,16 +253,20 @@ FeatureCorPlot(
 - byrow:
 
   Whether to fill the combined plot byrow (top to bottom, left to
-  right). Defaults to TRUE.
+  right). Default is `TRUE`.
 
 - force:
 
   Whether to force the creation of the plot, even if it contains more
-  than 50 subplots. Defaults to FALSE.
+  than 50 subplots. Default is `FALSE`.
 
 - seed:
 
-  The random seed for reproducibility. Defaults to 11.
+  The random seed for reproducibility. Default is `11`.
+
+## See also
+
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
 
 ## Examples
 
@@ -323,6 +329,10 @@ FeatureCorPlot(
   cor_palette = "Greys",
   cor_range = c(0, 1)
 )
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
+#> Warning: essentially perfect fit: summary may be unreliable
 
 
 FeatureCorPlot(

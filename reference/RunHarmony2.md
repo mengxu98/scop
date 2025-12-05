@@ -1,8 +1,7 @@
 # Run Harmony algorithm
 
-This is a modified version of
-[harmony::RunHarmony](https://rdrr.io/pkg/harmony/man/RunHarmony.html)
-specifically designed for compatibility with
+This is a modified version of harmony::RunHarmony specifically designed
+for compatibility with
 [RunSymphonyMap](https://mengxu98.github.io/scop/reference/RunSymphonyMap.md).
 
 ## Usage
@@ -125,13 +124,47 @@ panc8_sub <- RunHarmony2(
 #> → All 2 packages (0 B) are cached.
 #> + RhpcBLASctl   0.23-42 
 #> + harmony       1.2.4   
+#> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 2 pkgs are cached
 #> ✔ Got RhpcBLASctl 0.23-42 (x86_64-pc-linux-gnu-ubuntu-24.04) (14.56 kB)
 #> ✔ Got harmony 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.80 MB)
-#> ✔ Installed RhpcBLASctl 0.23-42  (1s)
-#> ✔ Installed harmony 1.2.4  (1.1s)
-#> ✔ 1 pkg + 29 deps: kept 28, added 2, dld 2 (4.81 MB) [3.2s]
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install libx11-dev libcurl4-openssl-dev libssl-dev make zlib1g-dev libglpk-dev libxml2-dev pandoc libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev python3 libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> libx11-dev is already the newest version (2:1.8.7-1build1).
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> make is already the newest version (4.3-4.1build2).
+#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
+#> libglpk-dev is already the newest version (5.0-1build2).
+#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
+#> libjpeg-dev is already the newest version (8c-2ubuntu11).
+#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
+#> libwebp-dev is already the newest version (1.3.2-0.4build3).
+#> python3 is already the newest version (3.12.3-0ubuntu2.1).
+#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> libfribidi-dev is already the newest version (1.0.13-3build1).
+#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed RhpcBLASctl 0.23-42  (36ms)
+#> ✔ Installed harmony 1.2.4  (102ms)
+#> ✔ 1 pkg + 200 deps: kept 199, added 2, dld 2 (4.81 MB) [8.7s]
 #> Transposing data matrix
 #> Initializing state using k-means centroids initialization
 #> Harmony 1/10

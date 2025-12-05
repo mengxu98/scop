@@ -166,11 +166,6 @@ RunNMF(
 
 ``` r
 library(Matrix)
-#> 
-#> Attaching package: ‘Matrix’
-#> The following object is masked from ‘package:S4Vectors’:
-#> 
-#>     expand
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 #> StandardPC_ 1 

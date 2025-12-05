@@ -27,8 +27,8 @@ srt_to_adata(
 
 - features:
 
-  Optional vector of features to include in the anndata object. Defaults
-  to all features in `assay_x`.
+  Optional vector of features to include in the anndata object. Default
+  is all features in `assay_x`.
 
 - assay_x:
 
