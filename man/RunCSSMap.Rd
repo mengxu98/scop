@@ -89,3 +89,6 @@ ProjectionPlot(
 )
 }
 }
+\seealso{
+[RunKNNMap]
+}

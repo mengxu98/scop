@@ -40,7 +40,7 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 
 \item{score_method}{The method to use for scoring.
 Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.
-Defaults to \code{"Seurat"}.}
+Default is \code{"Seurat"}.}
 
 \item{layer}{A character vector specifying the layer in the Seurat object to use.
 Default is \code{"counts"}.}
@@ -65,14 +65,14 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{db_version}{A character vector specifying the version of the database to be used.
 This argument is ignored if \code{db_update} is \code{TRUE}.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.}
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 

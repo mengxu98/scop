@@ -125,9 +125,9 @@ Default is \code{data}.}
 
 \item{keep_scale}{How to handle the color scale across multiple plots. Options are:
 \itemize{
-\item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
-\item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
-\item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
+\item \code{NULL} (no scaling): Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
+\item \code{"feature"} (default; by row/feature scaling): The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
+\item \code{"all"} (universal scaling): The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 }}
 
 \item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Vector of minimum and maximum cutoff values or quantile values for each feature.}
@@ -172,7 +172,7 @@ Default is \code{data}.}
 
 \item{label_repel}{Logical value indicating whether the label is repel away from the center location.}
 
-\item{label_repulsion}{Force of repulsion between overlapping text labels. Defaults to 20.}
+\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
 
 \item{label_point_size}{Size of the center points.}
 

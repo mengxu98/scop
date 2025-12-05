@@ -397,7 +397,7 @@ The length of the list should match the number of feature_annotation.
 Default is \code{NULL}.}
 
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
-Default is an empty list.}
+Default is \code{list()}.}
 
 \item{use_raster}{Whether to use a raster device for plotting.
 Default is \code{NULL}.}
@@ -421,7 +421,7 @@ Default is \code{"inch"}.}
 Default is \code{11}.}
 
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Default is an empty list.}
+Default is \code{list()}.}
 }
 \description{
 Feature Heatmap
