@@ -68,7 +68,7 @@ Default is \code{"vst"}.}
 Default is \code{2000}.}
 
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-The default value is \code{1}.}
+Default is \code{1}.}
 
 \item{HVF}{A vector of highly variable features.
 Default is \code{NULL}.}
@@ -107,16 +107,16 @@ Default is \code{0.6}.}
 
 \item{model}{A string indicating the scVI model to be used.
 Options are "SCVI" and "PEAKVI".
-Default is "SCVI".}
+Default is `"SCVI"`.}
 
 \item{SCVI_params}{A list of parameters for the SCVI model.
-Default is an empty list.}
+Default is `list()`.}
 
 \item{PEAKVI_params}{A list of parameters for the PEAKVI model.
-Default is an empty list.}
+Default is `list()`.}
 
 \item{num_threads}{An integer setting the number of threads for scVI.
-Default is 8.}
+Default is `8`.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
