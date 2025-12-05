@@ -71,3 +71,6 @@ Default is \code{TRUE}.}
 \description{
 Run dimensionality reduction
 }
+\seealso{
+\link{DefaultReduction}
+}

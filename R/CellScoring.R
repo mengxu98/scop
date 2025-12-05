@@ -7,16 +7,16 @@
 #' @md
 #' @inheritParams RunEnrichment
 #' @param srt A Seurat object.
-#' @param features A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.
-#' @param layer The layer of the Seurat object to use for scoring. Defaults to "data".
-#' @param assay The assay of the Seurat object to use for scoring. Defaults to NULL, in which case the default assay of the object is used.
-#' @param split.by A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Defaults to NULL.
-#' @param termnames A vector of term names to be used from the database. Defaults to NULL, in which case all features from the database are used.
-#' @param method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".
-#' @param classification Whether to perform classification based on the scores. Defaults to TRUE.
-#' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.
-#' @param new_assay Whether to create a new assay for storing the scores. Defaults to FALSE.
-#' @param seed The random seed for reproducibility. Defaults to 11.
+#' @param features A named list of feature lists for scoring. If NULL, `db` will be used to create features sets.
+#' @param layer The layer of the Seurat object to use for scoring. Default is `"data"`.
+#' @param assay The assay of the Seurat object to use for scoring. Default is `NULL`, in which case the default assay of the object is used.
+#' @param split.by A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Default is `NULL`.
+#' @param termnames A vector of term names to be used from the database. Default is `NULL`, in which case all features from the database are used.
+#' @param method The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is `"Seurat"`.
+#' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
+#' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
+#' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
+#' @param seed The random seed for reproducibility. Default is `11`.
 #' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'

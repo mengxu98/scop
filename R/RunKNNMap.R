@@ -17,7 +17,7 @@
 #' @param ref_group A character string specifying a metadata column name in the reference object to use for grouping.
 #' @param features A character vector specifying the features to be used for calculating the distance metric.
 #' If not provided, the function will use the variable features calculated by the Seurat package.
-#' @param nfeatures A integer specifying the number of highly variable features to be calculated if \code{features} is not provided.
+#' @param nfeatures A integer specifying the number of highly variable features to be calculated if `features` is not provided.
 #' @param query_reduction A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.
 #' @param ref_reduction A character string specifying the name of a dimensionality reduction in the reference object to use for calculating the distance metric.
 #' @param query_dims A numeric vector specifying the dimension indices from the query reduction to be used for calculating the distance metric.
@@ -41,7 +41,10 @@
 #'
 #' @return
 #' A Seurat object with the projection results stored in the "ref.embeddings" reduction.
-#' If \code{ref_group} is provided, the function will also add a new metadata column called "predicted_ref_group" to the query object.
+#' If `ref_group` is provided, the function will also add a new metadata column called "predicted_ref_group" to the query object.
+#'
+#' @seealso
+#' [RunKNNPredict], [RunSingleR], [CellCorHeatmap]
 #'
 #' @export
 #'

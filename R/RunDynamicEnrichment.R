@@ -10,7 +10,7 @@
 #' @inheritParams CellScoring
 #' @param score_method The method to use for scoring.
 #' Can be `"Seurat"`, `"AUCell"`, or `"UCell"`.
-#' Defaults to `"Seurat"`.
+#' Default is `"Seurat"`.
 #'
 #' @seealso
 #' [RunDynamicFeatures], [DynamicHeatmap]

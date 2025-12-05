@@ -29,13 +29,13 @@ RunDynamicFeatures(
 If NULL, n_candidates must be provided.}
 
 \item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
-Defaults to the lineage names.}
+Default is the lineage names.}
 
 \item{n_candidates}{A number of candidate features to select when features is NULL.
-Defaults to \code{1000}.}
+Default is \code{1000}.}
 
 \item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded. Defaults to \code{5}.}
+Features with a frequency less than minfreq will be excluded. Default is \code{5}.}
 
 \item{family}{A character or character vector specifying the family of distributions to use for the generalized additive models (GAMs).
 If family is set to NULL, the appropriate family will be automatically determined based on the data.
@@ -52,7 +52,7 @@ Default is \code{NULL}.}
 If NULL, the library size correction factors will be calculated based on the expression matrix.
 If length(libsize) is 1, the same value will be used for all cells.
 Otherwise, libsize must have the same length as the number of cells in srt.
-Defaults to \code{NULL}.}
+Default is \code{NULL}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
@@ -60,7 +60,7 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{An integer specifying the seed for random number generation. Defaults to \code{11}.}
+\item{seed}{An integer specifying the seed for random number generation. Default is \code{11}.}
 }
 \value{
 Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.

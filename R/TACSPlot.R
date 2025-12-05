@@ -464,7 +464,7 @@ div_by_sum <- function(x) {
 #' @param n An integer; number of results to return.
 #' @param features_use A character vector; list of features eligible to be returned.
 #' @param anticorr Whether to allow negatively correlated genes.
-#' Default is FALSE.
+#' Default is `FALSE`.
 #'
 #' @return character vector.
 #' @export

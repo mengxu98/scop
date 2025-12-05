@@ -21,23 +21,23 @@ RunScmap(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{ref_group}{A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.}
+\item{ref_group}{A character vector specifying the column name in the \code{srt_ref} metadata that represents the cell grouping.}
 
 \item{query_assay}{A character vector specifying the assay to be used for the query data.
-Defaults to the default assay of the `srt_query` object.}
+Default is the default assay of the \code{srt_query} object.}
 
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data.
-Defaults to the default assay of the `srt_ref` object.}
+Default is the default assay of the \code{srt_ref} object.}
 
 \item{method}{The method to be used for scmap analysis.
 Can be any of "scmapCluster" or "scmapCell".
-The default value is "scmapCluster".}
+Default is `"scmapCluster"`.}
 
 \item{nfeatures}{The number of top features to be selected.
-The default value is 500.}
+Default is `500`.}
 
 \item{threshold}{The threshold value on similarity to determine if a cell is assigned to a cluster.
-This should be a value between 0 and 1. The default value is 0.5.}
+This should be a value between 0 and 1. Default is `0.5`.}
 
 \item{k}{Number of clusters per group for k-means clustering when method is "scmapCell".}
 }
@@ -87,4 +87,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"
 )
+}
+\seealso{
+[RunKNNPredict]
 }

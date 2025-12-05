@@ -78,17 +78,17 @@ This argument is used to convert the gene IDs from \code{IDtype} to \code{result
 
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{db_version}{A character vector specifying the version of the database to be used.
 This argument is ignored if \code{db_update} is \code{TRUE}.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{db_combine}{Whether to combine multiple databases into one.
 If TRUE, all database specified by \code{db} will be combined as one named "Combined".}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.}
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 

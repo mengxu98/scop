@@ -474,13 +474,13 @@ is_outlier <- function(
 #' Default is `20`.
 #' @param mito_pattern Regex patterns to match the mitochondrial genes.
 #' Default is `c("MT-", "Mt-", "mt-")`.
-#' @param mito_gene A defined mitochondrial genes. If features provided, will ignore the \code{mito_pattern} matching.
+#' @param mito_gene A defined mitochondrial genes. If features provided, will ignore the `mito_pattern` matching.
 #' Default is `NULL`.
 #' @param ribo_threshold Percentage of UMI counts of ribosomal genes. Cells that exceed this threshold will be considered as discarded.
 #' Default is `50`.
 #' @param ribo_pattern Regex patterns to match the ribosomal genes.
 #' Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
-#' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the \code{ribo_pattern} matching.
+#' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the `ribo_pattern` matching.
 #' Default is `NULL`.
 #' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
 #' Default is `c(1, Inf)`.

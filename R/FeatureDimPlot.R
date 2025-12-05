@@ -16,9 +16,9 @@
 #' @param pt.alpha Point transparency.
 #' @param keep_scale How to handle the color scale across multiple plots. Options are:
 #' \itemize{
-#'   \item \code{NULL (no scaling):} Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
-#'   \item \code{"feature" (default; by row/feature scaling):} The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
-#'   \item \code{"all" (universal scaling):} The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
+#'   \item `NULL` (no scaling): Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
+#'   \item `"feature"` (default; by row/feature scaling): The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
+#'   \item `"all"` (universal scaling): The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 #' }
 #' @param cells.highlight A vector of cell names to highlight.
 #' @param cols.highlight Color used to highlight the cells.
@@ -27,19 +27,19 @@
 #' @param stroke.highlight Border width of highlighted cell points.
 #' @param legend.position The position of legends ("none", "left", "right", "bottom", "top").
 #' @param legend.direction Layout of items in legends ("horizontal" or "vertical")
-#' @param combine Combine plots into a single \code{patchwork} object. If \code{FALSE}, return a list of ggplot objects.
+#' @param combine Combine plots into a single `patchwork` object. If `FALSE`, return a list of ggplot objects.
 #' @param nrow Number of rows in the combined plot.
 #' @param ncol Number of columns in the combined plot.
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.
 #' @param layer Which layer to pull expression data from?
 #' Default is `data`.
-#' @param assay Which assay to pull expression data from. If \code{NULL}, will use the assay returned by [SeuratObject::DefaultAssay].
+#' @param assay Which assay to pull expression data from. If `NULL`, will use the assay returned by [SeuratObject::DefaultAssay].
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
 #' @param compare_features Whether to show the values of multiple features on a single plot.
-#' @param color_blend_mode Blend mode to use when \code{compare_features = TRUE}
-#' @param bg_cutoff Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with \code{bg_color}.
+#' @param color_blend_mode Blend mode to use when `compare_features = TRUE`
+#' @param bg_cutoff Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with `bg_color`.
 #' @param bg_color Color value for background points.
 #' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Vector of minimum and maximum cutoff values or quantile values for each feature.
 #' @param add_density Whether to add a density layer on the plot.
@@ -52,9 +52,9 @@
 #' @param label.fg Foreground color of label.
 #' @param label.bg Background color of label.
 #' @param label.bg.r Background ratio of label.
-#' @param label_insitu Whether the labels is feature names instead of numbers. Valid only when \code{compare_features = TRUE}.
+#' @param label_insitu Whether the labels is feature names instead of numbers. Valid only when `compare_features = TRUE`.
 #' @param label_repel Logical value indicating whether the label is repel away from the center location.
-#' @param label_repulsion Force of repulsion between overlapping text labels. Defaults to 20.
+#' @param label_repulsion Force of repulsion between overlapping text labels. Default is `20`.
 #' @param label_point_size Size of the center points.
 #' @param label_point_color Color of the center points
 #' @param label_segment_color Color of the line segment for labels.
@@ -82,7 +82,7 @@
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
 #' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
 #' Default is `c(512, 512)`.
-#' @param theme_use Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or [ggplot2::theme_classic].
+#' @param theme_use Theme used. Can be a character string or a theme function. For example, `"theme_blank"` or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.
 #' @param title The text for the title.
 #' @param subtitle The text for the subtitle for the plot which will be displayed below the title.

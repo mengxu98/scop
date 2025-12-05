@@ -43,13 +43,13 @@ Default is \code{TRUE}.}
 \value{
 A list with the following elements:
 \itemize{
-\item \code{geneID_res:} A data.frame contains the all gene IDs mapped in the database with columns: \code{"from_IDtype"}, \code{"from_geneID"}, \code{"to_IDtype"}, \code{"to_geneID"}.
-\item \code{geneID_collapse:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the \code{"from_geneID"} column (which is set as the row names) of the data.frame is unique.
-\item \code{geneID_expand:} The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
-\item \code{Ensembl_version:} Ensembl database version.
-\item \code{Datasets:} Datasets available in the selected BioMart database.
-\item \code{Attributes:} Attributes available in the selected BioMart database.
-\item \code{geneID_unmapped:} A character vector of gene IDs that are unmapped in the database.
+\item \code{geneID_res}: A data.frame contains the all gene IDs mapped in the database with columns: \code{"from_IDtype"}, \code{"from_geneID"}, \code{"to_IDtype"}, \code{"to_geneID"}.
+\item \code{geneID_collapse}: The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the \code{"from_geneID"} column (which is set as the row names) of the data.frame is unique.
+\item \code{geneID_expand}: The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.
+\item \code{Ensembl_version}: Ensembl database version.
+\item \code{Datasets}: Datasets available in the selected BioMart database.
+\item \code{Attributes}: Attributes available in the selected BioMart database.
+\item \code{geneID_unmapped}: A character vector of gene IDs that are unmapped in the database.
 }
 }
 \description{
@@ -91,4 +91,7 @@ homologs_counts <- methods::as(
 )
 homologs_counts[1:5, 1:5]
 }
+}
+\seealso{
+\link{AnnotateFeatures}
 }

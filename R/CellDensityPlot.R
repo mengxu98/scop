@@ -59,6 +59,9 @@
 #' @param force Whether to continue plotting if there are more than 50 features.
 #' Default is `FALSE`.
 #'
+#' @seealso
+#' [CellStatPlot]
+#'
 #' @export
 #'
 #' @examples

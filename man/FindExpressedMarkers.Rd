@@ -177,3 +177,6 @@ FeatureStatPlot(
   add_point = TRUE
 )
 }
+\seealso{
+[RunDEtest]
+}

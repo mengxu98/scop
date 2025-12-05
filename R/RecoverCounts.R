@@ -13,6 +13,9 @@
 #' Default is `0.1`
 #' @param sf Set the scaling factor manually.
 #'
+#' @seealso
+#' [CheckDataType]
+#'
 #' @export
 #'
 #' @examples
