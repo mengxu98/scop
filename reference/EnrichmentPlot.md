@@ -94,7 +94,7 @@ EnrichmentPlot(
 - split_by:
 
   The splitting variable(s) for the plot. Can be `"Database"`,
-  `"Groups"`, or both. Default is c("Database", "Groups") for plots.
+  `"Groups"`, or both. Default is `c("Database", "Groups")` for plots.
 
 - color_by:
 
@@ -142,8 +142,8 @@ EnrichmentPlot(
 
 - words_excluded:
 
-  Words to be excluded from the wordcloud. The default value is `NULL`,
-  which means that the built-in words
+  Words to be excluded from the wordcloud. Default is `NULL`, which
+  means that the built-in words
   ([words_excluded](https://mengxu98.github.io/scop/reference/words_excluded.md))
   will be used.
 
@@ -249,7 +249,8 @@ EnrichmentPlot(
 
 - theme_args:
 
-  The arguments to pass to the theme. Default is an empty list.
+  The arguments to pass to the theme. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
@@ -258,12 +259,12 @@ EnrichmentPlot(
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL, calculated
+  The number of rows in the combined plot. Default is `NULL`, calculated
   based on the number of plots.
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL,
+  The number of columns in the combined plot. Default is `NULL`,
   calculated based on the number of plots.
 
 - byrow:

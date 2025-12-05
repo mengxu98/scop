@@ -96,8 +96,7 @@ CSS_integrate(
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
-  times in order to be considered as highly variable. The default value
-  is `1`.
+  times in order to be considered as highly variable. Default is `1`.
 
 - HVF:
 
@@ -206,7 +205,7 @@ CSS_integrate(
 
   A list of parameters for the
   \[simspec::cluster_sim_spectrum\](https://github.com/quadbio/simspec)
-  function. Default is an empty list.
+  function. Default is \`list()\`.
 
 - verbose:
 

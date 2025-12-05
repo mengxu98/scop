@@ -137,6 +137,10 @@ RunSeuratMap(
   "median", "sum", "min", "max", "sd", "var", etc. If not provided, the
   default is "mean".
 
+## See also
+
+\[RunKNNMap\]
+
 ## Examples
 
 ``` r

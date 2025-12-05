@@ -181,6 +181,10 @@ CellDensityPlot(
   Whether to continue plotting if there are more than 50 features.
   Default is `FALSE`.
 
+## See also
+
+[CellStatPlot](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
+
 ## Examples
 
 ``` r
@@ -226,15 +230,6 @@ CellDensityPlot(
   features = "Sox9",
   group.by = "SubCellType"
 )
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + ggridges   0.5.7 
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got ggridges 0.5.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.25 MB)
-#> ✔ Installed ggridges 0.5.7  (1s)
-#> ✔ 1 pkg + 16 deps: kept 16, added 1, dld 1 (2.25 MB) [2.5s]
 #> Picking joint bandwidth of 0.209
 
 
@@ -243,7 +238,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 CellDensityPlot(
   pancreas_sub,
@@ -251,8 +246,7 @@ CellDensityPlot(
   group.by = "SubCellType",
   aspect.ratio = 1
 )
-#> Picking joint bandwidth of 0.661
-
+#> Error in CellDensityPlot(pancreas_sub, features = "Lineage1", group.by = "SubCellType",     aspect.ratio = 1): `features` must be type of numeric variable
 
 CellDensityPlot(
   pancreas_sub,
@@ -260,5 +254,5 @@ CellDensityPlot(
   group.by = "SubCellType",
   flip = TRUE
 )
-#> Picking joint bandwidth of 0.661
+#> Error in CellDensityPlot(pancreas_sub, features = "Lineage1", group.by = "SubCellType",     flip = TRUE): `features` must be type of numeric variable
 ```

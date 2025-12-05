@@ -95,7 +95,7 @@ GSEAPlot(
 - plot_type:
 
   The type of plot to generate. Options are: "line", "comparison",
-  "bar", "network", "enrichmap", "wordcloud". Default is "line".
+  "bar", "network", "enrichmap", "wordcloud". Default is `"line"`.
 
 - group_use:
 
@@ -123,7 +123,7 @@ GSEAPlot(
 - direction:
 
   The direction of enrichment to include in the plot. Must be one of
-  "pos", "neg", or "both". The default value is "both".
+  "pos", "neg", or "both". Default is `"both"`.
 
 - compare_only_sig:
 
@@ -144,8 +144,8 @@ GSEAPlot(
 
 - words_excluded:
 
-  Words to be excluded from the wordcloud. The default value is `NULL`,
-  which means that the built-in words
+  Words to be excluded from the wordcloud. Default is `NULL`, which
+  means that the built-in words
   ([words_excluded](https://mengxu98.github.io/scop/reference/words_excluded.md))
   will be used.
 
@@ -292,7 +292,8 @@ GSEAPlot(
 
 - theme_args:
 
-  The arguments to pass to the theme. Default is an empty list.
+  The arguments to pass to the theme. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
@@ -301,12 +302,12 @@ GSEAPlot(
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL, calculated
+  The number of rows in the combined plot. Default is `NULL`, calculated
   based on the number of plots.
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL,
+  The number of columns in the combined plot. Default is `NULL`,
   calculated based on the number of plots.
 
 - byrow:

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -135,7 +135,7 @@ If provided, 'srt', 'test.use' and 'group_by' are ignored.</p></dd>
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>The type of plot to generate.
-Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is "line".</p></dd>
+Options are: "line", "comparison", "bar", "network", "enrichmap", "wordcloud". Default is <code>"line"</code>.</p></dd>
 
 
 <dt id="arg-group-use">group_use<a class="anchor" aria-label="anchor" href="#arg-group-use"></a></dt>
@@ -166,7 +166,7 @@ Default is <code>6</code>, or <code>100</code> if <code>plot_type</code> is <cod
 
 <dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a></dt>
 <dd><p>The direction of enrichment to include in the plot.
-Must be one of "pos", "neg", or "both". The default value is "both".</p></dd>
+Must be one of "pos", "neg", or "both". Default is <code>"both"</code>.</p></dd>
 
 
 <dt id="arg-compare-only-sig">compare_only_sig<a class="anchor" aria-label="anchor" href="#arg-compare-only-sig"></a></dt>
@@ -191,7 +191,7 @@ Default is <code>"term"</code>.</p></dd>
 
 <dt id="arg-words-excluded">words_excluded<a class="anchor" aria-label="anchor" href="#arg-words-excluded"></a></dt>
 <dd><p>Words to be excluded from the wordcloud.
-The default value is <code>NULL</code>, which means that the built-in words (<a href="words_excluded.html">words_excluded</a>) will be used.</p></dd>
+Default is <code>NULL</code>, which means that the built-in words (<a href="words_excluded.html">words_excluded</a>) will be used.</p></dd>
 
 
 <dt id="arg-line-width">line_width<a class="anchor" aria-label="anchor" href="#arg-line-width"></a></dt>
@@ -350,7 +350,7 @@ Default is <code>"theme_scop"</code>.</p></dd>
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
 <dd><p>The arguments to pass to the theme.
-Default is an empty list.</p></dd>
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
@@ -360,12 +360,12 @@ Default is <code>TRUE</code>.</p></dd>
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
 <dd><p>The number of rows in the combined plot.
-Default is NULL, calculated based on the number of plots.</p></dd>
+Default is <code>NULL</code>, calculated based on the number of plots.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
 <dd><p>The number of columns in the combined plot.
-Default is NULL, calculated based on the number of plots.</p></dd>
+Default is <code>NULL</code>, calculated based on the number of plots.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>

@@ -62,163 +62,165 @@ DynamicPlot(
 - group.by:
 
   A character specifying a metadata column to group the cells by.
-  Default is NULL.
+  Default is `NULL`.
 
 - cells:
 
   A character vector specifying the cells to include in the plot.
-  Default is NULL.
+  Default is `NULL`.
 
 - layer:
 
   A character string specifying the layer to use for the analysis.
-  Default is "counts".
+  Default is `"counts"`.
 
 - assay:
 
   A character string specifying the assay to use for the analysis.
-  Default is NULL.
+  Default is `NULL`.
 
 - family:
 
   A character specifying the model used to calculate the dynamic
-  features if needed. By default, this parameter is set to NULL, and the
-  appropriate family will be automatically determined.
+  features if needed. By default, this parameter is set to `NULL`, and
+  the appropriate family will be automatically determined.
 
 - exp_method:
 
   A character specifying the method to transform the expression values.
-  Default is "log1p" with options "log1p", "raw", "zscore", "fc",
+  Default is `"log1p"` with options "log1p", "raw", "zscore", "fc",
   "log2fc".
 
 - lib_normalize:
 
   A boolean specifying whether to normalize the expression values using
   library size. Default the `layer` is counts, this parameter is set to
-  TRUE. Otherwise, it is set to FALSE.
+  `TRUE`. Otherwise, it is set to `FALSE`.
 
 - libsize:
 
   A numeric vector specifying the library size for each cell. Default is
-  NULL.
+  `NULL`.
 
 - compare_lineages:
 
   A boolean specifying whether to compare the lineages in the plot.
-  Default is TRUE.
+  Default is `TRUE`.
 
 - compare_features:
 
   A boolean specifying whether to compare the features in the plot.
-  Default is FALSE.
+  Default is `FALSE`.
 
 - add_line:
 
   A boolean specifying whether to add lines to the plot. Default is
-  TRUE.
+  `TRUE`.
 
 - add_interval:
 
   A boolean specifying whether to add confidence intervals to the plot.
-  Default is TRUE.
+  Default is `TRUE`.
 
 - line.size:
 
-  A numeric specifying the size of the lines. Default is 1.
+  A numeric specifying the size of the lines. Default is `1`.
 
 - line_palette:
 
   A character string specifying the name of the palette to use for the
-  line colors. Default is "Dark2".
+  line colors. Default is `"Dark2"`.
 
 - line_palcolor:
 
   A vector specifying the colors to use for the line palette. Default is
-  NULL.
+  `NULL`.
 
 - add_point:
 
   A boolean specifying whether to add points to the plot. Default is
-  TRUE.
+  `TRUE`.
 
 - pt.size:
 
-  A numeric specifying the size of the points. Default is 1.
+  A numeric specifying the size of the points. Default is `1`.
 
 - point_palette:
 
   A character string specifying the name of the palette to use for the
-  point colors. Default is "Paired".
+  point colors. Default is `"Paired"`.
 
 - point_palcolor:
 
   A vector specifying the colors to use for the point palette. Default
-  is NULL.
+  is `NULL`.
 
 - add_rug:
 
-  A boolean specifying whether to add rugs to the plot. Default is TRUE.
+  A boolean specifying whether to add rugs to the plot. Default is
+  `TRUE`.
 
 - flip:
 
-  A boolean specifying whether to flip the x-axis. Default is FALSE.
+  A boolean specifying whether to flip the x-axis. Default is `FALSE`.
 
 - reverse:
 
-  A boolean specifying whether to reverse the x-axis. Default is FALSE.
+  A boolean specifying whether to reverse the x-axis. Default is
+  `FALSE`.
 
 - x_order:
 
   A character specifying the order of the x-axis values. Default is
-  c("value", "rank").
+  `c("value", "rank")`.
 
 - aspect.ratio:
 
-  A numeric specifying the aspect ratio of the plot. Default is NULL.
+  A numeric specifying the aspect ratio of the plot. Default is `NULL`.
 
 - legend.position:
 
   A character string specifying the position of the legend in the plot.
-  Default is "right".
+  Default is `"right"`.
 
 - legend.direction:
 
   A character string specifying the direction of the legend in the plot.
-  Default is "vertical".
+  Default is `"vertical"`.
 
 - theme_use:
 
   A character string specifying the name of the theme to use for the
-  plot. Default is "theme_scop".
+  plot. Default is `"theme_scop"`.
 
 - theme_args:
 
   A list specifying the arguments to pass to the theme function. Default
-  is list().
+  is [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
   A boolean specifying whether to combine multiple plots into a single
-  plot. Default is TRUE.
+  plot. Default is `TRUE`.
 
 - nrow:
 
   A numeric specifying the number of rows in the combined plot. Default
-  is NULL.
+  is `NULL`.
 
 - ncol:
 
   A numeric specifying the number of columns in the combined plot.
-  Default is NULL.
+  Default is `NULL`.
 
 - byrow:
 
   A boolean specifying whether to fill plots by row in the combined
-  plot. Default is TRUE.
+  plot. Default is `TRUE`.
 
 - seed:
 
-  A numeric specifying the random seed. Default is 11.
+  A numeric specifying the random seed. Default is `11`.
 
 ## See also
 
@@ -269,7 +271,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 CellDimPlot(
   pancreas_sub,
@@ -278,7 +280,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage1 is not in the meta.data of srt object.
 
 DynamicPlot(
   pancreas_sub,
@@ -287,21 +289,7 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + MatrixGenerics   1.22.0 [bld]
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got MatrixGenerics 1.22.0 (source) (34.60 kB)
-#> ℹ Building MatrixGenerics 1.22.0
-#> ✔ Built MatrixGenerics 1.22.0 (2.3s)
-#> ✔ Installed MatrixGenerics 1.22.0  (1s)
-#> ✔ 1 pkg + 1 dep: kept 1, added 1, dld 1 (34.60 kB) [4.2s]
-#> ⠙ [2025-12-03 09:38:47] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:38:47] Completed 3 tasks in 118ms
-#> 
-
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 DynamicPlot(
   pancreas_sub,
@@ -311,10 +299,7 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2025-12-03 09:38:49] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:38:49] Completed 3 tasks in 119ms
-#> 
-
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 DynamicPlot(
   pancreas_sub,
@@ -324,10 +309,5 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ⠙ [2025-12-03 09:38:53] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:38:53] Completed 3 tasks in 116ms
-#> 
-#> ⠙ [2025-12-03 09:38:55] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 09:38:55] Completed 3 tasks in 126ms
-#> 
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 ```

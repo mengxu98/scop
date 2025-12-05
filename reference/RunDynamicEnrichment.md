@@ -53,7 +53,7 @@ RunDynamicEnrichment(
 - score_method:
 
   The method to use for scoring. Can be `"Seurat"`, `"AUCell"`, or
-  `"UCell"`. Defaults to `"Seurat"`.
+  `"UCell"`. Default is `"Seurat"`.
 
 - layer:
 
@@ -101,18 +101,18 @@ RunDynamicEnrichment(
 
   Whether the gene annotation databases should be forcefully updated. If
   set to FALSE, the function will attempt to load the cached databases
-  instead. Default is FALSE.
+  instead. Default is `FALSE`.
 
 - db_version:
 
   A character vector specifying the version of the database to be used.
   This argument is ignored if `db_update` is `TRUE`. Default is
-  "latest".
+  `"latest"`.
 
 - convert_species:
 
   Whether to use a species-converted database when the annotation is
-  missing for the specified species. The default value is TRUE.
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 
@@ -209,29 +209,22 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = "Lineage1",
   n_candidates = 200
 )
-#> ⠙ [2025-12-03 10:00:32] Running [1/200] Processing: 1  ETA:  7s
-#> ⠹ [2025-12-03 10:00:32] Running [39/200] Processing: 39  ETA:  6s
-#> ⠸ [2025-12-03 10:00:32] Running [129/200] Processing: 129  ETA:  2s
-#> ✔ [2025-12-03 10:00:32] Completed 200 tasks in 6.8s
-#> 
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 4
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", cell_annotation = "SubCellType",     n_split = 4): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 pancreas_sub <- RunDynamicEnrichment(
   pancreas_sub,
@@ -240,29 +233,8 @@ pancreas_sub <- RunDynamicEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + UCell   2.14.0 [bld]
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got UCell 2.14.0 (source) (2.41 MB)
-#> ℹ Building UCell 2.14.0
-#> ✔ Built UCell 2.14.0 (10.9s)
-#> ✔ Installed UCell 2.14.0  (1.1s)
-#> ✔ 1 pkg + 28 deps: kept 28, added 1, dld 1 (2.41 MB) [13.8s]
-#> ⠙ [2025-12-03 10:03:41] Running [1/2794] Processing: 1  ETA: 35s
-#> ⠹ [2025-12-03 10:03:41] Running [59/2794] Processing: 59  ETA: 26s
-#> ⠸ [2025-12-03 10:03:41] Running [374/2794] Processing: 374  ETA: 23s
-#> ⠼ [2025-12-03 10:03:41] Running [691/2794] Processing: 691  ETA: 20s
-#> ⠴ [2025-12-03 10:03:41] Running [1018/2794] Processing: 1018  ETA: 17s
-#> ⠦ [2025-12-03 10:03:41] Running [1332/2794] Processing: 1332  ETA: 14s
-#> ⠧ [2025-12-03 10:03:41] Running [1645/2794] Processing: 1645  ETA: 11s
-#> ⠇ [2025-12-03 10:03:41] Running [1953/2794] Processing: 1953  ETA:  8s
-#> ⠏ [2025-12-03 10:03:41] Running [2275/2794] Processing: 2275  ETA:  5s
-#> ⠋ [2025-12-03 10:03:41] Running [2583/2794] Processing: 2583  ETA:  2s
-#> ✔ [2025-12-03 10:03:41] Completed 2794 tasks in 26.6s
-#> 
+#> Error in RunDynamicEnrichment(pancreas_sub, lineages = "Lineage1", score_method = "UCell",     db = "GO_BP", species = "Mus_musculus"): "Lineage1" info not found in the srt object. Should perform
+#> `RunDynamicFeatures()` first
 ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",
@@ -271,9 +243,7 @@ ht2 <- DynamicHeatmap(
   n_split = 4,
   split_method = "kmeans-peaktime"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error in DynamicHeatmap(pancreas_sub, assay = "GO_BP", lineages = "Lineage1_GO_BP",     cell_annotation = "SubCellType", n_split = 4, split_method = "kmeans-peaktime"): Lineages: Lineage1_GO_BP is not in the meta data of the Seurat object
 ht2$plot
+#> Error: object 'ht2' not found
 ```

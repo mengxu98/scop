@@ -202,24 +202,25 @@ StatPlot(
 
 - combine:
 
-  Whether to combine multiple plots into a single plot. Default is TRUE.
+  Whether to combine multiple plots into a single plot. Default is
+  `TRUE`.
 
 - nrow:
 
-  The number of rows in the combined plot. Default is NULL.
+  The number of rows in the combined plot. Default is `NULL`.
 
 - ncol:
 
-  The number of columns in the combined plot. Default is NULL.
+  The number of columns in the combined plot. Default is `NULL`.
 
 - byrow:
 
-  Whether to fill the plot by row or by column. Default is TRUE.
+  Whether to fill the plot by row or by column. Default is `TRUE`.
 
 - force:
 
   Whether to force the plot even if some variables have more than 100
-  levels. Default is FALSE.
+  levels. Default is `FALSE`.
 
 - seed:
 

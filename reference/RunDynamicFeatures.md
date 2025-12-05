@@ -43,18 +43,18 @@ RunDynamicFeatures(
 - suffix:
 
   A character vector specifying the suffix to append to the output layer
-  names for each lineage. Defaults to the lineage names.
+  names for each lineage. Default is the lineage names.
 
 - n_candidates:
 
   A number of candidate features to select when features is NULL.
-  Defaults to `1000`.
+  Default is `1000`.
 
 - minfreq:
 
   An integer specifying the minimum frequency threshold for candidate
   features. Features with a frequency less than minfreq will be
-  excluded. Defaults to `5`.
+  excluded. Default is `5`.
 
 - family:
 
@@ -80,7 +80,7 @@ RunDynamicFeatures(
   factors for each cell. If NULL, the library size correction factors
   will be calculated based on the expression matrix. If length(libsize)
   is 1, the same value will be used for all cells. Otherwise, libsize
-  must have the same length as the number of cells in srt. Defaults to
+  must have the same length as the number of cells in srt. Default is
   `NULL`.
 
 - cores:
@@ -95,8 +95,8 @@ RunDynamicFeatures(
 
 - seed:
 
-  An integer specifying the seed for random number generation. Defaults
-  to `11`.
+  An integer specifying the seed for random number generation. Default
+  is `11`.
 
 ## Value
 
@@ -154,46 +154,23 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2025-12-03 10:04:41] Running [1/225] Processing: 1  ETA:  8s
-#> ⠹ [2025-12-03 10:04:41] Running [14/225] Processing: 14  ETA:  8s
-#> ⠸ [2025-12-03 10:04:41] Running [105/225] Processing: 105  ETA:  4s
-#> ⠼ [2025-12-03 10:04:41] Running [196/225] Processing: 196  ETA:  1s
-#> ✔ [2025-12-03 10:04:41] Completed 225 tasks in 7.6s
-#> 
-#> ⠙ [2025-12-03 10:04:51] Running [60/225] Processing: 60  ETA:  5s
-#> ⠹ [2025-12-03 10:04:51] Running [157/225] Processing: 157  ETA:  2s
-#> ✔ [2025-12-03 10:04:51] Completed 225 tasks in 7.2s
-#> 
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
 )
-#> [1] "DynamicFeatures" "raw_matrix"      "fitted_matrix"   "upr_matrix"     
-#> [5] "lwr_matrix"      "libsize"         "lineages"        "family"         
+#> NULL
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
-#>      features exp_ncells       r.sq  dev.expl peaktime valleytime pvalue
-#> Gcg       Gcg        178 0.07474585 0.8463493 29.93042   2.028632      0
-#> Iapp     Iapp        308 0.26805682 0.7766207 29.34657   1.834261      0
-#> Pyy       Pyy        475 0.49836581 0.7682591 27.10419  14.503163      0
-#> Gast     Gast        103 0.04420017 0.6562081 27.70426   0.140757      0
-#> Rbp4     Rbp4        437 0.39150230 0.7319113 26.71387  14.634662      0
-#> Chgb     Chgb        302 0.48290058 0.8015278 23.69410   0.140757      0
-#>      padjust
-#> Gcg        0
-#> Iapp       0
-#> Pyy        0
-#> Gast       0
-#> Rbp4       0
-#> Chgb       0
+#> NULL
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -201,12 +178,9 @@ ht <- DynamicHeatmap(
   n_split = 6,
   reverse_ht = "Lineage1"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     cell_annotation = "SubCellType", n_split = 6, reverse_ht = "Lineage1"): Lineages: Lineage1 is not in the meta data of the Seurat object
 ht$plot
-
+#> Error: object 'ht' not found
 
 DynamicPlot(
   pancreas_sub,
@@ -216,10 +190,5 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2025-12-03 10:05:02] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 10:05:02] Completed 2 tasks in 122ms
-#> 
-#> ⠙ [2025-12-03 10:05:04] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2025-12-03 10:05:04] Completed 2 tasks in 133ms
-#> 
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 ```

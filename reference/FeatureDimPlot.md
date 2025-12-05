@@ -165,16 +165,16 @@ FeatureDimPlot(
 
   How to handle the color scale across multiple plots. Options are:
 
-  - `NULL (no scaling):` Each individual plot is scaled to the maximum
+  - `NULL` (no scaling): Each individual plot is scaled to the maximum
     expression value of the feature in the condition provided to
     'split.by'. Be aware setting NULL will result in color scales that
     are not comparable between plots.
 
-  - `"feature" (default; by row/feature scaling):` The plots for each
+  - `"feature"` (default; by row/feature scaling): The plots for each
     individual feature are scaled to the maximum expression of the
     feature across the conditions provided to 'split.by'.
 
-  - `"all" (universal scaling):` The plots for all features and
+  - `"all"` (universal scaling): The plots for all features and
     conditions are scaled to the maximum expression value for the
     feature with the highest overall expression.
 
@@ -269,7 +269,7 @@ FeatureDimPlot(
 
 - label_repulsion:
 
-  Force of repulsion between overlapping text labels. Defaults to 20.
+  Force of repulsion between overlapping text labels. Default is `20`.
 
 - label_point_size:
 
@@ -573,7 +573,7 @@ FeatureDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 # Chane the plot type from point to the hexagonal bin
 FeatureDimPlot(
@@ -582,7 +582,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -591,7 +591,7 @@ FeatureDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
@@ -599,7 +599,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -607,7 +607,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   lineages = "Lineage2"
 )
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"): Lineage2 is not in the meta.data of srt object.
 
 FeatureDimPlot(
   pancreas_sub,
@@ -616,7 +616,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE): Lineage2 is not in the meta.data of srt object.
 
 FeatureDimPlot(
   pancreas_sub,
@@ -625,7 +625,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_span = 0.1
 )
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1): Lineage2 is not in the meta.data of srt object.
 
 # Input a named feature list
 markers <- list(
@@ -709,7 +709,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -722,7 +722,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -735,7 +735,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -748,7 +748,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -761,4 +761,5 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
+#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
 ```

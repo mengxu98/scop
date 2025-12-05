@@ -9,7 +9,7 @@ It calculates scores for a given set of features and adds the scores as metadata
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,15 +88,15 @@ It calculates scores for a given set of features and adds the scores as metadata
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>The layer of the Seurat object to use for scoring. Defaults to "data".</p></dd>
+<dd><p>The layer of the Seurat object to use for scoring. Default is <code>"data"</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>The assay of the Seurat object to use for scoring. Defaults to NULL, in which case the default assay of the object is used.</p></dd>
+<dd><p>The assay of the Seurat object to use for scoring. Default is <code>NULL</code>, in which case the default assay of the object is used.</p></dd>
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Defaults to NULL.</p></dd>
+<dd><p>A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-idtype">IDtype<a class="anchor" aria-label="anchor" href="#arg-idtype"></a></dt>
@@ -113,24 +113,24 @@ This argument is used to convert the gene IDs to a different type if <code>IDtyp
 
 
 <dt id="arg-termnames">termnames<a class="anchor" aria-label="anchor" href="#arg-termnames"></a></dt>
-<dd><p>A vector of term names to be used from the database. Defaults to NULL, in which case all features from the database are used.</p></dd>
+<dd><p>A vector of term names to be used from the database. Default is <code>NULL</code>, in which case all features from the database are used.</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
 <dd><p>Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.</p></dd>
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
 <dd><p>A character vector specifying the version of the database to be used.
 This argument is ignored if <code>db_update</code> is <code>TRUE</code>.
-Default is "latest".</p></dd>
+Default is <code>"latest"</code>.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
 <dd><p>Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.</p></dd>
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
@@ -150,23 +150,23 @@ The default value is TRUE.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".</p></dd>
+<dd><p>The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is <code>"Seurat"</code>.</p></dd>
 
 
 <dt id="arg-classification">classification<a class="anchor" aria-label="anchor" href="#arg-classification"></a></dt>
-<dd><p>Whether to perform classification based on the scores. Defaults to TRUE.</p></dd>
+<dd><p>Whether to perform classification based on the scores. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.</p></dd>
+<dd><p>The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is <code>""</code>.</p></dd>
 
 
 <dt id="arg-new-assay">new_assay<a class="anchor" aria-label="anchor" href="#arg-new-assay"></a></dt>
-<dd><p>Whether to create a new assay for storing the scores. Defaults to FALSE.</p></dd>
+<dd><p>Whether to create a new assay for storing the scores. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>The random seed for reproducibility. Defaults to 11.</p></dd>
+<dd><p>The random seed for reproducibility. Default is <code>11</code>.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
@@ -237,10 +237,12 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"Seurat"</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"test"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-03 09:26:18] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] Processing: <span style="color: #0000BB;">1 </span> ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-03 09:26:18] Completed <span style="color: #0000BB;">2</span> tasks in 124ms</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 08:28:27] Running [<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] Processing: <span style="color: #0000BB;">1 </span> ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 08:28:27] Completed <span style="color: #0000BB;">2</span> tasks in 133ms</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"test_classification"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="CellScoring-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"test_A"</span><span class="op">)</span></span></span>

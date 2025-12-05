@@ -30,38 +30,42 @@ RunScmap(
 
 - ref_group:
 
-  A character vector specifying the column name in the \`srt_ref\`
+  A character vector specifying the column name in the `srt_ref`
   metadata that represents the cell grouping.
 
 - query_assay:
 
   A character vector specifying the assay to be used for the query data.
-  Defaults to the default assay of the \`srt_query\` object.
+  Default is the default assay of the `srt_query` object.
 
 - ref_assay:
 
   A character vector specifying the assay to be used for the reference
-  data. Defaults to the default assay of the \`srt_ref\` object.
+  data. Default is the default assay of the `srt_ref` object.
 
 - method:
 
   The method to be used for scmap analysis. Can be any of "scmapCluster"
-  or "scmapCell". The default value is "scmapCluster".
+  or "scmapCell". Default is \`"scmapCluster"\`.
 
 - nfeatures:
 
-  The number of top features to be selected. The default value is 500.
+  The number of top features to be selected. Default is \`500\`.
 
 - threshold:
 
   The threshold value on similarity to determine if a cell is assigned
-  to a cluster. This should be a value between 0 and 1. The default
-  value is 0.5.
+  to a cluster. This should be a value between 0 and 1. Default is
+  \`0.5\`.
 
 - k:
 
   Number of clusters per group for k-means clustering when method is
   "scmapCell".
+
+## See also
+
+\[RunKNNPredict\]
 
 ## Examples
 
@@ -173,34 +177,32 @@ pancreas_sub <- RunScmap(
 #>   
 #> ℹ No downloads are needed, 3 pkgs are cached
 #> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
-#> ✔ Got googleVis 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (498.39 kB)
 #> ✔ Got scmap 1.32.0 (source) (2.34 MB)
+#> ✔ Got googleVis 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (498.39 kB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [73.4 kB]
-#> Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [55.2 kB]
-#> Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.2 kB]
-#> Fetched 143 kB in 0s (397 kB/s)
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
+#> ℹ Executing `sudo sh -c apt-get -y install pandoc make libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> make is already the newest version (4.3-4.1build2).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed googleVis 0.7.3  (31ms)
-#> ✔ Installed randomForest 4.7-1.2  (45ms)
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed googleVis 0.7.3  (32ms)
+#> ✔ Installed randomForest 4.7-1.2  (48ms)
 #> ℹ Building scmap 1.32.0
-#> ✔ Built scmap 1.32.0 (22.5s)
-#> ✔ Installed scmap 1.32.0  (1.1s)
-#> ✔ 1 pkg + 54 deps: kept 52, added 3, dld 3 (3.06 MB) [29.7s]
+#> ✔ Built scmap 1.32.0 (23.1s)
+#> ✔ Installed scmap 1.32.0  (61ms)
+#> ✔ 1 pkg + 77 deps: kept 74, added 3, dld 3 (3.06 MB) [28.4s]
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"

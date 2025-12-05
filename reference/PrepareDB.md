@@ -66,7 +66,7 @@ PrepareDB(
 - convert_species:
 
   Whether to use a species-converted database when the annotation is
-  missing for the specified species. The default value is `TRUE`.
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 
@@ -120,11 +120,11 @@ PrepareDB(
 
 A list containing the prepared gene annotation databases:
 
-- `TERM2GENE:` mapping of gene identifiers to terms.
+- `TERM2GENE`: mapping of gene identifiers to terms.
 
-- `TERM2NAME:` mapping of terms to their names.
+- `TERM2NAME`: mapping of terms to their names.
 
-- `semData:` semantic similarity data for gene sets (only for Gene
+- `semData`: semantic similarity data for gene sets (only for Gene
   Ontology terms).
 
 ## Details

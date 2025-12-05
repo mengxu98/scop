@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,45 +87,45 @@
 
 <dt id="arg-bulk-ref">bulk_ref<a class="anchor" aria-label="anchor" href="#arg-bulk-ref"></a></dt>
 <dd><p>A cell atlas matrix, where cell types are represented by columns and genes are represented by rows,
-for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.</p></dd>
+for example, scop::ref_scHCL. Either <code>srt_ref</code> or <code>bulk_ref</code> must be provided.</p></dd>
 
 
 <dt id="arg-query-group">query_group<a class="anchor" aria-label="anchor" href="#arg-query-group"></a></dt>
-<dd><p>A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.</p></dd>
+<dd><p>A character vector specifying the column name in the <code>srt_query</code> metadata that represents the cell grouping.</p></dd>
 
 
 <dt id="arg-ref-group">ref_group<a class="anchor" aria-label="anchor" href="#arg-ref-group"></a></dt>
-<dd><p>A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.</p></dd>
+<dd><p>A character vector specifying the column name in the <code>srt_ref</code> metadata that represents the cell grouping.</p></dd>
 
 
 <dt id="arg-query-assay">query_assay<a class="anchor" aria-label="anchor" href="#arg-query-assay"></a></dt>
 <dd><p>A character vector specifying the assay to be used for the query data.
-Defaults to the default assay of the `srt_query` object.</p></dd>
+Default is the default assay of the <code>srt_query</code> object.</p></dd>
 
 
 <dt id="arg-ref-assay">ref_assay<a class="anchor" aria-label="anchor" href="#arg-ref-assay"></a></dt>
 <dd><p>A character vector specifying the assay to be used for the reference data.
-Defaults to the default assay of the `srt_ref` object.</p></dd>
+Default is the default assay of the <code>srt_ref</code> object.</p></dd>
 
 
 <dt id="arg-query-reduction">query_reduction<a class="anchor" aria-label="anchor" href="#arg-query-reduction"></a></dt>
 <dd><p>A character vector specifying the dimensionality reduction method used for the query data.
-If NULL, the function will use the default reduction method specified in the `srt_query` object.</p></dd>
+If NULL, the function will use the default reduction method specified in the <code>srt_query</code> object.</p></dd>
 
 
 <dt id="arg-ref-reduction">ref_reduction<a class="anchor" aria-label="anchor" href="#arg-ref-reduction"></a></dt>
 <dd><p>A character vector specifying the dimensionality reduction method used for the reference data.
-If NULL, the function will use the default reduction method specified in the `srt_ref` object.</p></dd>
+If NULL, the function will use the default reduction method specified in the <code>srt_ref</code> object.</p></dd>
 
 
 <dt id="arg-query-dims">query_dims<a class="anchor" aria-label="anchor" href="#arg-query-dims"></a></dt>
 <dd><p>A numeric vector specifying the dimensions to be used for the query data.
-Defaults to the first 30 dimensions.</p></dd>
+Default is the first <code>30</code> dimensions.</p></dd>
 
 
 <dt id="arg-ref-dims">ref_dims<a class="anchor" aria-label="anchor" href="#arg-ref-dims"></a></dt>
 <dd><p>A numeric vector specifying the dimensions to be used for the reference data.
-Defaults to the first 30 dimensions.</p></dd>
+Default is the first <code>30</code> dimensions.</p></dd>
 
 
 <dt id="arg-query-collapsing">query_collapsing<a class="anchor" aria-label="anchor" href="#arg-query-collapsing"></a></dt>
@@ -148,46 +148,50 @@ If TRUE, the function will return the distance matrix used for the KNN predictio
 
 
 <dt id="arg-features-type">features_type<a class="anchor" aria-label="anchor" href="#arg-features-type"></a></dt>
-<dd><p>A character vector specifying the type of features to be used for the KNN prediction. Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Defaults to "HVF".</p></dd>
+<dd><p>A character vector specifying the type of features to be used for the KNN prediction. Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is <code>"HVF"</code>.</p></dd>
 
 
 <dt id="arg-feature-source">feature_source<a class="anchor" aria-label="anchor" href="#arg-feature-source"></a></dt>
-<dd><p>A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Defaults to "both".</p></dd>
+<dd><p>A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Default is <code>"both"</code>.</p></dd>
 
 
 <dt id="arg-nfeatures">nfeatures<a class="anchor" aria-label="anchor" href="#arg-nfeatures"></a></dt>
-<dd><p>An integer specifying the maximum number of features to be used for the KNN prediction. Defaults to 2000.</p></dd>
+<dd><p>An integer specifying the maximum number of features to be used for the KNN prediction. Default is <code>2000</code>.</p></dd>
 
 
 <dt id="arg-detest-param">DEtest_param<a class="anchor" aria-label="anchor" href="#arg-detest-param"></a></dt>
-<dd><p>A list of parameters to be passed to the differential expression test function if `features_type` is set to "DE". Defaults to `list(max.cells.per.ident = 200, test.use = "wilcox")`.</p></dd>
+<dd><p>A list of parameters to be passed to the differential expression test function if <code>features_type</code> is set to "DE". Default is <code>list(max.cells.per.ident = 200, test.use = "wilcox")</code>.</p></dd>
 
 
 <dt id="arg-de-threshold">DE_threshold<a class="anchor" aria-label="anchor" href="#arg-de-threshold"></a></dt>
 <dd><p>Threshold used to filter the DE features.
-Default is `"p_val &lt; 0.05"`. If using "roc" test, <code>DE_threshold</code> should be needs to be reassigned. e.g. "power &gt; 0.5".</p></dd>
+Default is <code>"p_val &lt; 0.05"</code>. If using "roc" test, <code>DE_threshold</code> should be needs to be reassigned. e.g. "power &gt; 0.5".</p></dd>
 
 
 <dt id="arg-nn-method">nn_method<a class="anchor" aria-label="anchor" href="#arg-nn-method"></a></dt>
-<dd><p>A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Defaults to "raw".</p></dd>
+<dd><p>A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Default is <code>"raw"</code>.</p></dd>
 
 
 <dt id="arg-distance-metric">distance_metric<a class="anchor" aria-label="anchor" href="#arg-distance-metric"></a></dt>
-<dd><p>A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Defaults to "cosine".</p></dd>
+<dd><p>A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Default is <code>"cosine"</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>A number of nearest neighbors to be considered for the KNN prediction. Defaults to 30.</p></dd>
+<dd><p>A number of nearest neighbors to be considered for the KNN prediction. Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-filter-lowfreq">filter_lowfreq<a class="anchor" aria-label="anchor" href="#arg-filter-lowfreq"></a></dt>
-<dd><p>An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable". Defaults to 0, which means no filtering will be performed.</p></dd>
+<dd><p>An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than <code>filter_lowfreq</code> will be labelled as "unreliable". Default is <code>0</code>, which means no filtering will be performed.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
-<dd><p>A character vector specifying the prefix to be added to the resulting annotations. Defaults to "KNNPredict".</p></dd>
+<dd><p>A character vector specifying the prefix to be added to the resulting annotations. Default is <code>"KNNPredict"</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="RunKNNMap.html">RunKNNMap</a>, <a href="RunSingleR.html">RunSingleR</a>, <a href="CellCorHeatmap.html">CellCorHeatmap</a></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -354,8 +358,8 @@ Default is `"p_val &lt; 0.05"`. If using "roc" test, <code>DE_threshold</code> s
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"ref"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-03 10:09:23] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-03 10:09:23] Completed <span style="color: #0000BB;">13</span> tasks in 4.2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:03:49] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:03:49] Completed <span style="color: #0000BB;">13</span> tasks in 7.2s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
@@ -380,11 +384,11 @@ Default is `"p_val &lt; 0.05"`. If using "roc" test, <code>DE_threshold</code> s
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"both"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-03 10:09:27] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">8</span>] Processing: <span style="color: #0000BB;">Ductal, Beta, Pre-endocrine, </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-03 10:09:27] Completed <span style="color: #0000BB;">8</span> tasks in 1.5s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:03:56] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">8</span>] Processing: <span style="color: #0000BB;">Ductal, Beta, Pre-endocrine, </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:03:56] Completed <span style="color: #0000BB;">8</span> tasks in 1.4s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-03 10:09:34] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-03 10:09:34] Completed <span style="color: #0000BB;">13</span> tasks in 9.4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:04:00] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:04:00] Completed <span style="color: #0000BB;">13</span> tasks in 3.2s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>

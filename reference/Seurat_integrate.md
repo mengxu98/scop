@@ -97,8 +97,7 @@ Seurat_integrate(
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
-  times in order to be considered as highly variable. The default value
-  is `1`.
+  times in order to be considered as highly variable. Default is `1`.
 
 - HVF:
 
@@ -200,17 +199,17 @@ Seurat_integrate(
 - FindIntegrationAnchors_params:
 
   A list of parameters for the Seurat::FindIntegrationAnchors function.
-  Default is an empty list.
+  Default is \`list()\`.
 
 - IntegrateData_params:
 
   A list of parameters for the Seurat::IntegrateData function. Default
-  is an empty list.
+  is \`list()\`.
 
 - IntegrateEmbeddings_params:
 
   A list of parameters for the Seurat::IntegrateEmbeddings function.
-  Default is an empty list.
+  Default is \`list()\`.
 
 - verbose:
 

@@ -91,8 +91,7 @@ LIGER_integrate(
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
-  times in order to be considered as highly variable. The default value
-  is `1`.
+  times in order to be considered as highly variable. Default is `1`.
 
 - HVF:
 
@@ -167,15 +166,13 @@ LIGER_integrate(
 
 - optimizeALS_params:
 
-  A list of parameters for the
-  [rliger::optimizeALS](https://welch-lab.github.io/liger/reference/rliger-deprecated.html)
-  function. Default is an empty list.
+  A list of parameters for the rliger::optimizeALS function. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - quantilenorm_params:
 
-  A list of parameters for the
-  [rliger::quantile_norm](https://welch-lab.github.io/liger/reference/rliger-deprecated.html)
-  function. Default is an empty list.
+  A list of parameters for the rliger::quantile_norm function. Default
+  is [`list()`](https://rdrr.io/r/base/list.html).
 
 - verbose:
 

@@ -112,3 +112,7 @@ RunDimReduction(
 - seed:
 
   Set a seed. Default is `11`.
+
+## See also
+
+[DefaultReduction](https://mengxu98.github.io/scop/reference/DefaultReduction.md)

@@ -51,5 +51,9 @@ A string indicating the type of data. Possible values are:
 ``` r
 data(pancreas_sub)
 CheckDataType(pancreas_sub)
+#> Warning: Layer ‘data’ is empty
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
 #> [1] "unknown"
 ```

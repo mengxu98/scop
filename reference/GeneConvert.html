@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,14 +106,18 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with the following elements:</p><ul><li><p><code>geneID_res:</code> A data.frame contains the all gene IDs mapped in the database with columns: <code>"from_IDtype"</code>, <code>"from_geneID"</code>, <code>"to_IDtype"</code>, <code>"to_geneID"</code>.</p></li>
-<li><p><code>geneID_collapse:</code> The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the <code>"from_geneID"</code> column (which is set as the row names) of the data.frame is unique.</p></li>
-<li><p><code>geneID_expand:</code> The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.</p></li>
-<li><p><code>Ensembl_version:</code> Ensembl database version.</p></li>
-<li><p><code>Datasets:</code> Datasets available in the selected BioMart database.</p></li>
-<li><p><code>Attributes:</code> Attributes available in the selected BioMart database.</p></li>
-<li><p><code>geneID_unmapped:</code> A character vector of gene IDs that are unmapped in the database.</p></li>
+    <p>A list with the following elements:</p><ul><li><p><code>geneID_res</code>: A data.frame contains the all gene IDs mapped in the database with columns: <code>"from_IDtype"</code>, <code>"from_geneID"</code>, <code>"to_IDtype"</code>, <code>"to_geneID"</code>.</p></li>
+<li><p><code>geneID_collapse</code>: The data.frame contains all the successfully converted gene IDs, and the output gene IDs are collapsed into a list. As a result, the <code>"from_geneID"</code> column (which is set as the row names) of the data.frame is unique.</p></li>
+<li><p><code>geneID_expand</code>: The data.frame contains all the successfully converted gene IDs, and the output gene IDs are expanded.</p></li>
+<li><p><code>Ensembl_version</code>: Ensembl database version.</p></li>
+<li><p><code>Datasets</code>: Datasets available in the selected BioMart database.</p></li>
+<li><p><code>Attributes</code>: Attributes available in the selected BioMart database.</p></li>
+<li><p><code>geneID_unmapped</code>: A character vector of gene IDs that are unmapped in the database.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="AnnotateFeatures.html">AnnotateFeatures</a></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

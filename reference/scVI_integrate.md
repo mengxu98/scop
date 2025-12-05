@@ -90,8 +90,7 @@ scVI_integrate(
 - HVF_min_intersection:
 
   The feature needs to be present in batches for a minimum number of
-  times in order to be considered as highly variable. The default value
-  is `1`.
+  times in order to be considered as highly variable. Default is `1`.
 
 - HVF:
 
@@ -150,19 +149,19 @@ scVI_integrate(
 - model:
 
   A string indicating the scVI model to be used. Options are "SCVI" and
-  "PEAKVI". Default is "SCVI".
+  "PEAKVI". Default is \`"SCVI"\`.
 
 - SCVI_params:
 
-  A list of parameters for the SCVI model. Default is an empty list.
+  A list of parameters for the SCVI model. Default is \`list()\`.
 
 - PEAKVI_params:
 
-  A list of parameters for the PEAKVI model. Default is an empty list.
+  A list of parameters for the PEAKVI model. Default is \`list()\`.
 
 - num_threads:
 
-  An integer setting the number of threads for scVI. Default is 8.
+  An integer setting the number of threads for scVI. Default is \`8\`.
 
 - verbose:
 

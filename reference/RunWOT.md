@@ -71,7 +71,7 @@ RunWOT(
 - growth_iters:
 
   A number of growth iterations to perform during the OT Model
-  computation. Default is 3.
+  computation. Default is `3`.
 
 - tmap_out:
 

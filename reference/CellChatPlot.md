@@ -126,586 +126,597 @@ pancreas_sub <- RunCellChat(
 #> ✔ Loading metadata database ... done
 #> 
 #>  
-#> → Will install 151 packages.
-#> → Will download 1 CRAN package (1.68 MB), cached: 150 (0 B).
-#> + Biobase          2.70.0     [bld][cmp]
-#> + BiocGenerics     0.56.0     [bld]
-#> + BiocManager      1.30.27    
-#> + BiocNeighbors    2.4.0      [bld][cmp]
-#> + CellChat         2.2.0      [bld][cmp] (GitHub: 623f48f)
-#> + ComplexHeatmap   2.26.0     [bld]
-#> + Deriv            4.2.0      
-#> + FNN              1.1.4.1    
-#> + Formula          1.2-5      
-#> + GetoptLong       1.1.0       + ✔ perl
-#> + GlobalOptions    0.1.3      
-#> + IRanges          2.44.0     [bld][cmp]
-#> + MatrixModels     0.5-4      
-#> + NMF              0.28       [bld][cmp][dl] (1.68 MB)
-#> + R6               2.6.1      
-#> + RColorBrewer     1.1-3      
-#> + RSpectra         0.16-2     
-#> + Rcpp             1.1.0      
-#> + RcppEigen        0.3.4.0.2  
-#> + RcppTOML         0.2.3      
-#> + Rdpack           2.6.4      
-#> + S4Vectors        0.48.0     [bld][cmp]
-#> + S7               0.2.1      
-#> + SparseM          1.84-2     
-#> + abind            1.4-8      
-#> + askpass          1.2.1      
-#> + assorthead       1.4.0      [bld]
-#> + backports        1.5.0      
-#> + base64enc        0.1-3      
-#> + broom            1.0.10     
-#> + bslib            0.9.0      
-#> + cachem           1.1.0      
-#> + car              3.1-3      
-#> + carData          3.0-5      
-#> + circlize         0.4.16     
-#> + cli              3.6.5      
-#> + clue             0.3-66     
-#> + coda             0.19-4.1   
-#> + colorspace       2.1-2      
-#> + commonmark       2.0.0      
-#> + corrplot         0.95       
-#> + cowplot          1.2.0      
-#> + crayon           1.5.3      
-#> + crosstalk        1.2.2      
-#> + curl             7.0.0       + ✔ libcurl4-openssl-dev, ✔ libssl-dev
-#> + data.table       1.17.8     
-#> + digest           0.6.39     
-#> + doBy             4.7.0      
-#> + doParallel       1.0.17     
-#> + dplyr            1.1.4      
-#> + evaluate         1.0.5      
-#> + farver           2.1.2      
-#> + fastmap          1.2.0      
-#> + fontawesome      0.5.3      
-#> + foreach          1.5.2      
-#> + fs               1.6.6       + ✔ make
-#> + future           1.68.0     
-#> + future.apply     1.20.0     
-#> + generics         0.1.4      
-#> + ggalluvial       0.12.5     
-#> + ggnetwork        0.5.14     
-#> + ggplot2          4.0.1      
-#> + ggpubr           0.6.2      
-#> + ggrepel          0.9.6      
-#> + ggsci            4.1.0      
-#> + ggsignif         0.6.4      
-#> + globals          0.18.0     
-#> + glue             1.8.0      
-#> + gridBase         0.4-7      
-#> + gridExtra        2.3        
-#> + gtable           0.3.6      
-#> + here             1.0.2      
-#> + highr            0.11       
-#> + htmltools        0.5.8.1    
-#> + htmlwidgets      1.6.4      
-#> + httpuv           1.6.16      + ✔ make, ✔ zlib1g-dev
-#> + httr             1.4.7      
-#> + igraph           2.2.1       + ✔ libglpk-dev, ✔ libxml2-dev
-#> + irlba            2.3.5.1    
-#> + isoband          0.2.7      
-#> + iterators        1.0.14     
-#> + jquerylib        0.1.4      
-#> + jsonlite         2.0.0      
-#> + knitr            1.50        + ✔ pandoc
-#> + labeling         0.4.3      
-#> + later            1.4.4      
-#> + lazyeval         0.2.2      
-#> + lifecycle        1.0.4      
-#> + listenv          0.10.0     
-#> + lme4             1.1-37     
-#> + magrittr         2.0.4      
-#> + matrixStats      1.5.0      
-#> + memoise          2.0.1      
-#> + microbenchmark   1.5.0      
-#> + mime             0.13       
-#> + minqa            1.2.8       + ✔ make
-#> + modelr           0.1.11     
-#> + network          1.19.0     
-#> + nloptr           2.2.1       + ✔ cmake
-#> + numDeriv         2016.8-1.1 
-#> + openssl          2.3.4       + ✔ libssl-dev
-#> + otel             0.2.0      
-#> + parallelly       1.45.1     
-#> + patchwork        1.3.2      
-#> + pbapply          1.7-4      
-#> + pbkrtest         0.5.5      
-#> + pillar           1.11.1     
-#> + pkgconfig        2.0.3      
-#> + plotly           4.11.0     
-#> + plyr             1.8.9      
-#> + png              0.1-8       + ✔ libpng-dev
-#> + polynom          1.4-1      
-#> + promises         1.5.0      
-#> + purrr            1.2.0      
-#> + quantreg         6.1        
-#> + rappdirs         0.3.3      
-#> + rbibutils        2.4        
-#> + reformulas       0.4.2      
-#> + registry         0.5-1      
-#> + reshape2         1.4.5      
-#> + reticulate       1.44.1      + ✔ python3
-#> + rjson            0.2.23     
-#> + rlang            1.1.6      
-#> + rmarkdown        2.30        + ✔ pandoc
-#> + rngtools         1.5.2      
-#> + rprojroot        2.1.1      
-#> + rstatix          0.7.3      
-#> + sass             0.4.10      + ✔ make
-#> + scales           1.4.0      
-#> + shape            1.4.6.1    
-#> + shiny            1.11.1     
-#> + sna              2.8        
-#> + sourcetools      0.1.7-1    
-#> + statnet.common   4.12.0     
-#> + stringi          1.8.7       + ✔ libicu-dev
-#> + stringr          1.6.0      
-#> + svglite          2.2.2       + ✔ libpng-dev
-#> + sys              3.4.3      
-#> + systemfonts      1.3.1       + ✔ libfontconfig1-dev, ✔ libfreetype6-dev
-#> + textshaping      1.0.4       + ✔ libfreetype6-dev, ✔ libfribidi-dev, ✔ libharfbuzz-dev
-#> + tibble           3.3.0      
-#> + tidyr            1.3.1      
-#> + tidyselect       1.2.1      
-#> + tinytex          0.58       
-#> + utf8             1.2.6      
-#> + vctrs            0.6.5      
-#> + viridisLite      0.4.2      
-#> + withr            3.0.2      
-#> + xfun             0.54       
-#> + xtable           1.8-4      
-#> + yaml             2.3.11     
+#> → Will install 170 packages.
+#> → All 170 packages (0 B) are cached.
+#> + BH                     1.87.0-1 
+#> + Biobase                2.70.0   [bld][cmp]
+#> + BiocGenerics           0.56.0   [bld]
+#> + BiocManager            1.30.27  
+#> + BiocParallel           1.44.0   [bld][cmp]
+#> + BiocStyle              2.38.0   [bld]
+#> + DESeq2                 1.50.2   [bld][cmp]
+#> + DelayedArray           0.36.0   [bld][cmp]
+#> + FNN                    1.1.4.1  
+#> + GenomicRanges          1.62.0   [bld][cmp]
+#> + IRanges                2.44.0   [bld][cmp]
+#> + MatrixGenerics         1.22.0   [bld]
+#> + R6                     2.6.1    
+#> + RANN                   2.6.2    
+#> + RColorBrewer           1.1-3    
+#> + ROCR                   1.0-11   
+#> + RSpectra               0.16-2   
+#> + Rcpp                   1.1.0    
+#> + RcppAnnoy              0.0.22   
+#> + RcppArmadillo          15.2.2-1 
+#> + RcppHNSW               0.6.0    
+#> + RcppTOML               0.2.3    
+#> + Rtsne                  0.17     
+#> + S4Arrays               1.10.1   [bld][cmp]
+#> + S4Vectors              0.48.0   [bld][cmp]
+#> + S7                     0.2.1    
+#> + Seqinfo                1.0.0    [bld]
+#> + Seurat                 5.3.1    
+#> + SeuratObject           5.2.0    
+#> + SingleCellExperiment   1.32.0   [bld]
+#> + SparseArray            1.10.4   [bld][cmp]
+#> + SummarizedExperiment   1.40.0   [bld]
+#> + XVector                0.50.0   [bld][cmp]
+#> + abind                  1.4-8    
+#> + askpass                1.2.1    
+#> + backports              1.5.0    
+#> + base64enc              0.1-3    
+#> + bitops                 1.0-9    
+#> + bookdown               0.45      + ✔ pandoc
+#> + brio                   1.1.5    
+#> + broom                  1.0.11   
+#> + bslib                  0.9.0    
+#> + caTools                1.18.3   
+#> + cachem                 1.1.0    
+#> + callr                  3.7.6    
+#> + cli                    3.6.5    
+#> + commonmark             2.0.0    
+#> + cowplot                1.2.0    
+#> + cpp11                  0.5.2    
+#> + crayon                 1.5.3    
+#> + crosstalk              1.2.2    
+#> + curl                   7.0.0     + ✔ libcurl4-openssl-dev, ✔ libssl-dev
+#> + data.table             1.17.8   
+#> + deldir                 2.0-4    
+#> + desc                   1.4.3    
+#> + diffobj                0.3.6    
+#> + digest                 0.6.39   
+#> + dotCall64              1.2      
+#> + dplyr                  1.1.4    
+#> + evaluate               1.0.5    
+#> + farver                 2.1.2    
+#> + fastDummies            1.7.5    
+#> + fastmap                1.2.0    
+#> + fitdistrplus           1.2-4    
+#> + fontawesome            0.5.3    
+#> + formatR                1.14     
+#> + fs                     1.6.6     + ✔ make
+#> + futile.logger          1.4.3    
+#> + futile.options         1.0.1    
+#> + future                 1.68.0   
+#> + future.apply           1.20.0   
+#> + generics               0.1.4    
+#> + ggplot2                4.0.1    
+#> + ggrepel                0.9.6    
+#> + ggridges               0.5.7    
+#> + globals                0.18.0   
+#> + glue                   1.8.0    
+#> + goftest                1.2-3    
+#> + gplots                 3.3.0    
+#> + gridExtra              2.3      
+#> + gtable                 0.3.6    
+#> + gtools                 3.9.5    
+#> + here                   1.0.2    
+#> + highr                  0.11     
+#> + htmltools              0.5.9    
+#> + htmlwidgets            1.6.4    
+#> + httpuv                 1.6.16    + ✔ make, ✔ zlib1g-dev
+#> + httr                   1.4.7    
+#> + ica                    1.0-3    
+#> + igraph                 2.2.1     + ✔ libglpk-dev, ✔ libxml2-dev
+#> + irlba                  2.3.5.1  
+#> + isoband                0.2.7    
+#> + jquerylib              0.1.4    
+#> + jsonlite               2.0.0    
+#> + knitr                  1.50      + ✔ pandoc
+#> + labeling               0.4.3    
+#> + lambda.r               1.2.4    
+#> + later                  1.4.4    
+#> + lazyeval               0.2.2    
+#> + leidenbase             0.1.35   
+#> + lifecycle              1.0.4    
+#> + listenv                0.10.0   
+#> + lmtest                 0.9-40   
+#> + locfit                 1.5-9.12 
+#> + magrittr               2.0.4    
+#> + matrixStats            1.5.0    
+#> + memoise                2.0.1    
+#> + mime                   0.13     
+#> + miniUI                 0.1.2    
+#> + openssl                2.3.4     + ✔ libssl-dev
+#> + otel                   0.2.0    
+#> + parallelly             1.45.1   
+#> + patchwork              1.3.2    
+#> + pbapply                1.7-4    
+#> + pillar                 1.11.1   
+#> + pkgbuild               1.4.8    
+#> + pkgconfig              2.0.3    
+#> + pkgload                1.4.1    
+#> + plotly                 4.11.0   
+#> + plyr                   1.8.9    
+#> + png                    0.1-8     + ✔ libpng-dev
+#> + polyclip               1.10-7   
+#> + praise                 1.0.0    
+#> + presto                 1.0.0    [bld][cmp] (GitHub: 7636b3d)
+#> + processx               3.8.6    
+#> + progressr              0.18.0   
+#> + promises               1.5.0    
+#> + ps                     1.9.1    
+#> + purrr                  1.2.0    
+#> + rappdirs               0.3.3    
+#> + reshape2               1.4.5    
+#> + reticulate             1.44.1    + ✔ python3
+#> + rlang                  1.1.6    
+#> + rmarkdown              2.30      + ✔ pandoc
+#> + rprojroot              2.1.1    
+#> + sass                   0.4.10    + ✔ make
+#> + scales                 1.4.0    
+#> + scattermore            1.2      
+#> + sctransform            0.4.2    
+#> + shiny                  1.12.0   
+#> + snow                   0.4-4    
+#> + sourcetools            0.1.7-1  
+#> + sp                     2.2-0    
+#> + spam                   2.11-1   
+#> + spatstat.data          3.1-9    
+#> + spatstat.explore       3.6-0    
+#> + spatstat.geom          3.6-1    
+#> + spatstat.random        3.4-3    
+#> + spatstat.sparse        3.1-0    
+#> + spatstat.univar        3.1-5    
+#> + spatstat.utils         3.2-0    
+#> + stringi                1.8.7     + ✔ libicu-dev
+#> + stringr                1.6.0    
+#> + sys                    3.4.3    
+#> + tensor                 1.5.1    
+#> + testthat               3.3.1    
+#> + tibble                 3.3.0    
+#> + tidyr                  1.3.1    
+#> + tidyselect             1.2.1    
+#> + tinytex                0.58     
+#> + utf8                   1.2.6    
+#> + uwot                   0.2.4    
+#> + vctrs                  0.6.5    
+#> + viridisLite            0.4.2    
+#> + waldo                  0.6.2    
+#> + withr                  3.0.2    
+#> + xfun                   0.54     
+#> + xtable                 1.8-4    
+#> + yaml                   2.3.11   
+#> + zoo                    1.8-14   
 #> ✔ All system requirements are already installed.
 #>   
-#> ℹ Getting 1 pkg (1.68 MB), 150 cached
-#> ✔ Got BiocGenerics 0.56.0 (source) (61.53 kB)
-#> ✔ Got base64enc 0.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.57 kB)
+#> ℹ No downloads are needed, 170 pkgs are cached
 #> ✔ Got askpass 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (21.89 kB)
+#> ✔ Got base64enc 0.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.57 kB)
 #> ✔ Got abind 1.4-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.92 kB)
 #> ✔ Got backports 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (115.90 kB)
-#> ✔ Got BiocNeighbors 2.4.0 (source) (338.98 kB)
-#> ✔ Got lazyeval 0.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (157.44 kB)
-#> ✔ Got IRanges 2.44.0 (source) (496.06 kB)
-#> ✔ Got BiocManager 1.30.27 (x86_64-pc-linux-gnu-ubuntu-24.04) (666.57 kB)
-#> ✔ Got parallelly 1.45.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (571.86 kB)
-#> ✔ Got png 0.1-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (40.57 kB)
-#> ✔ Got S4Vectors 0.48.0 (source) (843.90 kB)
-#> ✔ Got ComplexHeatmap 2.26.0 (source) (1.47 MB)
-#> ✔ Got Rdpack 2.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (637.80 kB)
-#> ✔ Got RSpectra 0.16-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (529.66 kB)
-#> ✔ Got isoband 0.2.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.64 MB)
-#> ✔ Got Deriv 4.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.58 kB)
-#> ✔ Got Biobase 2.70.0 (source) (1.98 MB)
-#> ✔ Got broom 1.0.10 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.92 MB)
-#> ✔ Got crosstalk 1.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (412.02 kB)
-#> ✔ Got assorthead 1.4.0 (source) (1.91 MB)
-#> ✔ Got NMF 0.28 (source) (1.68 MB)
-#> ✔ Got fs 1.6.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (310.07 kB)
-#> ✔ Got htmlwidgets 1.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (815.05 kB)
-#> ✔ Got dplyr 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.49 MB)
-#> ✔ Got farver 2.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.47 MB)
-#> ✔ Got fontawesome 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.40 MB)
-#> ✔ Got ggrepel 0.9.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (290.23 kB)
-#> ✔ Got jquerylib 0.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (526.85 kB)
-#> ✔ Got labeling 0.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (60.95 kB)
-#> ✔ Got later 1.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (155.03 kB)
-#> ✔ Got memoise 2.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (48.86 kB)
-#> ✔ Got pbapply 1.7-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (100.53 kB)
-#> ✔ Got nloptr 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (567.65 kB)
-#> ✔ Got ggsci 4.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.30 MB)
-#> ✔ Got numDeriv 2016.8-1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (114.36 kB)
-#> ✔ Got pillar 1.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (660.46 kB)
-#> ✔ Got otel 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (279.62 kB)
-#> ✔ Got R6 2.6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (86.81 kB)
-#> ✔ Got polynom 1.4-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (406.99 kB)
-#> ✔ Got purrr 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (553.55 kB)
-#> ✔ Got reformulas 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.23 kB)
-#> ✔ Got ggnetwork 0.5.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.97 MB)
-#> ✔ Got rprojroot 2.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (113.23 kB)
-#> ✔ Got sna 2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.28 MB)
-#> ✔ Got rlang 1.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.59 MB)
-#> ✔ Got shape 1.4.6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (749.97 kB)
-#> ✔ Got Rcpp 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.19 MB)
-#> ✔ Got svglite 2.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (239.34 kB)
-#> ✔ Got tidyselect 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (225.28 kB)
-#> ✔ Got lme4 1.1-37 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.28 MB)
-#> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
-#> ✔ Got tibble 3.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (680.35 kB)
-#> ✔ Got ggplot2 4.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (8.47 MB)
-#> ✔ Got vctrs 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.31 MB)
-#> ✔ Got clue 0.3-66 (x86_64-pc-linux-gnu-ubuntu-24.04) (998.14 kB)
-#> ✔ Got carData 3.0-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.70 MB)
-#> ✔ Got cachem 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (67.49 kB)
-#> ✔ Got Formula 1.2-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (159.13 kB)
-#> ✔ Got coda 0.19-4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (327.75 kB)
-#> ✔ Got stringi 1.8.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.29 MB)
-#> ✔ Got doParallel 1.0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (188.11 kB)
-#> ✔ Got fastmap 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (66.05 kB)
-#> ✔ Got foreach 1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.65 kB)
-#> ✔ Got ggsignif 0.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (602.07 kB)
-#> ✔ Got globals 0.18.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (158.33 kB)
-#> ✔ Got future 1.68.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (966.66 kB)
-#> ✔ Got data.table 1.17.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.67 MB)
-#> ✔ Got gridBase 0.4-7 (x86_64-pc-linux-gnu-ubuntu-24.04) (162.00 kB)
-#> ✔ Got httr 1.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (486.52 kB)
-#> ✔ Got highr 0.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (37.50 kB)
-#> ✔ Got corrplot 0.95 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.82 MB)
-#> ✔ Got iterators 1.0.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (346.57 kB)
-#> ✔ Got magrittr 2.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (221.44 kB)
-#> ✔ Got colorspace 2.1-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.64 MB)
-#> ✔ Got MatrixModels 0.5-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (408.50 kB)
-#> ✔ Got microbenchmark 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (65.96 kB)
-#> ✔ Got modelr 0.1.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (200.70 kB)
-#> ✔ Got pkgconfig 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.08 kB)
-#> ✔ Got bslib 0.9.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.67 MB)
-#> ✔ Got matrixStats 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (474.75 kB)
-#> ✔ Got ggalluvial 0.12.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.66 MB)
-#> ✔ Got network 1.19.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (823.12 kB)
-#> ✔ Got plyr 1.8.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (787.35 kB)
-#> ✔ Got S7 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (325.15 kB)
-#> ✔ Got ggpubr 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.13 MB)
-#> ✔ Got quantreg 6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.46 MB)
-#> ✔ Got promises 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
-#> ✔ Got rngtools 1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (78.03 kB)
-#> ✔ Got stringr 1.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (333.76 kB)
-#> ✔ Got RcppEigen 0.3.4.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.85 MB)
-#> ✔ Got sys 3.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (40.73 kB)
-#> ✔ Got textshaping 1.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (189.59 kB)
-#> ✔ Got statnet.common 4.12.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (313.83 kB)
-#> ✔ Got scales 1.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (841.36 kB)
-#> ✔ Got utf8 1.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.81 kB)
-#> ✔ Got commonmark 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (148.07 kB)
-#> ✔ Got crayon 1.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (163.30 kB)
-#> ✔ Got plotly 4.11.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.86 MB)
-#> ✔ Got reticulate 1.44.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.98 MB)
-#> ✔ Got tidyr 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.18 MB)
-#> ✔ Got sass 0.4.10 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.46 MB)
-#> ✔ Got generics 0.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (80.38 kB)
-#> ✔ Got here 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (53.59 kB)
-#> ✔ Got FNN 1.1.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (128.22 kB)
-#> ✔ Got curl 7.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (788.30 kB)
-#> ✔ Got listenv 0.10.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (106.64 kB)
-#> ✔ Got glue 1.8.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (168.12 kB)
-#> ✔ Got minqa 1.2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.60 kB)
-#> ✔ Got htmltools 0.5.8.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (354.46 kB)
-#> ✔ Got pbkrtest 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.06 kB)
-#> ✔ Got RColorBrewer 1.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (51.81 kB)
-#> ✔ Got irlba 2.3.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (292.19 kB)
-#> ✔ Got reshape2 1.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.33 kB)
-#> ✔ Got rjson 0.2.23 (x86_64-pc-linux-gnu-ubuntu-24.04) (113.12 kB)
-#> ✔ Got httpuv 1.6.16 (x86_64-pc-linux-gnu-ubuntu-24.04) (656.07 kB)
-#> ✔ Got sourcetools 0.1.7-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (46.59 kB)
-#> ✔ Got xfun 0.54 (x86_64-pc-linux-gnu-ubuntu-24.04) (583.00 kB)
-#> ✔ Got systemfonts 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (816.45 kB)
-#> ✔ Got rbibutils 2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.15 MB)
-#> ✔ Got evaluate 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (102.86 kB)
-#> ✔ Got cli 3.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.34 MB)
-#> ✔ Got circlize 0.4.16 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.32 MB)
+#> ✔ Got BiocGenerics 0.56.0 (source) (61.53 kB)
 #> ✔ Got lifecycle 1.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (125.07 kB)
-#> ✔ Got gridExtra 2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.11 MB)
-#> ✔ Got rappdirs 0.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (45.26 kB)
-#> ✔ Got car 3.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.54 MB)
-#> ✔ Got registry 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (194.47 kB)
-#> ✔ Got knitr 1.50 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.10 MB)
-#> ✔ Got xtable 1.8-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (706.31 kB)
-#> ✔ Got openssl 2.3.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.31 MB)
 #> ✔ Got gtable 0.3.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.55 kB)
-#> ✔ Got mime 0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (44.52 kB)
-#> ✔ Got RcppTOML 0.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (244.01 kB)
-#> ✔ Got viridisLite 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
-#> ✔ Got future.apply 1.20.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (191.24 kB)
-#> ✔ Got shiny 1.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.44 MB)
-#> ✔ Got rstatix 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (615.19 kB)
-#> ✔ Got withr 3.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (223.90 kB)
-#> ✔ Got cowplot 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.38 MB)
-#> ✔ Got jsonlite 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.09 MB)
-#> ✔ Got rmarkdown 2.30 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.64 MB)
-#> ✔ Got igraph 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.84 MB)
-#> ✔ Got doBy 4.7.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.91 MB)
-#> ✔ Got patchwork 1.3.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.35 MB)
-#> ✔ Got CellChat 2.2.0 (source) (29.82 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Fetched 126 kB in 0s (353 kB/s)
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make perl zlib1g-dev libglpk-dev libxml2-dev pandoc cmake libpng-dev python3 libicu-dev libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> perl is already the newest version (5.38.2-3.2ubuntu0.2).
-#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> cmake is already the newest version (3.28.3-1build7).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> python3 is already the newest version (3.12.3-0ubuntu2.1).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libfribidi-dev is already the newest version (1.0.13-3build1).
-#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ℹ Building assorthead 1.4.0
-#> ✔ Installed abind 1.4-8  (77ms)
-#> ✔ Installed askpass 1.2.1  (86ms)
-#> ✔ Installed backports 1.5.0  (115ms)
-#> ✔ Installed base64enc 0.1-3  (64ms)
-#> ✔ Installed BiocManager 1.30.27  (66ms)
-#> ✔ Installed broom 1.0.10  (96ms)
-#> ✔ Installed bslib 0.9.0  (141ms)
-#> ✔ Installed cachem 1.1.0  (70ms)
-#> ✔ Installed car 3.1-3  (70ms)
-#> ✔ Installed carData 3.0-5  (70ms)
-#> ✔ Installed circlize 0.4.16  (73ms)
-#> ✔ Installed cli 3.6.5  (70ms)
-#> ✔ Installed clue 0.3-66  (66ms)
-#> ✔ Installed coda 0.19-4.1  (94ms)
-#> ✔ Installed colorspace 2.1-2  (73ms)
-#> ✔ Installed commonmark 2.0.0  (69ms)
-#> ✔ Installed corrplot 0.95  (72ms)
-#> ✔ Installed cowplot 1.2.0  (69ms)
-#> ✔ Installed crayon 1.5.3  (68ms)
-#> ✔ Installed crosstalk 1.2.2  (87ms)
-#> ✔ Installed curl 7.0.0  (129ms)
-#> ✔ Installed data.table 1.17.8  (78ms)
-#> ✔ Installed Deriv 4.2.0  (98ms)
-#> ✔ Installed digest 0.6.39  (99ms)
-#> ✔ Installed doBy 4.7.0  (76ms)
-#> ✔ Installed doParallel 1.0.17  (73ms)
-#> ✔ Installed dplyr 1.1.4  (79ms)
-#> ✔ Installed evaluate 1.0.5  (99ms)
-#> ✔ Installed farver 2.1.2  (97ms)
-#> ✔ Installed fastmap 1.2.0  (64ms)
-#> ✔ Installed FNN 1.1.4.1  (64ms)
-#> ✔ Installed fontawesome 0.5.3  (68ms)
-#> ✔ Installed foreach 1.5.2  (66ms)
-#> ✔ Installed Formula 1.2-5  (65ms)
-#> ✔ Installed fs 1.6.6  (68ms)
-#> ✔ Installed future 1.68.0  (102ms)
-#> ✔ Installed future.apply 1.20.0  (69ms)
-#> ✔ Installed generics 0.1.4  (67ms)
-#> ℹ Building BiocGenerics 0.56.0
-#> ✔ Installed GetoptLong 1.1.0  (82ms)
-#> ✔ Installed ggalluvial 0.12.5  (1.1s)
-#> ✔ Built assorthead 1.4.0 (3.5s)
-#> ✔ Installed ggnetwork 0.5.14  (65ms)
-#> ✔ Installed ggpubr 0.6.2  (1s)
-#> ✔ Installed ggplot2 4.0.1  (1.1s)
-#> ✔ Installed ggrepel 0.9.6  (81ms)
-#> ✔ Installed ggsci 4.1.0  (101ms)
-#> ✔ Installed ggsignif 0.6.4  (90ms)
-#> ✔ Installed GlobalOptions 0.1.3  (70ms)
-#> ✔ Installed globals 0.18.0  (104ms)
-#> ✔ Installed glue 1.8.0  (71ms)
-#> ✔ Installed gridBase 0.4-7  (90ms)
-#> ✔ Installed gridExtra 2.3  (90ms)
-#> ✔ Installed gtable 0.3.6  (70ms)
-#> ✔ Installed here 1.0.2  (69ms)
-#> ✔ Installed highr 0.11  (68ms)
-#> ✔ Installed htmltools 0.5.8.1  (110ms)
-#> ✔ Built BiocGenerics 0.56.0 (3.2s)
-#> ✔ Installed htmlwidgets 1.6.4  (93ms)
-#> ✔ Installed httpuv 1.6.16  (87ms)
-#> ✔ Installed httr 1.4.7  (67ms)
-#> ✔ Installed irlba 2.3.5.1  (1s)
-#> ✔ Installed igraph 2.2.1  (1.1s)
-#> ✔ Installed isoband 0.2.7  (101ms)
-#> ✔ Installed iterators 1.0.14  (96ms)
-#> ✔ Installed jquerylib 0.1.4  (62ms)
-#> ✔ Installed jsonlite 2.0.0  (62ms)
-#> ✔ Installed knitr 1.50  (73ms)
-#> ✔ Installed labeling 0.4.3  (71ms)
-#> ✔ Installed later 1.4.4  (62ms)
-#> ✔ Installed lazyeval 0.2.2  (62ms)
-#> ✔ Installed lifecycle 1.0.4  (97ms)
-#> ✔ Installed listenv 0.10.0  (64ms)
-#> ✔ Installed lme4 1.1-37  (68ms)
-#> ✔ Installed magrittr 2.0.4  (69ms)
-#> ✔ Installed MatrixModels 0.5-4  (68ms)
-#> ✔ Installed matrixStats 1.5.0  (66ms)
-#> ✔ Installed memoise 2.0.1  (62ms)
-#> ✔ Installed microbenchmark 1.5.0  (103ms)
-#> ✔ Installed mime 0.13  (64ms)
-#> ✔ Installed minqa 1.2.8  (62ms)
-#> ✔ Installed modelr 0.1.11  (62ms)
-#> ✔ Installed network 1.19.0  (65ms)
-#> ✔ Installed nloptr 2.2.1  (64ms)
-#> ✔ Installed numDeriv 2016.8-1.1  (62ms)
-#> ✔ Installed openssl 2.3.4  (99ms)
-#> ✔ Installed otel 0.2.0  (67ms)
-#> ✔ Installed parallelly 1.45.1  (67ms)
-#> ✔ Installed patchwork 1.3.2  (72ms)
-#> ✔ Installed pbapply 1.7-4  (67ms)
-#> ✔ Installed pbkrtest 0.5.5  (64ms)
-#> ✔ Installed pillar 1.11.1  (64ms)
-#> ✔ Installed pkgconfig 2.0.3  (97ms)
-#> ✔ Installed plotly 4.11.0  (100ms)
-#> ✔ Installed plyr 1.8.9  (69ms)
-#> ✔ Installed png 0.1-8  (62ms)
-#> ✔ Installed polynom 1.4-1  (61ms)
-#> ✔ Installed promises 1.5.0  (63ms)
-#> ✔ Installed purrr 1.2.0  (65ms)
-#> ✔ Installed quantreg 6.1  (64ms)
-#> ✔ Installed R6 2.6.1  (98ms)
-#> ✔ Installed rappdirs 0.3.3  (69ms)
-#> ✔ Installed rbibutils 2.4  (69ms)
-#> ✔ Installed RColorBrewer 1.1-3  (62ms)
-#> ✔ Installed Rcpp 1.1.0  (65ms)
-#> ✔ Installed RcppEigen 0.3.4.0.2  (1.1s)
-#> ✔ Installed RcppTOML 0.2.3  (1.1s)
-#> ✔ Installed Rdpack 2.6.4  (101ms)
-#> ✔ Installed reformulas 0.4.2  (64ms)
-#> ✔ Installed registry 0.5-1  (61ms)
-#> ✔ Installed reshape2 1.4.5  (62ms)
-#> ✔ Installed reticulate 1.44.1  (66ms)
-#> ✔ Installed rjson 0.2.23  (62ms)
-#> ✔ Installed rlang 1.1.6  (67ms)
-#> ✔ Installed rmarkdown 2.30  (115ms)
-#> ✔ Installed rngtools 1.5.2  (70ms)
-#> ✔ Installed rprojroot 2.1.1  (65ms)
-#> ✔ Installed RSpectra 0.16-2  (65ms)
-#> ✔ Installed rstatix 0.7.3  (66ms)
-#> ✔ Installed S7 0.2.1  (66ms)
-#> ✔ Installed sass 0.4.10  (67ms)
-#> ✔ Installed scales 1.4.0  (106ms)
-#> ✔ Installed shape 1.4.6.1  (69ms)
-#> ✔ Installed sna 2.8  (1s)
-#> ✔ Installed shiny 1.11.1  (1.1s)
-#> ✔ Installed sourcetools 0.1.7-1  (73ms)
-#> ✔ Installed SparseM 1.84-2  (62ms)
-#> ✔ Installed statnet.common 4.12.0  (62ms)
-#> ✔ Installed stringi 1.8.7  (1.1s)
-#> ✔ Installed stringr 1.6.0  (1.1s)
-#> ✔ Installed svglite 2.2.2  (69ms)
-#> ✔ Installed sys 3.4.3  (65ms)
-#> ✔ Installed systemfonts 1.3.1  (67ms)
-#> ✔ Installed textshaping 1.0.4  (68ms)
-#> ✔ Installed tibble 3.3.0  (70ms)
-#> ✔ Installed tidyr 1.3.1  (109ms)
-#> ✔ Installed tidyselect 1.2.1  (74ms)
-#> ✔ Installed tinytex 0.58  (65ms)
-#> ✔ Installed utf8 1.2.6  (64ms)
-#> ✔ Installed vctrs 0.6.5  (66ms)
-#> ✔ Installed viridisLite 0.4.2  (65ms)
-#> ✔ Installed withr 3.0.2  (64ms)
-#> ✔ Installed xfun 0.54  (104ms)
-#> ✔ Installed xtable 1.8-4  (104ms)
-#> ✔ Installed yaml 2.3.11  (66ms)
-#> ✔ Installed BiocGenerics 0.56.0  (1s)
-#> ℹ Building Biobase 2.70.0
-#> ✔ Installed assorthead 1.4.0  (1.1s)
-#> ℹ Building BiocNeighbors 2.4.0
-#> ℹ Building S4Vectors 0.48.0
-#> ✔ Built Biobase 2.70.0 (9s)
-#> ✔ Installed Biobase 2.70.0  (68ms)
-#> ℹ Building NMF 0.28
-#> ✔ Built S4Vectors 0.48.0 (22.7s)
-#> ✔ Installed S4Vectors 0.48.0  (64ms)
-#> ℹ Building IRanges 2.44.0
-#> ✔ Built NMF 0.28 (16.7s)
-#> ✔ Installed NMF 0.28  (64ms)
-#> ✔ Built BiocNeighbors 2.4.0 (35.3s)
-#> ✔ Installed BiocNeighbors 2.4.0  (80ms)
-#> ✔ Built IRanges 2.44.0 (36.7s)
-#> ✔ Installed IRanges 2.44.0  (41ms)
-#> ℹ Building ComplexHeatmap 2.26.0
-#> ✔ Built ComplexHeatmap 2.26.0 (12.3s)
-#> ✔ Installed ComplexHeatmap 2.26.0  (1.1s)
-#> ℹ Packaging CellChat 2.2.0
-#> ✔ Packaged CellChat 2.2.0 (4s)
-#> ℹ Building CellChat 2.2.0
-#> ✔ Built CellChat 2.2.0 (23.8s)
-#> ✔ Installed CellChat 2.2.0 (github::jinworks/CellChat@623f48f) (58ms)
-#> ✔ 1 pkg + 160 deps: kept 9, added 151, dld 146 (NA B) [2m 27.4s]
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + RcppArmadillo   15.2.2-1 
-#> + presto          1.0.0    [bld][cmp] (GitHub: 7636b3d)
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
+#> ✔ Got rprojroot 2.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (113.23 kB)
+#> ✔ Got gtools 3.9.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (361.11 kB)
+#> ✔ Got rappdirs 0.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (45.26 kB)
+#> ✔ Got DelayedArray 0.36.0 (source) (816.30 kB)
+#> ✔ Got BiocStyle 2.38.0 (source) (908.65 kB)
+#> ✔ Got BiocManager 1.30.27 (x86_64-pc-linux-gnu-ubuntu-24.04) (666.57 kB)
+#> ✔ Got xtable 1.8-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (706.31 kB)
+#> ✔ Got MatrixGenerics 1.22.0 (source) (34.60 kB)
+#> ✔ Got RSpectra 0.16-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (529.66 kB)
+#> ✔ Got BiocParallel 1.44.0 (source) (1.11 MB)
+#> ✔ Got XVector 0.50.0 (source) (71.42 kB)
+#> ✔ Got tensor 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (13.96 kB)
+#> ✔ Got gridExtra 2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.11 MB)
+#> ✔ Got spatstat.sparse 3.1-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (213.31 kB)
+#> ✔ Got IRanges 2.44.0 (source) (496.06 kB)
+#> ✔ Got cpp11 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (289.40 kB)
+#> ✔ Got desc 1.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (334.52 kB)
+#> ✔ Got GenomicRanges 1.62.0 (source) (1.38 MB)
+#> ✔ Got Biobase 2.70.0 (source) (1.98 MB)
+#> ✔ Got curl 7.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (788.30 kB)
+#> ✔ Got zoo 1.8-14 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got fastmap 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (66.05 kB)
+#> ✔ Got DESeq2 1.50.2 (source) (2.69 MB)
+#> ✔ Got RcppArmadillo 15.2.2-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.70 MB)
+#> ✔ Got FNN 1.1.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (128.22 kB)
+#> ✔ Got dplyr 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.49 MB)
+#> ✔ Got fs 1.6.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (310.07 kB)
+#> ✔ Got goftest 1.2-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (58.64 kB)
+#> ✔ Got farver 2.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.47 MB)
+#> ✔ Got here 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (53.59 kB)
+#> ✔ Got magrittr 2.0.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (221.44 kB)
+#> ✔ Got httr 1.4.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (486.52 kB)
+#> ✔ Got listenv 0.10.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (106.64 kB)
+#> ✔ Got htmlwidgets 1.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (815.05 kB)
+#> ✔ Got pkgload 1.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.06 kB)
+#> ✔ Got knitr 1.50 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.10 MB)
+#> ✔ Got polyclip 1.10-7 (x86_64-pc-linux-gnu-ubuntu-24.04) (120.02 kB)
+#> ✔ Got ps 1.9.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (499.64 kB)
+#> ✔ Got R6 2.6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (86.81 kB)
+#> ✔ Got locfit 1.5-9.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (539.82 kB)
+#> ✔ Got processx 3.8.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (337.39 kB)
+#> ✔ Got ROCR 1.0-11 (x86_64-pc-linux-gnu-ubuntu-24.04) (465.58 kB)
+#> ✔ Got reshape2 1.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.33 kB)
+#> ✔ Got rlang 1.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.59 MB)
 #> ✔ Got presto 1.0.0 (source) (746.05 kB)
+#> ✔ Got Rcpp 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.19 MB)
+#> ✔ Got plotly 4.11.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.86 MB)
+#> ✔ Got rmarkdown 2.30 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.64 MB)
+#> ✔ Got spatstat.utils 3.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (401.56 kB)
+#> ✔ Got SeuratObject 5.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.08 MB)
+#> ✔ Got stringr 1.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (333.76 kB)
+#> ✔ Got ggplot2 4.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (8.47 MB)
+#> ✔ Got waldo 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (135.16 kB)
+#> ✔ Got Seurat 5.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.70 MB)
+#> ✔ Got tinytex 0.58 (x86_64-pc-linux-gnu-ubuntu-24.04) (143.77 kB)
+#> ✔ Got yaml 2.3.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (115.50 kB)
+#> ✔ Got vctrs 0.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.31 MB)
+#> ✔ Got spam 2.11-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.75 MB)
+#> ✔ Got Seqinfo 1.0.0 (source) (254.66 kB)
+#> ✔ Got S4Vectors 0.48.0 (source) (843.90 kB)
+#> ✔ Got SummarizedExperiment 1.40.0 (source) (690.87 kB)
+#> ✔ Got testthat 3.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.11 MB)
+#> ✔ Got tidyr 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.18 MB)
+#> ✔ Got caTools 1.18.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (205.11 kB)
+#> ✔ Got fastDummies 1.7.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (41.76 kB)
+#> ✔ Got SingleCellExperiment 1.32.0 (source) (987.98 kB)
+#> ✔ Got dotCall64 1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.26 kB)
+#> ✔ Got bookdown 0.45 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.09 MB)
+#> ✔ Got cli 3.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.34 MB)
+#> ✔ Got diffobj 0.3.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.00 MB)
+#> ✔ Got globals 0.18.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (158.33 kB)
+#> ✔ Got BH 1.87.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (13.35 MB)
+#> ✔ Got futile.logger 1.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (96.77 kB)
+#> ✔ Got ggrepel 0.9.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (290.23 kB)
+#> ✔ Got glue 1.8.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (168.12 kB)
+#> ✔ Got cowplot 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.38 MB)
+#> ✔ Got future 1.68.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (966.66 kB)
+#> ✔ Got httpuv 1.6.16 (x86_64-pc-linux-gnu-ubuntu-24.04) (656.07 kB)
+#> ✔ Got highr 0.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (37.50 kB)
+#> ✔ Got labeling 0.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (60.95 kB)
+#> ✔ Got data.table 1.17.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.67 MB)
+#> ✔ Got pbapply 1.7-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (100.53 kB)
+#> ✔ Got lambda.r 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (110.01 kB)
+#> ✔ Got fontawesome 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.40 MB)
+#> ✔ Got pkgbuild 1.4.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (208.62 kB)
+#> ✔ Got irlba 2.3.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (292.19 kB)
+#> ✔ Got matrixStats 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (474.75 kB)
+#> ✔ Got isoband 0.2.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.64 MB)
+#> ✔ Got png 0.1-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (40.57 kB)
+#> ✔ Got praise 1.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (16.39 kB)
+#> ✔ Got parallelly 1.45.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (571.86 kB)
+#> ✔ Got RANN 2.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (43.84 kB)
+#> ✔ Got RcppHNSW 0.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (217.19 kB)
+#> ✔ Got openssl 2.3.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.31 MB)
+#> ✔ Got sourcetools 0.1.7-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (46.59 kB)
+#> ✔ Got progressr 0.18.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (412.00 kB)
+#> ✔ Got scales 1.4.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (841.36 kB)
+#> ✔ Got reticulate 1.44.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.98 MB)
+#> ✔ Got spatstat.univar 3.1-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (325.81 kB)
+#> ✔ Got leidenbase 0.1.35 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.33 MB)
+#> ✔ Got patchwork 1.3.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.35 MB)
+#> ✔ Got spatstat.random 3.4-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.23 MB)
+#> ✔ Got tibble 3.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (680.35 kB)
+#> ✔ Got withr 3.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (223.90 kB)
+#> ✔ Got utf8 1.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.81 kB)
+#> ✔ Got brio 1.1.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.30 kB)
+#> ✔ Got callr 3.7.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (449.24 kB)
+#> ✔ Got crosstalk 1.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (412.02 kB)
+#> ✔ Got digest 0.6.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.38 kB)
+#> ✔ Got spatstat.explore 3.6-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.56 MB)
+#> ✔ Got uwot 0.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.03 MB)
+#> ✔ Got deldir 2.0-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (278.91 kB)
+#> ✔ Got stringi 1.8.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.29 MB)
+#> ✔ Got formatR 1.14 (x86_64-pc-linux-gnu-ubuntu-24.04) (151.65 kB)
+#> ✔ Got future.apply 1.20.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (191.24 kB)
+#> ✔ Got memoise 2.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (48.86 kB)
+#> ✔ Got miniUI 0.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.20 kB)
+#> ✔ Got ica 1.0-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (85.54 kB)
+#> ✔ Got otel 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (279.62 kB)
+#> ✔ Got pillar 1.11.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (660.46 kB)
+#> ✔ Got lmtest 0.9-40 (x86_64-pc-linux-gnu-ubuntu-24.04) (403.49 kB)
+#> ✔ Got RColorBrewer 1.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (51.81 kB)
+#> ✔ Got RcppAnnoy 0.0.22 (x86_64-pc-linux-gnu-ubuntu-24.04) (269.84 kB)
+#> ✔ Got sp 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.31 MB)
+#> ✔ Got ggridges 0.5.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.25 MB)
+#> ✔ Got promises 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
+#> ✔ Got S7 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (325.15 kB)
+#> ✔ Got bslib 0.9.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.67 MB)
+#> ✔ Got tidyselect 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (225.28 kB)
+#> ✔ Got xfun 0.54 (x86_64-pc-linux-gnu-ubuntu-24.04) (583.00 kB)
+#> ✔ Got cachem 1.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (67.49 kB)
+#> ✔ Got commonmark 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (148.07 kB)
+#> ✔ Got evaluate 1.0.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (102.86 kB)
+#> ✔ Got sctransform 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (565.83 kB)
+#> ✔ Got futile.options 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.42 kB)
+#> ✔ Got lazyeval 0.2.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (157.44 kB)
+#> ✔ Got sass 0.4.10 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.46 MB)
+#> ✔ Got jsonlite 2.0.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.09 MB)
+#> ✔ Got plyr 1.8.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (787.35 kB)
+#> ✔ Got Rtsne 0.17 (x86_64-pc-linux-gnu-ubuntu-24.04) (118.33 kB)
+#> ✔ Got sys 3.4.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (40.73 kB)
+#> ✔ Got RcppTOML 0.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (244.01 kB)
+#> ✔ Got bitops 1.0-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (26.02 kB)
+#> ✔ Got purrr 1.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (553.55 kB)
+#> ✔ Got crayon 1.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (163.30 kB)
+#> ✔ Got pkgconfig 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (18.08 kB)
+#> ✔ Got later 1.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (155.03 kB)
+#> ✔ Got igraph 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.84 MB)
+#> ✔ Got generics 0.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (80.38 kB)
+#> ✔ Got mime 0.13 (x86_64-pc-linux-gnu-ubuntu-24.04) (44.52 kB)
+#> ✔ Got snow 0.4-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (97.07 kB)
+#> ✔ Got jquerylib 0.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (526.85 kB)
+#> ✔ Got viridisLite 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
+#> ✔ Got scattermore 1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (339.10 kB)
+#> ✔ Got spatstat.data 3.1-9 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.17 MB)
+#> ✔ Got gplots 3.3.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.90 MB)
+#> ✔ Got fitdistrplus 1.2-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.96 MB)
+#> ✔ Got spatstat.geom 3.6-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.18 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libicu-dev`
+#> ℹ Executing `sudo sh -c apt-get -y install pandoc libcurl4-openssl-dev libssl-dev make zlib1g-dev libglpk-dev libxml2-dev libpng-dev python3 libicu-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> make is already the newest version (4.3-4.1build2).
+#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
+#> libglpk-dev is already the newest version (5.0-1build2).
+#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
+#> libpng-dev is already the newest version (1.6.43-5build1).
+#> python3 is already the newest version (3.12.3-0ubuntu2.1).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
-#> ✔ Installed RcppArmadillo 15.2.2-1  (1.1s)
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ✔ Installed abind 1.4-8  (79ms)
+#> ✔ Installed askpass 1.2.1  (93ms)
+#> ✔ Installed backports 1.5.0  (112ms)
+#> ✔ Installed base64enc 0.1-3  (141ms)
+#> ✔ Installed BiocManager 1.30.27  (1s)
+#> ✔ Installed BH 1.87.0-1  (1.1s)
+#> ✔ Installed bitops 1.0-9  (64ms)
+#> ✔ Installed bookdown 0.45  (71ms)
+#> ✔ Installed brio 1.1.5  (71ms)
+#> ✔ Installed broom 1.0.11  (135ms)
+#> ✔ Installed bslib 0.9.0  (1.1s)
+#> ✔ Installed cachem 1.1.0  (1.1s)
+#> ✔ Installed callr 3.7.6  (65ms)
+#> ✔ Installed caTools 1.18.3  (113ms)
+#> ✔ Installed cli 3.6.5  (66ms)
+#> ✔ Installed commonmark 2.0.0  (68ms)
+#> ✔ Installed cowplot 1.2.0  (69ms)
+#> ✔ Installed cpp11 0.5.2  (70ms)
+#> ✔ Installed crayon 1.5.3  (67ms)
+#> ✔ Installed crosstalk 1.2.2  (119ms)
+#> ✔ Installed curl 7.0.0  (77ms)
+#> ✔ Installed data.table 1.17.8  (81ms)
+#> ✔ Installed deldir 2.0-4  (77ms)
+#> ✔ Installed desc 1.4.3  (65ms)
+#> ✔ Installed diffobj 0.3.6  (68ms)
+#> ✔ Installed digest 0.6.39  (110ms)
+#> ✔ Installed dotCall64 1.2  (117ms)
+#> ✔ Installed dplyr 1.1.4  (69ms)
+#> ✔ Installed evaluate 1.0.5  (69ms)
+#> ✔ Installed farver 2.1.2  (67ms)
+#> ✔ Installed fastDummies 1.7.5  (69ms)
+#> ✔ Installed fastmap 1.2.0  (66ms)
+#> ✔ Installed fitdistrplus 1.2-4  (116ms)
+#> ✔ Installed FNN 1.1.4.1  (68ms)
+#> ✔ Installed fontawesome 0.5.3  (66ms)
+#> ✔ Installed formatR 1.14  (66ms)
+#> ✔ Installed fs 1.6.6  (67ms)
+#> ✔ Installed futile.logger 1.4.3  (69ms)
+#> ✔ Installed futile.options 1.0.1  (118ms)
+#> ✔ Installed future 1.68.0  (79ms)
+#> ✔ Installed future.apply 1.20.0  (70ms)
+#> ✔ Installed generics 0.1.4  (67ms)
+#> ℹ Building BiocGenerics 0.56.0
+#> ✔ Installed ggplot2 4.0.1  (435ms)
+#> ✔ Installed ggrepel 0.9.6  (1.1s)
+#> ✔ Installed globals 0.18.0  (1s)
+#> ✔ Installed ggridges 0.5.7  (1.1s)
+#> ✔ Installed glue 1.8.0  (107ms)
+#> ✔ Installed goftest 1.2-3  (137ms)
+#> ✔ Installed gridExtra 2.3  (1s)
+#> ✔ Built BiocGenerics 0.56.0 (3.6s)
+#> ✔ Installed gplots 3.3.0  (1.2s)
+#> ✔ Installed gtable 0.3.6  (94ms)
+#> ✔ Installed gtools 3.9.5  (125ms)
+#> ✔ Installed here 1.0.2  (82ms)
+#> ✔ Installed highr 0.11  (68ms)
+#> ✔ Installed htmltools 0.5.9  (69ms)
+#> ✔ Installed htmlwidgets 1.6.4  (71ms)
+#> ✔ Installed httpuv 1.6.16  (74ms)
+#> ✔ Installed httr 1.4.7  (121ms)
+#> ✔ Installed ica 1.0-3  (87ms)
+#> ✔ Installed irlba 2.3.5.1  (1s)
+#> ✔ Installed igraph 2.2.1  (1.1s)
+#> ✔ Installed isoband 0.2.7  (121ms)
+#> ✔ Installed jquerylib 0.1.4  (68ms)
+#> ✔ Installed jsonlite 2.0.0  (66ms)
+#> ✔ Installed knitr 1.50  (78ms)
+#> ✔ Installed labeling 0.4.3  (78ms)
+#> ✔ Installed lambda.r 1.2.4  (64ms)
+#> ✔ Installed later 1.4.4  (120ms)
+#> ✔ Installed lazyeval 0.2.2  (71ms)
+#> ✔ Installed leidenbase 0.1.35  (66ms)
+#> ✔ Installed lifecycle 1.0.4  (68ms)
+#> ✔ Installed listenv 0.10.0  (67ms)
+#> ✔ Installed lmtest 0.9-40  (66ms)
+#> ✔ Installed locfit 1.5-9.12  (120ms)
+#> ✔ Installed magrittr 2.0.4  (74ms)
+#> ✔ Installed matrixStats 1.5.0  (68ms)
+#> ℹ Building MatrixGenerics 1.22.0
+#> ✔ Installed memoise 2.0.1  (79ms)
+#> ✔ Installed mime 0.13  (26ms)
+#> ✔ Installed miniUI 0.1.2  (18ms)
+#> ✔ Installed openssl 2.3.4  (77ms)
+#> ✔ Installed otel 0.2.0  (106ms)
+#> ✔ Installed parallelly 1.45.1  (146ms)
+#> ✔ Installed patchwork 1.3.2  (89ms)
+#> ✔ Installed pbapply 1.7-4  (80ms)
+#> ✔ Installed pillar 1.11.1  (76ms)
+#> ✔ Installed pkgbuild 1.4.8  (127ms)
+#> ✔ Installed pkgconfig 2.0.3  (73ms)
+#> ✔ Installed pkgload 1.4.1  (74ms)
+#> ✔ Installed plotly 4.11.0  (1.1s)
+#> ✔ Installed plyr 1.8.9  (1.1s)
+#> ✔ Installed png 0.1-8  (104ms)
+#> ✔ Installed polyclip 1.10-7  (78ms)
+#> ✔ Installed praise 1.0.0  (72ms)
+#> ✔ Installed processx 3.8.6  (80ms)
+#> ✔ Installed progressr 0.18.0  (148ms)
+#> ✔ Installed promises 1.5.0  (153ms)
+#> ✔ Installed ps 1.9.1  (76ms)
+#> ✔ Installed purrr 1.2.0  (75ms)
+#> ✔ Built MatrixGenerics 1.22.0 (2.6s)
+#> ✔ Installed R6 2.6.1  (95ms)
+#> ✔ Installed RANN 2.6.2  (87ms)
+#> ✔ Installed rappdirs 0.3.3  (123ms)
+#> ✔ Installed RColorBrewer 1.1-3  (79ms)
+#> ✔ Installed Rcpp 1.1.0  (69ms)
+#> ✔ Installed RcppAnnoy 0.0.22  (75ms)
+#> ✔ Installed RcppHNSW 0.6.0  (1.2s)
+#> ✔ Installed RcppArmadillo 15.2.2-1  (1.3s)
+#> ✔ Installed RcppTOML 0.2.3  (67ms)
+#> ✔ Installed reshape2 1.4.5  (65ms)
+#> ✔ Installed reticulate 1.44.1  (66ms)
+#> ✔ Installed rlang 1.1.6  (68ms)
+#> ✔ Installed rmarkdown 2.30  (79ms)
+#> ✔ Installed ROCR 1.0-11  (104ms)
+#> ✔ Installed rprojroot 2.1.1  (66ms)
+#> ✔ Installed RSpectra 0.16-2  (66ms)
+#> ✔ Installed Rtsne 0.17  (66ms)
+#> ✔ Installed S7 0.2.1  (67ms)
+#> ✔ Installed sass 0.4.10  (69ms)
+#> ✔ Installed scales 1.4.0  (67ms)
+#> ✔ Installed scattermore 1.2  (96ms)
+#> ✔ Installed sctransform 0.4.2  (95ms)
+#> ✔ Installed Seurat 5.3.1  (72ms)
+#> ✔ Installed SeuratObject 5.2.0  (74ms)
+#> ✔ Installed snow 0.4-4  (1s)
+#> ℹ Building BiocParallel 1.44.0
+#> ✔ Installed shiny 1.12.0  (1.1s)
+#> ✔ Installed sourcetools 0.1.7-1  (27ms)
+#> ✔ Installed sp 2.2-0  (1.1s)
+#> ✔ Installed spam 2.11-1  (1s)
+#> ✔ Installed spatstat.data 3.1-9  (1.1s)
+#> ✔ Installed spatstat.explore 3.6-0  (95ms)
+#> ✔ Installed spatstat.geom 3.6-1  (81ms)
+#> ✔ Installed spatstat.random 3.4-3  (72ms)
+#> ✔ Installed spatstat.sparse 3.1-0  (69ms)
+#> ✔ Installed spatstat.univar 3.1-5  (108ms)
+#> ✔ Installed spatstat.utils 3.2-0  (105ms)
+#> ✔ Installed stringi 1.8.7  (78ms)
+#> ✔ Installed stringr 1.6.0  (80ms)
+#> ✔ Installed sys 3.4.3  (75ms)
+#> ✔ Installed tensor 1.5.1  (67ms)
+#> ✔ Installed testthat 3.3.1  (75ms)
+#> ✔ Installed tibble 3.3.0  (79ms)
+#> ✔ Installed tidyr 1.3.1  (106ms)
+#> ✔ Installed tidyselect 1.2.1  (72ms)
+#> ✔ Installed tinytex 0.58  (69ms)
+#> ✔ Installed utf8 1.2.6  (70ms)
+#> ✔ Installed uwot 0.2.4  (80ms)
+#> ✔ Installed vctrs 0.6.5  (78ms)
+#> ✔ Installed viridisLite 0.4.2  (72ms)
+#> ✔ Installed waldo 0.6.2  (123ms)
+#> ✔ Installed withr 3.0.2  (74ms)
 #> ℹ Packaging presto 1.0.0
-#> ✔ Packaged presto 1.0.0 (721ms)
+#> ✔ Installed xfun 0.54  (91ms)
+#> ✔ Installed xtable 1.8-4  (92ms)
+#> ✔ Installed yaml 2.3.11  (148ms)
+#> ℹ Building BiocStyle 2.38.0
+#> ✔ Installed zoo 1.8-14  (185ms)
+#> ✔ Installed BiocGenerics 0.56.0  (1s)
+#> ℹ Building Biobase 2.70.0
+#> ✔ Packaged presto 1.0.0 (1.6s)
 #> ℹ Building presto 1.0.0
-#> ✔ Built presto 1.0.0 (11.8s)
-#> ✔ Installed presto 1.0.0 (github::immunogenomics/presto@7636b3d) (1s)
-#> ✔ 1 pkg + 24 deps: kept 23, added 2, dld 1 (NA B) [18.9s]
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2025-12-03 09:22:06.424816]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2025-12-03 09:23:17.234595]"
+#> ✔ Built BiocStyle 2.38.0 (3.3s)
+#> ℹ Building S4Vectors 0.48.0
+#> ✔ Built Biobase 2.70.0 (11.8s)
+#> ✔ Installed Biobase 2.70.0  (72ms)
+#> ✔ Installed BiocStyle 2.38.0  (50ms)
+#> ✔ Installed MatrixGenerics 1.22.0  (1s)
+#> ✔ Built BiocParallel 1.44.0 (18.5s)
+#> ✔ Installed BiocParallel 1.44.0  (60ms)
+#> ✔ Built presto 1.0.0 (21.2s)
+#> ✔ Installed presto 1.0.0 (github::immunogenomics/presto@7636b3d) (40ms)
+#> ✔ Built S4Vectors 0.48.0 (20.6s)
+#> ✔ Installed S4Vectors 0.48.0  (49ms)
+#> ℹ Building IRanges 2.44.0
+#> ✔ Built IRanges 2.44.0 (35.7s)
+#> ✔ Installed IRanges 2.44.0  (44ms)
+#> ℹ Building S4Arrays 1.10.1
+#> ℹ Building Seqinfo 1.0.0
+#> ℹ Building XVector 0.50.0
+#> ✔ Built Seqinfo 1.0.0 (6.6s)
+#> ✔ Installed Seqinfo 1.0.0  (28ms)
+#> ℹ Building GenomicRanges 1.62.0
+#> ✔ Built XVector 0.50.0 (12.1s)
+#> ✔ Installed XVector 0.50.0  (27ms)
+#> ✔ Built S4Arrays 1.10.1 (13.9s)
+#> ✔ Installed S4Arrays 1.10.1  (32ms)
+#> ℹ Building SparseArray 1.10.4
+#> ✔ Built GenomicRanges 1.62.0 (13.5s)
+#> ✔ Installed GenomicRanges 1.62.0  (52ms)
+#> ✔ Built SparseArray 1.10.4 (20.9s)
+#> ✔ Installed SparseArray 1.10.4  (49ms)
+#> ℹ Building DelayedArray 0.36.0
+#> ✔ Built DelayedArray 0.36.0 (16s)
+#> ✔ Installed DelayedArray 0.36.0  (43ms)
+#> ℹ Building SummarizedExperiment 1.40.0
+#> ✔ Built SummarizedExperiment 1.40.0 (14.4s)
+#> ✔ Installed SummarizedExperiment 1.40.0  (43ms)
+#> ℹ Building DESeq2 1.50.2
+#> ℹ Building SingleCellExperiment 1.32.0
+#> ✔ Built SingleCellExperiment 1.32.0 (12.9s)
+#> ✔ Installed SingleCellExperiment 1.32.0  (47ms)
+#> ✔ Built DESeq2 1.50.2 (29.2s)
+#> ✔ Installed DESeq2 1.50.2  (1.1s)
+#> ✔ 1 pkg + 177 deps: kept 8, added 170, dld 165 (NA B) [3m 20.1s]
+#> Error in loadNamespace(x): there is no package called ‘CellChat’
 
 CellChatPlot(pancreas_sub, plot_type = "aggregate")
-
-#> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
-
-
+#> Error in CellChatPlot(pancreas_sub, plot_type = "aggregate"): No CellChat results found in the Seurat object. Please run
+#> `RunCellChat()` first.
 
 CellChatPlot(pancreas_sub, plot_type = "pathway")
-#> Comparing communications on a single object 
-
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-
-#> Comparing communications on a single object 
-#> NULL
+#> Error in CellChatPlot(pancreas_sub, plot_type = "pathway"): No CellChat results found in the Seurat object. Please run
+#> `RunCellChat()` first.
 
 CellChatPlot(pancreas_sub, plot_type = "bubble")
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-#> Comparing communications on a single object 
-
+#> Error in CellChatPlot(pancreas_sub, plot_type = "bubble"): No CellChat results found in the Seurat object. Please run
+#> `RunCellChat()` first.
 
 CellChatPlot(pancreas_sub, plot_type = "gene")
-
+#> Error in CellChatPlot(pancreas_sub, plot_type = "gene"): No CellChat results found in the Seurat object. Please run
+#> `RunCellChat()` first.
 
 CellChatPlot(pancreas_sub, plot_type = "heatmap")
-
-#> NULL
+#> Error in CellChatPlot(pancreas_sub, plot_type = "heatmap"): No CellChat results found in the Seurat object. Please run
+#> `RunCellChat()` first.
 ```

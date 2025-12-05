@@ -227,6 +227,10 @@ FindExpressedMarkers(
 
   Arguments passed to other methods and to specific DE methods
 
+## See also
+
+\[RunDEtest\]
+
 ## Examples
 
 ``` r
@@ -274,23 +278,9 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + limma     3.66.0 [bld][cmp]
-#> + statmod   1.5.1  
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got statmod 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (317.50 kB)
-#> ✔ Got limma 3.66.0 (source) (2.86 MB)
-#> ✔ Installed statmod 1.5.1  (1s)
-#> ℹ Building limma 3.66.0
-#> ✔ Built limma 3.66.0 (9.7s)
-#> ✔ Installed limma 3.66.0  (53ms)
-#> ✔ 1 pkg + 1 dep: added 2, dld 2 (3.17 MB) [12.2s]
-#> ⠙ [2025-12-03 09:45:00] Running [1/6145] Processing: 1  ETA: 16s
-#> ⠹ [2025-12-03 09:45:00] Running [5120/6145] Processing: 5120  ETA:  1s
-#> ✔ [2025-12-03 09:45:00] Completed 6145 tasks in 3.4s
+#> ⠙ [2025-12-05 08:38:20] Running [1/6145] Processing: 1  ETA: 16s
+#> ⠹ [2025-12-05 08:38:20] Running [5038/6145] Processing: 5038  ETA:  1s
+#> ✔ [2025-12-05 08:38:20] Completed 6145 tasks in 3.3s
 #> 
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
@@ -307,4 +297,6 @@ FeatureStatPlot(
   group.by = "Phase",
   add_point = TRUE
 )
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ```

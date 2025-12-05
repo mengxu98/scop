@@ -51,6 +51,10 @@ RecoverCounts(
 
   Whether to print the message. Default is `TRUE`.
 
+## See also
+
+[CheckDataType](https://mengxu98.github.io/scop/reference/CheckDataType.md)
+
 ## Examples
 
 ``` r

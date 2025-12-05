@@ -139,6 +139,12 @@ A Seurat object with the projection results stored in the
 will also add a new metadata column called "predicted_ref_group" to the
 query object.
 
+## See also
+
+[RunKNNPredict](https://mengxu98.github.io/scop/reference/RunKNNPredict.md),
+[RunSingleR](https://mengxu98.github.io/scop/reference/RunSingleR.md),
+[CellCorHeatmap](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md)
+
 ## Examples
 
 ``` r

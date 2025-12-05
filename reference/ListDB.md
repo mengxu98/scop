@@ -33,16 +33,7 @@ A data frame containing information about the databases.
 
 ``` r
 ListDB(species = "Homo_sapiens")
-#> [1] identifier version    comment    timestamp  date       db_version db_name   
-#> [8] file      
-#> <0 rows> (or 0-length row.names)
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 ListDB(species = "Mus_musculus", db = "GO_BP")
-#>                                                         identifier version
-#> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                 comment  timestamp                       date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1764754569 2025-12-03 09:36:09.150074
-#>           db_version            db_name
-#> 1 3.22.0 nterm:15169 Mus_musculus-GO_BP
-#>                                                                    file
-#> 1 /home/runner/.cache/R/R.cache/4363ecdce2b08b4d38a5c290b4f4ae60.Rcache
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 ```
