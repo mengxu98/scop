@@ -12,16 +12,13 @@ RemoveEnv(envname = NULL, conda = "auto", force = FALSE)
 
 - envname:
 
-  The name of the conda environment to remove. If `NULL`, uses the
-  default scop environment name.
+  The name of the conda environment. If `NULL`, the environment name
+  will be set to `"scop_env"`. Default is `NULL`.
 
 - conda:
 
-  The path to a `conda` executable. Use `"auto"` to allow `reticulate`
-  to automatically find an appropriate `conda` binary. See **Finding
-  Conda** and
-  [`conda_binary()`](https://rstudio.github.io/reticulate/reference/conda-tools.html)
-  for more details.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 - force:
 

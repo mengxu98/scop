@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,20 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="scop-070">scop 0.7.0<a class="anchor" aria-label="anchor" href="#scop-070"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Integrated <code>uv</code> as the primary <em>Python</em> package installer for improved installation speed.</li>
+<li>
+<code><a href="../reference/check_python.html">check_python()</a></code>: Now uses <code>uv</code> as the primary installation tool with <code>pip</code> as fallback, significantly improving package installation speed.</li>
+<li>Added <code>find_uv()</code> and <code>install_uv()</code> internal functions for managing <code>uv</code> package manager installation and detection.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.6" id="scop-066">scop 0.6.6<a class="anchor" aria-label="anchor" href="#scop-066"></a></h2>
 <ul><li>
@@ -56,7 +67,7 @@
 <strong>func</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>:
-<ul><li>Added comprehensive environment variable configuration to prevent crashes when calling Python functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.</li>
+<ul><li>Added comprehensive environment variable configuration to prevent crashes when calling <em>Python</em> functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.</li>
 <li>Added <code>accept_conda_tos()</code> function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.</li>
 <li>Fixed conda Terms of Service acceptance issue in <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>. The function now automatically accepts conda Terms of Service for required channels, eliminating the need for manual acceptance. This addresses the issue reported in <a href="https://github.com/mengxu98/scop/issues/85" class="external-link">#85</a>.</li>
 </ul></li>
@@ -98,7 +109,7 @@
 </ul></li>
 <li>
 <strong>refactor</strong>:
-<ul><li>Moved <code><a href="../reference/exist_python_pkgs.html">exist_python_pkgs()</a></code> function to <code>check_package.R</code> for better code organization.</li>
+<ul><li>Moved <code>exist_python_pkgs()</code> function to <code>check_package.R</code> for better code organization.</li>
 <li>Replaced direct <code>conda_info()$envs_dirs[1]</code> calls with <code>get_conda_envs_dir()</code> helper function for consistency.</li>
 <li>
 <code><a href="../reference/RunSCExplorer.html">RunSCExplorer()</a></code>: Updated to use <code><a href="https://mengxu98.github.io/thisplot/reference/palette_list.html" class="external-link">thisplot::palette_list</a></code> and <code><a href="https://mengxu98.github.io/thisplot/reference/slim_data.html" class="external-link">thisplot::slim_data()</a></code> instead of <code>scop::palette_list</code> and <code>scop::slim_data()</code>.</li>

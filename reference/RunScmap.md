@@ -200,9 +200,9 @@ pancreas_sub <- RunScmap(
 #> ✔ Installed googleVis 0.7.3  (32ms)
 #> ✔ Installed randomForest 4.7-1.2  (48ms)
 #> ℹ Building scmap 1.32.0
-#> ✔ Built scmap 1.32.0 (23.1s)
-#> ✔ Installed scmap 1.32.0  (61ms)
-#> ✔ 1 pkg + 77 deps: kept 74, added 3, dld 3 (3.06 MB) [28.4s]
+#> ✔ Built scmap 1.32.0 (22.4s)
+#> ✔ Installed scmap 1.32.0  (64ms)
+#> ✔ 1 pkg + 77 deps: kept 73, added 3, dld 3 (3.06 MB) [26.8s]
 CellDimPlot(
   pancreas_sub,
   group.by = "scmap_annotation"

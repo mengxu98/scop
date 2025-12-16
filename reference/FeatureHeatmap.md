@@ -644,17 +644,14 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> Warning: The `slot` argument of `Assays()` is deprecated as of SeuratObject 5.0.0.
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
 #> ℹ Please use `LayerData()` instead.
-#> ℹ The deprecated feature was likely used in the scop package.
-#>   Please report the issue at <https://github.com/mengxu98/scop/issues>.
-#> ⠙ [2025-12-05 08:30:54] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-05 08:30:54] Completed 5 tasks in 871ms
-#> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -662,16 +659,9 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error: object 'de_filter' not found
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(
   ht1$plot,
@@ -680,7 +670,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-
+#> Error: object 'ht1' not found
 
 ht2 <- FeatureHeatmap(
   pancreas_sub,
@@ -694,12 +684,9 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'de_filter' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- FeatureHeatmap(
   pancreas_sub,
@@ -712,230 +699,7 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#>  
-#> → Will install 51 packages.
-#> → All 51 packages (0 B) are cached.
-#> + AnnotationDbi       1.72.0  [bld]
-#> + AnnotationHub       4.0.0   [bld][cmp]
-#> + BiocBaseUtils       1.12.0  [bld]
-#> + BiocFileCache       3.0.0   [bld]
-#> + BiocVersion         3.22.0  [bld]
-#> + Biostrings          2.78.0  [bld][cmp]
-#> + DBI                 1.2.3   
-#> + DOSE                4.4.0   [bld]
-#> + GO.db               3.22.0  [bld]
-#> + GOSemSim            2.36.0  [bld][cmp]
-#> + KEGGREST            1.50.0  [bld]
-#> + R.methodsS3         1.8.2   
-#> + R.oo                1.27.1  
-#> + R.utils             2.13.0  
-#> + RSQLite             2.4.5   
-#> + ape                 5.8-1   
-#> + bit                 4.6.0   
-#> + bit64               4.6.0-1 
-#> + blob                1.2.4   
-#> + clipr               0.8.0    + ✔ libx11-dev
-#> + clusterProfiler     4.18.2  [bld]
-#> + dbplyr              2.5.1   
-#> + enrichplot          1.30.4  [bld]
-#> + fastmatch           1.1-6   
-#> + fgsea               1.36.0  [bld][cmp]
-#> + filelock            1.0.3   
-#> + fontBitstreamVera   0.1.1   
-#> + fontLiberation      0.1.0   
-#> + fontquiver          0.2.1   
-#> + gdtools             0.4.4    + ✔ libcairo2-dev, ✔ libfontconfig1-dev, ✔ libfreetype6-dev
-#> + ggforce             0.5.0   
-#> + ggiraph             0.9.2    + ✔ libpng-dev
-#> + ggnewscale          0.5.2   
-#> + ggtangle            0.0.9   
-#> + ggtree              4.0.1   [bld]
-#> + gson                0.1.0   
-#> + hms                 1.1.4   
-#> + httr2               1.2.1   
-#> + org.Hs.eg.db        3.22.0  [bld]
-#> + quarto              1.5.1   
-#> + qvalue              2.42.0  [bld]
-#> + readr               2.1.6   
-#> + rstudioapi          0.17.1  
-#> + scatterpie          0.2.6   
-#> + systemfonts         1.3.1    + ✔ libfontconfig1-dev, ✔ libfreetype6-dev
-#> + tidydr              0.0.6   
-#> + tidytree            0.4.6   
-#> + treeio              1.34.0  [bld]
-#> + tweenr              2.0.3   
-#> + tzdb                0.5.0   
-#> + vroom               1.6.7   
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 51 pkgs are cached
-#> ✔ Got BiocVersion 3.22.0 (source) (1.11 kB)
-#> ✔ Got blob 1.2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (47.47 kB)
-#> ✔ Got BiocBaseUtils 1.12.0 (source) (232.56 kB)
-#> ✔ Got clipr 0.8.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (51.24 kB)
-#> ✔ Got filelock 1.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (24.70 kB)
-#> ✔ Got bit64 4.6.0-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (492.54 kB)
-#> ✔ Got BiocFileCache 3.0.0 (source) (744.19 kB)
-#> ✔ Got bit 4.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (628.10 kB)
-#> ✔ Got ggtangle 0.0.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (257.09 kB)
-#> ✔ Got clusterProfiler 4.18.2 (source) (632.38 kB)
-#> ✔ Got AnnotationHub 4.0.0 (source) (1.00 MB)
-#> ✔ Got scatterpie 0.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (150.90 kB)
-#> ✔ Got dbplyr 2.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.24 MB)
-#> ✔ Got RSQLite 2.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.35 MB)
-#> ✔ Got tzdb 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (666.60 kB)
-#> ✔ Got GOSemSim 2.36.0 (source) (610.99 kB)
-#> ✔ Got fontBitstreamVera 0.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (699.47 kB)
-#> ✔ Got hms 1.1.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (103.38 kB)
-#> ✔ Got fastmatch 1.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.95 kB)
-#> ✔ Got gdtools 0.4.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (203.79 kB)
-#> ✔ Got rstudioapi 0.17.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (317.69 kB)
-#> ✔ Got ggtree 4.0.1 (source) (370.24 kB)
-#> ✔ Got gson 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (232.54 kB)
-#> ✔ Got KEGGREST 1.50.0 (source) (239.73 kB)
-#> ✔ Got qvalue 2.42.0 (source) (2.77 MB)
-#> ✔ Got ape 5.8-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.97 MB)
-#> ✔ Got vroom 1.6.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (966.05 kB)
-#> ✔ Got fontquiver 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.28 MB)
-#> ✔ Got R.methodsS3 1.8.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (82.67 kB)
-#> ✔ Got tweenr 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (461.68 kB)
-#> ✔ Got treeio 1.34.0 (source) (701.64 kB)
-#> ✔ Got readr 2.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (868.61 kB)
-#> ✔ Got ggiraph 0.9.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.67 MB)
-#> ✔ Got ggforce 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.95 MB)
-#> ✔ Got tidytree 0.4.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (343.02 kB)
-#> ✔ Got R.oo 1.27.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.09 kB)
-#> ✔ Got quarto 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (544.37 kB)
-#> ✔ Got ggnewscale 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (351.15 kB)
-#> ✔ Got DBI 1.2.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (916.93 kB)
-#> ✔ Got systemfonts 1.3.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (816.45 kB)
-#> ✔ Got AnnotationDbi 1.72.0 (source) (4.38 MB)
-#> ✔ Got httr2 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (782.87 kB)
-#> ✔ Got DOSE 4.4.0 (source) (5.75 MB)
-#> ✔ Got R.utils 2.13.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.45 MB)
-#> ✔ Got fgsea 1.36.0 (source) (6.17 MB)
-#> ✔ Got fontLiberation 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.54 MB)
-#> ✔ Got Biostrings 2.78.0 (source) (12.82 MB)
-#> ✔ Got GO.db 3.22.0 (source) (25.25 MB)
-#> ✔ Got org.Hs.eg.db 3.22.0 (source) (104.97 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libx11-dev libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libcurl4-openssl-dev libssl-dev make libglpk-dev libxml2-dev pandoc libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libx11-dev is already the newest version (2:1.8.7-1build1).
-#> libx11-dev set to manually installed.
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libpng-dev is already the newest version (1.6.43-5build1).
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ℹ Building BiocBaseUtils 1.12.0
-#> ℹ Building BiocVersion 3.22.0
-#> ℹ Building Biostrings 2.78.0
-#> ℹ Building qvalue 2.42.0
-#> ✔ Built BiocVersion 3.22.0 (1.5s)
-#> ✔ Installed ape 5.8-1  (103ms)
-#> ✔ Installed bit 4.6.0  (42ms)
-#> ✔ Installed bit64 4.6.0-1  (1.1s)
-#> ✔ Built BiocBaseUtils 1.12.0 (3.2s)
-#> ✔ Installed blob 1.2.4  (117ms)
-#> ✔ Installed clipr 0.8.0  (163ms)
-#> ✔ Installed DBI 1.2.3  (135ms)
-#> ✔ Installed dbplyr 2.5.1  (134ms)
-#> ✔ Installed fastmatch 1.1-6  (113ms)
-#> ℹ Building fgsea 1.36.0
-#> ✔ Installed filelock 1.0.3  (203ms)
-#> ✔ Installed fontBitstreamVera 0.1.1  (53ms)
-#> ✔ Installed fontLiberation 0.1.0  (94ms)
-#> ✔ Installed fontquiver 0.2.1  (1.1s)
-#> ✔ Installed gdtools 0.4.4  (121ms)
-#> ✔ Built qvalue 2.42.0 (5.4s)
-#> ✔ Installed ggforce 0.5.0  (110ms)
-#> ✔ Installed ggiraph 0.9.2  (131ms)
-#> ✔ Installed ggnewscale 0.5.2  (118ms)
-#> ✔ Installed ggtangle 0.0.9  (114ms)
-#> ✔ Installed gson 0.1.0  (126ms)
-#> ✔ Installed hms 1.1.4  (146ms)
-#> ✔ Installed httr2 1.2.1  (232ms)
-#> ✔ Installed quarto 1.5.1  (149ms)
-#> ✔ Installed R.methodsS3 1.8.2  (138ms)
-#> ✔ Installed R.oo 1.27.1  (137ms)
-#> ✔ Installed R.utils 2.13.0  (130ms)
-#> ✔ Installed readr 2.1.6  (139ms)
-#> ✔ Installed RSQLite 2.4.5  (161ms)
-#> ℹ Building BiocFileCache 3.0.0
-#> ✔ Installed rstudioapi 0.17.1  (231ms)
-#> ✔ Installed scatterpie 0.2.6  (59ms)
-#> ✔ Installed systemfonts 1.3.1  (55ms)
-#> ✔ Installed tidydr 0.0.6  (62ms)
-#> ✔ Installed tidytree 0.4.6  (36ms)
-#> ℹ Building treeio 1.34.0
-#> ✔ Built BiocFileCache 3.0.0 (8.4s)
-#> ✔ Installed tweenr 2.0.3  (75ms)
-#> ✔ Installed tzdb 0.5.0  (102ms)
-#> ✔ Installed vroom 1.6.7  (120ms)
-#> ✔ Installed BiocBaseUtils 1.12.0  (91ms)
-#> ✔ Installed BiocFileCache 3.0.0  (58ms)
-#> ✔ Installed BiocVersion 3.22.0  (51ms)
-#> ✔ Installed qvalue 2.42.0  (125ms)
-#> ✔ Built treeio 1.34.0 (9.4s)
-#> ✔ Installed treeio 1.34.0  (63ms)
-#> ℹ Building ggtree 4.0.1
-#> ✔ Built ggtree 4.0.1 (12s)
-#> ✔ Installed ggtree 4.0.1  (111ms)
-#> ✔ Built Biostrings 2.78.0 (32.4s)
-#> ✔ Installed Biostrings 2.78.0  (170ms)
-#> ℹ Building KEGGREST 1.50.0
-#> ✔ Built fgsea 1.36.0 (33.1s)
-#> ✔ Installed fgsea 1.36.0  (132ms)
-#> ✔ Built KEGGREST 1.50.0 (5s)
-#> ✔ Installed KEGGREST 1.50.0  (26ms)
-#> ℹ Building AnnotationDbi 1.72.0
-#> ✔ Built AnnotationDbi 1.72.0 (11.6s)
-#> ✔ Installed AnnotationDbi 1.72.0  (70ms)
-#> ℹ Building AnnotationHub 4.0.0
-#> ℹ Building GO.db 3.22.0
-#> ℹ Building org.Hs.eg.db 3.22.0
-#> ✔ Built AnnotationHub 4.0.0 (12.3s)
-#> ✔ Installed AnnotationHub 4.0.0  (58ms)
-#> ✔ Built GO.db 3.22.0 (37.4s)
-#> ✔ Installed GO.db 3.22.0  (490ms)
-#> ℹ Building GOSemSim 2.36.0
-#> ✔ Built GOSemSim 2.36.0 (13.2s)
-#> ✔ Installed GOSemSim 2.36.0  (41ms)
-#> ℹ Building DOSE 4.4.0
-#> ✔ Built DOSE 4.4.0 (11.6s)
-#> ✔ Installed DOSE 4.4.0  (55ms)
-#> ℹ Building enrichplot 1.30.4
-#> ✔ Built enrichplot 1.30.4 (11.5s)
-#> ✔ Installed enrichplot 1.30.4  (23ms)
-#> ℹ Building clusterProfiler 4.18.2
-#> ✔ Built clusterProfiler 4.18.2 (12.3s)
-#> ✔ Installed clusterProfiler 4.18.2  (31ms)
-#> ✔ Built org.Hs.eg.db 3.22.0 (3m 56.2s)
-#> ✔ Installed org.Hs.eg.db 3.22.0  (2.1s)
-#> ✔ 1 pkg + 155 deps: kept 105, added 51, dld 49 (195.15 MB) [5m 13.9s]
-#> Error in loadNamespace(x): there is no package called ‘R.cache’
+#> Error: object 'de_filter' not found
 ht3$plot
 #> Error: object 'ht3' not found
 

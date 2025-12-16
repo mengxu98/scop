@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Print environment information</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/PrepareEnv.R" class="external-link"><code>R/PrepareEnv.R</code></a></small>
       <div class="d-none name"><code>env_info.Rd</code></div>
     </div>
 
@@ -53,11 +53,13 @@
 
 <dl><dt id="arg-conda">conda<a class="anchor" aria-label="anchor" href="#arg-conda"></a></dt>
 <dd><p>The path to a conda executable.
-Use <code>"auto"</code> to allow scop to automatically find an appropriate conda binary.</p></dd>
+Use <code>"auto"</code> to allow automatically finding an appropriate conda binary.</p></dd>
 
 
 <dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
-<dd><p>The name of a conda environment.</p></dd>
+<dd><p>The name of the conda environment.
+If <code>NULL</code>, the environment name will be set to <code>"scop_env"</code>.
+Default is <code>NULL</code>.</p></dd>
 
 </dl></div>
 

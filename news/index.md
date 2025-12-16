@@ -1,5 +1,17 @@
 # Changelog
 
+## scop 0.7.0
+
+- **func**:
+  - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
+    Integrated `uv` as the primary *Python* package installer for
+    improved installation speed.
+  - [`check_python()`](https://mengxu98.github.io/scop/reference/check_python.md):
+    Now uses `uv` as the primary installation tool with `pip` as
+    fallback, significantly improving package installation speed.
+  - Added `find_uv()` and `install_uv()` internal functions for managing
+    `uv` package manager installation and detection.
+
 ## scop 0.6.6
 
 - **docs**:
@@ -19,7 +31,7 @@
 - **func**:
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     - Added comprehensive environment variable configuration to prevent
-      crashes when calling Python functions, including setting thread
+      crashes when calling *Python* functions, including setting thread
       limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This
       improves stability on all platforms, especially Apple silicon
       Macs.
@@ -71,9 +83,8 @@
     Enhanced `integration_method` parameter definition with explicit
     method list for better code clarity.
 - **refactor**:
-  - Moved
-    [`exist_python_pkgs()`](https://mengxu98.github.io/scop/reference/exist_python_pkgs.md)
-    function to `check_package.R` for better code organization.
+  - Moved `exist_python_pkgs()` function to `check_package.R` for better
+    code organization.
   - Replaced direct `conda_info()$envs_dirs[1]` calls with
     `get_conda_envs_dir()` helper function for consistency.
   - [`RunSCExplorer()`](https://mengxu98.github.io/scop/reference/RunSCExplorer.md):

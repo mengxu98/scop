@@ -205,13 +205,13 @@ pancreas_sub <- RunSingleR(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 8 pkgs are cached
+#> ✔ Got DelayedMatrixStats 1.32.0 (source) (274.35 kB)
 #> ✔ Got biocmake 1.2.0 (source) (229.12 kB)
 #> ✔ Got dir.expiry 1.18.0 (source) (308.96 kB)
-#> ✔ Got DelayedMatrixStats 1.32.0 (source) (274.35 kB)
 #> ✔ Got celldex 1.20.0 (source) (412.25 kB)
+#> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
 #> ✔ Got SingleR 2.12.0 (source) (695.24 kB)
 #> ✔ Got scrapper 1.4.0 (source) (958.15 kB)
-#> ✔ Got sparseMatrixStats 1.22.0 (source) (706.40 kB)
 #> ✔ Got Rigraphlib 1.2.0 (source) (4.53 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
@@ -219,9 +219,9 @@ pancreas_sub <- RunSingleR(
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install make libcurl4-openssl-dev libnode-dev libxml2-dev pandoc libssl-dev libpng-dev libicu-dev`
 #> Reading package lists...
@@ -233,34 +233,34 @@ pancreas_sub <- RunSingleR(
 #> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
 #> pandoc is already the newest version (3.1.3+ds-2).
 #> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
 #> ℹ Building dir.expiry 1.18.0
 #> ℹ Building sparseMatrixStats 1.22.0
 #> ✔ Built dir.expiry 1.18.0 (1.1s)
-#> ✔ Installed dir.expiry 1.18.0  (27ms)
+#> ✔ Installed dir.expiry 1.18.0  (1s)
 #> ℹ Building biocmake 1.2.0
-#> ✔ Built biocmake 1.2.0 (1.2s)
-#> ✔ Installed biocmake 1.2.0  (1s)
+#> ✔ Built biocmake 1.2.0 (1.1s)
+#> ✔ Installed biocmake 1.2.0  (30ms)
 #> ℹ Building Rigraphlib 1.2.0
-#> ✔ Built sparseMatrixStats 1.22.0 (18.6s)
-#> ✔ Installed sparseMatrixStats 1.22.0  (1.1s)
+#> ✔ Built sparseMatrixStats 1.22.0 (17.7s)
+#> ✔ Installed sparseMatrixStats 1.22.0  (70ms)
 #> ℹ Building DelayedMatrixStats 1.32.0
-#> ✔ Built DelayedMatrixStats 1.32.0 (11.2s)
-#> ✔ Installed DelayedMatrixStats 1.32.0  (30ms)
+#> ✔ Built DelayedMatrixStats 1.32.0 (10.8s)
+#> ✔ Installed DelayedMatrixStats 1.32.0  (1s)
 #> ℹ Building SingleR 2.12.0
 #> ℹ Building celldex 1.20.0
-#> ✔ Built celldex 1.20.0 (23.3s)
-#> ✔ Installed celldex 1.20.0  (42ms)
-#> ✔ Built SingleR 2.12.0 (47.2s)
-#> ✔ Installed SingleR 2.12.0  (95ms)
-#> ✔ Built Rigraphlib 1.2.0 (2m 18.9s)
-#> ✔ Installed Rigraphlib 1.2.0  (249ms)
+#> ✔ Built celldex 1.20.0 (20.5s)
+#> ✔ Installed celldex 1.20.0  (30ms)
+#> ✔ Built SingleR 2.12.0 (45.2s)
+#> ✔ Installed SingleR 2.12.0  (96ms)
+#> ✔ Built Rigraphlib 1.2.0 (2m 22.5s)
+#> ✔ Installed Rigraphlib 1.2.0  (273ms)
 #> ℹ Building scrapper 1.4.0
-#> ✔ Built scrapper 1.4.0 (4m 10.4s)
-#> ✔ Installed scrapper 1.4.0  (697ms)
-#> ✔ 1 pkg + 158 deps: kept 150, added 8, dld 8 (8.12 MB) [6m 40.7s]
+#> ✔ Built scrapper 1.4.0 (4m 12.8s)
+#> ✔ Installed scrapper 1.4.0  (1.8s)
+#> ✔ 1 pkg + 158 deps: kept 149, added 8, dld 8 (8.12 MB) [6m 47.3s]
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")

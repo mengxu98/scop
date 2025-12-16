@@ -1,19 +1,7 @@
 # Prepare the python environment
 
 Prepare the python environment by installing the required dependencies
-and setting up the environment. This function prepares the python
-environment by checking if conda is installed, creating a new conda
-environment if needed, installing the required packages, and setting up
-the Python environment for use with scop. In order to create the
-environment, this function requires the path to the conda binary. If
-`conda` is set to `"auto"`, it will attempt to automatically find the
-conda binary. If a conda environment with the specified name already
-exists and `force` is set to `FALSE`, the function will use the existing
-environment. If `force` set to `TRUE`, the existing environment will be
-recreated. Note that recreating the environment will remove any existing
-data in the environment. The function also checks if the package
-versions in the environment meet the requirements specified by the
-`version` parameter.
+and setting up the environment.
 
 ## Usage
 
@@ -32,24 +20,29 @@ PrepareEnv(
 
 - envname:
 
-  The name of a conda environment.
+  The name of the conda environment. If `NULL`, the environment name
+  will be set to `"scop_env"`. Default is `NULL`.
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow scop to
-  automatically find an appropriate conda binary.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 - miniconda_repo:
 
-  Repositories for miniconda. Default is
+  Repository URL for miniconda. Default is
   <https://repo.anaconda.com/miniconda>.
 
 - version:
 
-  A character vector specifying the version of the environment. Default
-  is `"3.10-1"`.
+  The Python version. Default is `"3.10-1"`.
 
 - force:
 
-  Whether to force a new environment to be created. If `TRUE`, the
-  existing environment will be recreated. Default is `FALSE`.
+  Whether to force recreation of the environment. If `TRUE`, the
+  existing environment will be removed and recreated. Default is
+  `FALSE`.
+
+- ...:
+
+  Additional arguments passed to package installation functions.

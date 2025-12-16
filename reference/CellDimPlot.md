@@ -995,20 +995,19 @@ CellDimPlot(
 #> ✔ Got preprocessCore 1.72.0 (source) (131.03 kB)
 #> ✔ Got affyio 1.80.0 (source) (111.72 kB)
 #> ✔ Got statmod 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (317.50 kB)
-#> ✔ Got affy 1.88.0 (source) (1.77 MB)
 #> ✔ Got hexbin 1.28.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.60 MB)
+#> ✔ Got affy 1.88.0 (source) (1.77 MB)
 #> ✔ Got limma 3.66.0 (source) (2.86 MB)
 #> ✔ Got marray 1.88.0 (source) (5.91 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Fetched 126 kB in 0s (348 kB/s)
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install pandoc`
 #> Reading package lists...
@@ -1018,22 +1017,22 @@ CellDimPlot(
 #> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
 #> ℹ Building affyio 1.80.0
 #> ℹ Building preprocessCore 1.72.0
-#> ✔ Installed hexbin 1.28.5  (73ms)
-#> ✔ Installed statmod 1.5.1  (65ms)
+#> ✔ Installed hexbin 1.28.5  (125ms)
+#> ✔ Installed statmod 1.5.1  (119ms)
 #> ℹ Building limma 3.66.0
-#> ✔ Built affyio 1.80.0 (8.4s)
-#> ✔ Installed affyio 1.80.0  (23ms)
-#> ✔ Built preprocessCore 1.72.0 (9s)
-#> ✔ Installed preprocessCore 1.72.0  (23ms)
+#> ✔ Built affyio 1.80.0 (8.2s)
+#> ✔ Installed affyio 1.80.0  (24ms)
+#> ✔ Built preprocessCore 1.72.0 (8.7s)
+#> ✔ Installed preprocessCore 1.72.0  (1s)
 #> ℹ Building affy 1.88.0
-#> ✔ Built limma 3.66.0 (13.5s)
-#> ✔ Installed limma 3.66.0  (45ms)
+#> ✔ Built limma 3.66.0 (11.9s)
+#> ✔ Installed limma 3.66.0  (48ms)
 #> ℹ Building marray 1.88.0
-#> ✔ Built affy 1.88.0 (5.3s)
-#> ✔ Installed affy 1.88.0  (1s)
+#> ✔ Built affy 1.88.0 (5.1s)
+#> ✔ Installed affy 1.88.0  (39ms)
 #> ✔ Built marray 1.88.0 (5.6s)
-#> ✔ Installed marray 1.88.0  (91ms)
-#> ✔ 1 pkg + 16 deps: kept 10, added 7, dld 7 (12.70 MB) [24.1s]
+#> ✔ Installed marray 1.88.0  (92ms)
+#> ✔ 1 pkg + 16 deps: kept 9, added 7, dld 7 (12.70 MB) [22.3s]
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
