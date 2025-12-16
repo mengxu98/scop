@@ -8,9 +8,11 @@ env_info(conda, envname)
 }
 \arguments{
 \item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
 
-\item{envname}{The name of a conda environment.}
+\item{envname}{The name of the conda environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.
+Default is \code{NULL}.}
 }
 \description{
 Print environment information

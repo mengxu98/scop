@@ -11,11 +11,17 @@ env_requirements(version = "3.10-1")
 Default is \code{"3.10-1"}.}
 }
 \value{
-A list of requirements for the specified version.
+A list containing:
+\describe{
+\item{python}{Python version string}
+\item{packages}{Named vector of package version specifications}
+\item{package_aliases}{Named list mapping logical package names to actual installed names}
+}
 }
 \description{
-The function returns a list of requirements including the required Python version
-and a list of packages with their corresponding versions.
+The function returns a list of requirements including the required Python version,
+package versions, and package name aliases for platform-specific packages.
+All packages will be installed using uv as the primary tool.
 }
 \examples{
 env_requirements("3.10-1")

@@ -14,31 +14,25 @@ PrepareEnv(
 )
 }
 \arguments{
-\item{envname}{The name of a conda environment.}
+\item{envname}{The name of the conda environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.
+Default is \code{NULL}.}
 
 \item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
 
-\item{miniconda_repo}{Repositories for miniconda.
+\item{miniconda_repo}{Repository URL for miniconda.
 Default is \url{https://repo.anaconda.com/miniconda}.}
 
-\item{version}{A character vector specifying the version of the environment.
+\item{version}{The Python version.
 Default is \code{"3.10-1"}.}
 
-\item{force}{Whether to force a new environment to be created.
-If \code{TRUE}, the existing environment will be recreated.
+\item{force}{Whether to force recreation of the environment.
+If \code{TRUE}, the existing environment will be removed and recreated.
 Default is \code{FALSE}.}
+
+\item{...}{Additional arguments passed to package installation functions.}
 }
 \description{
 Prepare the python environment by installing the required dependencies and setting up the environment.
-This function prepares the python environment by checking if conda is installed,
-creating a new conda environment if needed, installing the required packages,
-and setting up the Python environment for use with scop.
-In order to create the environment, this function requires the path to the conda binary.
-If \code{conda} is set to \code{"auto"}, it will attempt to automatically find the conda binary.
-If a conda environment with the specified name already exists and \code{force} is set to \code{FALSE},
-the function will use the existing environment.
-If \code{force} set to \code{TRUE}, the existing environment will be recreated.
-Note that recreating the environment will remove any existing data in the environment.
-The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter.
 }
