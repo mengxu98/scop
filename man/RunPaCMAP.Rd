@@ -73,8 +73,8 @@ Default is \code{"data"}.}
 Default is \code{2}.}
 
 \item{n.neighbors}{A number of neighbors considered in the k-Nearest Neighbor graph.
-Default to 10 for dataset whose sample size is smaller than 10000.
-For large dataset whose sample size (n) is larger than 10000, the default value is: 10 + 15 * (log10(n) - 4).}
+Default is \code{10} for dataset whose sample size is smaller than 10000.
+For large dataset whose sample size (n) is larger than 10000, the default value is: \code{10 + 15 * (log10(n) - 4)}.}
 
 \item{MN_ratio}{The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
 Default is \code{0.5}.}

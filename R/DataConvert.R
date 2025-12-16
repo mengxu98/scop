@@ -19,7 +19,7 @@
 #' @param convert_misc Whether to convert the miscellaneous data.
 #' Default is `FALSE`.
 #' @param features Optional vector of features to include in the anndata object.
-#' Defaults to all features in `assay_x`.
+#' Default is all features in `assay_x`.
 #'
 #' @return A `anndata` object.
 #'

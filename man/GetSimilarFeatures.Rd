@@ -25,7 +25,7 @@ GetSimilarFeatures(
 \item{features_use}{A character vector; list of features eligible to be returned.}
 
 \item{anticorr}{Whether to allow negatively correlated genes.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{aggregator}{How to combine correlations when finding similar features.
 Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"max"}, or \code{"mean"}.}

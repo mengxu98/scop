@@ -2,6 +2,7 @@
 #'
 #' This function generates a statistical plot for features.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param stat.by A character vector specifying the features to plot.
 #' @param group.by A character vector specifying the groups to group by.
@@ -148,7 +149,7 @@
 #' @param theme_use A string specifying the theme to use for the plot.
 #' Default is `"theme_scop"`.
 #' @param theme_args A list of arguments to pass to the theme function.
-#' Default is an empty list.
+#' Default is `list()`.
 #' @param combine Whether to combine the individual plots into a single plot.
 #' Default is `TRUE`.
 #' @param nrow A number of rows for the combined plot.
@@ -161,6 +162,9 @@
 #' Default is `FALSE`.
 #' @param seed An integer specifying the random seed to use for generating jitter.
 #' Default is `11`.
+#'
+#' @seealso
+#' [CellStatPlot], [StatPlot]
 #'
 #' @export
 #'

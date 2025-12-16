@@ -115,3 +115,6 @@ ProjectionPlot(
   ref_group = "celltype"
 )
 }
+\seealso{
+[RunKNNMap]
+}
