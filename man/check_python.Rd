@@ -16,33 +16,37 @@ check_python(
 )
 }
 \arguments{
-\item{packages}{A character vector, indicating package names which should be installed or removed.
-Use \code{"<package>==<version>"} to request the installation of a specific version of a package.}
+\item{packages}{A character vector of package names to check and install.
+Use \code{"<package>==<version>"} to request a specific version.}
 
-\item{envname}{The name of a conda environment.}
+\item{envname}{The name of the conda environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.
+Default is \code{NULL}.}
 
 \item{conda}{The path to a conda executable.
-Use \code{"auto"} to allow scop to automatically find an appropriate conda binary.}
+Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
 
-\item{force}{Whether to force package installation.
+\item{force}{Whether to force package reinstallation.
 Default is \code{FALSE}.}
 
-\item{pip}{Whether to use pip for package installation.
-Default is \code{TRUE}, packages are installed from the active conda channels.}
+\item{pip}{Whether to use \code{pip}/\code{uv} (\code{TRUE}) or \code{conda} (\code{FALSE}) for installation.
+Default is \code{TRUE}. When \code{TRUE}, uv is used as the primary installer with pip as fallback.}
 
-\item{pip_options}{An optional character vector of additional command line arguments to be passed to \code{pip}.
-Only relevant when \code{pip = TRUE}.}
+\item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when \code{pip = TRUE}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Other arguments passed to \link[reticulate:conda-tools]{reticulate::conda_install}}
+\item{...}{Other arguments to be passed to \code{\link[=conda_install]{conda_install()}}.}
 }
 \description{
 Check and install python packages
 }
 \examples{
 \dontrun{
+PrepareEnv()
+
+# Then check/install packages
 check_python(
   packages = c("numpy", "pandas")
 )
