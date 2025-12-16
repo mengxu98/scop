@@ -40,7 +40,7 @@
 #' @param label.bg Background color of label.
 #' @param label.bg.r Background ratio of label.
 #' @param label_repel Logical value indicating whether the label is repel away from the center points.
-#' @param label_repulsion Force of repulsion between overlapping text labels. Defaults to 20.
+#' @param label_repulsion Force of repulsion between overlapping text labels. Default is `20`.
 #' @param label_point_size Size of the center points.
 #' @param label_point_color Color of the center points.
 #' @param label_segment_color Color of the line segment for labels.
@@ -51,13 +51,13 @@
 #' @param density_filled_palcolor Custom colors used to fill contour bands.
 #' @param add_mark Whether to add marks around cell groups. Default is `FALSE`.
 #' @param mark_type Type of mark to add around cell groups.
-#' One of "hull", "ellipse", "rect", or "circle". Default is "hull".
+#' One of "hull", "ellipse", "rect", or "circle". Default is `"hull"`.
 #' @param mark_expand Expansion of the mark around the cell group.
 #' Default is `grid::unit(3, "mm")`.
 #' @param mark_alpha Transparency of the mark.
-#' Default is 0.1.
+#' Default is `0.1`.
 #' @param mark_linetype Line type of the mark border.
-#' Default is 1 (solid line).
+#' Default is `1` (solid line).
 #' @param lineages Lineages/pseudotime to add to the plot.
 #' If specified, curves will be fitted using [stats::loess] method.
 #' @param lineages_trim Trim the leading and the trailing data in the lineages.
@@ -74,7 +74,7 @@
 #' @param stat.by The name of a metadata column to stat.
 #' @param stat_type Set stat types ("percent" or "count").
 #' @param stat_plot_type Set the statistical plot type.
-#' @param stat_plot_size Set the statistical plot size. Defaults to 0.1
+#' @param stat_plot_size Set the statistical plot size. Default is `0.1`.
 #' @param stat_plot_palette Color palette used in statistical plot.
 #' @param stat_palcolor Custom colors used in statistical plot
 #' @param stat_plot_position Position adjustment in statistical plot.
@@ -125,7 +125,7 @@
 #' @param hex.linewidth Border width of hexagonal bins.
 #' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
 #' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
-#' Default is c(512, 512).
+#' Default is `c(512, 512)`.
 #' @param theme_use Theme used. Can be a character string or a theme function.
 #' For example, `"theme_blank"` or [ggplot2::theme_classic].
 #' @param aspect.ratio Aspect ratio of the panel.

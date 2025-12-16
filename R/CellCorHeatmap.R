@@ -43,7 +43,7 @@
 #' `"ref"` to use only features from the reference dataset, or `"both"` to use features from both datasets.
 #' If not provided or set to "both", features will be selected from both datasets.
 #' @param nfeatures The maximum number of features to include in the heatmap.
-#' Default is 2000.
+#' Default is `2000`.
 #' @param DEtest_param The parameters to use for differential expression testing.
 #' This should be a list with two elements:
 #' `"max.cells.per.ident"` specifying the maximum number of cells per group for differential expression testing,
@@ -54,15 +54,15 @@
 #' @param distance_metric The distance metric to use for calculating similarities between cells.
 #' This can be any of the following:
 #' `"cosine"`, `"pearson"`, `"spearman"`, `"correlation"`, `"jaccard"`, `"ejaccard"`, `"dice"`, `"edice"`, `"hamman"`, `"simple matching"`, or `"faith"`.
-#' Dhe default is `"cosine"`.
+#' Default is `"cosine"`.
 #' @param k The number of nearest neighbors to use for calculating similarities.
-#' Default is 30.
+#' Default is `30`.
 #' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features.
 #' Features with a frequency below this threshold will be excluded from the heatmap.
-#' Default is 0.
+#' Default is `0`.
 #' @param prefix The prefix to use for the KNNPredict tool layer in the query dataset.
 #' This can be used to avoid conflicts with other tools in the Seurat object.
-#' The default is `"KNNPredict"`.
+#' Default is `"KNNPredict"`.
 #' @param exp_legend_title The title for the color legend in the heatmap.
 #' If not provided, a default title based on the similarity metric will be used.
 #' @param border Whether to add a border around each heatmap cell.
@@ -110,10 +110,10 @@
 #' @param nlabel The maximum number of labels to show on each side of the heatmap.
 #' If set to 0, no labels will be shown.
 #' This can be useful for reducing clutter in large heatmaps.
-#' Default is 0.
+#' Default is `0`.
 #' @param label_cutoff The similarity cutoff for showing labels.
 #' Only cells with similarity values above this cutoff will have labels.
-#' Default is 0.
+#' Default is `0`.
 #' @param label_by The dimension to use for labeling cells.
 #' Options are `"row"` to label cells by row, `"column"` to label cells by column, or `"both"` to label cells by both row and column.
 #' Default is `"row"`.
@@ -191,11 +191,11 @@
 #' @return
 #' A list with the following elements:
 #' \itemize{
-#'   \item \code{plot:} The heatmap plot as a ggplot object.
-#'   \item \code{features:} The features used in the heatmap.
-#'   \item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
-#'   \item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
-#'   \item \code{cell_metadata:} The cell metadata used to generate the heatmap.
+#'   \item `plot`: The heatmap plot as a ggplot object.
+#'   \item `features`: The features used in the heatmap.
+#'   \item `simil_matrix`: The similarity matrix used to generate the heatmap.
+#'   \item `simil_name`: The name of the similarity metric used to generate the heatmap.
+#'   \item `cell_metadata`: The cell metadata used to generate the heatmap.
 #' }
 #'
 #' @seealso

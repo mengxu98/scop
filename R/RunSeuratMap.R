@@ -15,6 +15,9 @@
 #' @param k.weight Number of neighbors to consider when weighting anchors.
 #' Default is `100`.
 #'
+#' @seealso
+#' [RunKNNMap]
+#'
 #' @export
 #'
 #' @examples

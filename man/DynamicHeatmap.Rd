@@ -430,7 +430,7 @@ The length of the list should match the number of feature_annotation.
 Default is \code{NULL}.}
 
 \item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
-Default is an empty list.}
+Default is \code{list()}.}
 
 \item{separate_annotation}{Names of the annotations to be displayed in separate annotation blocks.
 Each name should match a column name in the metadata of the \code{Seurat} object.}
@@ -468,7 +468,7 @@ Default is \code{"inch"}.}
 Default is \code{11}.}
 
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Default is an empty list.}
+Default is \code{list()}.}
 }
 \description{
 Heatmap plot for dynamic features along lineages
