@@ -4,6 +4,10 @@
 #' @param layer The layer used.
 #' @param min.expression The min.expression used.
 #' @param seed The seed used.
+#'
+#' @seealso
+#' [RunDEtest]
+#'
 #' @export
 #'
 #' @examples

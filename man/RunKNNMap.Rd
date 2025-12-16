@@ -116,3 +116,6 @@ ProjectionPlot(
   ref_group = "celltype"
 )
 }
+\seealso{
+\link{RunKNNPredict}, \link{RunSingleR}, \link{CellCorHeatmap}
+}

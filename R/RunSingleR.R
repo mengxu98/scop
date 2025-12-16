@@ -13,6 +13,9 @@
 #' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.
 #' @param prune `"prune"` parameter in [SingleR::SingleR] function.
 #'
+#' @seealso
+#' [RunKNNPredict], [RunKNNMap]
+#'
 #' @export
 #'
 #' @examples

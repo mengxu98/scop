@@ -5,7 +5,7 @@
 #' @inheritParams RunPAGA
 #' @param time_field A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.
 #' @param growth_iters A number of growth iterations to perform during the OT Model computation.
-#' Default is 3.
+#' Default is `3`.
 #' @param tmap_out A character string specifying the path to store the computed transport maps.
 #' @param time_from The starting time point for trajectory and fate analysis.
 #' @param time_to The ending time point for trajectory and fate analysis.
