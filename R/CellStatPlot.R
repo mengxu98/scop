@@ -446,7 +446,7 @@ CellStatPlot <- function(
 #' )
 #'
 #' StatPlot(
-#'   meta.data,
+#'   GetFeaturesData(pancreas_sub, "RNA"),
 #'   stat.by = "highly_variable_genes",
 #'   plot_type = "ring",
 #'   label = TRUE,
