@@ -3,20 +3,22 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams PrepareEnv
-#' @param packages A character vector, indicating package names which should be installed or removed.
-#' Use `"<package>==<version>"` to request the installation of a specific version of a package.
-#' @param force Whether to force package installation.
+#' @param packages A character vector of package names to check and install.
+#' Use `"<package>==<version>"` to request a specific version.
+#' @param force Whether to force package reinstallation.
 #' Default is `FALSE`.
-#' @param pip Whether to use pip for package installation.
-#' Default is `TRUE`, packages are installed from the active conda channels.
-#' @param pip_options An optional character vector of additional command line arguments to be passed to `pip`.
-#' Only relevant when `pip = TRUE`.
-#' @param ... Other arguments passed to [reticulate::conda_install]
+#' @param pip Whether to use `pip`/`uv` (`TRUE`) or `conda` (`FALSE`) for installation.
+#' Default is `TRUE`. When `TRUE`, uv is used as the primary installer with pip as fallback.
+#' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when `pip = TRUE`.
+#' @param ... Other arguments to be passed to [conda_install()].
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
+#' PrepareEnv()
+#'
+#' # Then check/install packages
 #' check_python(
 #'   packages = c("numpy", "pandas")
 #' )
@@ -37,20 +39,14 @@ check_python <- function(
     verbose = TRUE,
     ...) {
   envname <- get_envname(envname)
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
+  conda <- resolve_conda(conda)
+
   env <- env_exist(conda = conda, envname = envname)
   if (isFALSE(env)) {
     log_message(
-      "{.arg envname}: {.val {envname}} python environment does not exist",
-      message_type = "warning",
-      verbose = verbose
+      "Python environment {.val {envname}} not found. Run {.fn PrepareEnv} first",
+      message_type = "error"
     )
-    PrepareEnv(envname = envname)
   }
 
   if (isTRUE(force)) {
@@ -73,9 +69,6 @@ check_python <- function(
       "Try to install: {.pkg {pkgs_to_install}}",
       verbose = verbose
     )
-    if (isTRUE(pip)) {
-      pkgs_to_install <- c("pip", pkgs_to_install)
-    }
     tryCatch(
       expr = {
         conda_install(
@@ -109,25 +102,15 @@ check_python <- function(
   }
 }
 
-#' Check if the python package exists in the environment
-#'
-#' @inheritParams PrepareEnv
-#' @export
 exist_python_pkgs <- function(
     packages,
     envname = NULL,
     conda = "auto") {
   envname <- get_envname(envname)
+  conda <- resolve_conda(conda)
 
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
-
-  if (is.null(conda)) {
-    log_message("Conda not found", message_type = "error")
+  if (!ensure_conda(conda)) {
+    return(invisible(FALSE))
   }
 
   env <- env_exist(conda = conda, envname = envname)
@@ -158,6 +141,9 @@ exist_python_pkgs <- function(
     rep(FALSE, length(packages)), packages
   )
 
+  requirements <- env_requirements()
+  pkg_name_mapping <- requirements$package_aliases
+
   for (i in seq_along(packages)) {
     pkg <- packages[i]
 
@@ -174,24 +160,98 @@ exist_python_pkgs <- function(
       pkg_version <- NA
     }
 
-    if (pkg_name %in% all_installed$package) {
+    check_pkg_names <- pkg_name
+    if (length(pkg_name_mapping) > 0) {
+      if (pkg_name %in% names(pkg_name_mapping)) {
+        actual_name <- pkg_name_mapping[[pkg_name]]
+        check_pkg_names <- c(pkg_name, actual_name)
+      }
+      if (pkg_name %in% pkg_name_mapping) {
+        logical_name <- names(pkg_name_mapping)[pkg_name_mapping == pkg_name]
+        check_pkg_names <- unique(c(check_pkg_names, logical_name))
+      }
+    }
+
+    found_pkg_name <- NULL
+    if (length(check_pkg_names) > 1) {
+      for (chk_name in check_pkg_names) {
+        if (chk_name %in% all_installed$package) {
+          found_pkg_name <- chk_name
+          break
+        }
+      }
+    } else {
+      if (check_pkg_names %in% all_installed$package) {
+        found_pkg_name <- check_pkg_names
+      }
+    }
+
+    if (!is.null(found_pkg_name)) {
       if (!is.na(pkg_version)) {
-        installed_version <- all_installed$version[all_installed$package == pkg_name]
-        packages_installed[pkg] <- installed_version == pkg_version
-        if (packages_installed[pkg]) {
+        installed_version <- all_installed$version[all_installed$package == found_pkg_name]
+
+        get_major_version <- function(version_str) {
+          tryCatch(
+            {
+              ver <- package_version(version_str)
+              as.numeric(ver[1, 1])
+            },
+            error = function(e) {
+              match_result <- regmatches(version_str, regexpr("^([0-9]+)", version_str))
+              if (length(match_result) > 0) {
+                as.numeric(match_result)
+              } else {
+                NA
+              }
+            }
+          )
+        }
+
+        version_match <- tryCatch(
+          {
+            installed_ver <- package_version(installed_version)
+            required_ver <- package_version(pkg_version)
+            installed_ver == required_ver
+          },
+          error = function(e) {
+            normalize_version_string <- function(v) {
+              v <- gsub("(\\.0+)+$", "", v)
+              v
+            }
+            installed_norm <- normalize_version_string(installed_version)
+            required_norm <- normalize_version_string(pkg_version)
+            installed_norm == required_norm || installed_version == pkg_version
+          }
+        )
+
+        if (!version_match) {
+          installed_major <- get_major_version(installed_version)
+          required_major <- get_major_version(pkg_version)
+
+          if (!is.na(installed_major) && !is.na(required_major) &&
+            installed_major == required_major) {
+            version_match <- TRUE
+            log_message(
+              "{.pkg {pkg_name}} compatible (major version {.pkg {required_major}}): installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
+              message_type = "warning"
+            )
+          } else {
+            log_message(
+              "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
+              message_type = "warning"
+            )
+          }
+        } else {
           log_message(
             "{.pkg {pkg_name}} {.pkg {pkg_version}}",
             message_type = "success"
           )
-        } else {
-          log_message(
-            "{.pkg {pkg_name}} found but version mismatch: installed {.pkg {installed_version}}, required {.pkg {pkg_version}}",
-            message_type = "warning"
-          )
         }
+
+        packages_installed[pkg] <- version_match
       } else {
         packages_installed[pkg] <- TRUE
-        installed_version <- all_installed$version[all_installed$package == pkg_name]
+        installed_version <- all_installed$version[all_installed$package == found_pkg_name]
         log_message(
           "{.pkg {pkg_name}} version: {.pkg {installed_version}}",
           message_type = "success"
@@ -209,21 +269,61 @@ exist_python_pkgs <- function(
   return(packages_installed)
 }
 
+installed_python_pkgs <- function(
+    envname = NULL,
+    conda = "auto") {
+  envname <- get_envname(envname)
+  conda <- resolve_conda(conda)
+
+  if (!ensure_conda(conda)) {
+    return(invisible(NULL))
+  }
+
+  env <- env_exist(conda = conda, envname = envname)
+  if (isFALSE(env)) {
+    log_message(
+      "Cannot find the conda environment: {.file {envname}}",
+      message_type = "error"
+    )
+  }
+
+  log_message(
+    "Retrieving package list for environment: {.file {envname}}"
+  )
+
+  tryCatch(
+    {
+      all_installed <- get_namespace_fun(
+        "reticulate", "conda_list_packages"
+      )(
+        conda = conda,
+        envname = envname,
+        no_pip = FALSE
+      )
+      log_message("Found {.val {nrow(all_installed)}} packages installed")
+      return(all_installed)
+    },
+    error = function(e) {
+      log_message(
+        "Failed to retrieve package list: {.val {e$message}}",
+        message_type = "error"
+      )
+    }
+  )
+}
+
 #' @title Remove Python packages from conda environment
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams PrepareEnv
 #' @param packages A character vector of package names to remove.
-#' @param envname The name of the conda environment.
-#' If `NULL`, uses the default scop environment name.
-#' @param conda The path to a conda executable.
-#' Use `"auto"` to allow reticulate to automatically find an appropriate conda binary.
 #' @param pip Whether to use pip for package removal.
 #' Default is `FALSE` (use conda).
 #' @param force Whether to force removal without confirmation.
 #' Default is `FALSE`.
 #'
-#' @return Invisibly value.
+#' @return Invisibly returns.
 #'
 #' @export
 #'
@@ -258,15 +358,8 @@ remove_python <- function(
     verbose = verbose
   )
 
-  if (identical(conda, "auto")) {
-    conda <- find_conda()
-  } else {
-    options(reticulate.conda_binary = conda)
-    conda <- find_conda()
-  }
-
-  if (is.null(conda)) {
-    log_message("Conda not found", message_type = "error")
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda)) {
     return(invisible(FALSE))
   }
 
@@ -322,49 +415,7 @@ remove_python <- function(
   }
 
   if (pip) {
-    log_message(
-      "Removing {.pkg {packages}} via {.pkg pip}...",
-      verbose = verbose
-    )
-
-    result <- tryCatch(
-      {
-        for (pkg in packages) {
-          log_message(
-            "Removing {.pkg {pkg}}",
-            verbose = verbose
-          )
-
-          args <- c(
-            "-m", "pip", "uninstall", "-y", pkg
-          )
-
-          status <- system2t(python, shQuote(args))
-
-          if (status != 0L) {
-            log_message(
-              "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-              message_type = "warning",
-              verbose = verbose
-            )
-          } else {
-            log_message(
-              "Package {.pkg {pkg}} removed successfully via {.pkg pip}",
-              message_type = "success",
-              verbose = verbose
-            )
-          }
-        }
-        TRUE
-      },
-      error = function(e) {
-        log_message(
-          "Pip removal failed: {.val {e$message}}",
-          message_type = "error"
-        )
-        FALSE
-      }
-    )
+    result <- remove_via_pip_uv(packages, python, envname, conda, verbose)
   } else {
     log_message(
       "Removing {.pkg {packages}} via {.pkg conda}...",
@@ -407,44 +458,93 @@ remove_python <- function(
 
     if (!result && !pip) {
       log_message(
-        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg pip} as fallback...",
+        "{.pkg {packages}} removal failed via {.pkg conda}, trying {.pkg uv} as fallback...",
         message_type = "warning",
         verbose = verbose
       )
 
       result <- tryCatch(
         {
-          for (pkg in packages) {
+          uv <- find_uv(
+            python = python, envname = envname, conda = conda, auto_install = TRUE
+          )
+
+          if (is.null(uv)) {
             log_message(
-              "Removing {.pkg {pkg}}",
-              verbose = verbose
+              "{.pkg uv} not found and installation failed, falling back to {.pkg pip}",
+              message_type = "warning"
             )
-
-            args <- c(
-              "-m", "pip", "uninstall", "-y", pkg
-            )
-
-            status <- system2t(python, shQuote(args))
-
-            if (status != 0L) {
+            for (pkg in packages) {
               log_message(
-                "Failed to remove {.pkg {pkg}} via {.pkg pip} [error code {.val {status}}]",
-                message_type = "warning",
+                "Removing {.pkg {pkg}} via {.pkg pip}...",
                 verbose = verbose
               )
-            } else {
+
+              args <- c(
+                "-m", "pip", "uninstall", "-y", pkg
+              )
+
+              status <- system2t(python, shQuote(args))
+
+              if (status != 0L) {
+                log_message(
+                  "{.pkg {pkg}} removal failed via {.pkg pip} [error code {.val {status}}]",
+                  message_type = "warning",
+                  verbose = verbose
+                )
+              } else {
+                log_message(
+                  "{.pkg {pkg}} removed successfully via {.pkg pip}",
+                  message_type = "success",
+                  verbose = verbose
+                )
+              }
+            }
+          } else {
+            for (pkg in packages) {
               log_message(
-                "{.pkg {pkg}} removed successfully via {.pkg pip}",
-                message_type = "success",
+                "Removing {.pkg {pkg}}",
                 verbose = verbose
               )
+
+              args <- c("pip", "uninstall", "--python", python, "-y", pkg)
+
+              if (uv == "python -m uv") {
+                args <- c("-m", "uv", args)
+                status <- system2t(python, shQuote(args))
+              } else {
+                status <- system2t(uv, shQuote(args))
+              }
+
+              if (status != 0L) {
+                log_message(
+                  "Failed to remove {.pkg {pkg}} via {.pkg uv} [error code {.val {status}}], trying pip",
+                  message_type = "warning",
+                  verbose = verbose
+                )
+                args <- c("-m", "pip", "uninstall", "-y", pkg)
+                status <- system2t(python, shQuote(args))
+                if (status == 0L) {
+                  log_message(
+                    "{.pkg {pkg}} removed successfully via {.pkg pip}",
+                    message_type = "success",
+                    verbose = verbose
+                  )
+                }
+              } else {
+                log_message(
+                  "{.pkg {pkg}} removed successfully via {.pkg uv}",
+                  message_type = "success",
+                  verbose = verbose
+                )
+              }
             }
           }
           TRUE
         },
         error = function(e) {
           log_message(
-            "{.pkg {packages}} removal failed via {.pkg pip} as fallback: {.val {e$message}}",
+            "{.pkg {packages}} removal failed via {.pkg uv} as fallback: {.val {e$message}}",
             message_type = "error",
             verbose = verbose
           )
@@ -673,4 +773,74 @@ check_pkg_status <- function(pkg, version = NULL, lib = .libPaths()[1]) {
   }
 
   TRUE
+}
+
+remove_via_pip_uv <- function(
+    packages, python, envname, conda, verbose = TRUE) {
+  system2t <- get_namespace_fun("reticulate", "system2t")
+
+  uv <- find_uv(python = python, envname = envname, conda = conda, auto_install = TRUE)
+
+  cmd_args <- c("pip", "uninstall", "-y")
+
+  if (!is.null(uv)) {
+    log_message(
+      "Removing {.pkg {packages}} via {.pkg uv}...",
+      verbose = verbose
+    )
+
+    if (uv == "python -m uv") {
+      runner <- python
+      base_args <- c("-m", "uv", cmd_args)
+    } else {
+      runner <- uv
+      base_args <- c(cmd_args, "--python", python)
+    }
+
+    final_args <- c(base_args, packages)
+    status <- system2t(runner, shQuote(final_args))
+
+    if (status == 0L) {
+      log_message(
+        "{.pkg {packages}} removed successfully via {.pkg uv}",
+        message_type = "success",
+        verbose = verbose
+      )
+      return(TRUE)
+    } else {
+      log_message(
+        "{.pkg uv} removal failed [error code {.val {status}}], falling back to pip",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+  } else {
+    log_message(
+      "uv not found, falling back to pip",
+      message_type = "warning", verbose = verbose
+    )
+  }
+
+  log_message(
+    "Removing {.pkg {packages}} via {.pkg pip}...",
+    verbose = verbose
+  )
+  args <- c("-m", "pip", "uninstall", "-y", packages)
+  status <- system2t(python, shQuote(args))
+
+  if (status == 0L) {
+    log_message(
+      "{.pkg {packages}} removed successfully via {.pkg pip}",
+      message_type = "success",
+      verbose = verbose
+    )
+    return(TRUE)
+  } else {
+    log_message(
+      "Failed to remove {.pkg {packages}} via {.pkg pip} [error code {.val {status}}]",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(FALSE)
+  }
 }
