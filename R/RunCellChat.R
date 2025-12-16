@@ -55,21 +55,21 @@ RunCellChat <- function(
   check_r("immunogenomics/presto")
   if (!group.by %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {group.by}} does not exist in the seurat object meta data",
+      "{.val {group.by}} does not exist in {.cls Seurat} object",
       message_type = "error"
     )
   }
 
   if (!is.null(split.by) && !split.by %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {split.by}} does not exist in the seurat object meta data",
+      "{.val {split.by}} does not exist in {.cls Seurat} object",
       message_type = "error"
     )
   }
 
   if (!is.null(group_column) && !group_column %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {group_column}} does not exist in the seurat object meta data",
+      "{.val {group_column}} does not exist in {.cls Seurat} object",
       message_type = "error"
     )
   }

@@ -142,7 +142,7 @@ CheckDataType.default <- function(
 #' @param nHVF The number of highly variable features to select.
 #' Default is `2000`.
 #' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-#' The default value is `1`.
+#' Default is `1`.
 #' @param HVF A vector of highly variable features.
 #' Default is `NULL`.
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.

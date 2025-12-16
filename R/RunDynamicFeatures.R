@@ -9,11 +9,11 @@
 #' @param features A character vector specifying the features (genes or metadata variables) for which dynamic features should be calculated.
 #' If NULL, n_candidates must be provided.
 #' @param suffix A character vector specifying the suffix to append to the output layer names for each lineage.
-#' Defaults to the lineage names.
+#' Default is the lineage names.
 #' @param n_candidates A number of candidate features to select when features is NULL.
-#' Defaults to `1000`.
+#' Default is `1000`.
 #' @param minfreq An integer specifying the minimum frequency threshold for candidate features.
-#' Features with a frequency less than minfreq will be excluded. Defaults to `5`.
+#' Features with a frequency less than minfreq will be excluded. Default is `5`.
 #' @param family A character or character vector specifying the family of distributions to use for the generalized additive models (GAMs).
 #' If family is set to NULL, the appropriate family will be automatically determined based on the data.
 #' If length(family) is 1, the same family will be used for all features.
@@ -26,8 +26,8 @@
 #' If NULL, the library size correction factors will be calculated based on the expression matrix.
 #' If length(libsize) is 1, the same value will be used for all cells.
 #' Otherwise, libsize must have the same length as the number of cells in srt.
-#' Defaults to `NULL`.
-#' @param seed An integer specifying the seed for random number generation. Defaults to `11`.
+#' Default is `NULL`.
+#' @param seed An integer specifying the seed for random number generation. Default is `11`.
 #' @inheritParams thisutils::parallelize_fun
 #'
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.

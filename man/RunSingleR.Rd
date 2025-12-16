@@ -30,15 +30,15 @@ RunSingleR(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{query_group}{A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.}
+\item{query_group}{A character vector specifying the column name in the \code{srt_query} metadata that represents the cell grouping.}
 
-\item{ref_group}{A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.}
+\item{ref_group}{A character vector specifying the column name in the \code{srt_ref} metadata that represents the cell grouping.}
 
 \item{query_assay}{A character vector specifying the assay to be used for the query data.
-Defaults to the default assay of the `srt_query` object.}
+Default is the default assay of the \code{srt_query} object.}
 
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data.
-Defaults to the default assay of the `srt_ref` object.}
+Default is the default assay of the \code{srt_ref} object.}
 
 \item{genes}{\code{"genes"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
@@ -113,4 +113,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
 )
+}
+\seealso{
+\link{RunKNNPredict}, \link{RunKNNMap}
 }

@@ -1,12 +1,31 @@
 # scop
 
+# scop 0.7.0
+
+* **func**:
+  * `PrepareEnv()`: Integrated `uv` as the primary *Python* package installer for improved installation speed.
+  * `check_python()`: Now uses `uv` as the primary installation tool with `pip` as fallback, significantly improving package installation speed.
+  * Added `find_uv()` and `install_uv()` internal functions for managing `uv` package manager installation and detection.
+
+# scop 0.6.6
+
+* **docs**:
+  * Unified documentation format across all R functions:
+    * Standardized return value tags: Changed all `@returns` to `@return` for consistency.
+    * Unified parameter documentation: Replaced all `\code{value}` with Markdown backticks `` `value` `` format.
+    * Standardized default value descriptions.
+    * Added `@md` tags: Added `@md` tags to all functions using Markdown syntax in documentation.
+    * Enhanced cross-references: Added `@seealso` links to related functions where appropriate.
+
 # scop 0.6.5
 
 * **func**:
   * `PrepareEnv()`:
-    * Added comprehensive environment variable configuration to prevent crashes when calling Python functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
+    * Added comprehensive environment variable configuration to prevent crashes when calling *Python* functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
     * Added `accept_conda_tos()` function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.
+    * Fixed conda Terms of Service acceptance issue in `PrepareEnv()`. The function now automatically accepts conda Terms of Service for required channels, eliminating the need for manual acceptance. This addresses the issue reported in [#85](https://github.com/mengxu98/scop/issues/85).
   * Multiple Python-based functions (`RunPAGA`, `RunSCVELO`, `RunPalantir`, `RunCellRank`, `RunWOT`, `RunPHATE`, `RunPaCMAP`, `RunTriMap`): Enhanced message formatting and code improvements.
+  * `PrepareSCExplorer()`: Fixed package version dependency issues with `shiny` and `bslib` compatibility. The function now properly handles `bslib` theme configuration to work with both `shiny` 1.6.0 and 1.7.0+, addressing compatibility errors reported in [#87](https://github.com/mengxu98/scop/issues/87).
 
 * **refactor**:
   * Improved code formatting and consistency across multiple functions.
@@ -16,11 +35,6 @@
   * Updated documentation for multiple functions to reflect code improvements.
 
 # scop 0.6.2
-
-* **refactor**:
-  * Moved example figures from `man/figures/` to `figures/` directory for better package organization.
-  * Updated README.md to reference figures from the new location.
-  * Added `figures/` directory to `.Rbuildignore` to exclude example figures from package builds.
 
 * **func**:
   * `CellChatPlot()`: Adjusted the size of saved figures for better file size optimization.

@@ -172,7 +172,7 @@ Default is \code{FALSE}, which using numbers instead of raw labels.}
 
 \item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
 
-\item{label_repulsion}{Force of repulsion between overlapping text labels. Defaults to 20.}
+\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
 
 \item{label_point_size}{Size of the center points.}
 
@@ -203,16 +203,16 @@ Default is \code{FALSE}, which using numbers instead of raw labels.}
 \item{add_mark}{Whether to add marks around cell groups. Default is \code{FALSE}.}
 
 \item{mark_type}{Type of mark to add around cell groups.
-One of "hull", "ellipse", "rect", or "circle". Default is "hull".}
+One of "hull", "ellipse", "rect", or "circle". Default is \code{"hull"}.}
 
 \item{mark_expand}{Expansion of the mark around the cell group.
 Default is \code{grid::unit(3, "mm")}.}
 
 \item{mark_alpha}{Transparency of the mark.
-Default is 0.1.}
+Default is \code{0.1}.}
 
 \item{mark_linetype}{Line type of the mark border.
-Default is 1 (solid line).}
+Default is \code{1} (solid line).}
 
 \item{lineages}{Lineages/pseudotime to add to the plot.
 If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
@@ -247,7 +247,7 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{stat_plot_position}{Position adjustment in statistical plot.}
 
-\item{stat_plot_size}{Set the statistical plot size. Defaults to 0.1}
+\item{stat_plot_size}{Set the statistical plot size. Default is \code{0.1}.}
 
 \item{stat_plot_palette}{Color palette used in statistical plot.}
 
@@ -346,7 +346,7 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 \item{raster}{Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells}
 
 \item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore().
-Default is c(512, 512).}
+Default is \code{c(512, 512)}.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.}
 

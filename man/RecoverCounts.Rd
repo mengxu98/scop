@@ -70,3 +70,6 @@ new_counts <- GetAssayData5(
 )
 identical(raw_counts, new_counts)
 }
+\seealso{
+\link{CheckDataType}
+}

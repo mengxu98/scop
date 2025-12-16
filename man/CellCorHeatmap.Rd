@@ -139,7 +139,7 @@ Options are \code{"query"} to use only features from the query dataset,
 If not provided or set to "both", features will be selected from both datasets.}
 
 \item{nfeatures}{The maximum number of features to include in the heatmap.
-Default is 2000.}
+Default is \code{2000}.}
 
 \item{DEtest_param}{The parameters to use for differential expression testing.
 This should be a list with two elements:
@@ -153,18 +153,18 @@ Only features with adjusted p-values below this threshold will be considered dif
 \item{distance_metric}{The distance metric to use for calculating similarities between cells.
 This can be any of the following:
 \code{"cosine"}, \code{"pearson"}, \code{"spearman"}, \code{"correlation"}, \code{"jaccard"}, \code{"ejaccard"}, \code{"dice"}, \code{"edice"}, \code{"hamman"}, \code{"simple matching"}, or \code{"faith"}.
-Dhe default is \code{"cosine"}.}
+Default is \code{"cosine"}.}
 
 \item{k}{The number of nearest neighbors to use for calculating similarities.
-Default is 30.}
+Default is \code{30}.}
 
 \item{filter_lowfreq}{The minimum frequency threshold for selecting query dataset features.
 Features with a frequency below this threshold will be excluded from the heatmap.
-Default is 0.}
+Default is \code{0}.}
 
 \item{prefix}{The prefix to use for the KNNPredict tool layer in the query dataset.
 This can be used to avoid conflicts with other tools in the Seurat object.
-The default is \code{"KNNPredict"}.}
+Default is \code{"KNNPredict"}.}
 
 \item{exp_legend_title}{The title for the color legend in the heatmap.
 If not provided, a default title based on the similarity metric will be used.}
@@ -231,11 +231,11 @@ Default is \code{0} degrees.}
 \item{nlabel}{The maximum number of labels to show on each side of the heatmap.
 If set to 0, no labels will be shown.
 This can be useful for reducing clutter in large heatmaps.
-Default is 0.}
+Default is \code{0}.}
 
 \item{label_cutoff}{The similarity cutoff for showing labels.
 Only cells with similarity values above this cutoff will have labels.
-Default is 0.}
+Default is \code{0}.}
 
 \item{label_by}{The dimension to use for labeling cells.
 Options are \code{"row"} to label cells by row, \code{"column"} to label cells by column, or \code{"both"} to label cells by both row and column.
@@ -337,11 +337,11 @@ Any conflicting parameters will override the defaults set by this function.}
 \value{
 A list with the following elements:
 \itemize{
-\item \code{plot:} The heatmap plot as a ggplot object.
-\item \code{features:} The features used in the heatmap.
-\item \code{simil_matrix:} The similarity matrix used to generate the heatmap.
-\item \code{simil_name:} The name of the similarity metric used to generate the heatmap.
-\item \code{cell_metadata:} The cell metadata used to generate the heatmap.
+\item \code{plot}: The heatmap plot as a ggplot object.
+\item \code{features}: The features used in the heatmap.
+\item \code{simil_matrix}: The similarity matrix used to generate the heatmap.
+\item \code{simil_name}: The name of the similarity metric used to generate the heatmap.
+\item \code{cell_metadata}: The cell metadata used to generate the heatmap.
 }
 }
 \description{
