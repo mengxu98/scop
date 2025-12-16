@@ -74,7 +74,7 @@ Default is \code{"vst"}.}
 Default is \code{2000}.}
 
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-The default value is \code{1}.}
+Default is \code{1}.}
 
 \item{HVF}{A vector of highly variable features.
 Default is \code{NULL}.}

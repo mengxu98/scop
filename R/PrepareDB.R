@@ -23,7 +23,7 @@
 #' If set to FALSE, the function will attempt to load the cached databases instead.
 #' Default is `FALSE`.
 #' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
-#' The default value is `TRUE`.
+#' Default is `TRUE`.
 #' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
 #' Default is `NULL`.
 #' @param custom_TERM2NAME A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
@@ -42,9 +42,9 @@
 #'
 #' @return A list containing the prepared gene annotation databases:
 #'   \itemize{
-#'     \item \code{TERM2GENE:} mapping of gene identifiers to terms.
-#'     \item \code{TERM2NAME:} mapping of terms to their names.
-#'     \item \code{semData:} semantic similarity data for gene sets (only for Gene Ontology terms).
+#'     \item `TERM2GENE`: mapping of gene identifiers to terms.
+#'     \item `TERM2NAME`: mapping of terms to their names.
+#'     \item `semData`: semantic similarity data for gene sets (only for Gene Ontology terms).
 #'     }
 #'
 #' @seealso [ListDB]

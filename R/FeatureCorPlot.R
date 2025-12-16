@@ -3,49 +3,53 @@
 #' @description
 #' This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
 #'
+#' @md
 #' @param srt A Seurat object.
 #' @param features A character vector specifying the features to compare. Should be present in both the assay data and the metadata of the Seurat object.
 #' @param group.by A character string specifying the column in the metadata to group cells by.
 #' @param split.by A character string specifying the column in the metadata to split the plot by.
 #' @param cells A character vector specifying the cells to include in the plot. If NULL (default), all cells will be included.
-#' @param layer A character string specifying the layer in the Seurat object to use. Defaults to "data".
-#' @param assay A character string specifying the assay to use. Defaults to the default assay in the Seurat object.
+#' @param layer A character string specifying the layer in the Seurat object to use. Default is `"data"`.
+#' @param assay A character string specifying the assay to use. Default is the default assay in the Seurat object.
 #' @param cor_method A character string specifying the correlation method to use. Can be "pearson" (default) or "spearman".
-#' @param adjust The adjustment factor for the width of the violin plots. Defaults to 1.
-#' @param margin The margin size for the plot. Defaults to 1.
-#' @param reverse Whether to reverse the order of the features in the plot. Defaults to FALSE.
-#' @param add_equation Whether to add the equation of the linear regression line to each scatter plot. Defaults to FALSE.
-#' @param add_r2 Whether to add the R-squared value of the linear regression line to each scatter plot. Defaults to TRUE.
-#' @param add_pvalue Whether to add the p-value of the linear regression line to each scatter plot. Defaults to TRUE.
-#' @param add_smooth Whether to add a smoothed line to each scatter plot. Defaults to TRUE.
-#' @param palette A character string specifying the name of the color palette to use for the groups. Defaults to "Paired".
-#' @param palcolor A character string specifying the color for the groups. Defaults to NULL.
-#' @param cor_palette A character string specifying the name of the color palette to use for the correlation. Defaults to "RuBu".
-#' @param cor_palcolor A character string specifying the color for the correlation. Defaults to "RuBu".
+#' @param adjust The adjustment factor for the width of the violin plots. Default is `1`.
+#' @param margin The margin size for the plot. Default is `1`.
+#' @param reverse Whether to reverse the order of the features in the plot. Default is `FALSE`.
+#' @param add_equation Whether to add the equation of the linear regression line to each scatter plot. Default is `FALSE`.
+#' @param add_r2 Whether to add the R-squared value of the linear regression line to each scatter plot. Default is `TRUE`.
+#' @param add_pvalue Whether to add the p-value of the linear regression line to each scatter plot. Default is `TRUE`.
+#' @param add_smooth Whether to add a smoothed line to each scatter plot. Default is `TRUE`.
+#' @param palette A character string specifying the name of the color palette to use for the groups. Default is `"Paired"`.
+#' @param palcolor A character string specifying the color for the groups. Default is `NULL`.
+#' @param cor_palette A character string specifying the name of the color palette to use for the correlation. Default is `"RuBu"`.
+#' @param cor_palcolor A character string specifying the color for the correlation. Default is `"RuBu"`.
 #' @param cor_range A two-length numeric vector specifying the range for the correlation.
 #' @param pt.size The size of the points in the scatter plots. If NULL (default), the size will be automatically determined based on the number of cells.
-#' @param pt.alpha A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Defaults to 1.
-#' @param cells.highlight A logical value or a character vector specifying the cells to highlight in the scatter plots. If TRUE, all cells will be highlighted. Defaults to NULL.
-#' @param cols.highlight A character string specifying the color for the highlighted cells. Defaults to "black".
-#' @param sizes.highlight The size of the highlighted cells in the scatter plots. Defaults to 1.
-#' @param alpha.highlight A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Defaults to 1.
-#' @param stroke.highlight The stroke size of the highlighted cells in the scatter plots. Defaults to 0.5.
-#' @param calculate_coexp Whether to calculate the co-expression of selected features. Defaults to FALSE.
-#' @param raster Whether to use raster graphics for scatter plots. Defaults to NULL.
-#' @param raster.dpi A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Defaults to c(512, 512).
-#' @param aspect.ratio The aspect ratio of the scatter plots. Defaults to 1.
-#' @param title A character string specifying the title for the correlation plot. Defaults to NULL.
-#' @param subtitle A character string specifying the subtitle for the correlation plot. Defaults to NULL.
+#' @param pt.alpha A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Default is `1`.
+#' @param cells.highlight A logical value or a character vector specifying the cells to highlight in the scatter plots. If TRUE, all cells will be highlighted. Default is `NULL`.
+#' @param cols.highlight A character string specifying the color for the highlighted cells. Default is `"black"`.
+#' @param sizes.highlight The size of the highlighted cells in the scatter plots. Default is `1`.
+#' @param alpha.highlight A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Default is `1`.
+#' @param stroke.highlight The stroke size of the highlighted cells in the scatter plots. Default is `0.5`.
+#' @param calculate_coexp Whether to calculate the co-expression of selected features. Default is `FALSE`.
+#' @param raster Whether to use raster graphics for scatter plots. Default is `NULL`.
+#' @param raster.dpi A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Default is `c(512, 512)`.
+#' @param aspect.ratio The aspect ratio of the scatter plots. Default is `1`.
+#' @param title A character string specifying the title for the correlation plot. Default is `NULL`.
+#' @param subtitle A character string specifying the subtitle for the correlation plot. Default is `NULL`.
 #' @param legend.position A character string specifying the position of the legend. Can be "right" (default), "left", "top", or "bottom".
 #' @param legend.direction A character string specifying the direction of the legend. Can be "vertical" (default) or "horizontal".
-#' @param theme_use A character string specifying the name of the theme to use for the plot. Defaults to "theme_scop".
-#' @param theme_args A list of arguments to pass to the theme function. Defaults to an empty list.
-#' @param combine Whether to combine the plots into a single plot. Defaults to TRUE.
+#' @param theme_use A character string specifying the name of the theme to use for the plot. Default is `"theme_scop"`.
+#' @param theme_args A list of arguments to pass to the theme function. Default is `list()`.
+#' @param combine Whether to combine the plots into a single plot. Default is `TRUE`.
 #' @param nrow The number of rows in the combined plot. If NULL (default), the number of rows will be automatically determined.
 #' @param ncol The number of columns in the combined plot. If NULL (default), the number of columns will be automatically determined.
-#' @param byrow Whether to fill the combined plot byrow (top to bottom, left to right). Defaults to TRUE.
-#' @param force Whether to force the creation of the plot, even if it contains more than 50 subplots. Defaults to FALSE.
-#' @param seed The random seed for reproducibility. Defaults to 11.
+#' @param byrow Whether to fill the combined plot byrow (top to bottom, left to right). Default is `TRUE`.
+#' @param force Whether to force the creation of the plot, even if it contains more than 50 subplots. Default is `FALSE`.
+#' @param seed The random seed for reproducibility. Default is `11`.
+#'
+#' @seealso
+#' [FeatureStatPlot]
 #'
 #' @export
 #'

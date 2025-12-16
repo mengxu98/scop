@@ -36,11 +36,11 @@ CellScoring(
 
 \item{features}{A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.}
 
-\item{layer}{The layer of the Seurat object to use for scoring. Defaults to "data".}
+\item{layer}{The layer of the Seurat object to use for scoring. Default is \code{"data"}.}
 
-\item{assay}{The assay of the Seurat object to use for scoring. Defaults to NULL, in which case the default assay of the object is used.}
+\item{assay}{The assay of the Seurat object to use for scoring. Default is \code{NULL}, in which case the default assay of the object is used.}
 
-\item{split.by}{A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Defaults to NULL.}
+\item{split.by}{A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Default is \code{NULL}.}
 
 \item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
@@ -49,18 +49,18 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 
 \item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
 
-\item{termnames}{A vector of term names to be used from the database. Defaults to NULL, in which case all features from the database are used.}
+\item{termnames}{A vector of term names to be used from the database. Default is \code{NULL}, in which case all features from the database are used.}
 
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
-Default is FALSE.}
+Default is \code{FALSE}.}
 
 \item{db_version}{A character vector specifying the version of the database to be used.
 This argument is ignored if \code{db_update} is \code{TRUE}.
-Default is "latest".}
+Default is \code{"latest"}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-The default value is TRUE.}
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
 
@@ -70,15 +70,15 @@ The default value is TRUE.}
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Defaults to "Seurat".}
+\item{method}{The method to use for scoring. Can be "Seurat", "AUCell", or "UCell". Default is \code{"Seurat"}.}
 
-\item{classification}{Whether to perform classification based on the scores. Defaults to TRUE.}
+\item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
 
-\item{name}{The name of the assay to store the scores in. Only used if new_assay is TRUE. Defaults to an empty string.}
+\item{name}{The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is \code{""}.}
 
-\item{new_assay}{Whether to create a new assay for storing the scores. Defaults to FALSE.}
+\item{new_assay}{Whether to create a new assay for storing the scores. Default is \code{FALSE}.}
 
-\item{seed}{The random seed for reproducibility. Defaults to 11.}
+\item{seed}{The random seed for reproducibility. Default is \code{11}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
