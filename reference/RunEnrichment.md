@@ -259,9 +259,9 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-12-05 09:01:08] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-05 09:01:08] Completed 5 tasks in 749ms
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group_by = "CellType",
@@ -269,7 +269,152 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> Error in loadNamespace(x): there is no package called ‘R.cache’
+#>  
+#> → Will install 29 packages.
+#> → Will download 3 CRAN packages (1.93 MB), cached: 26 (0 B).
+#> + DOSE                4.4.0  [bld]
+#> + GO.db               3.22.0 [bld]
+#> + GOSemSim            2.36.0 [bld][cmp]
+#> + R.methodsS3         1.8.2  
+#> + R.oo                1.27.1 
+#> + R.utils             2.13.0 
+#> + ape                 5.8-1  [bld][cmp][dl] (1.42 MB)
+#> + clusterProfiler     4.18.3 [bld]
+#> + enrichplot          1.30.4 [bld]
+#> + fastmatch           1.1-6  
+#> + fgsea               1.36.0 [bld][cmp]
+#> + fontBitstreamVera   0.1.1  
+#> + fontLiberation      0.1.0  
+#> + fontquiver          0.2.1  
+#> + gdtools             0.4.4  [bld][cmp][dl] (73.90 kB) + ✔ libcairo2-dev, ✔ libfontconfig1-dev, ✔ libfreetype6-dev
+#> + ggforce             0.5.0  
+#> + ggiraph             0.9.2  [bld][cmp][dl] (429.12 kB) + ✔ libpng-dev
+#> + ggnewscale          0.5.2  
+#> + ggtangle            0.0.9  
+#> + ggtree              4.0.1  [bld]
+#> + gson                0.1.0  
+#> + org.Hs.eg.db        3.22.0 [bld]
+#> + quarto              1.5.1  
+#> + qvalue              2.42.0 [bld]
+#> + scatterpie          0.2.6  
+#> + tidydr              0.0.6  
+#> + tidytree            0.4.6  
+#> + treeio              1.34.0 [bld]
+#> + tweenr              2.0.3  
+#> ✔ All system requirements are already installed.
+#>   
+#> ℹ Getting 3 pkgs (1.93 MB), 26 cached
+#> ✔ Got ggtree 4.0.1 (source) (370.24 kB)
+#> ✔ Got GOSemSim 2.36.0 (source) (610.99 kB)
+#> ✔ Got treeio 1.34.0 (source) (701.64 kB)
+#> ✔ Got fastmatch 1.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (35.95 kB)
+#> ✔ Got tweenr 2.0.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (461.68 kB)
+#> ✔ Got ggnewscale 0.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (351.15 kB)
+#> ✔ Got fontBitstreamVera 0.1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (699.47 kB)
+#> ✔ Got quarto 1.5.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (544.37 kB)
+#> ✔ Got R.oo 1.27.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.09 kB)
+#> ✔ Got ggforce 0.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.95 MB)
+#> ✔ Got qvalue 2.42.0 (source) (2.77 MB)
+#> ✔ Got fontquiver 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.28 MB)
+#> ✔ Got scatterpie 0.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (150.90 kB)
+#> ✔ Got ggtangle 0.0.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (257.09 kB)
+#> ✔ Got R.methodsS3 1.8.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (82.67 kB)
+#> ✔ Got ggiraph 0.9.2 (source) (430.83 kB)
+#> ✔ Got R.utils 2.13.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.45 MB)
+#> ✔ Got gson 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (232.54 kB)
+#> ✔ Got gdtools 0.4.4 (source) (73.99 kB)
+#> ✔ Got tidytree 0.4.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (343.02 kB)
+#> ✔ Got ape 5.8-1 (source) (1.43 MB)
+#> ✔ Got fontLiberation 0.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.54 MB)
+#> ✔ Got DOSE 4.4.0 (source) (5.75 MB)
+#> ✔ Got fgsea 1.36.0 (source) (6.17 MB)
+#> ✔ Got GO.db 3.22.0 (source) (25.25 MB)
+#> ✔ Got org.Hs.eg.db 3.22.0 (source) (104.97 MB)
+#> ℹ Installing system requirements
+#> ℹ Executing `sudo sh -c apt-get -y update`
+#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+#> Reading package lists...
+#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libx11-dev libcurl4-openssl-dev libssl-dev make libglpk-dev libxml2-dev pandoc libicu-dev`
+#> Reading package lists...
+#> Building dependency tree...
+#> Reading state information...
+#> libcairo2-dev is already the newest version (1.18.0-3build1).
+#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
+#> libx11-dev is already the newest version (2:1.8.7-1build1).
+#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
+#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
+#> make is already the newest version (4.3-4.1build2).
+#> libglpk-dev is already the newest version (5.0-1build2).
+#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
+#> pandoc is already the newest version (3.1.3+ds-2).
+#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
+#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
+#> ℹ Building ape 5.8-1
+#> ℹ Building qvalue 2.42.0
+#> ℹ Building GO.db 3.22.0
+#> ℹ Building org.Hs.eg.db 3.22.0
+#> ✔ Built qvalue 2.42.0 (4.3s)
+#> ✔ Installed fastmatch 1.1-6  (25ms)
+#> ℹ Building fgsea 1.36.0
+#> ✔ Built ape 5.8-1 (34.7s)
+#> ✔ Installed ape 5.8-1  (1.1s)
+#> ✔ Installed fontBitstreamVera 0.1.1  (37ms)
+#> ✔ Installed fontLiberation 0.1.0  (1.1s)
+#> ✔ Installed fontquiver 0.2.1  (1.1s)
+#> ℹ Building gdtools 0.4.4
+#> ✔ Built fgsea 1.36.0 (36.3s)
+#> ✔ Installed ggforce 0.5.0  (56ms)
+#> ✔ Installed ggnewscale 0.5.2  (32ms)
+#> ✔ Installed ggtangle 0.0.9  (32ms)
+#> ✔ Installed gson 0.1.0  (80ms)
+#> ✔ Installed quarto 1.5.1  (47ms)
+#> ✔ Installed R.methodsS3 1.8.2  (28ms)
+#> ✔ Installed R.oo 1.27.1  (45ms)
+#> ✔ Installed R.utils 2.13.0  (47ms)
+#> ✔ Installed scatterpie 0.2.6  (32ms)
+#> ✔ Installed tidydr 0.0.6  (31ms)
+#> ✔ Installed tidytree 0.4.6  (101ms)
+#> ℹ Building treeio 1.34.0
+#> ✔ Built treeio 1.34.0 (6s)
+#> ✔ Installed tweenr 2.0.3  (36ms)
+#> ✔ Installed fgsea 1.36.0  (169ms)
+#> ✔ Installed qvalue 2.42.0  (50ms)
+#> ✔ Installed treeio 1.34.0  (63ms)
+#> ✔ Built GO.db 3.22.0 (48.7s)
+#> ✔ Installed GO.db 3.22.0  (534ms)
+#> ℹ Building GOSemSim 2.36.0
+#> ✔ Built gdtools 0.4.4 (15.4s)
+#> ✔ Installed gdtools 0.4.4  (40ms)
+#> ℹ Building ggiraph 0.9.2
+#> ✔ Built GOSemSim 2.36.0 (15.8s)
+#> ✔ Installed GOSemSim 2.36.0  (53ms)
+#> ℹ Building DOSE 4.4.0
+#> ✔ Built DOSE 4.4.0 (14.1s)
+#> ✔ Installed DOSE 4.4.0  (59ms)
+#> ✔ Built ggiraph 0.9.2 (38.9s)
+#> ✔ Installed ggiraph 0.9.2  (83ms)
+#> ℹ Building ggtree 4.0.1
+#> ✔ Built ggtree 4.0.1 (6.5s)
+#> ✔ Installed ggtree 4.0.1  (1.1s)
+#> ℹ Building enrichplot 1.30.4
+#> ✔ Built enrichplot 1.30.4 (11.3s)
+#> ✔ Installed enrichplot 1.30.4  (1s)
+#> ℹ Building clusterProfiler 4.18.3
+#> ✔ Built clusterProfiler 4.18.3 (12s)
+#> ✔ Installed clusterProfiler 4.18.3  (31ms)
+#> ✔ Built org.Hs.eg.db 3.22.0 (4m 38s)
+#> ✔ Installed org.Hs.eg.db 3.22.0  (2.3s)
+#> ✔ 1 pkg + 155 deps: kept 124, added 29, dld 26 (162.90 MB) [5m 1.4s]
+#> Error in RunEnrichment(pancreas_sub, group_by = "CellType", DE_threshold = "p_val_adj < 0.05",     db = "GO_BP", species = "Mus_musculus"): Cannot find the DEtest result for the group 'CellType'. You may perform
+#> RunDEtest first.
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",

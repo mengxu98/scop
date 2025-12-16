@@ -1,7 +1,9 @@
 # Python environment requirements
 
 The function returns a list of requirements including the required
-Python version and a list of packages with their corresponding versions.
+Python version, package versions, and package name aliases for
+platform-specific packages. All packages will be installed using uv as
+the primary tool.
 
 ## Usage
 
@@ -17,7 +19,19 @@ env_requirements(version = "3.10-1")
 
 ## Value
 
-A list of requirements for the specified version.
+A list containing:
+
+- python:
+
+  Python version string
+
+- packages:
+
+  Named vector of package version specifications
+
+- package_aliases:
+
+  Named list mapping logical package names to actual installed names
 
 ## Examples
 
@@ -30,7 +44,7 @@ env_requirements("3.10-1")
 #>               leidenalg                     tbb           python-igraph 
 #>     "leidenalg==0.10.2"         "tbb==2022.2.0" "python-igraph==0.11.9" 
 #>              matplotlib                   numba                llvmlite 
-#>    "matplotlib==3.10.7"         "numba==0.59.1"      "llvmlite==0.42.0" 
+#>    "matplotlib==3.10.8"         "numba==0.59.1"      "llvmlite==0.42.0" 
 #>                   numpy               packaging                palantir 
 #>         "numpy==1.26.4"       "packaging>=24.0"       "palantir==1.4.1" 
 #>                  pandas                  scanpy            scikit-learn 
@@ -55,5 +69,10 @@ env_requirements("3.10-1")
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
 #>     scanorama      cellrank 
 #>         "pip"         "pip" 
+#> 
+#> $package_aliases
+#> $package_aliases$`python-igraph`
+#> [1] "igraph"
+#> 
 #> 
 ```

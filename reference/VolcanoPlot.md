@@ -221,15 +221,16 @@ pancreas_sub <- RunDEtest(
  pancreas_sub,
  group_by = "CellType"
 )
-#> ⠙ [2025-12-05 09:20:08] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-05 09:20:08] Completed 5 tasks in 723ms
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 VolcanoPlot(
   pancreas_sub,
   group_by = "CellType",
   ncol = 2
 )
-
+#> Error in VolcanoPlot(pancreas_sub, group_by = "CellType", ncol = 2): Cannot find the DEtest result for the group 'CellType'. You may perform
+#> RunDEtest first.
 
 VolcanoPlot(
   pancreas_sub,
@@ -237,7 +238,8 @@ VolcanoPlot(
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
-
+#> Error in VolcanoPlot(pancreas_sub, group_by = "CellType", DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",     ncol = 2): Cannot find the DEtest result for the group 'CellType'. You may perform
+#> RunDEtest first.
 
 VolcanoPlot(
   pancreas_sub,
@@ -245,4 +247,6 @@ VolcanoPlot(
   x_metric = "avg_log2FC",
   ncol = 2
 )
+#> Error in VolcanoPlot(pancreas_sub, group_by = "CellType", x_metric = "avg_log2FC",     ncol = 2): Cannot find the DEtest result for the group 'CellType'. You may perform
+#> RunDEtest first.
 ```

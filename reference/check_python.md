@@ -21,32 +21,33 @@ check_python(
 
 - packages:
 
-  A character vector, indicating package names which should be installed
-  or removed. Use `"<package>==<version>"` to request the installation
-  of a specific version of a package.
+  A character vector of package names to check and install. Use
+  `"<package>==<version>"` to request a specific version.
 
 - envname:
 
-  The name of a conda environment.
+  The name of the conda environment. If `NULL`, the environment name
+  will be set to `"scop_env"`. Default is `NULL`.
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow scop to
-  automatically find an appropriate conda binary.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 - force:
 
-  Whether to force package installation. Default is `FALSE`.
+  Whether to force package reinstallation. Default is `FALSE`.
 
 - pip:
 
-  Whether to use pip for package installation. Default is `TRUE`,
-  packages are installed from the active conda channels.
+  Whether to use `pip`/`uv` (`TRUE`) or `conda` (`FALSE`) for
+  installation. Default is `TRUE`. When `TRUE`, uv is used as the
+  primary installer with pip as fallback.
 
 - pip_options:
 
-  An optional character vector of additional command line arguments to
-  be passed to `pip`. Only relevant when `pip = TRUE`.
+  Additional command line arguments to be passed to `uv`/`pip` when
+  `pip = TRUE`.
 
 - verbose:
 
@@ -54,13 +55,15 @@ check_python(
 
 - ...:
 
-  Other arguments passed to
-  [reticulate::conda_install](https://rstudio.github.io/reticulate/reference/conda-tools.html)
+  Other arguments to be passed to `conda_install()`.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
+PrepareEnv()
+
+# Then check/install packages
 check_python(
   packages = c("numpy", "pandas")
 )

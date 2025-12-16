@@ -12,9 +12,10 @@ env_info(conda, envname)
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow scop to
-  automatically find an appropriate conda binary.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 - envname:
 
-  The name of a conda environment.
+  The name of the conda environment. If `NULL`, the environment name
+  will be set to `"scop_env"`. Default is `NULL`.

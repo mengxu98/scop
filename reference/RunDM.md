@@ -158,19 +158,19 @@ pancreas_sub <- RunDM(
 )
 #>  
 #> → Will install 18 packages.
-#> → All 18 packages (0 B) are cached.
+#> → Will download 3 CRAN packages (2.23 MB), cached: 15 (0 B).
 #> + DEoptimR            1.1-4  
-#> + VIM                 6.2.6  
+#> + VIM                 6.2.6  [bld][cmp][dl] (2.04 MB)
 #> + destiny             3.24.0 [bld][cmp]
 #> + e1071               1.7-16 
 #> + ggplot.multistats   1.0.1  
 #> + ggthemes            5.2.0  
-#> + knn.covertree       1.0    
+#> + knn.covertree       1.1    [bld][cmp][dl] (13.91 kB)
 #> + laeken              0.5.3  
 #> + org.Mm.eg.db        3.22.0 [bld]
 #> + pcaMethods          2.2.0  [bld][cmp]
-#> + proxy               0.4-27 
-#> + ranger              0.17.0 
+#> + proxy               0.4-28 
+#> + ranger              0.17.0 [bld][cmp][dl] (178.53 kB)
 #> + repr                1.1.7  
 #> + rgl                 1.3.31  + ✔ libfreetype6-dev, ✖ libglu1-mesa-dev, ✖ texlive, ✔ libpng-dev, ✖ libgl1-mesa-dev, ✔ pandoc, ✔ zlib1g-dev
 #> + robustbase          0.99-6 
@@ -181,41 +181,40 @@ pancreas_sub <- RunDM(
 #> + libgl1-mesa-dev   - rgl
 #> + libglu1-mesa-dev  - rgl
 #> + texlive           - rgl
-#> ℹ No downloads are needed, 18 pkgs are cached
-#> ✔ Got e1071 1.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (596.57 kB)
-#> ✔ Got DEoptimR 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)
-#> ✔ Got smoother 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)
-#> ✔ Got destiny 3.24.0 (source) (900.68 kB)
-#> ✔ Got proxy 0.4-27 (x86_64-pc-linux-gnu-ubuntu-24.04) (175.47 kB)
-#> ✔ Got pcaMethods 2.2.0 (source) (1.05 MB)
-#> ✔ Got ranger 0.17.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (473.78 kB)
-#> ✔ Got knn.covertree 1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (91.51 kB)
-#> ✔ Got ggthemes 5.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (969.47 kB)
+#> ℹ Getting 3 pkgs (2.23 MB), 15 cached
+#> ✔ Cached copy of knn.covertree 1.1 (source) is the latest build
 #> ✔ Got ggplot.multistats 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (31.64 kB)
-#> ✔ Got laeken 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)
-#> ✔ Got scatterplot3d 0.3-44 (x86_64-pc-linux-gnu-ubuntu-24.04) (348.15 kB)
-#> ✔ Got VIM 6.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.77 MB)
-#> ✔ Got vcd 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
+#> ✔ Got pcaMethods 2.2.0 (source) (1.05 MB)
+#> ✔ Got destiny 3.24.0 (source) (900.68 kB)
+#> ✔ Got DEoptimR 1.1-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (74.64 kB)
 #> ✔ Got repr 1.1.7 (x86_64-pc-linux-gnu-ubuntu-24.04) (128.02 kB)
+#> ✔ Got e1071 1.7-16 (x86_64-pc-linux-gnu-ubuntu-24.04) (596.57 kB)
+#> ✔ Got ggthemes 5.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (969.47 kB)
+#> ✔ Got smoother 1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (22.69 kB)
+#> ✔ Got ranger 0.17.0 (source) (176.87 kB)
+#> ✔ Got VIM 6.2.6 (source) (2.04 MB)
+#> ✔ Got scatterplot3d 0.3-44 (x86_64-pc-linux-gnu-ubuntu-24.04) (348.15 kB)
+#> ✔ Got vcd 1.4-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.30 MB)
+#> ✔ Got laeken 0.5.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.16 MB)
 #> ✔ Got robustbase 0.99-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.13 MB)
 #> ✔ Got rgl 1.3.31 (x86_64-pc-linux-gnu-ubuntu-24.04) (6.45 MB)
 #> ✔ Got org.Mm.eg.db 3.22.0 (source) (92.82 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libfreetype6-dev libglu1-mesa-dev texlive libpng-dev libgl1-mesa-dev pandoc zlib1g-dev make libcurl4-openssl-dev libnode-dev libxml2-dev libx11-dev libssl-dev libglpk-dev cmake libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
 #> Reading package lists...
 #> Building dependency tree...
 #> Reading state information...
 #> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libpng-dev is already the newest version (1.6.43-5build1).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
 #> pandoc is already the newest version (3.1.3+ds-2).
 #> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
 #> make is already the newest version (4.3-4.1build2).
@@ -297,7 +296,7 @@ pancreas_sub <- RunDM(
 #> Get:39 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libglvnd-dev amd64 1.7.0-1build1 [3198 B]
 #> Get:40 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgl1-mesa-dev amd64 25.0.7-0ubuntu0.24.04.2 [20.4 kB]
 #> Preconfiguring packages ...
-#> Fetched 132 MB in 1s (131 MB/s)
+#> Fetched 132 MB in 2s (80.4 MB/s)
 #> Selecting previously unselected package libkpathsea6:amd64.
 #> (Reading database ...
 #> (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%
@@ -309,7 +308,7 @@ pancreas_sub <- RunDM(
 #> (Reading database ... 85%
 #> (Reading database ... 90%
 #> (Reading database ... 95%
-#> (Reading database ... 100%(Reading database ... 256281 files and directories currently installed.)
+#> (Reading database ... 100%(Reading database ... 256299 files and directories currently installed.)
 #> Preparing to unpack .../00-libkpathsea6_2023.20230311.66589-9build3_amd64.deb ...
 #> Unpacking libkpathsea6:amd64 (2023.20230311.66589-9build3) ...
 #> Selecting previously unselected package libpotrace0:amd64.
@@ -491,41 +490,40 @@ pancreas_sub <- RunDM(
 #> Restarting services...
 #> Service restarts being deferred:
 #>  systemctl restart networkd-dispatcher.service
-#> 
 #> No containers need to be restarted.
 #> 
 #> No user sessions are running outdated binaries.
 #> 
 #> No VM guests are running outdated hypervisor (qemu) binaries on this host.
+#> ℹ Building ranger 0.17.0
 #> ℹ Building pcaMethods 2.2.0
 #> ℹ Building org.Mm.eg.db 3.22.0
-#> ✔ Installed DEoptimR 1.1-4  (100ms)
-#> ✔ Installed e1071 1.7-16  (89ms)
-#> ✔ Installed ggplot.multistats 1.0.1  (93ms)
-#> ✔ Installed ggthemes 5.2.0  (88ms)
-#> ✔ Installed knn.covertree 1.0  (148ms)
-#> ✔ Installed laeken 0.5.3  (93ms)
-#> ✔ Installed proxy 0.4-27  (83ms)
-#> ✔ Installed ranger 0.17.0  (84ms)
-#> ✔ Installed repr 1.1.7  (89ms)
-#> ✔ Installed robustbase 0.99-6  (109ms)
-#> ✔ Installed rgl 1.3.31  (279ms)
-#> ✔ Installed scatterplot3d 0.3-44  (83ms)
-#> ✔ Installed smoother 1.3  (81ms)
-#> ✔ Installed vcd 1.4-13  (88ms)
-#> ✔ Installed VIM 6.2.6  (73ms)
-#> ✔ Built pcaMethods 2.2.0 (9.6s)
-#> ✔ Installed pcaMethods 2.2.0  (41ms)
+#> ✔ Installed DEoptimR 1.1-4  (1s)
+#> ✔ Installed e1071 1.7-16  (39ms)
+#> ✔ Installed ggplot.multistats 1.0.1  (31ms)
+#> ✔ Installed ggthemes 5.2.0  (90ms)
+#> ✔ Installed knn.covertree 1.1  (1.1s)
+#> ✔ Installed laeken 0.5.3  (63ms)
+#> ✔ Installed proxy 0.4-28  (30ms)
+#> ✔ Installed repr 1.1.7  (36ms)
+#> ✔ Installed rgl 1.3.31  (191ms)
+#> ✔ Installed robustbase 0.99-6  (78ms)
+#> ✔ Installed scatterplot3d 0.3-44  (31ms)
+#> ✔ Installed smoother 1.3  (30ms)
+#> ✔ Installed vcd 1.4-13  (46ms)
+#> ✔ Built pcaMethods 2.2.0 (13.3s)
+#> ✔ Installed pcaMethods 2.2.0  (54ms)
+#> ✔ Built ranger 0.17.0 (49.6s)
+#> ✔ Installed ranger 0.17.0  (116ms)
+#> ℹ Building VIM 6.2.6
+#> ✔ Built VIM 6.2.6 (12.7s)
+#> ✔ Installed VIM 6.2.6  (65ms)
 #> ℹ Building destiny 3.24.0
-#> ✔ Built destiny 3.24.0 (28.6s)
-#> ✔ Installed destiny 3.24.0  (60ms)
-#> ✔ Built org.Mm.eg.db 3.22.0 (3m 31.8s)
-#> ✔ Installed org.Mm.eg.db 3.22.0  (1.9s)
-#> ✔ 1 pkg + 256 deps: kept 239, added 18, dld 18 (114.49 MB) [4m 30.7s]
-#> Registered S3 methods overwritten by 'proxy':
-#>   method               from    
-#>   print.registry_field registry
-#>   print.registry_entry registry
+#> ✔ Built destiny 3.24.0 (27.8s)
+#> ✔ Installed destiny 3.24.0  (63ms)
+#> ✔ Built org.Mm.eg.db 3.22.0 (4m 4.5s)
+#> ✔ Installed org.Mm.eg.db 3.22.0  (2.1s)
+#> ✔ 1 pkg + 256 deps: kept 236, added 18, dld 16 (113.19 MB) [5m 2.2s]
 #> 'as(<dsCMatrix>, "dgTMatrix")' is deprecated.
 #> Use 'as(as(., "generalMatrix"), "TsparseMatrix")' instead.
 #> See help("Deprecated") and help("Matrix-deprecated").

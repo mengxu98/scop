@@ -695,7 +695,7 @@ FeatureStatPlot(
 )
 #>  
 #> → Will install 34 packages.
-#> → All 34 packages (0 B) are cached.
+#> → Will download 3 CRAN packages (4.41 MB), cached: 31 (0 B).
 #> + Deriv            4.2.0      
 #> + Formula          1.2-5      
 #> + MatrixModels     0.5-4      
@@ -707,14 +707,14 @@ FeatureStatPlot(
 #> + colorspace       2.1-2      
 #> + corrplot         0.95       
 #> + doBy             4.7.1      
-#> + forecast         8.24.0     
+#> + forecast         8.24.0     [bld][cmp][dl] (581.95 kB)
 #> + fracdiff         1.5-3      
 #> + ggpubr           0.6.2      
 #> + ggsci            4.1.0      
 #> + ggsignif         0.6.4      
-#> + lme4             1.1-38     
+#> + lme4             1.1-38     [bld][cmp][dl] (3.77 MB)
 #> + microbenchmark   1.5.0      
-#> + minqa            1.2.8       + ✔ make
+#> + minqa            1.2.8      [bld][cmp][dl] (54.64 kB) + ✔ make
 #> + modelr           0.1.11     
 #> + nloptr           2.2.1       + ✔ cmake
 #> + numDeriv         2016.8-1.1 
@@ -732,40 +732,42 @@ FeatureStatPlot(
 #> + xts              0.14.1     
 #> ✔ All system requirements are already installed.
 #>   
-#> ℹ No downloads are needed, 34 pkgs are cached
-#> ✔ Got Deriv 4.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.58 kB)
-#> ✔ Got MatrixModels 0.5-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (408.50 kB)
-#> ✔ Got Rdpack 2.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (637.80 kB)
-#> ✔ Got nloptr 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (567.65 kB)
-#> ✔ Got reformulas 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.23 kB)
+#> ℹ Getting 3 pkgs (4.41 MB), 31 cached
+#> ✔ Cached copy of forecast 8.24.0 (source) is the latest build
+#> ✔ Cached copy of lme4 1.1-38 (source) is the latest build
+#> ✔ Got modelr 0.1.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (200.70 kB)
 #> ✔ Got carData 3.0-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.70 MB)
-#> ✔ Got microbenchmark 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (65.96 kB)
-#> ✔ Got xts 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)
-#> ✔ Got minqa 1.2.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (122.60 kB)
 #> ✔ Got car 3.1-3 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.54 MB)
-#> ✔ Got Formula 1.2-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (159.13 kB)
-#> ✔ Got numDeriv 2016.8-1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (114.36 kB)
+#> ✔ Got Deriv 4.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (152.58 kB)
 #> ✔ Got TTR 0.24.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (524.49 kB)
+#> ✔ Got rbibutils 2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.15 MB)
+#> ✔ Got Formula 1.2-5 (x86_64-pc-linux-gnu-ubuntu-24.04) (159.13 kB)
+#> ✔ Got ggpubr 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.13 MB)
+#> ✔ Got numDeriv 2016.8-1.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (114.36 kB)
 #> ✔ Got colorspace 2.1-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.64 MB)
+#> ✔ Got minqa 1.2.8 (source) (55.10 kB)
+#> ✔ Got polynom 1.4-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (406.99 kB)
+#> ✔ Got ggsignif 0.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (602.07 kB)
+#> ✔ Got Rdpack 2.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (637.80 kB)
+#> ✔ Got microbenchmark 1.5.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (65.96 kB)
+#> ✔ Got corrplot 0.95 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.82 MB)
+#> ✔ Got rstatix 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (615.19 kB)
 #> ✔ Got pbkrtest 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (222.06 kB)
 #> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
-#> ✔ Got rstatix 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (615.19 kB)
-#> ✔ Got corrplot 0.95 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.82 MB)
-#> ✔ Got rbibutils 2.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.15 MB)
-#> ✔ Got modelr 0.1.11 (x86_64-pc-linux-gnu-ubuntu-24.04) (200.70 kB)
-#> ✔ Got polynom 1.4-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (406.99 kB)
-#> ✔ Got quantreg 6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.46 MB)
-#> ✔ Got ggsignif 0.6.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (602.07 kB)
 #> ✔ Got ggsci 4.1.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.30 MB)
-#> ✔ Got ggpubr 0.6.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.13 MB)
+#> ✔ Got reformulas 0.4.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (139.23 kB)
+#> ✔ Got nloptr 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (567.65 kB)
+#> ✔ Got quantreg 6.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.46 MB)
+#> ✔ Got MatrixModels 0.5-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (408.50 kB)
+#> ✔ Got xts 0.14.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.22 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install make cmake libcurl4-openssl-dev libssl-dev pandoc libicu-dev`
@@ -779,41 +781,43 @@ FeatureStatPlot(
 #> pandoc is already the newest version (3.1.3+ds-2).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed car 3.1-3  (73ms)
-#> ✔ Installed carData 3.0-5  (90ms)
-#> ✔ Installed colorspace 2.1-2  (134ms)
-#> ✔ Installed corrplot 0.95  (197ms)
-#> ✔ Installed Deriv 4.2.0  (143ms)
-#> ✔ Installed doBy 4.7.1  (66ms)
-#> ✔ Installed forecast 8.24.0  (67ms)
-#> ✔ Installed Formula 1.2-5  (65ms)
-#> ✔ Installed fracdiff 1.5-3  (65ms)
-#> ✔ Installed ggpubr 0.6.2  (69ms)
-#> ✔ Installed ggsci 4.1.0  (123ms)
-#> ✔ Installed ggsignif 0.6.4  (73ms)
-#> ✔ Installed lme4 1.1-38  (71ms)
-#> ✔ Installed MatrixModels 0.5-4  (68ms)
-#> ✔ Installed microbenchmark 1.5.0  (65ms)
-#> ✔ Installed minqa 1.2.8  (67ms)
-#> ✔ Installed modelr 0.1.11  (67ms)
-#> ✔ Installed nloptr 2.2.1  (119ms)
-#> ✔ Installed numDeriv 2016.8-1.1  (68ms)
-#> ✔ Installed pbkrtest 0.5.5  (65ms)
-#> ✔ Installed polynom 1.4-1  (63ms)
-#> ✔ Installed quadprog 1.5-8  (63ms)
-#> ✔ Installed quantmod 0.4.28  (69ms)
-#> ✔ Installed quantreg 6.1  (71ms)
-#> ✔ Installed rbibutils 2.4  (123ms)
-#> ✔ Installed Rdpack 2.6.4  (72ms)
-#> ✔ Installed reformulas 0.4.2  (67ms)
-#> ✔ Installed rstatix 0.7.3  (68ms)
-#> ✔ Installed SparseM 1.84-2  (69ms)
-#> ✔ Installed timeDate 4051.111  (69ms)
-#> ✔ Installed tseries 0.10-58  (363ms)
-#> ✔ Installed TTR 0.24.4  (356ms)
-#> ✔ Installed urca 1.3-4  (65ms)
-#> ✔ Installed xts 0.14.1  (47ms)
-#> ✔ 1 pkg + 99 deps: kept 66, added 34, dld 25 (23.79 MB) [10.2s]
+#> ℹ Building minqa 1.2.8
+#> ✔ Installed car 3.1-3  (117ms)
+#> ✔ Installed carData 3.0-5  (152ms)
+#> ✔ Installed colorspace 2.1-2  (166ms)
+#> ✔ Installed corrplot 0.95  (136ms)
+#> ✔ Installed Deriv 4.2.0  (114ms)
+#> ✔ Installed doBy 4.7.1  (126ms)
+#> ✔ Installed forecast 8.24.0  (95ms)
+#> ✔ Installed Formula 1.2-5  (71ms)
+#> ✔ Installed fracdiff 1.5-3  (68ms)
+#> ✔ Installed ggpubr 0.6.2  (79ms)
+#> ✔ Installed ggsci 4.1.0  (83ms)
+#> ✔ Installed ggsignif 0.6.4  (75ms)
+#> ✔ Installed MatrixModels 0.5-4  (78ms)
+#> ✔ Installed microbenchmark 1.5.0  (96ms)
+#> ✔ Installed modelr 0.1.11  (1s)
+#> ✔ Installed lme4 1.1-38  (1.3s)
+#> ✔ Installed nloptr 2.2.1  (79ms)
+#> ✔ Installed numDeriv 2016.8-1.1  (72ms)
+#> ✔ Installed pbkrtest 0.5.5  (73ms)
+#> ✔ Installed polynom 1.4-1  (72ms)
+#> ✔ Installed quadprog 1.5-8  (70ms)
+#> ✔ Installed quantmod 0.4.28  (107ms)
+#> ✔ Installed quantreg 6.1  (108ms)
+#> ✔ Installed rbibutils 2.4  (77ms)
+#> ✔ Installed Rdpack 2.6.4  (73ms)
+#> ✔ Installed reformulas 0.4.2  (71ms)
+#> ✔ Installed rstatix 0.7.3  (75ms)
+#> ✔ Installed SparseM 1.84-2  (74ms)
+#> ✔ Installed timeDate 4051.111  (72ms)
+#> ✔ Installed tseries 0.10-58  (103ms)
+#> ✔ Installed TTR 0.24.4  (71ms)
+#> ✔ Installed urca 1.3-4  (72ms)
+#> ✔ Installed xts 0.14.1  (51ms)
+#> ✔ Built minqa 1.2.8 (7.2s)
+#> ✔ Installed minqa 1.2.8  (1s)
+#> ✔ 1 pkg + 101 deps: kept 65, added 34, dld 25 (23.73 MB) [15.6s]
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: Groups with fewer than two datapoints have been dropped.

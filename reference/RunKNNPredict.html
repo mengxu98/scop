@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run KNN prediction</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunKNNPredict.R" class="external-link"><code>R/RunKNNPredict.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunKNNPredict.R" class="external-link"><code>R/RunKNNPredict.R</code></a></small>
       <div class="d-none name"><code>RunKNNPredict.Rd</code></div>
     </div>
 
@@ -358,9 +358,9 @@ Default is <code>"p_val &lt; 0.05"</code>. If using "roc" test, <code>DE_thresho
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"ref"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:03:49] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:03:49] Completed <span style="color: #0000BB;">13</span> tasks in 7.2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> and is now defunct.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `LayerData()` instead.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -384,12 +384,9 @@ Default is <code>"p_val &lt; 0.05"</code>. If using "roc" test, <code>DE_thresho
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"both"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:03:56] Running [<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">8</span>] Processing: <span style="color: #0000BB;">Ductal, Beta, Pre-endocrine, </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:03:56] Completed <span style="color: #0000BB;">8</span> tasks in 1.4s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2025-12-05 09:04:00] Running [<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] Processing: <span style="color: #0000BB;">delta, acinar, alpha, activa</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2025-12-05 09:04:00] Completed <span style="color: #0000BB;">13</span> tasks in 3.2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> and is now defunct.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `LayerData()` instead.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

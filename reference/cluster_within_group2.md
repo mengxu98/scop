@@ -57,28 +57,28 @@ dend <- cluster_within_group2(mat, factor)
 #> + gsfonts          - webshot
 #> + libmagick++-dev  - webshot
 #> ℹ No downloads are needed, 22 pkgs are cached
-#> ✔ Got diptest 0.77-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (174.55 kB)
 #> ✔ Got assertthat 0.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (53.11 kB)
-#> ✔ Got dynamicTreeCut 1.63-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (90.00 kB)
-#> ✔ Got ca 0.71.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (241.85 kB)
-#> ✔ Got modeltools 0.2-24 (x86_64-pc-linux-gnu-ubuntu-24.04) (223 kB)
 #> ✔ Got DendSer 1.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (60.86 kB)
+#> ✔ Got ca 0.71.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (241.85 kB)
+#> ✔ Got diptest 0.77-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (174.55 kB)
+#> ✔ Got webshot 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.60 kB)
 #> ✔ Got prabclus 2.3-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (481.41 kB)
+#> ✔ Got pvclust 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (184.52 kB)
+#> ✔ Got gclus 1.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (420.18 kB)
+#> ✔ Got egg 0.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (874.80 kB)
+#> ✔ Got kernlab 0.9-33 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.05 MB)
+#> ✔ Got TSP 1.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (780.72 kB)
 #> ✔ Got qap 0.1-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (467.07 kB)
 #> ✔ Got fpc 2.2-13 (x86_64-pc-linux-gnu-ubuntu-24.04) (860.09 kB)
-#> ✔ Got TSP 1.2.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (780.72 kB)
-#> ✔ Got pvclust 2.2-0 (x86_64-pc-linux-gnu-ubuntu-24.04) (184.52 kB)
-#> ✔ Got heatmaply 1.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.02 MB)
 #> ✔ Got permute 0.9-8 (x86_64-pc-linux-gnu-ubuntu-24.04) (239.98 kB)
-#> ✔ Got vegan 2.7-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.08 MB)
-#> ✔ Got mclust 6.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.16 MB)
-#> ✔ Got kernlab 0.9-33 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.05 MB)
-#> ✔ Got egg 0.4.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (874.80 kB)
-#> ✔ Got webshot 0.5.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (206.60 kB)
-#> ✔ Got flexmix 2.3-20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.76 MB)
-#> ✔ Got gclus 1.3.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (420.18 kB)
+#> ✔ Got dynamicTreeCut 1.63-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (90.00 kB)
 #> ✔ Got dendextend 1.19.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.05 MB)
+#> ✔ Got mclust 6.1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (4.16 MB)
+#> ✔ Got modeltools 0.2-24 (x86_64-pc-linux-gnu-ubuntu-24.04) (223 kB)
+#> ✔ Got flexmix 2.3-20 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.76 MB)
 #> ✔ Got seriation 1.5.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.37 MB)
+#> ✔ Got vegan 2.7-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.08 MB)
+#> ✔ Got heatmaply 1.6.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.02 MB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
@@ -103,12 +103,12 @@ dend <- cluster_within_group2(mat, factor)
 #>   gir1.2-rsvg-2.0 gobject-introspection gobject-introspection-bin
 #>   libdjvulibre-dev libdjvulibre-text libdjvulibre21 libexif-dev libexif-doc
 #>   libexif12 libgdk-pixbuf-2.0-dev libgdk-pixbuf2.0-bin libgirepository-1.0-dev
-#> libgirepository1.0-dev libimath-3-1-29t64 libimath-dev libjxr-tools
+#>   libgirepository1.0-dev libimath-3-1-29t64 libimath-dev libjxr-tools
 #>   libjxr0t64 liblcms2-dev liblqr-1-0-dev libmagick++-6-headers
 #>   libmagick++-6.q16-9t64 libmagick++-6.q16-dev libmagickcore-6-arch-config
 #>   libmagickcore-6-headers libmagickcore-6.q16-7-extra libmagickcore-6.q16-dev
 #>   libmagickwand-6-headers libmagickwand-6.q16-dev libopenexr-3-1-30
-#>   libopenexr-dev librsvg2-2 librsvg2-common librsvg2-dev libwmf-0.2-7
+#> libopenexr-dev librsvg2-2 librsvg2-common librsvg2-dev libwmf-0.2-7
 #>   libwmf-dev libwmflite-0.2-7 libxt-dev python3-mako python3-markdown
 #> Suggested packages:
 #>   libgirepository1.0-doc inkscape librsvg2-bin librsvg2-doc libwmf-0.2-7-gtk
@@ -117,8 +117,8 @@ dend <- cluster_within_group2(mat, factor)
 #>   build-essential gir1.2-gdkpixbuf-2.0 gir1.2-girepository-2.0-dev
 #>   gir1.2-rsvg-2.0 gobject-introspection gobject-introspection-bin gsfonts
 #>   libdjvulibre-dev libdjvulibre-text libdjvulibre21 libexif-dev libexif-doc
-#> libexif12 libgdk-pixbuf-2.0-dev libgdk-pixbuf2.0-bin libgirepository-1.0-dev
-#>   libgirepository1.0-dev libimath-3-1-29t64 libimath-dev libjxr-tools
+#>   libexif12 libgdk-pixbuf-2.0-dev libgdk-pixbuf2.0-bin libgirepository-1.0-dev
+#> libgirepository1.0-dev libimath-3-1-29t64 libimath-dev libjxr-tools
 #>   libjxr0t64 liblcms2-dev liblqr-1-0-dev libmagick++-6-headers
 #>   libmagick++-6.q16-9t64 libmagick++-6.q16-dev libmagick++-dev
 #>   libmagickcore-6-arch-config libmagickcore-6-headers
@@ -174,7 +174,7 @@ dend <- cluster_within_group2(mat, factor)
 #> Get:43 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libexif-doc all 0.6.24-1build2 [366 kB]
 #> Get:44 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libjxr0t64 amd64 1.2~git20170615.f752187-5.1ubuntu2 [181 kB]
 #> Get:45 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libjxr-tools amd64 1.2~git20170615.f752187-5.1ubuntu2 [15.8 kB]
-#> Fetched 12.7 MB in 0s (41.5 MB/s)
+#> Fetched 12.7 MB in 1s (21.6 MB/s)
 #> Selecting previously unselected package libmagickcore-6-headers.
 #> (Reading database ...
 #> (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%
@@ -186,7 +186,7 @@ dend <- cluster_within_group2(mat, factor)
 #> (Reading database ... 85%
 #> (Reading database ... 90%
 #> (Reading database ... 95%
-#> (Reading database ... 100%(Reading database ... 269009 files and directories currently installed.)
+#> (Reading database ... 100%(Reading database ... 269027 files and directories currently installed.)
 #> Preparing to unpack .../00-libmagickcore-6-headers_8%3a6.9.12.98+dfsg1-5.2build2_all.deb ...
 #> Unpacking libmagickcore-6-headers (8:6.9.12.98+dfsg1-5.2build2) ...
 #> Selecting previously unselected package libmagickwand-6-headers.
@@ -370,37 +370,36 @@ dend <- cluster_within_group2(mat, factor)
 #> 
 #> Restarting services...
 #> Service restarts being deferred:
-#> systemctl restart networkd-dispatcher.service
+#>  systemctl restart networkd-dispatcher.service
 #> 
 #> No containers need to be restarted.
-#> 
 #> No user sessions are running outdated binaries.
 #> 
 #> No VM guests are running outdated hypervisor (qemu) binaries on this host.
-#> ✔ Installed assertthat 0.2.1  (59ms)
-#> ✔ Installed ca 0.71.1  (82ms)
-#> ✔ Installed dendextend 1.19.1  (172ms)
-#> ✔ Installed DendSer 1.0.2  (188ms)
-#> ✔ Installed diptest 0.77-2  (100ms)
-#> ✔ Installed dynamicTreeCut 1.63-1  (65ms)
-#> ✔ Installed egg 0.4.5  (63ms)
-#> ✔ Installed flexmix 2.3-20  (154ms)
-#> ✔ Installed fpc 2.2-13  (90ms)
-#> ✔ Installed gclus 1.3.3  (68ms)
-#> ✔ Installed heatmaply 1.6.0  (73ms)
-#> ✔ Installed kernlab 0.9-33  (69ms)
-#> ✔ Installed mclust 6.1.2  (67ms)
-#> ✔ Installed modeltools 0.2-24  (116ms)
-#> ✔ Installed permute 0.9-8  (91ms)
-#> ✔ Installed prabclus 2.3-4  (68ms)
-#> ✔ Installed pvclust 2.2-0  (64ms)
-#> ✔ Installed qap 0.1-2  (65ms)
-#> ✔ Installed seriation 1.5.8  (68ms)
-#> ✔ Installed TSP 1.2.6  (122ms)
-#> ✔ Installed vegan 2.7-2  (92ms)
-#> ✔ Installed webshot 0.5.5  (51ms)
-#> ✔ 1 pkg + 129 deps: kept 108, added 22, dld 22 (24.84 MB) [15.9s]
+#> ✔ Installed assertthat 0.2.1  (55ms)
+#> ✔ Installed ca 0.71.1  (78ms)
+#> ✔ Installed dendextend 1.19.1  (130ms)
+#> ✔ Installed DendSer 1.0.2  (150ms)
+#> ✔ Installed diptest 0.77-2  (161ms)
+#> ✔ Installed dynamicTreeCut 1.63-1  (75ms)
+#> ✔ Installed egg 0.4.5  (66ms)
+#> ✔ Installed flexmix 2.3-20  (68ms)
+#> ✔ Installed fpc 2.2-13  (69ms)
+#> ✔ Installed gclus 1.3.3  (66ms)
+#> ✔ Installed heatmaply 1.6.0  (127ms)
+#> ✔ Installed kernlab 0.9-33  (72ms)
+#> ✔ Installed mclust 6.1.2  (69ms)
+#> ✔ Installed modeltools 0.2-24  (68ms)
+#> ✔ Installed permute 0.9-8  (69ms)
+#> ✔ Installed prabclus 2.3-4  (69ms)
+#> ✔ Installed pvclust 2.2-0  (120ms)
+#> ✔ Installed qap 0.1-2  (69ms)
+#> ✔ Installed seriation 1.5.8  (73ms)
+#> ✔ Installed TSP 1.2.6  (73ms)
+#> ✔ Installed vegan 2.7-2  (71ms)
+#> ✔ Installed webshot 0.5.5  (95ms)
+#> ✔ 1 pkg + 129 deps: kept 106, added 22, dld 22 (24.84 MB) [14.5s]
 dend
-#> 'dendrogram' with 2 branches and 10 members total, at height 7.730525 
+#> 'dendrogram' with 2 branches and 10 members total, at height 8.215899 
 plot(dend)
 ```

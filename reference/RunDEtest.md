@@ -308,31 +308,30 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "SubCellType"
 )
-#> ⠙ [2025-12-05 08:51:56] Running [1/8] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-05 08:51:56] Completed 8 tasks in 1.2s
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = AllMarkers$gene,
   feature_split = AllMarkers$group1,
   group.by = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'AllMarkers' not found
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 TopMarkers <- AllMarkers |>
   dplyr::group_by(gene) |>
   dplyr::top_n(1, avg_log2FC) |>
   dplyr::group_by(group1) |>
   dplyr::top_n(3, avg_log2FC)
+#> Error: object 'AllMarkers' not found
 ht2 <- GroupHeatmap(
   pancreas_sub,
   features = TopMarkers$gene,
@@ -340,12 +339,9 @@ ht2 <- GroupHeatmap(
   group.by = "SubCellType",
   show_row_names = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'TopMarkers' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 pancreas_sub <- RunDEtest(
   pancreas_sub,
@@ -353,25 +349,23 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ⠙ [2025-12-05 08:52:05] Running [28/56] Processing: 1, 3, 5, 7, 9, 11, 13, 15, …
-#> ✔ [2025-12-05 08:52:05] Completed 56 tasks in 3.4s
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht3 <- GroupHeatmap(
   pancreas_sub,
   features = PairedMarkers$gene,
   feature_split = PairedMarkers$group1,
   group.by = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'PairedMarkers' not found
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 data(panc8_sub)
 panc8_sub <- integration_scop(
@@ -392,13 +386,14 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-05 08:53:28] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-05 08:53:28] Completed 13 tasks in 6.1s
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht4 <- GroupHeatmap(
   panc8_sub,
   layer = "data",
@@ -408,22 +403,9 @@ ht4 <- GroupHeatmap(
   split.by = "celltype",
   within_groups = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'ConservedMarkers1' not found
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 panc8_sub <- RunDEtest(
   srt = panc8_sub,
@@ -432,13 +414,14 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-05 08:53:53] Running [3/5] Processing: celseq, smartseq2, indrop  ET…
-#> ✔ [2025-12-05 08:53:53] Completed 5 tasks in 5.3s
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht4 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",
@@ -447,12 +430,9 @@ ht4 <- GroupHeatmap(
   group.by = "tech",
   split.by = "celltype"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'ConservedMarkers2' not found
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 panc8_sub <- RunDEtest(
   srt = panc8_sub,
@@ -461,13 +441,14 @@ panc8_sub <- RunDEtest(
   markers_type = "disturbed",
   cores = 2
 )
-#> ⠙ [2025-12-05 08:54:10] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-05 08:54:10] Completed 13 tasks in 12s
-#> 
+#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
+#> and is now defunct.
+#> ℹ Please use `LayerData()` instead.
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht5 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",
@@ -476,22 +457,16 @@ ht5 <- GroupHeatmap(
   group.by = "celltype",
   split.by = "tech"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'DisturbedMarkers' not found
 ht5$plot
-
+#> Error: object 'ht5' not found
 
 gene_specific <- names(which(table(DisturbedMarkers$gene) == 1))
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'which': object 'DisturbedMarkers' not found
 DisturbedMarkers_specific <- DisturbedMarkers[
   DisturbedMarkers$gene %in% gene_specific,
 ]
+#> Error: object 'DisturbedMarkers' not found
 ht6 <- GroupHeatmap(
   srt = panc8_sub,
   layer = "data",
@@ -500,12 +475,9 @@ ht6 <- GroupHeatmap(
   group.by = "celltype",
   split.by = "tech"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'DisturbedMarkers_specific' not found
 ht6$plot
-
+#> Error: object 'ht6' not found
 
 ht7 <- GroupHeatmap(
   srt = panc8_sub,
@@ -517,9 +489,7 @@ ht7 <- GroupHeatmap(
   grouping.var = "tech",
   numerator = "smartseq2"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-
+#> Error: object 'DisturbedMarkers_specific' not found
 ht7$plot
+#> Error: object 'ht7' not found
 ```

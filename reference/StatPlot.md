@@ -281,13 +281,13 @@ StatPlot(
 
 
 StatPlot(
-  meta.data,
+  GetFeaturesData(pancreas_sub, "RNA"),
   stat.by = "highly_variable_genes",
   plot_type = "ring",
   label = TRUE,
   NA_stat = FALSE
 )
-#> Error in StatPlot(meta.data, stat.by = "highly_variable_genes", plot_type = "ring",     label = TRUE, NA_stat = FALSE): Highly_variable_genes is not in the meta.data.
+
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(

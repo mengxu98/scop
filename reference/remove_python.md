@@ -23,13 +23,13 @@ remove_python(
 
 - envname:
 
-  The name of the conda environment. If `NULL`, uses the default scop
-  environment name.
+  The name of the conda environment. If `NULL`, the environment name
+  will be set to `"scop_env"`. Default is `NULL`.
 
 - conda:
 
-  The path to a conda executable. Use `"auto"` to allow reticulate to
-  automatically find an appropriate conda binary.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 - pip:
 
@@ -46,7 +46,7 @@ remove_python(
 
 ## Value
 
-Invisibly value.
+Invisibly returns.
 
 ## Examples
 

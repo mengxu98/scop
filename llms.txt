@@ -795,24 +795,10 @@ etc.
   : Check and install python packages
 - [`check_r()`](https://mengxu98.github.io/scop/reference/check_r.md) :
   Check and install R packages
-- [`conda_install()`](https://mengxu98.github.io/scop/reference/conda_install.md)
-  : Enhanced conda installation
-- [`conda_python()`](https://mengxu98.github.io/scop/reference/conda_python.md)
-  : Find the path to Python associated with a conda environment
-- [`env_exist()`](https://mengxu98.github.io/scop/reference/env_exist.md)
-  : Check if a conda environment exists
 - [`env_info()`](https://mengxu98.github.io/scop/reference/env_info.md)
   : Print environment information
 - [`env_requirements()`](https://mengxu98.github.io/scop/reference/env_requirements.md)
   : Python environment requirements
-- [`exist_python_pkgs()`](https://mengxu98.github.io/scop/reference/exist_python_pkgs.md)
-  : Check if the python package exists in the environment
-- [`find_conda()`](https://mengxu98.github.io/scop/reference/find_conda.md)
-  : Find an appropriate conda binary
-- [`install_miniconda2()`](https://mengxu98.github.io/scop/reference/install_miniconda2.md)
-  : Enhanced miniconda installation
-- [`installed_python_pkgs()`](https://mengxu98.github.io/scop/reference/installed_python_pkgs.md)
-  : Show all the python packages in the environment
 - [`ListEnv()`](https://mengxu98.github.io/scop/reference/ListEnv.md) :
   List conda environments
 - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)

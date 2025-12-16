@@ -736,7 +736,7 @@ pancreas_sub <- RunDynamicFeatures(
 #> ℹ No downloads are needed, 1 pkg is cached
 #> ✔ Got mgcv 1.9-4 (x86_64-pc-linux-gnu-ubuntu-24.04) (3.63 MB)
 #> ✔ Installed mgcv 1.9-4  (1s)
-#> ✔ 1 pkg + 5 deps: kept 5, upd 1, dld 1 (3.63 MB) [2.4s]
+#> ✔ 1 pkg + 5 deps: kept 5, upd 1, dld 1 (3.63 MB) [2.5s]
 #> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 ht1 <- DynamicHeatmap(

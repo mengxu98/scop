@@ -12,11 +12,8 @@ ListEnv(conda = "auto")
 
 - conda:
 
-  The path to a `conda` executable. Use `"auto"` to allow `reticulate`
-  to automatically find an appropriate `conda` binary. See **Finding
-  Conda** and
-  [`conda_binary()`](https://rstudio.github.io/reticulate/reference/conda-tools.html)
-  for more details.
+  The path to a conda executable. Use `"auto"` to allow automatically
+  finding an appropriate conda binary.
 
 ## Value
 

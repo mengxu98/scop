@@ -197,20 +197,20 @@ pancreas_sub <- RunGLMPCA(pancreas_sub)
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 6 pkgs are cached
-#> ✔ Got markdown 2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.28 kB)
 #> ✔ Got rex 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (126.59 kB)
 #> ✔ Got covr 3.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (344.29 kB)
-#> ✔ Got litedown 0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.68 kB)
+#> ✔ Got markdown 2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.28 kB)
 #> ✔ Got glmpca 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.79 kB)
+#> ✔ Got litedown 0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.68 kB)
 #> ✔ Got logisticPCA 0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (384.47 kB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make pandoc`
@@ -222,13 +222,13 @@ pancreas_sub <- RunGLMPCA(pancreas_sub)
 #> make is already the newest version (4.3-4.1build2).
 #> pandoc is already the newest version (3.1.3+ds-2).
 #> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed covr 3.6.5  (83ms)
-#> ✔ Installed glmpca 0.2.0  (122ms)
-#> ✔ Installed litedown 0.8  (144ms)
-#> ✔ Installed logisticPCA 0.2  (175ms)
-#> ✔ Installed markdown 2.0  (58ms)
-#> ✔ Installed rex 1.2.1  (44ms)
-#> ✔ 1 pkg + 54 deps: kept 49, added 6, dld 6 (1.52 MB) [4.7s]
+#> ✔ Installed covr 3.6.5  (115ms)
+#> ✔ Installed glmpca 0.2.0  (130ms)
+#> ✔ Installed litedown 0.8  (147ms)
+#> ✔ Installed logisticPCA 0.2  (143ms)
+#> ✔ Installed markdown 2.0  (66ms)
+#> ✔ Installed rex 1.2.1  (49ms)
+#> ✔ 1 pkg + 54 deps: kept 48, added 6, dld 6 (1.52 MB) [4.4s]
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
