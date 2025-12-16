@@ -1,5 +1,12 @@
 # scop
 
+# scop 0.7.0
+
+* **func**:
+  * `PrepareEnv()`: Integrated `uv` as the primary *Python* package installer for improved installation speed.
+  * `check_python()`: Now uses `uv` as the primary installation tool with `pip` as fallback, significantly improving package installation speed.
+  * Added `find_uv()` and `install_uv()` internal functions for managing `uv` package manager installation and detection.
+
 # scop 0.6.6
 
 * **docs**:
@@ -14,7 +21,7 @@
 
 * **func**:
   * `PrepareEnv()`:
-    * Added comprehensive environment variable configuration to prevent crashes when calling Python functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
+    * Added comprehensive environment variable configuration to prevent crashes when calling *Python* functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
     * Added `accept_conda_tos()` function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.
     * Fixed conda Terms of Service acceptance issue in `PrepareEnv()`. The function now automatically accepts conda Terms of Service for required channels, eliminating the need for manual acceptance. This addresses the issue reported in [#85](https://github.com/mengxu98/scop/issues/85).
   * Multiple Python-based functions (`RunPAGA`, `RunSCVELO`, `RunPalantir`, `RunCellRank`, `RunWOT`, `RunPHATE`, `RunPaCMAP`, `RunTriMap`): Enhanced message formatting and code improvements.
