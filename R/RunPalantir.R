@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams RunPAGA
+#' @inheritParams RunCellRank
 #' @param dm_n_components The number of diffusion components to calculate.
 #' @param dm_alpha Normalization parameter for the diffusion operator.
 #' @param dm_n_eigs Number of eigen vectors to use.
@@ -16,7 +16,7 @@
 #' @param adjust_early_cell Whether to adjust the early cell to the cell with the minimum pseudotime value.
 #' @param adjust_terminal_cells Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
-#' @param n_jobs The number of parallel jobs to run.
+#' @param point_size The point size for plotting.
 #'
 #' @seealso [srt_to_adata]
 #'
@@ -75,15 +75,17 @@ RunPalantir <- function(
     adjust_early_cell = FALSE,
     adjust_terminal_cells = FALSE,
     max_iterations = 25,
-    n_jobs = 1,
+    cores = 1,
     point_size = 20,
     palette = "Paired",
     palcolor = NULL,
+    legend.position = "on data",
     show_plot = FALSE,
-    save = FALSE,
-    dpi = 300,
+    save_plot = FALSE,
+    plot_format = c("pdf", "png", "svg"),
+    plot_dpi = 300,
+    plot_prefix = "palantir",
     dirpath = "./",
-    fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
   PrepareEnv()
@@ -144,6 +146,18 @@ RunPalantir <- function(
         "palcolor"
       )
   ]
+
+  args[["legend_loc"]] <- legend.position
+  args <- args[!names(args) %in% c("legend.position")]
+
+  args[["n_jobs"]] <- cores
+  args <- args[!names(args) %in% c("cores")]
+
+  # Map new parameters to Python legacy parameters
+  args[["save"]] <- save_plot
+  args[["dpi"]] <- plot_dpi
+  args[["fileprefix"]] <- plot_prefix
+  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
