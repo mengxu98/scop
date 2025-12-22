@@ -1,3 +1,5 @@
+# LogMessage class and log_message function
+
 """
 Python implementation of log_message function
 Provides formatted logging with timestamps, colors, and message types
@@ -89,7 +91,6 @@ class LogMessage:
 
     def _check_color_support(self):
         """Check if colors should be enabled (prefer enabled unless NO_COLOR is set)."""
-        # disable colors (e.g., R's reticulate output), unless explicitly set NO_COLOR
         self.color_support = os.environ.get("NO_COLOR") is None
 
     def _hex_to_rgb(self, hex_color: str) -> tuple:
@@ -578,13 +579,17 @@ def SCVELO(
     top_n=6,
     n_jobs=1,
     show_plot=True,
+    save_plot=False,
+    plot_format="png",
+    plot_dpi=600,
+    plot_prefix="scvelo",
+    dirpath="./scvelo",
     save=False,
     dpi=300,
-    dirpath="./",
     fileprefix="",
     verbose=True,
+    legend_loc="on data",
 ):
-    # Configure OpenMP settings to prevent conflicts
     import os
     import platform
 
@@ -596,7 +601,6 @@ def SCVELO(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on Apple silicon
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
@@ -613,8 +617,8 @@ def SCVELO(
 
         import numba
 
-        numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)  # Force single thread
+        numba.config.DISABLE_JIT = True
+        numba.set_num_threads(1)
         log_message(
             "NUMBA configured for Apple silicon",
             message_type="success",
@@ -623,7 +627,7 @@ def SCVELO(
 
     import matplotlib
 
-    matplotlib.use("Agg")  # Use non-interactive backend
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import scvelo as scv
     import scanpy as sc
@@ -637,13 +641,21 @@ def SCVELO(
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
     prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(dirpath))
+
+    expanded_path = os.path.expanduser(dirpath)
+    os.makedirs(expanded_path, exist_ok=True)
+    os.chdir(expanded_path)
+
+    os.makedirs("./figures", exist_ok=True)
+
+    sc.settings.figdir = "./figures"
+    sc.settings.file_format_figs = plot_format
+    sc.settings.autosave = save_plot
 
     log_message(
         "Starting {.pkg scVelo} analysis...", message_type="running", verbose=verbose
     )
     try:
-        # Input validation
         if adata is None and h5ad is None:
             raise ValueError("Either {.arg adata} or {.arg h5ad} must be provided")
 
@@ -658,10 +670,8 @@ def SCVELO(
                 "At least one of {.arg linear_reduction} or {.arg nonlinear_reduction} must be provided"
             )
 
-        # Setup basis
         if basis is None:
             if nonlinear_reduction is not None:
-                # Check if the nonlinear reduction exists in obsm
                 if nonlinear_reduction in adata.obsm:
                     basis = nonlinear_reduction
                 elif f"X_{nonlinear_reduction}" in adata.obsm:
@@ -684,14 +694,12 @@ def SCVELO(
                     else f"X_{linear_reduction}"
                 )
 
-        # Ensure the basis exists in obsm
         if basis not in adata.obsm:
             log_message(
                 "basis '{.val {basis}}' not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
                 message_type="warning",
                 verbose=verbose,
             )
-            # Try to find alternative basis
             if linear_reduction in adata.obsm:
                 basis = linear_reduction
                 log_message(
@@ -707,7 +715,6 @@ def SCVELO(
                     verbose=verbose,
                 )
             else:
-                # Create a 2D basis from linear reduction
                 if linear_reduction in adata.obsm:
                     adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
                     basis = "basis"
@@ -726,19 +733,15 @@ def SCVELO(
             verbose=verbose,
         )
 
-        # Ensure group_by is categorical
         adata.obs[group_by] = adata.obs[group_by].astype("category")
 
-        # PREPROCESSING PHASE
         log_message("Starting preprocessing", message_type="running", verbose=verbose)
 
-        # 1. Gene filtering (optional)
         if filter_genes:
             log_message("Filtering genes...", message_type="info", verbose=verbose)
             scv.pp.filter_genes(adata, min_counts=min_counts)
             scv.pp.filter_genes(adata, min_counts_u=min_counts_u)
 
-        # 2. Normalization and transformation
         if normalize_per_cell:
             log_message("Normalizing per cell...", message_type="info", verbose=verbose)
             scv.pp.normalize_per_cell(adata)
@@ -747,7 +750,6 @@ def SCVELO(
             log_message("Log transforming...", message_type="info", verbose=verbose)
             sc.pp.log1p(adata)
 
-        # 3. Magic imputation (if requested)
         if magic_impute:
             log_message(
                 "Performing {.pkg magic-impute} imputation...",
@@ -773,15 +775,12 @@ def SCVELO(
                     verbose=verbose,
                 )
 
-        # 4. Compute neighbors and moments with version compatibility
         log_message(
             "Computing {.pkg scvelo} neighbors and moments...",
             message_type="info",
             verbose=verbose,
         )
 
-        # Find the best representation for neighbors computation
-        # Priority: PCA > other linear reductions > fallback to raw data
         use_rep = None
         if linear_reduction in adata.obsm:
             rep_dims = adata.obsm[linear_reduction].shape[1]
@@ -814,7 +813,6 @@ def SCVELO(
                     verbose=verbose,
                 )
 
-        # Try to find a suitable PCA representation
         if use_rep is None:
             pca_candidates = [
                 key
@@ -832,9 +830,7 @@ def SCVELO(
                     )
                     break
 
-        # If still no suitable representation, reduce n_pcs to available dimensions
         if use_rep is None:
-            # Find the representation with the most dimensions
             max_dims = 0
             for key in adata.obsm.keys():
                 if "pca" in key.lower() and "umap" not in key.lower():
@@ -851,7 +847,6 @@ def SCVELO(
                     verbose=verbose,
                 )
             else:
-                # Fallback to raw data
                 use_rep = None
                 n_pcs = min(n_pcs, adata.X.shape[1])
                 log_message(
@@ -861,7 +856,6 @@ def SCVELO(
                 )
 
         try:
-            # Method 1: Try using scVelo's workflow
             scv.pp.moments(adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep)
         except Exception as e:
             log_message(
@@ -869,12 +863,10 @@ def SCVELO(
                 message_type="warning",
                 verbose=verbose,
             )
-            # Method 2: Manual computation for compatibility
             sc.pp.neighbors(
                 adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep
             )
 
-            # Manual moments calculation
             connectivities = adata.obsp["connectivities"]
             if sparse.issparse(adata.layers["spliced"]):
                 Ms = connectivities @ adata.layers["spliced"]
@@ -949,7 +941,6 @@ def SCVELO(
             )
             scv.tl.velocity_embedding(adata, basis=basis, vkey=m)
 
-            # Velocity confidence (with error handling)
             if compute_velocity_confidence:
                 log_message(
                     "Computing {.pkg velocity} confidence...",
@@ -968,14 +959,12 @@ def SCVELO(
                     adata.obs[m + "_length"] = np.ones(n_obs) * 0.5
                     adata.obs[m + "_confidence"] = np.ones(n_obs) * 0.5
 
-            # Terminal states
             if compute_terminal_states:
                 log_message(
                     "Computing terminal states...", message_type="info", verbose=verbose
                 )
                 try:
                     scv.tl.terminal_states(adata, vkey=m)
-                    # Rename for consistency
                     for term in ["root_cells", "end_points"]:
                         if term in adata.obs.columns:
                             adata.obs[m + "_" + term] = adata.obs[term]
@@ -987,7 +976,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-            # Pseudotime
             if compute_pseudotime:
                 log_message(
                     "Computing {.pkg velocity} pseudotime...",
@@ -1015,7 +1003,6 @@ def SCVELO(
                         verbose=verbose,
                     )
 
-            # PAGA
             if compute_paga:
                 log_message("Computing PAGA...", message_type="info", verbose=verbose)
                 try:
@@ -1077,7 +1064,6 @@ def SCVELO(
                     verbose=verbose,
                 )
 
-                # Setup palette
                 groups = (
                     adata.obs[group_by].cat.categories
                     if hasattr(adata.obs[group_by], "cat")
@@ -1087,6 +1073,12 @@ def SCVELO(
                     palette = dict(
                         zip(groups, plt.cm.tab10(np.linspace(0, 1, len(groups))))
                     )
+
+                def get_scvelo_save_path(name):
+                    if save_plot:
+                        return f"{m}_{name}"
+                    else:
+                        return False
 
                 try:
                     scv.pl.velocity_embedding_stream(
@@ -1098,8 +1090,8 @@ def SCVELO(
                         palette=palette,
                         smooth=stream_smooth,
                         density=stream_density,
-                        legend_loc="right margin",
-                        save=f"{fileprefix}_{m}_stream.pdf" if save else False,
+                        legend_loc=legend_loc,
+                        save=get_scvelo_save_path("stream"),
                         show=show_plot,
                     )
                 except Exception as e:
@@ -1121,7 +1113,8 @@ def SCVELO(
                         arrow_size=arrow_size,
                         density=arrow_density,
                         linewidth=0.3,
-                        save=f"{fileprefix}_{m}_arrow.pdf" if save else False,
+                        legend_loc=legend_loc,
+                        save=get_scvelo_save_path("arrow"),
                         show=show_plot,
                     )
                 except Exception as e:
@@ -1142,9 +1135,8 @@ def SCVELO(
                                     color=color_key,
                                     title=f"{m} {metric}",
                                     cmap="viridis",
-                                    save=f"{fileprefix}_{m}_{metric}.pdf"
-                                    if save
-                                    else False,
+                                    legend_loc="right margin",
+                                    save=get_scvelo_save_path(metric),
                                     show=show_plot,
                                 )
                             except Exception as e:
@@ -1206,11 +1198,41 @@ def CellRank(
     show_plot=True,
     dpi=300,
     save=False,
-    dirpath="./",
+    dirpath="./cellrank",
     fileprefix="",
     verbose=True,
+    kernel_type="velocity",
+    time_key="dpt_pseudotime",
+    estimator_type="GPCCA",
+    use_connectivity_kernel=True,
+    velocity_weight=0.8,
+    connectivity_weight=0.2,
+    softmax_scale=4,
+    n_macrostates=None,
+    schur_method="krylov",
+    n_cells_terminal=10,
+    save_plot=False,
+    plot_format="png",
+    plot_dpi=600,
+    plot_prefix="cellrank",
+    plot_spectrum=True,
+    plot_schur_matrix=True,
+    plot_macrostates=True,
+    plot_coarse_T=True,
+    plot_fate_probabilities=True,
+    plot_lineage_drivers=True,
+    plot_aggregate_fates=True,
+    aggregate_mode="paga_pie",
+    n_driver_genes=8,
+    plot_gene_trends=None,
+    gene_trends_model="GAM",
+    plot_heatmap=True,
+    heatmap_genes=None,
+    heatmap_n_genes=50,
+    plot_projection=True,
+    projection_basis=None,
+    legend_loc="on data",
 ):
-    # Configure OpenMP settings to prevent conflicts
     import os
     import platform
 
@@ -1222,7 +1244,6 @@ def CellRank(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on Apple silicon
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
@@ -1239,8 +1260,8 @@ def CellRank(
 
         import numba
 
-        numba.config.DISABLE_JIT = True # Disable JIT compilation
-        numba.set_num_threads(1) # Force single thread
+        numba.config.DISABLE_JIT = True
+        numba.set_num_threads(1)
         log_message(
             "NUMBA configured for Apple silicon",
             message_type="success",
@@ -1263,6 +1284,12 @@ def CellRank(
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
 
+    os.makedirs("./figures", exist_ok=True)
+
+    sc.settings.figdir = "./figures"
+    sc.settings.file_format_figs = plot_format
+    sc.settings.autosave = save_plot
+
     if platform.system() == "Windows":
         import sys, multiprocessing, re
 
@@ -1276,20 +1303,19 @@ def CellRank(
 
     try:
         if adata is None and h5ad is None:
-            log_message("adata or h5ad must be provided.", message_type="error")
+            log_message("adata or h5ad must be provided", message_type="error")
             exit()
 
         if adata is None:
             adata = scv.read(h5ad)
-        # del adata.uns
 
         if group_by is None:
-            log_message("group_by must be provided.", message_type="error")
+            log_message("group_by must be provided", message_type="error")
             exit()
 
         if linear_reduction is None and nonlinear_reduction is None:
             log_message(
-                "linear_reduction or nonlinear_reduction must be provided at least one.",
+                "linear_reduction or nonlinear_reduction must be provided at least one",
                 message_type="error",
             )
             exit()
@@ -1329,97 +1355,1171 @@ def CellRank(
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
 
-        if mode[-1] + "_graph" not in adata.obs.keys():
-            adata = SCVELO(
-                adata=adata,
-                group_by=group_by,
-                n_jobs=n_jobs,
-                linear_reduction=linear_reduction,
-                nonlinear_reduction=nonlinear_reduction,
-                basis=basis,
-                mode=mode,
-                fitting_by=fitting_by,
-                magic_impute=magic_impute,
-                knn=knn,
-                t=t,
-                min_shared_counts=min_shared_counts,
-                n_pcs=n_pcs,
-                n_neighbors=n_neighbors,
-                stream_smooth=stream_smooth,
-                stream_density=stream_density,
-                arrow_size=arrow_size,
-                arrow_length=arrow_length,
-                arrow_density=arrow_density,
-                denoise=denoise,
-                kinetics=kinetics,
-                calculate_velocity_genes=calculate_velocity_genes,
-                show_plot=show_plot,
-                dpi=dpi,
-                save=save,
-                dirpath=dirpath,
-                fileprefix=fileprefix,
-            )
-        adata.layers["velocity"] = adata.layers[mode[-1]]
-        cr.tl.terminal_states(adata, cluster_key=group_by)
-        cr.pl.terminal_states(adata)
-        cr.tl.initial_states(adata, cluster_key=group_by)
-        cr.pl.initial_states(adata)
-        cr.tl.lineages(adata)
-        cr.pl.lineages(adata, same_plot=False)
-        cr.pl.lineages(adata, same_plot=True)
+        log_message(
+            f"Using kernel_type: '{kernel_type}'", message_type="info", verbose=verbose
+        )
 
-        # Check if dynamical mode was used, if not, run recover_dynamics for latent time
-        if "dynamical" not in mode:
+        use_velocity = False
+        use_pseudotime = False
+        use_cytotrace = False
+
+        if kernel_type == "velocity":
+            has_velocity_data = (
+                "spliced" in adata.layers and "unspliced" in adata.layers
+            )
+
+            if not has_velocity_data:
+                log_message(
+                    "No spliced/unspliced data found. Consider using kernel_type='cytotrace' or 'pseudotime' for RNA-only data",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                log_message(
+                    "Falling back to ConnectivityKernel only",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                use_velocity = False
+            else:
+                use_velocity = True
+
+                if mode[-1] + "_graph" not in adata.obs.keys():
+                    log_message(
+                        "Running scVelo to compute RNA velocity...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    adata = SCVELO(
+                        adata=adata,
+                        group_by=group_by,
+                        n_jobs=n_jobs,
+                        linear_reduction=linear_reduction,
+                        nonlinear_reduction=nonlinear_reduction,
+                        basis=basis,
+                        mode=mode,
+                        fitting_by=fitting_by,
+                        magic_impute=magic_impute,
+                        knn=knn,
+                        t=t,
+                        min_shared_counts=min_shared_counts,
+                        n_pcs=n_pcs,
+                        n_neighbors=n_neighbors,
+                        stream_smooth=stream_smooth,
+                        stream_density=stream_density,
+                        arrow_size=arrow_size,
+                        arrow_length=arrow_length,
+                        arrow_density=arrow_density,
+                        denoise=denoise,
+                        kinetics=kinetics,
+                        calculate_velocity_genes=calculate_velocity_genes,
+                        show_plot=show_plot,
+                        save_plot=save_plot,
+                        plot_format=plot_format,
+                        plot_dpi=plot_dpi,
+                        plot_prefix="scvelo",
+                        dirpath=".",
+                        legend_loc=legend_loc,
+                        dpi=dpi,
+                        save=save,
+                        fileprefix=fileprefix,
+                    )
+                adata.layers["velocity"] = adata.layers[mode[-1]]
+
+        elif kernel_type == "pseudotime":
+            use_pseudotime = True
+            if time_key not in adata.obs:
+                log_message(
+                    f"Pseudotime '{time_key}' not found. Computing DPT pseudotime...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                if linear_reduction and linear_reduction in adata.obsm:
+                    rep_key = linear_reduction
+                elif "X_pca" in adata.obsm:
+                    rep_key = "X_pca"
+                else:
+                    log_message(
+                        f"Computing PCA (n_comps={n_pcs})...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    sc.pp.pca(adata, n_comps=n_pcs)
+                    rep_key = "X_pca"
+
+                if "connectivities" not in adata.obsp:
+                    sc.pp.neighbors(
+                        adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
+                    )
+
+                sc.tl.diffmap(adata)
+                adata.uns["iroot"] = 0
+                sc.tl.dpt(adata)
+                time_key = "dpt_pseudotime"
+                adata.obs["cellrank_pseudotime"] = adata.obs["dpt_pseudotime"]
+                log_message(
+                    "DPT pseudotime computed and stored in adata.obs['cellrank_pseudotime']",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            else:
+                log_message(
+                    f"Using existing pseudotime from adata.obs['{time_key}']",
+                    message_type="info",
+                    verbose=verbose,
+                )
+
+        elif kernel_type == "cytotrace":
+            use_cytotrace = True
             log_message(
-                "Running recover_dynamics for latent time computation...",
+                "Using CytoTRACEKernel for RNA-only data...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+        log_message(
+            "Using CellRank kernel-estimator architecture...",
+            message_type="info",
+            verbose=verbose,
+        )
+
+        main_kernel = None
+
+        def get_rep_key():
+            if linear_reduction and linear_reduction in adata.obsm:
+                return linear_reduction
+            elif "X_pca" in adata.obsm:
+                return "X_pca"
+            else:
+                log_message(
+                    f"Computing PCA (n_comps={n_pcs})...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                sc.pp.pca(adata, n_comps=n_pcs)
+                return "X_pca"
+
+        if use_pseudotime:
+            log_message(
+                f"Creating PseudotimeKernel with time_key='{time_key}'...",
                 message_type="info",
                 verbose=verbose,
             )
             try:
-                scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
+                pk = cr.kernels.PseudotimeKernel(adata, time_key=time_key)
+                pk.compute_transition_matrix()
+                main_kernel = pk
+                log_message(
+                    "PseudotimeKernel created successfully",
+                    message_type="success",
+                    verbose=verbose,
+                )
             except Exception as e:
                 log_message(
-                    f"recover_dynamics failed ({e}), skipping latent time computation...",
+                    f"PseudotimeKernel failed: {e}. Falling back to ConnectivityKernel.",
                     message_type="warning",
                     verbose=verbose,
                 )
-                pass
+                use_pseudotime = False
+
+        elif use_cytotrace:
+            log_message(
+                "Creating CytoTRACEKernel and computing CytoTRACE score...",
+                message_type="info",
+                verbose=verbose,
+            )
+            try:
+                if "Ms" not in adata.layers:
+                    log_message(
+                        "Computing moments (required for CytoTRACEKernel)...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    rep_key = get_rep_key()
+                    if "connectivities" not in adata.obsp:
+                        sc.pp.neighbors(
+                            adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
+                        )
+
+                    import numpy as np
+                    from scipy.sparse import issparse, csr_matrix
+
+                    log_message(
+                        "Creating smoothed expression layer (Ms) for RNA-only data...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                    connectivities = adata.obsp["connectivities"].copy()
+                    if issparse(connectivities):
+                        connectivities = connectivities.toarray()
+                    connectivities += np.eye(connectivities.shape[0])
+                    row_sums = connectivities.sum(axis=1, keepdims=True)
+                    connectivities = connectivities / row_sums
+
+                    X = adata.X.toarray() if issparse(adata.X) else adata.X
+                    Ms = connectivities @ X
+                    adata.layers["Ms"] = csr_matrix(Ms)
+
+                    log_message(
+                        "Smoothed expression layer (Ms) created successfully",
+                        message_type="success",
+                        verbose=verbose,
+                    )
+
+                ctk = cr.kernels.CytoTRACEKernel(adata)
+                ctk.compute_cytotrace()
+                ctk.compute_transition_matrix()
+                main_kernel = ctk
+
+                if "ct_score" in adata.obs:
+                    adata.obs["cytotrace_score"] = adata.obs.pop("ct_score")
+                    adata.obs["cytotrace_pseudotime"] = 1 - adata.obs["cytotrace_score"]
+                    adata.obs["cellrank_pseudotime"] = adata.obs["cytotrace_pseudotime"]
+                if "ct_pseudotime" in adata.obs:
+                    del adata.obs["ct_pseudotime"]
+                if "ct_num_exp_genes" in adata.obs:
+                    adata.obs["cytotrace_num_exp_genes"] = adata.obs.pop(
+                        "ct_num_exp_genes"
+                    )
+
+                log_message(
+                    "CytoTRACEKernel created successfully",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            except Exception as e:
+                log_message(
+                    f"CytoTRACEKernel failed: {e}. Falling back to ConnectivityKernel.",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                use_cytotrace = False
+
+        elif use_velocity:
+            if velocity_weight <= 0 and connectivity_weight <= 0:
+                log_message(
+                    "Both kernel weights are <= 0. Using equal weights (0.5, 0.5).",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                velocity_weight = 0.5
+                connectivity_weight = 0.5
+            elif velocity_weight <= 0:
+                log_message(
+                    "velocity_weight <= 0. Using ConnectivityKernel only.",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                use_velocity = False
+                connectivity_weight = 1.0
+            elif connectivity_weight <= 0:
+                log_message(
+                    "connectivity_weight <= 0. Using VelocityKernel only.",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                use_connectivity_kernel = False
+                velocity_weight = 1.0
             else:
-                scv.tl.recover_latent_time(
-                    adata,
-                    root_key="initial_states_probs",
-                    end_key="terminal_states_probs",
+                total_weight = velocity_weight + connectivity_weight
+                if abs(total_weight - 1.0) > 0.01:
+                    log_message(
+                        f"Normalizing kernel weights ({velocity_weight}, {connectivity_weight}) to sum to 1.0",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    velocity_weight = velocity_weight / total_weight
+                    connectivity_weight = connectivity_weight / total_weight
+
+        if use_velocity and velocity_weight > 0:
+            log_message(
+                f"Creating VelocityKernel with model='{mode[-1]}', softmax_scale={softmax_scale}...",
+                message_type="info",
+                verbose=verbose,
+            )
+            try:
+                vk = cr.kernels.VelocityKernel(adata, backward=False)
+                vk.compute_transition_matrix(
+                    model=mode[-1], softmax_scale=softmax_scale
+                )
+                main_kernel = vk
+            except Exception as e:
+                log_message(
+                    f"VelocityKernel computation failed: {e}",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                log_message(
+                    "Trying with default parameters...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                try:
+                    vk = cr.kernels.VelocityKernel(adata, backward=False)
+                    vk.compute_transition_matrix(softmax_scale=softmax_scale)
+                    main_kernel = vk
+                except Exception as e2:
+                    log_message(
+                        f"VelocityKernel still failed: {e2}. Using ConnectivityKernel only.",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    use_velocity = False
+
+        def ensure_neighbors():
+            if "connectivities" not in adata.obsp:
+                log_message(
+                    "Neighbors not found. Computing neighbors...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                rep_key = get_rep_key()
+                sc.pp.neighbors(
+                    adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
+                )
+                log_message(
+                    f"Neighbors computed successfully (n_neighbors={n_neighbors})",
+                    message_type="success",
+                    verbose=verbose,
+                )
+
+        if (
+            main_kernel is not None
+            and use_connectivity_kernel
+            and connectivity_weight > 0
+        ):
+            try:
+                log_message(
+                    "Creating ConnectivityKernel...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                ensure_neighbors()
+                ck = cr.kernels.ConnectivityKernel(adata)
+                ck.compute_transition_matrix()
+                final_kernel = velocity_weight * main_kernel + connectivity_weight * ck
+                log_message(
+                    f"Combined kernels with weights: main={velocity_weight:.2f}, connectivity={connectivity_weight:.2f}",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            except Exception as e:
+                log_message(
+                    f"Failed to combine kernels: {e}. Using main kernel only.",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                final_kernel = main_kernel
+        elif main_kernel is not None:
+            final_kernel = main_kernel
+            log_message(
+                f"Using {type(main_kernel).__name__} only",
+                message_type="info",
+                verbose=verbose,
+            )
+        else:
+            log_message(
+                "Creating ConnectivityKernel (fallback)...",
+                message_type="info",
+                verbose=verbose,
+            )
+            ensure_neighbors()
+            ck = cr.kernels.ConnectivityKernel(adata)
+            ck.compute_transition_matrix()
+            final_kernel = ck
+            log_message(
+                "Using ConnectivityKernel only (connectivity-based transitions)",
+                message_type="warning",
+                verbose=verbose,
+            )
+
+        try:
+            import numpy as np
+            from scipy.sparse import diags, issparse, csr_matrix
+
+            tmat = final_kernel.transition_matrix
+            matrix_modified = False
+
+            log_message(
+                "Validating and fixing transition matrix for GPCCA compatibility...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+            if issparse(tmat):
+                if np.any(np.isnan(tmat.data)) or np.any(np.isinf(tmat.data)):
+                    log_message(
+                        "Cleaning NaN/Inf values...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    tmat.data[np.isnan(tmat.data)] = 0
+                    tmat.data[np.isinf(tmat.data)] = 0
+                    tmat.eliminate_zeros()
+                    matrix_modified = True
+            else:
+                if np.any(np.isnan(tmat)) or np.any(np.isinf(tmat)):
+                    log_message(
+                        "Cleaning NaN/Inf values...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    tmat[np.isnan(tmat)] = 0
+                    tmat[np.isinf(tmat)] = 0
+                    matrix_modified = True
+
+            if issparse(tmat):
+                if np.any(tmat.data < 0):
+                    log_message(
+                        f"Clipping {(tmat.data < 0).sum()} negative values to zero...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    tmat.data = np.maximum(tmat.data, 0)
+                    matrix_modified = True
+            else:
+                if np.any(tmat < 0):
+                    log_message(
+                        "Clipping negative values to zero...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    tmat = np.maximum(tmat, 0)
+                    matrix_modified = True
+
+            if issparse(tmat):
+                diag_values = tmat.diagonal()
+                min_self_loop = 0.01
+                needs_self_loop = diag_values < min_self_loop
+
+                if np.any(needs_self_loop):
+                    log_message(
+                        f"Adding self-loops to {needs_self_loop.sum()} cells for matrix primitivity...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                    tmat = tmat.tolil()
+                    for i in np.where(needs_self_loop)[0]:
+                        tmat[i, i] = min_self_loop
+                    tmat = tmat.tocsr()
+                    matrix_modified = True
+
+            row_sums = np.array(tmat.sum(axis=1)).flatten()
+            zero_rows = row_sums < 1e-10
+
+            if np.any(zero_rows):
+                log_message(
+                    f"Found {zero_rows.sum()} zero rows. Setting to self-loops...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+                if issparse(tmat):
+                    tmat = tmat.tolil()
+                    for i in np.where(zero_rows)[0]:
+                        tmat[i, i] = 1.0
+                    tmat = tmat.tocsr()
+                else:
+                    for i in np.where(zero_rows)[0]:
+                        tmat[i, :] = 0
+                        tmat[i, i] = 1.0
+
+                row_sums = np.array(tmat.sum(axis=1)).flatten()
+                matrix_modified = True
+
+            if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8):
+                log_message(
+                    f"Normalizing rows (current range: {row_sums.min():.8f} - {row_sums.max():.8f})...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+
+                row_sums_safe = np.maximum(row_sums, 1e-10)
+
+                if issparse(tmat):
+                    tmat = diags(1.0 / row_sums_safe) @ tmat
+                else:
+                    tmat = tmat / row_sums_safe[:, np.newaxis]
+
+                matrix_modified = True
+
+            final_row_sums = np.array(tmat.sum(axis=1)).flatten()
+
+            if issparse(tmat):
+                has_negative = np.any(tmat.data < -1e-10)
+            else:
+                has_negative = np.any(tmat < -1e-10)
+
+            rows_sum_to_one = np.allclose(final_row_sums, 1.0, rtol=1e-6, atol=1e-8)
+
+            if has_negative:
+                log_message(
+                    "Warning: Matrix still has negative values after fixing",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            if not rows_sum_to_one:
+                log_message(
+                    f"Warning: Matrix rows still don't sum to 1 (range: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            if matrix_modified:
+                final_kernel._transition_matrix = tmat
+                log_message(
+                    f"Matrix fixed and validated (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            else:
+                log_message(
+                    f"Matrix validation passed (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    message_type="success",
+                    verbose=verbose,
+                )
+
+        except Exception as e:
+            log_message(
+                f"Matrix validation encountered error: {e}. Proceeding with original matrix...",
+                message_type="warning",
+                verbose=verbose,
+            )
+
+        log_message(
+            f"Creating {estimator_type} estimator...",
+            message_type="info",
+            verbose=verbose,
+        )
+
+        gpcca_failed = False
+
+        if estimator_type == "GPCCA":
+            try:
+                estimator = cr.estimators.GPCCA(final_kernel)
+
+                log_message(
+                    "Computing eigendecomposition...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.compute_eigendecomposition()
+
+                if n_macrostates is None:
+                    n_cells = adata.n_obs
+                    if n_cells < 100:
+                        n_states_schur = 5
+                    elif n_cells < 500:
+                        n_states_schur = 8
+                    elif n_cells < 2000:
+                        n_states_schur = 10
+                    else:
+                        n_states_schur = 15
+
+                    log_message(
+                        f"Auto-determined n_states={n_states_schur} for Schur (based on {n_cells} cells)",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                else:
+                    n_states_schur = n_macrostates + 2
+                    log_message(
+                        f"Using n_states={n_states_schur} for Schur (n_macrostates={n_macrostates} + 2)",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                log_message(
+                    f"Computing Schur decomposition (n_states={n_states_schur}, method='brandts')...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.compute_schur(n_states_schur, method="brandts")
+
+                if n_macrostates is None:
+                    n_macro = max(2, n_states_schur - 2)
+                else:
+                    n_macro = n_macrostates
+
+                log_message(
+                    f"Computing macrostates (n_states={n_macro}, n_cells={n_cells_terminal})...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.compute_macrostates(
+                    n_states=n_macro, n_cells=n_cells_terminal
+                )
+
+                log_message(
+                    f"Setting terminal states (n_cells={n_cells_terminal})...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.set_terminal_states(n_cells=n_cells_terminal)
+
+                log_message(
+                    "GPCCA estimator completed successfully",
+                    message_type="success",
+                    verbose=verbose,
+                )
+
+            except (ValueError, RuntimeError) as e:
+                if (
+                    "not a transition matrix" in str(e).lower()
+                    or "schur" in str(e).lower()
+                    or "gpcca" in str(e).lower()
+                ):
+                    log_message(
+                        f"GPCCA estimator failed: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    log_message(
+                        "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    gpcca_failed = True
+                    estimator_type = "CFLARE"
+                else:
+                    log_message(
+                        f"GPCCA failed with unexpected error: {e}",
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                    raise
+
+        if estimator_type == "CFLARE":
+            estimator = cr.estimators.CFLARE(final_kernel)
+
+            log_message(
+                "Computing eigendecomposition...", message_type="info", verbose=verbose
+            )
+            estimator.compute_eigendecomposition()
+
+            predict_method = "leiden"
+            log_message(
+                f"Predicting terminal states (use={n_macrostates}, method='{predict_method}')...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+            try:
+                estimator.predict(use=n_macrostates, method=predict_method)
+            except Exception as e:
+                log_message(
+                    f"Prediction with '{predict_method}' failed: {e}. Trying 'kmeans'...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                estimator.predict(use=n_macrostates, method="kmeans")
+
+            if gpcca_failed:
+                log_message(
+                    "Successfully switched to CFLARE estimator",
+                    message_type="success",
+                    verbose=verbose,
+                )
+
+        log_message(
+            "Computing fate probabilities...", message_type="info", verbose=verbose
+        )
+        estimator.compute_fate_probabilities()
+
+        log_message(
+            f"Computing lineage drivers for cluster_key='{group_by}'...",
+            message_type="info",
+            verbose=verbose,
+        )
+        estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
+
+        log_message(
+            "CellRan analysis completed!", message_type="success", verbose=verbose
+        )
+
+        if "cellrank_pseudotime" not in adata.obs:
+            if "to_terminal_states" in adata.obsm or "lineages_fwd" in adata.obsm:
+                try:
+                    fate_probs_key = (
+                        "to_terminal_states"
+                        if "to_terminal_states" in adata.obsm
+                        else "lineages_fwd"
+                    )
+                    fate_probs = adata.obsm[fate_probs_key]
+                    if hasattr(fate_probs, "X"):
+                        import numpy as np
+
+                        max_probs = np.array(fate_probs.X.max(axis=1)).flatten()
+                    else:
+                        max_probs = np.array(fate_probs.max(axis=1)).flatten()
+                    adata.obs["cellrank_pseudotime"] = max_probs
+                    log_message(
+                        "Created cellrank_pseudotime from fate probabilities",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                except Exception as e:
+                    log_message(
+                        f"Failed to create cellrank_pseudotime from fate probabilities: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+        if show_plot or save_plot:
+            log_message(
+                "Generating visualizations...", message_type="info", verbose=verbose
+            )
+
+            def get_save_path(name):
+                if save_plot:
+                    return f"{plot_prefix}_{name}"
+                return None
+
+            if plot_spectrum:
+                try:
+                    log_message(
+                        "Plotting eigenvalue spectrum...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    estimator.plot_spectrum(
+                        real_only=True, dpi=plot_dpi, save=get_save_path("spectrum")
+                    )
+                    if show_plot:
+                        plt.show()
+                    plt.close()
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot spectrum: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if estimator_type == "GPCCA":
+                if plot_schur_matrix:
+                    try:
+                        log_message(
+                            "Plotting Schur matrix...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        estimator.plot_schur_matrix(
+                            dpi=plot_dpi, save=get_save_path("schur_matrix")
+                        )
+                        if show_plot:
+                            plt.show()
+                        plt.close()
+                    except Exception as e:
+                        log_message(
+                            f"Failed to plot Schur matrix: {e}",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+
+                if plot_coarse_T:
+                    try:
+                        log_message(
+                            "Plotting coarse-grained transition matrix...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        estimator.plot_coarse_T(
+                            show_initial_dist=True,
+                            show_stationary_dist=True,
+                            dpi=plot_dpi,
+                            save=get_save_path("coarse_T"),
+                        )
+                        if show_plot:
+                            plt.show()
+                        plt.close()
+                    except Exception as e:
+                        log_message(
+                            f"Failed to plot coarse T: {e}",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+
+            if plot_macrostates:
+                try:
+                    log_message(
+                        "Plotting all macrostates...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    estimator.plot_macrostates(
+                        which="all",
+                        basis=basis,
+                        dpi=plot_dpi,
+                        save=get_save_path("macrostates_all"),
+                    )
+                    if show_plot:
+                        plt.show()
+                    plt.close()
+
+                    log_message(
+                        "Plotting terminal states...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    estimator.plot_macrostates(
+                        which="terminal",
+                        basis=basis,
+                        dpi=plot_dpi,
+                        save=get_save_path("macrostates_terminal"),
+                    )
+                    if show_plot:
+                        plt.show()
+                    plt.close()
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot macrostates: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if plot_fate_probabilities:
+                try:
+                    log_message(
+                        "Plotting fate probabilities...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    estimator.plot_fate_probabilities(
+                        basis=basis,
+                        ncols=3,
+                        dpi=plot_dpi,
+                        save=get_save_path("fate_probabilities"),
+                    )
+                    if show_plot:
+                        plt.show()
+                    plt.close()
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot fate probabilities: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if plot_lineage_drivers:
+                try:
+                    fate_probs_key = (
+                        "to_terminal_states"
+                        if not hasattr(estimator, "backward") or not estimator.backward
+                        else "from_terminal_states"
+                    )
+                    if fate_probs_key in adata.obsm:
+                        lineages = adata.obsm[fate_probs_key].names
+                        log_message(
+                            f"Plotting lineage drivers for {len(lineages)} lineages...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+
+                        for lineage in lineages:
+                            try:
+                                estimator.plot_lineage_drivers(
+                                    lineage=lineage,
+                                    n_genes=n_driver_genes,
+                                    dpi=plot_dpi,
+                                    save=get_save_path(f"lineage_drivers_{lineage}"),
+                                )
+                                if show_plot:
+                                    plt.show()
+                                plt.close()
+                            except Exception as e:
+                                log_message(
+                                    f"Failed to plot lineage drivers for {lineage}: {e}",
+                                    message_type="warning",
+                                    verbose=verbose,
+                                )
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot lineage drivers: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if plot_aggregate_fates:
+                try:
+                    log_message(
+                        f"Plotting aggregate fate probabilities (mode={aggregate_mode})...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    cr.pl.aggregate_fate_probabilities(
+                        adata,
+                        mode=aggregate_mode,
+                        cluster_key=group_by,
+                        basis=basis if aggregate_mode in ["paga", "paga_pie"] else None,
+                        dpi=plot_dpi,
+                        save=get_save_path(f"aggregate_fates_{aggregate_mode}"),
+                    )
+                    if show_plot:
+                        plt.show()
+                    plt.close()
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot aggregate fates: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if plot_gene_trends is not None and "cellrank_pseudotime" in adata.obs:
+                try:
+                    log_message(
+                        "Plotting gene expression trends...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                    if isinstance(plot_gene_trends, int):
+                        driver_key = f"to_terminal_states_lineage_drivers"
+                        if driver_key in adata.varm:
+                            drivers_df = adata.varm[driver_key]
+                            top_genes = drivers_df.nlargest(
+                                plot_gene_trends, columns=drivers_df.columns[0]
+                            ).index.tolist()
+                            log_message(
+                                f"Using top {len(top_genes)} driver genes",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+                        else:
+                            log_message(
+                                "No lineage drivers found, skipping gene trends",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                            top_genes = None
+                    else:
+                        top_genes = plot_gene_trends
+
+                    if top_genes:
+                        if gene_trends_model.upper() == "GAM":
+                            model = cr.models.GAM()
+                        elif gene_trends_model.upper() == "GAMR":
+                            try:
+                                model = cr.models.GAMR()
+                            except Exception:
+                                log_message(
+                                    "GAMR not available, using GAM",
+                                    message_type="warning",
+                                    verbose=verbose,
+                                )
+                                model = cr.models.GAM()
+                        else:
+                            model = cr.models.GAM()
+
+                        cr.pl.gene_trends(
+                            adata,
+                            model=model,
+                            genes=top_genes[:20],
+                            time_key="cellrank_pseudotime",
+                            n_jobs=n_jobs,
+                            dpi=plot_dpi,
+                            save=get_save_path("gene_trends"),
+                        )
+                        if show_plot:
+                            plt.show()
+                        plt.close()
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot gene trends: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            if plot_projection:
+                try:
+                    log_message(
+                        "Plotting kernel projection...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    proj_basis = projection_basis if projection_basis else basis
+                    log_message(
+                        f"Using basis: {proj_basis} for projection",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    if final_kernel is not None:
+                        log_message(
+                            f"Final kernel type: {type(final_kernel).__name__}",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+
+                        plot_palette = palette
+                        if plot_palette is None and group_by is not None:
+                            groups = (
+                                adata.obs[group_by].cat.categories
+                                if hasattr(adata.obs[group_by], "cat")
+                                else adata.obs[group_by].unique()
+                            )
+                            plot_palette = dict(
+                                zip(
+                                    groups, plt.cm.tab10(np.linspace(0, 1, len(groups)))
+                                )
+                            )
+                            log_message(
+                                f"Created default palette for {len(groups)} groups",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+
+                        plot_kwargs = {}
+                        if save_plot:
+                            save_path = f"{plot_prefix}_projection_{proj_basis}"
+                            plot_kwargs["save"] = save_path
+                            log_message(
+                                f"Will save projection to: {save_path}",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+                        if plot_dpi:
+                            plot_kwargs["dpi"] = plot_dpi
+                            log_message(
+                                f"Using DPI: {plot_dpi}",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+
+                        if group_by is not None:
+                            plot_kwargs["color"] = group_by
+                            if plot_palette is not None:
+                                plot_kwargs["palette"] = plot_palette
+                            plot_kwargs["legend_loc"] = legend_loc
+                            log_message(
+                                f"Adding color information: color={group_by}, palette={'provided' if palette is not None else 'default'}",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+
+                        log_message(
+                            "Calling final_kernel.plot_projection()...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        try:
+                            final_kernel.plot_projection(
+                                basis=proj_basis,
+                                recompute=True,
+                                **plot_kwargs,
+                            )
+                            if show_plot:
+                                import matplotlib.pyplot as plt
+
+                                plt.show()
+                            log_message(
+                                "Projection plot completed successfully",
+                                message_type="success",
+                                verbose=verbose,
+                            )
+                        except Exception as e:
+                            log_message(
+                                f"Failed to plot projection: {e}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                    else:
+                        log_message(
+                            "Cannot plot projection: kernel object is None",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+                except Exception as e:
+                    log_message(
+                        f"Failed to plot projection: {e}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                    import traceback
+
+                    log_message(
+                        f"Projection error traceback: {traceback.format_exc()}",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+
+            log_message(
+                "Visualization completed!", message_type="success", verbose=verbose
+            )
+
+        if use_velocity:
+            try:
+                if "dynamical" not in mode:
+                    log_message(
+                        "Running recover_dynamics for latent time computation...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    try:
+                        scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
+                        terminal_key = (
+                            "to_terminal_states_probs"
+                            if hasattr(estimator, "terminal_states_probabilities")
+                            else "terminal_states_probs"
+                        )
+                        initial_key = (
+                            "to_initial_states_probs"
+                            if hasattr(estimator, "initial_states_probabilities")
+                            else "initial_states_probs"
+                        )
+
+                        scv.tl.recover_latent_time(
+                            adata,
+                            root_key=initial_key,
+                            end_key=terminal_key,
+                        )
+                        if "latent_time" in adata.obs:
+                            adata.obs["cellrank_pseudotime"] = adata.obs["latent_time"]
+                        log_message(
+                            "Latent time computed successfully",
+                            message_type="success",
+                            verbose=verbose,
+                        )
+                    except Exception as e:
+                        log_message(
+                            f"recover_dynamics failed ({e}), skipping latent time computation...",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+                else:
+                    terminal_key = (
+                        "to_terminal_states_probs"
+                        if hasattr(estimator, "terminal_states_probabilities")
+                        else "terminal_states_probs"
+                    )
+                    initial_key = (
+                        "to_initial_states_probs"
+                        if hasattr(estimator, "initial_states_probabilities")
+                        else "initial_states_probs"
+                    )
+
+                    scv.tl.recover_latent_time(
+                        adata, root_key=initial_key, end_key=terminal_key
+                    )
+                    if "latent_time" in adata.obs:
+                        adata.obs["cellrank_pseudotime"] = adata.obs["latent_time"]
+                    log_message(
+                        "Latent time computed successfully",
+                        message_type="success",
+                        verbose=verbose,
+                    )
+            except Exception as e:
+                log_message(
+                    f"Latent time computation failed: {e}",
+                    message_type="warning",
+                    verbose=verbose,
                 )
         else:
-            scv.tl.recover_latent_time(
-                adata, root_key="initial_states_probs", end_key="terminal_states_probs"
+            log_message(
+                "Skipping latent time computation (no velocity data available)",
+                message_type="info",
+                verbose=verbose,
             )
-        scv.tl.paga(
-            adata,
-            groups=group_by,
-            root_key="initial_states_probs",
-            end_key="terminal_states_probs",
-            use_time_prior="velocity_pseudotime",
-        )
-        cr.pl.cluster_fates(
-            adata,
-            mode="paga_pie",
-            cluster_key=group_by,
-            basis=basis,
-            legend_kwargs={"loc": "top right out"},
-            legend_loc="top left out",
-            node_size_scale=5,
-            edge_width_scale=1,
-            max_edge_width=4,
-            title="directed PAGA",
-        )
-        if show_plot is True:
-            plt.show()
-
-        cr.tl.lineage_drivers(adata, cluster_key=group_by)
-        cr.pl.lineage_drivers(adata, lineage=adata.obs[group_by].unique()[1], n_genes=4)
-        if show_plot is True:
-            plt.show()
 
     finally:
         os.chdir(prevdir)
@@ -1433,7 +2533,12 @@ def CellRank(
     except:
         pass
 
-    return adata
+    log_message(
+        "Returning adata, estimator, and kernel objects",
+        message_type="info",
+        verbose=verbose,
+    )
+    return adata, estimator, final_kernel
 
 
 def PAGA(
@@ -1458,19 +2563,23 @@ def PAGA(
     n_dcs=10,
     n_branchings=0,
     min_group_size=0.01,
+    n_jobs=1,
     show_plot=True,
+    save_plot=False,
+    plot_format="png",
+    plot_dpi=600,
+    plot_prefix="paga",
+    dirpath="./paga",
     dpi=300,
     save=False,
-    dirpath="./",
     fileprefix="",
     verbose=True,
+    legend_loc="on data",
 ):
-    # Configure OpenMP settings to prevent conflicts
     import os
     import platform
     import sys
 
-    # Enhanced thread configuration for Apple silicon MacBooks
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     os.environ["MKL_NUM_THREADS"] = "1"
@@ -1479,34 +2588,28 @@ def PAGA(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Additional Apple silicon specific configurations
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
     if is_apple_silicon:
         os.environ["PYTHONHASHSEED"] = "0"
         os.environ["PYTHONUNBUFFERED"] = "1"
         os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
         os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
-        # Disable problematic features for Apple silicon
         os.environ["MPLBACKEND"] = "Agg"
         os.environ["DISPLAY"] = ""
-        # Force single-threaded execution - set early
         os.environ["NUMBA_NUM_THREADS"] = "1"
         os.environ["NUMBA_DISABLE_JIT"] = "1"
-        # Additional thread control
         os.environ["NUMBA_THREADING_LAYER"] = "tbb"
         os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
 
-    # Import with error handling
     try:
         import matplotlib
 
-        matplotlib.use("Agg")  # Use non-interactive backend
+        matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
-        # Configure matplotlib for Apple silicon
         if is_apple_silicon:
             plt.rcParams["figure.max_open_warning"] = 0
-            plt.rcParams["figure.figsize"] = (4, 4)  # Small figures
+            plt.rcParams["figure.figsize"] = (4, 4)
             plt.rcParams["axes.linewidth"] = 0.5
             plt.rcParams["lines.linewidth"] = 0.5
             plt.rcParams["font.size"] = 8
@@ -1516,12 +2619,10 @@ def PAGA(
         )
         plt = None
 
-    # Set NUMBA threads before importing scanpy
     if is_apple_silicon:
         try:
             import numba
 
-            # Completely disable JIT compilation for Apple silicon
             numba.config.DISABLE_JIT = True
             numba.set_num_threads(1)
         except:
@@ -1547,10 +2648,17 @@ def PAGA(
     warnings.simplefilter("ignore", category=FutureWarning)
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
-    # Additional Apple silicon configurations are already set above
-
     prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(dirpath))
+
+    expanded_path = os.path.expanduser(dirpath)
+    os.makedirs(expanded_path, exist_ok=True)
+    os.chdir(expanded_path)
+
+    os.makedirs("./figures", exist_ok=True)
+
+    import scanpy as sc
+
+    sc.settings.figdir = "./figures"
 
     import platform
 
@@ -1567,19 +2675,19 @@ def PAGA(
 
     try:
         if adata is None and h5ad is None:
-            log_message("adata or h5ad must be provided.", message_type="error")
+            log_message("adata or h5ad must be provided", message_type="error")
             return None
 
         if adata is None:
             adata = sc.read(h5ad)
 
         if group_by is None:
-            log_message("group_by must be provided.", message_type="error")
+            log_message("group_by must be provided", message_type="error")
             return None
 
         if linear_reduction is None and nonlinear_reduction is None:
             log_message(
-                "linear_reduction or nonlinear_reduction must be provided at least one.",
+                "linear_reduction or nonlinear_reduction must be provided at least one",
                 message_type="error",
             )
             return None
@@ -1600,7 +2708,7 @@ def PAGA(
 
         if infer_pseudotime is True and root_cell is None and root_group is None:
             log_message(
-                "root_cell or root_group should be provided.", message_type="error"
+                "root_cell or root_group should be provided", message_type="error"
             )
             return None
 
@@ -1609,7 +2717,6 @@ def PAGA(
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
 
-        # Choose representation key and make n_pcs safe for its dimensionality
         rep_key = linear_reduction
         try:
             obsm_keys = set(adata.obsm_keys())
@@ -1633,7 +2740,6 @@ def PAGA(
                 if neighbors_n_pcs is not None and isinstance(
                     neighbors_n_pcs, (int, float)
                 ):
-                    # If the representation has fewer dims than requested PCs, let Scanpy use full dims
                     if rep_dims < int(neighbors_n_pcs):
                         neighbors_n_pcs = None
             else:
@@ -1653,10 +2759,8 @@ def PAGA(
                 adata, n_pcs=neighbors_n_pcs, use_rep=rep_key, n_neighbors=n_neighbors
             )
 
-        # Core PAGA computation - this is the essential part
         sc.tl.paga(adata, groups=group_by, use_rna_velocity=use_rna_velocity)
 
-        # PAGA compare plot with error handling
         try:
             if use_rna_velocity is True:
                 sc.pl.paga_compare(
@@ -1692,7 +2796,8 @@ def PAGA(
 
             if save:
                 plt.savefig(
-                    ".".join(filter(None, [fileprefix, "paga_compare.pdf"])),
+                    "./figures/"
+                    + ".".join(filter(None, [fileprefix, "paga_compare.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -1706,7 +2811,6 @@ def PAGA(
                 plt.clf()
                 plt.close("all")
 
-        # PAGA layout plot
         try:
             sc.pl.paga(
                 adata,
@@ -1720,7 +2824,8 @@ def PAGA(
 
             if save:
                 plt.savefig(
-                    ".".join(filter(None, [fileprefix, "paga_layout.pdf"])),
+                    "./figures/"
+                    + ".".join(filter(None, [fileprefix, "paga_layout.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -1734,7 +2839,6 @@ def PAGA(
                 plt.clf()
                 plt.close("all")
 
-        # draw_graph computation and plotting
         try:
             sc.tl.draw_graph(adata, init_pos="paga", layout=paga_layout)
             log_message(
@@ -1748,13 +2852,14 @@ def PAGA(
                 title="PAGA layout: " + paga_layout,
                 layout=paga_layout,
                 frameon=False,
-                legend_loc="on data",
+                legend_loc=legend_loc,
                 show=show_plot,
             )
 
             if save:
                 plt.savefig(
-                    ".".join(filter(None, [fileprefix, "paga_graph.pdf"])),
+                    "./figures/"
+                    + ".".join(filter(None, [fileprefix, "paga_graph.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -1768,7 +2873,6 @@ def PAGA(
                 plt.close("all")
 
         if embedded_with_PAGA is True:
-            # UMAP computation and plotting
             try:
                 umap2d = sc.tl.umap(adata, init_pos="paga", n_components=2, copy=True)
                 adata.obsm["PAGAUMAP2D"] = umap2d.obsm["X_umap"]
@@ -1787,7 +2891,8 @@ def PAGA(
 
                 if save:
                     plt.savefig(
-                        ".".join(filter(None, [fileprefix, "paga_umap.pdf"])),
+                        "./figures/"
+                        + ".".join(filter(None, [fileprefix, "paga_umap.pdf"])),
                         dpi=dpi,
                         bbox_inches="tight",
                         facecolor="white",
@@ -1826,7 +2931,6 @@ def PAGA(
                 min_group_size=min_group_size,
             )
 
-            # Pseudotime plotting
             try:
                 sc.pl.embedding(
                     adata,
@@ -1838,7 +2942,8 @@ def PAGA(
 
                 if save:
                     plt.savefig(
-                        ".".join(filter(None, [fileprefix, "dpt_pseudotime.pdf"])),
+                        "./figures/"
+                        + ".".join(filter(None, [fileprefix, "dpt_pseudotime.pdf"])),
                         dpi=dpi,
                         bbox_inches="tight",
                         facecolor="white",
@@ -1855,12 +2960,10 @@ def PAGA(
     finally:
         os.chdir(prevdir)
 
-        # Clean up matplotlib for Apple silicon MacBooks
         if is_apple_silicon and plt is not None:
             try:
                 plt.clf()
                 plt.close("all")
-                # Force garbage collection
                 import gc
 
                 gc.collect()
@@ -1910,8 +3013,8 @@ def Palantir(
     dirpath="./",
     fileprefix="",
     verbose=True,
+    legend_loc="on data",
 ):
-    # Configure OpenMP settings to prevent conflicts
     import os
     import platform
 
@@ -1923,7 +3026,6 @@ def Palantir(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on M-series machine
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
@@ -1941,8 +3043,8 @@ def Palantir(
 
         import numba
 
-        numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)  # Force single thread
+        numba.config.DISABLE_JIT = True
+        numba.set_num_threads(1)
         log_message(
             "NUMBA configured for Apple silicon",
             message_type="success",
@@ -1967,6 +3069,8 @@ def Palantir(
     prevdir = os.getcwd()
     os.chdir(os.path.expanduser(dirpath))
 
+    os.makedirs("./figures", exist_ok=True)
+
     if platform.system() == "Windows":
         import sys, multiprocessing, re
 
@@ -1980,12 +3084,11 @@ def Palantir(
 
     try:
         if adata is None and h5ad is None:
-            log_message("adata or h5ad must be provided.", message_type="error")
+            log_message("adata or h5ad must be provided", message_type="error")
             exit()
 
         if adata is None:
             adata = sc.read(h5ad)
-        # del adata.uns
 
         if group_by is None and (
             early_group is not None or terminal_groups is not None
@@ -2067,22 +3170,6 @@ def Palantir(
                 message_type="info",
                 verbose=verbose,
             )
-
-        # if HVF is None:
-        #   sc.pp.highly_variable_genes(adata, n_top_genes=2000)
-        # else:
-        #   df = pd.DataFrame([False] * adata.X.shape[1],columns=["highly_variable"])
-        #   df = df.set_index(adata.var_names)
-        #   df.highly_variable.iloc[:n_top_genes] = True
-        #   df.loc[df['channel'].isin(['sale','fullprice'])]
-        #   df.highly_variable.iloc[df.index.isin(HVF)] = True
-        #   if "highly_variable" in adata.var.columns:
-        #     adata.var.drop('highly_variable', axis=1, inplace=True)
-        #   adata.var=adata.var.join(df)
-
-        # adata.uns['pca']['variance_ratio']
-        # pca_projections=n_comps = np.where(np.cumsum(ad.uns['pca']['variance_ratio']) > 0.85)[0][0]
-        # pca_projections, _ = palantir.utils.run_pca(adata, use_hvg=True)
 
         pca_projections = pd.DataFrame(
             adata.obsm[linear_reduction][:, :n_pcs], index=adata.obs_names
@@ -2169,7 +3256,9 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])), dpi=dpi
+                "./figures/"
+                + ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])),
+                dpi=dpi,
             )
 
         sc.pl.embedding(
@@ -2181,7 +3270,8 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_diff_potential.pdf"])),
+                "./figures/"
+                + ".".join(filter(None, [fileprefix, "palantir_diff_potential.pdf"])),
                 dpi=dpi,
             )
 
@@ -2194,7 +3284,9 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])), dpi=dpi
+                "./figures/"
+                + ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])),
+                dpi=dpi,
             )
 
         if group_by is not None:
@@ -2204,11 +3296,13 @@ def Palantir(
                 color=group_by,
                 size=point_size,
                 palette=palette,
+                legend_loc=legend_loc,
                 show=show_plot,
             )
             if save:
                 plt.savefig(
-                    ".".join(filter(None, [fileprefix, "palantir_group_by.pdf"])),
+                    "./figures/"
+                    + ".".join(filter(None, [fileprefix, "palantir_group_by.pdf"])),
                     dpi=dpi,
                 )
 
@@ -2246,7 +3340,6 @@ def WOT(
     fileprefix="",
     verbose=True,
 ):
-    # Configure OpenMP settings to prevent conflicts
     import os
     import platform
 
@@ -2258,7 +3351,6 @@ def WOT(
     os.environ["KMP_WARNINGS"] = "0"
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    # Check if running on Apple silicon
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
@@ -2276,8 +3368,8 @@ def WOT(
 
         import numba
 
-        numba.config.DISABLE_JIT = True  # Disable JIT compilation
-        numba.set_num_threads(1)  # Force single thread
+        numba.config.DISABLE_JIT = True
+        numba.set_num_threads(1)
         log_message(
             "NUMBA configured for Apple silicon",
             message_type="success",
@@ -2320,18 +3412,18 @@ def WOT(
 
     try:
         if adata is None and h5ad is None:
-            log_message("adata or h5ad must be provided.", message_type="error")
+            log_message("`adata` or `h5ad` must be provided", message_type="error")
             exit()
 
         if adata is None:
             adata = sc.read(h5ad)
 
         if group_by is None:
-            log_message("group_by must be provided.", message_type="error")
+            log_message("`group_by` must be provided", message_type="error")
             exit()
 
         if time_field is None:
-            log_message("time_field must be provided.", message_type="error")
+            log_message("`time_field` must be provided", message_type="error")
             exit()
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
@@ -2342,7 +3434,7 @@ def WOT(
                 adata.obs["time_field"] = adata.obs[time_field].astype("float")
             except ValueError:
                 log_message(
-                    f"Unable to convert column '{time_field}' to float type.",
+                    f"Unable to convert column `{time_field}` to float type",
                     message_type="warning",
                 )
         else:
@@ -2350,7 +3442,7 @@ def WOT(
 
         time_dict = dict(zip(adata.obs[time_field], adata.obs["time_field"]))
         if time_from not in time_dict.keys():
-            log_message("'time_from' is incorrect", message_type="error")
+            log_message("`time_from` is incorrect", message_type="error")
             exit()
 
         ot_model = wot.ot.OTModel(
@@ -2397,11 +3489,6 @@ def WOT(
         fates_df = pd.concat([fates_df, new_df])
         adata.uns["fates_" + str(time_from)] = fates_df.reindex(adata.obs_names)
 
-        # obs_list = wot.tmap.trajectory_trends_from_trajectory(
-        #     trajectory_ds = trajectory_ds,
-        #     expression_ds = adata
-        # )
-
         if time_to is not None:
             if time_to not in time_dict.keys():
                 log_message("`time_to` is incorrect", message_type="error")
@@ -2443,3 +3530,361 @@ def WOT(
         pass
 
     return adata
+
+
+def CellTypistModels(on_the_fly=False, verbose=True):
+    """
+    Get a list of all available CellTypist models.
+
+    Parameters
+    ----------
+    on_the_fly : bool
+        If True, only show downloaded models.
+        If False, show all available models (fetch list from server).
+    verbose : bool
+        Whether to show detailed information.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing model names and descriptions.
+    """
+    import os
+    import platform
+
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["KMP_WARNINGS"] = "0"
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
+    if is_apple_silicon:
+        os.environ["PYTHONHASHSEED"] = "0"
+        os.environ["PYTHONUNBUFFERED"] = "1"
+        os.environ["MPLBACKEND"] = "Agg"
+        os.environ["DISPLAY"] = ""
+
+    try:
+        import celltypist
+        from celltypist import models
+    except ImportError as e:
+        log_message(
+            f"celltypist import failed: {e}",
+            message_type="error",
+            verbose=verbose,
+        )
+        raise
+
+    try:
+        models_df = models.models_description(on_the_fly=on_the_fly)
+        return models_df
+    except Exception as e:
+        log_message(
+            f"Failed to get model list: {e}",
+            message_type="error",
+            verbose=verbose,
+        )
+        raise
+
+
+def CellTypist(
+    adata=None,
+    h5ad=None,
+    model="Immune_All_Low.pkl",
+    mode="best match",
+    p_thres=0.5,
+    majority_voting=False,
+    over_clustering=None,
+    min_prop=0,
+    use_GPU=False,
+    insert_labels=True,
+    insert_conf=True,
+    insert_conf_by="predicted_labels",
+    insert_prob=False,
+    insert_decision=False,
+    prefix="",
+    verbose=True,
+):
+    """
+    Run CellTypist cell type annotation.
+
+    Parameters
+    ----------
+    adata : AnnData
+        AnnData object (required if h5ad is not provided).
+    h5ad : str
+        Path to h5ad file (optional).
+    model : str
+        Model name or path. Default is 'Immune_All_Low.pkl'.
+        Supports three formats:
+        1. Model name (e.g., 'Immune_All_Low.pkl'): automatically searched in ~/.celltypist/data/models/
+        2. Full path (contains '/'): use the provided path directly
+        3. None: use default model via celltypist.models.get_default_model()
+    mode : str
+        Prediction mode: 'best match' or 'prob match'. Default is 'best match'.
+    p_thres : float
+        Probability threshold for 'prob match' mode. Default is 0.5.
+    majority_voting : bool
+        Whether to use majority voting. Default is False.
+    over_clustering : str, list, or None
+        Over-clustering result. Can be:
+        - String: column name in adata.obs
+        - List/array: over-clustering labels
+        - None: use heuristic over-clustering
+    min_prop : float
+        Minimum proportion for majority voting. Default is 0.
+    use_GPU : bool
+        Whether to use GPU for over-clustering. Default is False.
+    insert_labels : bool
+        Whether to insert predicted labels into AnnData. Default is True.
+    insert_conf : bool
+        Whether to insert confidence scores. Default is True.
+    insert_conf_by : str
+        Which prediction type to base confidence on. Default is 'predicted_labels'.
+    insert_prob : bool
+        Whether to insert probability matrix. Default is False.
+    insert_decision : bool
+        Whether to insert decision matrix. Default is False.
+    prefix : str
+        Prefix for inserted columns. Default is empty string.
+    verbose : bool
+        Whether to show detailed information. Default is True.
+
+    Returns
+    -------
+    AnnData
+        AnnData object with CellTypist predictions inserted.
+    """
+    import os
+    import platform
+    import sys
+
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["KMP_WARNINGS"] = "0"
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
+    if is_apple_silicon:
+        os.environ["PYTHONHASHSEED"] = "0"
+        os.environ["PYTHONUNBUFFERED"] = "1"
+        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
+        os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
+        os.environ["MPLBACKEND"] = "Agg"
+        os.environ["DISPLAY"] = ""
+        os.environ["NUMBA_NUM_THREADS"] = "1"
+        os.environ["NUMBA_DISABLE_JIT"] = "1"
+        os.environ["NUMBA_THREADING_LAYER"] = "tbb"
+        os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
+
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+
+        if is_apple_silicon:
+            plt.rcParams["figure.max_open_warning"] = 0
+            plt.rcParams["figure.figsize"] = (4, 4)
+            plt.rcParams["axes.linewidth"] = 0.5
+            plt.rcParams["lines.linewidth"] = 0.5
+            plt.rcParams["font.size"] = 8
+    except Exception as e:
+        log_message(
+            f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
+        )
+        plt = None
+
+    if is_apple_silicon:
+        try:
+            import numba
+
+            numba.config.DISABLE_JIT = True
+            numba.set_num_threads(1)
+        except:
+            pass
+
+    try:
+        import celltypist
+        from celltypist import models
+    except ImportError as e:
+        log_message(
+            f"celltypist import failed: {e}",
+            message_type="error",
+            verbose=verbose,
+        )
+        raise
+
+    import warnings
+
+    warnings.simplefilter("ignore", category=UserWarning)
+    warnings.simplefilter("ignore", category=FutureWarning)
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+
+    try:
+        if adata is None and h5ad is None:
+            log_message(
+                "`adata` or `h5ad` must be provided", message_type="error", verbose=verbose
+            )
+            return None
+
+        if adata is None:
+            import scanpy as sc
+
+            adata = sc.read(h5ad)
+
+        import numpy as np
+        import scanpy as sc
+
+        needs_preprocessing = False
+
+        if adata.X is not None:
+            sample_size = min(100, adata.n_obs)
+            try:
+                if hasattr(adata.X, "toarray"):
+                    sample_data = adata.X[:sample_size].toarray()
+                else:
+                    sample_data = adata.X[:sample_size]
+
+                min_val = float(np.min(sample_data))
+                max_val = float(np.max(sample_data))
+
+                if min_val < 0 or max_val > 9.22:
+                    needs_preprocessing = True
+                    log_message(
+                        f"Data format invalid for CellTypist (min={min_val:.2f}, max={max_val:.2f}). "
+                        f"Will attempt to preprocess...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+            except Exception as e:
+                log_message(
+                    f"Could not check data format: {e}. Attempting preprocessing...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                needs_preprocessing = True
+
+        if needs_preprocessing:
+            log_message(
+                "Preprocessing data for CellTypist (normalize to 10000 counts per cell and log1p transform)...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+            if adata.raw is not None:
+                log_message(
+                    "Using .raw data for preprocessing",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                adata = adata.raw.to_adata()
+            elif adata.X is not None:
+                try:
+                    if hasattr(adata.X, "toarray"):
+                        sample_check = adata.X[: min(10, adata.n_obs)].toarray()
+                    else:
+                        sample_check = adata.X[: min(10, adata.n_obs)]
+
+                    if np.all(sample_check >= 0) and np.max(sample_check) > 20:
+                        adata.raw = adata.copy()
+                        log_message(
+                            "Detected raw counts in .X, storing in .raw",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                except:
+                    pass
+
+            sc.pp.normalize_total(adata, target_sum=1e4, inplace=True)
+            sc.pp.log1p(adata)
+
+        if model is None:
+            model = models.get_default_model()
+            log_message(
+                f"Using default model: {model}",
+                message_type="info",
+                verbose=verbose,
+            )
+        elif "/" not in model:
+            try:
+                all_models = models.get_all_models()
+                if model in all_models:
+                    model = models.get_model_path(model)
+                    log_message(
+                        f"Using model: {model}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                else:
+                    log_message(
+                        f"Model '{model}' not found in downloaded models. "
+                        f"Will try to use as path or download if needed.",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+            except Exception as e:
+                log_message(
+                    f"Could not check model list: {e}. Using model as provided.",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+        over_clustering_value = None
+        if over_clustering is not None:
+            if isinstance(over_clustering, str):
+                if over_clustering in adata.obs.columns:
+                    over_clustering_value = adata.obs[over_clustering].values
+                else:
+                    log_message(
+                        f"'{over_clustering}' not found in adata.obs. "
+                        f"Will use heuristic over-clustering.",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+            else:
+                over_clustering_value = over_clustering
+
+        log_message("Running CellTypist annotation...", verbose=verbose)
+
+        predictions = celltypist.annotate(
+            filename=adata,
+            model=model,
+            mode=mode,
+            p_thres=p_thres,
+            majority_voting=majority_voting,
+            over_clustering=over_clustering_value,
+            min_prop=min_prop,
+            use_GPU=use_GPU,
+        )
+
+        adata = predictions.to_adata(
+            insert_labels=insert_labels,
+            insert_conf=insert_conf,
+            insert_conf_by=insert_conf_by,
+            insert_decision=insert_decision,
+            insert_prob=insert_prob,
+            prefix=prefix,
+        )
+
+        log_message(
+            "CellTypist annotation completed successfully",
+            message_type="success",
+            verbose=verbose,
+        )
+
+        return adata
+
+    except Exception as e:
+        log_message(
+            f"CellTypist annotation failed: {e}",
+            message_type="error",
+            verbose=verbose,
+        )
+        raise
