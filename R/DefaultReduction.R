@@ -121,7 +121,6 @@ DefaultReduction <- function(
           grep(pattern = pat, x = default_reduc, ignore.case = TRUE)
         }
       ))]
-      # 选择维度最小的
       default_reduc <- default_reduc[which.min(sapply(
         default_reduc,
         function(x) dim(srt@reductions[[x]])[2]

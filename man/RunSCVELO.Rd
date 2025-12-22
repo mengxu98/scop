@@ -45,14 +45,16 @@ RunSCVELO(
   compute_pseudotime = TRUE,
   compute_paga = TRUE,
   top_n = 6,
-  n_jobs = 1,
+  cores = 1,
   palette = "Paired",
   palcolor = NULL,
+  legend.position = "on data",
   show_plot = TRUE,
-  save = FALSE,
-  dpi = 300,
-  dirpath = "./",
-  fileprefix = "",
+  save_plot = FALSE,
+  plot_format = c("pdf", "png", "svg"),
+  plot_dpi = 300,
+  plot_prefix = "scvelo",
+  dirpath = "./scvelo",
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -92,9 +94,11 @@ Can be a vector containing \code{"deterministic"}, \code{"stochastic"}, and/or \
 
 \item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.}
 
-\item{n_pcs}{Number of principal components (PCs) used for velocity estimation.}
+\item{n_pcs}{Number of principal components to use for linear reduction.
+Default is \code{30}.}
 
-\item{n_neighbors}{Number of nearest neighbors used for velocity estimation.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
+Default is \code{30}.}
 
 \item{filter_genes}{Whether to filter genes based on minimum counts.}
 
@@ -143,22 +147,27 @@ Each cell in the grid can have, at most, one traversing streamline.}
 
 \item{top_n}{The number of top features to plot.}
 
-\item{n_jobs}{The number of parallel jobs to run.}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
 \item{palette}{The palette to use for coloring cells.}
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
+\item{legend.position}{Position of legend in plots. Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}
 
-\item{save}{Whether to save the plots.}
+\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
 
-\item{dpi}{The DPI (dots per inch) for saving the plot.}
+\item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{dirpath}{The directory to save the plots.}
+\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
 
-\item{fileprefix}{The file prefix to use for the plots.}
+\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+
+\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}

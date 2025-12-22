@@ -37,7 +37,7 @@ Default is \code{TRUE}. When \code{TRUE}, uv is used as the primary installer wi
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Other arguments to be passed to \code{\link[=conda_install]{conda_install()}}.}
+\item{...}{Other arguments to be passed to other functions.}
 }
 \description{
 Check and install python packages

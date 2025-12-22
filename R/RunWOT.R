@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams RunPAGA
+#' @inheritParams RunCellRank
 #' @param time_field A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.
 #' @param growth_iters A number of growth iterations to perform during the OT Model computation.
 #' Default is `3`.
@@ -76,10 +76,11 @@ RunWOT <- function(
     palette = "Paired",
     palcolor = NULL,
     show_plot = FALSE,
-    save = FALSE,
-    dpi = 300,
+    save_plot = FALSE,
+    plot_format = c("pdf", "png", "svg"),
+    plot_dpi = 300,
+    plot_prefix = "wot",
     dirpath = "./",
-    fileprefix = "",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
   PrepareEnv()
@@ -140,6 +141,12 @@ RunWOT <- function(
       }
     }
   )
+
+  args[["save"]] <- save_plot
+  args[["dpi"]] <- plot_dpi
+  args[["fileprefix"]] <- plot_prefix
+  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
+
   args <- args[
     !names(args) %in%
       c(
