@@ -16,6 +16,7 @@
 #' Default is `FALSE`.
 #' @param version The Python version.
 #' Default is `"3.10-1"`.
+#' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
 #' @export
@@ -25,6 +26,7 @@ PrepareEnv <- function(
     miniconda_repo = "https://repo.anaconda.com/miniconda",
     version = "3.10-1",
     force = FALSE,
+    pip_options = character(),
     ...) {
   env_cache <- getOption("scop_env_cache", default = NULL)
   if (isTRUE(env_cache) && isFALSE(force)) {
@@ -37,23 +39,11 @@ PrepareEnv <- function(
   }
 
   log_message(
-    "Preparing scop python environment...",
+    "Preparing python environment...",
     text_color = "orange",
     message_type = "running",
     timestamp_style = FALSE
   )
-
-  system_python <- Sys.which("python3")
-  if (system_python == "" || !file.exists(system_python)) {
-    system_python <- Sys.which("python")
-  }
-  if (system_python != "" && file.exists(system_python)) {
-    system_uv <- Sys.which("uv")
-    if (system_uv == "" || !file.exists(system_uv)) {
-      log_message("Installing {.pkg uv} to system python...")
-      install_uv(python = system_python, envname = NULL, conda = NULL)
-    }
-  }
 
   if (!is.null(envname)) {
     options(scop_envname = envname)
@@ -140,9 +130,9 @@ PrepareEnv <- function(
       print(conda_info(conda = conda))
       print(reticulate::conda_list(conda = conda))
       log_message(
-        "Unable to find scop environment under the expected path: {.file {env_path}}\n",
+        "Unable to find environment under the expected path: {.file {env_path}}\n",
         "conda: {.pkg {conda}}\n",
-        "scop python: {.file {python_path}}",
+        "python: {.file {python_path}}",
         message_type = "error"
       )
     } else {
@@ -161,7 +151,8 @@ PrepareEnv <- function(
     python = python,
     envname = envname,
     conda = conda,
-    auto_install = TRUE
+    auto_install = TRUE,
+    pip_options = pip_options
   )
 
   conda_packages <- packages[install_methods == "conda"]
@@ -201,6 +192,7 @@ PrepareEnv <- function(
       conda = conda,
       force = force,
       pip = TRUE,
+      pip_options = pip_options,
       ...
     )
   }
@@ -422,7 +414,8 @@ env_requirements <- function(version = "3.10-1") {
     "phate" = "pip",
     "bbknn" = "pip",
     "scanorama" = "pip",
-    "cellrank" = "pip"
+    "cellrank" = "pip",
+    "celltypist" = "pip"
   )
 
   package_versions <- c(
@@ -451,7 +444,8 @@ env_requirements <- function(version = "3.10-1") {
     "bbknn" = "bbknn==1.6.0",
     "scanorama" = "scanorama==1.7.4",
     "scvi-tools" = "scvi-tools==1.2.1",
-    "cellrank" = "cellrank==2.0.7"
+    "cellrank" = "cellrank==2.0.7",
+    "celltypist" = "celltypist"
   )
 
   package_aliases <- list(
@@ -599,7 +593,11 @@ ensure_conda <- function(conda, error_if_missing = TRUE) {
   return(TRUE)
 }
 
-install_uv <- function(python = NULL, envname = NULL, conda = "auto") {
+install_uv <- function(
+    python = NULL,
+    envname = NULL,
+    conda = "auto",
+    pip_options = character()) {
   log_message("Attempting to install uv...")
 
   if (is.null(python)) {
@@ -650,6 +648,13 @@ install_uv <- function(python = NULL, envname = NULL, conda = "auto") {
       install_cmd <- c(install_cmd, "--user")
     }
   }
+  if (length(pip_options) > 0) {
+    # Split pip_options if it's a single string
+    if (length(pip_options) == 1 && grepl(" ", pip_options)) {
+      pip_options <- strsplit(pip_options, "\\s+")[[1]]
+    }
+    install_cmd <- c(install_cmd, pip_options)
+  }
   install_cmd <- c(install_cmd, "uv")
   install_status <- system2t(python, shQuote(install_cmd))
 
@@ -698,7 +703,8 @@ find_uv <- function(
     python = NULL,
     envname = NULL,
     conda = "auto",
-    auto_install = TRUE) {
+    auto_install = TRUE,
+    pip_options = character()) {
   uv <- Sys.which("uv")
   if (uv != "" && file.exists(uv)) {
     return(uv)
@@ -734,7 +740,7 @@ find_uv <- function(
   }
 
   if (isTRUE(auto_install)) {
-    uv <- install_uv(python = python, envname = envname, conda = conda)
+    uv <- install_uv(python = python, envname = envname, conda = conda, pip_options = pip_options)
     if (!is.null(uv)) {
       return(uv)
     }
@@ -848,7 +854,8 @@ conda_install <- function(
       python = python,
       envname = envname,
       conda = conda,
-      auto_install = TRUE
+      auto_install = TRUE,
+      pip_options = pip_options
     )
 
     if (!is.null(uv)) {
@@ -857,6 +864,10 @@ conda_install <- function(
       args <- c("pip", "install", "--python", python)
 
       if (length(pip_options) > 0) {
+        # Split pip_options if it's a single string
+        if (length(pip_options) == 1 && grepl(" ", pip_options)) {
+          pip_options <- strsplit(pip_options, "\\s+")[[1]]
+        }
         args <- c(args, pip_options)
       }
 
@@ -924,7 +935,13 @@ conda_install <- function(
     log_message("Using channel: {.val {ch}}")
   }
 
-  args <- c(args, python_package, packages)
+  conda_packages <- if (is.character(packages)) {
+    gsub("==", "=", packages, fixed = TRUE)
+  } else {
+    packages
+  }
+
+  args <- c(args, python_package, conda_packages)
 
   log_message("Installing {.val {length(packages)}} packages...")
 
