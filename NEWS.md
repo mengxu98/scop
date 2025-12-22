@@ -1,5 +1,21 @@
 # scop
 
+# scop 0.7.3
+
+* **func**:
+  * `RunCellTypist()`: New function for cell type annotation using the CellTypist method.
+  * `CellTypistModels()`: New function for downloading and managing CellTypist pre-trained models.
+
+# scop 0.7.2
+
+* **func**:
+  * `RunCellRank()`: Performance optimizations and code improvements.
+
+# scop 0.7.1
+
+* **bugs**:
+  * `CellDimPlot()`: Fixed issue where NA values appeared in labels. This issue reported in [#93](https://github.com/mengxu98/scop/issues/93).
+
 # scop 0.7.0
 
 * **func**:
