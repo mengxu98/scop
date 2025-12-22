@@ -30,16 +30,18 @@ Default is the default assay of the \code{srt_query} object.}
 Default is the default assay of the \code{srt_ref} object.}
 
 \item{method}{The method to be used for scmap analysis.
-Can be any of "scmapCluster" or "scmapCell".
-Default is `"scmapCluster"`.}
+Can be any of \code{"scmapCluster"} or \code{"scmapCell"}.
+Default is \code{"scmapCluster"}.}
 
 \item{nfeatures}{The number of top features to be selected.
-Default is `500`.}
+Default is \code{500}.}
 
 \item{threshold}{The threshold value on similarity to determine if a cell is assigned to a cluster.
-This should be a value between 0 and 1. Default is `0.5`.}
+This should be a value between \code{0} and \code{1}.
+Default is \code{0.5}.}
 
-\item{k}{Number of clusters per group for k-means clustering when method is "scmapCell".}
+\item{k}{Number of clusters per group for k-means clustering when \code{method} is \code{"scmapCell"}.
+Default is \code{10}.}
 }
 \description{
 Annotate single cells using scmap.
@@ -89,5 +91,5 @@ CellDimPlot(
 )
 }
 \seealso{
-[RunKNNPredict]
+\link{RunKNNPredict}, \link{RunKNNMap}
 }

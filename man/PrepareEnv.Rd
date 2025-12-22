@@ -10,6 +10,7 @@ PrepareEnv(
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   version = "3.10-1",
   force = FALSE,
+  pip_options = character(),
   ...
 )
 }
@@ -30,6 +31,8 @@ Default is \code{"3.10-1"}.}
 \item{force}{Whether to force recreation of the environment.
 If \code{TRUE}, the existing environment will be removed and recreated.
 Default is \code{FALSE}.}
+
+\item{pip_options}{Additional command line arguments to be passed to \code{uv}/\code{pip} when installing pip packages.}
 
 \item{...}{Additional arguments passed to package installation functions.}
 }

@@ -6,8 +6,8 @@
 #' version compatibility, and modular design.
 #'
 #' @md
-#' @inheritParams RunPAGA
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunCellRank
 #' @param mode Velocity estimation models to use.
 #' Can be a vector containing `"deterministic"`, `"stochastic"`, and/or `"dynamical"`.
 #' @param fitting_by Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".
@@ -15,8 +15,6 @@
 #' @param knn The number of nearest neighbors for `magic.MAGIC`.
 #' @param t power to which the diffusion operator is powered for `magic.MAGIC`.
 #' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
-#' @param n_pcs Number of principal components (PCs) used for velocity estimation.
-#' @param n_neighbors Number of nearest neighbors used for velocity estimation.
 #' @param filter_genes Whether to filter genes based on minimum counts.
 #' @param min_counts Minimum counts for gene filtering.
 #' @param min_counts_u Minimum unspliced counts for gene filtering.
@@ -42,7 +40,6 @@
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
 #' @param top_n The number of top features to plot.
-#' @param n_jobs The number of parallel jobs to run.
 #'
 #' @seealso
 #' [srt_to_adata], [VelocityPlot], [CellDimPlot], [RunPAGA]
@@ -141,14 +138,16 @@ RunSCVELO <- function(
     compute_pseudotime = TRUE,
     compute_paga = TRUE,
     top_n = 6,
-    n_jobs = 1,
+    cores = 1,
     palette = "Paired",
     palcolor = NULL,
+    legend.position = "on data",
     show_plot = TRUE,
-    save = FALSE,
-    dpi = 300,
-    dirpath = "./",
-    fileprefix = "",
+    save_plot = FALSE,
+    plot_format = c("pdf", "png", "svg"),
+    plot_dpi = 300,
+    plot_prefix = "scvelo",
+    dirpath = "./scvelo",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
   PrepareEnv()
@@ -156,6 +155,8 @@ RunSCVELO <- function(
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", verbose = verbose)
   }
+
+  plot_format <- match.arg(plot_format)
 
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -219,6 +220,17 @@ RunSCVELO <- function(
     }
   })
 
+  args[["n_jobs"]] <- cores
+
+  args[["legend_loc"]] <- legend.position
+  args <- args[!names(args) %in% c("legend.position")]
+
+  # Map new parameters to Python legacy parameters
+  args[["save"]] <- save_plot
+  args[["dpi"]] <- plot_dpi
+  args[["fileprefix"]] <- plot_prefix
+  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
+
   args <- args[
     !names(args) %in%
       c(
@@ -229,7 +241,8 @@ RunSCVELO <- function(
         "layer_y",
         "return_seurat",
         "palette",
-        "palcolor"
+        "palcolor",
+        "cores"
       )
   ]
 

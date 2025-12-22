@@ -30,7 +30,8 @@
 #' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions
 #' @param show_na Whether to assign a color from the color palette to NA group.
-#' If `FALSE`, cell points with NA level will colored by `bg_color`.
+#' If `TRUE`, cell points with NA level will be colored by `bg_color`.
+#' If `FALSE`, cell points with NA level will be removed from the plot.
 #' @param show_stat Whether to show statistical information on the plot.
 #' @param label Whether to label the cell groups.
 #' @param label_insitu Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
@@ -138,7 +139,8 @@
 #' @param theme_args Other arguments passed to the `theme_use`.
 #' @param seed Random seed set for reproducibility
 #'
-#' @seealso [FeatureDimPlot]
+#' @seealso
+#' [CellDimPlot3D], [FeatureDimPlot], [FeatureDimPlot3D]
 #'
 #' @export
 #'
@@ -665,6 +667,7 @@ CellDimPlot <- function(
   set.seed(seed)
   mark_type <- match.arg(mark_type)
 
+  check_r("ggnewscale", verbose = FALSE)
   if (is.null(split.by)) {
     split.by <- "All.groups"
     srt@meta.data[[split.by]] <- factor("")
@@ -672,7 +675,7 @@ CellDimPlot <- function(
   for (i in unique(c(group.by, split.by))) {
     if (!i %in% colnames(srt@meta.data)) {
       log_message(
-        paste0(i, " is not in the meta.data of srt object."),
+        "{.val {i}} is not in the meta.data of srt object",
         message_type = "error"
       )
     }
@@ -692,14 +695,14 @@ CellDimPlot <- function(
   for (l in lineages) {
     if (!l %in% colnames(srt@meta.data)) {
       log_message(
-        paste0(l, " is not in the meta.data of srt object."),
+        "Lineage {.val {l}} is not in the meta.data of srt object",
         message_type = "error"
       )
     }
   }
   if (!is.null(graph) && !graph %in% names(srt@graphs)) {
     log_message(
-      paste0("Graph ", graph, " is not exist in the srt object."),
+      "Graph {.val {graph}} is not exist in the srt object",
       message_type = "error"
     )
   }
@@ -713,20 +716,20 @@ CellDimPlot <- function(
   }
   if (!reduction %in% names(srt@reductions)) {
     log_message(
-      paste0(reduction, " is not in the srt reduction names."),
+      "{.val {reduction}} is not in the srt reduction names",
       message_type = "error"
     )
   }
   if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
-        "No cells in 'cells.highlight' found in srt.",
+        "No cells in '{.arg cells.highlight}' found in srt",
         message_type = "error"
       )
     }
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
-        "Some cells in 'cells.highlight' not found in srt.",
+        "Some cells in '{.arg cells.highlight}' not found in srt",
         message_type = "warning"
       )
     }
@@ -738,10 +741,7 @@ CellDimPlot <- function(
   nlev <- nlev[nlev > 100]
   if (length(nlev) > 0 && isFALSE(force)) {
     log_message(
-      paste0(
-        "The following variables have more than 100 levels: ",
-        paste(names(nlev), collapse = ",")
-      ),
+      "The following variables have more than 100 levels: {.val {names(nlev)}}",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
@@ -768,7 +768,7 @@ CellDimPlot <- function(
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
       log_message(
-        "'raster.dpi' must be a two-length numeric vector",
+        "'{.arg raster.dpi}' must be a two-length numeric vector",
         message_type = "error"
       )
     }
@@ -953,12 +953,15 @@ CellDimPlot <- function(
       dat <- dat_use
       cells_mask <- dat[[split.by]] != s
       dat[[g]][cells_mask] <- NA
+      if (isFALSE(show_na)) {
+        dat <- dat[!is.na(dat[[g]]), , drop = FALSE]
+      }
       legend_list <- list()
       labels_tb <- table(dat[[g]])
       labels_tb <- labels_tb[labels_tb != 0]
-      cells.highlight_use <- cells.highlight
-      if (isTRUE(cells.highlight_use)) {
-        cells.highlight_use <- rownames(dat)[!is.na(dat[[g]])]
+      cells_highlight_use <- cells.highlight
+      if (isTRUE(cells_highlight_use)) {
+        cells_highlight_use <- rownames(dat)[!is.na(dat[[g]])]
       }
 
       if (isTRUE(label_insitu)) {
@@ -1012,7 +1015,8 @@ CellDimPlot <- function(
       }
 
       if (isTRUE(add_mark)) {
-        mark_fun <- switch(mark_type,
+        mark_fun <- switch(
+          EXPR = mark_type,
           "ellipse" = "geom_mark_ellipse",
           "hull" = "geom_mark_hull",
           "rect" = "geom_mark_rect",
@@ -1198,8 +1202,8 @@ CellDimPlot <- function(
           )
       }
 
-      if (!is.null(cells.highlight_use) && isFALSE(hex)) {
-        cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight_use)
+      if (!is.null(cells_highlight_use) && isFALSE(hex)) {
+        cell_df <- subset(p$data, rownames(p$data) %in% cells_highlight_use)
         if (nrow(cell_df) > 0) {
           if (isTRUE(raster)) {
             p <- p +
@@ -1664,15 +1668,15 @@ CellDimPlot3D <- function(
     reduction_key,
     dims[3]
   )]]
-  cells.highlight_use <- cells.highlight
-  if (isTRUE(cells.highlight_use)) {
-    cells.highlight_use <- rownames(dat_use)[dat_use[[group.by]] != "NA"]
+  cells_highlight_use <- cells.highlight
+  if (isTRUE(cells_highlight_use)) {
+    cells_highlight_use <- rownames(dat_use)[dat_use[[group.by]] != "NA"]
   }
-  if (!is.null(cells.highlight_use)) {
-    cells.highlight_use <- cells.highlight_use[
-      cells.highlight_use %in% rownames(dat_use)
+  if (!is.null(cells_highlight_use)) {
+    cells_highlight_use <- cells_highlight_use[
+      cells_highlight_use %in% rownames(dat_use)
     ]
-    dat_use_highlight <- dat_use[cells.highlight_use, , drop = FALSE]
+    dat_use_highlight <- dat_use[cells_highlight_use, , drop = FALSE]
   }
 
   p <- plotly::plot_ly(data = dat_use, width = width, height = height)
@@ -1698,7 +1702,7 @@ CellDimPlot3D <- function(
     showlegend = TRUE,
     visible = TRUE
   )
-  if (!is.null(cells.highlight_use)) {
+  if (!is.null(cells_highlight_use)) {
     p <- plotly::add_trace(
       p = p,
       x = dat_use_highlight[[paste0(reduction_key, dims[1], "All_cells")]],
