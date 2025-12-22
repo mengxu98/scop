@@ -104,17 +104,13 @@ reference:
   - RunTriMap
   - RunPHATE
   - RunLargeVis
-  - RunKNNPredict
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
   - RunCSSMap
   - RunHarmony2
-  - RunKNNMap
   - RunPCAMap
-  - RunScmap
   - RunSeuratMap
-  - RunSingleR
   - RunSymphonyMap
   - BBKNN_integrate
   - CSS_integrate
@@ -129,6 +125,15 @@ reference:
   - Uncorrected_integrate
   - fastMNN_integrate
 
+- subtitle: "Cell Type Annotation"
+- contents:
+  - CellTypistModels
+  - RunCellTypist
+  - RunKNNMap
+  - RunKNNPredict
+  - RunSingleR
+  - RunScmap
+
 - subtitle: "Differential Analysis and Enrichment"
 - contents:
   - FindExpressedMarkers
@@ -138,8 +143,9 @@ reference:
   - RunDynamicEnrichment
   - RunProportionTest
 
-- subtitle: "Trajectory Analysis"
+- subtitle: "Dynamic Trajectory Analysis"
 - contents:
+  - RunCellRank
   - RunPAGA
   - RunPalantir
   - RunSlingshot
