@@ -30,15 +30,17 @@ RunPalantir(
   adjust_early_cell = FALSE,
   adjust_terminal_cells = FALSE,
   max_iterations = 25,
-  n_jobs = 1,
+  cores = 1,
   point_size = 20,
   palette = "Paired",
   palcolor = NULL,
+  legend.position = "on data",
   show_plot = FALSE,
-  save = FALSE,
-  dpi = 300,
+  save_plot = FALSE,
+  plot_format = c("pdf", "png", "svg"),
+  plot_dpi = 300,
+  plot_prefix = "palantir",
   dirpath = "./",
-  fileprefix = "",
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -97,7 +99,8 @@ Default is \code{30}.}
 
 \item{max_iterations}{Maximum number of iterations for pseudotime convergence.}
 
-\item{n_jobs}{The number of parallel jobs to run.}
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
 \item{point_size}{The point size for plotting.}
 
@@ -105,16 +108,20 @@ Default is \code{30}.}
 
 \item{palcolor}{A vector of colors to use as the palette.}
 
+\item{legend.position}{Position of legend in plots. Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}
 
-\item{save}{Whether to save the plots.}
+\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
 
-\item{dpi}{The DPI (dots per inch) for saving the plot.}
+\item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{dirpath}{The directory to save the plots.}
+\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
 
-\item{fileprefix}{The file prefix to use for the plots.}
+\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+
+\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
 Default is \code{TRUE}.}
