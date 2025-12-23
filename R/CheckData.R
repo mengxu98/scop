@@ -446,7 +446,7 @@ CheckDataList <- function(
     }
 
     if (normalization_method == "SCT" && type == "RNA") {
-      check_r("glmGamPoi")
+      check_r("glmGamPoi", verbose = FALSE)
       if (
         isTRUE(do_normalization) ||
           isTRUE(do_HVF_finding) ||

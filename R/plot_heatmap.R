@@ -193,7 +193,7 @@ heatmap_enrichment <- function(
 
           ha_keys <- NULL
           if (isTRUE(anno_keys)) {
-            check_r("simplifyEnrichment")
+            check_r("simplifyEnrichment", verbose = FALSE)
             keys_list <- lapply(subdf_list, function(df) {
               if (all(df$Database %in% c("GO", "GO_BP", "GO_CC", "GO_MF"))) {
                 df0 <- simplifyEnrichment::keyword_enrichment_from_GO(df[[
@@ -668,7 +668,7 @@ heatmap_rendersize <- function(
 #' dend
 #' plot(dend)
 cluster_within_group2 <- function(mat, factor) {
-  check_r("dendextend")
+  check_r("dendextend", verbose = FALSE)
   if (!is.factor(factor)) {
     factor <- factor(factor, levels = unique(factor))
   }

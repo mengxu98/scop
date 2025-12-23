@@ -352,7 +352,7 @@ CellCorHeatmap <- function(
     ht_params = list()) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
-    check_r("magick")
+    check_r("magick", verbose = FALSE)
   }
 
   ref_legend <- TRUE

@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.7.3
-Date: 2025-12-22
+Version: 0.7.5
+Date: 2025-12-23
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -108,9 +108,7 @@ Suggests:
     umap,
     UCell
 Remotes:
-    jinworks/CellChat,
-    theislab/destiny,
-    mengxu98/thisplot
+    jinworks/CellChat
 RoxygenNote: 7.3.2
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3

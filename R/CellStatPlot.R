@@ -1137,7 +1137,7 @@ StatPlot <- function(
     for (sp in levels(dat_all[[split.by]])) {
       dat_use <- dat_split[[ifelse(split.by == "All.groups", 1, sp)]]
       if (plot_type == "venn") {
-        check_r("ggVennDiagram")
+        check_r("ggVennDiagram", verbose = FALSE)
         dat_list <- as.list(dat_use[, stat.by])
         dat_list <- lapply(
           stats::setNames(
@@ -1240,7 +1240,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "upset") {
-        check_r("ggupset")
+        check_r("ggupset", verbose = FALSE)
         for (n in seq_len(nrow(dat_use))) {
           dat_use[["intersection"]][n] <- list(
             stat.by[unlist(dat_use[
@@ -1297,7 +1297,7 @@ StatPlot <- function(
       }
 
       if (plot_type == "sankey") {
-        check_r("davidsjoberg/ggsankey")
+        check_r("davidsjoberg/ggsankey", verbose = FALSE)
         colors <- palette_colors(
           c(
             unique(
