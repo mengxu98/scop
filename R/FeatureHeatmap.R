@@ -232,7 +232,7 @@ FeatureHeatmap <- function(
     ht_params = list()) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
-    check_r("magick")
+    check_r("magick", verbose = FALSE)
   }
 
   split_method <- match.arg(split_method)
@@ -1046,11 +1046,12 @@ FeatureHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_r("e1071"), error = identity)
+          status <- tryCatch(check_r("e1071", verbose = FALSE), error = identity)
           if (inherits(status, "error")) {
             log_message(
-              "The {.pkg e1071} package was not found. Switch split_method to 'kmeans'",
-              message_type = "warning"
+              "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",
+              message_type = "warning",
+              verbose = verbose
             )
             split_method <- "kmeans"
           } else {
@@ -1063,9 +1064,9 @@ FeatureHeatmap <- function(
             } else {
               if (fuzzification <= min_fuzzification) {
                 log_message(
-                  "fuzzification value is samller than estimated:",
-                  round(min_fuzzification, 2),
-                  message_type = "warning"
+                  "{.arg fuzzification} value is samller than estimated: {.val {round(min_fuzzification, 2)}}",
+                  message_type = "warning",
+                  verbose = verbose
                 )
               }
             }

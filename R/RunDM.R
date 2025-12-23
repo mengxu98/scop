@@ -151,7 +151,7 @@ RunDM.default <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  check_r("destiny", verbose = verbose)
+  check_r("destiny", verbose = FALSE)
 
   set.seed(seed = seed.use)
   dm_results <- destiny::DiffusionMap(

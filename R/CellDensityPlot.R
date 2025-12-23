@@ -123,7 +123,7 @@ CellDensityPlot <- function(
     ncol = NULL,
     byrow = TRUE,
     force = FALSE) {
-  check_r("ggridges")
+  check_r("ggridges", verbose = FALSE)
   assay <- assay %||% DefaultAssay(srt)
   x_order <- match.arg(x_order)
   if (is.null(features)) {

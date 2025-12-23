@@ -1,8 +1,9 @@
-#' @title Run GLMPCA (generalized version of principal components analysis)
+#' @title Run generalized principal components analysis (GLMPCA)
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object, an assay object, or a matrix-like object.
+#' @param object An object.
+#' Can be a Seurat object, an assay object, or a matrix-like object.
 #' @param assay The assay to be used for the analysis.
 #' Default is `NULL`.
 #' @param layer The layer to be used for the analysis.
@@ -192,7 +193,7 @@ RunGLMPCA.default <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  check_r("glmpca")
+  check_r("glmpca", verbose = FALSE)
   if (inherits(object, "dgCMatrix")) {
     object <- as_matrix(object)
   }

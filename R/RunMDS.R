@@ -211,11 +211,11 @@ RunMDS.default <- function(
     )
   }
   if (mds.method == "isoMDS") {
-    check_r("MASS")
+    check_r("MASS", verbose = FALSE)
     mds_results <- MASS::isoMDS(cell_dist, k = nmds, ...)
   }
   if (mds.method == "sammon") {
-    check_r("MASS")
+    check_r("MASS", verbose = FALSE)
     mds_results <- MASS::sammon(cell_dist, k = nmds, ...)
   }
   cell_embeddings <- mds_results$points

@@ -210,7 +210,7 @@ ExpressionStatPlot <- function(
     sort <- FALSE
   }
   if (isTRUE(multiplegroup_comparisons) || length(comparisons) > 0) {
-    check_r("ggpubr")
+    check_r("ggpubr", verbose = FALSE)
     ncomp <- sapply(comparisons, length)
     if (any(ncomp > 2)) {
       log_message(
