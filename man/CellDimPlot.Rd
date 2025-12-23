@@ -142,7 +142,8 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 \item{cells}{Subset cells to plot.}
 
 \item{show_na}{Whether to assign a color from the color palette to NA group.
-If \code{FALSE}, cell points with NA level will colored by \code{bg_color}.}
+If \code{TRUE}, cell points with NA level will be colored by \code{bg_color}.
+If \code{FALSE}, cell points with NA level will be removed from the plot.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 
@@ -607,7 +608,6 @@ CellDimPlot(
 )
 
 # Show neighbors graphs on the plot
-pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -662,8 +662,6 @@ CellDimPlot(
 
 \dontrun{
 # Show PAGA results on the plot
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group_by = "SubCellType",
@@ -706,8 +704,6 @@ CellDimPlot(
 )
 
 # Show RNA velocity results on the plot
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   group_by = "SubCellType",
@@ -785,5 +781,5 @@ CellDimPlot(
 }
 }
 \seealso{
-\link{FeatureDimPlot}
+\link{CellDimPlot3D}, \link{FeatureDimPlot}, \link{FeatureDimPlot3D}
 }

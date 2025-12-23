@@ -6,7 +6,7 @@
 \alias{RunGLMPCA.Assay}
 \alias{RunGLMPCA.Assay5}
 \alias{RunGLMPCA.default}
-\title{Run GLMPCA (generalized version of principal components analysis)}
+\title{Run generalized principal components analysis (GLMPCA)}
 \usage{
 RunGLMPCA(object, ...)
 
@@ -76,7 +76,8 @@ RunGLMPCA(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object, an assay object, or a matrix-like object.}
+\item{object}{An object.
+Can be a Seurat object, an assay object, or a matrix-like object.}
 
 \item{...}{Additional arguments to be passed to the \link[glmpca:glmpca]{glmpca::glmpca} function.}
 
@@ -118,7 +119,7 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Run GLMPCA (generalized version of principal components analysis)
+Run generalized principal components analysis (GLMPCA)
 }
 \examples{
 data(pancreas_sub)
