@@ -328,7 +328,7 @@ CellScoring <- function(
       }
       features_nm <- features_raw
     } else if (method == "UCell") {
-      check_r("UCell")
+      check_r("UCell", verbose = FALSE)
       srt_tmp <- UCell::AddModuleScore_UCell(
         srt_sp,
         features = features,
@@ -351,7 +351,7 @@ CellScoring <- function(
       features_nm <- features_raw[!names(features) %in% filtered]
       scores <- srt_tmp[[paste0(names(features_keep), name)]]
     } else if (method == "AUCell") {
-      check_r("AUCell")
+      check_r("AUCell", verbose = FALSE)
       cell_rank <- AUCell::AUCell_buildRankings(
         as_matrix(
           GetAssayData5(
@@ -591,7 +591,11 @@ AddModuleScore2 <- function(
   features_scores <- do.call(rbind, lapply(scores, function(x) x[[2]]))
 
   features_scores_use <- features_scores - ctrl_scores
-  rownames(features_scores_use) <- paste0(name, seq_len(cluster_length))
+  if (name == "") {
+    rownames(features_scores_use) <- paste0("X", seq_len(cluster_length))
+  } else {
+    rownames(features_scores_use) <- paste0(name, seq_len(cluster_length))
+  }
   features_scores_use <- as.data.frame(t(features_scores_use))
   rownames(features_scores_use) <- colnames(object)
   object[[colnames(features_scores_use)]] <- features_scores_use
