@@ -1,5 +1,13 @@
 # scop
 
+# scop 0.7.5
+
+* **bugs**:
+  * `CellScoring()`: Fixed bug where the function failed to build results. This issue reported in [#98](https://github.com/mengxu98/scop/issues/98).
+
+* **func**:
+  * `RunDEtest()`: Fixed compatibility issue with [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by replacing deprecated `Assays()` `slot` argument with `LayerData()`. This issue reported in [#100](https://github.com/mengxu98/scop/issues/100).
+
 # scop 0.7.3
 
 * **func**:
