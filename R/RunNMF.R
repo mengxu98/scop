@@ -219,7 +219,7 @@ RunNMF.default <- function(
   }
   nbes <- min(nbes, nrow(x = object) - 1)
   if (nmf.method == "RcppML") {
-    check_r("zdebruine/RcppML")
+    check_r("zdebruine/RcppML", verbose = FALSE)
     options("RcppML.verbose" = verbose)
     options("RcppML.threads" = 0)
 
@@ -236,7 +236,7 @@ RunNMF.default <- function(
   }
 
   if (nmf.method == "NMF") {
-    check_r("NMF")
+    check_r("NMF", verbose = FALSE)
     nmf_results <- NMF::nmf(
       x = as_matrix(
         Matrix::t(object)

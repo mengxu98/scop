@@ -263,14 +263,14 @@ FeatureCorPlot <- function(
   features <- unique(features[features %in% c(features_gene, features_meta)])
   if (length(features) < 2) {
     log_message(
-      "features must be a vector of length at least 2.",
+      "{.arg features} must be a vector of length at least 2",
       message_type = "error"
     )
   }
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
     log_message(
-      "'features' must be type of numeric variable.",
+      "{.arg dat_exp} must be type of numeric variable",
       message_type = "error"
     )
   }
@@ -281,7 +281,7 @@ FeatureCorPlot <- function(
   }
   if (length(features) > 10 && isFALSE(force)) {
     log_message(
-      "More than 10 features to be paired compared which will generate more than 50 plots.",
+      "More than 10 features to be paired compared which will generate more than 50 plots",
       message_type = "warning"
     )
     answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
@@ -300,12 +300,12 @@ FeatureCorPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) * ncol(combn(features, m = 2)) > 1e5)
   if (isTRUE(raster)) {
-    check_r("scattermore")
+    check_r("scattermore", verbose = FALSE)
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
       log_message(
-        "'raster.dpi' must be a two-length numeric vector",
+        "{.arg raster.dpi} must be a two-length numeric vector",
         message_type = "error"
       )
     }

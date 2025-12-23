@@ -695,12 +695,12 @@ FeatureDimPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
-    check_r("scattermore")
+    check_r("scattermore", verbose = FALSE)
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
       log_message(
-        "'raster.dpi' must be a two-length numeric vector",
+        "{.arg raster.dpi} must be a two-length numeric vector",
         message_type = "error"
       )
     }
@@ -1529,7 +1529,7 @@ FeatureDimPlot <- function(
               pixels = raster.dpi
             )
         } else if (isTRUE(hex)) {
-          check_r("hexbin")
+          check_r("hexbin", verbose = FALSE)
           dat_na <- dat[is.na(dat[["value"]]), , drop = FALSE]
           dat_hex <- dat[!is.na(dat[["value"]]), , drop = FALSE]
           if (nrow(dat_na) > 0) {
@@ -1911,10 +1911,10 @@ FeatureDimPlot3D <- function(
     zlab <- axis_labs[3]
   }
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    check_r("htmlwidgets")
+    check_r("htmlwidgets", verbose = FALSE)
     if (!grepl(".html$", save)) {
       log_message(
-        "'save' must be a string with .html as a suffix.",
+        "{.arg save} must be a string with .html as a suffix",
         message_type = "error"
       )
     }
@@ -2052,7 +2052,7 @@ FeatureDimPlot3D <- function(
 
   if (!is.numeric(dat_exp) && !inherits(dat_exp, "Matrix")) {
     log_message(
-      "'features' must be type of numeric variable.",
+      "{.arg dat_exp} must be type of numeric variable",
       message_type = "error"
     )
   }

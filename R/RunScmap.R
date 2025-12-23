@@ -71,14 +71,14 @@ RunScmap <- function(
     nfeatures = 500,
     threshold = 0.5,
     k = 10) {
-  check_r("scmap")
+  check_r("scmap", verbose = FALSE)
   if (!is.null(ref_group)) {
     if (length(ref_group) == ncol(srt_ref)) {
       srt_ref[["ref_group"]] <- ref_group
     } else if (length(ref_group) == 1) {
       if (!ref_group %in% colnames(srt_ref@meta.data)) {
         log_message(
-          "ref_group must be one of the column names in the meta.data",
+          "{.arg ref_group} must be one of the column names in the meta.data",
           message_type = "error"
         )
       } else {
@@ -86,14 +86,14 @@ RunScmap <- function(
       }
     } else {
       log_message(
-        "Length of ref_group must be one or length of srt_ref.",
+        "Length of {.arg ref_group} must be one or length of {.arg srt_ref}",
         message_type = "error"
       )
     }
     ref_group <- "ref_group"
   } else {
     log_message(
-      "'ref_group' must be provided.",
+      "{.arg ref_group} must be provided",
       message_type = "error"
     )
   }
@@ -105,7 +105,7 @@ RunScmap <- function(
       assay = query_assay
     )
   )
-  log_message("Detected srt_query data type: ", status_query)
+  log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
   status_ref <- CheckDataType(
     object = GetAssayData5(
       srt_ref,
@@ -113,7 +113,7 @@ RunScmap <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected srt_ref data type: ", status_ref)
+  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
   if (
     status_ref != status_query ||
       any(status_query == "unknown", status_ref == "unknown")

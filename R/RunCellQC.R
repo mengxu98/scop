@@ -129,7 +129,7 @@ db_scDblFinder <- function(
       message_type = "error"
     )
   }
-  check_r("scDblFinder")
+  check_r("scDblFinder", verbose = FALSE)
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   sce <- scDblFinder::scDblFinder(sce, dbr = db_rate, verbose = FALSE, ...)
   srt[["db.scDblFinder_score"]] <- sce[["scDblFinder.score"]]
@@ -183,7 +183,7 @@ db_scds <- function(
       message_type = "error"
     )
   }
-  check_r("scds")
+  check_r("scds", verbose = FALSE)
   method <- match.arg(method)
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   sce <- scds::cxds_bcds_hybrid(sce, ...)
@@ -247,7 +247,7 @@ db_Scrublet <- function(
       message_type = "error"
     )
   }
-  check_python("scrublet")
+  check_python("scrublet", verbose = FALSE)
   scr <- reticulate::import("scrublet")
   raw_counts <- Matrix::t(
     as_matrix(

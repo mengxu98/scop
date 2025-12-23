@@ -338,7 +338,7 @@ PrepareDB <- function(
       if (any(orgdb_dependent %in% db)) {
         status <- tryCatch(
           {
-            check_r(c(org_sp, "GO.db", "GOSemSim"))
+            check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
           },
           error = identity
         )
@@ -370,10 +370,10 @@ PrepareDB <- function(
         orgdb <- get(org_sp)
       }
       if ("PFAM" %in% db) {
-        check_r("PFAM.db")
+        check_r("PFAM.db", verbose = FALSE)
       }
       if ("Reactome" %in% db) {
-        check_r("reactome.db")
+        check_r("reactome.db", verbose = FALSE)
       }
 
       if (is.null(custom_TERM2GENE)) {
@@ -470,7 +470,7 @@ PrepareDB <- function(
         ## KEGG -----------------
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg KEGG} database", verbose = verbose)
-          check_r("httr")
+          check_r("httr", verbose = FALSE)
           orgs <- kegg_get("https://rest.kegg.jp/list/organism")
           kegg_sp <- orgs[
             grep(gsub(pattern = "_", replacement = " ", x = sps), orgs[, 3]),
@@ -1591,7 +1591,7 @@ PrepareDB <- function(
               )
             }
           }
-          check_r("openxlsx")
+          check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: CSPA")
           temp <- tempfile(fileext = ".xlsx")
           url <- "https://wlab.ethz.ch/cspa/data/S1_File.xlsx"
@@ -1665,7 +1665,7 @@ PrepareDB <- function(
               )
             }
           }
-          check_r("openxlsx")
+          check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: Surfaceome")
           temp <- tempfile(fileext = ".xlsx")
           url <- "http://wlab.ethz.ch/surfaceome/table_S3_surfaceome.xlsx"
