@@ -367,7 +367,6 @@
 #' )
 #'
 #' # Show neighbors graphs on the plot
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -422,8 +421,6 @@
 #'
 #' \dontrun{
 #' # Show PAGA results on the plot
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPAGA(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",
@@ -466,8 +463,6 @@
 #' )
 #'
 #' # Show RNA velocity results on the plot
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
 #'   pancreas_sub,
 #'   group_by = "SubCellType",
@@ -763,7 +758,7 @@ CellDimPlot <- function(
   }
   raster <- raster %||% (nrow(dat_use) > 1e5)
   if (isTRUE(raster)) {
-    check_r("scattermore")
+    check_r("scattermore", verbose = FALSE)
   }
   if (!is.null(x = raster.dpi)) {
     if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
@@ -1160,7 +1155,7 @@ CellDimPlot <- function(
             pixels = raster.dpi
           )
       } else if (isTRUE(hex)) {
-        check_r("hexbin")
+        check_r("hexbin", verbose = FALSE)
         if (isTRUE(hex.count)) {
           p <- p +
             geom_hex(
@@ -1602,7 +1597,7 @@ CellDimPlot3D <- function(
     zlab <- axis_labs[3]
   }
   if ((!is.null(save) && is.character(save) && nchar(save) > 0)) {
-    check_r("htmlwidgets")
+    check_r("htmlwidgets", verbose = FALSE)
     if (!grepl(".html$", save)) {
       log_message(
         "'save' must be a string with .html as a suffix.",

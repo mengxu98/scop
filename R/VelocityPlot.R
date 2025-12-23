@@ -328,7 +328,7 @@ VelocityPlot <- function(
     )
   }
   if (plot_type == "stream") {
-    check_r("metR")
+    check_r("metR", verbose = FALSE)
     res <- compute_velocity_on_grid(
       x_emb,
       v_emb,
