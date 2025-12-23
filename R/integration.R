@@ -1452,12 +1452,12 @@ MNN_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("batchelor")
+  check_r("batchelor", verbose = FALSE)
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
@@ -1783,12 +1783,12 @@ fastMNN_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("batchelor")
+  check_r("batchelor", verbose = FALSE)
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty.",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
@@ -3212,7 +3212,7 @@ CSS_integrate <- function(
     "leiden" = 4
   )
 
-  check_r(c("quadbiolab/simspec", "qlcMatrix"))
+  check_r(c("quadbiolab/simspec", "qlcMatrix"), verbose = FALSE)
   set.seed(seed)
 
   if (normalization_method == "TFIDF") {
@@ -3474,12 +3474,12 @@ LIGER_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("rliger")
+  check_r("rliger", verbose = FALSE)
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
@@ -3833,12 +3833,12 @@ Conos_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("conos")
+  check_r("conos", verbose = FALSE)
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
@@ -4213,12 +4213,12 @@ ComBat_integrate <- function(
     "leiden" = 4
   )
 
-  check_r("sva")
+  check_r("sva", verbose = FALSE)
   set.seed(seed)
 
   if (is.null(srt_list) && is.null(srt_merge)) {
     log_message(
-      "srt_list and srt_merge were all empty",
+      "{.arg srt_list} and {.arg srt_merge} were all empty",
       message_type = "error"
     )
   }
