@@ -548,7 +548,7 @@ GroupHeatmap <- function(
   set.seed(seed)
 
   if (isTRUE(raster_by_magick)) {
-    check_r("magick")
+    check_r("magick", verbose = FALSE)
   }
   if (is.null(features)) {
     log_message(
@@ -585,7 +585,7 @@ GroupHeatmap <- function(
   if (!is.null(grouping.var)) {
     if (identical(split.by, grouping.var)) {
       log_message(
-        "'grouping.var' must be different from 'split.by'",
+        "{.arg grouping.var} must be different from {.arg split.by}",
         message_type = "error"
       )
     }
@@ -598,7 +598,7 @@ GroupHeatmap <- function(
     if (is.null(numerator)) {
       numerator <- levels(srt@meta.data[[grouping.var]])[1]
       log_message(
-        "'{.arg numerator}' is not specified. Use the first level in '{.arg grouping.var}': ",
+        "{.arg numerator} is not specified. Use the first level in {.arg grouping.var}: {.val {numerator}}",
         numerator,
         message_type = "warning",
         verbose = verbose
@@ -606,7 +606,7 @@ GroupHeatmap <- function(
     } else {
       if (!numerator %in% levels(srt@meta.data[, grouping.var])) {
         log_message(
-          "'{.arg numerator}' is not an element of the '{.arg grouping.var}'",
+          "{.arg numerator} is not an element of the {.arg grouping.var}",
           message_type = "error"
         )
       }
@@ -646,7 +646,7 @@ GroupHeatmap <- function(
 
   if (length(split.by) > 1) {
     log_message(
-      "'{.arg split.by}' only support one variable.",
+      "{.arg split.by} only support one variable",
       message_type = "error"
     )
   }
@@ -1564,7 +1564,7 @@ GroupHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_r("e1071"), error = identity)
+          status <- tryCatch(check_r("e1071", verbose = FALSE), error = identity)
           if (inherits(status, "error")) {
             log_message(
               "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",

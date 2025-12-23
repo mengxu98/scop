@@ -163,7 +163,7 @@ GeneConvert <- function(
     names(to_attr) <- geneID_to_IDtype
   }
 
-  check_r("biomaRt")
+  check_r("biomaRt", verbose = FALSE)
   if (is.null(biomart)) {
     log_message(
       "Connect to the Ensembl archives...",
