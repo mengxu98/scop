@@ -83,7 +83,7 @@ RunHarmony2.Seurat <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  check_r("harmony")
+  check_r("harmony", verbose = FALSE)
   if (!is.null(x = seed.use)) {
     set.seed(seed = seed.use)
   }
