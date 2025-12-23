@@ -414,7 +414,7 @@ FindConservedMarkers2 <- function(
         next
       }
       marker.test[[level.use]] <- Seurat::FindMarkers(
-        object = SeuratObject::Assays(object, assay),
+        object = Seurat::GetAssay(object, assay),
         layer = layer,
         cells.1 = cells.1.use,
         cells.2 = cells.2.use,
@@ -464,7 +464,7 @@ FindConservedMarkers2 <- function(
         verbose = verbose
       )
       marker.test[[level.use]] <- Seurat::FindMarkers(
-        object = SeuratObject::Assays(object, assay),
+        object = Seurat::GetAssay(object, assay),
         layer = layer,
         cells.1 = cells.1.use,
         cells.2 = cells.2.use,
@@ -517,7 +517,7 @@ FindConservedMarkers2 <- function(
   }
   markers.combined <- Reduce(cbind, markers.conserved)
   fc <- Seurat::FoldChange(
-    SeuratObject::Assays(object, assay),
+    Seurat::GetAssay(object, assay),
     layer = layer,
     cells.1 = cells.1,
     cells.2 = cells.2,

@@ -97,7 +97,7 @@ RunDynamicFeatures <- function(
     verbose = verbose
   )
 
-  check_r("mgcv")
+  check_r("mgcv", verbose = FALSE)
   meta <- c()
   gene <- c()
   if (!is.null(features)) {

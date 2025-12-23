@@ -187,7 +187,7 @@ RunEnrichment <- function(
     cores = 1,
     verbose = TRUE) {
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
-  check_r("clusterProfiler")
+  check_r("clusterProfiler", verbose = FALSE)
   use_srt <- FALSE
   if (is.null(geneID)) {
     if (is.null(group_by)) {
@@ -199,9 +199,8 @@ RunEnrichment <- function(
         length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
     ) {
       log_message(
-        "Cannot find the DEtest result for the group '",
-        group_by,
-        "'. You may perform RunDEtest first.",
+        "Cannot find the DEtest result for the group {.val {group_by}}. ",
+        "You may perform {.fn RunDEtest} first",
         message_type = "error"
       )
     }
@@ -211,7 +210,7 @@ RunEnrichment <- function(
     )[1]
     if (is.na(index)) {
       log_message(
-        "Cannot find the 'AllMarkers_", test.use, "' in the DEtest result.",
+        "Cannot find the {.val AllMarkers_{test.use}} in the DEtest result",
         message_type = "error"
       )
     }

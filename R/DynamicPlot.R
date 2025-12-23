@@ -133,7 +133,7 @@ DynamicPlot <- function(
     seed = 11) {
   set.seed(seed)
 
-  check_r("MatrixGenerics")
+  check_r("MatrixGenerics", verbose = FALSE)
   x_order <- match.arg(x_order)
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
     log_message(

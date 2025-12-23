@@ -84,10 +84,10 @@ RunSingleR <- function(
     "Start {.pkg SingleR} annotation",
     verbose = verbose
   )
-  check_r(c("SingleR", "scrapper"))
+  check_r(c("SingleR", "scrapper"), verbose = FALSE)
   if (is.null(ref_group)) {
     log_message(
-      "'ref_group' must be provided",
+      "{.arg ref_group} must be provided",
       message_type = "error",
       verbose = verbose
     )
@@ -97,7 +97,7 @@ RunSingleR <- function(
   } else if (length(ref_group) == 1) {
     if (!ref_group %in% colnames(srt_ref@meta.data)) {
       log_message(
-        "ref_group must be one of the column names in the meta.data",
+        "{.arg ref_group} must be one of the column names in the meta.data",
         message_type = "error"
       )
     } else {
@@ -105,7 +105,7 @@ RunSingleR <- function(
     }
   } else {
     log_message(
-      "Length of ref_group must be one or length of srt_ref.",
+      "Length of {.arg ref_group} must be one or length of {.arg srt_ref}",
       message_type = "error"
     )
   }
@@ -117,7 +117,7 @@ RunSingleR <- function(
     } else if (length(query_group) == 1) {
       if (!query_group %in% colnames(srt_query@meta.data)) {
         log_message(
-          "query_group must be one of the column names in the meta.data",
+          "{.arg query_group} must be one of the column names in the meta.data",
           message_type = "error"
         )
       } else {
@@ -125,7 +125,7 @@ RunSingleR <- function(
       }
     } else {
       log_message(
-        "Length of query_group must be one or length of srt_query.",
+        "Length of {.arg query_group} must be one or length of {.arg srt_query}",
         message_type = "error"
       )
     }
@@ -142,7 +142,7 @@ RunSingleR <- function(
       assay = query_assay
     )
   )
-  log_message("Detected srt_query data type: {.val {status_query}}")
+  log_message("Detected {.arg srt_query} data type: {.val {status_query}}")
   status_ref <- CheckDataType(
     object = GetAssayData5(
       srt_ref,
@@ -150,10 +150,10 @@ RunSingleR <- function(
       assay = ref_assay
     )
   )
-  log_message("Detected srt_ref data type: {.val {status_ref}}")
+  log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
   if (status_ref != status_query || any(status_query == "unknown", status_ref == "unknown")) {
     log_message(
-      "Data type is unknown or different between query and ref",
+      "Data type is unknown or different between {.arg srt_query} and {.arg srt_ref}",
       message_type = "warning",
       verbose = verbose
     )

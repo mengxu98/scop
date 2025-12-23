@@ -51,8 +51,8 @@ RunCellChat <- function(
     verbose = verbose
   )
 
-  check_r("jinworks/CellChat")
-  check_r("immunogenomics/presto")
+  check_r("jinworks/CellChat", verbose = FALSE)
+  check_r("immunogenomics/presto", verbose = FALSE)
   if (!group.by %in% colnames(srt@meta.data)) {
     log_message(
       "{.val {group.by}} does not exist in {.cls Seurat} object",
