@@ -160,7 +160,7 @@ WilcoxDETest <- function(
     verbose = TRUE,
     ...) {
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
-  check_r("limma")
+  check_r("limma", verbose = FALSE)
   p_val <- parallelize_fun(
     seq_len(nrow(data.use)),
     fun = function(x) {
@@ -422,7 +422,7 @@ RunDEtest <- function(
     cores = 1,
     ...) {
   set.seed(seed)
-  check_r("immunogenomics/presto")
+  check_r("immunogenomics/presto", verbose = FALSE)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
   if (markers_type %in% c("conserved", "disturbed")) {
@@ -438,14 +438,14 @@ RunDEtest <- function(
   status <- CheckDataType(srt, layer = layer, assay = assay)
   if (layer == "counts" && status != "raw_counts") {
     log_message(
-      "Data in the 'counts' layer is not raw counts.",
+      "Data in the {.arg counts} layer is not raw counts",
       message_type = "error"
     )
   }
   if (layer == "data" && status != "log_normalized_counts") {
     if (status == "raw_counts") {
       log_message(
-        "Data in the 'data' layer is raw counts. Perform NormalizeData(LogNormalize) on the data.",
+        "Data in the {.arg data} layer is raw counts. Perform {.fun NormalizeData}({.val LogNormalize}) on the data",
         message_type = "warning",
         verbose = verbose
       )
@@ -458,7 +458,7 @@ RunDEtest <- function(
     }
     if (status == "raw_normalized_counts") {
       log_message(
-        "Data in the 'data' layer is raw_normalized_counts. Perform NormalizeData(LogNormalize) on the data.",
+        "Data in the {.arg data} layer is raw_normalized_counts. Perform {.fun NormalizeData}({.val LogNormalize}) on the data",
         message_type = "warning",
         verbose = verbose
       )
@@ -484,7 +484,7 @@ RunDEtest <- function(
   )
   if (fc.threshold < 1) {
     log_message(
-      "fc.threshold must be greater than or equal to 1",
+      "{.arg fc.threshold} must be greater than or equal to 1",
       message_type = "error"
     )
   }
@@ -493,7 +493,7 @@ RunDEtest <- function(
     if (is.null(cells1)) {
       if (is.null(group_by)) {
         log_message(
-          "'group_by' must be provided when 'group1' specified",
+          "{.arg group_by} must be provided when {.arg group1} specified",
           message_type = "error"
         )
       }
@@ -504,7 +504,7 @@ RunDEtest <- function(
     }
     if (!all(cells1 %in% colnames(srt))) {
       log_message(
-        "cells1 has some cells not in the Seurat object.",
+        "{.arg cells1} has some cells not in the Seurat object",
         message_type = "error"
       )
     }
@@ -514,7 +514,7 @@ RunDEtest <- function(
     }
     if (!all(cells2 %in% colnames(srt))) {
       log_message(
-        "cells2 has some cells not in the Seurat object.",
+        "{.arg cells2} has some cells not in the Seurat object",
         message_type = "error"
       )
     }
@@ -536,7 +536,7 @@ RunDEtest <- function(
 
     if (markers_type == "all") {
       markers <- Seurat::FindMarkers(
-        object = SeuratObject::Assays(srt, assay),
+        object = Seurat::GetAssay(srt, assay),
         layer = layer,
         cells.1 = cells1,
         cells.2 = cells2,
@@ -741,7 +741,7 @@ RunDEtest <- function(
     )
 
     args1 <- list(
-      object = SeuratObject::Assays(srt, assay),
+      object = Seurat::GetAssay(srt, assay),
       layer = layer,
       features = features,
       test.use = test.use,
