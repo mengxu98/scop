@@ -55,7 +55,7 @@ check_python(
 
 - ...:
 
-  Other arguments to be passed to `conda_install()`.
+  Other arguments to be passed to other functions.
 
 ## Examples
 

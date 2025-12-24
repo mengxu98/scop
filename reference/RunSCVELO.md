@@ -48,14 +48,16 @@ RunSCVELO(
   compute_pseudotime = TRUE,
   compute_paga = TRUE,
   top_n = 6,
-  n_jobs = 1,
+  cores = 1,
   palette = "Paired",
   palcolor = NULL,
+  legend.position = "on data",
   show_plot = TRUE,
-  save = FALSE,
-  dpi = 300,
-  dirpath = "./",
-  fileprefix = "",
+  save_plot = FALSE,
+  plot_format = c("pdf", "png", "svg"),
+  plot_dpi = 300,
+  plot_prefix = "scvelo",
+  dirpath = "./scvelo",
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -133,11 +135,13 @@ RunSCVELO(
 
 - n_pcs:
 
-  Number of principal components (PCs) used for velocity estimation.
+  Number of principal components to use for linear reduction. Default is
+  `30`.
 
 - n_neighbors:
 
-  Number of nearest neighbors used for velocity estimation.
+  Number of neighbors to use for constructing the KNN graph. Default is
+  `30`.
 
 - filter_genes:
 
@@ -232,9 +236,11 @@ RunSCVELO(
 
   The number of top features to plot.
 
-- n_jobs:
+- cores:
 
-  The number of parallel jobs to run.
+  The number of cores to use for parallelization with
+  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
+  Default is `1`.
 
 - palette:
 
@@ -244,25 +250,34 @@ RunSCVELO(
 
   A vector of colors to use as the palette.
 
+- legend.position:
+
+  Position of legend in plots. Can be `"on data"`, `"right margin"`,
+  `"bottom right"`, etc. Default is `"on data"`.
+
 - show_plot:
 
   Whether to show the plot. Default is `FALSE`.
 
-- save:
+- save_plot:
 
-  Whether to save the plots.
+  Whether to save plots to files. Default is `FALSE`.
 
-- dpi:
+- plot_format:
 
-  The DPI (dots per inch) for saving the plot.
+  Format for saved plots: `"png"` (default), `"pdf"`, or `"svg"`.
+
+- plot_dpi:
+
+  Resolution (DPI) for saved plots. Default is `300`.
+
+- plot_prefix:
+
+  Prefix for saved plot filenames. Default is "cellrank".
 
 - dirpath:
 
-  The directory to save the plots.
-
-- fileprefix:
-
-  The file prefix to use for the plots.
+  The directory to save the plots. Default is `"./cellrank"`.
 
 - return_seurat:
 

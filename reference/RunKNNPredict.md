@@ -353,9 +353,9 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "ref",
   DEtest_param = list(cores = 2)
 )
-#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
-#> and is now defunct.
-#> ℹ Please use `LayerData()` instead.
+#> ⠙ [2025-12-24 15:36:47] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-24 15:36:47] Completed 13 tasks in 3.1s
+#> 
 
 CellDimPlot(
   pancreas_sub,
@@ -379,9 +379,9 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "both",
   DEtest_param = list(cores = 2)
 )
-#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
-#> and is now defunct.
-#> ℹ Please use `LayerData()` instead.
+#> ⠙ [2025-12-24 15:36:54] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2025-12-24 15:36:54] Completed 13 tasks in 3.1s
+#> 
 
 CellDimPlot(
   pancreas_sub,

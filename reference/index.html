@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -392,7 +392,7 @@
           <code><a href="RunDM.html">RunDM()</a></code>
 
         </dt>
-        <dd>Run DM (diffusion map)</dd>
+        <dd>Run diffusion map (DM)</dd>
 
         <dt>
 
@@ -406,7 +406,7 @@
           <code><a href="RunGLMPCA.html">RunGLMPCA()</a></code>
 
         </dt>
-        <dd>Run GLMPCA (generalized version of principal components analysis)</dd>
+        <dd>Run generalized principal components analysis (GLMPCA)</dd>
 
         <dt>
 
@@ -456,13 +456,6 @@
 
         </dt>
         <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
-
-        <dt>
-
-          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
-
-        </dt>
-        <dd>Run KNN prediction</dd>
       </dl></div><div class="section level2">
 
       <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
@@ -489,13 +482,6 @@
 
         <dt>
 
-          <code><a href="RunKNNMap.html">RunKNNMap()</a></code>
-
-        </dt>
-        <dd>Single-cell reference mapping with KNN method</dd>
-
-        <dt>
-
           <code><a href="RunPCAMap.html">RunPCAMap()</a></code>
 
         </dt>
@@ -503,24 +489,10 @@
 
         <dt>
 
-          <code><a href="RunScmap.html">RunScmap()</a></code>
-
-        </dt>
-        <dd>Annotate single cells using scmap.</dd>
-
-        <dt>
-
           <code><a href="RunSeuratMap.html">RunSeuratMap()</a></code>
 
         </dt>
         <dd>Single-cell reference mapping with Seurat method</dd>
-
-        <dt>
-
-          <code><a href="RunSingleR.html">RunSingleR()</a></code>
-
-        </dt>
-        <dd>Annotate single cells using SingleR</dd>
 
         <dt>
 
@@ -614,6 +586,57 @@
         <dd>The fastMNN integration function</dd>
       </dl></div><div class="section level2">
 
+      <h3 id="cell-type-annotation">Cell Type Annotation<a class="anchor" aria-label="anchor" href="#cell-type-annotation"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CellTypistModels.html">CellTypistModels()</a></code>
+
+        </dt>
+        <dd>Get available CellTypist models</dd>
+
+        <dt>
+
+          <code><a href="RunCellTypist.html">RunCellTypist()</a></code>
+
+        </dt>
+        <dd>Run CellTypist cell type annotation</dd>
+
+        <dt>
+
+          <code><a href="RunKNNMap.html">RunKNNMap()</a></code>
+
+        </dt>
+        <dd>Single-cell reference mapping with KNN method</dd>
+
+        <dt>
+
+          <code><a href="RunKNNPredict.html">RunKNNPredict()</a></code>
+
+        </dt>
+        <dd>Run KNN prediction</dd>
+
+        <dt>
+
+          <code><a href="RunSingleR.html">RunSingleR()</a></code>
+
+        </dt>
+        <dd>Annotate single cells using SingleR</dd>
+
+        <dt>
+
+          <code><a href="RunScmap.html">RunScmap()</a></code>
+
+        </dt>
+        <dd>Annotate single cells using scmap.</dd>
+      </dl></div><div class="section level2">
+
       <h3 id="differential-analysis-and-enrichment">Differential Analysis and Enrichment<a class="anchor" aria-label="anchor" href="#differential-analysis-and-enrichment"></a></h3>
 
 
@@ -665,7 +688,7 @@
         <dd>Proportion Test</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="trajectory-analysis">Trajectory Analysis<a class="anchor" aria-label="anchor" href="#trajectory-analysis"></a></h3>
+      <h3 id="dynamic-trajectory-analysis">Dynamic Trajectory Analysis<a class="anchor" aria-label="anchor" href="#dynamic-trajectory-analysis"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -674,6 +697,13 @@
 
 
       <dl><dt>
+
+          <code><a href="RunCellRank.html">RunCellRank()</a></code>
+
+        </dt>
+        <dd>Run CellRank analysis with kernel-estimator architecture</dd>
+
+        <dt>
 
           <code><a href="RunPAGA.html">RunPAGA()</a></code>
 

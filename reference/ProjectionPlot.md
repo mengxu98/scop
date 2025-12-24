@@ -160,5 +160,10 @@ ProjectionPlot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 ```

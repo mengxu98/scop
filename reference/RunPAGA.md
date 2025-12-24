@@ -33,11 +33,14 @@ RunPAGA(
   min_group_size = 0.01,
   palette = "Paired",
   palcolor = NULL,
+  legend.position = "on data",
+  cores = 1,
   show_plot = FALSE,
-  save = FALSE,
-  dpi = 300,
-  dirpath = "./",
-  fileprefix = "",
+  save_plot = FALSE,
+  plot_format = c("pdf", "png", "svg"),
+  plot_dpi = 300,
+  plot_prefix = "paga",
+  dirpath = "./paga",
   return_seurat = !is.null(srt),
   verbose = TRUE
 )
@@ -157,25 +160,40 @@ RunPAGA(
 
   A vector of colors to use as the palette.
 
+- legend.position:
+
+  Position of legend in plots. Can be `"on data"`, `"right margin"`,
+  `"bottom right"`, etc. Default is `"on data"`.
+
+- cores:
+
+  The number of cores to use for parallelization with
+  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
+  Default is `1`.
+
 - show_plot:
 
   Whether to show the plot. Default is `FALSE`.
 
-- save:
+- save_plot:
 
-  Whether to save the plots.
+  Whether to save plots to files. Default is `FALSE`.
 
-- dpi:
+- plot_format:
 
-  The DPI (dots per inch) for saving the plot.
+  Format for saved plots: `"png"` (default), `"pdf"`, or `"svg"`.
+
+- plot_dpi:
+
+  Resolution (DPI) for saved plots. Default is `300`.
+
+- plot_prefix:
+
+  Prefix for saved plot filenames. Default is "cellrank".
 
 - dirpath:
 
-  The directory to save the plots.
-
-- fileprefix:
-
-  The file prefix to use for the plots.
+  The directory to save the plots. Default is `"./cellrank"`.
 
 - return_seurat:
 

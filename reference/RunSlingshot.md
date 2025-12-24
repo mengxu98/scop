@@ -148,7 +148,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage1 is not in the meta.data of srt object.
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
 
 # 3D lineage
 pancreas_sub <- RunSlingshot(
@@ -165,5 +165,5 @@ CellDimPlot(
   lineages_span = 0.1,
   lineages_trim = c(0.05, 0.95)
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1, lineages_trim = c(0.05,         0.95)): Lineage1 is not in the meta.data of srt object.
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1, lineages_trim = c(0.05,         0.95)): Lineage "Lineage1" is not in the meta.data of srt object
 ```

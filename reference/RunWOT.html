@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run WOT analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
       <div class="d-none name"><code>RunWOT.Rd</code></div>
     </div>
 
@@ -62,10 +62,11 @@
 <span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  save <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  save_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plot_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span>, <span class="st">"svg"</span><span class="op">)</span>,</span>
+<span>  plot_dpi <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  plot_prefix <span class="op">=</span> <span class="st">"wot"</span>,</span>
 <span>  dirpath <span class="op">=</span> <span class="st">"./"</span>,</span>
-<span>  fileprefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -149,20 +150,24 @@ Default is <code>FALSE</code>.</p></dd>
 Default is <code>FALSE</code>.</p></dd>
 
 
-<dt id="arg-save">save<a class="anchor" aria-label="anchor" href="#arg-save"></a></dt>
-<dd><p>Whether to save the plots.</p></dd>
+<dt id="arg-save-plot">save_plot<a class="anchor" aria-label="anchor" href="#arg-save-plot"></a></dt>
+<dd><p>Whether to save plots to files. Default is <code>FALSE</code>.</p></dd>
 
 
-<dt id="arg-dpi">dpi<a class="anchor" aria-label="anchor" href="#arg-dpi"></a></dt>
-<dd><p>The DPI (dots per inch) for saving the plot.</p></dd>
+<dt id="arg-plot-format">plot_format<a class="anchor" aria-label="anchor" href="#arg-plot-format"></a></dt>
+<dd><p>Format for saved plots: <code>"png"</code> (default), <code>"pdf"</code>, or <code>"svg"</code>.</p></dd>
+
+
+<dt id="arg-plot-dpi">plot_dpi<a class="anchor" aria-label="anchor" href="#arg-plot-dpi"></a></dt>
+<dd><p>Resolution (DPI) for saved plots. Default is <code>300</code>.</p></dd>
+
+
+<dt id="arg-plot-prefix">plot_prefix<a class="anchor" aria-label="anchor" href="#arg-plot-prefix"></a></dt>
+<dd><p>Prefix for saved plot filenames. Default is "cellrank".</p></dd>
 
 
 <dt id="arg-dirpath">dirpath<a class="anchor" aria-label="anchor" href="#arg-dirpath"></a></dt>
-<dd><p>The directory to save the plots.</p></dd>
-
-
-<dt id="arg-fileprefix">fileprefix<a class="anchor" aria-label="anchor" href="#arg-fileprefix"></a></dt>
-<dd><p>The file prefix to use for the plots.</p></dd>
+<dd><p>The directory to save the plots. Default is <code>"./cellrank"</code>.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>

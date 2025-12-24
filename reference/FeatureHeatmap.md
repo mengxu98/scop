@@ -644,14 +644,13 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> Error: The `slot` argument of `Assays()` was deprecated in SeuratObject 5.0.0
-#> and is now defunct.
-#> ℹ Please use `LayerData()` instead.
+#> ⠙ [2025-12-24 15:07:55] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2025-12-24 15:07:55] Completed 5 tasks in 865ms
+#> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
-#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -659,9 +658,16 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> Error: object 'de_filter' not found
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
 ht1$plot
-#> Error: object 'ht1' not found
+
 
 thisplot::panel_fix(
   ht1$plot,
@@ -670,7 +676,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-#> Error: object 'ht1' not found
+
 
 ht2 <- FeatureHeatmap(
   pancreas_sub,
@@ -684,9 +690,12 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> Error: object 'de_filter' not found
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+
 ht2$plot
-#> Error: object 'ht2' not found
+
 
 ht3 <- FeatureHeatmap(
   pancreas_sub,
@@ -699,7 +708,10 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> Error: object 'de_filter' not found
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 ht3$plot
 #> Error: object 'ht3' not found
 

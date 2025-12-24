@@ -573,7 +573,9 @@ FeatureDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: Removed 396 rows containing missing values or values outside the scale range
+#> (`geom_raster()`).
+
 
 # Chane the plot type from point to the hexagonal bin
 FeatureDimPlot(
@@ -582,7 +584,11 @@ FeatureDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_hex()`).
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -591,7 +597,11 @@ FeatureDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_hex()`).
+
 
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
@@ -607,7 +617,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   lineages = "Lineage2"
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"): Lineage2 is not in the meta.data of srt object.
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"): Lineage "Lineage2" is not in the <Seurat> object
 
 FeatureDimPlot(
   pancreas_sub,
@@ -616,7 +626,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE): Lineage2 is not in the meta.data of srt object.
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE): Lineage "Lineage2" is not in the <Seurat> object
 
 FeatureDimPlot(
   pancreas_sub,
@@ -625,7 +635,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_span = 0.1
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1): Lineage2 is not in the meta.data of srt object.
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1): Lineage "Lineage2" is not in the <Seurat> object
 
 # Input a named feature list
 markers <- list(
@@ -709,7 +719,9 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -722,7 +734,9 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -735,7 +749,9 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -748,7 +764,9 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -761,5 +779,6 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘ggnewscale’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ```

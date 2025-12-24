@@ -82,50 +82,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
-#>  
-#> → Will install 2 packages.
-#> → Will download 1 CRAN package (449.57 kB), cached: 1 (0 B).
-#> + pROC   1.19.0.1 [bld][cmp][dl] (449.57 kB)
-#> + scds   1.26.0   [bld]
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ Getting 1 pkg (449.57 kB), 1 cached
-#> ✔ Got scds 1.26.0 (source) (1.45 MB)
-#> ✔ Got pROC 1.19.0.1 (source) (445.25 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev pandoc make libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> make is already the newest version (4.3-4.1build2).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libjpeg-dev is already the newest version (8c-2ubuntu11).
-#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
-#> libwebp-dev is already the newest version (1.3.2-0.4build3).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfribidi-dev is already the newest version (1.0.13-3build1).
-#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ℹ Building pROC 1.19.0.1
-#> ✔ Built pROC 1.19.0.1 (9.6s)
-#> ✔ Installed pROC 1.19.0.1  (1s)
-#> ℹ Building scds 1.26.0
-#> ✔ Built scds 1.26.0 (11.1s)
-#> ✔ Installed scds 1.26.0  (1s)
-#> ✔ 1 pkg + 105 deps: kept 102, added 2, dld 2 (1.90 MB) [27.8s]
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore
@@ -135,7 +91,7 @@ CellDimPlot(
   reduction = "umap",
   group.by = "db.scds_hybrid_class"
 )
-#> Error in CellDimPlot(pancreas_sub, reduction = "umap", group.by = "db.scds_hybrid_class"): Db.scds_hybrid_class is not in the meta.data of srt object.
+#> Error in CellDimPlot(pancreas_sub, reduction = "umap", group.by = "db.scds_hybrid_class"): "db.scds_hybrid_class" is not in the meta.data of srt object
 
 FeatureDimPlot(
   pancreas_sub,

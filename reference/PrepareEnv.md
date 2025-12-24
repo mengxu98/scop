@@ -12,6 +12,7 @@ PrepareEnv(
   miniconda_repo = "https://repo.anaconda.com/miniconda",
   version = "3.10-1",
   force = FALSE,
+  pip_options = character(),
   ...
 )
 ```
@@ -42,6 +43,11 @@ PrepareEnv(
   Whether to force recreation of the environment. If `TRUE`, the
   existing environment will be removed and recreated. Default is
   `FALSE`.
+
+- pip_options:
+
+  Additional command line arguments to be passed to `uv`/`pip` when
+  installing pip packages.
 
 - ...:
 

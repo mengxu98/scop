@@ -126,11 +126,11 @@
 - [`RunDimReduction()`](https://mengxu98.github.io/scop/reference/RunDimReduction.md)
   : Run dimensionality reduction
 - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md) : Run
-  DM (diffusion map)
+  diffusion map (DM)
 - [`RunFR()`](https://mengxu98.github.io/scop/reference/RunFR.md) : Run
   Force-Directed Layout (Fruchterman-Reingold algorithm)
 - [`RunGLMPCA()`](https://mengxu98.github.io/scop/reference/RunGLMPCA.md)
-  : Run GLMPCA (generalized version of principal components analysis)
+  : Run generalized principal components analysis (GLMPCA)
 - [`RunMDS()`](https://mengxu98.github.io/scop/reference/RunMDS.md) :
   Run MDS (multi-dimensional scaling)
 - [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md) :
@@ -146,8 +146,6 @@
   Embedding)
 - [`RunLargeVis()`](https://mengxu98.github.io/scop/reference/RunLargeVis.md)
   : Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
-- [`RunKNNPredict()`](https://mengxu98.github.io/scop/reference/RunKNNPredict.md)
-  : Run KNN prediction
 
 ### Data Integration and Batch Effect Removal
 
@@ -155,16 +153,10 @@
   : Single-cell reference mapping with CSS method
 - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md)
   : Run Harmony algorithm
-- [`RunKNNMap()`](https://mengxu98.github.io/scop/reference/RunKNNMap.md)
-  : Single-cell reference mapping with KNN method
 - [`RunPCAMap()`](https://mengxu98.github.io/scop/reference/RunPCAMap.md)
   : Single-cell reference mapping with PCA method
-- [`RunScmap()`](https://mengxu98.github.io/scop/reference/RunScmap.md)
-  : Annotate single cells using scmap.
 - [`RunSeuratMap()`](https://mengxu98.github.io/scop/reference/RunSeuratMap.md)
   : Single-cell reference mapping with Seurat method
-- [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md)
-  : Annotate single cells using SingleR
 - [`RunSymphonyMap()`](https://mengxu98.github.io/scop/reference/RunSymphonyMap.md)
   : Single-cell reference mapping with Symphony method
 - [`BBKNN_integrate()`](https://mengxu98.github.io/scop/reference/BBKNN_integrate.md)
@@ -192,6 +184,21 @@
 - [`fastMNN_integrate()`](https://mengxu98.github.io/scop/reference/fastMNN_integrate.md)
   : The fastMNN integration function
 
+### Cell Type Annotation
+
+- [`CellTypistModels()`](https://mengxu98.github.io/scop/reference/CellTypistModels.md)
+  : Get available CellTypist models
+- [`RunCellTypist()`](https://mengxu98.github.io/scop/reference/RunCellTypist.md)
+  : Run CellTypist cell type annotation
+- [`RunKNNMap()`](https://mengxu98.github.io/scop/reference/RunKNNMap.md)
+  : Single-cell reference mapping with KNN method
+- [`RunKNNPredict()`](https://mengxu98.github.io/scop/reference/RunKNNPredict.md)
+  : Run KNN prediction
+- [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md)
+  : Annotate single cells using SingleR
+- [`RunScmap()`](https://mengxu98.github.io/scop/reference/RunScmap.md)
+  : Annotate single cells using scmap.
+
 ### Differential Analysis and Enrichment
 
 - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md)
@@ -207,8 +214,10 @@
 - [`RunProportionTest()`](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
   : Proportion Test
 
-### Trajectory Analysis
+### Dynamic Trajectory Analysis
 
+- [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md)
+  : Run CellRank analysis with kernel-estimator architecture
 - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md) :
   Run PAGA analysis
 - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md)

@@ -1,6 +1,6 @@
-# Run GLMPCA (generalized version of principal components analysis)
+# Run generalized principal components analysis (GLMPCA)
 
-Run GLMPCA (generalized version of principal components analysis)
+Run generalized principal components analysis (GLMPCA)
 
 ## Usage
 
@@ -81,8 +81,8 @@ RunGLMPCA(
 
 - object:
 
-  An object. This can be a Seurat object, an assay object, or a
-  matrix-like object.
+  An object. Can be a Seurat object, an assay object, or a matrix-like
+  object.
 
 - ...:
 
@@ -185,50 +185,6 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 pancreas_sub <- RunGLMPCA(pancreas_sub)
-#>  
-#> → Will install 6 packages.
-#> → All 6 packages (0 B) are cached.
-#> + covr          3.6.5 
-#> + glmpca        0.2.0 
-#> + litedown      0.8   
-#> + logisticPCA   0.2   
-#> + markdown      2.0   
-#> + rex           1.2.1 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 6 pkgs are cached
-#> ✔ Got rex 1.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (126.59 kB)
-#> ✔ Got covr 3.6.5 (x86_64-pc-linux-gnu-ubuntu-24.04) (344.29 kB)
-#> ✔ Got markdown 2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (64.28 kB)
-#> ✔ Got glmpca 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (230.79 kB)
-#> ✔ Got litedown 0.8 (x86_64-pc-linux-gnu-ubuntu-24.04) (371.68 kB)
-#> ✔ Got logisticPCA 0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (384.47 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make pandoc`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed covr 3.6.5  (115ms)
-#> ✔ Installed glmpca 0.2.0  (130ms)
-#> ✔ Installed litedown 0.8  (147ms)
-#> ✔ Installed logisticPCA 0.2  (143ms)
-#> ✔ Installed markdown 2.0  (66ms)
-#> ✔ Installed rex 1.2.1  (49ms)
-#> ✔ 1 pkg + 54 deps: kept 48, added 6, dld 6 (1.52 MB) [4.4s]
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
