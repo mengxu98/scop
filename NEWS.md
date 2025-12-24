@@ -1,5 +1,10 @@
 # scop
 
+# scop 0.7.6
+
+* **func**:
+  * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
+
 # scop 0.7.5
 
 * **bugs**:
@@ -7,6 +12,7 @@
 
 * **func**:
   * `RunDEtest()`: Fixed compatibility issue with [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by replacing deprecated `Assays()` `slot` argument with `LayerData()`. This issue reported in [#100](https://github.com/mengxu98/scop/issues/100).
+  * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
 
 # scop 0.7.3
 
