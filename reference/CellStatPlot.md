@@ -501,40 +501,6 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + forcats    1.0.1     
-#> + ggsankey   0.0.99999 [bld][cmp] (GitHub: b675d0d)
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got forcats 1.0.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (422.23 kB)
-#> ✔ Got ggsankey 0.0.99999 (source) (277.80 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install make libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> make is already the newest version (4.3-4.1build2).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed forcats 1.0.1  (1s)
-#> ℹ Packaging ggsankey 0.0.99999
-#> ✔ Packaged ggsankey 0.0.99999 (561ms)
-#> ℹ Building ggsankey 0.0.99999
-#> ✔ Built ggsankey 0.0.99999 (2.1s)
-#> ✔ Installed ggsankey 0.0.99999 (github::davidsjoberg/ggsankey@b675d0d) (1s)
-#> ✔ 1 pkg + 45 deps: kept 44, added 2, dld 2 (NA B) [9s]
 
 
 CellStatPlot(
@@ -553,57 +519,6 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#>  
-#> → Will install 8 packages.
-#> → All 8 packages (0 B) are cached.
-#> + admisc          0.39  
-#> + aplot           0.2.9 
-#> + ggVennDiagram   1.5.4 
-#> + ggfun           0.2.0 
-#> + ggplotify       0.1.3 
-#> + gridGraphics    0.5-1 
-#> + venn            1.12  
-#> + yulab.utils     0.2.2 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 8 pkgs are cached
-#> ✔ Got aplot 0.2.9 (x86_64-pc-linux-gnu-ubuntu-24.04) (105.37 kB)
-#> ✔ Got ggfun 0.2.0 (x86_64-pc-linux-gnu-ubuntu-24.04) (250.63 kB)
-#> ✔ Got ggplotify 0.1.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (142.82 kB)
-#> ✔ Got gridGraphics 0.5-1 (x86_64-pc-linux-gnu-ubuntu-24.04) (249.33 kB)
-#> ✔ Got admisc 0.39 (x86_64-pc-linux-gnu-ubuntu-24.04) (374.81 kB)
-#> ✔ Got venn 1.12 (x86_64-pc-linux-gnu-ubuntu-24.04) (308.02 kB)
-#> ✔ Got ggVennDiagram 1.5.4 (x86_64-pc-linux-gnu-ubuntu-24.04) (5.27 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcurl4-openssl-dev libssl-dev make zlib1g-dev pandoc libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.6).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.6).
-#> make is already the newest version (4.3-4.1build2).
-#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed admisc 0.39  (65ms)
-#> ✔ Installed aplot 0.2.9  (80ms)
-#> ✔ Installed ggfun 0.2.0  (103ms)
-#> ✔ Installed ggplotify 0.1.3  (134ms)
-#> ✔ Installed gridGraphics 0.5-1  (1s)
-#> ✔ Installed ggVennDiagram 1.5.4  (1.2s)
-#> ✔ Installed venn 1.12  (136ms)
-#> ✔ Installed yulab.utils 0.2.2  (48ms)
-#> ✔ 1 pkg + 90 deps: kept 81, added 8, dld 7 (6.70 MB) [7.1s]
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -636,32 +551,6 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + ggupset   0.4.1 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got ggupset 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.59 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install make`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> make is already the newest version (4.3-4.1build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ✔ Installed ggupset 0.4.1  (1s)
-#> ✔ 1 pkg + 37 deps: kept 37, added 1, dld 1 (2.59 MB) [5s]
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the ggupset package.

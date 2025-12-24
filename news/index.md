@@ -1,5 +1,58 @@
 # Changelog
 
+## scop 0.7.6
+
+- **func**:
+  - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md):
+    Added automatic PCA-based dimensionality reduction when using many
+    features (\>1000) to speed up diffusion map computation. The `npcs`
+    parameter can be used to control the number of principal components
+    used for pre-processing.
+
+## scop 0.7.5
+
+- **bugs**:
+  - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md):
+    Fixed bug where the function failed to build results. This issue
+    reported in [\#98](https://github.com/mengxu98/scop/issues/98).
+- **func**:
+  - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md):
+    Fixed compatibility issue with
+    [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by
+    replacing deprecated
+    [`Assays()`](https://satijalab.github.io/seurat-object/reference/ObjectAccess.html)
+    `slot` argument with
+    [`LayerData()`](https://satijalab.github.io/seurat-object/reference/Layers.html).
+    This issue reported in
+    [\#100](https://github.com/mengxu98/scop/issues/100).
+  - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md):
+    Added automatic PCA-based dimensionality reduction when using many
+    features (\>1000) to speed up diffusion map computation. The `npcs`
+    parameter can be used to control the number of principal components
+    used for pre-processing.
+
+## scop 0.7.3
+
+- **func**:
+  - [`RunCellTypist()`](https://mengxu98.github.io/scop/reference/RunCellTypist.md):
+    New function for cell type annotation using the CellTypist method.
+  - [`CellTypistModels()`](https://mengxu98.github.io/scop/reference/CellTypistModels.md):
+    New function for downloading and managing CellTypist pre-trained
+    models.
+
+## scop 0.7.2
+
+- **func**:
+  - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md):
+    Performance optimizations and code improvements.
+
+## scop 0.7.1
+
+- **bugs**:
+  - [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md):
+    Fixed issue where NA values appeared in labels. This issue reported
+    in [\#93](https://github.com/mengxu98/scop/issues/93).
+
 ## scop 0.7.0
 
 - **func**:
@@ -109,7 +162,7 @@
     ([`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
     [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
     [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md),
-    `RunCellRank()`,
+    [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md),
     [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md))
     now automatically call
     [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
@@ -191,7 +244,7 @@
     ([`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
     [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
     [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md),
-    `RunCellRank()`,
+    [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md),
     [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md))
     and added `verbose` parameter inheritance and improved message
     formatting using cli-style formatting.
@@ -306,8 +359,9 @@
   - [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md):
     Added ARM64-specific optimizations to prevent crashes and ensure
     stable execution.
-  - `RunCellRank()`: Implemented *M-series* compatibility with proper
-    NUMBA configuration.
+  - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md):
+    Implemented *M-series* compatibility with proper NUMBA
+    configuration.
   - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
     Added ARM64 support with single-threaded execution mode.
   - [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md):

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,58 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.6" id="scop-076">scop 0.7.6<a class="anchor" aria-label="anchor" href="#scop-076"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunDM.html">RunDM()</a></code>: Added automatic PCA-based dimensionality reduction when using many features (&gt;1000) to speed up diffusion map computation. The <code>npcs</code> parameter can be used to control the number of principal components used for pre-processing.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.5" id="scop-075">scop 0.7.5<a class="anchor" aria-label="anchor" href="#scop-075"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/CellScoring.html">CellScoring()</a></code>: Fixed bug where the function failed to build results. This issue reported in <a href="https://github.com/mengxu98/scop/issues/98" class="external-link">#98</a>.</li>
+</ul></li>
+<li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed compatibility issue with <a href="https://satijalab.github.io/seurat-object/" class="external-link">SeuratObject</a> 5.0.0+ by replacing deprecated <code><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Assays()</a></code> <code>slot</code> argument with <code><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">LayerData()</a></code>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/100" class="external-link">#100</a>.</li>
+<li>
+<code><a href="../reference/RunDM.html">RunDM()</a></code>: Added automatic PCA-based dimensionality reduction when using many features (&gt;1000) to speed up diffusion map computation. The <code>npcs</code> parameter can be used to control the number of principal components used for pre-processing.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.3" id="scop-073">scop 0.7.3<a class="anchor" aria-label="anchor" href="#scop-073"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunCellTypist.html">RunCellTypist()</a></code>: New function for cell type annotation using the CellTypist method.</li>
+<li>
+<code><a href="../reference/CellTypistModels.html">CellTypistModels()</a></code>: New function for downloading and managing CellTypist pre-trained models.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.2" id="scop-072">scop 0.7.2<a class="anchor" aria-label="anchor" href="#scop-072"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Performance optimizations and code improvements.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.1" id="scop-071">scop 0.7.1<a class="anchor" aria-label="anchor" href="#scop-071"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code>: Fixed issue where NA values appeared in labels. This issue reported in <a href="https://github.com/mengxu98/scop/issues/93" class="external-link">#93</a>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="scop-070">scop 0.7.0<a class="anchor" aria-label="anchor" href="#scop-070"></a></h2>
 <ul><li>
@@ -126,7 +175,7 @@
 <strong>func</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Enhanced with environment caching mechanism to avoid redundant environment preparation. Improved message formatting and error handling.</li>
-<li>Python-based functions (<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code>RunCellRank()</code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) now automatically call <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> internally, eliminating the need for users to manually prepare the Python environment before using these functions.</li>
+<li>Python-based functions (<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) now automatically call <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> internally, eliminating the need for users to manually prepare the Python environment before using these functions.</li>
 <li>
 <code><a href="../reference/cluster_within_group2.html">cluster_within_group2()</a></code>: New function for clustering within groups.</li>
 <li>Multiple plotting functions: Replaced <code>geom_sankey()</code> with <code><a href="https://rdrr.io/pkg/ggsankey/man/geom_sankey.html" class="external-link">ggsankey::geom_sankey()</a></code> for better Sankey diagram support.</li>
@@ -175,7 +224,7 @@
 <strong>func</strong>:
 <ul><li>
 <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Changed default <code>Ensembl_version</code> parameter from <code>103</code> to <code>NULL</code> for more flexible version handling.</li>
-<li>Added <em>Python</em> version <code>log_message()</code> for Python-based functions (<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code>RunCellRank()</code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) and added <code>verbose</code> parameter inheritance and improved message formatting using cli-style formatting.</li>
+<li>Added <em>Python</em> version <code>log_message()</code> for Python-based functions (<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) and added <code>verbose</code> parameter inheritance and improved message formatting using cli-style formatting.</li>
 </ul></li>
 <li>
 <strong>refactor</strong>:
@@ -294,7 +343,7 @@
 <li>
 <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.</li>
 <li>
-<code>RunCellRank()</code>: Implemented <em>M-series</em> compatibility with proper NUMBA configuration.</li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Implemented <em>M-series</em> compatibility with proper NUMBA configuration.</li>
 <li>
 <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Added ARM64 support with single-threaded execution mode.</li>
 <li>

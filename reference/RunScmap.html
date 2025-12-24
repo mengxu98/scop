@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Annotate single cells using scmap.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunScmap.R" class="external-link"><code>R/RunScmap.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunScmap.R" class="external-link"><code>R/RunScmap.R</code></a></small>
       <div class="d-none name"><code>RunScmap.Rd</code></div>
     </div>
 
@@ -85,27 +85,29 @@ Default is the default assay of the <code>srt_ref</code> object.</p></dd>
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>The method to be used for scmap analysis.
-Can be any of "scmapCluster" or "scmapCell".
-Default is `"scmapCluster"`.</p></dd>
+Can be any of <code>"scmapCluster"</code> or <code>"scmapCell"</code>.
+Default is <code>"scmapCluster"</code>.</p></dd>
 
 
 <dt id="arg-nfeatures">nfeatures<a class="anchor" aria-label="anchor" href="#arg-nfeatures"></a></dt>
 <dd><p>The number of top features to be selected.
-Default is `500`.</p></dd>
+Default is <code>500</code>.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
 <dd><p>The threshold value on similarity to determine if a cell is assigned to a cluster.
-This should be a value between 0 and 1. Default is `0.5`.</p></dd>
+This should be a value between <code>0</code> and <code>1</code>.
+Default is <code>0.5</code>.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>Number of clusters per group for k-means clustering when method is "scmapCell".</p></dd>
+<dd><p>Number of clusters per group for k-means clustering when <code>method</code> is <code>"scmapCell"</code>.
+Default is <code>10</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>[RunKNNPredict]</p></div>
+    <div class="dont-index"><p><a href="RunKNNPredict.html">RunKNNPredict</a>, <a href="RunKNNMap.html">RunKNNMap</a></p></div>
     </div>
 
     <div class="section level2">
@@ -207,42 +209,6 @@ This should be a value between 0 and 1. Default is `0.5`.</p></dd>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"scmapCluster"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 3 packages.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → All 3 packages (0 B) are cached.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">googleVis</span>      0.7.3   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">randomForest</span>   4.7-1.2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">scmap</span>          1.32.0  [bld][cmp]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 3 pkgs are cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">randomForest</span> 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">scmap</span> 1.32.0 (source) (2.34 MB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">googleVis</span> 0.7.3 (x86_64-pc-linux-gnu-ubuntu-24.04) (498.39 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install pandoc make libicu-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> pandoc is already the newest version (3.1.3+ds-2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> make is already the newest version (4.3-4.1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libicu-dev is already the newest version (74.2-1ubuntu3.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">googleVis</span> 0.7.3  <span style="color: #9E9E9E;">(32ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">randomForest</span> 4.7-1.2  <span style="color: #9E9E9E;">(48ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building <span style="color: #0000BB;">scmap</span> 1.32.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Built <span style="color: #0000BB;">scmap</span> 1.32.0 <span style="color: #9E9E9E;">(22.4s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">scmap</span> 1.32.0  <span style="color: #9E9E9E;">(64ms)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 77 deps: kept 73, added 3, dld 3 (3.06 MB) <span style="color: #B2B2B2;">[26.8s]</span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"scmap_annotation"</span></span></span>

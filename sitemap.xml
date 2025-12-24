@@ -15,6 +15,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CellDimPlot3D.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellScoring.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellStatPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CellTypistModels.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CheckDataList.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CheckDataMerge.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CheckDataType.html</loc></url>
@@ -61,6 +62,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunCSSMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellChat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellQC.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCellRank.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCellTypist.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDEtest.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDimReduction.html</loc></url>

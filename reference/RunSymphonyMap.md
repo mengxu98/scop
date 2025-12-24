@@ -162,47 +162,6 @@ srt_query <- RunSymphonyMap(
   ref_harmony = "Harmony",
   ref_umap = "HarmonyUMAP2D"
 )
-#>  
-#> → Will install 1 package.
-#> → The package (0 B) is cached.
-#> + symphony   0.1.2 [bld][cmp] (GitHub: 91e2ca1)
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 1 pkg is cached
-#> ✔ Got symphony 0.1.2 (source) (4.19 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libcairo2-dev make pandoc libpng-dev libfreetype6-dev libjpeg-dev libtiff-dev libwebp-dev libicu-dev libfontconfig1-dev libfribidi-dev libharfbuzz-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> make is already the newest version (4.3-4.1build2).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1build3).
-#> libjpeg-dev is already the newest version (8c-2ubuntu11).
-#> libtiff-dev is already the newest version (4.5.1+git230720-4ubuntu2.4).
-#> libwebp-dev is already the newest version (1.3.2-0.4build3).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfribidi-dev is already the newest version (1.0.13-3build1).
-#> libharfbuzz-dev is already the newest version (8.3.0-2build2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 49 not upgraded.
-#> ℹ Packaging symphony 0.1.2
-#> ✔ Packaged symphony 0.1.2 (646ms)
-#> ℹ Building symphony 0.1.2
-#> ✔ Built symphony 0.1.2 (19.7s)
-#> ✔ Installed symphony 0.1.2 (github::immunogenomics/symphony@91e2ca1) (60ms)
-#> ✔ 1 pkg + 89 deps: kept 87, added 1, dld 1 (NA B) [26.1s]
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,

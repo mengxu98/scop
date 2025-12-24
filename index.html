@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,24 +59,19 @@
 
 <!-- badges: end -->
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
-</h2>
-<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package provides a comprehensive set of tools for single-cell omics data processing and downstream analysis.</p>
-</div>
-<div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package includes the following facilities:</p>
+<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package provides a comprehensive set of tools for single-cell omics data processing and downstream analysis:</p>
 <ul>
-<li>Integrated single-cell quality control methods.</li>
-<li>Pipelines embedded with multiple methods for normalization, feature reduction, and cell population identification (standard Seurat workflow).</li>
-<li>Pipelines embedded with multiple integration methods for scRNA-seq or scATAC-seq data, including Uncorrected, <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a>, <a href="https://github.com/scverse/scvi-tools" class="external-link">scVI</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">MNN</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">fastMNN</a>, <a href="https://github.com/immunogenomics/harmony" class="external-link">Harmony</a>, <a href="https://github.com/brianhie/scanorama" class="external-link">Scanorama</a>, <a href="https://github.com/Teichlab/bbknn" class="external-link">BBKNN</a>, <a href="https://github.com/quadbiolab/simspec" class="external-link">CSS</a>, <a href="https://github.com/welch-lab/liger" class="external-link">LIGER</a>, <a href="https://github.com/kharchenkolab/conos" class="external-link">Conos</a>, <a href="https://bioconductor.org/packages/release/bioc/html/sva.html" class="external-link">ComBat</a>.</li>
-<li>Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, etc.</li>
-<li>Multiple methods for automatic annotation of single-cell data and methods for projection between single-cell datasets.</li>
+<li>Integrated single-cell quality control methods, including doublet detection methods (<a href="https://github.com/plger/scDblFinder" class="external-link">scDblFinder</a>, <a href="https://github.com/kostkalab/scds" class="external-link">scds</a>, <a href="https://github.com/swolock/scrublet" class="external-link">Scrublet</a>, <a href="https://github.com/JonathanShor/DoubletDetection" class="external-link">DoubletDetection</a>).</li>
+<li>Pipelines embedded with multiple methods for normalization, feature reduction (PCA, ICA, NMF, MDS, <a href="https://github.com/willtownes/glmpca" class="external-link">GLMPCA</a>, <a href="https://github.com/lmcinnes/umap" class="external-link">UMAP</a>, <a href="https://github.com/eamid/trimap" class="external-link">TriMap</a>, <a href="https://github.com/lferry007/LargeVis" class="external-link">LargeVis</a>, <a href="https://github.com/YingfanWang/PaCMAP" class="external-link">PaCMAP</a>, <a href="https://github.com/KrishnaswamyLab/PHATE" class="external-link">PHATE</a>, <a href="https://bioconductor.org/packages/release/bioc/html/destiny.html" class="external-link">DM</a>, FR), and cell population identification.</li>
+<li>Pipelines embedded with multiple integration methods for scRNA-seq, including Uncorrected, <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a>, <a href="https://github.com/scverse/scvi-tools" class="external-link">scVI</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">MNN</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">fastMNN</a>, <a href="https://github.com/immunogenomics/harmony" class="external-link">Harmony</a>, <a href="https://github.com/brianhie/scanorama" class="external-link">Scanorama</a>, <a href="https://github.com/Teichlab/bbknn" class="external-link">BBKNN</a>, <a href="https://github.com/quadbiolab/simspec" class="external-link">CSS</a>, <a href="https://github.com/welch-lab/liger" class="external-link">LIGER</a>, <a href="https://github.com/kharchenkolab/conos" class="external-link">Conos</a>, <a href="https://bioconductor.org/packages/release/bioc/html/sva.html" class="external-link">ComBat</a>.</li>
+<li>Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, <a href="https://github.com/theislab/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/broadinstitute/wot" class="external-link">WOT</a>, <a href="https://bioconductor.org/packages/release/bioc/html/slingshot.html" class="external-link">Slingshot</a>, <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a>, proportion test, dynamic enrichment analysis, and expressed marker identification.</li>
+<li>Multiple methods for automatic annotation of single-cell data (<a href="https://github.com/Teichlab/celltypist" class="external-link">CellTypist</a>, <a href="https://github.com/dviraran/SingleR" class="external-link">SingleR</a>, <a href="https://github.com/hemberg-lab/scmap" class="external-link">Scmap</a>, KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, <a href="https://github.com/immunogenomics/symphony" class="external-link">SymphonyMap</a>).</li>
 <li>High-quality data visualization methods.</li>
 <li>Fast deployment of single-cell data into SCExplorer, a <a href="https://shiny.rstudio.com/" class="external-link">shiny</a> app that provides an interactive visualization interface.</li>
 </ul>
-<p>The functions in the scop package are all developed around the <a href="https://github.com/satijalab/seurat-object" class="external-link">Seurat</a> object and are compatible with other Seurat functions.</p>
+<p>The functions in <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> are all developed around the <a href="https://github.com/satijalab/seurat-object" class="external-link">Seurat</a> object and are compatible with other Seurat functions.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -85,7 +80,6 @@
 <li>
 <a href="#scop-single-cell-omics-analysis-pipeline">scop: Single-Cell Omics analysis Pipeline</a>
 <ul>
-<li><a href="#overview">Overview</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#quick-start">Quick Start</a></li>
 <li><a href="#credits">Credits</a></li>

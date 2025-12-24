@@ -1,23 +1,29 @@
 # scop: Single-Cell Omics analysis Pipeline
 
-## Overview
+## Introduction
 
 The [scop](https://github.com/mengxu98/scop) package provides a
 comprehensive set of tools for single-cell omics data processing and
-downstream analysis.
+downstream analysis:
 
-## Introduction
-
-The [scop](https://github.com/mengxu98/scop) package includes the
-following facilities:
-
-- Integrated single-cell quality control methods.
+- Integrated single-cell quality control methods, including doublet
+  detection methods
+  ([scDblFinder](https://github.com/plger/scDblFinder),
+  [scds](https://github.com/kostkalab/scds),
+  [Scrublet](https://github.com/swolock/scrublet),
+  [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)).
 - Pipelines embedded with multiple methods for normalization, feature
-  reduction, and cell population identification (standard Seurat
-  workflow).
-- Pipelines embedded with multiple integration methods for scRNA-seq or
-  scATAC-seq data, including Uncorrected,
-  [Seurat](https://github.com/satijalab/seurat),
+  reduction (PCA, ICA, NMF, MDS,
+  [GLMPCA](https://github.com/willtownes/glmpca),
+  [UMAP](https://github.com/lmcinnes/umap),
+  [TriMap](https://github.com/eamid/trimap),
+  [LargeVis](https://github.com/lferry007/LargeVis),
+  [PaCMAP](https://github.com/YingfanWang/PaCMAP),
+  [PHATE](https://github.com/KrishnaswamyLab/PHATE),
+  [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html),
+  FR), and cell population identification.
+- Pipelines embedded with multiple integration methods for scRNA-seq,
+  including Uncorrected, [Seurat](https://github.com/satijalab/seurat),
   [scVI](https://github.com/scverse/scvi-tools),
   [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
   [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.md),
@@ -33,15 +39,25 @@ following facilities:
   identification of dynamic features,
   [PAGA](https://github.com/theislab/paga), [RNA
   velocity](https://github.com/theislab/scvelo),
-  [Palantir](https://github.com/dpeerlab/Palantir), etc.
-- Multiple methods for automatic annotation of single-cell data and
-  methods for projection between single-cell datasets.
+  [Palantir](https://github.com/dpeerlab/Palantir),
+  [CellRank](https://github.com/theislab/cellrank),
+  [WOT](https://github.com/broadinstitute/wot),
+  [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html),
+  [CellChat](https://github.com/jinworks/CellChat), proportion test,
+  dynamic enrichment analysis, and expressed marker identification.
+- Multiple methods for automatic annotation of single-cell data
+  ([CellTypist](https://github.com/Teichlab/celltypist),
+  [SingleR](https://github.com/dviraran/SingleR),
+  [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods
+  for projection between single-cell datasets (CSSMap, PCAMap,
+  SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a
   [shiny](https://shiny.rstudio.com/) app that provides an interactive
   visualization interface.
 
-The functions in the scop package are all developed around the
+The functions in [scop](https://github.com/mengxu98/scop) are all
+developed around the
 [Seurat](https://github.com/satijalab/seurat-object) object and are
 compatible with other Seurat functions.
 
@@ -49,7 +65,6 @@ compatible with other Seurat functions.
 
 - [scop: Single-Cell Omics analysis
   Pipeline](#scop-single-cell-omics-analysis-pipeline)
-  - [Overview](#overview)
   - [Introduction](#introduction)
   - [Quick Start](#quick-start)
   - [Credits](#credits)

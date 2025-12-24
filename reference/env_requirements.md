@@ -55,8 +55,8 @@ env_requirements("3.10-1")
 #>         "trimap==1.1.4"         "pacmap==0.8.0"         "phate==1.0.11" 
 #>                   bbknn               scanorama              scvi-tools 
 #>          "bbknn==1.6.0"      "scanorama==1.7.4"     "scvi-tools==1.2.1" 
-#>                cellrank 
-#>       "cellrank==2.0.7" 
+#>                cellrank              celltypist 
+#>       "cellrank==2.0.7"            "celltypist" 
 #> 
 #> $install_methods
 #>     leidenalg           tbb python-igraph    scvi-tools    matplotlib 
@@ -67,8 +67,8 @@ env_requirements("3.10-1")
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
 #>           wot        trimap        pacmap         phate         bbknn 
 #>         "pip"         "pip"         "pip"         "pip"         "pip" 
-#>     scanorama      cellrank 
-#>         "pip"         "pip" 
+#>     scanorama      cellrank    celltypist 
+#>         "pip"         "pip"         "pip" 
 #> 
 #> $package_aliases
 #> $package_aliases$`python-igraph`

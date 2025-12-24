@@ -280,7 +280,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage1 is not in the meta.data of srt object.
+#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
 
 DynamicPlot(
   pancreas_sub,
