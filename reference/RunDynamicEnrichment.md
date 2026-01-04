@@ -209,22 +209,29 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = "Lineage1",
   n_candidates = 200
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 09:02:42] Running [1/200] Processing: 1  ETA:  7s
+#> ⠹ [2026-01-04 09:02:42] Running [88/200] Processing: 88  ETA:  4s
+#> ⠸ [2026-01-04 09:02:42] Running [177/200] Processing: 177  ETA:  1s
+#> ✔ [2026-01-04 09:02:42] Completed 200 tasks in 6.7s
+#> 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 4
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", cell_annotation = "SubCellType",     n_split = 4): Lineages: Lineage1 is not in the meta data of the Seurat object
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+
 ht1$plot
-#> Error: object 'ht1' not found
+
 
 pancreas_sub <- RunDynamicEnrichment(
   pancreas_sub,
@@ -233,8 +240,7 @@ pancreas_sub <- RunDynamicEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> Error in RunDynamicEnrichment(pancreas_sub, lineages = "Lineage1", score_method = "UCell",     db = "GO_BP", species = "Mus_musculus"): "Lineage1" info not found in the srt object. Should perform
-#> `RunDynamicFeatures()` first
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",

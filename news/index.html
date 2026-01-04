@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,24 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.7" id="scop-077">scop 0.7.7<a class="anchor" aria-label="anchor" href="#scop-077"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Enhanced to support multiple AnnData object types including <em>Python</em> AnnData objects (from scanpy/reticulate), R6 AnnData objects from the <code>anndata</code> package (AnnDataR6), and R6 AnnData objects from the <code>anndataR</code> package (InMemoryAnnData). Added internal helper functions <code>get_adata_element()</code> and <code>get_adata_names()</code> for better compatibility. This enhancement addresses the issue reported in <a href="https://github.com/mengxu98/scop/issues/67" class="external-link">#67</a>, <a href="https://github.com/mengxu98/scop/issues/91" class="external-link">#91</a> and <a href="https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993" class="external-link">91#issuecomment</a>.</li>
+</ul></li>
+<li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed error when comparing one cluster against multiple clusters using <code>group1</code> and <code>group2</code> parameters. This issue reported in <a href="https://github.com/mengxu98/scop/issues/111" class="external-link">#111</a>.</li>
+<li>
+<code><a href="../reference/AnnotateFeatures.html">AnnotateFeatures()</a></code>: Fixed bug where the function would fail when processing GTF file annotations due to column name matching issues during data naming. The function now correctly handles column name intersections when merging annotation data.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.6" id="scop-076">scop 0.7.6<a class="anchor" aria-label="anchor" href="#scop-076"></a></h2>
 <ul><li>

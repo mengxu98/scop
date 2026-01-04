@@ -238,7 +238,15 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 CellDensityPlot(
   pancreas_sub,
@@ -246,7 +254,8 @@ CellDensityPlot(
   group.by = "SubCellType",
   aspect.ratio = 1
 )
-#> Error in CellDensityPlot(pancreas_sub, features = "Lineage1", group.by = "SubCellType",     aspect.ratio = 1): `features` must be type of numeric variable
+#> Picking joint bandwidth of 0.661
+
 
 CellDensityPlot(
   pancreas_sub,
@@ -254,5 +263,5 @@ CellDensityPlot(
   group.by = "SubCellType",
   flip = TRUE
 )
-#> Error in CellDensityPlot(pancreas_sub, features = "Lineage1", group.by = "SubCellType",     flip = TRUE): `features` must be type of numeric variable
+#> Picking joint bandwidth of 0.661
 ```

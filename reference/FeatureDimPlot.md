@@ -609,7 +609,15 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -617,7 +625,13 @@ FeatureDimPlot(
   reduction = "UMAP",
   lineages = "Lineage2"
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"): Lineage "Lineage2" is not in the <Seurat> object
+#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
+#> ℹ Use one of colour, color, or fill instead.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -626,7 +640,15 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE): Lineage "Lineage2" is not in the <Seurat> object
+#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
+#> ℹ Use one of colour, color, or fill instead.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 FeatureDimPlot(
   pancreas_sub,
@@ -635,7 +657,9 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_span = 0.1
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1): Lineage "Lineage2" is not in the <Seurat> object
+#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
+#> ℹ Use one of colour, color, or fill instead.
+
 
 # Input a named feature list
 markers <- list(

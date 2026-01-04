@@ -644,8 +644,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-12-24 15:07:55] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-24 15:07:55] Completed 5 tasks in 865ms
+#> ⠙ [2026-01-04 08:45:07] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2026-01-04 08:45:07] Completed 5 tasks in 868ms
 #> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -720,7 +720,15 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 ht4 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -729,9 +737,16 @@ ht4 <- FeatureHeatmap(
   cell_annotation = c("SubCellType", "Lineage1"),
   cell_annotation_palette = c("Paired", "cividis")
 )
-#> Error in FeatureHeatmap(pancreas_sub, features = de_filter$gene, nlabel = 10,     cell_order = names(sort(pancreas_sub$Lineage1)), cell_annotation = c("SubCellType",         "Lineage1"), cell_annotation_palette = c("Paired", "cividis")): Cell_annotation: Lineage1 is not in the Seurat object.
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
 ht4$plot
-#> Error: object 'ht4' not found
+
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(

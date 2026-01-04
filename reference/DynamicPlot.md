@@ -271,7 +271,15 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -280,7 +288,11 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+
 
 DynamicPlot(
   pancreas_sub,
@@ -289,7 +301,10 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 08:43:30] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-04 08:43:30] Completed 3 tasks in 99ms
+#> 
+
 
 DynamicPlot(
   pancreas_sub,
@@ -299,7 +314,18 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 08:43:34] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-04 08:43:34] Completed 3 tasks in 107ms
+#> 
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+
 
 DynamicPlot(
   pancreas_sub,
@@ -309,5 +335,21 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 08:43:38] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-04 08:43:38] Completed 3 tasks in 101ms
+#> 
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 ```

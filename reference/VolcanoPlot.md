@@ -218,11 +218,11 @@ pancreas_sub <- standard_scop(pancreas_sub)
 #>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
 #>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 pancreas_sub <- RunDEtest(
- pancreas_sub,
- group_by = "CellType"
+  pancreas_sub,
+  group_by = "CellType"
 )
-#> ⠙ [2025-12-24 15:53:15] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-24 15:53:15] Completed 5 tasks in 751ms
+#> ⠙ [2026-01-04 09:22:49] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2026-01-04 09:22:49] Completed 5 tasks in 752ms
 #> 
 VolcanoPlot(
   pancreas_sub,

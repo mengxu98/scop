@@ -1059,14 +1059,13 @@ pancreas_sub <- RunSlingshot(
   reduction = "UMAP",
   show_plot = FALSE
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
 
 FeatureDimPlot(
   pancreas_sub,
   features = paste0("Lineage", 1:2),
   reduction = "UMAP"
 )
-#> Error in FeatureDimPlot(pancreas_sub, features = paste0("Lineage", 1:2),     reduction = "UMAP"): There are no valid features present.
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1074,7 +1073,15 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2)): Lineage "Lineage1" is not in the meta.data of srt object
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1083,7 +1090,17 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_whiskers = TRUE): Lineage "Lineage1" is not in the meta.data of srt object
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_segment()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -1092,7 +1109,11 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+
 
 if (FALSE) { # \dontrun{
 # Show PAGA results on the plot

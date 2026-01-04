@@ -12,7 +12,10 @@ adata_to_srt(adata, verbose = TRUE)
 
 - adata:
 
-  A connected python anndata object.
+  An AnnData object. Can be a Python AnnData object (from
+  scanpy/reticulate), an R6 AnnData object from the `anndata` package
+  (AnnDataR6), or an R6 AnnData object from the `anndataR` package
+  (InMemoryAnnData).
 
 - verbose:
 
