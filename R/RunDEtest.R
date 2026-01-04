@@ -225,7 +225,7 @@ WilcoxDETest <- function(
 #' @export
 #'
 #' @seealso
-#' [RunEnrichment], [RunGSEA], [GroupHeatmap]
+#' [VolcanoPlot], [RunEnrichment], [RunGSEA], [GroupHeatmap]
 #'
 #' @examples
 #' data(pancreas_sub)
@@ -560,8 +560,22 @@ RunDEtest <- function(
 
       if (!is.null(markers) && nrow(markers) > 0) {
         markers[, "gene"] <- rownames(markers)
-        markers[, "group1"] <- group1 %||% "group1"
-        markers[, "group2"] <- group2 %||% "group2"
+        group1_str <- if (is.null(group1)) {
+          "group1"
+        } else if (length(group1) > 1) {
+          paste(group1, collapse = ";")
+        } else {
+          as.character(group1)
+        }
+        group2_str <- if (is.null(group2)) {
+          "group2"
+        } else if (length(group2) > 1) {
+          paste(group2, collapse = ";")
+        } else {
+          as.character(group2)
+        }
+        markers[, "group1"] <- group1_str
+        markers[, "group2"] <- group2_str
         rownames(markers) <- NULL
         markers[, "group1"] <- factor(
           markers[, "group1"],
@@ -625,8 +639,22 @@ RunDEtest <- function(
       )
       if (!is.null(markers) && nrow(markers) > 0) {
         markers[, "gene"] <- rownames(markers)
-        markers[, "group1"] <- group1 %||% "group1"
-        markers[, "group2"] <- group2 %||% "group2"
+        group1_str <- if (is.null(group1)) {
+          "group1"
+        } else if (length(group1) > 1) {
+          paste(group1, collapse = ";")
+        } else {
+          as.character(group1)
+        }
+        group2_str <- if (is.null(group2)) {
+          "group2"
+        } else if (length(group2) > 1) {
+          paste(group2, collapse = ";")
+        } else {
+          as.character(group2)
+        }
+        markers[, "group1"] <- group1_str
+        markers[, "group2"] <- group2_str
         rownames(markers) <- NULL
         markers[, "group1"] <- factor(
           markers[, "group1"],
