@@ -229,7 +229,9 @@ srt_to_adata <- function(
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param adata A connected python anndata object.
+#' @param adata An AnnData object. Can be a Python AnnData object (from scanpy/reticulate),
+#'   an R6 AnnData object from the `anndata` package (AnnDataR6), or an R6 AnnData object
+#'   from the `anndataR` package (InMemoryAnnData).
 #'
 #' @export
 #'
@@ -256,14 +258,18 @@ srt_to_adata <- function(
 adata_to_srt <- function(
     adata,
     verbose = TRUE) {
-  if (!inherits(adata, "python.builtin.object")) {
+  PrepareEnv()
+  data_types <- c(
+    "python.builtin.object", "AnnDataR6", "InMemoryAnnData", "AbstractAnnData"
+  )
+  if (!inherits(adata, data_types)) {
     log_message(
-      "{.val adata} is not a python.builtin.object.",
+      "{.val adata} must be one of the following classes: {.val {data_types}}",
       message_type = "error"
     )
   }
   log_message(
-    "Converting {.cls AnnData} object to {.cls Seurat} object...",
+    "Converting {.cls {class(adata)}} object to {.cls Seurat} object...",
     verbose = verbose
   )
 
@@ -271,8 +277,8 @@ adata_to_srt <- function(
   if (!inherits(x, "dgCMatrix")) {
     x <- SeuratObject::as.sparse(x)
   }
-  rownames(x) <- py_to_r2(adata$var_names$values)
-  colnames(x) <- py_to_r2(adata$obs_names$values)
+  rownames(x) <- get_adata_names(adata, "var")
+  colnames(x) <- get_adata_names(adata, "obs")
   rownames(x) <- as.character(rownames(x))
   colnames(x) <- as.character(colnames(x))
 
@@ -294,10 +300,10 @@ adata_to_srt <- function(
   }
   if (length(keys) > 0) {
     for (k in keys) {
-      layer <- py_to_r2(adata$layers[[k]])
+      layer <- py_to_r2(get_adata_element(adata$layers, k))
       if (!inherits(layer, c("Matrix", "matrix"))) {
         log_message(
-          "The object in {.val {k}} layers is not a matrix: {.val {class(adata$layers[[k]])}}",
+          "The object in {.val {k}} layers is not a matrix: {.val {class(get_adata_element(adata$layers, k))}}",
           message_type = "error"
         )
       }
@@ -305,8 +311,8 @@ adata_to_srt <- function(
       if (!inherits(layer, "dgCMatrix")) {
         layer <- SeuratObject::as.sparse(layer)
       }
-      rownames(layer) <- py_to_r2(adata$var_names$values)
-      colnames(layer) <- py_to_r2(adata$obs_names$values)
+      rownames(layer) <- get_adata_names(adata, "var")
+      colnames(layer) <- get_adata_names(adata, "obs")
       srt[[py_to_r2(k)]] <- Seurat::CreateAssayObject(counts = layer)
     }
   }
@@ -326,7 +332,10 @@ adata_to_srt <- function(
       }
 
       processed_reductions <- c(processed_reductions, k_clean)
-      obsm <- tryCatch(py_to_r2(adata$obsm[[k]]), error = identity)
+      obsm <- tryCatch(
+        py_to_r2(get_adata_element(adata$obsm, k)),
+        error = identity
+      )
       if (inherits(obsm, "error")) {
         log_message(
           "{.val obsm}: {.val {k}} will not be converted",
@@ -339,7 +348,7 @@ adata_to_srt <- function(
         obsm <- as_matrix(obsm)
       }
       colnames(obsm) <- paste0(k_clean, "_", seq_len(ncol(obsm)))
-      rownames(obsm) <- py_to_r2(adata$obs_names$values)
+      rownames(obsm) <- get_adata_names(adata, "obs")
       srt[[py_to_r2(k)]] <- Seurat::CreateDimReducObject(
         embeddings = obsm,
         assay = "RNA",
@@ -355,7 +364,10 @@ adata_to_srt <- function(
   }
   if (length(keys) > 0) {
     for (k in keys) {
-      obsp <- tryCatch(py_to_r2(adata$obsp[[k]]), error = identity)
+      obsp <- tryCatch(
+        py_to_r2(get_adata_element(adata$obsp, k)),
+        error = identity
+      )
       if (inherits(obsp, "error")) {
         log_message(
           "{.val obsp}: {.val {k}} will not be converted",
@@ -367,8 +379,8 @@ adata_to_srt <- function(
       if (!inherits(obsp, "dgCMatrix")) {
         obsp <- SeuratObject::as.sparse(obsp)
       }
-      colnames(obsp) <- py_to_r2(adata$obs_names$values)
-      rownames(obsp) <- py_to_r2(adata$obs_names$values)
+      colnames(obsp) <- get_adata_names(adata, "obs")
+      rownames(obsp) <- get_adata_names(adata, "obs")
       obsp <- SeuratObject::as.Graph(obsp)
       SeuratObject::DefaultAssay(obsp) <- "RNA"
       srt[[py_to_r2(k)]] <- obsp
@@ -389,7 +401,10 @@ adata_to_srt <- function(
   }
   if (length(keys) > 0) {
     for (k in keys) {
-      varm <- tryCatch(py_to_r2(adata$varm[[k]]), error = identity)
+      varm <- tryCatch(
+        py_to_r2(get_adata_element(adata$varm, k)),
+        error = identity
+      )
       if (inherits(varm, "error")) {
         log_message(
           "{.val varm}: {.val {k}} will not be converted",
@@ -402,7 +417,7 @@ adata_to_srt <- function(
         varm <- as_matrix(varm)
       }
       colnames(varm) <- paste0(py_to_r2(k), "_", seq_len(ncol(varm)))
-      rownames(varm) <- py_to_r2(adata$var_names$values)
+      rownames(varm) <- get_adata_names(adata, "var")
       srt[["RNA"]]@misc[["feature.loadings"]][[py_to_r2(k)]] <- varm
     }
   }
@@ -414,7 +429,10 @@ adata_to_srt <- function(
   }
   if (length(keys) > 0) {
     for (k in keys) {
-      varp <- tryCatch(py_to_r2(adata$varp[[k]]), error = identity)
+      varp <- tryCatch(
+        py_to_r2(get_adata_element(adata$varp, k)),
+        error = identity
+      )
       if (inherits(varp, "error")) {
         log_message(
           "{.val varp}: {.val {k}} will not be converted.",
@@ -426,8 +444,8 @@ adata_to_srt <- function(
       if (!inherits(varp, "matrix")) {
         varp <- as_matrix(varp)
       }
-      colnames(varp) <- py_to_r2(adata$var_names$values)
-      rownames(varp) <- py_to_r2(adata$var_names$values)
+      colnames(varp) <- get_adata_names(adata, "var")
+      rownames(varp) <- get_adata_names(adata, "var")
       srt[["RNA"]]@misc[["feature.graphs"]][[py_to_r2(k)]] <- varp
     }
   }
@@ -439,7 +457,10 @@ adata_to_srt <- function(
   }
   if (length(keys) > 0) {
     for (k in keys) {
-      uns <- tryCatch(py_to_r2(adata$uns[[k]]), error = identity)
+      uns <- tryCatch(
+        py_to_r2(get_adata_element(adata$uns, k)),
+        error = identity
+      )
       if (inherits(uns, "error")) {
         log_message(
           "{.val uns}: {.val {k}} will not be converted",
@@ -483,6 +504,67 @@ py_to_r2 <- function(x) {
   } else {
     x
   }
+}
+
+get_adata_element <- function(container, key) {
+  if (is.function(container$get)) {
+    result <- tryCatch(
+      {
+        container$get(key)
+      },
+      error = function(e) NULL
+    )
+    if (!is.null(result)) {
+      return(result)
+    }
+  }
+  tryCatch(
+    {
+      return(container[[key]])
+    },
+    error = function(e) {
+      log_message(
+        "Cannot access element: {.val {key}}",
+        message_type = "error"
+      )
+    }
+  )
+}
+
+get_adata_names <- function(adata, name_type = c("var", "obs")) {
+  name_type <- match.arg(name_type)
+  attr_name <- paste0(name_type, "_names")
+
+  names_obj <- adata[[attr_name]]
+  if (is.null(names_obj)) {
+    log_message(
+      "Cannot access element: {.val {attr_name}}",
+      message_type = "error"
+    )
+  }
+
+  names_r <- py_to_r2(names_obj)
+
+  if (is.vector(names_r) || is.character(names_r)) {
+    return(names_r)
+  }
+
+  if (is.list(names_r) && "values" %in% names(names_r)) {
+    return(py_to_r2(names_r$values))
+  }
+
+  if (inherits(names_obj, "python.builtin.object")) {
+    tryCatch(
+      {
+        return(py_to_r2(names_obj$values))
+      },
+      error = function(e) {
+        return(names_r)
+      }
+    )
+  }
+
+  return(names_r)
 }
 
 check_python_element <- function(
