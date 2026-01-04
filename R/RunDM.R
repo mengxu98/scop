@@ -182,7 +182,7 @@ RunDM.default <- function(
     dm_args$n_pcs <- npcs
   }
   dm_results <- do.call(
-    thisplot::get_namespace_fun("destiny", "DiffusionMap"),
+    get_namespace_fun("destiny", "DiffusionMap"),
     c(dm_args, list(...))
   )
 

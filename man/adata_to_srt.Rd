@@ -7,7 +7,9 @@
 adata_to_srt(adata, verbose = TRUE)
 }
 \arguments{
-\item{adata}{A connected python anndata object.}
+\item{adata}{An AnnData object. Can be a Python AnnData object (from scanpy/reticulate),
+an R6 AnnData object from the \code{anndata} package (AnnDataR6), or an R6 AnnData object
+from the \code{anndataR} package (InMemoryAnnData).}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
