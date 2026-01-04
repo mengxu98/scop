@@ -11,7 +11,7 @@ which provides more flexibility and advanced features compared to the legacy API
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ which provides more flexibility and advanced features compared to the legacy API
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run CellRank analysis with kernel-estimator architecture</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCellRank.R" class="external-link"><code>R/RunCellRank.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCellRank.R" class="external-link"><code>R/RunCellRank.R</code></a></small>
       <div class="d-none name"><code>RunCellRank.Rd</code></div>
     </div>
 
@@ -93,22 +93,6 @@ which provides more flexibility and advanced features compared to the legacy API
 <span>  plot_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span>, <span class="st">"svg"</span><span class="op">)</span>,</span>
 <span>  plot_dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  plot_prefix <span class="op">=</span> <span class="st">"cellrank"</span>,</span>
-<span>  plot_spectrum <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_schur_matrix <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_macrostates <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_coarse_T <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_fate_probabilities <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_lineage_drivers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_aggregate_fates <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  aggregate_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"paga_pie"</span>, <span class="st">"bar"</span>, <span class="st">"paga"</span>, <span class="st">"violin"</span>, <span class="st">"heatmap"</span>, <span class="st">"clustermap"</span><span class="op">)</span>,</span>
-<span>  n_driver_genes <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  plot_gene_trends <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gene_trends_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GAM"</span>, <span class="st">"GAMR"</span><span class="op">)</span>,</span>
-<span>  plot_heatmap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  heatmap_genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  heatmap_n_genes <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>  plot_projection <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  projection_basis <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend.position <span class="op">=</span> <span class="st">"on data"</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -314,71 +298,6 @@ Default is <code>FALSE</code>.</p></dd>
 
 <dt id="arg-plot-prefix">plot_prefix<a class="anchor" aria-label="anchor" href="#arg-plot-prefix"></a></dt>
 <dd><p>Prefix for saved plot filenames. Default is "cellrank".</p></dd>
-
-
-<dt id="arg-plot-spectrum">plot_spectrum<a class="anchor" aria-label="anchor" href="#arg-plot-spectrum"></a></dt>
-<dd><p>Whether to plot eigenvalue spectrum. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-schur-matrix">plot_schur_matrix<a class="anchor" aria-label="anchor" href="#arg-plot-schur-matrix"></a></dt>
-<dd><p>Whether to plot Schur matrix (GPCCA only). Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-macrostates">plot_macrostates<a class="anchor" aria-label="anchor" href="#arg-plot-macrostates"></a></dt>
-<dd><p>Whether to plot macrostates. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-coarse-t">plot_coarse_T<a class="anchor" aria-label="anchor" href="#arg-plot-coarse-t"></a></dt>
-<dd><p>Whether to plot coarse-grained transition matrix (GPCCA only). Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-fate-probabilities">plot_fate_probabilities<a class="anchor" aria-label="anchor" href="#arg-plot-fate-probabilities"></a></dt>
-<dd><p>Whether to plot fate probabilities. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-lineage-drivers">plot_lineage_drivers<a class="anchor" aria-label="anchor" href="#arg-plot-lineage-drivers"></a></dt>
-<dd><p>Whether to plot lineage driver genes. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-plot-aggregate-fates">plot_aggregate_fates<a class="anchor" aria-label="anchor" href="#arg-plot-aggregate-fates"></a></dt>
-<dd><p>Whether to plot aggregated fate probabilities. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-aggregate-mode">aggregate_mode<a class="anchor" aria-label="anchor" href="#arg-aggregate-mode"></a></dt>
-<dd><p>Mode for aggregate fate probability plots: <code>"paga_pie"</code>, <code>"bar"</code>, <code>"paga"</code>, <code>"violin"</code>, <code>"heatmap"</code>, or <code>"clustermap"</code>.
-Default is <code>"paga_pie"</code>.</p></dd>
-
-
-<dt id="arg-n-driver-genes">n_driver_genes<a class="anchor" aria-label="anchor" href="#arg-n-driver-genes"></a></dt>
-<dd><p>Number of top driver genes to plot for each lineage. Default is <code>8</code>.</p></dd>
-
-
-<dt id="arg-plot-gene-trends">plot_gene_trends<a class="anchor" aria-label="anchor" href="#arg-plot-gene-trends"></a></dt>
-<dd><p>Whether to plot gene expression trends. Can be <code>NULL</code> (disabled), an integer (number of top driver genes), or a character vector (gene names). Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-gene-trends-model">gene_trends_model<a class="anchor" aria-label="anchor" href="#arg-gene-trends-model"></a></dt>
-<dd><p>Model to use for gene trends: <code>"GAM"</code> (default) or <code>"GAMR"</code>.</p></dd>
-
-
-<dt id="arg-plot-heatmap">plot_heatmap<a class="anchor" aria-label="anchor" href="#arg-plot-heatmap"></a></dt>
-<dd><p>Whether to plot heatmap. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-heatmap-genes">heatmap_genes<a class="anchor" aria-label="anchor" href="#arg-heatmap-genes"></a></dt>
-<dd><p>Character vector of gene names to plot in heatmap. If <code>NULL</code>, top driver genes will be used. Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-heatmap-n-genes">heatmap_n_genes<a class="anchor" aria-label="anchor" href="#arg-heatmap-n-genes"></a></dt>
-<dd><p>Number of genes to plot in heatmap when <code>heatmap_genes</code> is <code>NULL</code>. Default is <code>50</code>.</p></dd>
-
-
-<dt id="arg-plot-projection">plot_projection<a class="anchor" aria-label="anchor" href="#arg-plot-projection"></a></dt>
-<dd><p>Whether to plot kernel projection. Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-projection-basis">projection_basis<a class="anchor" aria-label="anchor" href="#arg-projection-basis"></a></dt>
-<dd><p>Basis to use for projection plot. If <code>NULL</code>, uses the same as <code>basis</code>. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>

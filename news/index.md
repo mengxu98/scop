@@ -1,5 +1,29 @@
 # Changelog
 
+## scop 0.7.7
+
+- **func**:
+  - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md):
+    Enhanced to support multiple AnnData object types including *Python*
+    AnnData objects (from scanpy/reticulate), R6 AnnData objects from
+    the `anndata` package (AnnDataR6), and R6 AnnData objects from the
+    `anndataR` package (InMemoryAnnData). Added internal helper
+    functions `get_adata_element()` and `get_adata_names()` for better
+    compatibility. This enhancement addresses the issue reported in
+    [\#67](https://github.com/mengxu98/scop/issues/67),
+    [\#91](https://github.com/mengxu98/scop/issues/91) and
+    [91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
+- **bugs**:
+  - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md):
+    Fixed error when comparing one cluster against multiple clusters
+    using `group1` and `group2` parameters. This issue reported in
+    [\#111](https://github.com/mengxu98/scop/issues/111).
+  - [`AnnotateFeatures()`](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md):
+    Fixed bug where the function would fail when processing GTF file
+    annotations due to column name matching issues during data naming.
+    The function now correctly handles column name intersections when
+    merging annotation data.
+
 ## scop 0.7.6
 
 - **func**:

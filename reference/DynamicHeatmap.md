@@ -722,13 +722,29 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 08:38:15] Running [1/225] Processing: 1  ETA: 13s
+#> ⠹ [2026-01-04 08:38:15] Running [106/225] Processing: 106  ETA:  3s
+#> ⠸ [2026-01-04 08:38:15] Running [214/225] Processing: 214  ETA:  0s
+#> ✔ [2026-01-04 08:38:15] Completed 225 tasks in 6.3s
+#> 
+#> ⠙ [2026-01-04 08:38:24] Running [105/225] Processing: 105  ETA:  3s
+#> ⠹ [2026-01-04 08:38:24] Running [215/225] Processing: 215  ETA:  0s
+#> ✔ [2026-01-04 08:38:24] Completed 225 tasks in 5.9s
+#> 
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -737,12 +753,15 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", n_split = 5,     split_method = "kmeans-peaktime", cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+
 ht1$plot
-#> Error: object 'ht1' not found
+
 
 thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
-#> Error: object 'ht1' not found
+
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
@@ -756,9 +775,14 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", features = c("Sox9",     "Neurod2", "Isl1", "Rbp4", "Pyy", "S_score", "G2M_score"),     cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
+#> ⠙ [2026-01-04 08:38:32] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-04 08:38:32] Completed 2 tasks in 42ms
+#> 
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
 ht2$plot
-#> Error: object 'ht2' not found
+
 
 thisplot::panel_fix(
   ht2$plot,
@@ -767,7 +791,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-#> Error: object 'ht2' not found
+
 
 ht3 <- DynamicHeatmap(
   pancreas_sub,
@@ -777,9 +801,12 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     n_split = 5, split_method = "kmeans", cluster_rows = TRUE,     cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of the Seurat object
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+
 ht3$plot
-#> Error: object 'ht3' not found
+
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
@@ -794,7 +821,32 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     reverse_ht = "Lineage1", cell_annotation = "SubCellType",     n_split = 5, split_method = "mfuzz", species = "Mus_musculus",     db = "GO_BP", anno_terms = TRUE, anno_keys = TRUE, anno_features = TRUE): Lineages: Lineage1 is not in the meta data of the Seurat object
+#>  
+#> → Will install 6 packages.
+#> → All 6 packages (0 B) are cached.
+#> + SparseM        1.84-2  
+#> + e1071          1.7-17  
+#> + mlbench        2.1-6   
+#> + proxy          0.4-29  
+#> + randomForest   4.7-1.2 
+#> + slam           0.1-55  
+#>   
+#> ℹ No downloads are needed, 6 pkgs are cached
+#> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
+#> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
+#> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
+#> ✔ Got mlbench 2.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.05 MB)
+#> ✔ Installed e1071 1.7-17  (67ms)
+#> ✔ Installed mlbench 2.1-6  (78ms)
+#> ✔ Installed proxy 0.4-29  (96ms)
+#> ✔ Installed randomForest 4.7-1.2  (126ms)
+#> ✔ Installed slam 0.1-55  (66ms)
+#> ✔ Installed SparseM 1.84-2  (46ms)
+#> ✔ 1 pkg + 13 deps: kept 8, added 6, dld 4 (2.35 MB) [1.8s]
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error in loadNamespace(x): there is no package called ‘R.cache’
 ht4$plot
 #> Error: object 'ht4' not found
 

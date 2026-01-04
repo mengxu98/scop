@@ -259,8 +259,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2025-12-24 15:34:07] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-24 15:34:07] Completed 5 tasks in 768ms
+#> ⠙ [2026-01-04 09:03:49] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2026-01-04 09:03:49] Completed 5 tasks in 745ms
 #> 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,

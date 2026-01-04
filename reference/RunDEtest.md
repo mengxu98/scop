@@ -260,6 +260,7 @@ RunDEtest(
 
 ## See also
 
+[VolcanoPlot](https://mengxu98.github.io/scop/reference/VolcanoPlot.md),
 [RunEnrichment](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
 [RunGSEA](https://mengxu98.github.io/scop/reference/RunGSEA.md),
 [GroupHeatmap](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
@@ -308,8 +309,9 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "SubCellType"
 )
-#> ⠙ [2025-12-24 15:29:32] Running [1/8] Processing: Ductal  ETA:  1s
-#> ✔ [2025-12-24 15:29:32] Completed 8 tasks in 1.1s
+#> ⠙ [2026-01-04 08:58:30] Running [1/8] Processing: Ductal  ETA:  1s
+#> ⠹ [2026-01-04 08:58:30] Running [3/8] Processing: Beta  ETA:  1s
+#> ✔ [2026-01-04 08:58:30] Completed 8 tasks in 1.1s
 #> 
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -353,8 +355,8 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ⠙ [2025-12-24 15:29:41] Running [28/56] Processing: 1, 3, 5, 7, 9, 11, 13, 15, …
-#> ✔ [2025-12-24 15:29:41] Completed 56 tasks in 3.5s
+#> ⠙ [2026-01-04 08:58:39] Running [28/56] Processing: 1, 3, 5, 7, 9, 11, 13, 15, …
+#> ✔ [2026-01-04 08:58:39] Completed 56 tasks in 4s
 #> 
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -392,8 +394,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-24 15:31:05] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-24 15:31:05] Completed 13 tasks in 5.9s
+#> ⠙ [2026-01-04 09:00:06] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2026-01-04 09:00:06] Completed 13 tasks in 5.5s
 #> 
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -432,8 +434,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2025-12-24 15:31:29] Running [3/5] Processing: celseq, smartseq2, indrop  ET…
-#> ✔ [2025-12-24 15:31:29] Completed 5 tasks in 5.3s
+#> ⠙ [2026-01-04 09:00:30] Running [3/5] Processing: celseq, smartseq2, indrop  ET…
+#> ✔ [2026-01-04 09:00:30] Completed 5 tasks in 4.9s
 #> 
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
@@ -461,8 +463,8 @@ panc8_sub <- RunDEtest(
   markers_type = "disturbed",
   cores = 2
 )
-#> ⠙ [2025-12-24 15:31:46] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2025-12-24 15:31:46] Completed 13 tasks in 12.4s
+#> ⠙ [2026-01-04 09:00:48] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2026-01-04 09:00:48] Completed 13 tasks in 12.2s
 #> 
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,

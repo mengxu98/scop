@@ -154,23 +154,46 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+
 
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 09:03:10] Running [1/225] Processing: 1  ETA:  8s
+#> ⠹ [2026-01-04 09:03:10] Running [77/225] Processing: 77  ETA:  5s
+#> ⠸ [2026-01-04 09:03:10] Running [170/225] Processing: 170  ETA:  2s
+#> ✔ [2026-01-04 09:03:10] Completed 225 tasks in 7.7s
+#> 
+#> ⠙ [2026-01-04 09:03:18] Running [34/225] Processing: 34  ETA:  6s
+#> ⠹ [2026-01-04 09:03:18] Running [131/225] Processing: 131  ETA:  3s
+#> ⠸ [2026-01-04 09:03:18] Running [221/225] Processing: 221  ETA:  0s
+#> ✔ [2026-01-04 09:03:18] Completed 225 tasks in 7.2s
+#> 
 
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
 )
-#> NULL
+#> [1] "DynamicFeatures" "raw_matrix"      "fitted_matrix"   "upr_matrix"     
+#> [5] "lwr_matrix"      "libsize"         "lineages"        "family"         
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
-#> NULL
+#>      features exp_ncells       r.sq  dev.expl peaktime valleytime pvalue
+#> Gcg       Gcg        178 0.07474585 0.8463493 29.93042   2.028632      0
+#> Iapp     Iapp        308 0.26805682 0.7766207 29.34657   1.834261      0
+#> Pyy       Pyy        475 0.49836581 0.7682591 27.10419  14.503163      0
+#> Gast     Gast        103 0.04420017 0.6562081 27.70426   0.140757      0
+#> Rbp4     Rbp4        437 0.39150230 0.7319113 26.71387  14.634662      0
+#> Chgb     Chgb        302 0.48290058 0.8015278 23.69410   0.140757      0
+#>      padjust
+#> Gcg        0
+#> Iapp       0
+#> Pyy        0
+#> Gast       0
+#> Rbp4       0
+#> Chgb       0
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -178,9 +201,12 @@ ht <- DynamicHeatmap(
   n_split = 6,
   reverse_ht = "Lineage1"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     cell_annotation = "SubCellType", n_split = 6, reverse_ht = "Lineage1"): Lineages: Lineage1 is not in the meta data of the Seurat object
+#> 'magick' package is suggested to install to give better rasterization.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+
 ht$plot
-#> Error: object 'ht' not found
+
 
 DynamicPlot(
   pancreas_sub,
@@ -190,5 +216,7 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ⠙ [2026-01-04 09:03:30] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-04 09:03:30] Completed 2 tasks in 121ms
+#> 
 ```

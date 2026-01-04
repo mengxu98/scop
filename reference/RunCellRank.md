@@ -51,22 +51,6 @@ RunCellRank(
   plot_format = c("pdf", "png", "svg"),
   plot_dpi = 300,
   plot_prefix = "cellrank",
-  plot_spectrum = TRUE,
-  plot_schur_matrix = TRUE,
-  plot_macrostates = TRUE,
-  plot_coarse_T = TRUE,
-  plot_fate_probabilities = TRUE,
-  plot_lineage_drivers = TRUE,
-  plot_aggregate_fates = TRUE,
-  aggregate_mode = c("paga_pie", "bar", "paga", "violin", "heatmap", "clustermap"),
-  n_driver_genes = 8,
-  plot_gene_trends = NULL,
-  gene_trends_model = c("GAM", "GAMR"),
-  plot_heatmap = TRUE,
-  heatmap_genes = NULL,
-  heatmap_n_genes = 50,
-  plot_projection = TRUE,
-  projection_basis = NULL,
   legend.position = "on data",
   palette = "Paired",
   palcolor = NULL,
@@ -269,78 +253,6 @@ RunCellRank(
 - plot_prefix:
 
   Prefix for saved plot filenames. Default is "cellrank".
-
-- plot_spectrum:
-
-  Whether to plot eigenvalue spectrum. Default is `TRUE`.
-
-- plot_schur_matrix:
-
-  Whether to plot Schur matrix (GPCCA only). Default is `TRUE`.
-
-- plot_macrostates:
-
-  Whether to plot macrostates. Default is `TRUE`.
-
-- plot_coarse_T:
-
-  Whether to plot coarse-grained transition matrix (GPCCA only). Default
-  is `TRUE`.
-
-- plot_fate_probabilities:
-
-  Whether to plot fate probabilities. Default is `TRUE`.
-
-- plot_lineage_drivers:
-
-  Whether to plot lineage driver genes. Default is `TRUE`.
-
-- plot_aggregate_fates:
-
-  Whether to plot aggregated fate probabilities. Default is `TRUE`.
-
-- aggregate_mode:
-
-  Mode for aggregate fate probability plots: `"paga_pie"`, `"bar"`,
-  `"paga"`, `"violin"`, `"heatmap"`, or `"clustermap"`. Default is
-  `"paga_pie"`.
-
-- n_driver_genes:
-
-  Number of top driver genes to plot for each lineage. Default is `8`.
-
-- plot_gene_trends:
-
-  Whether to plot gene expression trends. Can be `NULL` (disabled), an
-  integer (number of top driver genes), or a character vector (gene
-  names). Default is `NULL`.
-
-- gene_trends_model:
-
-  Model to use for gene trends: `"GAM"` (default) or `"GAMR"`.
-
-- plot_heatmap:
-
-  Whether to plot heatmap. Default is `TRUE`.
-
-- heatmap_genes:
-
-  Character vector of gene names to plot in heatmap. If `NULL`, top
-  driver genes will be used. Default is `NULL`.
-
-- heatmap_n_genes:
-
-  Number of genes to plot in heatmap when `heatmap_genes` is `NULL`.
-  Default is `50`.
-
-- plot_projection:
-
-  Whether to plot kernel projection. Default is `TRUE`.
-
-- projection_basis:
-
-  Basis to use for projection plot. If `NULL`, uses the same as `basis`.
-  Default is `NULL`.
 
 - legend.position:
 
