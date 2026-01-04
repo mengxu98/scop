@@ -225,11 +225,9 @@ RunSCVELO <- function(
   args[["legend_loc"]] <- legend.position
   args <- args[!names(args) %in% c("legend.position")]
 
-  # Map new parameters to Python legacy parameters
-  args[["save"]] <- save_plot
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
+  args <- args[!names(args) %in% c("plot_dpi", "plot_prefix")]
 
   args <- args[
     !names(args) %in%

@@ -126,8 +126,8 @@ Generate a volcano plot based on differential expression analysis results.
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
- pancreas_sub,
- group_by = "CellType"
+  pancreas_sub,
+  group_by = "CellType"
 )
 VolcanoPlot(
   pancreas_sub,

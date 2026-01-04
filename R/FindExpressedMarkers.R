@@ -80,7 +80,7 @@ FindExpressedMarkers <- function(
     )
   }
 
-  data.use <- Seurat::GetAssayData(
+  data.use <- GetAssayData5(
     object = object,
     assay = assay,
     layer = layer

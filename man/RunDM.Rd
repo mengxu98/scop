@@ -4,7 +4,7 @@
 \alias{RunDM}
 \alias{RunDM.Seurat}
 \alias{RunDM.default}
-\title{Run DM (diffusion map)}
+\title{Run diffusion map (DM)}
 \usage{
 RunDM(object, ...)
 
@@ -19,6 +19,7 @@ RunDM(object, ...)
   sigma = "local",
   k = 30,
   dist.method = "euclidean",
+  npcs = NULL,
   reduction.name = "dm",
   reduction.key = "DM_",
   verbose = TRUE,
@@ -34,6 +35,7 @@ RunDM(object, ...)
   sigma = "local",
   k = 30,
   dist.method = "euclidean",
+  npcs = NULL,
   reduction.key = "DM_",
   verbose = TRUE,
   seed.use = 11,
@@ -43,7 +45,7 @@ RunDM(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to \link[destiny:DiffusionMap-class]{destiny::DiffusionMap}.}
+\item{...}{Additional arguments to be passed to \code{destiny::DiffusionMap}.}
 
 \item{reduction}{The reduction to be used.
 Default is \code{"pca"}.}
@@ -73,6 +75,10 @@ Default is \code{30}.}
 Currently supported values are \code{"euclidean"} and \code{"cosine"}.
 Default is \code{"euclidean"}.}
 
+\item{npcs}{Number of principal components to use for dimensionality reduction before computing diffusion map.
+This can speed up computation when using many features.
+Default is \code{NULL} (auto-determined based on the number of features).}
+
 \item{reduction.name}{The name of the reduction to be stored in the Seurat object.
 Default is \code{"dm"}.}
 
@@ -86,7 +92,7 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Run DM (diffusion map)
+Run diffusion map (DM)
 }
 \examples{
 data(pancreas_sub)
