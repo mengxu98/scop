@@ -185,20 +185,20 @@ AnnotateFeatures <- function(
 
   if (!is.null(gtf)) {
     gtf_all <- suppressWarnings(
-      data.table::fread(gtf, sep = "\t")
+      read.table(gtf, sep = "\t", header = FALSE)
     )
     gtf_all <- gtf_all[, 1:9]
-    colnames(gtf_all) <- c(
+    columns <- c(
       "seqname",
-      "source",
       "feature",
       "start",
       "end",
-      "score",
       "strand",
-      "frame",
-      "attribute"
+      "gene_id",
+      "gene_name",
+      "gene_type"
     )
+    colnames(gtf_all) <- columns
     for (type in c("gene", "transcript", "exon", "CDS")) {
       if (type %in% gtf_all[["feature"]]) {
         gtf_all <- gtf_all[gtf_all[["feature"]] == type, ]
@@ -219,7 +219,8 @@ AnnotateFeatures <- function(
         out[intersect(columns, names(out))]
       }
     )
-    gene_attr_df <- data.table::rbindlist(gene_attr, fill = TRUE)
+
+    gene_attr_df <- do.call(rbind, gene_attr)
     gtf_columns <- cbind(
       gtf_all[, intersect(colnames(gtf_all), columns), with = FALSE],
       gene_attr_df
