@@ -79,6 +79,7 @@ RunSlingshot <- function(
     lineage_palette = "Dark2",
     seed = 11,
     ...) {
+  check_r("slingshot", verbose = FALSE)
   if (missing(group.by)) {
     log_message(
       "group.by is missing",

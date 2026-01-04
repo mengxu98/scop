@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.7.5
-Date: 2025-12-23
+Version: 0.7.7
+Date: 2025-01-04
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -42,7 +42,6 @@ Suggests:
     AnnotationDbi,
     AUCell,
     batchelor,
-    data.table,
     biomaRt,
     CellChat,
     circlize,
@@ -50,7 +49,6 @@ Suggests:
     conos,
     cowplot,
     dendextend,
-    destiny,
     e1071,
     ggpubr,
     ggridges,

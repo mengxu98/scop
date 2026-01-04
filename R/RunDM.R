@@ -1,4 +1,4 @@
-#' @title Run DM (diffusion map)
+#' @title Run diffusion map (DM)
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -22,13 +22,16 @@
 #' @param dist.method The distance metric to be used for the construction of the knn graph.
 #' Currently supported values are `"euclidean"` and `"cosine"`.
 #' Default is `"euclidean"`.
+#' @param npcs Number of principal components to use for dimensionality reduction before computing diffusion map.
+#' This can speed up computation when using many features.
+#' Default is `NULL` (auto-determined based on the number of features).
 #' @param reduction.name The name of the reduction to be stored in the Seurat object.
 #' Default is `"dm"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"DM_"`.
 #' @param seed.use An integer specifying the random seed to be used.
 #' Default is `11`.
-#' @param ... Additional arguments to be passed to [destiny::DiffusionMap].
+#' @param ... Additional arguments to be passed to `destiny::DiffusionMap`.
 #'
 #' @rdname RunDM
 #' @export
@@ -64,6 +67,7 @@ RunDM.Seurat <- function(
     sigma = "local",
     k = 30,
     dist.method = "euclidean",
+    npcs = NULL,
     reduction.name = "dm",
     reduction.key = "DM_",
     verbose = TRUE,
@@ -74,6 +78,7 @@ RunDM.Seurat <- function(
     message_type = "running",
     verbose = verbose
   )
+  check_r("destiny", verbose = FALSE)
   if (!is.null(features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
     data_use <- as_matrix(
@@ -91,6 +96,15 @@ RunDM.Seurat <- function(
         " features provided, {.val {ndcs}} Diffusion components requested",
         message_type = "error"
       )
+    }
+    if (is.null(npcs) && ncol(data_use) > 1000) {
+      npcs <- min(50, ncol(data_use))
+      if (verbose) {
+        log_message(
+          "Using {.val {npcs}} principal components to speed up computation",
+          " (provided {.val {ncol(data_use)}} features)"
+        )
+      }
     }
   } else if (!is.null(dims)) {
     reduction <- DefaultReduction(
@@ -121,6 +135,7 @@ RunDM.Seurat <- function(
     sigma = sigma,
     k = k,
     dist.method = dist.method,
+    npcs = npcs,
     reduction.key = reduction.key,
     seed.use = seed.use,
     verbose = verbose,
@@ -147,6 +162,7 @@ RunDM.default <- function(
     sigma = "local",
     k = 30,
     dist.method = "euclidean",
+    npcs = NULL,
     reduction.key = "DM_",
     verbose = TRUE,
     seed.use = 11,
@@ -154,14 +170,20 @@ RunDM.default <- function(
   check_r("destiny", verbose = FALSE)
 
   set.seed(seed = seed.use)
-  dm_results <- destiny::DiffusionMap(
+  dm_args <- list(
     data = object,
     n_eigs = ndcs,
     sigma = sigma,
     k = k,
     distance = dist.method,
-    verbose = FALSE,
-    ...
+    verbose = FALSE
+  )
+  if (!is.null(npcs)) {
+    dm_args$n_pcs <- npcs
+  }
+  dm_results <- do.call(
+    get_namespace_fun("destiny", "DiffusionMap"),
+    c(dm_args, list(...))
   )
 
   embeddings <- dm_results@eigenvectors

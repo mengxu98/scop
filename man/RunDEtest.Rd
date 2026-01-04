@@ -326,5 +326,5 @@ ht7 <- GroupHeatmap(
 ht7$plot
 }
 \seealso{
-\link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
+\link{VolcanoPlot}, \link{RunEnrichment}, \link{RunGSEA}, \link{GroupHeatmap}
 }
