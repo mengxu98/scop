@@ -100,8 +100,8 @@ RunProportionTest <- function(
         rep(list(seq_len(n)), r)
       )
       comparisons_condition <- comparisons_condition[
-        apply(comparisons_condition, 1, function(x) length(unique(x)) == r),
-        , drop = FALSE
+        apply(comparisons_condition, 1, function(x) length(unique(x)) == r), ,
+        drop = FALSE
       ]
       comparisons_condition <- matrix(
         conditions[as.matrix(comparisons_condition)],
