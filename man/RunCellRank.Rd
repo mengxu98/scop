@@ -47,22 +47,6 @@ RunCellRank(
   plot_format = c("pdf", "png", "svg"),
   plot_dpi = 300,
   plot_prefix = "cellrank",
-  plot_spectrum = TRUE,
-  plot_schur_matrix = TRUE,
-  plot_macrostates = TRUE,
-  plot_coarse_T = TRUE,
-  plot_fate_probabilities = TRUE,
-  plot_lineage_drivers = TRUE,
-  plot_aggregate_fates = TRUE,
-  aggregate_mode = c("paga_pie", "bar", "paga", "violin", "heatmap", "clustermap"),
-  n_driver_genes = 8,
-  plot_gene_trends = NULL,
-  gene_trends_model = c("GAM", "GAMR"),
-  plot_heatmap = TRUE,
-  heatmap_genes = NULL,
-  heatmap_n_genes = 50,
-  plot_projection = TRUE,
-  projection_basis = NULL,
   legend.position = "on data",
   palette = "Paired",
   palcolor = NULL,
@@ -181,39 +165,6 @@ Default is \code{FALSE}.}
 \item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
 
 \item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
-
-\item{plot_spectrum}{Whether to plot eigenvalue spectrum. Default is \code{TRUE}.}
-
-\item{plot_schur_matrix}{Whether to plot Schur matrix (GPCCA only). Default is \code{TRUE}.}
-
-\item{plot_macrostates}{Whether to plot macrostates. Default is \code{TRUE}.}
-
-\item{plot_coarse_T}{Whether to plot coarse-grained transition matrix (GPCCA only). Default is \code{TRUE}.}
-
-\item{plot_fate_probabilities}{Whether to plot fate probabilities. Default is \code{TRUE}.}
-
-\item{plot_lineage_drivers}{Whether to plot lineage driver genes. Default is \code{TRUE}.}
-
-\item{plot_aggregate_fates}{Whether to plot aggregated fate probabilities. Default is \code{TRUE}.}
-
-\item{aggregate_mode}{Mode for aggregate fate probability plots: \code{"paga_pie"}, \code{"bar"}, \code{"paga"}, \code{"violin"}, \code{"heatmap"}, or \code{"clustermap"}.
-Default is \code{"paga_pie"}.}
-
-\item{n_driver_genes}{Number of top driver genes to plot for each lineage. Default is \code{8}.}
-
-\item{plot_gene_trends}{Whether to plot gene expression trends. Can be \code{NULL} (disabled), an integer (number of top driver genes), or a character vector (gene names). Default is \code{NULL}.}
-
-\item{gene_trends_model}{Model to use for gene trends: \code{"GAM"} (default) or \code{"GAMR"}.}
-
-\item{plot_heatmap}{Whether to plot heatmap. Default is \code{TRUE}.}
-
-\item{heatmap_genes}{Character vector of gene names to plot in heatmap. If \code{NULL}, top driver genes will be used. Default is \code{NULL}.}
-
-\item{heatmap_n_genes}{Number of genes to plot in heatmap when \code{heatmap_genes} is \code{NULL}. Default is \code{50}.}
-
-\item{plot_projection}{Whether to plot kernel projection. Default is \code{TRUE}.}
-
-\item{projection_basis}{Basis to use for projection plot. If \code{NULL}, uses the same as \code{basis}. Default is \code{NULL}.}
 
 \item{legend.position}{Position of legend in plots. Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
 
