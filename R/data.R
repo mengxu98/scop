@@ -51,6 +51,8 @@
 #'   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
 #'   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
 #'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
+#'   pancreas_sub@reductions$X_pca <- NULL
+#'   pancreas_sub@reductions$X_umap <- NULL
 #'   usethis::use_data(
 #'     pancreas_sub,
 #'     compress = "xz",
