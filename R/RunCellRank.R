@@ -81,23 +81,6 @@
 #' Only used for GPCCA estimator.
 #' @param n_cells_terminal Minimum number of cells required for a state to be considered terminal.
 #' Default is `10`.
-#' @param plot_spectrum Whether to plot eigenvalue spectrum. Default is `TRUE`.
-#' @param plot_schur_matrix Whether to plot Schur matrix (GPCCA only). Default is `TRUE`.
-#' @param plot_macrostates Whether to plot macrostates. Default is `TRUE`.
-#' @param plot_coarse_T Whether to plot coarse-grained transition matrix (GPCCA only). Default is `TRUE`.
-#' @param plot_fate_probabilities Whether to plot fate probabilities. Default is `TRUE`.
-#' @param plot_lineage_drivers Whether to plot lineage driver genes. Default is `TRUE`.
-#' @param plot_aggregate_fates Whether to plot aggregated fate probabilities. Default is `TRUE`.
-#' @param aggregate_mode Mode for aggregate fate probability plots: `"paga_pie"`, `"bar"`, `"paga"`, `"violin"`, `"heatmap"`, or `"clustermap"`.
-#' Default is `"paga_pie"`.
-#' @param n_driver_genes Number of top driver genes to plot for each lineage. Default is `8`.
-#' @param plot_gene_trends Whether to plot gene expression trends. Can be `NULL` (disabled), an integer (number of top driver genes), or a character vector (gene names). Default is `NULL`.
-#' @param gene_trends_model Model to use for gene trends: `"GAM"` (default) or `"GAMR"`.
-#' @param plot_heatmap Whether to plot heatmap. Default is `TRUE`.
-#' @param heatmap_genes Character vector of gene names to plot in heatmap. If `NULL`, top driver genes will be used. Default is `NULL`.
-#' @param heatmap_n_genes Number of genes to plot in heatmap when `heatmap_genes` is `NULL`. Default is `50`.
-#' @param plot_projection Whether to plot kernel projection. Default is `TRUE`.
-#' @param projection_basis Basis to use for projection plot. If `NULL`, uses the same as `basis`. Default is `NULL`.
 #'
 #' @return
 #' Returns a Seurat object if `return_seurat = TRUE` or an anndata object with CellRank results stored in `obsm`, `obs`, and `varm` slots.
@@ -200,24 +183,6 @@ RunCellRank <- function(
     plot_format = c("pdf", "png", "svg"),
     plot_dpi = 300,
     plot_prefix = "cellrank",
-    plot_spectrum = TRUE,
-    plot_schur_matrix = TRUE,
-    plot_macrostates = TRUE,
-    plot_coarse_T = TRUE,
-    plot_fate_probabilities = TRUE,
-    plot_lineage_drivers = TRUE,
-    plot_aggregate_fates = TRUE,
-    aggregate_mode = c(
-      "paga_pie", "bar", "paga", "violin", "heatmap", "clustermap"
-    ),
-    n_driver_genes = 8,
-    plot_gene_trends = NULL,
-    gene_trends_model = c("GAM", "GAMR"),
-    plot_heatmap = TRUE,
-    heatmap_genes = NULL,
-    heatmap_n_genes = 50,
-    plot_projection = TRUE,
-    projection_basis = NULL,
     legend.position = "on data",
     palette = "Paired",
     palcolor = NULL,
@@ -242,16 +207,11 @@ RunCellRank <- function(
     )
   }
 
-  # === Parameter validation for new parameters ===
-  # Match parameter values
   kernel_type <- match.arg(kernel_type)
   estimator_type <- match.arg(estimator_type)
   schur_method <- match.arg(schur_method)
   plot_format <- match.arg(plot_format)
-  aggregate_mode <- match.arg(aggregate_mode)
-  gene_trends_model <- match.arg(gene_trends_model)
 
-  # Validate kernel weights
   if (use_connectivity_kernel) {
     weight_sum <- velocity_weight + connectivity_weight
     if (abs(weight_sum - 1.0) > 0.01) {
@@ -263,38 +223,6 @@ RunCellRank <- function(
       velocity_weight <- velocity_weight / weight_sum
       connectivity_weight <- connectivity_weight / weight_sum
     }
-  }
-
-  # Validate plot parameters
-  if (!show_plot && !save_plot) {
-    log_message(
-      "Both {.arg show_plot} and {.arg save_plot} are FALSE. Plots will be computed but not displayed or saved.",
-      message_type = "warning",
-      verbose = verbose
-    )
-  }
-
-  # Validate save_plot directory
-  if (save_plot) {
-    if (!dir.exists(dirpath)) {
-      log_message(
-        "Creating directory: {.path {dirpath}}",
-        message_type = "info",
-        verbose = verbose
-      )
-      dir.create(dirpath, recursive = TRUE, showWarnings = FALSE)
-    }
-  }
-
-  # Validate estimator-specific parameters
-  if (estimator_type == "CFLARE" && (plot_schur_matrix || plot_coarse_T)) {
-    log_message(
-      "CFLARE estimator does not support {.arg plot_schur_matrix} or {.arg plot_coarse_T}. These will be skipped.",
-      message_type = "info",
-      verbose = verbose
-    )
-    plot_schur_matrix <- FALSE
-    plot_coarse_T <- FALSE
   }
 
   if (is.null(linear_reduction)) {
@@ -346,32 +274,6 @@ RunCellRank <- function(
       arg
     }
   })
-  args <- args[
-    !names(args) %in%
-      c(
-        "srt",
-        "assay_x",
-        "layer_x",
-        "assay_y",
-        "layer_y",
-        "return_seurat",
-        "palette",
-        "palcolor"
-      )
-  ]
-
-  # Map legend.position to legend_loc for Python
-  args[["legend_loc"]] <- legend.position
-  args <- args[!names(args) %in% c("legend.position")]
-
-  args[["n_jobs"]] <- cores
-  args <- args[!names(args) %in% c("cores")]
-
-  # Map new parameters to Python legacy parameters
-  args[["save"]] <- save_plot
-  args[["dpi"]] <- plot_dpi
-  args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
@@ -383,11 +285,32 @@ RunCellRank <- function(
     )
   }
   groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  args[["legend_loc"]] <- legend.position
+  args[["n_jobs"]] <- cores
+  args[["dpi"]] <- plot_dpi
+  args[["fileprefix"]] <- plot_prefix
   args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,
     palcolor = palcolor
   )
+  args <- args[
+    !names(args) %in%
+      c(
+        "srt",
+        "assay_x",
+        "layer_x",
+        "assay_y",
+        "layer_y",
+        "return_seurat",
+        "palette",
+        "palcolor",
+        "legend.position",
+        "cores",
+        "plot_dpi",
+        "plot_prefix"
+      )
+  ]
 
   log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
   functions <- reticulate::import_from_path(
@@ -401,29 +324,6 @@ RunCellRank <- function(
     message_type = "success",
     verbose = verbose
   )
-
-  if (verbose) {
-    log_message(
-      "CellRank results are stored in:",
-      message_type = "info",
-      verbose = TRUE
-    )
-    log_message(
-      "  Terminal states: srt$term_states_fwd",
-      message_type = "info",
-      verbose = TRUE
-    )
-    log_message(
-      "  Fate probabilities: srt@reductions$lineages_fwd",
-      message_type = "info",
-      verbose = TRUE
-    )
-    log_message(
-      "  Use {.code names(srt@reductions)} to see all available results",
-      message_type = "info",
-      verbose = TRUE
-    )
-  }
 
   adata <- result[[1]]
   estimator <- result[[2]]
