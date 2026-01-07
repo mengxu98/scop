@@ -642,13 +642,19 @@ def SCVELO(
 
     prevdir = os.getcwd()
 
-    expanded_path = os.path.expanduser(dirpath)
-    os.makedirs(expanded_path, exist_ok=True)
-    os.chdir(expanded_path)
-
-    os.makedirs("./figures", exist_ok=True)
-
-    sc.settings.figdir = "./figures"
+    if save_plot:
+        expanded_path = os.path.expanduser(dirpath)
+        if not os.path.exists(expanded_path):
+            os.makedirs(expanded_path, exist_ok=True)
+            log_message(
+                f"Created directory: {expanded_path}",
+                message_type="info",
+                verbose=verbose,
+            )
+        os.chdir(expanded_path)
+        sc.settings.figdir = "."
+    else:
+        sc.settings.figdir = "."
     sc.settings.file_format_figs = plot_format
     sc.settings.autosave = save_plot
 
@@ -674,57 +680,41 @@ def SCVELO(
             if nonlinear_reduction is not None:
                 if nonlinear_reduction in adata.obsm:
                     basis = nonlinear_reduction
-                elif f"X_{nonlinear_reduction}" in adata.obsm:
-                    basis = f"X_{nonlinear_reduction}"
                 else:
                     log_message(
                         "{.val {nonlinear_reduction}} not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
-                        message_type="warning",
+                        message_type="error",
                         verbose=verbose,
                     )
-                    basis = (
-                        linear_reduction
-                        if linear_reduction in adata.obsm
-                        else f"X_{linear_reduction}"
+                    raise ValueError(
+                        f"nonlinear_reduction '{nonlinear_reduction}' not found in adata.obsm"
                     )
             else:
-                basis = (
-                    linear_reduction
-                    if linear_reduction in adata.obsm
-                    else f"X_{linear_reduction}"
-                )
+                if linear_reduction in adata.obsm:
+                    basis = linear_reduction
+                else:
+                    log_message(
+                        "{.val {linear_reduction}} not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                    raise ValueError(
+                        f"linear_reduction '{linear_reduction}' not found in adata.obsm"
+                    )
 
         if basis not in adata.obsm:
             log_message(
                 "basis '{.val {basis}}' not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
-                message_type="warning",
+                message_type="error",
                 verbose=verbose,
             )
             if linear_reduction in adata.obsm:
-                basis = linear_reduction
-                log_message(
-                    "Using {.val {linear_reduction}} as basis instead",
-                    message_type="info",
-                    verbose=verbose,
-                )
-            elif f"X_{linear_reduction}" in adata.obsm:
-                basis = f"X_{linear_reduction}"
-                log_message(
-                    "Using {.val {linear_reduction}} as basis instead",
-                    message_type="info",
-                    verbose=verbose,
-                )
+                adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
+                basis = "basis"
             else:
-                if linear_reduction in adata.obsm:
-                    adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
-                    basis = "basis"
-                elif f"X_{linear_reduction}" in adata.obsm:
-                    adata.obsm["basis"] = adata.obsm[f"X_{linear_reduction}"][:, 0:2]
-                    basis = "basis"
-                else:
-                    raise ValueError(
-                        "Cannot find suitable basis. Available obsm keys: {.val {list(adata.obsm.keys())}}"
-                    )
+                raise ValueError(
+                    f"Cannot find suitable basis. Available obsm keys: {list(adata.obsm.keys())}"
+                )
 
         log_message("Using basis: {.val {basis}}", message_type="info", verbose=verbose)
         log_message(
@@ -786,21 +776,6 @@ def SCVELO(
             rep_dims = adata.obsm[linear_reduction].shape[1]
             if rep_dims >= n_pcs:
                 use_rep = linear_reduction
-                log_message(
-                    "Using {.val {linear_reduction}} with {.val {rep_dims}} dimensions",
-                    message_type="info",
-                    verbose=verbose,
-                )
-            else:
-                log_message(
-                    "{.val {linear_reduction}} has only {.val {rep_dims}} dimensions, need {.val {n_pcs}}",
-                    message_type="warning",
-                    verbose=verbose,
-                )
-        elif f"X_{linear_reduction}" in adata.obsm:
-            rep_dims = adata.obsm[f"X_{linear_reduction}"].shape[1]
-            if rep_dims >= n_pcs:
-                use_rep = f"X_{linear_reduction}"
                 log_message(
                     "Using {.val {linear_reduction}} with {.val {rep_dims}} dimensions",
                     message_type="info",
@@ -939,6 +914,36 @@ def SCVELO(
                 message_type="info",
                 verbose=verbose,
             )
+            if basis not in adata.obsm:
+                log_message(
+                    f"Basis '{basis}' not found in adata.obsm. Available keys: {list(adata.obsm.keys())}",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                raise ValueError(
+                    f"Basis '{basis}' not found in adata.obsm. Available keys: {list(adata.obsm.keys())}"
+                )
+
+            basis_embedding = adata.obsm[basis]
+            if basis_embedding.shape[1] < 2:
+                log_message(
+                    f"Basis '{basis}' has only {basis_embedding.shape[1]} dimensions, need at least 2 for velocity embedding",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                raise ValueError(
+                    f"Basis '{basis}' must have at least 2 dimensions for velocity embedding"
+                )
+
+            x_basis_key = f"X_{basis}"
+            if x_basis_key not in adata.obsm:
+                adata.obsm[x_basis_key] = basis_embedding
+                log_message(
+                    f"Created '{x_basis_key}' in adata.obsm for scvelo compatibility",
+                    message_type="info",
+                    verbose=verbose,
+                )
+
             scv.tl.velocity_embedding(adata, basis=basis, vkey=m)
 
             if compute_velocity_confidence:
@@ -1013,23 +1018,12 @@ def SCVELO(
                         "connectivities"
                     ]
 
-                    root_key = (
-                        m + "_root_cells"
-                        if (m + "_root_cells") in adata.obs.columns
-                        else None
-                    )
-                    end_key = (
-                        m + "_end_points"
-                        if (m + "_end_points") in adata.obs.columns
-                        else None
-                    )
-                    scv.tl.paga(
-                        adata,
-                        groups=group_by,
-                        vkey=m,
-                        root_key=root_key,
-                        end_key=end_key,
-                    )
+                    if m + "_graph" in adata.uns:
+                        adata.uns["velocity_graph"] = adata.uns[m + "_graph"]
+
+                    adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
+
+                    sc.tl.paga(adata, groups=group_by, use_rna_velocity=True)
                 except Exception as e:
                     log_message(
                         "PAGA computation failed ({.val {e}})",
@@ -1076,9 +1070,14 @@ def SCVELO(
 
                 def get_scvelo_save_path(name):
                     if save_plot:
-                        return f"{m}_{name}"
-                    else:
-                        return False
+                        ext = (
+                            plot_format
+                            if plot_format in ["png", "pdf", "svg"]
+                            else "png"
+                        )
+                        save_path = os.path.abspath(f"{plot_prefix}_{m}_{name}.{ext}")
+                        return save_path
+                    return False
 
                 try:
                     scv.pl.velocity_embedding_stream(
@@ -1091,15 +1090,38 @@ def SCVELO(
                         smooth=stream_smooth,
                         density=stream_density,
                         legend_loc=legend_loc,
-                        save=get_scvelo_save_path("stream"),
+                        save=False,
                         show=show_plot,
+                        dpi=plot_dpi,
                     )
+                    if save_plot:
+                        save_path = get_scvelo_save_path("stream")
+                        try:
+                            plt.savefig(save_path, dpi=plot_dpi, bbox_inches="tight")
+                        except Exception as pdf_error:
+                            if os.path.exists(save_path):
+                                try:
+                                    os.remove(save_path)
+                                except Exception:
+                                    pass
+                            save_path_png = save_path.replace(".pdf", ".png")
+                            plt.savefig(
+                                save_path_png, dpi=plot_dpi, bbox_inches="tight"
+                            )
+                            log_message(
+                                f"PDF save failed, saved as PNG instead: {save_path_png}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                    plt.close()
                 except Exception as e:
                     log_message(
                         "stream plot failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
+                    if plt is not None:
+                        plt.close()
 
                 try:
                     scv.pl.velocity_embedding(
@@ -1114,15 +1136,38 @@ def SCVELO(
                         density=arrow_density,
                         linewidth=0.3,
                         legend_loc=legend_loc,
-                        save=get_scvelo_save_path("arrow"),
+                        save=False,
                         show=show_plot,
+                        dpi=plot_dpi,
                     )
+                    if save_plot:
+                        save_path = get_scvelo_save_path("arrow")
+                        try:
+                            plt.savefig(save_path, dpi=plot_dpi, bbox_inches="tight")
+                        except Exception as pdf_error:
+                            if os.path.exists(save_path):
+                                try:
+                                    os.remove(save_path)
+                                except Exception:
+                                    pass
+                            save_path_png = save_path.replace(".pdf", ".png")
+                            plt.savefig(
+                                save_path_png, dpi=plot_dpi, bbox_inches="tight"
+                            )
+                            log_message(
+                                f"PDF save failed, saved as PNG instead: {save_path_png}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                    plt.close()
                 except Exception as e:
                     log_message(
                         "arrow plot failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
+                    if plt is not None:
+                        plt.close()
 
                 if compute_velocity_confidence:
                     for metric in ["length", "confidence"]:
@@ -1158,7 +1203,21 @@ def SCVELO(
         )
         raise
     finally:
-        os.chdir(prevdir)
+        try:
+            figures_dir = os.path.join(os.getcwd(), "figures")
+            if os.path.exists(figures_dir) and os.path.isdir(figures_dir):
+                if not os.listdir(figures_dir):
+                    os.rmdir(figures_dir)
+                    log_message(
+                        f"Removed empty figures directory: {figures_dir}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+        except Exception:
+            pass
+
+        if save_plot:
+            os.chdir(prevdir)
 
     try:
         if hasattr(adata, "_raw") and adata._raw is not None:
@@ -1168,6 +1227,272 @@ def SCVELO(
         pass
 
     return adata
+
+
+def compute_transition_matrix(kernel, verbose=True):
+    """
+    Compute transition matrix
+
+    Parameters
+    ----------
+    kernel : cellrank.kernels.Kernel
+        The kernel object
+    verbose : bool
+        Whether to log messages
+
+    Returns
+    -------
+    bool
+        True if matrix was computed, False otherwise
+    """
+    try:
+        kernel.compute_transition_matrix()
+        return fix_transition_matrix(kernel, verbose=verbose)
+    except ValueError as e:
+        if "not row stochastic" in str(e):
+            if verbose:
+                log_message(
+                    f"Transition matrix validation failed: {e}. Attempting to fix...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+            try:
+                import numpy as np
+                from scipy.sparse import issparse, csr_matrix
+
+                if hasattr(kernel, "connectivity"):
+                    conn = kernel.connectivity
+                elif hasattr(kernel, "_conn"):
+                    conn = kernel._conn
+                else:
+                    if (
+                        hasattr(kernel, "adata")
+                        and "connectivities" in kernel.adata.obsp
+                    ):
+                        conn = kernel.adata.obsp["connectivities"]
+                    else:
+                        raise ValueError("Cannot access connectivity matrix")
+
+                if issparse(conn):
+                    row_sums = np.array(conn.sum(axis=1)).flatten()
+                    row_sums_safe = np.maximum(row_sums, 1e-10)
+                    from scipy.sparse import diags
+
+                    tmat = diags(1.0 / row_sums_safe) @ conn
+                else:
+                    row_sums = conn.sum(axis=1, keepdims=True)
+                    row_sums_safe = np.maximum(row_sums, 1e-10)
+                    tmat = conn / row_sums_safe
+
+                kernel._transition_matrix = tmat
+
+                fix_transition_matrix(kernel, verbose=verbose)
+
+                if verbose:
+                    log_message(
+                        "Transition matrix fixed successfully",
+                        message_type="success",
+                        verbose=verbose,
+                    )
+                return True
+            except Exception as fix_error:
+                if verbose:
+                    log_message(
+                        f"Failed to fix transition matrix: {fix_error}",
+                        message_type="error",
+                        verbose=verbose,
+                    )
+                raise
+        else:
+            raise
+
+
+def fix_transition_matrix(kernel, verbose=True):
+    """
+    Fix transition matrix to be row stochastic (rows sum to 1).
+
+    This function ensures the transition matrix is valid for CellRank estimators
+    by cleaning NaN/Inf values, clipping negatives, adding self-loops where needed,
+    and normalizing rows to sum to 1.
+
+    Parameters
+    ----------
+    kernel : cellrank.kernels.Kernel
+        The kernel object with a transition_matrix attribute
+    verbose : bool
+        Whether to log messages
+
+    Returns
+    -------
+    bool
+        True if matrix was modified, False otherwise
+    """
+    try:
+        import numpy as np
+        from scipy.sparse import diags, issparse, csr_matrix
+
+        tmat = kernel.transition_matrix
+        matrix_modified = False
+
+        if verbose:
+            log_message(
+                "Validating and fixing transition matrix...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+        if issparse(tmat):
+            if np.any(np.isnan(tmat.data)) or np.any(np.isinf(tmat.data)):
+                if verbose:
+                    log_message(
+                        "Cleaning NaN/Inf values...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                tmat.data[np.isnan(tmat.data)] = 0
+                tmat.data[np.isinf(tmat.data)] = 0
+                tmat.eliminate_zeros()
+                matrix_modified = True
+        else:
+            if np.any(np.isnan(tmat)) or np.any(np.isinf(tmat)):
+                if verbose:
+                    log_message(
+                        "Cleaning NaN/Inf values...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                tmat[np.isnan(tmat)] = 0
+                tmat[np.isinf(tmat)] = 0
+                matrix_modified = True
+
+        if issparse(tmat):
+            if np.any(tmat.data < 0):
+                if verbose:
+                    log_message(
+                        f"Clipping {(tmat.data < 0).sum()} negative values to zero...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                tmat.data = np.maximum(tmat.data, 0)
+                matrix_modified = True
+        else:
+            if np.any(tmat < 0):
+                if verbose:
+                    log_message(
+                        "Clipping negative values to zero...",
+                        message_type="warning",
+                        verbose=verbose,
+                    )
+                tmat = np.maximum(tmat, 0)
+                matrix_modified = True
+
+        if issparse(tmat):
+            diag_values = tmat.diagonal()
+            min_self_loop = 0.01
+            needs_self_loop = diag_values < min_self_loop
+
+            if np.any(needs_self_loop):
+                if verbose:
+                    log_message(
+                        f"Adding self-loops to {needs_self_loop.sum()} cells for matrix primitivity...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                tmat = tmat.tolil()
+                for i in np.where(needs_self_loop)[0]:
+                    tmat[i, i] = min_self_loop
+                tmat = tmat.tocsr()
+                matrix_modified = True
+
+        row_sums = np.array(tmat.sum(axis=1)).flatten()
+        zero_rows = row_sums < 1e-10
+
+        if np.any(zero_rows):
+            if verbose:
+                log_message(
+                    f"Found {zero_rows.sum()} zero rows. Setting to self-loops...",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            if issparse(tmat):
+                tmat = tmat.tolil()
+                for i in np.where(zero_rows)[0]:
+                    tmat[i, i] = 1.0
+                tmat = tmat.tocsr()
+            else:
+                for i in np.where(zero_rows)[0]:
+                    tmat[i, :] = 0
+                    tmat[i, i] = 1.0
+
+            row_sums = np.array(tmat.sum(axis=1)).flatten()
+            matrix_modified = True
+
+        if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8):
+            log_message(
+                f"Normalizing rows (current range: {row_sums.min():.8f} - {row_sums.max():.8f})...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+            row_sums_safe = np.maximum(row_sums, 1e-10)
+
+            if issparse(tmat):
+                tmat = diags(1.0 / row_sums_safe) @ tmat
+            else:
+                tmat = tmat / row_sums_safe[:, np.newaxis]
+
+            matrix_modified = True
+
+        final_row_sums = np.array(tmat.sum(axis=1)).flatten()
+
+        if issparse(tmat):
+            has_negative = np.any(tmat.data < -1e-10)
+        else:
+            has_negative = np.any(tmat < -1e-10)
+
+        rows_sum_to_one = np.allclose(final_row_sums, 1.0, rtol=1e-6, atol=1e-8)
+
+        if has_negative and verbose:
+            log_message(
+                "Warning: Matrix still has negative values after fixing",
+                message_type="warning",
+                verbose=verbose,
+            )
+
+        if not rows_sum_to_one and verbose:
+            log_message(
+                f"Warning: Matrix rows still don't sum to 1 (range: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                message_type="warning",
+                verbose=verbose,
+            )
+
+        if matrix_modified:
+            kernel._transition_matrix = tmat
+            if verbose:
+                log_message(
+                    f"Matrix fixed and validated (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    message_type="success",
+                    verbose=verbose,
+                )
+        elif verbose:
+            log_message(
+                f"Matrix validation passed (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                message_type="success",
+                verbose=verbose,
+            )
+
+        return matrix_modified
+
+    except Exception as e:
+        if verbose:
+            log_message(
+                f"Matrix validation encountered error: {e}. Proceeding with original matrix...",
+                message_type="warning",
+                verbose=verbose,
+            )
+        return False
 
 
 def CellRank(
@@ -1215,22 +1540,6 @@ def CellRank(
     plot_format="png",
     plot_dpi=600,
     plot_prefix="cellrank",
-    plot_spectrum=True,
-    plot_schur_matrix=True,
-    plot_macrostates=True,
-    plot_coarse_T=True,
-    plot_fate_probabilities=True,
-    plot_lineage_drivers=True,
-    plot_aggregate_fates=True,
-    aggregate_mode="paga_pie",
-    n_driver_genes=8,
-    plot_gene_trends=None,
-    gene_trends_model="GAM",
-    plot_heatmap=True,
-    heatmap_genes=None,
-    heatmap_n_genes=50,
-    plot_projection=True,
-    projection_basis=None,
     legend_loc="on data",
 ):
     import os
@@ -1282,13 +1591,29 @@ def CellRank(
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
     prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(dirpath))
 
-    os.makedirs("./figures", exist_ok=True)
-
-    sc.settings.figdir = "./figures"
+    if save_plot:
+        expanded_path = os.path.expanduser(dirpath)
+        if not os.path.exists(expanded_path):
+            os.makedirs(expanded_path, exist_ok=True)
+            log_message(
+                f"Created directory: {expanded_path}",
+                message_type="info",
+                verbose=verbose,
+            )
+        os.chdir(expanded_path)
+        sc.settings.figdir = "."
+        cr.settings.figdir = "."
+    else:
+        sc.settings.figdir = "."
+        cr.settings.figdir = "."
     sc.settings.file_format_figs = plot_format
     sc.settings.autosave = save_plot
+    log_message(
+        f"CellRank figdir set to: {cr.settings.figdir}",
+        message_type="info",
+        verbose=verbose,
+    )
 
     if platform.system() == "Windows":
         import sys, multiprocessing, re
@@ -1319,10 +1644,6 @@ def CellRank(
                 message_type="error",
             )
             exit()
-
-        if linear_reduction is None:
-            sc.pp.pca(adata, n_comps=n_pcs)
-            linear_reduction = "X_pca"
 
         if basis is None:
             if nonlinear_reduction is not None:
@@ -1435,16 +1756,13 @@ def CellRank(
                 )
                 if linear_reduction and linear_reduction in adata.obsm:
                     rep_key = linear_reduction
-                elif "X_pca" in adata.obsm:
-                    rep_key = "X_pca"
                 else:
                     log_message(
-                        f"Computing PCA (n_comps={n_pcs})...",
-                        message_type="info",
+                        f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                        message_type="error",
                         verbose=verbose,
                     )
-                    sc.pp.pca(adata, n_comps=n_pcs)
-                    rep_key = "X_pca"
+                    exit()
 
                 if "connectivities" not in adata.obsp:
                     sc.pp.neighbors(
@@ -1487,16 +1805,13 @@ def CellRank(
         def get_rep_key():
             if linear_reduction and linear_reduction in adata.obsm:
                 return linear_reduction
-            elif "X_pca" in adata.obsm:
-                return "X_pca"
             else:
                 log_message(
-                    f"Computing PCA (n_comps={n_pcs})...",
-                    message_type="info",
+                    f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                    message_type="error",
                     verbose=verbose,
                 )
-                sc.pp.pca(adata, n_comps=n_pcs)
-                return "X_pca"
+                exit()
 
         if use_pseudotime:
             log_message(
@@ -1506,7 +1821,7 @@ def CellRank(
             )
             try:
                 pk = cr.kernels.PseudotimeKernel(adata, time_key=time_key)
-                pk.compute_transition_matrix()
+                compute_transition_matrix(pk, verbose=verbose)
                 main_kernel = pk
                 log_message(
                     "PseudotimeKernel created successfully",
@@ -1568,7 +1883,7 @@ def CellRank(
 
                 ctk = cr.kernels.CytoTRACEKernel(adata)
                 ctk.compute_cytotrace()
-                ctk.compute_transition_matrix()
+                compute_transition_matrix(ctk, verbose=verbose)
                 main_kernel = ctk
 
                 if "ct_score" in adata.obs:
@@ -1642,6 +1957,7 @@ def CellRank(
                 vk.compute_transition_matrix(
                     model=mode[-1], softmax_scale=softmax_scale
                 )
+                compute_transition_matrix(vk, verbose=verbose)
                 main_kernel = vk
             except Exception as e:
                 log_message(
@@ -1657,6 +1973,7 @@ def CellRank(
                 try:
                     vk = cr.kernels.VelocityKernel(adata, backward=False)
                     vk.compute_transition_matrix(softmax_scale=softmax_scale)
+                    compute_transition_matrix(vk, verbose=verbose)
                     main_kernel = vk
                 except Exception as e2:
                     log_message(
@@ -1696,7 +2013,7 @@ def CellRank(
                 )
                 ensure_neighbors()
                 ck = cr.kernels.ConnectivityKernel(adata)
-                ck.compute_transition_matrix()
+                compute_transition_matrix(ck, verbose=verbose)
                 final_kernel = velocity_weight * main_kernel + connectivity_weight * ck
                 log_message(
                     f"Combined kernels with weights: main={velocity_weight:.2f}, connectivity={connectivity_weight:.2f}",
@@ -1725,7 +2042,7 @@ def CellRank(
             )
             ensure_neighbors()
             ck = cr.kernels.ConnectivityKernel(adata)
-            ck.compute_transition_matrix()
+            compute_transition_matrix(ck, verbose=verbose)
             final_kernel = ck
             log_message(
                 "Using ConnectivityKernel only (connectivity-based transitions)",
@@ -1932,11 +2249,38 @@ def CellRank(
                     )
 
                 log_message(
-                    f"Computing Schur decomposition (n_states={n_states_schur}, method='brandts')...",
+                    f"Computing Schur decomposition (n_states={n_states_schur}, method='{schur_method}')...",
                     message_type="info",
                     verbose=verbose,
                 )
-                estimator.compute_schur(n_states_schur, method="brandts")
+                try:
+                    estimator.compute_schur(n_states_schur, method=schur_method)
+                except (ValueError, RuntimeError) as schur_error:
+                    if "subspace_angles" in str(schur_error) or "invariant subspace" in str(schur_error):
+                        if schur_method == "brandts":
+                            log_message(
+                                f"Schur decomposition with '{schur_method}' method failed: {schur_error}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                            log_message(
+                                "Trying with 'krylov' method instead...",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+                            try:
+                                estimator.compute_schur(n_states_schur, method="krylov")
+                            except Exception as krylov_error:
+                                log_message(
+                                    f"Schur decomposition with 'krylov' method also failed: {krylov_error}",
+                                    message_type="warning",
+                                    verbose=verbose,
+                                )
+                                raise schur_error
+                        else:
+                            raise
+                    else:
+                        raise
 
                 if n_macrostates is None:
                     n_macro = max(2, n_states_schur - 2)
@@ -1948,16 +2292,59 @@ def CellRank(
                     message_type="info",
                     verbose=verbose,
                 )
-                estimator.compute_macrostates(
-                    n_states=n_macro, n_cells=n_cells_terminal
-                )
+                try:
+                    estimator.compute_macrostates(
+                        n_states=n_macro, n_cells=n_cells_terminal
+                    )
+                except ValueError as macro_error:
+                    if "Discretizing leads to a cluster" in str(
+                        macro_error
+                    ) or "0 samples" in str(macro_error):
+                        log_message(
+                            f"Macrostates computation failed: {macro_error}",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+                        log_message(
+                            "Trying with fewer macrostates...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        # Try with fewer macrostates
+                        n_macro_reduced = max(2, n_macro - 2)
+                        try:
+                            estimator.compute_macrostates(
+                                n_states=n_macro_reduced, n_cells=n_cells_terminal
+                            )
+                            log_message(
+                                f"Macrostates computed successfully with n_states={n_macro_reduced}",
+                                message_type="success",
+                                verbose=verbose,
+                            )
+                        except Exception as e2:
+                            log_message(
+                                f"Reduced macrostates also failed: {e2}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                            log_message(
+                                "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+                            gpcca_failed = True
+                            estimator_type = "CFLARE"
+                            raise
+                    else:
+                        raise
 
-                log_message(
-                    f"Setting terminal states (n_cells={n_cells_terminal})...",
-                    message_type="info",
-                    verbose=verbose,
-                )
-                estimator.set_terminal_states(n_cells=n_cells_terminal)
+                if not gpcca_failed:
+                    log_message(
+                        f"Setting terminal states (n_cells={n_cells_terminal})...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    estimator.set_terminal_states(n_cells=n_cells_terminal)
 
                 log_message(
                     "GPCCA estimator completed successfully",
@@ -1970,19 +2357,27 @@ def CellRank(
                     "not a transition matrix" in str(e).lower()
                     or "schur" in str(e).lower()
                     or "gpcca" in str(e).lower()
+                    or "Discretizing leads to a cluster" in str(e)
+                    or "0 samples" in str(e)
+                    or "subspace_angles" in str(e).lower()
+                    or "invariant subspace" in str(e).lower()
                 ):
-                    log_message(
-                        f"GPCCA estimator failed: {e}",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
-                    log_message(
-                        "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
-                    gpcca_failed = True
-                    estimator_type = "CFLARE"
+                    if not gpcca_failed:
+                        log_message(
+                            f"GPCCA estimator failed: {e}",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+                        log_message(
+                            "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
+                        gpcca_failed = True
+                        estimator_type = "CFLARE"
+                    else:
+                        # Already tried to switch, just raise
+                        raise
                 else:
                     log_message(
                         f"GPCCA failed with unexpected error: {e}",
@@ -2033,7 +2428,17 @@ def CellRank(
             message_type="info",
             verbose=verbose,
         )
-        estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
+        try:
+            estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
+        except RuntimeError as e:
+            if "Compute `.fate_probabilities`" in str(e):
+                log_message(
+                    "Skipping lineage drivers computation (fate probabilities not available)",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+            else:
+                raise
 
         log_message(
             "CellRan analysis completed!", message_type="success", verbose=verbose
@@ -2067,206 +2472,204 @@ def CellRank(
                         verbose=verbose,
                     )
 
-        if show_plot or save_plot:
+        if save_plot:
             log_message(
                 "Generating visualizations...", message_type="info", verbose=verbose
             )
 
             def get_save_path(name):
-                if save_plot:
-                    return f"{plot_prefix}_{name}"
-                return None
+                ext = plot_format if plot_format in ["png", "pdf", "svg"] else "png"
+                save_path = os.path.abspath(f"{plot_prefix}_{name}.{ext}")
+                log_message(
+                    f"Save path for {name}: {save_path}",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                return save_path
 
-            if plot_spectrum:
-                try:
-                    log_message(
-                        "Plotting eigenvalue spectrum...",
-                        message_type="info",
-                        verbose=verbose,
-                    )
-                    estimator.plot_spectrum(
-                        real_only=True, dpi=plot_dpi, save=get_save_path("spectrum")
-                    )
-                    if show_plot:
-                        plt.show()
-                    plt.close()
-                except Exception as e:
-                    log_message(
-                        f"Failed to plot spectrum: {e}",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
+            try:
+                log_message(
+                    "Plotting eigenvalue spectrum...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.plot_spectrum(
+                    real_only=True, dpi=plot_dpi, save=get_save_path("spectrum")
+                )
+                if show_plot:
+                    plt.show()
+                plt.close()
+            except Exception as e:
+                log_message(
+                    f"Failed to plot spectrum: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
 
             if estimator_type == "GPCCA":
-                if plot_schur_matrix:
-                    try:
-                        log_message(
-                            "Plotting Schur matrix...",
-                            message_type="info",
-                            verbose=verbose,
-                        )
-                        estimator.plot_schur_matrix(
-                            dpi=plot_dpi, save=get_save_path("schur_matrix")
-                        )
-                        if show_plot:
-                            plt.show()
-                        plt.close()
-                    except Exception as e:
-                        log_message(
-                            f"Failed to plot Schur matrix: {e}",
-                            message_type="warning",
-                            verbose=verbose,
-                        )
-
-                if plot_coarse_T:
-                    try:
-                        log_message(
-                            "Plotting coarse-grained transition matrix...",
-                            message_type="info",
-                            verbose=verbose,
-                        )
-                        estimator.plot_coarse_T(
-                            show_initial_dist=True,
-                            show_stationary_dist=True,
-                            dpi=plot_dpi,
-                            save=get_save_path("coarse_T"),
-                        )
-                        if show_plot:
-                            plt.show()
-                        plt.close()
-                    except Exception as e:
-                        log_message(
-                            f"Failed to plot coarse T: {e}",
-                            message_type="warning",
-                            verbose=verbose,
-                        )
-
-            if plot_macrostates:
                 try:
                     log_message(
-                        "Plotting all macrostates...",
+                        "Plotting Schur matrix...",
                         message_type="info",
                         verbose=verbose,
                     )
-                    estimator.plot_macrostates(
-                        which="all",
-                        basis=basis,
-                        dpi=plot_dpi,
-                        save=get_save_path("macrostates_all"),
-                    )
-                    if show_plot:
-                        plt.show()
-                    plt.close()
-
-                    log_message(
-                        "Plotting terminal states...",
-                        message_type="info",
-                        verbose=verbose,
-                    )
-                    estimator.plot_macrostates(
-                        which="terminal",
-                        basis=basis,
-                        dpi=plot_dpi,
-                        save=get_save_path("macrostates_terminal"),
+                    estimator.plot_schur_matrix(
+                        dpi=plot_dpi, save=get_save_path("schur_matrix")
                     )
                     if show_plot:
                         plt.show()
                     plt.close()
                 except Exception as e:
                     log_message(
-                        f"Failed to plot macrostates: {e}",
+                        f"Failed to plot Schur matrix: {e}",
                         message_type="warning",
                         verbose=verbose,
                     )
 
-            if plot_fate_probabilities:
                 try:
                     log_message(
-                        "Plotting fate probabilities...",
+                        "Plotting coarse-grained transition matrix...",
                         message_type="info",
                         verbose=verbose,
                     )
-                    estimator.plot_fate_probabilities(
-                        basis=basis,
-                        ncols=3,
+                    estimator.plot_coarse_T(
+                        show_initial_dist=True,
+                        show_stationary_dist=True,
                         dpi=plot_dpi,
-                        save=get_save_path("fate_probabilities"),
+                        save=get_save_path("coarse_T"),
                     )
                     if show_plot:
                         plt.show()
                     plt.close()
                 except Exception as e:
                     log_message(
-                        f"Failed to plot fate probabilities: {e}",
+                        f"Failed to plot coarse T: {e}",
                         message_type="warning",
                         verbose=verbose,
                     )
 
-            if plot_lineage_drivers:
-                try:
-                    fate_probs_key = (
-                        "to_terminal_states"
-                        if not hasattr(estimator, "backward") or not estimator.backward
-                        else "from_terminal_states"
-                    )
-                    if fate_probs_key in adata.obsm:
-                        lineages = adata.obsm[fate_probs_key].names
-                        log_message(
-                            f"Plotting lineage drivers for {len(lineages)} lineages...",
-                            message_type="info",
-                            verbose=verbose,
-                        )
+            try:
+                log_message(
+                    "Plotting all macrostates...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.plot_macrostates(
+                    which="all",
+                    basis=basis,
+                    dpi=plot_dpi,
+                    save=get_save_path("macrostates_all"),
+                )
+                if show_plot:
+                    plt.show()
+                plt.close()
 
-                        for lineage in lineages:
-                            try:
-                                estimator.plot_lineage_drivers(
-                                    lineage=lineage,
-                                    n_genes=n_driver_genes,
-                                    dpi=plot_dpi,
-                                    save=get_save_path(f"lineage_drivers_{lineage}"),
-                                )
-                                if show_plot:
-                                    plt.show()
-                                plt.close()
-                            except Exception as e:
-                                log_message(
-                                    f"Failed to plot lineage drivers for {lineage}: {e}",
-                                    message_type="warning",
-                                    verbose=verbose,
-                                )
-                except Exception as e:
-                    log_message(
-                        f"Failed to plot lineage drivers: {e}",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
+                log_message(
+                    "Plotting terminal states...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.plot_macrostates(
+                    which="terminal",
+                    basis=basis,
+                    dpi=plot_dpi,
+                    save=get_save_path("macrostates_terminal"),
+                )
+                if show_plot:
+                    plt.show()
+                plt.close()
+            except Exception as e:
+                log_message(
+                    f"Failed to plot macrostates: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
 
-            if plot_aggregate_fates:
-                try:
+            try:
+                log_message(
+                    "Plotting fate probabilities...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                estimator.plot_fate_probabilities(
+                    basis=basis,
+                    ncols=3,
+                    dpi=plot_dpi,
+                    save=get_save_path("fate_probabilities"),
+                )
+                if show_plot:
+                    plt.show()
+                plt.close()
+            except Exception as e:
+                log_message(
+                    f"Failed to plot fate probabilities: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            try:
+                fate_probs_key = (
+                    "to_terminal_states"
+                    if not hasattr(estimator, "backward") or not estimator.backward
+                    else "from_terminal_states"
+                )
+                if fate_probs_key in adata.obsm:
+                    lineages = adata.obsm[fate_probs_key].names
                     log_message(
-                        f"Plotting aggregate fate probabilities (mode={aggregate_mode})...",
+                        f"Plotting lineage drivers for {len(lineages)} lineages...",
                         message_type="info",
                         verbose=verbose,
                     )
-                    cr.pl.aggregate_fate_probabilities(
-                        adata,
-                        mode=aggregate_mode,
-                        cluster_key=group_by,
-                        basis=basis if aggregate_mode in ["paga", "paga_pie"] else None,
-                        dpi=plot_dpi,
-                        save=get_save_path(f"aggregate_fates_{aggregate_mode}"),
-                    )
-                    if show_plot:
-                        plt.show()
-                    plt.close()
-                except Exception as e:
-                    log_message(
-                        f"Failed to plot aggregate fates: {e}",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
 
-            if plot_gene_trends is not None and "cellrank_pseudotime" in adata.obs:
+                    for lineage in lineages:
+                        try:
+                            estimator.plot_lineage_drivers(
+                                lineage=lineage,
+                                n_genes=8,
+                                dpi=plot_dpi,
+                                save=get_save_path(f"lineage_drivers_{lineage}"),
+                            )
+                            if show_plot:
+                                plt.show()
+                            plt.close()
+                        except Exception as e:
+                            log_message(
+                                f"Failed to plot lineage drivers for {lineage}: {e}",
+                                message_type="warning",
+                                verbose=verbose,
+                            )
+            except Exception as e:
+                log_message(
+                    f"Failed to plot lineage drivers: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            try:
+                log_message(
+                    "Plotting aggregate fate probabilities (mode=paga_pie)...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                cr.pl.aggregate_fate_probabilities(
+                    adata,
+                    mode="paga_pie",
+                    cluster_key=group_by,
+                    basis=basis,
+                    dpi=plot_dpi,
+                    save=get_save_path("aggregate_fates_paga_pie"),
+                )
+                if show_plot:
+                    plt.show()
+                plt.close()
+            except Exception as e:
+                log_message(
+                    f"Failed to plot aggregate fates: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+
+            if "cellrank_pseudotime" in adata.obs:
                 try:
                     log_message(
                         "Plotting gene expression trends...",
@@ -2274,44 +2677,19 @@ def CellRank(
                         verbose=verbose,
                     )
 
-                    if isinstance(plot_gene_trends, int):
-                        driver_key = f"to_terminal_states_lineage_drivers"
-                        if driver_key in adata.varm:
-                            drivers_df = adata.varm[driver_key]
-                            top_genes = drivers_df.nlargest(
-                                plot_gene_trends, columns=drivers_df.columns[0]
-                            ).index.tolist()
-                            log_message(
-                                f"Using top {len(top_genes)} driver genes",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-                        else:
-                            log_message(
-                                "No lineage drivers found, skipping gene trends",
-                                message_type="warning",
-                                verbose=verbose,
-                            )
-                            top_genes = None
-                    else:
-                        top_genes = plot_gene_trends
+                    driver_key = "to_terminal_states_lineage_drivers"
+                    if driver_key in adata.varm:
+                        drivers_df = adata.varm[driver_key]
+                        top_genes = drivers_df.nlargest(
+                            20, columns=drivers_df.columns[0]
+                        ).index.tolist()
+                        log_message(
+                            f"Using top {len(top_genes)} driver genes",
+                            message_type="info",
+                            verbose=verbose,
+                        )
 
-                    if top_genes:
-                        if gene_trends_model.upper() == "GAM":
-                            model = cr.models.GAM()
-                        elif gene_trends_model.upper() == "GAMR":
-                            try:
-                                model = cr.models.GAMR()
-                            except Exception:
-                                log_message(
-                                    "GAMR not available, using GAM",
-                                    message_type="warning",
-                                    verbose=verbose,
-                                )
-                                model = cr.models.GAM()
-                        else:
-                            model = cr.models.GAM()
-
+                        model = cr.models.GAM()
                         cr.pl.gene_trends(
                             adata,
                             model=model,
@@ -2324,6 +2702,12 @@ def CellRank(
                         if show_plot:
                             plt.show()
                         plt.close()
+                    else:
+                        log_message(
+                            "No lineage drivers found, skipping gene trends",
+                            message_type="warning",
+                            verbose=verbose,
+                        )
                 except Exception as e:
                     log_message(
                         f"Failed to plot gene trends: {e}",
@@ -2331,121 +2715,140 @@ def CellRank(
                         verbose=verbose,
                     )
 
-            if plot_projection:
-                try:
+            try:
+                log_message(
+                    "Plotting kernel projection...",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                proj_basis = basis
+                log_message(
+                    f"Using basis: {proj_basis} for projection",
+                    message_type="info",
+                    verbose=verbose,
+                )
+                if final_kernel is not None:
                     log_message(
-                        "Plotting kernel projection...",
+                        f"Final kernel type: {type(final_kernel).__name__}",
                         message_type="info",
                         verbose=verbose,
                     )
-                    proj_basis = projection_basis if projection_basis else basis
-                    log_message(
-                        f"Using basis: {proj_basis} for projection",
-                        message_type="info",
-                        verbose=verbose,
-                    )
-                    if final_kernel is not None:
+
+                    plot_palette = palette
+                    if plot_palette is None and group_by is not None:
+                        groups = (
+                            adata.obs[group_by].cat.categories
+                            if hasattr(adata.obs[group_by], "cat")
+                            else adata.obs[group_by].unique()
+                        )
+                        plot_palette = dict(
+                            zip(groups, plt.cm.tab10(np.linspace(0, 1, len(groups))))
+                        )
                         log_message(
-                            f"Final kernel type: {type(final_kernel).__name__}",
+                            f"Created default palette for {len(groups)} groups",
                             message_type="info",
                             verbose=verbose,
                         )
 
-                        plot_palette = palette
-                        if plot_palette is None and group_by is not None:
-                            groups = (
-                                adata.obs[group_by].cat.categories
-                                if hasattr(adata.obs[group_by], "cat")
-                                else adata.obs[group_by].unique()
-                            )
-                            plot_palette = dict(
-                                zip(
-                                    groups, plt.cm.tab10(np.linspace(0, 1, len(groups)))
-                                )
-                            )
-                            log_message(
-                                f"Created default palette for {len(groups)} groups",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-
-                        plot_kwargs = {}
-                        if save_plot:
-                            save_path = f"{plot_prefix}_projection_{proj_basis}"
-                            plot_kwargs["save"] = save_path
-                            log_message(
-                                f"Will save projection to: {save_path}",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-                        if plot_dpi:
-                            plot_kwargs["dpi"] = plot_dpi
-                            log_message(
-                                f"Using DPI: {plot_dpi}",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-
-                        if group_by is not None:
-                            plot_kwargs["color"] = group_by
-                            if plot_palette is not None:
-                                plot_kwargs["palette"] = plot_palette
-                            plot_kwargs["legend_loc"] = legend_loc
-                            log_message(
-                                f"Adding color information: color={group_by}, palette={'provided' if palette is not None else 'default'}",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-
+                    plot_kwargs = {}
+                    if save_plot:
+                        ext = (
+                            plot_format
+                            if plot_format in ["png", "pdf", "svg"]
+                            else "png"
+                        )
+                        save_path = os.path.abspath(
+                            f"{plot_prefix}_projection_{proj_basis}.{ext}"
+                        )
+                        plot_kwargs["save"] = save_path
                         log_message(
-                            "Calling final_kernel.plot_projection()...",
+                            f"Will save projection to: {save_path}",
                             message_type="info",
                             verbose=verbose,
                         )
-                        try:
-                            final_kernel.plot_projection(
-                                basis=proj_basis,
-                                recompute=True,
-                                **plot_kwargs,
-                            )
-                            if show_plot:
-                                import matplotlib.pyplot as plt
-
-                                plt.show()
-                            log_message(
-                                "Projection plot completed successfully",
-                                message_type="success",
-                                verbose=verbose,
-                            )
-                        except Exception as e:
-                            log_message(
-                                f"Failed to plot projection: {e}",
-                                message_type="warning",
-                                verbose=verbose,
-                            )
-                    else:
+                    if plot_dpi:
+                        plot_kwargs["dpi"] = plot_dpi
                         log_message(
-                            "Cannot plot projection: kernel object is None",
+                            f"Using DPI: {plot_dpi}",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+
+                    if group_by is not None:
+                        plot_kwargs["color"] = group_by
+                        if plot_palette is not None:
+                            plot_kwargs["palette"] = plot_palette
+                        plot_kwargs["legend_loc"] = legend_loc
+                        log_message(
+                            f"Adding color information: color={group_by}, palette={'provided' if palette is not None else 'default'}",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+
+                    log_message(
+                        "Calling final_kernel.plot_projection()...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    try:
+                        final_kernel.plot_projection(
+                            basis=proj_basis,
+                            recompute=True,
+                            **plot_kwargs,
+                        )
+                        if show_plot:
+                            import matplotlib.pyplot as plt
+
+                            plt.show()
+                        if save_plot and plot_format == "pdf":
+                            save_path = plot_kwargs.get("save")
+                            if save_path and save_path.endswith(".pdf"):
+                                png_path = save_path.replace(".pdf", ".png")
+                                if os.path.exists(png_path) and not os.path.exists(
+                                    save_path
+                                ):
+                                    if os.path.exists(save_path):
+                                        try:
+                                            os.remove(save_path)
+                                        except Exception:
+                                            pass
+                                    log_message(
+                                        f"PDF save failed, CellRank saved as PNG: {png_path}",
+                                        message_type="warning",
+                                        verbose=verbose,
+                                    )
+                        log_message(
+                            "Projection plot completed successfully",
+                            message_type="success",
+                            verbose=verbose,
+                        )
+                    except Exception as e:
+                        log_message(
+                            f"Failed to plot projection: {e}",
                             message_type="warning",
                             verbose=verbose,
                         )
-                except Exception as e:
+                else:
                     log_message(
-                        f"Failed to plot projection: {e}",
+                        "Cannot plot projection: kernel object is None",
                         message_type="warning",
                         verbose=verbose,
                     )
-                    import traceback
+            except Exception as e:
+                log_message(
+                    f"Failed to plot projection: {e}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                import traceback
 
-                    log_message(
-                        f"Projection error traceback: {traceback.format_exc()}",
-                        message_type="warning",
-                        verbose=verbose,
-                    )
+                log_message(
+                    f"Projection error traceback: {traceback.format_exc()}",
+                    message_type="warning",
+                    verbose=verbose,
+                )
 
-            log_message(
-                "Visualization completed!", message_type="success", verbose=verbose
-            )
+        log_message("Visualization completed!", message_type="success", verbose=verbose)
 
         if use_velocity:
             try:
@@ -2456,6 +2859,28 @@ def CellRank(
                         verbose=verbose,
                     )
                     try:
+                        vkey = mode[-1] if isinstance(mode, list) else mode
+                        velocity_graph_key = vkey + "_graph"
+                        
+                        if velocity_graph_key in adata.uns:
+                            adata.uns["velocity_graph"] = adata.uns[velocity_graph_key]
+                            if velocity_graph_key + "_neg" in adata.uns:
+                                adata.uns["velocity_graph_neg"] = adata.uns[velocity_graph_key + "_neg"]
+                            else:
+                                log_message(
+                                    "velocity_graph_neg not found, computing velocity graph...",
+                                    message_type="info",
+                                    verbose=verbose,
+                                )
+                                scv.tl.velocity_graph(adata, vkey=vkey, n_neighbors=n_neighbors, n_jobs=n_jobs)
+                        elif "velocity_graph" not in adata.uns:
+                            log_message(
+                                "velocity_graph not found, computing velocity graph...",
+                                message_type="info",
+                                verbose=verbose,
+                            )
+                            scv.tl.velocity_graph(adata, vkey=vkey, n_neighbors=n_neighbors, n_jobs=n_jobs)
+                        
                         scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
                         terminal_key = (
                             "to_terminal_states_probs"
@@ -2522,7 +2947,21 @@ def CellRank(
             )
 
     finally:
-        os.chdir(prevdir)
+        try:
+            figures_dir = os.path.join(os.getcwd(), "figures")
+            if os.path.exists(figures_dir) and os.path.isdir(figures_dir):
+                if not os.listdir(figures_dir):
+                    os.rmdir(figures_dir)
+                    log_message(
+                        f"Removed empty figures directory: {figures_dir}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+        except Exception:
+            pass
+
+        if save_plot:
+            os.chdir(prevdir)
 
     try:
         adata.__dict__["_raw"].__dict__["_var"] = (
@@ -2654,11 +3093,9 @@ def PAGA(
     os.makedirs(expanded_path, exist_ok=True)
     os.chdir(expanded_path)
 
-    os.makedirs("./figures", exist_ok=True)
-
     import scanpy as sc
 
-    sc.settings.figdir = "./figures"
+    sc.settings.figdir = "."
 
     import platform
 
@@ -2692,10 +3129,6 @@ def PAGA(
             )
             return None
 
-        if linear_reduction is None:
-            sc.pp.pca(adata, n_comps=n_pcs)
-            linear_reduction = "X_pca"
-
         if basis is None:
             if nonlinear_reduction is not None:
                 basis = nonlinear_reduction
@@ -2720,19 +3153,14 @@ def PAGA(
         rep_key = linear_reduction
         try:
             obsm_keys = set(adata.obsm_keys())
-            cand_keys = [
-                linear_reduction,
-                (
-                    f"X_{linear_reduction}"
-                    if linear_reduction is not None
-                    and not str(linear_reduction).startswith("X_")
-                    else None
-                ),
-            ]
-            rep_key = next(
-                (k for k in cand_keys if k is not None and k in obsm_keys),
-                linear_reduction,
-            )
+            if linear_reduction not in obsm_keys:
+                log_message(
+                    f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                return None
+            rep_key = linear_reduction
 
             neighbors_n_pcs = n_pcs
             if rep_key in obsm_keys:
@@ -2796,8 +3224,7 @@ def PAGA(
 
             if save:
                 plt.savefig(
-                    "./figures/"
-                    + ".".join(filter(None, [fileprefix, "paga_compare.pdf"])),
+                    "./" + ".".join(filter(None, [fileprefix, "paga_compare.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -2824,8 +3251,7 @@ def PAGA(
 
             if save:
                 plt.savefig(
-                    "./figures/"
-                    + ".".join(filter(None, [fileprefix, "paga_layout.pdf"])),
+                    "./" + ".".join(filter(None, [fileprefix, "paga_layout.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -2858,8 +3284,7 @@ def PAGA(
 
             if save:
                 plt.savefig(
-                    "./figures/"
-                    + ".".join(filter(None, [fileprefix, "paga_graph.pdf"])),
+                    "./" + ".".join(filter(None, [fileprefix, "paga_graph.pdf"])),
                     dpi=dpi,
                     bbox_inches="tight",
                     facecolor="white",
@@ -2891,8 +3316,7 @@ def PAGA(
 
                 if save:
                     plt.savefig(
-                        "./figures/"
-                        + ".".join(filter(None, [fileprefix, "paga_umap.pdf"])),
+                        "./" + ".".join(filter(None, [fileprefix, "paga_umap.pdf"])),
                         dpi=dpi,
                         bbox_inches="tight",
                         facecolor="white",
@@ -2942,7 +3366,7 @@ def PAGA(
 
                 if save:
                     plt.savefig(
-                        "./figures/"
+                        "./"
                         + ".".join(filter(None, [fileprefix, "dpt_pseudotime.pdf"])),
                         dpi=dpi,
                         bbox_inches="tight",
@@ -2958,6 +3382,19 @@ def PAGA(
                     plt.close("all")
 
     finally:
+        try:
+            figures_dir = os.path.join(os.getcwd(), "figures")
+            if os.path.exists(figures_dir) and os.path.isdir(figures_dir):
+                if not os.listdir(figures_dir):
+                    os.rmdir(figures_dir)
+                    log_message(
+                        f"Removed empty figures directory: {figures_dir}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+        except Exception:
+            pass
+
         os.chdir(prevdir)
 
         if is_apple_silicon and plt is not None:
@@ -3067,9 +3504,9 @@ def Palantir(
     warnings.simplefilter("ignore", category=DeprecationWarning)
 
     prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(dirpath))
-
-    os.makedirs("./figures", exist_ok=True)
+    expanded_path = os.path.expanduser(dirpath)
+    os.makedirs(expanded_path, exist_ok=True)
+    os.chdir(expanded_path)
 
     if platform.system() == "Windows":
         import sys, multiprocessing, re
@@ -3103,9 +3540,9 @@ def Palantir(
             )
             exit()
 
-        if linear_reduction is None:
-            sc.pp.pca(adata, n_comps=n_pcs)
-            linear_reduction = "X_pca"
+        # if linear_reduction is None:
+        #     sc.pp.pca(adata, n_comps=n_pcs)
+        #     linear_reduction = "X_pca"
 
         if basis is None:
             if nonlinear_reduction is not None:
@@ -3256,8 +3693,7 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                "./figures/"
-                + ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])),
+                "./" + ".".join(filter(None, [fileprefix, "palantir_pseudotime.pdf"])),
                 dpi=dpi,
             )
 
@@ -3270,7 +3706,7 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                "./figures/"
+                "./"
                 + ".".join(filter(None, [fileprefix, "palantir_diff_potential.pdf"])),
                 dpi=dpi,
             )
@@ -3284,8 +3720,7 @@ def Palantir(
         )
         if save:
             plt.savefig(
-                "./figures/"
-                + ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])),
+                "./" + ".".join(filter(None, [fileprefix, "palantir_probs.pdf"])),
                 dpi=dpi,
             )
 
@@ -3301,12 +3736,25 @@ def Palantir(
             )
             if save:
                 plt.savefig(
-                    "./figures/"
+                    "./"
                     + ".".join(filter(None, [fileprefix, "palantir_group_by.pdf"])),
                     dpi=dpi,
                 )
 
     finally:
+        try:
+            figures_dir = os.path.join(os.getcwd(), "figures")
+            if os.path.exists(figures_dir) and os.path.isdir(figures_dir):
+                if not os.listdir(figures_dir):
+                    os.rmdir(figures_dir)
+                    log_message(
+                        f"Removed empty figures directory: {figures_dir}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+        except Exception:
+            pass
+
         os.chdir(prevdir)
 
     try:
@@ -3393,7 +3841,9 @@ def WOT(
     import os
 
     prevdir = os.getcwd()
-    os.chdir(os.path.expanduser(dirpath))
+    expanded_path = os.path.expanduser(dirpath)
+    os.makedirs(expanded_path, exist_ok=True)
+    os.chdir(expanded_path)
 
     import platform
 
@@ -3518,6 +3968,19 @@ def WOT(
                 )
 
     finally:
+        try:
+            figures_dir = os.path.join(os.getcwd(), "figures")
+            if os.path.exists(figures_dir) and os.path.isdir(figures_dir):
+                if not os.listdir(figures_dir):
+                    os.rmdir(figures_dir)
+                    log_message(
+                        f"Removed empty figures directory: {figures_dir}",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+        except Exception:
+            pass
+
         os.chdir(prevdir)
 
     try:
@@ -3730,7 +4193,9 @@ def CellTypist(
     try:
         if adata is None and h5ad is None:
             log_message(
-                "`adata` or `h5ad` must be provided", message_type="error", verbose=verbose
+                "`adata` or `h5ad` must be provided",
+                message_type="error",
+                verbose=verbose,
             )
             return None
 
