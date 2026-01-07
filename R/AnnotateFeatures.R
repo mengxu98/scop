@@ -185,7 +185,7 @@ AnnotateFeatures <- function(
 
   if (!is.null(gtf)) {
     gtf_all <- suppressWarnings(
-      read.table(gtf, sep = "\t", header = FALSE)
+      utils::read.table(gtf, sep = "\t", header = FALSE)
     )
     gtf_all <- gtf_all[, 1:9]
     columns <- c(
