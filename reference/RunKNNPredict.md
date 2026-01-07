@@ -353,8 +353,8 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "ref",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2026-01-04 09:06:30] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2026-01-04 09:06:30] Completed 13 tasks in 7.8s
+#> ⠙ [2026-01-07 09:20:46] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2026-01-07 09:20:46] Completed 13 tasks in 3.3s
 #> 
 
 CellDimPlot(
@@ -379,11 +379,11 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "both",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2026-01-04 09:06:37] Running [4/8] Processing: Ductal, Beta, Pre-endocrine, …
-#> ✔ [2026-01-04 09:06:37] Completed 8 tasks in 1.4s
+#> ⠙ [2026-01-07 09:20:50] Running [4/8] Processing: Ductal, Beta, Pre-endocrine, …
+#> ✔ [2026-01-07 09:20:50] Completed 8 tasks in 1.4s
 #> 
-#> ⠙ [2026-01-04 09:06:40] Running [7/13] Processing: delta, acinar, alpha, activa…
-#> ✔ [2026-01-04 09:06:40] Completed 13 tasks in 3.6s
+#> ⠙ [2026-01-07 09:20:54] Running [7/13] Processing: delta, acinar, alpha, activa…
+#> ✔ [2026-01-07 09:20:54] Completed 13 tasks in 3.3s
 #> 
 
 CellDimPlot(

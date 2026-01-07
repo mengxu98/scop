@@ -1,5 +1,37 @@
 # Changelog
 
+## scop 0.7.8
+
+- **bugs**:
+  - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
+    Fixed unused `plot_format` parameter error. The parameter is now
+    properly excluded from arguments passed to Python functions. This
+    issue reported in
+    [\#114](https://github.com/mengxu98/scop/issues/114).
+  - [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md):
+    Fixed PAGA computation error by replacing `scv.tl.paga` with
+    `sc.tl.paga` (scanpy implementation) for better stability. The
+    function now uses the same PAGA implementation as
+    [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
+    function.
+  - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md):
+    Fixed GPCCA Schur decomposition error by adding fallback mechanism.
+    When `brandts` method fails with “subspace_angles” error, the
+    function automatically tries `krylov` method. If both methods fail,
+    it automatically switches to CFLARE estimator for more robust
+    computation.
+  - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md):
+    Fixed `recover_dynamics` error by ensuring `velocity_graph` and
+    `velocity_graph_neg` are properly set before calling
+    `scv.tl.recover_dynamics()` for latent time computation.
+- **func**:
+  - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md):
+    Removed automatic removal of “X\_” prefix from dimensionality
+    reduction names in `obsm` keys. The function now preserves original
+    reduction names as they are stored in AnnData objects.
+- **data**:
+  - Reducing the size of `pancreas_sub` example dataset.
+
 ## scop 0.7.7
 
 - **func**:

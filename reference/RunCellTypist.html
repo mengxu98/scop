@@ -11,7 +11,7 @@ on a Seurat object or AnnData object."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,14 +84,6 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 <dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
 <dd><p>An anndata object. Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
-
-
-<dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Layer name for <code>assay</code> in the Seurat object.</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
@@ -174,6 +166,10 @@ Default is <code>TRUE</code>.</p></dd>
 Default is <code>TRUE</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An AnnData object or a Seurat object depending on the <code>return_seurat</code> argument.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="CellTypistModels.html">CellTypistModels</a>, <a href="RunSingleR.html">RunSingleR</a>, <a href="RunScmap.html">RunScmap</a></p></div>

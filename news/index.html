@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,29 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.8" id="scop-078">scop 0.7.8<a class="anchor" aria-label="anchor" href="#scop-078"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in <a href="https://github.com/mengxu98/scop/issues/114" class="external-link">#114</a>.</li>
+<li>
+<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>: Fixed PAGA computation error by replacing <code>scv.tl.paga</code> with <code>sc.tl.paga</code> (scanpy implementation) for better stability. The function now uses the same PAGA implementation as <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> function.</li>
+<li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Fixed GPCCA Schur decomposition error by adding fallback mechanism. When <code>brandts</code> method fails with “subspace_angles” error, the function automatically tries <code>krylov</code> method. If both methods fail, it automatically switches to CFLARE estimator for more robust computation.</li>
+<li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Fixed <code>recover_dynamics</code> error by ensuring <code>velocity_graph</code> and <code>velocity_graph_neg</code> are properly set before calling <code>scv.tl.recover_dynamics()</code> for latent time computation.</li>
+</ul></li>
+<li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Removed automatic removal of “X_” prefix from dimensionality reduction names in <code>obsm</code> keys. The function now preserves original reduction names as they are stored in AnnData objects.</li>
+</ul></li>
+<li>
+<strong>data</strong>:
+<ul><li>Reducing the size of <code>pancreas_sub</code> example dataset.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.7" id="scop-077">scop 0.7.7<a class="anchor" aria-label="anchor" href="#scop-077"></a></h2>
 <ul><li>

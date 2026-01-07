@@ -726,9 +726,9 @@ pancreas_sub <- RunSlingshot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 pancreas_sub <- RunDynamicFeatures(
@@ -736,14 +736,15 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2026-01-04 08:38:15] Running [1/225] Processing: 1  ETA: 13s
-#> ⠹ [2026-01-04 08:38:15] Running [106/225] Processing: 106  ETA:  3s
-#> ⠸ [2026-01-04 08:38:15] Running [214/225] Processing: 214  ETA:  0s
-#> ✔ [2026-01-04 08:38:15] Completed 225 tasks in 6.3s
+#> ⠙ [2026-01-07 08:52:15] Running [1/231] Processing: 1  ETA: 14s
+#> ⠹ [2026-01-07 08:52:15] Running [20/231] Processing: 20  ETA:  5s
+#> ⠸ [2026-01-07 08:52:15] Running [131/231] Processing: 131  ETA:  3s
+#> ✔ [2026-01-07 08:52:15] Completed 231 tasks in 6.4s
 #> 
-#> ⠙ [2026-01-04 08:38:24] Running [105/225] Processing: 105  ETA:  3s
-#> ⠹ [2026-01-04 08:38:24] Running [215/225] Processing: 215  ETA:  0s
-#> ✔ [2026-01-04 08:38:24] Completed 225 tasks in 5.9s
+#> ⠙ [2026-01-07 08:52:22] Running [2/231] Processing: 2  ETA:  6s
+#> ⠹ [2026-01-07 08:52:22] Running [106/231] Processing: 106  ETA:  4s
+#> ⠸ [2026-01-07 08:52:22] Running [206/231] Processing: 206  ETA:  1s
+#> ✔ [2026-01-07 08:52:22] Completed 231 tasks in 6.8s
 #> 
 
 ht1 <- DynamicHeatmap(
@@ -775,8 +776,8 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ⠙ [2026-01-04 08:38:32] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 08:38:32] Completed 2 tasks in 42ms
+#> ⠙ [2026-01-07 08:52:33] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:52:33] Completed 2 tasks in 42ms
 #> 
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
@@ -832,17 +833,19 @@ ht4 <- DynamicHeatmap(
 #> + slam           0.1-55  
 #>   
 #> ℹ No downloads are needed, 6 pkgs are cached
+#> ✔ Got proxy 0.4-29 (x86_64-pc-linux-gnu-ubuntu-24.04) (172.19 kB)
 #> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
-#> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
+#> ✔ Got e1071 1.7-17 (x86_64-pc-linux-gnu-ubuntu-24.04) (588.22 kB)
 #> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
+#> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
 #> ✔ Got mlbench 2.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.05 MB)
-#> ✔ Installed e1071 1.7-17  (67ms)
-#> ✔ Installed mlbench 2.1-6  (78ms)
-#> ✔ Installed proxy 0.4-29  (96ms)
-#> ✔ Installed randomForest 4.7-1.2  (126ms)
-#> ✔ Installed slam 0.1-55  (66ms)
+#> ✔ Installed e1071 1.7-17  (62ms)
+#> ✔ Installed mlbench 2.1-6  (81ms)
+#> ✔ Installed proxy 0.4-29  (100ms)
+#> ✔ Installed randomForest 4.7-1.2  (131ms)
+#> ✔ Installed slam 0.1-55  (65ms)
 #> ✔ Installed SparseM 1.84-2  (46ms)
-#> ✔ 1 pkg + 13 deps: kept 8, added 6, dld 4 (2.35 MB) [1.8s]
+#> ✔ 1 pkg + 13 deps: kept 8, added 6, dld 6 (3.11 MB) [2.3s]
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.

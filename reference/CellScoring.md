@@ -212,8 +212,8 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ⠙ [2026-01-04 08:37:06] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 08:37:06] Completed 2 tasks in 132ms
+#> ⠙ [2026-01-07 08:51:04] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:51:04] Completed 2 tasks in 135ms
 #> 
 CellDimPlot(pancreas_sub, "test_classification")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the

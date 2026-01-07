@@ -1004,7 +1004,7 @@ CellDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -1015,7 +1015,7 @@ CellDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -1026,7 +1026,7 @@ CellDimPlot(
   hex = TRUE,
   hex.count = FALSE
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> Warning: Removed 6 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -1077,9 +1077,9 @@ CellDimPlot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -1094,11 +1094,11 @@ CellDimPlot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_segment()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 

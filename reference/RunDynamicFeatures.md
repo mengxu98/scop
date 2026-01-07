@@ -161,15 +161,15 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2026-01-04 09:03:10] Running [1/225] Processing: 1  ETA:  8s
-#> ⠹ [2026-01-04 09:03:10] Running [77/225] Processing: 77  ETA:  5s
-#> ⠸ [2026-01-04 09:03:10] Running [170/225] Processing: 170  ETA:  2s
-#> ✔ [2026-01-04 09:03:10] Completed 225 tasks in 7.7s
+#> ⠙ [2026-01-07 09:17:23] Running [1/231] Processing: 1  ETA:  8s
+#> ⠹ [2026-01-07 09:17:23] Running [61/231] Processing: 61  ETA:  5s
+#> ⠸ [2026-01-07 09:17:23] Running [151/231] Processing: 151  ETA:  3s
+#> ✔ [2026-01-07 09:17:23] Completed 231 tasks in 7.7s
 #> 
-#> ⠙ [2026-01-04 09:03:18] Running [34/225] Processing: 34  ETA:  6s
-#> ⠹ [2026-01-04 09:03:18] Running [131/225] Processing: 131  ETA:  3s
-#> ⠸ [2026-01-04 09:03:18] Running [221/225] Processing: 221  ETA:  0s
-#> ✔ [2026-01-04 09:03:18] Completed 225 tasks in 7.2s
+#> ⠙ [2026-01-07 09:17:31] Running [8/231] Processing: 8  ETA:  7s
+#> ⠹ [2026-01-07 09:17:31] Running [93/231] Processing: 93  ETA:  5s
+#> ⠸ [2026-01-07 09:17:31] Running [175/231] Processing: 175  ETA:  2s
+#> ✔ [2026-01-07 09:17:31] Completed 231 tasks in 8.1s
 #> 
 
 names(
@@ -180,20 +180,13 @@ names(
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
-#>      features exp_ncells       r.sq  dev.expl peaktime valleytime pvalue
-#> Gcg       Gcg        178 0.07474585 0.8463493 29.93042   2.028632      0
-#> Iapp     Iapp        308 0.26805682 0.7766207 29.34657   1.834261      0
-#> Pyy       Pyy        475 0.49836581 0.7682591 27.10419  14.503163      0
-#> Gast     Gast        103 0.04420017 0.6562081 27.70426   0.140757      0
-#> Rbp4     Rbp4        437 0.39150230 0.7319113 26.71387  14.634662      0
-#> Chgb     Chgb        302 0.48290058 0.8015278 23.69410   0.140757      0
-#>      padjust
-#> Gcg        0
-#> Iapp       0
-#> Pyy        0
-#> Gast       0
-#> Rbp4       0
-#> Chgb       0
+#>      features exp_ncells      r.sq  dev.expl peaktime valleytime pvalue padjust
+#> Gcg       Gcg        182 0.6401140 0.7670504 21.33789  0.1164741      0       0
+#> Ghrl     Ghrl        167 0.2985260 0.6484728 18.01054 12.8984585      0       0
+#> Iapp     Iapp        279 0.2241776 0.7503415 21.33789  0.1164741      0       0
+#> Pyy       Pyy        434 0.4169149 0.7697879 19.21200  9.8743469      0       0
+#> Rbp4     Rbp4        396 0.4403772 0.7285632 18.83423 10.1022997      0       0
+#> Gast     Gast         92 0.0659722 0.7077578 19.84490  0.1164741      0       0
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -216,7 +209,10 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2026-01-04 09:03:30] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 09:03:30] Completed 2 tasks in 121ms
+#> ⠙ [2026-01-07 09:17:45] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 09:17:45] Completed 2 tasks in 128ms
+#> 
+#> ⠙ [2026-01-07 09:17:46] Running [1/2] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 09:17:46] Completed 2 tasks in 101ms
 #> 
 ```

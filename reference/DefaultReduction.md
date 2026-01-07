@@ -35,15 +35,15 @@ Default reduction name.
 ``` r
 data(pancreas_sub)
 names(pancreas_sub@reductions)
-#> [1] "X_pca"  "X_umap"
+#> character(0)
 DefaultReduction(pancreas_sub)
-#> [1] "X_umap"
+#> Error in DefaultReduction(pancreas_sub): Unable to find any reductions
 
 # Searches for matches to "pca"
 DefaultReduction(pancreas_sub, pattern = "pca")
-#> [1] "X_pca"
+#> Error in DefaultReduction(pancreas_sub, pattern = "pca"): Unable to find any reductions
 
 # Searches for approximate matches to "pc"
 DefaultReduction(pancreas_sub, pattern = "pc")
-#> [1] "X_pca"
+#> Error in DefaultReduction(pancreas_sub, pattern = "pc"): Unable to find any reductions
 ```

@@ -116,7 +116,8 @@ FeatureHeatmap(
   width = NULL,
   units = "inch",
   seed = 11,
-  ht_params = list()
+  ht_params = list(),
+  verbose = TRUE
 )
 ```
 
@@ -596,6 +597,10 @@ FeatureHeatmap(
   [ComplexHeatmap::Heatmap](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html)
   function. Default is [`list()`](https://rdrr.io/r/base/list.html).
 
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 ## See also
 
 [RunDEtest](https://mengxu98.github.io/scop/reference/RunDEtest.md)
@@ -644,8 +649,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2026-01-04 08:45:07] Running [1/5] Processing: Ductal  ETA:  1s
-#> ✔ [2026-01-04 08:45:07] Completed 5 tasks in 868ms
+#> ⠙ [2026-01-07 08:59:10] Running [1/5] Processing: Ductal  ETA:  1s
+#> ✔ [2026-01-07 08:59:10] Completed 5 tasks in 871ms
 #> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -724,9 +729,9 @@ pancreas_sub <- RunSlingshot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 ht4 <- FeatureHeatmap(

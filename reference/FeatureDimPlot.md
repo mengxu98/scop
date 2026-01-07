@@ -586,7 +586,7 @@ FeatureDimPlot(
 )
 #> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> Warning: Removed 1 row containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -599,7 +599,7 @@ FeatureDimPlot(
 )
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> Warning: Removed 4 rows containing missing values or values outside the scale range
 #> (`geom_hex()`).
 
 
@@ -613,9 +613,9 @@ pancreas_sub <- RunSlingshot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -627,9 +627,9 @@ FeatureDimPlot(
 )
 #> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
 #> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -642,11 +642,11 @@ FeatureDimPlot(
 )
 #> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
 #> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_segment()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 

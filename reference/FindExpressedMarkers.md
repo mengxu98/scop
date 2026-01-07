@@ -278,9 +278,9 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ⠙ [2026-01-04 08:47:54] Running [1/6145] Processing: 1  ETA: 16s
-#> ⠹ [2026-01-04 08:47:54] Running [5368/6145] Processing: 5368  ETA:  0s
-#> ✔ [2026-01-04 08:47:54] Completed 6145 tasks in 3.3s
+#> ⠙ [2026-01-07 09:01:31] Running [1/6145] Processing: 1  ETA: 17s
+#> ⠹ [2026-01-07 09:01:31] Running [4126/6145] Processing: 4126  ETA:  1s
+#> ✔ [2026-01-07 09:01:31] Completed 6145 tasks in 3.3s
 #> 
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj

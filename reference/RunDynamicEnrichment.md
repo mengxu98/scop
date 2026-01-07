@@ -215,10 +215,10 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = "Lineage1",
   n_candidates = 200
 )
-#> ⠙ [2026-01-04 09:02:42] Running [1/200] Processing: 1  ETA:  7s
-#> ⠹ [2026-01-04 09:02:42] Running [88/200] Processing: 88  ETA:  4s
-#> ⠸ [2026-01-04 09:02:42] Running [177/200] Processing: 177  ETA:  1s
-#> ✔ [2026-01-04 09:02:42] Completed 200 tasks in 6.7s
+#> ⠙ [2026-01-07 09:16:56] Running [1/199] Processing: 1  ETA:  7s
+#> ⠹ [2026-01-07 09:16:56] Running [63/199] Processing: 63  ETA:  5s
+#> ⠸ [2026-01-07 09:16:56] Running [154/199] Processing: 154  ETA:  1s
+#> ✔ [2026-01-07 09:16:56] Completed 199 tasks in 6.5s
 #> 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
