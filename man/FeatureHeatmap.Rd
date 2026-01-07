@@ -115,7 +115,8 @@ FeatureHeatmap(
   width = NULL,
   units = "inch",
   seed = 11,
-  ht_params = list()
+  ht_params = list(),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -422,6 +423,9 @@ Default is \code{11}.}
 
 \item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
 Default is \code{list()}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Feature Heatmap

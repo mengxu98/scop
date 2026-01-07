@@ -168,8 +168,7 @@ srt_to_adata <- function(
 
   reduction_list <- list()
   for (reduction in names(srt@reductions)) {
-    reduction_list[[paste0(reduction)]] <- srt[[reduction]]@cell.embeddings
-    reduction_list[[paste0("X_", reduction)]] <- srt[[reduction]]@cell.embeddings
+    reduction_list[[reduction]] <- srt[[reduction]]@cell.embeddings
   }
   if (length(reduction_list) > 0) {
     adata$obsm <- reduction_list
@@ -325,7 +324,7 @@ adata_to_srt <- function(
   if (length(keys) > 0) {
     processed_reductions <- character(0)
     for (k in keys) {
-      k_clean <- gsub(pattern = "^X_", replacement = "", x = py_to_r2(k))
+      k_clean <- py_to_r2(k)
 
       if (k_clean %in% processed_reductions) {
         next
