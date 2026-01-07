@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams GroupHeatmap
+#' @inheritParams thisutils::log_message
 #' @param max_cells An integer, maximum number of cells to sample per group.
 #' Default is `100`.
 #' @param cell_order A vector of cell names defining the order of cells.
@@ -229,7 +230,8 @@ FeatureHeatmap <- function(
     width = NULL,
     units = "inch",
     seed = 11,
-    ht_params = list()) {
+    ht_params = list(),
+    verbose = TRUE) {
   set.seed(seed)
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
