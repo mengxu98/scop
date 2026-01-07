@@ -7,11 +7,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object. Default is `NULL`.
-#' If provided, `adata` will be ignored.
-#' @param adata An anndata object. Default is `NULL`.
-#' @param assay Assay to convert in the anndata object.
-#' @param layer Layer name for `assay` in the Seurat object.
+#' @inheritParams RunCellRank
 #' @param model Model name or path. Default is `"Immune_All_Low.pkl"`.
 #' Supports three formats:
 #' 1. Model name (e.g., `"Immune_All_Low.pkl"`): automatically searched in `~/.celltypist/data/models/`
@@ -43,11 +39,12 @@
 #' Default is `FALSE`.
 #' @param prefix Prefix for inserted columns.
 #' Default is `"celltypist_"`.
-#' @param return_seurat Whether to return a Seurat object instead of an anndata object.
-#' Default is `TRUE`.
 #'
 #' @seealso
 #' [CellTypistModels], [RunSingleR], [RunScmap]
+#'
+#' @return
+#' An AnnData object or a Seurat object depending on the `return_seurat` argument.
 #'
 #' @export
 #'
@@ -100,6 +97,10 @@ RunCellTypist <- function(
     prefix = "celltypist_",
     return_seurat = !is.null(srt),
     verbose = TRUE) {
+  log_message(
+    "Running {.pkg CellTypist} annotation...",
+    verbose = verbose
+  )
   PrepareEnv()
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -154,7 +155,7 @@ RunCellTypist <- function(
           args[["over_clustering"]] <- over_clustering
         } else {
           log_message(
-            "'{.val {over_clustering}}' not found in Seurat metadata. Will use heuristic over-clustering.",
+            "{.val {over_clustering}} not found in Seurat metadata. Will use heuristic over-clustering",
             message_type = "warning",
             verbose = verbose
           )
@@ -187,13 +188,7 @@ RunCellTypist <- function(
     path = system.file("python", package = "scop", mustWork = TRUE),
     convert = TRUE
   )
-  log_message("Running {.pkg CellTypist} annotation...", verbose = verbose)
   adata <- do.call(functions$CellTypist, args)
-  log_message(
-    "{.pkg CellTypist} annotation completed",
-    message_type = "success",
-    verbose = verbose
-  )
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -247,6 +242,7 @@ RunCellTypist <- function(
 CellTypistModels <- function(
     on_the_fly = FALSE,
     verbose = TRUE) {
+  log_message("Fetching CellTypist models...", verbose = verbose)
   PrepareEnv()
   functions <- reticulate::import_from_path(
     "functions",
@@ -254,7 +250,6 @@ CellTypistModels <- function(
     convert = TRUE
   )
 
-  log_message("Fetching CellTypist models...", verbose = verbose)
   models_df <- functions$CellTypistModels(
     on_the_fly = on_the_fly,
     verbose = verbose

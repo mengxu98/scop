@@ -145,7 +145,7 @@ RunWOT <- function(
   args[["save"]] <- save_plot
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
+  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix", "plot_format")]
 
   args <- args[
     !names(args) %in%

@@ -32,10 +32,6 @@ If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
-\item{assay}{Assay to convert in the anndata object.}
-
-\item{layer}{Layer name for \code{assay} in the Seurat object.}
-
 \item{model}{Model name or path. Default is \code{"Immune_All_Low.pkl"}.
 Supports three formats:
 \enumerate{
@@ -89,6 +85,9 @@ Default is \code{TRUE}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+}
+\value{
+An AnnData object or a Seurat object depending on the \code{return_seurat} argument.
 }
 \description{
 CellTypist is an automated cell type annotation tool for scRNA-seq datasets
