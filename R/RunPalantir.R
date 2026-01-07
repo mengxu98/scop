@@ -32,7 +32,6 @@
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   early_group = "Ductal",
-#'   use_early_cell_as_start = TRUE,
 #'   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon")
 #' )
 #'
@@ -150,16 +149,39 @@ RunPalantir <- function(
   args[["legend_loc"]] <- legend.position
   args <- args[!names(args) %in% c("legend.position")]
 
-  args[["n_jobs"]] <- cores
+  args[["n_jobs"]] <- as.integer(cores)
   args <- args[!names(args) %in% c("cores")]
 
-  # Map new parameters to Python legacy parameters
   args[["save"]] <- save_plot
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
+  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix", "plot_format")]
 
   if (!is.null(srt)) {
+    if (is.null(linear_reduction)) {
+      linear_reduction <- DefaultReduction(srt)
+    } else {
+      linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+    }
+    if (!linear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {linear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
+
+    if (is.null(nonlinear_reduction)) {
+      nonlinear_reduction <- DefaultReduction(srt)
+    } else {
+      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+    }
+    if (!nonlinear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {nonlinear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
+
     args[["adata"]] <- srt_to_adata(
       srt = srt,
       assay_x = assay_x,
@@ -167,30 +189,21 @@ RunPalantir <- function(
       assay_y = assay_y,
       layer_y = layer_y
     )
+
     if (!is.null(linear_reduction)) {
-      if (!startsWith(linear_reduction, "X_")) {
-        args[["linear_reduction"]] <- paste0(
-          "X_", tolower(linear_reduction)
-        )
-      }
+      args[["linear_reduction"]] <- linear_reduction
     }
     if (!is.null(nonlinear_reduction)) {
-      if (!startsWith(nonlinear_reduction, "X_")) {
-        args[["nonlinear_reduction"]] <- paste0(
-          "X_", tolower(nonlinear_reduction)
-        )
-      }
+      args[["nonlinear_reduction"]] <- nonlinear_reduction
     }
     if (is.null(basis)) {
-      if (!is.null(args[["nonlinear_reduction"]])) {
-        args[["basis"]] <- args[["nonlinear_reduction"]]
-      } else if (!is.null(args[["linear_reduction"]])) {
-        args[["basis"]] <- args[["linear_reduction"]]
+      if (!is.null(nonlinear_reduction)) {
+        args[["basis"]] <- nonlinear_reduction
+      } else if (!is.null(linear_reduction)) {
+        args[["basis"]] <- linear_reduction
       }
     } else {
-      if (!startsWith(basis, "X_")) {
-        args[["basis"]] <- paste0("X_", tolower(basis))
-      }
+      args[["basis"]] <- basis
     }
   }
   groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
