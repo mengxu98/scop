@@ -227,7 +227,6 @@ pancreas_sub <- RunPalantir(
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   early_group = "Ductal",
-  use_early_cell_as_start = TRUE,
   terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon")
 )
 

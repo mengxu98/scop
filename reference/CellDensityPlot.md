@@ -242,9 +242,9 @@ pancreas_sub <- RunSlingshot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -254,7 +254,7 @@ CellDensityPlot(
   group.by = "SubCellType",
   aspect.ratio = 1
 )
-#> Picking joint bandwidth of 0.661
+#> Picking joint bandwidth of 0.548
 
 
 CellDensityPlot(
@@ -263,5 +263,5 @@ CellDensityPlot(
   group.by = "SubCellType",
   flip = TRUE
 )
-#> Picking joint bandwidth of 0.661
+#> Picking joint bandwidth of 0.548
 ```

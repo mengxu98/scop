@@ -275,9 +275,9 @@ pancreas_sub <- RunSlingshot(
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 
 
@@ -301,8 +301,8 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> ⠙ [2026-01-04 08:43:30] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 08:43:30] Completed 3 tasks in 99ms
+#> ⠙ [2026-01-07 08:57:32] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:57:32] Completed 3 tasks in 117ms
 #> 
 
 
@@ -314,8 +314,8 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2026-01-04 08:43:34] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 08:43:34] Completed 3 tasks in 107ms
+#> ⠙ [2026-01-07 08:57:34] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:57:34] Completed 3 tasks in 106ms
 #> 
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
@@ -335,8 +335,11 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ⠙ [2026-01-04 08:43:38] Running [1/3] Processing: 1  ETA:  0s
-#> ✔ [2026-01-04 08:43:38] Completed 3 tasks in 101ms
+#> ⠙ [2026-01-07 08:57:39] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:57:39] Completed 3 tasks in 111ms
+#> 
+#> ⠙ [2026-01-07 08:57:41] Running [1/3] Processing: 1  ETA:  0s
+#> ✔ [2026-01-07 08:57:41] Completed 3 tasks in 96ms
 #> 
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.

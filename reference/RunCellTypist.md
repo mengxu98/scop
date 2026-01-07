@@ -41,14 +41,6 @@ RunCellTypist(
 
   An anndata object. Default is `NULL`.
 
-- assay:
-
-  Assay to convert in the anndata object.
-
-- layer:
-
-  Layer name for `assay` in the Seurat object.
-
 - model:
 
   Model name or path. Default is `"Immune_All_Low.pkl"`. Supports three
@@ -125,6 +117,11 @@ RunCellTypist(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+## Value
+
+An AnnData object or a Seurat object depending on the `return_seurat`
+argument.
 
 ## See also
 

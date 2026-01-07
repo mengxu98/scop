@@ -95,11 +95,12 @@ CellDimPlot(
   reduction = "umap",
   group.by = "db.scDblFinder_class"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
   reduction = "umap",
   features = "db.scDblFinder_score"
 )
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 ```
