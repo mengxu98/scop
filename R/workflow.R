@@ -2,11 +2,10 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
-#' @param features Features used to reorder idents.
+#' @inheritParams standard_scop
+#' @inheritParams FeatureDimPlot
+#' @inheritParams CellCorHeatmap
 #' @param reorder_by Reorder groups instead of idents.
-#' @param layer Specific layer to get data from.
-#' @param assay Specific assay to get data from.
 #' @param log Whether [log1p] transformation needs to be applied.
 #' Default is `TRUE`.
 #' @param distance_metric Metric to compute distance.
@@ -158,7 +157,7 @@ srt_append <- function(
     verbose = TRUE) {
   if (!inherits(srt_raw, "Seurat") || !inherits(srt_append, "Seurat")) {
     log_message(
-      "{.arg srt_raw} or {.arg srt_append} is not a Seurat object",
+      "{.arg srt_raw} or {.arg srt_append} is not a {.cls Seurat}",
       message_type = "error"
     )
   }

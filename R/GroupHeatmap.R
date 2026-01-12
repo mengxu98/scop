@@ -2,12 +2,10 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
-#' @param features The features to include in the heatmap.
-#' Default is `NULL`.
-#' @param group.by A character vector specifying the groups to group by.
-#' Default is `NULL`.
-#' @param split.by A character vector specifying the variable to split the heatmap by.
+#' @inheritParams standard_scop
+#' @inheritParams CellDimPlot
+#' @inheritParams PrepareDB
+#' @param features A character vector of features to use.
 #' Default is `NULL`.
 #' @param within_groups Whether to create separate heatmap scales for each group or within each group.
 #' Default is `FALSE`.
@@ -15,7 +13,7 @@
 #' Default is `NULL`.
 #' @param numerator A character vector specifying the value to use as the numerator in the grouping.var grouping.
 #' Default is `NULL`.
-#' @param cells A character vector specifying the cells to include in the heatmap.
+#' @param cells A character vector of cell names to use.
 #' Default is `NULL`.
 #' @param aggregate_fun A function to use for aggregating data within groups.
 #' Default is [base::mean].
@@ -25,10 +23,8 @@
 #' Default is `TRUE`.
 #' @param flip Whether to flip the heatmap.
 #' Default is `FALSE`.
-#' @param layer A character vector specifying the layer in the Seurat object to use.
+#' @param layer Which layer to use.
 #' Default is `"counts"`.
-#' @param assay A character vector specifying the assay in the Seurat object to use.
-#' Default is `NULL`.
 #' @param exp_method A character vector specifying the method for calculating expression values.
 #' Options are `"zscore"`, `"raw"`, `"fc"`, `"log2fc"`, or `"log1p"`.
 #' Default is `"zscore"`.
@@ -107,16 +103,8 @@
 #' Default is `"symbol"`.
 #' @param species A character vector specifying the species for features.
 #' Default is `"Homo_sapiens"`.
-#' @param db_update Whether to update the database.
-#' Default is `FALSE`.
-#' @param db_version A character vector specifying the version of the database.
-#' Default is `"latest"`.
 #' @param db_combine Whether to use a combined database.
 #' Default is `FALSE`.
-#' @param convert_species Whether to use a species-converted database if annotation is missing for `species`.
-#' Default is `FALSE`.
-#' @param Ensembl_version An integer specifying the Ensembl version.
-#' Default is `103`.
 #' @param mirror A character vector specifying the mirror for the Ensembl database.
 #' Default is `NULL`.
 #' @param db A character vector specifying the database to use.
@@ -227,9 +215,9 @@
 #' Default is `NULL`.
 #' @param units A character vector specifying the units for the height and width.
 #' Default is `"inch"`.
-#' @param seed An integer specifying the random seed.
-#' Default is `11`.
-#' @param ht_params A list specifying additional parameters passed to the [ComplexHeatmap::Heatmap] function.
+#' @param ht_params Additional parameters to customize the appearance of the heatmap.
+#' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
+#' Any conflicting parameters will override the defaults set by this function.
 #' Default is `list()`.
 #' @param ... Additional arguments passed to the [ComplexHeatmap::Heatmap] function.
 #'
@@ -479,7 +467,7 @@ GroupHeatmap <- function(
     db_update = FALSE,
     db_version = "latest",
     db_combine = FALSE,
-    convert_species = FALSE,
+    convert_species = TRUE,
     Ensembl_version = NULL,
     mirror = NULL,
     db = "GO_BP",
@@ -628,7 +616,7 @@ GroupHeatmap <- function(
   if (any(!group.by %in% colnames(srt@meta.data))) {
     log_message(
       group.by[!group.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object.",
+      " is not in the meta data of {.cls Seurat}.",
       message_type = "error"
     )
   }
@@ -653,7 +641,7 @@ GroupHeatmap <- function(
   if (any(!split.by %in% colnames(srt@meta.data))) {
     log_message(
       split.by[!split.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object.",
+      " is not in the meta data of {.cls Seurat}.",
       message_type = "error"
     )
   }
@@ -765,7 +753,7 @@ GroupHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object.",
+        " is not in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -809,7 +797,7 @@ GroupHeatmap <- function(
         ),
         " is not in the meta data of the ",
         assay,
-        " assay in the Seurat object.",
+        " assay in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -1564,7 +1552,10 @@ GroupHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_r("e1071", verbose = FALSE), error = identity)
+          status <- tryCatch(
+            check_r("e1071", verbose = FALSE),
+            error = identity
+          )
           if (inherits(status, "error")) {
             log_message(
               "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",

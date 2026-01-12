@@ -2,8 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
-#' @param assay Name of assay to recover counts.
+#' @inheritParams standard_scop
 #' @param trans The transformation function to applied when data is presumed to be log-normalized.
 #' @param min_count Minimum UMI count of genes.
 #' @param tolerance When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.

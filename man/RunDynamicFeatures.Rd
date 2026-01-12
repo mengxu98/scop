@@ -25,13 +25,13 @@ RunDynamicFeatures(
 
 \item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
 
-\item{features}{A character vector specifying the features (genes or metadata variables) for which dynamic features should be calculated.
-If NULL, n_candidates must be provided.}
+\item{features}{A character vector of features to use.
+If \code{NULL}, n_candidates must be provided.}
 
 \item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
 Default is the lineage names.}
 
-\item{n_candidates}{A number of candidate features to select when features is NULL.
+\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.
 Default is \code{1000}.}
 
 \item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
@@ -42,11 +42,11 @@ If family is set to NULL, the appropriate family will be automatically determine
 If length(family) is 1, the same family will be used for all features.
 Otherwise, family must have the same length as features.}
 
-\item{layer}{A character vector specifying the layer in the Seurat object to use.
+\item{layer}{Which layer to use.
 Default is \code{"counts"}.}
 
-\item{assay}{A character vector specifying the assay in the Seurat object to use.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{libsize}{A numeric or numeric vector specifying the library size correction factors for each cell.
 If NULL, the library size correction factors will be calculated based on the expression matrix.
@@ -60,7 +60,8 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{An integer specifying the seed for random number generation. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \value{
 Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.

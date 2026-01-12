@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunKNNMap
+#' @inheritParams CellDimPlot
 #' @param query_group The grouping variable for the query group cells.
 #' @param ref_group The grouping variable for the reference group cells.
 #' @param query_reduction The name of the reduction in the query group cells.
@@ -18,7 +19,6 @@
 #' If not provided, the limits will be calculated based on the data.
 #' @param ylim The y-axis limits for the plot.
 #' If not provided, the limits will be calculated based on the data.
-#' @param pt.size The size of the points in the plot.
 #' @param stroke.highlight The size of the stroke highlight for cells.
 #'
 #' @export

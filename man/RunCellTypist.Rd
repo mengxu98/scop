@@ -32,6 +32,12 @@ If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
+\item{assay}{Which assay to use.
+Default is \code{"RNA"}.}
+
+\item{layer}{Which layer to use.
+Default is \code{data}.}
+
 \item{model}{Model name or path. Default is \code{"Immune_All_Low.pkl"}.
 Supports three formats:
 \enumerate{

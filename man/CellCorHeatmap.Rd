@@ -127,16 +127,14 @@ If set to TRUE, the similarities will be calculated between query groups rather 
 \item{ref_collapsing}{Detail description of the \code{query_collapsing} argument.}
 
 \item{features}{A vector of feature names to include in the heatmap.
-If not provided, a default set of highly variable features (HVF) will be used.}
+If not provided, highly variable features (HVF) will be used.}
 
-\item{features_type}{The type of features to use.
-Options are \code{"HVF"} for highly variable features,
-\code{"DE"} for differentially expressed features between query and reference groups.}
+\item{features_type}{A character vector specifying the type of features to be used for the KNN prediction.
+Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is \code{"HVF"}.}
 
-\item{feature_source}{The source of features to use.
-Options are \code{"query"} to use only features from the query dataset,
-\code{"ref"} to use only features from the reference dataset, or \code{"both"} to use features from both datasets.
-If not provided or set to "both", features will be selected from both datasets.}
+\item{feature_source}{The source of the features to be used.
+Must be one of "both", "query", or "ref".
+Default is \code{"both"}.}
 
 \item{nfeatures}{The maximum number of features to include in the heatmap.
 Default is \code{2000}.}
@@ -150,10 +148,10 @@ Default parameters will be used.}
 \item{DE_threshold}{The threshold for differential expression.
 Only features with adjusted p-values below this threshold will be considered differentially expressed.}
 
-\item{distance_metric}{The distance metric to use for calculating similarities between cells.
-This can be any of the following:
-\code{"cosine"}, \code{"pearson"}, \code{"spearman"}, \code{"correlation"}, \code{"jaccard"}, \code{"ejaccard"}, \code{"dice"}, \code{"edice"}, \code{"hamman"}, \code{"simple matching"}, or \code{"faith"}.
-Default is \code{"cosine"}.}
+\item{distance_metric}{The distance metric to use for calculating the pairwise distances between cells.
+Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
+"dice", "edice", "hamman", "simple matching", and "faith".
+Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
 \item{k}{The number of nearest neighbors to use for calculating similarities.
 Default is \code{30}.}
@@ -327,12 +325,13 @@ If not provided, the width will be automatically determined based on the number 
 \item{units}{The units to use for the width and height of the heatmap.
 Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
-\item{seed}{The random seed to use for reproducible results.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
 \item{ht_params}{Additional parameters to customize the appearance of the heatmap.
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Any conflicting parameters will override the defaults set by this function.}
+Any conflicting parameters will override the defaults set by this function.
+Default is \code{list()}.}
 }
 \value{
 A list with the following elements:

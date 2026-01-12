@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams StatPlot
 #' @param srt A `Seurat` object.
-#' @param cells A character vector specifying the cells to include in the plot.
+#' @param cells A character vector of cell names to use.
 #' Default is `NULL`.
 #'
 #' @seealso [StatPlot]
@@ -369,10 +369,9 @@ CellStatPlot <- function(
 #' dot plots, sankey plots, chord plots, venn diagrams, and upset plots.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param meta.data The data frame containing the data to be plotted.
 #' @param stat.by The column name(s) in `meta.data` specifying the variable(s) to be plotted.
-#' @param group.by The column name in `meta.data` specifying the grouping variable.
-#' @param split.by The column name in `meta.data` specifying the splitting variable.
 #' @param bg.by The column name in `meta.data` specifying the background variable for bar plots.
 #' @param flip Whether to flip the plot.
 #' Default is `FALSE`.
@@ -392,8 +391,6 @@ CellStatPlot <- function(
 #' Can be one of `"percent"` or `"count"`.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
-#' @param palette The name of the color palette to use for the plot.
-#' @param palcolor The color to use in the color palette.
 #' @param alpha The transparency level for the plot.
 #' @param bg_palette The name of the background color palette to use for bar plots.
 #' @param bg_palcolor The color to use in the background color palette.
@@ -404,30 +401,7 @@ CellStatPlot <- function(
 #' @param label.fg The foreground color of the labels.
 #' @param label.bg The background color of the labels.
 #' @param label.bg.r The radius of the rounded corners of the label background.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' @param title The main title of the plot.
-#' @param subtitle The subtitle of the plot.
-#' @param xlab The x-axis label of the plot.
-#' @param ylab The y-axis label of the plot.
-#' @param legend.position The position of the legend in the plot.
-#' Can be one of `"right"`, `"left"`, `"bottom"`, `"top"`, or `"none"`.
-#' @param legend.direction The direction of the legend in the plot.
-#' Can be one of `"vertical"` or `"horizontal"`.
-#' @param theme_use The name of the theme to use for the plot.
-#' Can be one of the predefined themes or a custom theme.
-#' @param theme_args A list of arguments to be passed to the theme function.
-#' @param combine Whether to combine multiple plots into a single plot.
-#' Default is `TRUE`.
-#' @param nrow The number of rows in the combined plot.
-#' Default is `NULL`.
-#' @param ncol The number of columns in the combined plot.
-#' Default is `NULL`.
-#' @param byrow Whether to fill the plot by row or by column.
-#' Default is `TRUE`.
-#' @param force Whether to force the plot even if some variables have more than 100 levels.
-#' Default is `FALSE`.
-#' @param seed The random seed to use for reproducible results.
-#' Default is `11`.
+#' @param aspect.ratio Aspect ratio of the panel. Default is `NULL`.
 #'
 #' @seealso [CellStatPlot]
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{FetchH5}
 \alias{FetchH5}
-\title{Fetch data from the hdf5 file}
+\title{Fetch data from the hdf5 file and returns a Seurat object}
 \usage{
 FetchH5(
   data_file,
@@ -40,8 +40,7 @@ If not specified, the default assay in the hdf5 file will be used.}
 A Seurat object with the fetched data.
 }
 \description{
-This function fetches data from an hdf5 file.
-It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
+Fetch data from the hdf5 file and returns a Seurat object
 }
 \examples{
 \dontrun{

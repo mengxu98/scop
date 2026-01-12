@@ -30,8 +30,7 @@ If \code{type} is \code{"higher"}, it detects only higher outliers.}
 Numeric vector of indices indicating the positions of outliers in \code{x}.
 }
 \description{
-This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
-It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
+Detect outliers using MAD (Median Absolute Deviation)
 }
 \examples{
 x <- c(1, 2, 3, 4, 5, 100)

@@ -27,7 +27,7 @@ Options are \code{"hybrid"}, \code{"cxds"}, or \code{"bcds"}.}
 \item{...}{Additional arguments to be passed to \code{\link[scds:cxds_bcds_hybrid]{scds::cxds_bcds_hybrid()}}.}
 }
 \description{
-This function performs doublet-calling using the scds package on a Seurat object.
+Run doublet-calling with scds
 }
 \examples{
 data(pancreas_sub)

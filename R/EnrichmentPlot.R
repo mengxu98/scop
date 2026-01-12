@@ -4,6 +4,8 @@
 #' This function generates various types of plots for enrichment (over-representation) analysis.
 #'
 #' @md
+#' @inheritParams CellDimPlot
+#' @inheritParams standard_scop
 #' @param srt A Seurat object containing the results of RunDEtest and RunEnrichment.
 #' If specified, enrichment results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` arguments must be provided.
@@ -80,29 +82,9 @@
 #' Default is `50`.
 #' @param lineheight The line height for y-axis labels.
 #' Default is `0.7`.
-#' @param palette The color palette to use.
+#' @param palette Color palette name.
+#' Available palettes can be found in [thisplot::show_palettes].
 #' Default is `"Spectral"`.
-#' @param palcolor Custom colors for palette.
-#' Default is `NULL`.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' Default is `1`.
-#' @param legend.position The position of the legend.
-#' Default is `"right"`.
-#' @param legend.direction The direction of the legend.
-#' Default is `"vertical"`.
-#' @param theme_use The theme to use for the plot.
-#' Default is `"theme_scop"`.
-#' @param theme_args The arguments to pass to the theme.
-#' Default is `list()`.
-#' @param combine Whether to combine multiple plots into a single plot.
-#' Default is `TRUE`.
-#' @param nrow The number of rows in the combined plot.
-#' Default is `NULL`, calculated based on the number of plots.
-#' @param ncol The number of columns in the combined plot.
-#' Default is `NULL`, calculated based on the number of plots.
-#' @param byrow  Whether to fill the combined plot by row.
-#' Default is `TRUE`.
-#' @param seed The random seed to use. Default is `11`.
 #'
 #' @seealso [RunEnrichment]
 #'

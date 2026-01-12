@@ -1,9 +1,9 @@
 #' @title Find Expressed Markers
 #'
+#' @inheritParams FeatureDimPlot
+#' @inheritParams standard_scop
 #' @inheritParams Seurat::FindMarkers
-#' @param layer The layer used.
 #' @param min.expression The min.expression used.
-#' @param seed The seed used.
 #'
 #' @seealso
 #' [RunDEtest]
@@ -72,7 +72,7 @@ FindExpressedMarkers <- function(
     )
   }
 
-  if (!is.null(x = latent.vars)) {
+  if (!is.null(latent.vars)) {
     latent.vars <- SeuratObject::FetchData(
       object = object,
       vars = latent.vars,
@@ -128,7 +128,7 @@ FindExpressedMarkers <- function(
       )
     )
   }
-  if (!is.null(x = norm.method)) {
+  if (!is.null(norm.method)) {
     # For anything apart from log normalization set to rowMeans
     if (norm.method != "LogNormalize") {
       new.mean.fxn <- counts.mean.fxn
@@ -201,7 +201,7 @@ FindExpressedMarkers <- function(
   alpha.min <- pmax(fc.results$pct.1, fc.results$pct.2)
   names(x = alpha.min) <- rownames(x = fc.results)
   features <- names(x = which(x = alpha.min >= min.pct))
-  if (length(x = features) == 0) {
+  if (length(features) == 0) {
     log_message(
       "No features pass min.pct threshold; returning empty data.frame",
       message_type = "warning"
@@ -212,7 +212,7 @@ FindExpressedMarkers <- function(
   features <- names(
     x = which(x = alpha.min >= min.pct & alpha.diff >= min.diff.pct)
   )
-  if (length(x = features) == 0) {
+  if (length(features) == 0) {
     log_message(
       "No features pass min.diff.pct threshold; returning empty data.frame",
       message_type = "warning"
@@ -229,7 +229,7 @@ FindExpressedMarkers <- function(
       names(x = which(x = abs(x = total.diff) >= logfc.threshold))
     }
     features <- intersect(x = features, y = features.diff)
-    if (length(x = features) == 0) {
+    if (length(features) == 0) {
       log_message(
         "No features pass logfc.threshold threshold; returning empty data.frame",
         message_type = "warning"
@@ -240,13 +240,13 @@ FindExpressedMarkers <- function(
   # subsample cell groups if they are too large
   if (max.cells.per.ident < Inf) {
     set.seed(seed)
-    if (length(x = cells.1) > max.cells.per.ident) {
+    if (length(cells.1) > max.cells.per.ident) {
       cells.1 <- sample(x = cells.1, size = max.cells.per.ident)
     }
-    if (length(x = cells.2) > max.cells.per.ident) {
+    if (length(cells.2) > max.cells.per.ident) {
       cells.2 <- sample(x = cells.2, size = max.cells.per.ident)
     }
-    if (!is.null(x = latent.vars)) {
+    if (!is.null(latent.vars)) {
       latent.vars <- latent.vars[c(cells.1, cells.2), , drop = FALSE]
     }
   }
@@ -363,7 +363,7 @@ FindConservedMarkers2 <- function(
         )
         next
       }
-      if (is.null(x = ident.2)) {
+      if (is.null(ident.2)) {
         cells.2.use <- setdiff(
           x = cells[[i]],
           y = cells.1.use
@@ -378,7 +378,7 @@ FindConservedMarkers2 <- function(
           replacement = "",
           x = ident.use.2
         )
-        if (length(x = ident.use.2) == 0) {
+        if (length(ident.use.2) == 0) {
           log_message(
             "Only one identity class present: {.val {ident.1}}",
             message_type = "error"
@@ -447,7 +447,7 @@ FindConservedMarkers2 <- function(
         )
         next
       }
-      if (is.null(x = cells.2)) {
+      if (is.null(cells.2)) {
         cells.2.use <- setdiff(x = cells[[i]], y = cells.1.use)
       } else {
         cells.2.use <- intersect(cells[[i]], cells.2)
@@ -505,7 +505,7 @@ FindConservedMarkers2 <- function(
     )
   )
   markers.conserved <- list()
-  for (i in 1:length(x = marker.test)) {
+  for (i in 1:length(marker.test)) {
     markers.conserved[[i]] <- marker.test[[i]][genes.conserved, , drop = FALSE]
     colnames(
       x = markers.conserved[[i]]
@@ -549,7 +549,7 @@ FindConservedMarkers2 <- function(
   pval.codes <- colnames(
     x = markers.combined
   )[grepl(pattern = "*_p_val$", x = colnames(x = markers.combined))]
-  if (length(x = pval.codes) > 1) {
+  if (length(pval.codes) > 1) {
     markers.combined[["max_pval"]] <- apply(
       X = markers.combined[, pval.codes, drop = FALSE],
       MARGIN = 1,

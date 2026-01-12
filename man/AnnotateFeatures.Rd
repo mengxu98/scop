@@ -25,27 +25,28 @@ AnnotateFeatures(
 \arguments{
 \item{srt}{Seurat object to be annotated.}
 
-\item{species}{Name of the species to be used for annotation.
-Default is \code{"Homo_sapiens"}.}
+\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
+Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
 \item{IDtype}{Type of identifier to use for annotation.
 Options are \code{"symbol"}, \code{"ensembl_id"}, or \code{"entrez_id"}.
 Default is \code{"symbol"}.}
 
-\item{db}{Vector of database names to be used for annotation.
-Default is \code{NULL}.}
+\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
 
-\item{db_update}{Whether to update the database.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
-\item{db_version}{Version of the database to use.
+\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 Default is \code{TRUE}.}
 
-\item{Ensembl_version}{Version of the Ensembl database to use.
-Default is \code{103}.}
+\item{Ensembl_version}{An integer specifying the Ensembl version.
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{URL of the mirror to use for Ensembl database.
 Default is \code{NULL}.}

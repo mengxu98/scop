@@ -48,15 +48,17 @@ DynamicPlot(
 
 \item{lineages}{A character vector specifying the lineages to plot.}
 
-\item{features}{A character vector specifying the features to plot.}
+\item{features}{A character vector of features to use.}
 
-\item{group.by}{A character specifying a metadata column to group the cells by. Default is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{cells}{A character vector specifying the cells to include in the plot. Default is \code{NULL}.}
+\item{cells}{A character vector of cell names to use. Default is \code{NULL}.}
 
-\item{layer}{A character string specifying the layer to use for the analysis. Default is \code{"counts"}.}
+\item{layer}{Which layer to use.
+Default is \code{"counts"}.}
 
-\item{assay}{A character string specifying the assay to use for the analysis. Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{family}{A character specifying the model used to calculate the dynamic features if needed.
 By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}
@@ -100,25 +102,35 @@ Otherwise, it is set to \code{FALSE}.}
 
 \item{x_order}{A character specifying the order of the x-axis values. Default is \code{c("value", "rank")}.}
 
-\item{aspect.ratio}{A numeric specifying the aspect ratio of the plot. Default is \code{NULL}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{NULL}.}
 
-\item{legend.position}{A character string specifying the position of the legend in the plot. Default is \code{"right"}.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{A character string specifying the direction of the legend in the plot. Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{A character string specifying the name of the theme to use for the plot. Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list specifying the arguments to pass to the theme function. Default is \code{list()}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{combine}{A boolean specifying whether to combine multiple plots into a single plot. Default is \code{TRUE}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{A numeric specifying the number of rows in the combined plot. Default is \code{NULL}.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{A numeric specifying the number of columns in the combined plot. Default is \code{NULL}.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{A boolean specifying whether to fill plots by row in the combined plot. Default is \code{TRUE}.}
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
 
-\item{seed}{A numeric specifying the random seed. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 Plot dynamic features across pseudotime

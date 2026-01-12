@@ -5,9 +5,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object containing count data and metadata.
-#' @param group.by The name of the metadata column in `srt` containing cluster labels or cell type names.
-#' @param split.by The name of the metadata column in `srt` that contains sample identifiers.
+#' @inheritParams CellDimPlot
 #' @param comparison Optional: specify comparisons to perform.
 #' @param n_permutations Number of permutations for the test.
 #' @param FDR_threshold FDR value cutoff for significance.

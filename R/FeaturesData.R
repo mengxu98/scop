@@ -3,8 +3,8 @@
 #' @description Get the data from the `Assay`, `Assay5` or `Seurat` object.
 #'
 #' @md
+#' @inheritParams standard_scop
 #' @param object A `Assay`, `Assay5` or `Seurat` object.
-#' @param assay Assay name to use. Default is `NULL`.
 #' @param ... Additional arguments passed to the method.
 #'
 #' @return A data frame containing the features data.
