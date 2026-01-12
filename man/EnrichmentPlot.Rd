@@ -165,40 +165,42 @@ Default is \code{50}.}
 \item{lineheight}{The line height for y-axis labels.
 Default is \code{0.7}.}
 
-\item{palette}{The color palette to use.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"Spectral"}.}
 
-\item{palcolor}{Custom colors for palette.
+\item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.
-Default is \code{1}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{legend.position}{The position of the legend.
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
 Default is \code{"right"}.}
 
-\item{legend.direction}{The direction of the legend.
-Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{The theme to use for the plot.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{The arguments to pass to the theme.
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
 
-\item{combine}{Whether to combine multiple plots into a single plot.
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
+
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{nrow}{The number of rows in the combined plot.
-Default is \code{NULL}, calculated based on the number of plots.}
-
-\item{ncol}{The number of columns in the combined plot.
-Default is \code{NULL}, calculated based on the number of plots.}
-
-\item{byrow}{Whether to fill the combined plot by row.
-Default is \code{TRUE}.}
-
-\item{seed}{The random seed to use. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 This function generates various types of plots for enrichment (over-representation) analysis.

@@ -11,7 +11,7 @@ VelocityPlot(
   cells = NULL,
   velocity = "stochastic",
   plot_type = c("raw", "grid", "stream"),
-  group_by = NULL,
+  group.by = NULL,
   group_palette = "Paired",
   group_palcolor = NULL,
   n_neighbors = ceiling(ncol(srt@assays[[1]])/50),
@@ -49,12 +49,12 @@ VelocityPlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{reduction}{Name of the reduction in the Seurat object to use for plotting.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
-\item{dims}{Indices of the dimensions to use for plotting.}
+\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
-\item{cells}{Cells to include in the plot.
-If \code{NULL}, all cells will be included.}
+\item{cells}{A character vector of cell names to use.}
 
 \item{velocity}{Name of the velocity to use for plotting.
 Default is \code{"stochastic"}.}
@@ -62,8 +62,7 @@ Default is \code{"stochastic"}.}
 \item{plot_type}{Type of plot to create.
 Can be \code{"raw"}, \code{"grid"}, or \code{"stream"}.}
 
-\item{group_by}{Name of the column in the Seurat object metadata to group the cells by.
-Defaults is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{group_palette}{Name of the palette to use for coloring the groups.
 Defaults is \code{"Paired"}.}
@@ -74,7 +73,7 @@ Defaults is \code{NULL}.}
 \item{n_neighbors}{Number of neighbors to include for the density estimation.
 Defaults is \code{ceiling(ncol(srt@assays[[1]]) / 50)}.}
 
-\item{density}{Propotion of cells to plot.
+\item{density}{Proportion of cells to plot.
 Defaults is \code{1} (plot all cells).}
 
 \item{smooth}{Smoothing parameter for density estimation.
@@ -128,38 +127,38 @@ Defaults is \code{"white"}.}
 \item{streamline_bg_stroke}{Stroke width of the streamlines background.
 Defaults is \code{0.5}.}
 
-\item{aspect.ratio}{Aspect ratio of the plot.
-Defaults is \code{1}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{Title of the plot.
+\item{title}{The text for the title.
 Defaults is \code{"Cell velocity"}.}
 
-\item{subtitle}{Subtitle of the plot.
-Defaults is \code{NULL}.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{x-axis label.
-Defaults is \code{NULL}.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{y-axis label.
-Defaults is \code{NULL}.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{Position of the legend.
-Defaults is \code{"right"}.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{Direction of the legend.
-Defaults is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{Name of the theme to use for plotting.
-Defaults is \code{"theme_scop"}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{List of theme arguments for customization.
-Defaults is \code{list()}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
 \item{return_layer}{Whether to return the plot layers as a list.
 Defaults is \code{FALSE}.}
 
 \item{seed}{Random seed for reproducibility.
-Defaults is \code{11}.}
+Default is \code{11}.}
 }
 \description{
 This function creates a velocity plot for a given Seurat object.
@@ -171,7 +170,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "pca",
   nonlinear_reduction = "umap",
   return_seurat = TRUE
@@ -184,7 +183,7 @@ VelocityPlot(
 VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
-  group_by = "SubCellType"
+  group.by = "SubCellType"
 )
 
 VelocityPlot(

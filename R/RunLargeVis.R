@@ -3,17 +3,8 @@
 #' @md
 #' @inheritParams uwot::lvish
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction The reduction to be used.
-#' Default is `"pca"`.
-#' @param dims The dimensions to be used.
-#' Default is `NULL`.
-#' @param features The features to be used.
-#' Default is `NULL`.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
-#' @param layer The layer to be used.
-#' Default is `"data"`.
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
 #' @param n_components The number of LargeVis components.
 #' Default is `2`.
 #' @param pca_method Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
@@ -23,8 +14,6 @@
 #' Default is `"largevis"`.
 #' @param reduction.key The prefix for the column names of the LargeVis embeddings.
 #' Default is `"LargeVis_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to [uwot::lvish].
 #'
 #' @rdname RunLargeVis
@@ -87,13 +76,13 @@ RunLargeVis.Seurat <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (sum(c(is.null(x = dims), is.null(x = features))) == 3) {
+  if (sum(c(is.null(dims), is.null(features))) == 3) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
       message_type = "error"
     )
   }
-  if (!is.null(x = features)) {
+  if (!is.null(features)) {
     assay <- assay %||% SeuratObject::DefaultAssay(object = object)
     data.use <- as_matrix(
       Matrix::t(
@@ -104,27 +93,27 @@ RunLargeVis.Seurat <- function(
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < n_components) {
+    if (ncol(data.use) < n_components) {
       log_message(
         "Please provide as many or more features than n_components: ",
-        length(x = features),
+        length(features),
         " features provided, ",
         n_components,
         " LargeVis components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
+  } else if (!is.null(dims)) {
     data.use <- Seurat::Embeddings(
       object[[reduction]]
     )[, dims]
     assay <- SeuratObject::DefaultAssay(
       object = object[[reduction]]
     )
-    if (length(x = dims) < n_components) {
+    if (length(dims) < n_components) {
       log_message(
         "Please provide as many or more dims than n_components: ",
-        length(x = dims),
+        length(dims),
         " dims provided, ",
         n_components,
         " LargeVis components requested",
@@ -210,7 +199,7 @@ RunLargeVis.default <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (!is.null(x = seed.use)) {
+  if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
 
@@ -245,7 +234,7 @@ RunLargeVis.default <- function(
     pca_method = pca_method,
     ...
   )
-  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(x = embedding)))
+  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   if (inherits(x = object, what = "dist")) {
     rownames(x = embedding) <- attr(object, "Labels")
   } else {

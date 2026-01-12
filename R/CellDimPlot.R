@@ -5,29 +5,41 @@
 #' Plotting cell points on a reduced 2D plane and coloring according to the groups.
 #'
 #' @md
-#' @param srt A Seurat object.
-#' @param group.by Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).
+#' @inheritParams standard_scop
+#' @param group.by Name of one or more meta.data columns to group (color) cells by.
 #' @param reduction Which dimensionality reduction to use.
 #' If not specified, will use the reduction returned by [DefaultReduction].
 #' @param split.by Name of a column in meta.data column to split plot by.
-#' @param palette Name of a color palette name collected in scop.
+#' Default is `NULL`.
+#' @param palette Color palette name.
+#' Available palettes can be found in [thisplot::show_palettes].
 #' Default is `"Paired"`.
 #' @param palcolor Custom colors used to create a color palette.
+#' Default is `NULL`.
 #' @param bg_color Color value for background(NA) points.
-#' @param pt.size Point size.
-#' @param pt.alpha Point transparency.
-#' @param cells.highlight A vector of cell names to highlight.
+#' @param pt.size The size of the points in the plot.
+#' @param pt.alpha The transparency of the data points.
+#' Default is `1`.
+#' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
+#' If `TRUE`, all cells are highlighted. If `FALSE`, no cells are highlighted.
+#' Default is `NULL`.
 #' @param cols.highlight Color used to highlight the cells.
 #' @param sizes.highlight Size of highlighted cell points.
 #' @param alpha.highlight Transparency of highlighted cell points.
 #' @param stroke.highlight Border width of highlighted cell points.
-#' @param legend.position The position of legends ("none", "left", "right", "bottom", "top").
-#' @param legend.direction Layout of items in legends ("horizontal" or "vertical")
+#' @param legend.position The position of legends,
+#' one of `"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`.
+#' Default is `"right"`.
+#' @param legend.direction The direction of the legend in the plot.
+#' Can be one of `"vertical"` or `"horizontal"`.
 #' @param combine Combine plots into a single `patchwork` object.
 #' If `FALSE`, return a list of ggplot objects.
 #' @param nrow Number of rows in the combined plot.
+#' Default is `NULL`, which means determined automatically based on the number of plots.
 #' @param ncol Number of columns in the combined plot.
-#' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
+#' Default is `NULL`, which means determined automatically based on the number of plots.
+#' @param byrow Whether to arrange the plots by row in the combined plot.
+#' Default is `TRUE`.
 #' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions
 #' @param show_na Whether to assign a color from the color palette to NA group.
 #' If `TRUE`, cell points with NA level will be colored by `bg_color`.
@@ -124,20 +136,26 @@
 #' @param hex.bins Number of hexagonal bins.
 #' @param hex.binwidth Hexagonal bin width.
 #' @param hex.linewidth Border width of hexagonal bins.
-#' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
-#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
+#' @param raster Convert points to raster format.
+#' Default is `NULL`, which automatically rasterizes if plotting more than 100,000 cells.
+#' @param raster.dpi Pixel resolution for rasterized plots.
 #' Default is `c(512, 512)`.
 #' @param theme_use Theme used. Can be a character string or a theme function.
-#' For example, `"theme_blank"` or [ggplot2::theme_classic].
-#' @param aspect.ratio Aspect ratio of the panel.
+#' Default is `"theme_scop"`.
+#' @param aspect.ratio Aspect ratio of the panel. Default is `1`.
 #' @param title The text for the title.
+#' Default is `NULL`.
 #' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
-#' @param xlab x-axis label.
-#' @param ylab y-axis label.
+#' Default is `NULL`.
+#' @param xlab The x-axis label of the plot.
+#' Default is `NULL`.
+#' @param ylab The y-axis label of the plot.
+#' Default is `NULL`.
 #' @param force Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-#' @param cells Subset cells to plot.
+#' Default is `FALSE`.
+#' @param cells A character vector of cell names to use.
 #' @param theme_args Other arguments passed to the `theme_use`.
-#' @param seed Random seed set for reproducibility
+#' Default is `list()`.
 #'
 #' @seealso
 #' [CellDimPlot3D], [FeatureDimPlot], [FeatureDimPlot3D]
@@ -760,8 +778,8 @@ CellDimPlot <- function(
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
   }
-  if (!is.null(x = raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
+  if (!is.null(raster.dpi)) {
+    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
       log_message(
         "'{.arg raster.dpi}' must be a two-length numeric vector",
         message_type = "error"
@@ -882,7 +900,7 @@ CellDimPlot <- function(
       dims = dims,
       velocity = velocity,
       plot_type = velocity_plot_type,
-      group_by = group.by,
+      group.by = group.by,
       group_palette = palette,
       group_palcolor = palcolor,
       n_neighbors = velocity_n_neighbors,

@@ -67,7 +67,7 @@ PAGAPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing a PAGA result.}
+\item{srt}{A Seurat object.}
 
 \item{paga}{The PAGA result from the Seurat object.
 Default is \code{srt@misc$paga}.}
@@ -75,26 +75,21 @@ Default is \code{srt@misc$paga}.}
 \item{type}{The type of plot to generate.
 Possible values are \code{"connectivities"} (default) and \code{"connectivities_tree"}.}
 
-\item{reduction}{The type of reduction to use for the plot.
-Default is the default reduction in the Seurat object.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
-\item{dims}{The dimensions of the reduction to use for the plot.
-Default is the first two dimensions.}
+\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
-\item{cells}{The cells to include in the plot.
-Default is all cells.}
+\item{cells}{A character vector of cell names to use.}
 
 \item{show_transition}{Whether to display transitions between different cell states.
 Default is \code{FALSE}.}
 
-\item{node_palette}{The color palette to use for node coloring.
-Default is \code{"Paired"}.}
+\item{node_palette}{A character vector specifying the name of the color palette for node groups.}
 
-\item{node_palcolor}{A vector of colors to use for node coloring.
-Default is \code{NULL}.}
+\item{node_palcolor}{A character vector specifying the names of the colors for each node group.}
 
-\item{node_size}{The size of the nodes in the plot.
-Default is \code{4}.}
+\item{node_size}{A numeric value or column name of \code{node} specifying the size of the nodes.}
 
 \item{node_alpha}{A numeric value or column name of \code{node} specifying the transparency of the nodes.}
 
@@ -102,64 +97,50 @@ Default is \code{4}.}
 
 \item{node_highlight_color}{A character vector specifying the color for highlighting nodes.}
 
-\item{label}{Whether to show labels for the nodes.}
+\item{label}{Whether to label the cell groups.}
 
-\item{label.size}{The size of the labels.}
+\item{label.size}{Size of labels.}
 
-\item{label.fg}{A character vector specifying the foreground color of the labels.}
+\item{label.fg}{Foreground color of label.}
 
-\item{label.bg}{A character vector specifying the background color of the labels.}
+\item{label.bg}{Background color of label.}
 
-\item{label.bg.r}{The background color transparency of the labels.}
+\item{label.bg.r}{Background ratio of label.}
 
-\item{label_insitu}{Whether to display the node group labels in situ or as numeric values.}
+\item{label_insitu}{Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
+Default is \code{FALSE}, which using numbers instead of raw labels.}
 
-\item{label_repel}{Whether to use force-directed label repulsion.}
+\item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
 
-\item{label_repulsion}{The repulsion force for labels.}
+\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
 
-\item{label_point_size}{The size of the points in the labels.
-Default is \code{1}.}
+\item{label_point_size}{Size of the center points.}
 
-\item{label_point_color}{The color of the points in the labels.
-Default is \code{"black"}.}
+\item{label_point_color}{Color of the center points.}
 
-\item{label_segment_color}{The color of the lines connecting the points in the labels.
-Default is \code{"black"}.}
+\item{label_segment_color}{Color of the line segment for labels.}
 
-\item{edge_threshold}{The threshold for including edges in the plot.
-Default is \code{0.01}.}
+\item{edge_threshold}{The threshold for removing edges.}
 
-\item{edge_line}{The type of line to use for the edges.
-Possible values are \code{"straight"} and \code{"curved"}.
-Default is \code{"straight"}.}
+\item{edge_line}{A character vector specifying the type of line for edges (straight, curved).}
 
-\item{edge_line_curvature}{The curvature factor for curved edges.
-Default is \code{0.3}.}
+\item{edge_line_curvature}{The curvature of curved edges.}
 
-\item{edge_line_angle}{The angle for curved edges.
-Default is \code{90}.}
+\item{edge_line_angle}{The angle of curved edges.}
 
-\item{edge_size}{The size range for the edges.
-Default is \code{c(0.2, 1)}.}
+\item{edge_size}{Size of edges.}
 
-\item{edge_color}{The color of the edges.
-Default is \code{"grey40"}.}
+\item{edge_color}{Color of edges.}
 
-\item{edge_alpha}{The transparency of the edges.
-Default is \code{0.5}.}
+\item{edge_alpha}{Transparency of edges.}
 
-\item{edge_shorten}{The amount to shorten the edges.
-Default is \code{0}.}
+\item{edge_shorten}{The length of the edge shorten.}
 
-\item{edge_offset}{The offset for curved edges.
-Default is \code{0}.}
+\item{edge_offset}{The length of the edge offset.}
 
-\item{edge_highlight}{The group(s) to highlight in the plot.
-Default is \code{NULL}.}
+\item{edge_highlight}{A character vector specifying the names of edges to highlight.}
 
-\item{edge_highlight_color}{The color to use for highlighting the edges.
-Default is \code{"red"}.}
+\item{edge_highlight_color}{A character vector specifying the color for highlighting edges.}
 
 \item{transition_threshold}{The threshold for removing transitions.}
 
@@ -189,37 +170,35 @@ Default is \code{"red"}.}
 
 \item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.
-Default is \code{1}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{The title of the plot.
+\item{title}{The text for the title.
 Default is \code{"PAGA"}.}
 
-\item{subtitle}{The subtitle of the plot.
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
 Default is \code{NULL}.}
 
-\item{xlab}{The label for the x-axis.
+\item{xlab}{The x-axis label of the plot.
 Default is \code{NULL}.}
 
-\item{ylab}{The label for the y-axis.
+\item{ylab}{The y-axis label of the plot.
 Default is \code{NULL}.}
 
-\item{legend.position}{The position of the legend.
-Possible values are "right", "left", "bottom", and "top".
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
 Default is \code{"right"}.}
 
-\item{legend.direction}{The direction of the legend.
-Possible values are "vertical" and "horizontal".
-Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{The name of the theme to use for the plot.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to pass to the theme function.
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
 
-\item{return_layer}{Whether to return the plot as a ggplot2 layer.
-Default is \code{FALSE}.}
+\item{return_layer}{Whether to return the plot layers as a list.
+Defaults is \code{FALSE}.}
 }
 \description{
 This function generates a PAGA plot based on the given Seurat object and PAGA result.

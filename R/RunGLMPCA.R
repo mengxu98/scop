@@ -2,14 +2,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object An object.
 #' Can be a Seurat object, an assay object, or a matrix-like object.
-#' @param assay The assay to be used for the analysis.
-#' Default is `NULL`.
-#' @param layer The layer to be used for the analysis.
-#' Default is `"counts"`.
-#' @param features The features to be used for the analysis.
-#' Default is `NULL`, which uses all variable features.
 #' @param L The number of components to be computed.
 #' Default is `5`.
 #' @param fam The family of the generalized linear model to be used.
@@ -25,8 +20,6 @@
 #' Default is `"glmpca"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"GLMPC_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to the [glmpca::glmpca] function.
 #'
 #' @rdname RunGLMPCA

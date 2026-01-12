@@ -4,15 +4,14 @@
 #' Generate a lineage plot based on the pseudotime.
 #'
 #' @md
-#' @param srt An object of class Seurat.
+#' @inheritParams CellDimPlot
+#' @inheritParams GraphPlot
 #' @param lineages A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.
-#' @param reduction An optional string specifying the dimensionality reduction method to use.
-#' @param dims A numeric vector of length 2 specifying the dimensions to plot.
-#' @param cells An optional character vector specifying the cells to include in the plot.
 #' @param trim A numeric vector of length 2 specifying the quantile range of lineages to include in the plot.
 #' @param span The span of the loess smoother.
-#' @param palette A character string specifying the color palette to use for the lineages.
-#' @param palcolor An optional string specifying the color for the palette.
+#' @param palette Color palette name.
+#' Available palettes can be found in [thisplot::show_palettes].
+#' Default is `"Dark2"`.
 #' @param lineages_arrow An arrow object specifying the arrow for lineages.
 #' @param linewidth The linewidth for the lineages.
 #' @param line_bg A character string specifying the color for the background lines.
@@ -20,17 +19,6 @@
 #' @param whiskers Whether to include whiskers in the plot.
 #' @param whiskers_linewidth The linewidth for the whiskers.
 #' @param whiskers_alpha The transparency for the whiskers.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' @param title An optional character string specifying the plot title.
-#' @param subtitle An optional character string specifying the plot subtitle.
-#' @param xlab An optional character string specifying the x-axis label.
-#' @param ylab An optional character string specifying the y-axis label.
-#' @param legend.position A character string specifying the position of the legend.
-#' @param legend.direction A character string specifying the direction of the legend.
-#' @param theme_use A character string specifying the theme to use for the plot.
-#' @param theme_args A list of additional arguments to pass to the theme function.
-#' @param return_layer Whether to return the plot as a layer.
-#' @param seed An optional integer specifying the random seed for reproducibility.
 #'
 #' @seealso [RunSlingshot], [CellDimPlot]
 #'

@@ -18,5 +18,5 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 \item{...}{Additional arguments to be passed to \code{\link[scDblFinder:scDblFinder]{scDblFinder::scDblFinder()}}.}
 }
 \description{
-This function performs doublet-calling using the scDblFinder package on a Seurat object.
+Run doublet-calling with scDblFinder
 }

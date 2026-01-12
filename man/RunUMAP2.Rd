@@ -25,7 +25,7 @@ RunUMAP2(object, ...)
   n.components = 2L,
   metric = "cosine",
   n.epochs = 200L,
-  spread = 1,
+  cores = 1,
   min.dist = 0.3,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
@@ -52,7 +52,7 @@ RunUMAP2(object, ...)
   n.components = 2L,
   metric = "cosine",
   n.epochs = 200L,
-  spread = 1,
+  cores = 1,
   min.dist = 0.3,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
@@ -68,23 +68,26 @@ RunUMAP2(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
+\item{object}{An object.
+This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
 
 \item{...}{Additional arguments to be passed to UMAP.}
 
-\item{reduction}{The reduction to be used. Default is \code{"pca"}.}
+\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 
 \item{dims}{The dimensions to be used. Default is \code{NULL}.}
 
-\item{features}{The features to be used. Default is \code{NULL}.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
 \item{neighbor}{The name of the Neighbor object to be used. Default is \code{NULL}.}
 
 \item{graph}{The name of the Graph object to be used. Default is \code{NULL}.}
 
-\item{assay}{The assay to be used. Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer to be used. Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{umap.method}{The UMAP method to be used.
 Options are \code{"naive"} and \code{"uwot"}.
@@ -112,7 +115,7 @@ Default is \code{"cosine"}.}
 \item{n.epochs}{A number of iterations performed during layout optimization for UMAP.
 Default is \code{200}.}
 
-\item{spread}{The spread parameter for UMAP, used during automatic estimation of a/b parameters.
+\item{cores}{The spread parameter for UMAP, used during automatic estimation of a/b parameters.
 Default is \code{1}.}
 
 \item{min.dist}{The minimum distance between UMAP embeddings, determines how close points appear in the final layout.
@@ -152,7 +155,7 @@ Default is \code{"UMAP_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{The random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{
@@ -161,10 +164,7 @@ Run UMAP (Uniform Manifold Approximation and Projection)
 \examples{
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunUMAP2(
-  object = pancreas_sub,
-  features = SeuratObject::VariableFeatures(pancreas_sub)
-)
+pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

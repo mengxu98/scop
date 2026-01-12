@@ -4,6 +4,7 @@
 #' A function to plot a graph with nodes and edges.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param node A data frame representing the nodes of the graph.
 #' @param edge A matrix representing the edges of the graph.
 #' @param transition A matrix representing the transitions between nodes.
@@ -52,16 +53,8 @@
 #' @param transition_offset The length of the transition offset.
 #' @param transition_highlight A character vector specifying the names of transitions to highlight.
 #' @param transition_highlight_color A character vector specifying the color for highlighting transitions.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' @param title A character value specifying the title of the plot.
-#' @param subtitle A character value specifying the subtitle of the plot.
-#' @param xlab A character value specifying the label for the x-axis.
-#' @param ylab A character value specifying the label for the y-axis.
-#' @param legend.position A character value specifying the position of the legend.
-#' @param legend.direction A character value specifying the direction of the legend.
-#' @param theme_use A character value specifying the theme to use.
-#' @param theme_args A list of arguments to be passed to the theme.
-#' @param return_layer Whether to return the layers of the plot instead of the plot itself.
+#' @param return_layer Whether to return the plot layers as a list.
+#' Defaults is `FALSE`.
 #'
 #' @seealso [CellDimPlot]
 #'

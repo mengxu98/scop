@@ -31,11 +31,14 @@ RunDimReduction(
 
 \item{prefix}{The prefix used to name the result.}
 
-\item{features}{Use features expression data to run linear or nonlinear dimensionality reduction.}
+\item{features}{A character vector of features to use.
+Default is \code{NULL}.}
 
-\item{assay}{Specific assay to get data from.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{Specific layer to get data from.}
+\item{layer}{Which layer to use.
+Default is \code{"counts"}.}
 
 \item{linear_reduction}{Method of linear dimensionality reduction.
 Options are \code{"pca"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}.}
@@ -66,7 +69,8 @@ Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \cod
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Set a seed. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 Run dimensionality reduction

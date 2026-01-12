@@ -20,10 +20,8 @@ CheckDataType <- function(object, ...) {
 }
 
 #' @md
-#' @param layer The layer in the `srt` object from which to extract the data.
-#' Default is `"data"`.
-#' @param assay The assay to extract the data from.
-#' If not provided, the default assay will be used.
+#' @inheritParams standard_scop
+#' @inheritParams FeatureDimPlot
 #'
 #' @rdname CheckDataType
 #' @method CheckDataType Seurat
@@ -124,9 +122,9 @@ CheckDataType.default <- function(
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams standard_scop
 #' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
 #' @param batch A character string specifying the batch variable name.
-#' @param assay The name of the assay to be used for downstream analysis.
 #' @param do_normalization Whether data normalization should be performed.
 #' Default is `TRUE`.
 #' @param normalization_method The normalization method to be used.
@@ -147,8 +145,6 @@ CheckDataType.default <- function(
 #' Default is `NULL`.
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.
 #' Default is `NULL`.
-#' @param seed An integer specifying the random seed for reproducibility.
-#' Default is `11`.
 #'
 #' @return
 #' A list containing the preprocessed `Seurat` objects,
@@ -172,14 +168,14 @@ CheckDataList <- function(
     verbose = TRUE,
     seed = 11) {
   log_message(
-    "Checking a list of {.cls Seurat} object...",
+    "Checking a list of {.cls Seurat}...",
     verbose = verbose
   )
   set.seed(seed)
 
   if (!inherits(srt_list, "list") || any(sapply(srt_list, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "{.arg srt_list} is not a list of {.cls Seurat} objects",
+      "{.arg srt_list} is not a list of {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -200,7 +196,7 @@ CheckDataList <- function(
   which_less_2 <- which(sapply(srt_list, ncol) < 2)
   if (length(which_less_2) > 0) {
     log_message(
-      "{.cls Seurat} objects in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which_less_2}}",
+      "{.cls Seurat} in {.arg srt_list} contain less than 2 cells. {.arg srt_list} index: {.val {which_less_2}}",
       message_type = "error"
     )
   }
@@ -209,7 +205,7 @@ CheckDataList <- function(
     default_assay <- unique(sapply(srt_list, SeuratObject::DefaultAssay))
     if (length(default_assay) != 1) {
       log_message(
-        "The default assay name of the Seurat object in the {.arg srt_list} is inconsistent",
+        "The default assay name of {.cls Seurat} in the {.arg srt_list} is inconsistent",
         message_type = "error"
       )
     } else {
@@ -231,7 +227,7 @@ CheckDataList <- function(
   )
   if (length(assay_type) != 1) {
     log_message(
-      "The assay type of the {.cls Seurat} object in the {.arg srt_list} is inconsistent",
+      "The assay type of {.cls Seurat} in the {.arg srt_list} is inconsistent",
       message_type = "error"
     )
   } else {
@@ -650,7 +646,7 @@ CheckDataMerge <- function(
     seed = 11) {
   if (!inherits(srt_merge, "Seurat")) {
     log_message(
-      "{.arg srt_merge} is not a Seurat object",
+      "{.arg srt_merge} is not a {.cls Seurat}",
       message_type = "error"
     )
   }

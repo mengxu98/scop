@@ -48,11 +48,14 @@ use all other cells for comparison; if an object of class \code{phylo} or
 
 \item{cells.2}{Vector of cell names belonging to group 2}
 
-\item{features}{Genes to test. Default is to use all genes}
+\item{features}{A character vector or a named list of features to plot.
+Features can be gene names in Assay or names of numeric columns in meta.data.}
 
-\item{assay}{Assay to use in differential expression testing}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer used.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{min.expression}{The min.expression used.}
 
@@ -149,9 +152,11 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{norm.method}{Normalization method for fold change calculation when
 \code{slot} is \dQuote{\code{data}}}
 
-\item{seed}{The seed used.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 
-\item{verbose}{Print a progress bar once expression testing begins}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Arguments passed to other methods and to specific DE methods}
 }

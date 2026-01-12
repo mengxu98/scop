@@ -1,10 +1,7 @@
 #' @title Run doublet-calling for single cell RNA-seq data.
 #'
-#' @description
-#' This function performs doublet-calling for single cell RNA-seq data.
-#'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param assay The name of the assay to be used for doublet-calling.
 #' Default is `"RNA"`.
 #' @param db_method Method used for doublet-calling.
@@ -44,7 +41,7 @@ RunDoubletCalling <- function(
     ...) {
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "{.arg srt} is not a Seurat object",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -103,9 +100,6 @@ RunDoubletCalling <- function(
 
 #' @title Run doublet-calling with scDblFinder
 #'
-#' @description
-#' This function performs doublet-calling using the scDblFinder package on a Seurat object.
-#'
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param ... Additional arguments to be passed to [scDblFinder::scDblFinder()].
@@ -118,7 +112,7 @@ db_scDblFinder <- function(
     ...) {
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -138,9 +132,6 @@ db_scDblFinder <- function(
 }
 
 #' @title Run doublet-calling with scds
-#'
-#' @description
-#' This function performs doublet-calling using the scds package on a Seurat object.
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
@@ -172,7 +163,7 @@ db_scds <- function(
     ...) {
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -201,9 +192,6 @@ db_scds <- function(
 }
 
 #' @title Run doublet-calling with Scrublet
-#'
-#' @description
-#' This function performs doublet-calling using the scrublet(python) package on a Seurat object.
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
@@ -236,7 +224,7 @@ db_Scrublet <- function(
   PrepareEnv()
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "{.arg srt} is not a Seurat object",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -281,9 +269,6 @@ db_Scrublet <- function(
 
 #' @title Run doublet-calling with DoubletDetection
 #'
-#' @description
-#' This function performs doublet-calling using the doubletdetection(python) package on a Seurat object.
-#'
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
@@ -318,7 +303,7 @@ db_DoubletDetection <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -395,10 +380,6 @@ db_DoubletDetection <- function(
 
 #' @title Detect outliers using MAD (Median Absolute Deviation)
 #'
-#' @description
-#' This function detects outliers in a numeric vector using the MAD (Median Absolute Deviation) method.
-#' It calculates the median and the MAD, and determines the boundaries for outliers based on the median and the selected number of MADs.
-#'
 #' @md
 #' @param x Numeric vector.
 #' @param nmads Number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
@@ -448,13 +429,10 @@ is_outlier <- function(
 
 #' @title Run cell-level quality control for single cell RNA-seq data.
 #'
-#' @description
-#' This function handles multiple quality control methods for single-cell RNA-seq data.
-#'
 #' @md
+#' @inheritParams CellDimPlot
 #' @inheritParams RunDoubletCalling
-#' @param split.by Name of the sample variable to split the Seurat object.
-#' Default is `NULL`.
+#' @inheritParams standard_scop
 #' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object.
 #' Default is `FALSE`.
 #' @param qc_metrics A character vector specifying the quality control metrics to be applied.
@@ -490,8 +468,6 @@ is_outlier <- function(
 #' Default is `NULL`.
 #' @param species_percent Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
 #' Default is `95`.
-#' @param seed Set a random seed.
-#' Default is `11`.
 #'
 #' @return Returns Seurat object with the QC results stored in the meta.data layer.
 #'
@@ -581,7 +557,7 @@ RunCellQC <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "'srt' is not a Seurat object.",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }

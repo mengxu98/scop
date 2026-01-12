@@ -4,13 +4,15 @@
 #' Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
 #'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams thisutils::parallelize_fun
+#' @inheritParams standard_scop
+#' @inheritParams GroupHeatmap
 #' @param lineages A character vector specifying the lineage names for which dynamic features should be calculated.
-#' @param features A character vector specifying the features (genes or metadata variables) for which dynamic features should be calculated.
-#' If NULL, n_candidates must be provided.
+#' @param features A character vector of features to use.
+#' If `NULL`, n_candidates must be provided.
 #' @param suffix A character vector specifying the suffix to append to the output layer names for each lineage.
 #' Default is the lineage names.
-#' @param n_candidates A number of candidate features to select when features is NULL.
+#' @param n_candidates A number of candidate features to select when features is `NULL`.
 #' Default is `1000`.
 #' @param minfreq An integer specifying the minimum frequency threshold for candidate features.
 #' Features with a frequency less than minfreq will be excluded. Default is `5`.
@@ -18,17 +20,11 @@
 #' If family is set to NULL, the appropriate family will be automatically determined based on the data.
 #' If length(family) is 1, the same family will be used for all features.
 #' Otherwise, family must have the same length as features.
-#' @param layer A character vector specifying the layer in the Seurat object to use.
-#' Default is `"counts"`.
-#' @param assay A character vector specifying the assay in the Seurat object to use.
-#' Default is `NULL`.
 #' @param libsize A numeric or numeric vector specifying the library size correction factors for each cell.
 #' If NULL, the library size correction factors will be calculated based on the expression matrix.
 #' If length(libsize) is 1, the same value will be used for all cells.
 #' Otherwise, libsize must have the same length as the number of cells in srt.
 #' Default is `NULL`.
-#' @param seed An integer specifying the seed for random number generation. Default is `11`.
-#' @inheritParams thisutils::parallelize_fun
 #'
 #' @return Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
 #'

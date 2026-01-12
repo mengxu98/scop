@@ -87,14 +87,13 @@ RunNMF(object, ...)
 
 \item{...}{Additional arguments passed to \link[RcppML:nmf]{RcppML::nmf} or \link[NMF:nmf]{NMF::nmf}.}
 
-\item{assay}{The assay to be used for the analysis.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer to be used for the analysis.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{features}{The features to be used for the analysis.
-Default is \code{NULL}, which uses all variable features.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
 \item{nbes}{The number of basis vectors (components) to be computed.
 Default is \code{50}.}
@@ -127,7 +126,7 @@ Default is \code{"BE_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{The random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

@@ -22,7 +22,8 @@ AddFeaturesData(object, ...)
 
 \item{features}{Features data to add.}
 
-\item{assay}{Assay name to use. Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 }
 \value{
 A \code{Assay}, \code{Assay5} or \code{Seurat} object.

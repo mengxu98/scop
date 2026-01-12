@@ -50,24 +50,22 @@ RunTriMap(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object or a matrix-like object.}
+\item{object}{An object.
+This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
 
 \item{...}{Additional arguments to be passed to the trimap.TRIMAP function.}
 
-\item{reduction}{A character string specifying the reduction to be used.
-Default is \code{"pca"}.}
+\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 
-\item{dims}{An integer vector specifying the dimensions to be used.
-Default is \code{NULL}.}
+\item{dims}{The dimensions to be used. Default is \code{NULL}.}
 
-\item{features}{A character vector specifying the features to be used.
-Default is \code{NULL}.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
-\item{assay}{A character string specifying the assay to be used.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{A character string specifying the layer to be used.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{n_components}{A number of TriMap components.
 Default is \code{2}.}
@@ -107,7 +105,7 @@ Default is \code{"TriMap_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

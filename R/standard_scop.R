@@ -8,7 +8,7 @@
 #' @param srt A Seurat object.
 #' @param prefix A prefix to add to the names of intermediate objects created by the function.
 #' Default is `"Standard"`.
-#' @param assay The name of the assay to use for the analysis.
+#' @param assay Which assay to use.
 #' If `NULL`, the default assay of the Seurat object will be used.
 #' @param do_normalization Whether to perform normalization.
 #' If `NULL`, normalization will be performed if the specified assay does not have scaled data.
@@ -62,12 +62,10 @@
 #' @param cluster_resolution The resolution parameter to use for clustering.
 #' Larger values result in fewer clusters.
 #' Default is `0.6`.
-#' @param seed The random seed to use for reproducibility.
+#' @param seed Random seed for reproducibility.
 #' Default is `11`.
 #'
 #' @return A `Seurat` object.
-#'
-#' @seealso [integration_scop]
 #'
 #' @export
 #'
@@ -167,7 +165,7 @@ standard_scop <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "{.arg srt} is not a {.cls Seurat} object",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
