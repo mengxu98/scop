@@ -6,9 +6,9 @@
 \usage{
 FetchDataZero(
   srt,
+  features,
   assay = "RNA",
   layer = "data",
-  features,
   verbose = TRUE,
   ...
 )
@@ -16,16 +16,17 @@ FetchDataZero(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{The assay to use. Default is \code{"RNA"}.}
-
-\item{layer}{The layer to use. Default is \code{"data"}.}
-
 \item{features}{A character vector of feature names.}
+
+\item{assay}{Which assay to use. Default is \code{"RNA"}.}
+
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Other arguments to pass to FetchData}
+\item{...}{Other arguments to pass to \link[Seurat:reexports]{Seurat::FetchData}.}
 }
 \description{
 FetchData but with zeroes for unavailable genes

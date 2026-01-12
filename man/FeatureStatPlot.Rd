@@ -89,10 +89,9 @@ FeatureStatPlot(
 
 \item{stat.by}{A character vector specifying the features to plot.}
 
-\item{group.by}{A character vector specifying the groups to group by.
-Default is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{A character vector specifying the variable to split the plot by.
+\item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
 
 \item{bg.by}{A character vector specifying the variable to use as the background color.
@@ -106,14 +105,14 @@ Default is \code{"group"}.}
 Possible values are \code{"group"}, \code{"feature"}, or \code{"expression"}.
 Default is \code{"group"}.}
 
-\item{cells}{A character vector specifying the cells to include in the plot.
+\item{cells}{A character vector of cell names to use.
 Default is \code{NULL}.}
 
-\item{layer}{A string specifying which layer of the Seurat object to use.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{assay}{A string specifying which assay to use.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{keep_empty}{Whether to keep empty levels in the plot.
 Default is \code{FALSE}.}
@@ -125,10 +124,11 @@ Default is \code{FALSE}.}
 Possible values are \code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.
 Default is \code{"violin"}.}
 
-\item{palette}{A string specifying the color palette to use for filling.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"Paired"}.}
 
-\item{palcolor}{A character vector specifying specific colors to use for filling.
+\item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
 \item{alpha}{The transparency of the plot.
@@ -161,8 +161,7 @@ Default is \code{FALSE}.}
 \item{pt.color}{A string specifying the color of the data points.
 Default is \code{"grey30"}.}
 
-\item{pt.size}{The size of the data points. If NULL, the size is automatically determined.
-Default is \code{NULL}.}
+\item{pt.size}{The size of the points in the plot.}
 
 \item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
@@ -213,7 +212,8 @@ Default is \code{1}.}
 \item{line_type}{The type of the horizontal line.
 Default is \code{1}.}
 
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted.
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
 Default is \code{NULL}.}
 
 \item{cols.highlight}{A string specifying the color of the highlighted cells.
@@ -274,51 +274,50 @@ Default is \code{"p.format"}.}
 \item{sig_labelsize}{The size of the significant comparison labels.
 Default is \code{3.5}.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.
+\item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}
 
-\item{title}{A string specifying the title of the plot.
+\item{title}{The text for the title.
 Default is \code{NULL}.}
 
-\item{subtitle}{A string specifying the subtitle of the plot.
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
 Default is \code{NULL}.}
 
-\item{xlab}{A string specifying the label of the x-axis.
+\item{xlab}{The x-axis label of the plot.
 Default is \code{NULL}.}
 
 \item{ylab}{A string specifying the label of the y-axis.
 Default is \code{"Expression level"}.}
 
-\item{legend.position}{A string specifying the position of the legend.
-Possible values are \code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}, or \code{"none"}.
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
 Default is \code{"right"}.}
 
-\item{legend.direction}{A string specifying the direction of the legend.
-Possible values are \code{"vertical"} or \code{"horizontal"}.
-Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{A string specifying the theme to use for the plot.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to pass to the theme function.
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
 
-\item{combine}{Whether to combine the individual plots into a single plot.
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
+
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{nrow}{A number of rows for the combined plot.
-Default is \code{NULL}.}
-
-\item{ncol}{A number of columns for the combined plot.
-Default is \code{NULL}.}
-
-\item{byrow}{Whether to fill the combined plot by row or by column.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force the plot creation even if there are more than 100 levels in a variable.
+\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
 Default is \code{FALSE}.}
 
-\item{seed}{An integer specifying the random seed to use for generating jitter.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

@@ -1,6 +1,6 @@
 #' @title Find the default reduction name in a Seurat object
 #'
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param pattern Character string containing a regular expression to search for.
 #' @param min_dim Minimum dimension threshold.
 #' @param max_distance Maximum distance allowed for a match.
@@ -53,7 +53,7 @@ DefaultReduction <- function(
   }))]
   if (length(reduc_all) == 0) {
     log_message(
-      "No dimensional reduction found in {.cls Seurat} object",
+      "No dimensional reduction found in {.cls Seurat}",
       message_type = "error"
     )
   }

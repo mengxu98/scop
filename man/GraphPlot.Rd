@@ -162,25 +162,35 @@ GraphPlot(
 
 \item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{A character value specifying the title of the plot.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{A character value specifying the subtitle of the plot.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{A character value specifying the label for the x-axis.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{A character value specifying the label for the y-axis.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{A character value specifying the position of the legend.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{A character value specifying the direction of the legend.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{A character value specifying the theme to use.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to be passed to the theme.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{return_layer}{Whether to return the layers of the plot instead of the plot itself.}
+\item{return_layer}{Whether to return the plot layers as a list.
+Defaults is \code{FALSE}.}
 }
 \description{
 A function to plot a graph with nodes and edges.

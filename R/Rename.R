@@ -1,6 +1,6 @@
-#' Rename features for the Seurat object
+#' @title Rename features for the Seurat object
 #'
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param newnames A vector with the same length of features in Seurat object,
 #' or characters named with old features.
 #' @param assays Assays to rename.
@@ -93,7 +93,7 @@ RenameFeatures <- function(
 
 #' Rename clusters for the Seurat object
 #'
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param group.by The old group used to rename cells.
 #' @param nameslist A named list of new cluster value.
 #' @param name The name of the new cluster stored in the Seurat object.
