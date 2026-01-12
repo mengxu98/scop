@@ -18,13 +18,16 @@ srt_reorder(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{Features used to reorder idents.}
+\item{features}{A character vector or a named list of features to plot.
+Features can be gene names in Assay or names of numeric columns in meta.data.}
 
 \item{reorder_by}{Reorder groups instead of idents.}
 
-\item{layer}{Specific layer to get data from.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{assay}{Specific assay to get data from.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{log}{Whether \link{log1p} transformation needs to be applied.
 Default is \code{TRUE}.}

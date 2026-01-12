@@ -2,7 +2,7 @@
 % Please edit documentation in R/TACSPlot.R
 \name{GetSimilarFeatures}
 \alias{GetSimilarFeatures}
-\title{Find genes with expression patterns similar to the genes you've specified.}
+\title{Find features with expression patterns similar to provided features}
 \usage{
 GetSimilarFeatures(
   srt,
@@ -18,26 +18,26 @@ GetSimilarFeatures(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A character vector; giving feature names.}
+\item{features}{A character vector of feature names.}
 
 \item{n}{An integer; number of results to return.}
 
-\item{features_use}{A character vector; list of features eligible to be returned.}
+\item{features_use}{A character vector of features eligible to be returned.}
 
-\item{anticorr}{Whether to allow negatively correlated genes.
+\item{anticorr}{Whether to allow negatively correlated features.
 Default is \code{FALSE}.}
 
 \item{aggregator}{How to combine correlations when finding similar features.
 Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"max"}, or \code{"mean"}.}
 
-\item{assay}{The assay to use. Default is \code{"RNA"}.}
+\item{assay}{Which assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{The layer to use. Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 }
 \value{
 character vector.
 }
 \description{
-Given a Seurat object and a list of feature names,
-this function returns features that are strongly correlated with those markers.
+Find features with expression patterns similar to provided features
 }

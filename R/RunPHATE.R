@@ -2,17 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction The reduction to be used.
-#' Default is `"pca"`.
-#' @param dims The dimensions to be used.
-#' Default is `NULL`.
-#' @param features The features to be used.
-#' Default is `NULL`.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
-#' @param layer The layer to be used.
-#' Default is `"data"`.
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
 #' @param n_components The number of PHATE components.
 #' Default is `2`.
 #' @param knn A number of nearest neighbors on which to build kernel.
@@ -49,8 +40,6 @@
 #' Default is `"phate"`.
 #' @param reduction.key The prefix for the column names of the PHATE embeddings.
 #' Default is `"PHATE_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to phate.PHATE.
 #'
 #' @rdname RunPHATE

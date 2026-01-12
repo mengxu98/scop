@@ -5,12 +5,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object A Seurat object.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
 #' @param group.by.vars The batch variable name.
-#' @param reduction The reduction to be used.
-#' Default is `"pca"`.
 #' @param dims.use The dimensions to be used.
 #' Default is `1:30`.
 #' @param reduction.name The name of the reduction to be stored in the Seurat object.
@@ -19,8 +16,6 @@
 #' Default is `"Harmony_"`.
 #' @param project.dim Whether to project dimension reduction loadings.
 #' Default is `TRUE`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to [harmony::RunHarmony].
 #'
 #' @rdname RunHarmony2
@@ -81,10 +76,10 @@ RunHarmony2.Seurat <- function(
     reduction.name = "Harmony",
     reduction.key = "Harmony_",
     verbose = TRUE,
-    seed.use = 11L,
+    seed.use = 11,
     ...) {
   check_r("harmony", verbose = FALSE)
-  if (!is.null(x = seed.use)) {
+  if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
   if (length(dims.use) == 1) {

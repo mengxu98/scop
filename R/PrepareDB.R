@@ -9,12 +9,12 @@
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message
 #' @param species A character vector specifying the species for which the gene annotation databases should be prepared.
-#' Default is `c("Homo_sapiens", "Mus_musculus")`.
+#' Can be `"Homo_sapiens"` or `"Mus_musculus"`.
 #' @param db A character vector specifying the annotation sources to be included in the gene annotation databases.
-#' Default is `c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
+#' Can be one or more of `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
 #' "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
 #' "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
-#' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF")`.
+#' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
 #' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
 #' Default is `c("symbol", "entrez_id", "ensembl_id")`.
 #' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved.
@@ -24,6 +24,8 @@
 #' Default is `FALSE`.
 #' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
 #' Default is `TRUE`.
+#' @param Ensembl_version An integer specifying the Ensembl version.
+#' Default is `NULL`. If `NULL`, the latest version will be used.
 #' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
 #' Default is `NULL`.
 #' @param custom_TERM2NAME A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
@@ -35,17 +37,12 @@
 #' @param custom_version A character vector specifying the version to be used in a custom database.
 #' Default is `NULL`.
 #'
-#' @details
-#' The `PrepareDB` function prepares gene annotation databases for a given species and set of annotation sources.
-#' It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
-#' The function also supports creating custom databases based on user-provided gene sets.
-#'
 #' @return A list containing the prepared gene annotation databases:
-#'   \itemize{
-#'     \item `TERM2GENE`: mapping of gene identifiers to terms.
-#'     \item `TERM2NAME`: mapping of terms to their names.
-#'     \item `semData`: semantic similarity data for gene sets (only for Gene Ontology terms).
-#'     }
+#' \itemize{
+#'   \item `TERM2GENE`: mapping of gene identifiers to terms.
+#'   \item `TERM2NAME`: mapping of terms to their names.
+#'   \item `semData`: semantic similarity data for gene sets (only for Gene Ontology terms).
+#' }
 #'
 #' @seealso [ListDB]
 #'

@@ -53,9 +53,10 @@ If not provided, the function will choose the search method based on the size of
 
 \item{k}{A number of nearest neighbors to find for each cell in the query object.}
 
-\item{distance_metric}{A character string specifying the distance metric to use for calculating the pairwise distances between cells.
-Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching",
-and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
+\item{distance_metric}{The distance metric to use for calculating the pairwise distances between cells.
+Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
+"dice", "edice", "hamman", "simple matching", and "faith".
+Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
 \item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
 Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.

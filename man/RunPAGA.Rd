@@ -100,11 +100,15 @@ Edges for weights below this threshold will not be drawn.}
 
 \item{min_group_size}{The minimum size of a group (as a fraction of the total number of cells) to consider it as a potential branching point.}
 
-\item{palette}{The palette to use for coloring cells.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{A vector of colors to use as the palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
-\item{legend.position}{Position of legend in plots. Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+\item{legend.position}{Position of legend in plots.
+Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}

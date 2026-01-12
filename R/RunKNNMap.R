@@ -6,6 +6,8 @@
 #' The function maps cells from the srt_query dataset to the srt_ref dataset based on their similarity or distance.
 #'
 #' @md
+#' @inheritParams CellCorHeatmap
+#' @inheritParams RunKNNPredict
 #' @param srt_query A Seurat object storing the query cells.
 #' @param srt_ref A Seurat object storing the reference cells.
 #' @param query_assay A character string specifying the assay name for the query cells.
@@ -15,8 +17,6 @@
 #' @param ref_umap A character string specifying the name of the UMAP reduction in the reference object.
 #' If not provided, the first UMAP reduction found in the reference object will be used.
 #' @param ref_group A character string specifying a metadata column name in the reference object to use for grouping.
-#' @param features A character vector specifying the features to be used for calculating the distance metric.
-#' If not provided, the function will use the variable features calculated by the Seurat package.
 #' @param nfeatures A integer specifying the number of highly variable features to be calculated if `features` is not provided.
 #' @param query_reduction A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.
 #' @param ref_reduction A character string specifying the name of a dimensionality reduction in the reference object to use for calculating the distance metric.
@@ -25,16 +25,11 @@
 #' @param projection_method A character string specifying the projection method to use.
 #' Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
 #' If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.
-#' @param nn_method A character string specifying the nearest neighbor search method to use.
-#' Options are "raw", "annoy", and "rann".
-#' If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
-#' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
-#' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
-#' If not provided, the function will choose the search method based on the size of the query and reference datasets.
 #' @param k A number of nearest neighbors to find for each cell in the query object.
-#' @param distance_metric A character string specifying the distance metric to use for calculating the pairwise distances between cells.
-#' Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman", "simple matching",
-#' and "faith". Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.
+#' @param distance_metric The distance metric to use for calculating the pairwise distances between cells.
+#' Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
+#' "dice", "edice", "hamman", "simple matching", and "faith".
+#' Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.
 #' @param vote_fun A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
 #' Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 #' If not provided, the default is "mean".

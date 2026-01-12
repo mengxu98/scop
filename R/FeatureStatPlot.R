@@ -3,12 +3,10 @@
 #' This function generates a statistical plot for features.
 #'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
+#' @inheritParams CellDimPlot
+#' @inheritParams FeatureDimPlot
 #' @param stat.by A character vector specifying the features to plot.
-#' @param group.by A character vector specifying the groups to group by.
-#' Default is `NULL`.
-#' @param split.by A character vector specifying the variable to split the plot by.
-#' Default is `NULL`.
 #' @param plot.by A character vector specifying how to plot the data, by group or feature.
 #' Possible values are `"group"` or `"feature"`.
 #' Default is `"group"`.
@@ -17,11 +15,7 @@
 #' @param fill.by A string specifying what to fill the plot by.
 #' Possible values are `"group"`, `"feature"`, or `"expression"`.
 #' Default is `"group"`.
-#' @param cells A character vector specifying the cells to include in the plot.
-#' Default is `NULL`.
-#' @param layer A string specifying which layer of the Seurat object to use.
-#' Default is `"data"`.
-#' @param assay A string specifying which assay to use.
+#' @param cells A character vector of cell names to use.
 #' Default is `NULL`.
 #' @param keep_empty Whether to keep empty levels in the plot.
 #' Default is `FALSE`.
@@ -30,10 +24,6 @@
 #' @param plot_type A string specifying the type of plot to create.
 #' Possible values are `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
 #' Default is `"violin"`.
-#' @param palette A string specifying the color palette to use for filling.
-#' Default is `"Paired"`.
-#' @param palcolor A character vector specifying specific colors to use for filling.
-#' Default is `NULL`.
 #' @param alpha The transparency of the plot.
 #' Default is `1`.
 #' @param bg_palette A string specifying the color palette to use for the background.
@@ -54,10 +44,6 @@
 #' Default is `FALSE`.
 #' @param pt.color A string specifying the color of the data points.
 #' Default is `"grey30"`.
-#' @param pt.size The size of the data points. If NULL, the size is automatically determined.
-#' Default is `NULL`.
-#' @param pt.alpha The transparency of the data points.
-#' Default is `1`.
 #' @param jitter.width The width of the jitter.
 #' Default is `0.5`.
 #' @param jitter.height The height of the jitter.
@@ -89,8 +75,6 @@
 #' Default is `1`.
 #' @param line_type The type of the horizontal line.
 #' Default is `1`.
-#' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot. If TRUE, all cells are highlighted. If FALSE, no cells are highlighted.
-#' Default is `NULL`.
 #' @param cols.highlight A string specifying the color of the highlighted cells.
 #' Default is `"red"`.
 #' @param sizes.highlight The size of the highlighted cells.
@@ -130,38 +114,10 @@
 #' Default is `"p.format"`.
 #' @param sig_labelsize The size of the significant comparison labels.
 #' Default is `3.5`.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' Default is `NULL`.
-#' @param title A string specifying the title of the plot.
-#' Default is `NULL`.
-#' @param subtitle A string specifying the subtitle of the plot.
-#' Default is `NULL`.
-#' @param xlab A string specifying the label of the x-axis.
+#' @param aspect.ratio Aspect ratio of the panel.
 #' Default is `NULL`.
 #' @param ylab A string specifying the label of the y-axis.
 #' Default is `"Expression level"`.
-#' @param legend.position A string specifying the position of the legend.
-#' Possible values are `"right"`, `"left"`, `"top"`, `"bottom"`, or `"none"`.
-#' Default is `"right"`.
-#' @param legend.direction A string specifying the direction of the legend.
-#' Possible values are `"vertical"` or `"horizontal"`.
-#' Default is `"vertical"`.
-#' @param theme_use A string specifying the theme to use for the plot.
-#' Default is `"theme_scop"`.
-#' @param theme_args A list of arguments to pass to the theme function.
-#' Default is `list()`.
-#' @param combine Whether to combine the individual plots into a single plot.
-#' Default is `TRUE`.
-#' @param nrow A number of rows for the combined plot.
-#' Default is `NULL`.
-#' @param ncol A number of columns for the combined plot.
-#' Default is `NULL`.
-#' @param byrow Whether to fill the combined plot by row or by column.
-#' Default is `TRUE`.
-#' @param force Whether to force the plot creation even if there are more than 100 levels in a variable.
-#' Default is `FALSE`.
-#' @param seed An integer specifying the random seed to use for generating jitter.
-#' Default is `11`.
 #'
 #' @seealso
 #' [CellStatPlot], [StatPlot]

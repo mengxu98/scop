@@ -22,24 +22,42 @@
 #' Default is the first `30` dimensions.
 #' @param ref_dims A numeric vector specifying the dimensions to be used for the reference data.
 #' Default is the first `30` dimensions.
-#' @param query_collapsing A boolean value indicating whether the query data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.
+#' @param query_collapsing A boolean value indicating whether the query data should be collapsed to group-level average expression values.
+#' If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.
 #' @param ref_collapsing A boolean value indicating whether the reference data should be collapsed to group-level average expression values.
 #' If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group.
 #' Otherwise it will use the raw expression values for each cell.
 #' @param return_full_distance_matrix A boolean value indicating whether the full distance matrix should be returned.
 #' If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.
-#' @param features A character vector specifying the features (genes) to be used for the KNN prediction. If NULL, all the features in the query and reference data will be used.
-#' @param features_type A character vector specifying the type of features to be used for the KNN prediction. Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is `"HVF"`.
-#' @param feature_source A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Default is `"both"`.
-#' @param nfeatures An integer specifying the maximum number of features to be used for the KNN prediction. Default is `2000`.
+#' @param features A character vector specifying the features to be used for the KNN prediction.
+#' If `NULL`, all the features in the query and reference data will be used.
+#' @param features_type A character vector specifying the type of features to be used for the KNN prediction.
+#' Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is `"HVF"`.
+#' @param feature_source The source of the features to be used.
+#' Must be one of "both", "query", or "ref".
+#' Default is `"both"`.
+#' @param nfeatures An integer specifying the maximum number of features to be used for the KNN prediction.
+#' Default is `2000`.
 #' @param DEtest_param A list of parameters to be passed to the differential expression test function if `features_type` is set to "DE". Default is `list(max.cells.per.ident = 200, test.use = "wilcox")`.
 #' @param DE_threshold Threshold used to filter the DE features.
-#' Default is `"p_val < 0.05"`. If using "roc" test, `DE_threshold` should be needs to be reassigned. e.g. "power > 0.5".
-#' @param nn_method A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Default is `"raw"`.
-#' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Default is `"cosine"`.
-#' @param k A number of nearest neighbors to be considered for the KNN prediction. Default is `30`.
-#' @param filter_lowfreq An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable". Default is `0`, which means no filtering will be performed.
-#' @param prefix A character vector specifying the prefix to be added to the resulting annotations. Default is `"KNNPredict"`.
+#' If using "roc" test, `DE_threshold` should be needs to be reassigned. e.g. "power > 0.5".
+#' Default is `"p_val < 0.05"`.
+#' @param nn_method A character string specifying the nearest neighbor search method to use.
+#' Options are "raw", "annoy", and "rann".
+#' If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
+#' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
+#' If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
+#' If not provided, the function will choose the search method based on the size of the query and reference datasets.
+#' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
+#' Must be one of "cosine", "euclidean", "manhattan", or "hamming".
+#' Default is `"cosine"`.
+#' @param k A number of nearest neighbors to be considered for the KNN prediction.
+#' Default is `30`.
+#' @param filter_lowfreq An integer specifying the threshold for filtering low-frequency cell types from the predicted results.
+#' Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable".
+#' Default is `0`, which means no filtering will be performed.
+#' @param prefix A character vector specifying the prefix to be added to the resulting annotations.
+#' Default is `"KNNPredict"`.
 #'
 #' @seealso
 #' [RunKNNMap], [RunSingleR], [CellCorHeatmap]

@@ -53,89 +53,125 @@ FeatureCorPlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A character vector specifying the features to compare. Should be present in both the assay data and the metadata of the Seurat object.}
+\item{features}{A character vector specifying the features to compare.
+Should be present in both the assay data and the metadata of the Seurat object.}
 
-\item{group.by}{A character string specifying the column in the metadata to group cells by.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{A character string specifying the column in the metadata to split the plot by.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{cells}{A character vector specifying the cells to include in the plot. If NULL (default), all cells will be included.}
+\item{cells}{A character vector of cell names to use.}
 
-\item{layer}{A character string specifying the layer in the Seurat object to use. Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{assay}{A character string specifying the assay to use. Default is the default assay in the Seurat object.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{cor_method}{A character string specifying the correlation method to use. Can be "pearson" (default) or "spearman".}
+\item{cor_method}{A character string specifying the correlation method to use.
+Can be \code{"pearson"} or \code{"spearman"}.
+Default is \code{"pearson"}.}
 
-\item{adjust}{The adjustment factor for the width of the violin plots. Default is \code{1}.}
+\item{adjust}{The adjustment factor for the width of the violin plots.
+Default is \code{1}.}
 
 \item{margin}{The margin size for the plot. Default is \code{1}.}
 
-\item{reverse}{Whether to reverse the order of the features in the plot. Default is \code{FALSE}.}
+\item{reverse}{Whether to reverse the order of the features in the plot.
+Default is \code{FALSE}.}
 
-\item{add_equation}{Whether to add the equation of the linear regression line to each scatter plot. Default is \code{FALSE}.}
+\item{add_equation}{Whether to add the equation of the linear regression line to each scatter plot.
+Default is \code{FALSE}.}
 
-\item{add_r2}{Whether to add the R-squared value of the linear regression line to each scatter plot. Default is \code{TRUE}.}
+\item{add_r2}{Whether to add the R-squared value of the linear regression line to each scatter plot.
+Default is \code{TRUE}.}
 
-\item{add_pvalue}{Whether to add the p-value of the linear regression line to each scatter plot. Default is \code{TRUE}.}
+\item{add_pvalue}{Whether to add the p-value of the linear regression line to each scatter plot.
+Default is \code{TRUE}.}
 
-\item{add_smooth}{Whether to add a smoothed line to each scatter plot. Default is \code{TRUE}.}
+\item{add_smooth}{Whether to add a smoothed line to each scatter plot.
+Default is \code{TRUE}.}
 
-\item{palette}{A character string specifying the name of the color palette to use for the groups. Default is \code{"Paired"}.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{A character string specifying the color for the groups. Default is \code{NULL}.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
-\item{cor_palette}{A character string specifying the name of the color palette to use for the correlation. Default is \code{"RuBu"}.}
+\item{cor_palette}{A character string specifying the name of the color palette to use for the correlation.
+Default is \code{"RdBu"}.}
 
-\item{cor_palcolor}{A character string specifying the color for the correlation. Default is \code{"RuBu"}.}
+\item{cor_palcolor}{A character string specifying the color for the correlation.
+Default is \code{"RdBu"}.}
 
 \item{cor_range}{A two-length numeric vector specifying the range for the correlation.}
 
-\item{pt.size}{The size of the points in the scatter plots. If NULL (default), the size will be automatically determined based on the number of cells.}
+\item{pt.size}{The size of the points in the plot.}
 
-\item{pt.alpha}{A numeric value between 0 and 1 specifying the transparency of the points in the scatter plots. Default is \code{1}.}
+\item{pt.alpha}{The transparency of the data points.
+Default is \code{1}.}
 
-\item{cells.highlight}{A logical value or a character vector specifying the cells to highlight in the scatter plots. If TRUE, all cells will be highlighted. Default is \code{NULL}.}
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
+Default is \code{NULL}.}
 
-\item{cols.highlight}{A character string specifying the color for the highlighted cells. Default is \code{"black"}.}
+\item{cols.highlight}{Color used to highlight the cells.}
 
-\item{sizes.highlight}{The size of the highlighted cells in the scatter plots. Default is \code{1}.}
+\item{sizes.highlight}{Size of highlighted cell points.}
 
-\item{alpha.highlight}{A numeric value between 0 and 1 specifying the transparency of the highlighted cells in the scatter plots. Default is \code{1}.}
+\item{alpha.highlight}{Transparency of highlighted cell points.}
 
-\item{stroke.highlight}{The stroke size of the highlighted cells in the scatter plots. Default is \code{0.5}.}
+\item{stroke.highlight}{Border width of highlighted cell points.}
 
-\item{calculate_coexp}{Whether to calculate the co-expression of selected features. Default is \code{FALSE}.}
+\item{calculate_coexp}{Whether to calculate the co-expression of selected features.
+Default is \code{FALSE}.}
 
-\item{raster}{Whether to use raster graphics for scatter plots. Default is \code{NULL}.}
+\item{raster}{Convert points to raster format.
+Default is \code{NULL}, which automatically rasterizes if plotting more than 100,000 cells.}
 
-\item{raster.dpi}{A numeric vector specifying the dpi (dots per inch) resolution for raster graphics in the scatter plots. Default is \code{c(512, 512)}.}
+\item{raster.dpi}{Pixel resolution for rasterized plots.
+Default is \code{c(512, 512)}.}
 
-\item{aspect.ratio}{The aspect ratio of the scatter plots. Default is \code{1}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{A character string specifying the title for the correlation plot. Default is \code{NULL}.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{A character string specifying the subtitle for the correlation plot. Default is \code{NULL}.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{legend.position}{A character string specifying the position of the legend. Can be "right" (default), "left", "top", or "bottom".}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{A character string specifying the direction of the legend. Can be "vertical" (default) or "horizontal".}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{A character string specifying the name of the theme to use for the plot. Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to pass to the theme function. Default is \code{list()}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{combine}{Whether to combine the plots into a single plot. Default is \code{TRUE}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{The number of rows in the combined plot. If NULL (default), the number of rows will be automatically determined.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{The number of columns in the combined plot. If NULL (default), the number of columns will be automatically determined.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Whether to fill the combined plot byrow (top to bottom, left to right). Default is \code{TRUE}.}
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
 
-\item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots. Default is \code{FALSE}.}
+\item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots.
+Default is \code{FALSE}.}
 
-\item{seed}{The random seed for reproducibility. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.

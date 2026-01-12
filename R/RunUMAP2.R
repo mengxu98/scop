@@ -2,14 +2,15 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.
-#' @param reduction The reduction to be used. Default is `"pca"`.
+#' @inheritParams standard_scop
+#' @inheritParams FeatureDimPlot
+#' @param object An object.
+#' This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.
+#' @param reduction Which dimensionality reduction to use. Default is `"pca"`.
 #' @param dims The dimensions to be used. Default is `NULL`.
-#' @param features The features to be used. Default is `NULL`.
+#' @param features A character vector of features to use. Default is `NULL`.
 #' @param neighbor The name of the Neighbor object to be used. Default is `NULL`.
 #' @param graph The name of the Graph object to be used. Default is `NULL`.
-#' @param assay The assay to be used. Default is `NULL`.
-#' @param layer The layer to be used. Default is `"data"`.
 #' @param umap.method The UMAP method to be used.
 #' Options are `"naive"` and `"uwot"`.
 #' Default is `"uwot"`.
@@ -28,7 +29,7 @@
 #' Default is `"cosine"`.
 #' @param n.epochs A number of iterations performed during layout optimization for UMAP.
 #' Default is `200`.
-#' @param spread The spread parameter for UMAP, used during automatic estimation of a/b parameters.
+#' @param cores The spread parameter for UMAP, used during automatic estimation of a/b parameters.
 #' Default is `1`.
 #' @param min.dist The minimum distance between UMAP embeddings, determines how close points appear in the final layout.
 #' Default is `0.3`.
@@ -54,7 +55,7 @@
 #' Default is `"umap"`.
 #' @param reduction.key The prefix for the column names of the UMAP embeddings.
 #' Default is `"UMAP_"`.
-#' @param seed.use The random seed to be used.
+#' @param seed.use Random seed for reproducibility.
 #' Default is `11`.
 #' @param ... Additional arguments to be passed to UMAP.
 #'
@@ -64,10 +65,7 @@
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunUMAP2(
-#'   object = pancreas_sub,
-#'   features = SeuratObject::VariableFeatures(pancreas_sub)
-#' )
+#' pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 #' CellDimPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -97,7 +95,7 @@ RunUMAP2.Seurat <- function(
     n.components = 2L,
     metric = "cosine",
     n.epochs = 200L,
-    spread = 1,
+    cores = 1,
     min.dist = 0.3,
     set.op.mix.ratio = 1,
     local.connectivity = 1L,
@@ -113,19 +111,19 @@ RunUMAP2.Seurat <- function(
     ...) {
   if (
     sum(c(
-      is.null(x = dims),
-      is.null(x = features),
+      is.null(dims),
+      is.null(features),
       is.null(neighbor),
-      is.null(x = graph)
+      is.null(graph)
     )) ==
       4
   ) {
     log_message(
-      "Please specify only one of the following arguments: dims, features, neighbor or graph",
+      "Please specify only one of the following arguments: {.val dims, features, neighbor or graph}",
       message_type = "error"
     )
   }
-  if (!is.null(x = features)) {
+  if (!is.null(features)) {
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- as_matrix(
       Matrix::t(
@@ -136,54 +134,50 @@ RunUMAP2.Seurat <- function(
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < n.components) {
+    if (ncol(data.use) < n.components) {
       log_message(
-        "Please provide as many or more features than n.components: ",
-        length(x = features),
-        " features provided, ",
-        n.components,
-        " UMAP components requested",
+        "Please provide as many or more {.arg features} than {.arg n.components}: ",
+        "{.val {length(features)}} features provided, ",
+        "{.val {n.components}} UMAP components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
+  } else if (!is.null(dims)) {
+    reduction <- DefaultReduction(
+      object,
+      pattern = reduction
+    )
     data.use <- as_matrix(Embeddings(object[[reduction]])[, dims])
     assay <- DefaultAssay(object = object[[reduction]])
-    if (length(x = dims) < n.components) {
+    if (length(dims) < n.components) {
       log_message(
-        "Please provide as many or more dims than n.components: ",
-        length(x = dims),
-        " dims provided, ",
-        n.components,
-        " UMAP components requested",
+        "Please provide as many or more {.arg dims} than {.arg n.components}: ",
+        "{.val {length(dims)}} dims provided, ",
+        "{.val {n.components}} UMAP components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = neighbor)) {
+  } else if (!is.null(neighbor)) {
     if (!inherits(x = object[[neighbor]], what = "Neighbor")) {
       log_message(
         "Please specify a Neighbor object name, ",
-        "instead of the name of a ",
-        class(object[[neighbor]]),
-        " object",
+        "instead of the name of a {.cls {class(object[[neighbor]])}}",
         message_type = "error"
       )
     }
     data.use <- object[[neighbor]]
-  } else if (!is.null(x = graph)) {
+  } else if (!is.null(graph)) {
     if (!inherits(x = object[[graph]], what = "Graph")) {
       log_message(
         "Please specify a Graph object name, ",
-        "instead of the name of a ",
-        class(object[[graph]]),
-        " object",
+        "instead of the name of a {.cls {class(object[[graph]])}}",
         message_type = "error"
       )
     }
     data.use <- object[[graph]]
   } else {
     log_message(
-      "Please specify one of dims, features, neighbor, or graph",
+      "Please specify one of {.arg dims, features, neighbor, graph} to compute UMAP",
       message_type = "error"
     )
   }
@@ -197,7 +191,7 @@ RunUMAP2.Seurat <- function(
     n.components = n.components,
     metric = metric,
     n.epochs = n.epochs,
-    spread = spread,
+    cores = cores,
     min.dist = min.dist,
     set.op.mix.ratio = set.op.mix.ratio,
     local.connectivity = local.connectivity,
@@ -228,7 +222,7 @@ RunUMAP2.default <- function(
     n.components = 2L,
     metric = "cosine",
     n.epochs = 200L,
-    spread = 1,
+    cores = 1,
     min.dist = 0.3,
     set.op.mix.ratio = 1,
     local.connectivity = 1L,
@@ -241,7 +235,7 @@ RunUMAP2.default <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (!is.null(x = seed.use)) {
+  if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
   if (return.model) {
@@ -250,13 +244,13 @@ RunUMAP2.default <- function(
       verbose = verbose
     )
   }
-  if (!is.null(x = reduction.model)) {
+  if (!is.null(reduction.model)) {
     log_message(
       "Running UMAP projection",
       verbose = verbose
     )
     if (
-      is.null(x = reduction.model) ||
+      is.null(reduction.model) ||
         !inherits(x = reduction.model, what = "DimReduc")
     ) {
       log_message(
@@ -265,7 +259,7 @@ RunUMAP2.default <- function(
       )
     }
     model <- SeuratObject::Misc(object = reduction.model, slot = "model")
-    if (length(x = model) == 0) {
+    if (length(model) == 0) {
       log_message(
         "The provided reduction.model does not have a model stored",
         message_type = "error"
@@ -296,7 +290,7 @@ RunUMAP2.default <- function(
     umap.config$n_components <- n.components
     umap.config$metric <- metric
     umap.config$n_epochs <- ifelse(is.null(n.epochs), 200, n.epochs)
-    umap.config$spread <- spread
+    umap.config$spread <- cores
     umap.config$min_dist <- min.dist
     umap.config$set_op_mix_ratio <- set.op.mix.ratio
     umap.config$local_connectivity <- local.connectivity
@@ -461,7 +455,7 @@ RunUMAP2.default <- function(
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = spread,
+        spread = cores,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -496,7 +490,7 @@ RunUMAP2.default <- function(
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = spread,
+        spread = cores,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -581,7 +575,7 @@ RunUMAP2.default <- function(
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = spread,
+        spread = cores,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -623,7 +617,7 @@ RunUMAP2.default <- function(
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = spread,
+        spread = cores,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,

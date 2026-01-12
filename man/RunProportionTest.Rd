@@ -17,11 +17,12 @@ RunProportionTest(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing count data and metadata.}
+\item{srt}{A Seurat object.}
 
-\item{group.by}{The name of the metadata column in \code{srt} containing cluster labels or cell type names.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{The name of the metadata column in \code{srt} that contains sample identifiers.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
 \item{comparison}{Optional: specify comparisons to perform.}
 

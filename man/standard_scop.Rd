@@ -40,7 +40,7 @@ standard_scop(
 \item{prefix}{A prefix to add to the names of intermediate objects created by the function.
 Default is \code{"Standard"}.}
 
-\item{assay}{The name of the assay to use for the analysis.
+\item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{do_normalization}{Whether to perform normalization.
@@ -119,7 +119,7 @@ Default is \code{0.6}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{The random seed to use for reproducibility.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \value{
@@ -189,7 +189,4 @@ plist2 <- lapply(
 )
 patchwork::wrap_plots(plotlist = plist2)
 }
-}
-\seealso{
-\link{integration_scop}
 }
