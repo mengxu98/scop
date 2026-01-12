@@ -50,16 +50,17 @@ Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
 \item{x_metric}{A character string specifying the metric to use for the x-axis.
 Default is \code{"diff_pct"}.}
 
-\item{palette}{A character string specifying the color palette to use for the plot.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"RdBu"}.}
 
-\item{palcolor}{A character string specifying the color for the palette.
+\item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
 \item{pt.size}{The size of the points.
 Default is \code{1}.}
 
-\item{pt.alpha}{The transparency of the points.
+\item{pt.alpha}{The transparency of the data points.
 Default is \code{1}.}
 
 \item{cols.highlight}{A character string specifying the color for highlighted points.
@@ -92,7 +93,7 @@ Default is \code{0.1}.}
 \item{label.size}{The size of the labels.
 Default is \code{4}.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.
+\item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}
 
 \item{xlab}{A character string specifying the x-axis label.
@@ -101,20 +102,20 @@ Default is the value of \code{x_metric}.}
 \item{ylab}{A character string specifying the y-axis label.
 Default is \code{"-log10(p-adjust)"}.}
 
-\item{theme_use}{A character string specifying the theme to use for the plot.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of theme arguments to pass to the \code{theme_use} function.
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
 
-\item{combine}{Whether to combine the plots for each group into a single plot.
-Default is \code{TRUE}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{An integer value specifying the number of rows in the combined plot.
-Default is \code{NULL}.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{An integer value specifying the number of columns in the combined plot.
-Default is \code{NULL}.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}

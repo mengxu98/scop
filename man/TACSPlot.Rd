@@ -53,11 +53,12 @@ for example if different time points are present or certain cell types are mostl
 you can feed in a reference srt, and TACS will choose axes based on the reference data.
 Default is \code{NULL}.}
 
-\item{assay}{The assay to use. Default is \code{"RNA"}.}
+\item{assay}{Which assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{The layer to use. Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{group.by}{The variable to group the cells by. Default is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{feature1}{Horizontal axis on plot mimics this feature.
 Character, usually length 1 but possibly longer.}
@@ -69,7 +70,9 @@ Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x
 
 \item{density}{If \code{TRUE}, plot contours instead of points.}
 
-\item{palette}{The palette to use. Default is \code{"Paired"}.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
 \item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap).}
 
@@ -82,25 +85,34 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{remove_outliers}{If \code{TRUE}, remove outliers from the plot. Default is \code{FALSE}.}
 
-\item{aspect.ratio}{The aspect ratio of the plot. Default is \code{1}.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{The title of the plot.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{The subtitle of the plot.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{The x-axis label.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{The y-axis label.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
 \item{suffix}{The suffix of the axis labels. Default is \code{" expression level"}.}
 
-\item{legend.position}{The position of the legend. Default is \code{"right"}.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{The direction of the legend. Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{The theme to use. Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments for the theme. Default is \code{list()}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
 \item{include_all}{If \code{TRUE}, include a panel with all cells. Default is \code{FALSE}.}
 
@@ -120,10 +132,11 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{h}{Bandwidth for density plot. Default is \code{NULL}.}
 
-\item{nrow}{The number of rows for the facet plot. Default is \code{NULL}.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{The number of columns for the facet plot.
-Default is \code{NULL}.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

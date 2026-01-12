@@ -34,20 +34,26 @@ CellScoring(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A named list of feature lists for scoring. If NULL, \code{db} will be used to create features sets.}
+\item{features}{A named list of feature lists for scoring.
+If \code{NULL}, \code{db} will be used to create features sets.}
 
-\item{layer}{The layer of the Seurat object to use for scoring. Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{assay}{The assay of the Seurat object to use for scoring. Default is \code{NULL}, in which case the default assay of the object is used.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{split.by}{A cell metadata variable used for splitting the Seurat object into subsets and performing scoring on each subset. Default is \code{NULL}.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
 \item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{species}{A character vector specifying the species for which the analysis is performed.}
+\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
+Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
+\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
 
 \item{termnames}{A vector of term names to be used from the database. Default is \code{NULL}, in which case all features from the database are used.}
 
@@ -55,14 +61,14 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
-\item{db_version}{A character vector specifying the version of the database to be used.
-This argument is ignored if \code{db_update} is \code{TRUE}.
+\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 Default is \code{TRUE}.}
 
-\item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
+\item{Ensembl_version}{An integer specifying the Ensembl version.
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -78,7 +84,8 @@ Default is \code{TRUE}.}
 
 \item{new_assay}{Whether to create a new assay for storing the scores. Default is \code{FALSE}.}
 
-\item{seed}{The random seed for reproducibility. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}

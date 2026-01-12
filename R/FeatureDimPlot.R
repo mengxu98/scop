@@ -4,94 +4,28 @@
 #' Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
 #'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams CellDimPlot
+#' @inheritParams standard_scop
 #' @param features A character vector or a named list of features to plot.
 #' Features can be gene names in Assay or names of numeric columns in meta.data.
-#' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by [DefaultReduction].
-#' @param split.by Name of a column in meta.data to split plot by.
-#' @param palette Name of a color palette name collected in scop.
-#' @param palcolor Custom colors used to create a color palette.
-#' @param pt.size Point size for plotting.
-#' @param pt.alpha Point transparency.
+#' @param layer Which layer to use.
+#' Default is `data`.
 #' @param keep_scale How to handle the color scale across multiple plots. Options are:
 #' \itemize{
 #'   \item `NULL` (no scaling): Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
 #'   \item `"feature"` (default; by row/feature scaling): The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
 #'   \item `"all"` (universal scaling): The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
 #' }
-#' @param cells.highlight A vector of cell names to highlight.
-#' @param cols.highlight Color used to highlight the cells.
-#' @param sizes.highlight Size of highlighted cells.
-#' @param alpha.highlight Transparency of highlighted cell points.
-#' @param stroke.highlight Border width of highlighted cell points.
-#' @param legend.position The position of legends ("none", "left", "right", "bottom", "top").
-#' @param legend.direction Layout of items in legends ("horizontal" or "vertical")
-#' @param combine Combine plots into a single `patchwork` object. If `FALSE`, return a list of ggplot objects.
-#' @param nrow Number of rows in the combined plot.
-#' @param ncol Number of columns in the combined plot.
-#' @param byrow Logical value indicating if the plots should be arrange by row (default) or by column.
-#' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.
-#' @param layer Which layer to pull expression data from?
-#' Default is `data`.
-#' @param assay Which assay to pull expression data from. If `NULL`, will use the assay returned by [SeuratObject::DefaultAssay].
-#' @param show_stat Whether to show statistical information on the plot.
 #' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
 #' @param compare_features Whether to show the values of multiple features on a single plot.
 #' @param color_blend_mode Blend mode to use when `compare_features = TRUE`
 #' @param bg_cutoff Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with `bg_color`.
-#' @param bg_color Color value for background points.
 #' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Vector of minimum and maximum cutoff values or quantile values for each feature.
-#' @param add_density Whether to add a density layer on the plot.
-#' @param density_color Color of the density contours lines.
-#' @param density_filled Whether to add filled contour bands instead of contour lines.
-#' @param density_filled_palette Color palette used to fill contour bands.
-#' @param density_filled_palcolor Custom colors used to fill contour bands.
-#' @param label Whether the feature name is labeled in the center of the location of cells wieh high expression.
-#' @param label.size Size of labels.
-#' @param label.fg Foreground color of label.
-#' @param label.bg Background color of label.
-#' @param label.bg.r Background ratio of label.
+#' @param label Whether the feature name is labeled in the center of the location of cells with high expression.
 #' @param label_insitu Whether the labels is feature names instead of numbers. Valid only when `compare_features = TRUE`.
-#' @param label_repel Logical value indicating whether the label is repel away from the center location.
-#' @param label_repulsion Force of repulsion between overlapping text labels. Default is `20`.
-#' @param label_point_size Size of the center points.
-#' @param label_point_color Color of the center points
-#' @param label_segment_color Color of the line segment for labels.
-#' @param lineages Lineages/pseudotime to add to the plot. If specified, curves will be fitted using [stats::loess] method.
-#' @param lineages_trim Trim the leading and the trailing data in the lineages.
-#' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
-#' @param lineages_palette Color palette used for lineages.
-#' @param lineages_palcolor Custom colors used for lineages.
-#' @param lineages_arrow Set arrows of the lineages. See [grid::arrow].
-#' @param lineages_linewidth Width of fitted curve lines for lineages.
-#' @param lineages_line_bg Background color of curve lines for lineages.
-#' @param lineages_line_bg_stroke Border width of curve lines background.
-#' @param lineages_whiskers Whether to add whiskers for lineages.
-#' @param lineages_whiskers_linewidth Width of whiskers for lineages.
-#' @param lineages_whiskers_alpha Transparency of whiskers for lineages.
-#' @param graph Specify the graph name to add edges between cell neighbors to the plot.
-#' @param edge_size Size of edges.
-#' @param edge_alpha Transparency of edges.
-#' @param edge_color Color of edges.
-#' @param hex Whether to chane the plot type from point to the hexagonal bin.
-#' @param hex.bins Number of hexagonal bins.
-#' @param hex.binwidth Hexagonal bin width.
 #' @param hex.color Border color of hexagonal bins.
-#' @param hex.linewidth Border width of hexagonal bins.
-#' @param raster Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells
-#' @param raster.dpi Pixel resolution for rasterized plots, passed to geom_scattermore().
-#' Default is `c(512, 512)`.
-#' @param theme_use Theme used. Can be a character string or a theme function. For example, `"theme_blank"` or [ggplot2::theme_classic].
-#' @param aspect.ratio Aspect ratio of the panel.
-#' @param title The text for the title.
-#' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
-#' @param xlab x-axis label.
-#' @param ylab y-axis label.
 #' @param force Whether to force drawing regardless of the number of features greater than 100.
-#' @param cells Subset cells to plot.
-#' @param theme_args Other arguments passed to the `theme_use`.
-#' @param seed Random seed set for reproducibility
+#' Default is `FALSE`.
 #'
 #' @seealso [CellDimPlot]
 #'
@@ -459,7 +393,7 @@ FeatureDimPlot <- function(
   for (i in c(split.by)) {
     if (!i %in% colnames(srt@meta.data)) {
       log_message(
-        "{.val {i}} is not in the {.cls Seurat} object",
+        "{.val {i}} is not in {.cls Seurat}",
         message_type = "error"
       )
     }
@@ -473,14 +407,14 @@ FeatureDimPlot <- function(
   for (l in lineages) {
     if (!l %in% colnames(srt@meta.data)) {
       log_message(
-        "Lineage {.val {l}} is not in the {.cls Seurat} object",
+        "Lineage {.val {l}} is not in {.cls Seurat}",
         message_type = "error"
       )
     }
   }
   if (!is.null(graph) && !graph %in% names(srt@graphs)) {
     log_message(
-      "Graph {.val {graph}} is not exist in the {.cls Seurat} object",
+      "Graph {.val {graph}} is not exist in {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -494,20 +428,20 @@ FeatureDimPlot <- function(
   }
   if (!reduction %in% names(srt@reductions)) {
     log_message(
-      "{.val {reduction}} is not in the {.cls Seurat} object",
+      "{.val {reduction}} is not in {.cls Seurat}",
       message_type = "error"
     )
   }
   if (!is.null(cells.highlight) && isFALSE(cells.highlight)) {
     if (!any(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
-        "No cells in {.val {cells.highlight}} found in {.cls Seurat} object",
+        "No cells in {.val {cells.highlight}} found in {.cls Seurat}",
         message_type = "error"
       )
     }
     if (!all(cells.highlight %in% colnames(srt@assays[[1]]))) {
       log_message(
-        "Some cells in {.val {cells.highlight}} not found in {.cls Seurat} object",
+        "Some cells in {.val {cells.highlight}} not found in {.cls Seurat}",
         message_type = "warning"
       )
     }
@@ -531,7 +465,7 @@ FeatureDimPlot <- function(
   ]
   if (length(features_drop) > 0) {
     log_message(
-      "{.val {features_drop}} are not in the features of {.cls Seurat} object",
+      "{.val {features_drop}} are not in the features of {.cls Seurat}",
       message_type = "warning"
     )
     features <- features[!features %in% features_drop]
@@ -697,8 +631,8 @@ FeatureDimPlot <- function(
   if (isTRUE(raster)) {
     check_r("scattermore", verbose = FALSE)
   }
-  if (!is.null(x = raster.dpi)) {
-    if (!is.numeric(x = raster.dpi) || length(x = raster.dpi) != 2) {
+  if (!is.null(raster.dpi)) {
+    if (!is.numeric(x = raster.dpi) || length(raster.dpi) != 2) {
       log_message(
         "{.arg raster.dpi} must be a two-length numeric vector",
         message_type = "error"
@@ -1796,12 +1730,10 @@ FeatureDimPlot <- function(
 
 #' @title 3D-Dimensional reduction plot for gene expression visualization.
 #'
-#' @description
-#' Plotting cell points on a reduced 3D space and coloring according to the gene expression in the cells.
-#'
 #' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
+#' @inheritParams standard_scop
 #'
 #' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'

@@ -428,7 +428,7 @@ buildReferenceFromSeurat <- function(
 
   if (is.null(obj[[umap]]@misc$model)) {
     log_message(
-      "{.pkg uwot} model not initialiazed in Seurat object\n",
+      "{.pkg uwot} model not initialiazed in {.cls Seurat}\n",
       "Run {.fn Seurat::RunUMAP} with {.arg umap.method = 'uwot'}, {.arg return.model = TRUE} first",
       message_type = "error"
     )

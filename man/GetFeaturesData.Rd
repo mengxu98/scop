@@ -20,7 +20,8 @@ GetFeaturesData(object, ...)
 
 \item{...}{Additional arguments passed to the method.}
 
-\item{assay}{Assay name to use. Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 }
 \value{
 A data frame containing the features data.
