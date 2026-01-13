@@ -4,77 +4,16 @@
 #' This function generates a PAGA plot based on the given Seurat object and PAGA result.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @inheritParams GraphPlot
-#' @param srt A Seurat object containing a PAGA result.
 #' @param paga The PAGA result from the Seurat object.
 #' Default is `srt@misc$paga`.
 #' @param type The type of plot to generate.
 #' Possible values are `"connectivities"` (default) and `"connectivities_tree"`.
-#' @param reduction The type of reduction to use for the plot.
-#' Default is the default reduction in the Seurat object.
-#' @param dims The dimensions of the reduction to use for the plot.
-#' Default is the first two dimensions.
-#' @param cells The cells to include in the plot.
-#' Default is all cells.
 #' @param show_transition Whether to display transitions between different cell states.
 #' Default is `FALSE`.
-#' @param node_palette The color palette to use for node coloring.
-#' Default is `"Paired"`.
-#' @param node_palcolor A vector of colors to use for node coloring.
-#' Default is `NULL`.
-#' @param node_size The size of the nodes in the plot.
-#' Default is `4`.
-#' @param label_point_size The size of the points in the labels.
-#' Default is `1`.
-#' @param label_point_color The color of the points in the labels.
-#' Default is `"black"`.
-#' @param label_segment_color The color of the lines connecting the points in the labels.
-#' Default is `"black"`.
-#' @param edge_threshold The threshold for including edges in the plot.
-#' Default is `0.01`.
-#' @param edge_line The type of line to use for the edges.
-#' Possible values are `"straight"` and `"curved"`.
-#' Default is `"straight"`.
-#' @param edge_line_curvature The curvature factor for curved edges.
-#' Default is `0.3`.
-#' @param edge_line_angle The angle for curved edges.
-#' Default is `90`.
-#' @param edge_size The size range for the edges.
-#' Default is `c(0.2, 1)`.
-#' @param edge_color The color of the edges.
-#' Default is `"grey40"`.
-#' @param edge_alpha The transparency of the edges.
-#' Default is `0.5`.
-#' @param edge_shorten The amount to shorten the edges.
-#' Default is `0`.
-#' @param edge_offset The offset for curved edges.
-#' Default is `0`.
-#' @param edge_highlight The group(s) to highlight in the plot.
-#' Default is `NULL`.
-#' @param edge_highlight_color The color to use for highlighting the edges.
-#' Default is `"red"`.
-#' @param aspect.ratio The aspect ratio of the plot.
-#' Default is `1`.
-#' @param title The title of the plot.
+#' @param title The text for the title.
 #' Default is `"PAGA"`.
-#' @param subtitle The subtitle of the plot.
-#' Default is `NULL`.
-#' @param xlab The label for the x-axis.
-#' Default is `NULL`.
-#' @param ylab The label for the y-axis.
-#' Default is `NULL`.
-#' @param legend.position The position of the legend.
-#' Possible values are "right", "left", "bottom", and "top".
-#' Default is `"right"`.
-#' @param legend.direction The direction of the legend.
-#' Possible values are "vertical" and "horizontal".
-#' Default is `"vertical"`.
-#' @param theme_use The name of the theme to use for the plot.
-#' Default is `"theme_scop"`.
-#' @param theme_args A list of arguments to pass to the theme function.
-#' Default is `list()`.
-#' @param return_layer Whether to return the plot as a ggplot2 layer.
-#' Default is `FALSE`.
 #'
 #' @seealso
 #' [RunPAGA], [CellDimPlot], [GraphPlot]

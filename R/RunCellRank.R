@@ -7,6 +7,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams CellDimPlot
 #' @param srt A Seurat object. Default is `NULL`.
 #' If provided, `adata` will be ignored.
 #' @param adata An anndata object. Default is `NULL`.
@@ -24,9 +25,8 @@
 #' Default is `30`.
 #' @param cores The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 #' Default is `1`.
-#' @param palette The palette to use for coloring cells.
-#' @param palcolor A vector of colors to use as the palette.
-#' @param legend.position Position of legend in plots. Can be `"on data"`, `"right margin"`, `"bottom right"`, etc. Default is `"on data"`.
+#' @param legend.position Position of legend in plots.
+#' Can be `"on data"`, `"right margin"`, `"bottom right"`, etc. Default is `"on data"`.
 #' @param show_plot Whether to show the plot.
 #' Default is `FALSE`.
 #' @param save_plot Whether to save plots to files. Default is `FALSE`.

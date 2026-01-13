@@ -2,13 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, an Assay object, or a matrix-like object.
-#' @param assay The assay to be used for the analysis.
-#' Default is `NULL`.
-#' @param layer The layer to be used for the analysis.
-#' Default is `"data"`.
-#' @param features The features to be used for the analysis.
-#' Default is `NULL`, which uses all variable features.
 #' @param nbes The number of basis vectors (components) to be computed.
 #' Default is `50`.
 #' @param nmf.method The NMF algorithm to be used.
@@ -28,8 +23,6 @@
 #' Default is `"nmf"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"BE_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
 #'
 #' @rdname RunNMF

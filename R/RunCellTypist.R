@@ -8,6 +8,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
+#' @inheritParams FeatureDimPlot
+#' @param assay Which assay to use.
+#' Default is `"RNA"`.
 #' @param model Model name or path. Default is `"Immune_All_Low.pkl"`.
 #' Supports three formats:
 #' 1. Model name (e.g., `"Immune_All_Low.pkl"`): automatically searched in `~/.celltypist/data/models/`

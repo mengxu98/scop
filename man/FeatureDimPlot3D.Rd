@@ -34,29 +34,33 @@ Features can be gene names in Assay or names of numeric columns in meta.data.}
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.}
+\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
 \item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
 
-\item{split.by}{Name of a column in meta.data to split plot by.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{layer}{Which layer to pull expression data from?
+\item{layer}{Which layer to use.
 Default is \code{data}.}
 
-\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
 
-\item{pt.size}{Point size for plotting.}
+\item{pt.size}{The size of the points in the plot.}
 
-\item{cells.highlight}{A vector of cell names to highlight.}
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
+Default is \code{NULL}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
 \item{shape.highlight}{Shape of the cell to highlight.
 See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
 
-\item{sizes.highlight}{Size of highlighted cells.}
+\item{sizes.highlight}{Size of highlighted cell points.}
 
 \item{width}{Width in pixels, defaults to automatic sizing.}
 
@@ -64,10 +68,11 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 
 \item{save}{The name of the file to save the plot to. Must end in ".html".}
 
-\item{force}{Whether to force drawing regardless of the number of features greater than 100.}
+\item{force}{Whether to force drawing regardless of the number of features greater than 100.
+Default is \code{FALSE}.}
 }
 \description{
-Plotting cell points on a reduced 3D space and coloring according to the gene expression in the cells.
+3D-Dimensional reduction plot for gene expression visualization.
 }
 \examples{
 data(pancreas_sub)
