@@ -47,20 +47,17 @@ RunDM(object, ...)
 
 \item{...}{Additional arguments to be passed to \code{destiny::DiffusionMap}.}
 
-\item{reduction}{The reduction to be used.
-Default is \code{"pca"}.}
+\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 
-\item{dims}{The dimensions to be used.
-Default is \code{1:30}.}
+\item{dims}{The dimensions to be used. Default is \code{NULL}.}
 
-\item{features}{The features to be used.
-Default is \code{NULL}.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
-\item{assay}{The assay to be used.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer to be used.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{ndcs}{A number of diffusion components (dimensions) to be computed.
 Default is \code{2}.}
@@ -88,7 +85,7 @@ Default is \code{"DM_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{An integer specifying the random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

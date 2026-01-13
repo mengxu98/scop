@@ -72,25 +72,27 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 \item{result_IDtype}{A character vector specifying the desired type of gene ID to be used in the output.
 This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
 
-\item{species}{A character vector specifying the species for which the analysis is performed.}
+\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
+Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the name of the database to be used for enrichment analysis.}
+\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
+Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"}.}
 
 \item{db_update}{Whether the gene annotation databases should be forcefully updated.
 If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
-\item{db_version}{A character vector specifying the version of the database to be used.
-This argument is ignored if \code{db_update} is \code{TRUE}.
+\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
 \item{db_combine}{Whether to combine multiple databases into one.
-If TRUE, all database specified by \code{db} will be combined as one named "Combined".}
+If \code{TRUE}, all database specified by \code{db} will be combined as one named "Combined".}
 
 \item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
 Default is \code{TRUE}.}
 
-\item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
+\item{Ensembl_version}{An integer specifying the Ensembl version.
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -126,9 +128,7 @@ Default is \code{TRUE}.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
-
 If input is a geneID vector with or without geneID_groups, return the enrichment result directly.
-
 Enrichment result is a list with the following component:
 \itemize{
 \item \code{enrichment}: A data.frame containing all enrichment results.

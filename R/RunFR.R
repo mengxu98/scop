@@ -2,18 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, a Neighbor object, or a Graph object.
-#' @param reduction The reduction to be used.
-#' Default is `NULL`.
-#' @param dims The dimensions to be used.
-#' Default is `NULL`.
-#' @param features The features to be used.
-#' Default is `NULL`.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
-#' @param layer The layer to be used.
-#' Default is `"data"`.
-#' @param graph The name of the Graph object to be used.
 #' Default is `NULL`.
 #' @param neighbor The name of the Neighbor object to be used.
 #' Default is `NULL`.
@@ -27,8 +17,6 @@
 #' Default is `"fr"`.
 #' @param reduction.key The prefix for the column names of the force-directed layout embeddings.
 #' Default is `"FR_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to [igraph::layout_with_fr].
 #'
 #' @export
@@ -124,7 +112,7 @@ RunFR.Seurat <- function(
     data_use <- Seurat::Embeddings(
       object = object[[reduction]]
     )
-    if (max(dims) > ncol(x = data_use)) {
+    if (max(dims) > ncol(data_use)) {
       log_message(
         "More dimensions specified in dims than have been computed",
         message_type = "error"
@@ -191,7 +179,7 @@ RunFR.default <- function(
   )
   colnames(x = embedding) <- paste0(
     reduction.key,
-    seq_len(ncol(x = embedding))
+    seq_len(ncol(embedding))
   )
   rownames(x = embedding) <- rownames(object)
   reduction <- Seurat::CreateDimReducObject(

@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param assay_x Assay to convert as the main data matrix in the anndata object.
 #' Default is `"RNA"`.
 #' @param layer_x Layer name for assay_x in the Seurat object.
@@ -55,7 +55,7 @@ srt_to_adata <- function(
 
   if (!inherits(srt, "Seurat")) {
     log_message(
-      "{.arg srt} is not a Seurat object",
+      "{.arg srt} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -216,7 +216,7 @@ srt_to_adata <- function(
     adata$uns <- uns_list
   }
   log_message(
-    "Convert {.cls Seurat} object to {.cls AnnData} object completed",
+    "Convert {.cls Seurat} to {.cls AnnData} object completed",
     message_type = "success",
     verbose = verbose
   )
@@ -268,7 +268,7 @@ adata_to_srt <- function(
     )
   }
   log_message(
-    "Converting {.cls {class(adata)}} object to {.cls Seurat} object...",
+    "Converting {.cls {class(adata)}} object to {.cls Seurat}...",
     verbose = verbose
   )
 
@@ -490,7 +490,7 @@ adata_to_srt <- function(
     }
   }
   log_message(
-    "Convert {.cls AnnData} object to {.cls Seurat} object completed",
+    "Convert {.cls AnnData} object to {.cls Seurat} completed",
     message_type = "success",
     verbose = verbose
   )

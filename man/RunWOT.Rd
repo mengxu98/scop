@@ -65,9 +65,12 @@ Default is \code{FALSE}.}
 \item{recalculate}{Whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
 Default is \code{FALSE}.}
 
-\item{palette}{The palette to use for coloring cells.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{A vector of colors to use as the palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}

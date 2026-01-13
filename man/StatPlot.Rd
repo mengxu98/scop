@@ -53,9 +53,10 @@ StatPlot(
 
 \item{stat.by}{The column name(s) in \code{meta.data} specifying the variable(s) to be plotted.}
 
-\item{group.by}{The column name in \code{meta.data} specifying the grouping variable.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{The column name in \code{meta.data} specifying the splitting variable.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
 \item{bg.by}{The column name in \code{meta.data} specifying the background variable for bar plots.}
 
@@ -86,9 +87,12 @@ Can be one of \code{"percent"} or \code{"count"}.}
 \item{position}{The position adjustment for the plot.
 Can be one of \code{"stack"} or \code{"dodge"}.}
 
-\item{palette}{The name of the color palette to use for the plot.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{The color to use in the color palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
 \item{alpha}{The transparency level for the plot.}
 
@@ -109,43 +113,49 @@ Default is \code{FALSE}.}
 
 \item{label.bg.r}{The radius of the rounded corners of the label background.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{NULL}.}
 
-\item{title}{The main title of the plot.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{The subtitle of the plot.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{The x-axis label of the plot.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{The y-axis label of the plot.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{The position of the legend in the plot.
-Can be one of \code{"right"}, \code{"left"}, \code{"bottom"}, \code{"top"}, or \code{"none"}.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
 \item{legend.direction}{The direction of the legend in the plot.
 Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{The name of the theme to use for the plot.
-Can be one of the predefined themes or a custom theme.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to be passed to the theme function.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{combine}{Whether to combine multiple plots into a single plot.
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
+
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
+
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
-\item{nrow}{The number of rows in the combined plot.
-Default is \code{NULL}.}
-
-\item{ncol}{The number of columns in the combined plot.
-Default is \code{NULL}.}
-
-\item{byrow}{Whether to fill the plot by row or by column.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force the plot even if some variables have more than 100 levels.
+\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
 Default is \code{FALSE}.}
 
-\item{seed}{The random seed to use for reproducible results.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

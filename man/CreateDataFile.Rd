@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{CreateDataFile}
 \alias{CreateDataFile}
-\title{Create data file}
+\title{Create HDF5 data file from Seurat object}
 \usage{
 CreateDataFile(
   srt,
@@ -36,7 +36,7 @@ Default is \code{6}.}
 Default is \code{TRUE}.}
 }
 \description{
-Creates a data file in HDF5 format from a Seurat object.
+Create HDF5 data file from Seurat object
 }
 \seealso{
 \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}, \link{RunSCExplorer}

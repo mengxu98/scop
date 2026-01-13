@@ -14,7 +14,7 @@ FoldChange.default <- function(
       x = object[features, cells.1, drop = FALSE] > thresh.min,
       na.rm = TRUE
     ) /
-      length(x = cells.1),
+      length(cells.1),
     digits = 3
   )
   pct.2 <- round(
@@ -22,7 +22,7 @@ FoldChange.default <- function(
       x = object[features, cells.2, drop = FALSE] > thresh.min,
       na.rm = TRUE
     ) /
-      length(x = cells.2),
+      length(cells.2),
     digits = 3
   )
   data.1 <- mean.fxn(object[features, cells.1, drop = FALSE])
@@ -46,7 +46,7 @@ PerformDE <- function(
     ...) {
   if (
     !(test.use %in% c("negbinom", "poisson", "MAST", "LR")) &&
-      !is.null(x = latent.vars)
+      !is.null(latent.vars)
   ) {
     log_message(
       "'latent.vars' is only used for the following tests: ",
@@ -191,9 +191,10 @@ WilcoxDETest <- function(
 #' Users have the flexibility to specify custom cell groups, marker types, and various options for DE analysis.
 #'
 #' @md
+#' @inheritParams thisutils::parallelize_fun
 #' @inheritParams Seurat::FindMarkers
-#' @param srt A Seurat object.
-#' @param layer The layer used.
+#' @inheritParams standard_scop
+#' @inheritParams FeatureDimPlot
 #' @param group_by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
@@ -217,9 +218,6 @@ WilcoxDETest <- function(
 #' Default is `"LogNormalize"`.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
 #' Default is `"bonferroni"`.
-#' @param seed An integer value specifying the seed.
-#' Default is `11`.
-#' @inheritParams thisutils::parallelize_fun
 #' @param ... Additional arguments to pass to the [Seurat::FindMarkers] function.
 #'
 #' @export
@@ -504,7 +502,7 @@ RunDEtest <- function(
     }
     if (!all(cells1 %in% colnames(srt))) {
       log_message(
-        "{.arg cells1} has some cells not in the Seurat object",
+        "{.arg cells1} has some cells not in {.cls Seurat}",
         message_type = "error"
       )
     }
@@ -514,7 +512,7 @@ RunDEtest <- function(
     }
     if (!all(cells2 %in% colnames(srt))) {
       log_message(
-        "{.arg cells2} has some cells not in the Seurat object",
+        "{.arg cells2} has some cells not in {.cls Seurat}",
         message_type = "error"
       )
     }

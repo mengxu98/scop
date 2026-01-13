@@ -40,18 +40,18 @@ CellDensityPlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{A character vector specifying the features to plot.}
+\item{features}{A character vector of features to use.}
 
-\item{group.by}{A character vector specifying the variables to group the data by.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{A character vector specifying the variables to split the data by.
-Default is \code{NULL}, which means no splitting is performed.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{assay}{A character specifying the assay to use from the Seurat object.
-Default is \code{NULL}, which means the default assay will be used.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{A character specifying the layer to use from the assay.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{flip}{Whether to flip the x-axis. Default is \code{FALSE}.}
 
@@ -64,13 +64,14 @@ Default is \code{"value"}.}
 \item{decreasing}{Whether to order the groups in decreasing order.
 Default is \code{NULL}.}
 
-\item{palette}{The color palette to use for grouping variables.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"Paired"}.}
 
-\item{palcolor}{The color to use for each group.
+\item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
-\item{cells}{A character vector specifying the cells to plot.
+\item{cells}{A character vector of cell names to use.
 Default is \code{NULL}, which means all cells are included.}
 
 \item{keep_empty}{Whether to keep empty groups. Default is \code{FALSE}.}
@@ -86,36 +87,38 @@ Default is \code{NULL}, which means the maximum value will be automatically dete
 \item{same.y.lims}{Whether to use the same y-axis limits for all plots.
 Default is \code{FALSE}.}
 
-\item{aspect.ratio}{A numeric specifying the aspect ratio of the plot.
-Default is \code{NULL}, which means the aspect ratio will be automatically determined.}
-
-\item{title}{A character specifying the title of the plot.
+\item{aspect.ratio}{Aspect ratio of the panel.
 Default is \code{NULL}.}
 
-\item{subtitle}{A character specifying the subtitle of the plot.
+\item{title}{The text for the title.
 Default is \code{NULL}.}
 
-\item{legend.position}{A character specifying the position of the legend.
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
+
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
 Default is \code{"right"}.}
 
-\item{legend.direction}{A character specifying the direction of the legend.
-Default is \code{"vertical"}.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{A character specifying the theme to use.
+\item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of arguments to pass to the theme function.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{combine}{Whether to combine multiple plots into a single plot.
-Default is \code{TRUE}.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{A number of rows in the combined plot.
+\item{nrow}{Number of rows in the combined plot.
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{A number of columns in the combined plot.
+\item{ncol}{Number of columns in the combined plot.
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Whether to add plots by row or by column in the combined plot.
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
 Default is \code{TRUE}.}
 
 \item{force}{Whether to continue plotting if there are more than 50 features.

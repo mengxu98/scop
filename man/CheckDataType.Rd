@@ -17,11 +17,11 @@ CheckDataType(object, ...)
 
 \item{...}{The message to print.}
 
-\item{layer}{The layer in the \code{srt} object from which to extract the data.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{assay}{The assay to extract the data from.
-If not provided, the default assay will be used.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

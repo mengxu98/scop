@@ -4,6 +4,7 @@
 #' Generate a volcano plot based on differential expression analysis results.
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param srt An object of class `Seurat` containing the results of differential expression analysis.
 #' @param group_by A character vector specifying the column in `srt` to group the samples by.
 #' Default is `NULL`.
@@ -13,13 +14,10 @@
 #' Default is `"avg_log2FC > 0 & p_val_adj < 0.05"`.
 #' @param x_metric A character string specifying the metric to use for the x-axis.
 #' Default is `"diff_pct"`.
-#' @param palette A character string specifying the color palette to use for the plot.
+#' @param palette Color palette name.
+#' Available palettes can be found in [thisplot::show_palettes].
 #' Default is `"RdBu"`.
-#' @param palcolor A character string specifying the color for the palette.
-#' Default is `NULL`.
 #' @param pt.size The size of the points.
-#' Default is `1`.
-#' @param pt.alpha The transparency of the points.
 #' Default is `1`.
 #' @param cols.highlight A character string specifying the color for highlighted points.
 #' Default is `"black"`.
@@ -41,24 +39,12 @@
 #' Default is `0.1`.
 #' @param label.size The size of the labels.
 #' Default is `4`.
-#' @param aspect.ratio The aspect ratio of the plot.
+#' @param aspect.ratio Aspect ratio of the panel.
 #' Default is `NULL`.
 #' @param xlab A character string specifying the x-axis label.
 #' Default is the value of `x_metric`.
 #' @param ylab A character string specifying the y-axis label.
 #' Default is `"-log10(p-adjust)"`.
-#' @param theme_use A character string specifying the theme to use for the plot.
-#' Default is `"theme_scop"`.
-#' @param theme_args A list of theme arguments to pass to the `theme_use` function.
-#' Default is `list()`.
-#' @param combine Whether to combine the plots for each group into a single plot.
-#' Default is `TRUE`.
-#' @param nrow An integer value specifying the number of rows in the combined plot.
-#' Default is `NULL`.
-#' @param ncol An integer value specifying the number of columns in the combined plot.
-#' Default is `NULL`.
-#' @param byrow Whether to arrange the plots by row in the combined plot.
-#' Default is `TRUE`.
 #'
 #' @seealso [RunDEtest]
 #'

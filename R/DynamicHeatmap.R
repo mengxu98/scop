@@ -2,14 +2,11 @@
 #'
 #' @md
 #' @inheritParams GroupHeatmap
-#' @param srt A Seurat object.
 #' @param lineages A character vector specifying the lineages to plot.
 #' @param features A character vector specifying the features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 #' `min_expcells`, `r.sq`, `dev.expl`, `padjust` and `num_intersections`.
 #' @param use_fitted Whether to use fitted values. Default is `FALSE`.
-#' @param border Whether to add a border to the heatmap. Default is `TRUE`.
-#' @param flip Whether to flip the heatmap. Default is `FALSE`.
 #' @param min_expcells The minimum number of expected cells. Default is `20`.
 #' @param r.sq The R-squared threshold. Default is `0.2`.
 #' @param dev.expl The deviance explained threshold. Default is `0.2`.
@@ -363,7 +360,7 @@ DynamicHeatmap <- function(
         srt@meta.data[[l]] <- srt@meta.data[[pseudotime]]
       } else {
         log_message(
-          "lineages: ", l, " is not in the meta data of the Seurat object",
+          "lineages: ", l, " is not in the meta data of {.cls Seurat}",
           message_type = "error"
         )
       }
@@ -471,7 +468,7 @@ DynamicHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object."
+        " is not in {.cls Seurat}."
       )
     }
   }
@@ -514,7 +511,7 @@ DynamicHeatmap <- function(
         ),
         " is not in the meta data of the ",
         assay,
-        " assay in the Seurat object.",
+        " assay in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -559,7 +556,7 @@ DynamicHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object.",
+        " is not in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -1299,7 +1296,10 @@ DynamicHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_r("e1071"), error = identity)
+          status <- tryCatch(
+            check_r("e1071", verbose = FALSE),
+            error = identity
+          )
           if (inherits(status, "error")) {
             log_message(
               "The e1071 package was not found. Switch split_method to 'kmeans'",

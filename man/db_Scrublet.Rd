@@ -18,7 +18,7 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 \item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
 }
 \description{
-This function performs doublet-calling using the scrublet(python) package on a Seurat object.
+Run doublet-calling with Scrublet
 }
 \examples{
 \dontrun{

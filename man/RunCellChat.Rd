@@ -20,13 +20,15 @@ RunCellChat(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{group.by}{Name of the metadata column in the Seurat object that contains cell annotations.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{species}{The species of the data, either 'human', 'mouse' or 'zebrafish'.}
 
-\item{split.by}{Name of the metadata column in the Seurat object that contains sample information.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{annotation_selected}{A vector of cell annotations of interest for running the CellChat analysis. If not provided, all cell types will be considered.}
+\item{annotation_selected}{A vector of cell annotations of interest for running the CellChat analysis.
+If not provided, all cell types will be considered.}
 
 \item{group_column}{Name of the metadata column in the Seurat object that defines conditions or groups.}
 

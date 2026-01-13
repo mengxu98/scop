@@ -17,7 +17,7 @@ RunHarmony2(object, ...)
   reduction.name = "Harmony",
   reduction.key = "Harmony_",
   verbose = TRUE,
-  seed.use = 11L,
+  seed.use = 11,
   ...
 )
 }
@@ -28,11 +28,10 @@ RunHarmony2(object, ...)
 
 \item{group.by.vars}{The batch variable name.}
 
-\item{assay}{The assay to be used.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{reduction}{The reduction to be used.
-Default is \code{"pca"}.}
+\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 
 \item{dims.use}{The dimensions to be used.
 Default is \code{1:30}.}
@@ -49,7 +48,7 @@ Default is \code{"Harmony_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{The random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

@@ -2,17 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction The reduction to be used.
-#' Default is `"pca"`.
-#' @param dims The dimensions to be used.
-#' Default is `1:30`.
-#' @param features The features to be used.
-#' Default is `NULL`.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
-#' @param layer The layer to be used.
-#' Default is `"data"`.
 #' @param ndcs A number of diffusion components (dimensions) to be computed.
 #' Default is `2`.
 #' @param sigma The diffusion scale parameter of the Gaussian kernel.
@@ -29,8 +20,6 @@
 #' Default is `"dm"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"DM_"`.
-#' @param seed.use An integer specifying the random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to `destiny::DiffusionMap`.
 #'
 #' @rdname RunDM

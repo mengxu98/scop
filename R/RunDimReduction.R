@@ -2,11 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
+#' @inheritParams GroupHeatmap
 #' @param prefix The prefix used to name the result.
-#' @param features Use features expression data to run linear or nonlinear dimensionality reduction.
-#' @param assay Specific assay to get data from.
-#' @param layer Specific layer to get data from.
 #' @param linear_reduction Method of linear dimensionality reduction.
 #' Options are `"pca"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`.
 #' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
@@ -21,7 +18,6 @@
 #' @param graph_use Name of graph to use for the `nonlinear_reduction`.
 #' @param nonlinear_reduction_params  Other parameters passed to the `nonlinear_reduction` method.
 #' @param force_nonlinear_reduction Whether force to do nonlinear dimensionality reduction.
-#' @param seed Set a seed. Default is `11`.
 #'
 #' @seealso
 #' [DefaultReduction]
@@ -202,6 +198,7 @@ RunDimReduction <- function(
     )
     if (fun_use == "RunPCA") {
       params[["slot"]] <- params[["layer"]]
+      params[["verbose"]] <- FALSE
       params <- params[!names(params) %in% "layer"]
     }
     if (fun_use %in% c("RunSVD", "RunICA")) {

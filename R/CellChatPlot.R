@@ -62,7 +62,7 @@ CellChatPlot <- function(
     verbose = TRUE) {
   if (is.null(srt@tools[["CellChat"]])) {
     log_message(
-      "No CellChat results found in the Seurat object. Please run {.fn RunCellChat} first.",
+      "No CellChat results found in {.cls Seurat}. Please run {.fn RunCellChat} first",
       message_type = "error"
     )
   }
@@ -109,7 +109,7 @@ CellChatPlot <- function(
   }
 
   if (plot_type == "aggregate") {
-    p <- .create_aggregate_plots(
+    p <- create_aggregate_plots(
       cellchat_object = cellchat_object,
       condition = condition,
       dirpath = dirpath,
@@ -130,7 +130,7 @@ CellChatPlot <- function(
       pathways_top <- pathway
     }
 
-    p <- .create_pathway_plots(
+    p <- create_pathway_plots(
       cellchat_object = cellchat_object,
       seurat_object = seurat_object,
       pathways_to_show = pathways_top,
@@ -142,7 +142,7 @@ CellChatPlot <- function(
       res = res
     )
   } else if (plot_type == "heatmap") {
-    p <- .create_heatmap_plots(
+    p <- create_heatmap_plots(
       cellchat_object = cellchat_object,
       condition = condition,
       dirpath = dirpath,
@@ -152,7 +152,7 @@ CellChatPlot <- function(
       res = res
     )
   } else if (plot_type == "circle") {
-    p <- .create_circle_plots(
+    p <- create_circle_plots(
       cellchat_object = cellchat_object,
       condition = condition,
       dirpath = dirpath,
@@ -171,7 +171,7 @@ CellChatPlot <- function(
       )
       p2_list <- lapply(
         pathways_top, function(path) {
-          .create_bubble_plots(
+          create_bubble_plots(
             cellchat_object = cellchat_object,
             pathway = path,
             condition = condition,
@@ -185,7 +185,7 @@ CellChatPlot <- function(
       )
       p <- patchwork::wrap_plots(p2_list)
     } else {
-      p <- .create_bubble_plots(
+      p <- create_bubble_plots(
         cellchat_object = cellchat_object,
         pathway = pathway,
         condition = condition,
@@ -207,7 +207,7 @@ CellChatPlot <- function(
 
       p2_list <- lapply(
         pathways_top, function(path) {
-          .create_gene_plots(
+          create_gene_plots(
             cellchat_object = cellchat_object,
             seurat_object = seurat_object,
             pathway = path,
@@ -223,7 +223,7 @@ CellChatPlot <- function(
       )
       p <- patchwork::wrap_plots(p2_list)
     } else {
-      p <- .create_gene_plots(
+      p <- create_gene_plots(
         cellchat_object = cellchat_object,
         seurat_object = seurat_object,
         pathway = pathway,
@@ -249,7 +249,7 @@ CellChatPlot <- function(
     )
   } else {
     log_message(
-      "Unknown plot_type: {.val {plot_type}}. Available options: aggregate, pathway, heatmap, circle, bubble, gene, comparison",
+      "Unknown plot_type: {.val {plot_type}}. Can be: {.val aggregate, pathway, heatmap, circle, bubble, gene, comparison}",
       message_type = "error"
     )
   }
@@ -262,7 +262,7 @@ CellChatPlot <- function(
   return(p)
 }
 
-.create_output_device <- function(
+create_output_device <- function(
     filename,
     output_format = "pdf",
     height = 6,
@@ -286,7 +286,7 @@ CellChatPlot <- function(
   }
 }
 
-.save_ggplot <- function(
+save_ggplot <- function(
     plot,
     filename,
     output_format = "pdf",
@@ -306,7 +306,7 @@ CellChatPlot <- function(
   }
 }
 
-.create_aggregate_plots <- function(
+create_aggregate_plots <- function(
     cellchat_object,
     condition,
     dirpath = NULL,
@@ -323,7 +323,7 @@ CellChatPlot <- function(
     circle_filename <- paste0(
       dirpath, "/", condition, "_net_interaction_and_weight.", output_format
     )
-    .create_output_device(
+    create_output_device(
       circle_filename,
       output_format = output_format,
       height = height_in,
@@ -359,7 +359,7 @@ CellChatPlot <- function(
     p_scatter_filename <- paste0(
       dirpath, "/", condition, "_signaling_role.", output_format
     )
-    .save_ggplot(
+    save_ggplot(
       p_scatter,
       p_scatter_filename,
       output_format = output_format,
@@ -370,7 +370,7 @@ CellChatPlot <- function(
   return(p_scatter)
 }
 
-.create_pathway_plots <- function(
+create_pathway_plots <- function(
     cellchat_object,
     seurat_object,
     pathways_to_show,
@@ -386,7 +386,7 @@ CellChatPlot <- function(
         dirpath, "/", pathway, "_",
         condition, "_signaling_strength_chord.", output_format
       )
-      .create_output_device(
+      create_output_device(
         chord_filename,
         output_format = output_format,
         height = 5 * base_height,
@@ -421,7 +421,7 @@ CellChatPlot <- function(
       bubble_height <- 1 + 0.3 * length(unique(p$data$interaction_name)) * base_height
       bubble_width <- 1 + 0.3 * length(unique(p$data$source.target)) * base_width
 
-      .create_output_device(
+      create_output_device(
         bubble_filename,
         output_format = output_format,
         height = bubble_height,
@@ -434,7 +434,7 @@ CellChatPlot <- function(
   }
 }
 
-.create_heatmap_plots <- function(
+create_heatmap_plots <- function(
     cellchat_object,
     condition,
     dirpath = NULL,
@@ -454,7 +454,7 @@ CellChatPlot <- function(
     heatmap_filename <- paste0(
       dirpath, "/", condition, "_outgoing_incoming_signal.", output_format
     )
-    .create_output_device(
+    create_output_device(
       heatmap_filename,
       output_format = output_format,
       height = height_in,
@@ -484,7 +484,7 @@ CellChatPlot <- function(
   }
 }
 
-.create_circle_plots <- function(
+create_circle_plots <- function(
     cellchat_object,
     condition,
     dirpath = NULL,
@@ -504,7 +504,7 @@ CellChatPlot <- function(
       dirpath, "/",
       condition, "_net_weight_per_celltype.", output_format
     )
-    .create_output_device(
+    create_output_device(
       circle_filename,
       output_format = output_format,
       height = height_in,
@@ -537,7 +537,7 @@ CellChatPlot <- function(
   }
 }
 
-.create_bubble_plots <- function(
+create_bubble_plots <- function(
     cellchat_object,
     pathway,
     condition,
@@ -561,7 +561,7 @@ CellChatPlot <- function(
       dirpath, "/", pathway, "_",
       condition, "_LR_bubble_plot.", output_format
     )
-    .create_output_device(
+    create_output_device(
       bubble_filename,
       output_format = output_format,
       height = bubble_height,
@@ -574,7 +574,7 @@ CellChatPlot <- function(
   return(p)
 }
 
-.create_gene_plots <- function(
+create_gene_plots <- function(
     cellchat_object,
     seurat_object,
     pathway,
@@ -623,7 +623,7 @@ CellChatPlot <- function(
       dirpath, "/", pathway, "_",
       condition, "_signaling_gene.", output_format
     )
-    .create_output_device(
+    create_output_device(
       gene_filename,
       output_format = output_format,
       height = gene_height,

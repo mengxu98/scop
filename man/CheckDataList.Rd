@@ -26,7 +26,8 @@ CheckDataList(
 
 \item{batch}{A character string specifying the batch variable name.}
 
-\item{assay}{The name of the assay to be used for downstream analysis.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{do_normalization}{Whether data normalization should be performed.
 Default is \code{TRUE}.}
@@ -60,7 +61,7 @@ Default is \code{NULL}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{An integer specifying the random seed for reproducibility.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \value{

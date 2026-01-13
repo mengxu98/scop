@@ -6,11 +6,11 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
-#' @param group.by Name of the metadata column in the Seurat object that contains cell annotations.
+#' @inheritParams standard_scop
+#' @inheritParams CellDimPlot
 #' @param species The species of the data, either 'human', 'mouse' or 'zebrafish'.
-#' @param split.by Name of the metadata column in the Seurat object that contains sample information.
-#' @param annotation_selected A vector of cell annotations of interest for running the CellChat analysis. If not provided, all cell types will be considered.
+#' @param annotation_selected A vector of cell annotations of interest for running the CellChat analysis.
+#' If not provided, all cell types will be considered.
 #' @param group_column Name of the metadata column in the Seurat object that defines conditions or groups.
 #' @param group_cmp A list of pairwise condition comparisons for differential CellChat analysis.
 #' @param thresh The threshold for computing centrality scores.
@@ -55,21 +55,21 @@ RunCellChat <- function(
   check_r("immunogenomics/presto", verbose = FALSE)
   if (!group.by %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {group.by}} does not exist in {.cls Seurat} object",
+      "{.val {group.by}} does not exist in {.cls Seurat}",
       message_type = "error"
     )
   }
 
   if (!is.null(split.by) && !split.by %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {split.by}} does not exist in {.cls Seurat} object",
+      "{.val {split.by}} does not exist in {.cls Seurat}",
       message_type = "error"
     )
   }
 
   if (!is.null(group_column) && !group_column %in% colnames(srt@meta.data)) {
     log_message(
-      "{.val {group_column}} does not exist in {.cls Seurat} object",
+      "{.val {group_column}} does not exist in {.cls Seurat}",
       message_type = "error"
     )
   }

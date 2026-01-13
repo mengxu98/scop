@@ -5,12 +5,12 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams PrepareDB
 #' @param geneID A vector of the geneID character.
 #' @param geneID_from_IDtype Gene ID type of the input `geneID`. e.g. `"symbol"`, `"ensembl_id"`, `"entrez_id"`
 #' @param geneID_to_IDtype Gene ID type(s) to convert to. e.g. `"symbol"`, `"ensembl_id"`, `"entrez_id"`.
 #' @param species_from Latin names for animals of the input geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
 #' @param species_to Latin names for animals of the output geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
-#' @param Ensembl_version Ensembl database version. If NULL, use the current release version.
 #' @param biomart The name of the BioMart database that you want to connect to.
 #' Possible options include `"ensembl"`, `"protists_mart"`, `"fungi_mart"`, and `"plants_mart"`.
 #' @param max_tries The maximum number of attempts to connect with the BioMart service.
