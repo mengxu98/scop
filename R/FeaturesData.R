@@ -99,7 +99,7 @@ AddFeaturesData.Assay <- function(
     object,
     features,
     ...) {
-  object@meta.features <- .check_features_data(object, features)
+  object@meta.features <- check_features_data(object, features)
   return(object)
 }
 
@@ -110,11 +110,11 @@ AddFeaturesData.Assay5 <- function(
     object,
     features,
     ...) {
-  object[[]] <- .check_features_data(object, features)
+  object[[]] <- check_features_data(object, features)
   return(object)
 }
 
-.check_features_data <- function(object, features) {
+check_features_data <- function(object, features) {
   features_rownames <- rownames(object)
   features_rownames_add <- rownames(features)
   if (is.null(features_rownames_add)) {

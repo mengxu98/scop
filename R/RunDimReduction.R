@@ -198,6 +198,7 @@ RunDimReduction <- function(
     )
     if (fun_use == "RunPCA") {
       params[["slot"]] <- params[["layer"]]
+      params[["verbose"]] <- FALSE
       params <- params[!names(params) %in% "layer"]
     }
     if (fun_use %in% c("RunSVD", "RunICA")) {
