@@ -98,13 +98,12 @@ FeatureStatPlot(
 
 - group.by:
 
-  A character vector specifying the groups to group by. Default is
-  `NULL`.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - split.by:
 
-  A character vector specifying the variable to split the plot by.
-  Default is `NULL`.
+  Name of a column in meta.data column to split plot by. Default is
+  `NULL`.
 
 - bg.by:
 
@@ -124,17 +123,16 @@ FeatureStatPlot(
 
 - cells:
 
-  A character vector specifying the cells to include in the plot.
-  Default is `NULL`.
+  A character vector of cell names to use. Default is `NULL`.
 
 - layer:
 
-  A string specifying which layer of the Seurat object to use. Default
-  is `"data"`.
+  Which layer to use. Default is `data`.
 
 - assay:
 
-  A string specifying which assay to use. Default is `NULL`.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - keep_empty:
 
@@ -152,13 +150,13 @@ FeatureStatPlot(
 
 - palette:
 
-  A string specifying the color palette to use for filling. Default is
-  `"Paired"`.
+  Color palette name. Available palettes can be found in
+  [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
+  Default is `"Paired"`.
 
 - palcolor:
 
-  A character vector specifying specific colors to use for filling.
-  Default is `NULL`.
+  Custom colors used to create a color palette. Default is `NULL`.
 
 - alpha:
 
@@ -205,8 +203,7 @@ FeatureStatPlot(
 
 - pt.size:
 
-  The size of the data points. If NULL, the size is automatically
-  determined. Default is `NULL`.
+  The size of the points in the plot.
 
 - pt.alpha:
 
@@ -279,7 +276,7 @@ FeatureStatPlot(
 - cells.highlight:
 
   A logical or character vector specifying the cells to highlight in the
-  plot. If TRUE, all cells are highlighted. If FALSE, no cells are
+  plot. If `TRUE`, all cells are highlighted. If `FALSE`, no cells are
   highlighted. Default is `NULL`.
 
 - cols.highlight:
@@ -382,19 +379,20 @@ FeatureStatPlot(
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Default is `NULL`.
+  Aspect ratio of the panel. Default is `NULL`.
 
 - title:
 
-  A string specifying the title of the plot. Default is `NULL`.
+  The text for the title. Default is `NULL`.
 
 - subtitle:
 
-  A string specifying the subtitle of the plot. Default is `NULL`.
+  The text for the subtitle for the plot which will be displayed below
+  the title. Default is `NULL`.
 
 - xlab:
 
-  A string specifying the label of the x-axis. Default is `NULL`.
+  The x-axis label of the plot. Default is `NULL`.
 
 - ylab:
 
@@ -403,52 +401,52 @@ FeatureStatPlot(
 
 - legend.position:
 
-  A string specifying the position of the legend. Possible values are
-  `"right"`, `"left"`, `"top"`, `"bottom"`, or `"none"`. Default is
-  `"right"`.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - legend.direction:
 
-  A string specifying the direction of the legend. Possible values are
-  `"vertical"` or `"horizontal"`. Default is `"vertical"`.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - theme_use:
 
-  A string specifying the theme to use for the plot. Default is
+  Theme used. Can be a character string or a theme function. Default is
   `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to pass to the theme function. Default is
+  Other arguments passed to the `theme_use`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
-  Whether to combine the individual plots into a single plot. Default is
-  `TRUE`.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - nrow:
 
-  A number of rows for the combined plot. Default is `NULL`.
+  Number of rows in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - ncol:
 
-  A number of columns for the combined plot. Default is `NULL`.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - byrow:
 
-  Whether to fill the combined plot by row or by column. Default is
+  Whether to arrange the plots by row in the combined plot. Default is
   `TRUE`.
 
 - force:
 
-  Whether to force the plot creation even if there are more than 100
-  levels in a variable. Default is `FALSE`.
+  Whether to force drawing regardless of maximum levels in any cell
+  group is greater than 100. Default is `FALSE`.
 
 - seed:
 
-  An integer specifying the random seed to use for generating jitter.
-  Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 
@@ -460,41 +458,6 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> StandardPC_ 1 
-#> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
-#>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
-#>     Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 
-#> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 
-#>     Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 
-#>     Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 
-#> StandardPC_ 2 
-#> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b 
-#>     Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 
-#>     Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 
-#> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 
-#>     Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x 
-#>     Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 
-#> StandardPC_ 3 
-#> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 
-#>     2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr 
-#>     Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 
-#> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 
-#>     Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 
-#>     Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a 
-#> StandardPC_ 4 
-#> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx 
-#>     Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf 
-#>     Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam 
-#> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt 
-#>     G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a 
-#>     Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 
-#> StandardPC_ 5 
-#> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a 
-#>     Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 
-#>     Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 
-#> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
-#>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
-#>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),

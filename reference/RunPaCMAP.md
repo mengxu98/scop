@@ -55,7 +55,8 @@ RunPaCMAP(
 
 - object:
 
-  An object. This can be a Seurat object or a matrix-like object.
+  An object. This can be a Seurat object, a matrix-like object, a
+  Neighbor object, or a Graph object.
 
 - ...:
 
@@ -63,7 +64,7 @@ RunPaCMAP(
 
 - reduction:
 
-  The reduction to be used. Default is `"pca"`.
+  Which dimensionality reduction to use. Default is `"pca"`.
 
 - dims:
 
@@ -71,15 +72,16 @@ RunPaCMAP(
 
 - features:
 
-  The features to be used. Default is `NULL`.
+  A character vector of features to use. Default is `NULL`.
 
 - assay:
 
-  The assay to be used. Default is `NULL`.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - layer:
 
-  The layer to be used. Default is `"data"`.
+  Which layer to use. Default is `data`.
 
 - n_components:
 
@@ -143,7 +145,7 @@ RunPaCMAP(
 
 - seed.use:
 
-  The random seed to be used. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## Examples
 

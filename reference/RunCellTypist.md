@@ -41,6 +41,14 @@ RunCellTypist(
 
   An anndata object. Default is `NULL`.
 
+- assay:
+
+  Which assay to use. Default is `"RNA"`.
+
+- layer:
+
+  Which layer to use. Default is `data`.
+
 - model:
 
   Model name or path. Default is `"Immune_All_Low.pkl"`. Supports three

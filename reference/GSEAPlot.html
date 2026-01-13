@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -319,62 +319,64 @@ Default is <code>0.7</code>.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>The color palette to use.
+<dd><p>Color palette name.
+Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
 Default is <code>"Spectral"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors for palette.
+<dd><p>Custom colors used to create a color palette.
 Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>The aspect ratio of the plot.
-Default is <code>1</code>.</p></dd>
+<dd><p>Aspect ratio of the panel. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>The position of the legend.
+<dd><p>The position of legends,
+one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
 Default is <code>"right"</code>.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>The direction of the legend.
-Default is <code>"vertical"</code>.</p></dd>
+<dd><p>The direction of the legend in the plot.
+Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>The theme to use for the plot.
+<dd><p>Theme used. Can be a character string or a theme function.
 Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>The arguments to pass to the theme.
+<dd><p>Other arguments passed to the <code>theme_use</code>.
 Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine multiple plots into a single plot.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Combine plots into a single <code>patchwork</code> object.
+If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>The number of rows in the combined plot.
-Default is <code>NULL</code>, calculated based on the number of plots.</p></dd>
+<dd><p>Number of rows in the combined plot.
+Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>The number of columns in the combined plot.
-Default is <code>NULL</code>, calculated based on the number of plots.</p></dd>
+<dd><p>Number of columns in the combined plot.
+Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Whether to fill the combined plot by row.
+<dd><p>Whether to arrange the plots by row in the combined plot.
 Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>The random seed to use. Default is <code>11</code>.</p></dd>
+<dd><p>Random seed for reproducibility.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

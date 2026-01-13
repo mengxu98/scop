@@ -57,11 +57,11 @@ ProportionTestPlot(
 
 - pt.size:
 
-  The size of the points.
+  The size of the points. Default is `1`.
 
 - pt.alpha:
 
-  The transparency of the points.
+  The transparency of the data points. Default is `1`.
 
 - cols.sig:
 
@@ -73,31 +73,37 @@ ProportionTestPlot(
 
 - aspect.ratio:
 
-  The aspect ratio of the plot.
+  Aspect ratio of the panel.
 
 - xlab:
 
-  A character string specifying the x-axis label.
+  A character string specifying the x-axis label. Default is
+  `"Cell Type"`.
 
 - ylab:
 
-  A character string specifying the y-axis label.
+  A character string specifying the y-axis label. Default is
+  `"log2 (FD)"`.
 
 - theme_use:
 
-  A character string specifying the theme to use for the plot.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  A list of theme arguments to pass to the `theme_use` function.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - legend.position:
 
-  Position of the legend.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"bottom"`.
 
 - legend.direction:
 
-  Direction of the legend.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - legend.title:
 
@@ -105,20 +111,23 @@ ProportionTestPlot(
 
 - combine:
 
-  Whether to combine the plots for each comparison into a single plot.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - nrow:
 
-  An integer value specifying the number of rows in the combined plot.
+  Number of rows in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - ncol:
 
-  An integer value specifying the number of columns in the combined
-  plot.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - byrow:
 
-  Whether to arrange the plots by row in the combined plot.
+  Whether to arrange the plots by row in the combined plot. Default is
+  `TRUE`.
 
 ## See also
 

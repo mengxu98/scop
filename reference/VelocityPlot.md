@@ -14,7 +14,7 @@ VelocityPlot(
   cells = NULL,
   velocity = "stochastic",
   plot_type = c("raw", "grid", "stream"),
-  group_by = NULL,
+  group.by = NULL,
   group_palette = "Paired",
   group_palcolor = NULL,
   n_neighbors = ceiling(ncol(srt@assays[[1]])/50),
@@ -58,15 +58,18 @@ VelocityPlot(
 
 - reduction:
 
-  Name of the reduction in the Seurat object to use for plotting.
+  Which dimensionality reduction to use. If not specified, will use the
+  reduction returned by
+  [DefaultReduction](https://mengxu98.github.io/scop/reference/DefaultReduction.md).
 
 - dims:
 
-  Indices of the dimensions to use for plotting.
+  Dimensions to plot, must be a two-length numeric vector specifying x-
+  and y-dimensions
 
 - cells:
 
-  Cells to include in the plot. If `NULL`, all cells will be included.
+  A character vector of cell names to use.
 
 - velocity:
 
@@ -76,10 +79,9 @@ VelocityPlot(
 
   Type of plot to create. Can be `"raw"`, `"grid"`, or `"stream"`.
 
-- group_by:
+- group.by:
 
-  Name of the column in the Seurat object metadata to group the cells
-  by. Defaults is `NULL`.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - group_palette:
 
@@ -97,7 +99,7 @@ VelocityPlot(
 
 - density:
 
-  Propotion of cells to plot. Defaults is `1` (plot all cells).
+  Proportion of cells to plot. Defaults is `1` (plot all cells).
 
 - smooth:
 
@@ -170,39 +172,43 @@ VelocityPlot(
 
 - aspect.ratio:
 
-  Aspect ratio of the plot. Defaults is `1`.
+  Aspect ratio of the panel. Default is `1`.
 
 - title:
 
-  Title of the plot. Defaults is `"Cell velocity"`.
+  The text for the title. Defaults is `"Cell velocity"`.
 
 - subtitle:
 
-  Subtitle of the plot. Defaults is `NULL`.
+  The text for the subtitle for the plot which will be displayed below
+  the title. Default is `NULL`.
 
 - xlab:
 
-  x-axis label. Defaults is `NULL`.
+  The x-axis label of the plot. Default is `NULL`.
 
 - ylab:
 
-  y-axis label. Defaults is `NULL`.
+  The y-axis label of the plot. Default is `NULL`.
 
 - legend.position:
 
-  Position of the legend. Defaults is `"right"`.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - legend.direction:
 
-  Direction of the legend. Defaults is `"vertical"`.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - theme_use:
 
-  Name of the theme to use for plotting. Defaults is `"theme_scop"`.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  List of theme arguments for customization. Defaults is
+  Other arguments passed to the `theme_use`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
 
 - return_layer:
@@ -211,7 +217,7 @@ VelocityPlot(
 
 - seed:
 
-  Random seed for reproducibility. Defaults is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 
@@ -226,7 +232,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "pca",
   nonlinear_reduction = "umap",
   return_seurat = TRUE
@@ -239,7 +245,7 @@ VelocityPlot(
 VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
-  group_by = "SubCellType"
+  group.by = "SubCellType"
 )
 
 VelocityPlot(

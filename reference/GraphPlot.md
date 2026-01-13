@@ -273,43 +273,48 @@ GraphPlot(
 
 - aspect.ratio:
 
-  The aspect ratio of the plot.
+  Aspect ratio of the panel. Default is `1`.
 
 - title:
 
-  A character value specifying the title of the plot.
+  The text for the title. Default is `NULL`.
 
 - subtitle:
 
-  A character value specifying the subtitle of the plot.
+  The text for the subtitle for the plot which will be displayed below
+  the title. Default is `NULL`.
 
 - xlab:
 
-  A character value specifying the label for the x-axis.
+  The x-axis label of the plot. Default is `NULL`.
 
 - ylab:
 
-  A character value specifying the label for the y-axis.
+  The y-axis label of the plot. Default is `NULL`.
 
 - legend.position:
 
-  A character value specifying the position of the legend.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - legend.direction:
 
-  A character value specifying the direction of the legend.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - theme_use:
 
-  A character value specifying the theme to use.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to be passed to the theme.
+  Other arguments passed to the `theme_use`. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - return_layer:
 
-  Whether to return the layers of the plot instead of the plot itself.
+  Whether to return the plot layers as a list. Defaults is `FALSE`.
 
 ## See also
 

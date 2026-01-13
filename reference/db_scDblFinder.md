@@ -1,7 +1,6 @@
 # Run doublet-calling with scDblFinder
 
-This function performs doublet-calling using the scDblFinder package on
-a Seurat object.
+Run doublet-calling with scDblFinder
 
 ## Usage
 

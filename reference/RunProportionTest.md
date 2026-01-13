@@ -23,17 +23,16 @@ RunProportionTest(
 
 - srt:
 
-  A Seurat object containing count data and metadata.
+  A Seurat object.
 
 - group.by:
 
-  The name of the metadata column in `srt` containing cluster labels or
-  cell type names.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - split.by:
 
-  The name of the metadata column in `srt` that contains sample
-  identifiers.
+  Name of a column in meta.data column to split plot by. Default is
+  `NULL`.
 
 - comparison:
 

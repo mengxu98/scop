@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,7 +103,8 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>The name of the assay to be used for downstream analysis.</p></dd>
+<dd><p>Which assay to use.
+If <code>NULL</code>, the default assay of the Seurat object will be used.</p></dd>
 
 
 <dt id="arg-do-normalization">do_normalization<a class="anchor" aria-label="anchor" href="#arg-do-normalization"></a></dt>
@@ -250,7 +251,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>An integer specifying the random seed for reproducibility.
+<dd><p>Random seed for reproducibility.
 Default is <code>11</code>.</p></dd>
 
 </dl></div>

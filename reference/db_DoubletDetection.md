@@ -1,7 +1,6 @@
 # Run doublet-calling with DoubletDetection
 
-This function performs doublet-calling using the
-doubletdetection(python) package on a Seurat object.
+Run doublet-calling with DoubletDetection
 
 ## Usage
 

@@ -1,7 +1,6 @@
 # Run doublet-calling with Scrublet
 
-This function performs doublet-calling using the scrublet(python)
-package on a Seurat object.
+Run doublet-calling with Scrublet
 
 ## Usage
 

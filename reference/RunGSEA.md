@@ -103,13 +103,15 @@ RunGSEA(
 
 - species:
 
-  A character vector specifying the species for which the analysis is
-  performed.
+  A character vector specifying the species for which the gene
+  annotation databases should be prepared. Can be `"Homo_sapiens"` or
+  `"Mus_musculus"`.
 
 - db:
 
-  A character vector specifying the name of the database to be used for
-  enrichment analysis.
+  A character vector specifying the annotation sources to be included in
+  the gene annotation databases. Can be one or more of
+  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
 
 - db_update:
 
@@ -119,14 +121,13 @@ RunGSEA(
 
 - db_version:
 
-  A character vector specifying the version of the database to be used.
-  This argument is ignored if `db_update` is `TRUE`. Default is
-  `"latest"`.
+  A character vector specifying the version of the gene annotation
+  databases to be retrieved. Default is `"latest"`.
 
 - db_combine:
 
-  Whether to combine multiple databases into one. If TRUE, all database
-  specified by `db` will be combined as one named "Combined".
+  Whether to combine multiple databases into one. If `TRUE`, all
+  database specified by `db` will be combined as one named "Combined".
 
 - convert_species:
 
@@ -135,7 +136,8 @@ RunGSEA(
 
 - Ensembl_version:
 
-  Ensembl database version. If NULL, use the current release version.
+  An integer specifying the Ensembl version. Default is `NULL`. If
+  `NULL`, the latest version will be used.
 
 - mirror:
 
@@ -202,11 +204,8 @@ RunGSEA(
 ## Value
 
 If input is a Seurat object, returns the modified Seurat object with the
-enrichment result stored in the tools slot.
-
-If input is a geneID vector with or without geneID_groups, return the
-enrichment result directly.
-
+enrichment result stored in the tools slot. If input is a geneID vector
+with or without geneID_groups, return the enrichment result directly.
 Enrichment result is a list with the following component:
 
 - `enrichment`: A data.frame containing all enrichment results.

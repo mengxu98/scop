@@ -35,7 +35,8 @@ CheckDataMerge(
 
 - assay:
 
-  The name of the assay to be used for downstream analysis.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - do_normalization:
 
@@ -84,8 +85,7 @@ CheckDataMerge(
 
 - seed:
 
-  An integer specifying the random seed for reproducibility. Default is
-  `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 

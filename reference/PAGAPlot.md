@@ -73,7 +73,7 @@ PAGAPlot(
 
 - srt:
 
-  A Seurat object containing a PAGA result.
+  A Seurat object.
 
 - paga:
 
@@ -86,17 +86,18 @@ PAGAPlot(
 
 - reduction:
 
-  The type of reduction to use for the plot. Default is the default
-  reduction in the Seurat object.
+  Which dimensionality reduction to use. If not specified, will use the
+  reduction returned by
+  [DefaultReduction](https://mengxu98.github.io/scop/reference/DefaultReduction.md).
 
 - dims:
 
-  The dimensions of the reduction to use for the plot. Default is the
-  first two dimensions.
+  Dimensions to plot, must be a two-length numeric vector specifying x-
+  and y-dimensions
 
 - cells:
 
-  The cells to include in the plot. Default is all cells.
+  A character vector of cell names to use.
 
 - show_transition:
 
@@ -105,15 +106,18 @@ PAGAPlot(
 
 - node_palette:
 
-  The color palette to use for node coloring. Default is `"Paired"`.
+  A character vector specifying the name of the color palette for node
+  groups.
 
 - node_palcolor:
 
-  A vector of colors to use for node coloring. Default is `NULL`.
+  A character vector specifying the names of the colors for each node
+  group.
 
 - node_size:
 
-  The size of the nodes in the plot. Default is `4`.
+  A numeric value or column name of `node` specifying the size of the
+  nodes.
 
 - node_alpha:
 
@@ -130,93 +134,95 @@ PAGAPlot(
 
 - label:
 
-  Whether to show labels for the nodes.
+  Whether to label the cell groups.
 
 - label.size:
 
-  The size of the labels.
+  Size of labels.
 
 - label.fg:
 
-  A character vector specifying the foreground color of the labels.
+  Foreground color of label.
 
 - label.bg:
 
-  A character vector specifying the background color of the labels.
+  Background color of label.
 
 - label.bg.r:
 
-  The background color transparency of the labels.
+  Background ratio of label.
 
 - label_insitu:
 
-  Whether to display the node group labels in situ or as numeric values.
+  Whether to place the raw labels (group names) in the center of the
+  cells with the corresponding group. Default is `FALSE`, which using
+  numbers instead of raw labels.
 
 - label_repel:
 
-  Whether to use force-directed label repulsion.
+  Logical value indicating whether the label is repel away from the
+  center points.
 
 - label_repulsion:
 
-  The repulsion force for labels.
+  Force of repulsion between overlapping text labels. Default is `20`.
 
 - label_point_size:
 
-  The size of the points in the labels. Default is `1`.
+  Size of the center points.
 
 - label_point_color:
 
-  The color of the points in the labels. Default is `"black"`.
+  Color of the center points.
 
 - label_segment_color:
 
-  The color of the lines connecting the points in the labels. Default is
-  `"black"`.
+  Color of the line segment for labels.
 
 - edge_threshold:
 
-  The threshold for including edges in the plot. Default is `0.01`.
+  The threshold for removing edges.
 
 - edge_line:
 
-  The type of line to use for the edges. Possible values are
-  `"straight"` and `"curved"`. Default is `"straight"`.
+  A character vector specifying the type of line for edges (straight,
+  curved).
 
 - edge_line_curvature:
 
-  The curvature factor for curved edges. Default is `0.3`.
+  The curvature of curved edges.
 
 - edge_line_angle:
 
-  The angle for curved edges. Default is `90`.
+  The angle of curved edges.
 
 - edge_size:
 
-  The size range for the edges. Default is `c(0.2, 1)`.
+  Size of edges.
 
 - edge_color:
 
-  The color of the edges. Default is `"grey40"`.
+  Color of edges.
 
 - edge_alpha:
 
-  The transparency of the edges. Default is `0.5`.
+  Transparency of edges.
 
 - edge_shorten:
 
-  The amount to shorten the edges. Default is `0`.
+  The length of the edge shorten.
 
 - edge_offset:
 
-  The offset for curved edges. Default is `0`.
+  The length of the edge offset.
 
 - edge_highlight:
 
-  The group(s) to highlight in the plot. Default is `NULL`.
+  A character vector specifying the names of edges to highlight.
 
 - edge_highlight_color:
 
-  The color to use for highlighting the edges. Default is `"red"`.
+  A character vector specifying the color for highlighting edges.
 
 - transition_threshold:
 
@@ -278,46 +284,48 @@ PAGAPlot(
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Default is `1`.
+  Aspect ratio of the panel. Default is `1`.
 
 - title:
 
-  The title of the plot. Default is `"PAGA"`.
+  The text for the title. Default is `"PAGA"`.
 
 - subtitle:
 
-  The subtitle of the plot. Default is `NULL`.
+  The text for the subtitle for the plot which will be displayed below
+  the title. Default is `NULL`.
 
 - xlab:
 
-  The label for the x-axis. Default is `NULL`.
+  The x-axis label of the plot. Default is `NULL`.
 
 - ylab:
 
-  The label for the y-axis. Default is `NULL`.
+  The y-axis label of the plot. Default is `NULL`.
 
 - legend.position:
 
-  The position of the legend. Possible values are "right", "left",
-  "bottom", and "top". Default is `"right"`.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - legend.direction:
 
-  The direction of the legend. Possible values are "vertical" and
-  "horizontal". Default is `"vertical"`.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - theme_use:
 
-  The name of the theme to use for the plot. Default is `"theme_scop"`.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  A list of arguments to pass to the theme function. Default is
+  Other arguments passed to the `theme_use`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
 
 - return_layer:
 
-  Whether to return the plot as a ggplot2 layer. Default is `FALSE`.
+  Whether to return the plot layers as a list. Defaults is `FALSE`.
 
 ## See also
 

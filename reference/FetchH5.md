@@ -1,8 +1,6 @@
-# Fetch data from the hdf5 file
+# Fetch data from the hdf5 file and returns a Seurat object
 
-This function fetches data from an hdf5 file. It can fetch gene
-expression data, metadata, and reduction data from the specified file
-and returns a Seurat object.
+Fetch data from the hdf5 file and returns a Seurat object
 
 ## Usage
 

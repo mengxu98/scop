@@ -1,5 +1,45 @@
 # Changelog
 
+## scop 0.8.0
+
+- **func**:
+  - [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md):
+    New function for performing
+    [Monocle2](https://github.com/mengxu98/monocle) trajectory analysis
+    with support for various dimensionality reduction methods (DDRTree,
+    ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of
+    monocle2 from
+    [mengxu98/monocle](https://github.com/mengxu98/monocle).
+  - [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md):
+    New function for performing
+    [Monocle3](https://github.com/cole-trapnell-lab/monocle3) trajectory
+    analysis with support for cell ordering, trajectory learning, and
+    pseudotime computation.
+  - [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md):
+    New function for running [CytoTRACE
+    2](https://github.com/digitalcytometry/cytotrace2) analysis to
+    predict cellular potency scores and categories (Differentiated,
+    Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with
+    support for human and mouse species.
+  - [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md):
+    New function for visualizing [CytoTRACE
+    2](https://github.com/digitalcytometry/cytotrace2) analysis results.
+
+## scop 0.7.9
+
+- **docs**:
+  - Optimized `@inheritParams` usage to reduce redundant parameter
+    definitions.
+  - Unified parameter naming: renamed `group_by` to `group.by` for
+    consistency with Seurat conventions in
+    [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md),
+    [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md),
+    [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
+    [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md),
+    [`CellCorHeatmap()`](https://mengxu98.github.io/scop/reference/CellCorHeatmap.md),
+    and
+    [`RunDynamicFeatures()`](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md).
+
 ## scop 0.7.8
 
 - **bugs**:

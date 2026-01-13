@@ -1,9 +1,6 @@
 # Detect outliers using MAD (Median Absolute Deviation)
 
-This function detects outliers in a numeric vector using the MAD (Median
-Absolute Deviation) method. It calculates the median and the MAD, and
-determines the boundaries for outliers based on the median and the
-selected number of MADs.
+Detect outliers using MAD (Median Absolute Deviation)
 
 ## Usage
 

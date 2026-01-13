@@ -48,7 +48,8 @@ GeneConvert(
 
 - Ensembl_version:
 
-  Ensembl database version. If NULL, use the current release version.
+  An integer specifying the Ensembl version. Default is `NULL`. If
+  `NULL`, the latest version will be used.
 
 - biomart:
 

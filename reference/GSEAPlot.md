@@ -268,55 +268,61 @@ GSEAPlot(
 
 - palette:
 
-  The color palette to use. Default is `"Spectral"`.
+  Color palette name. Available palettes can be found in
+  [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
+  Default is `"Spectral"`.
 
 - palcolor:
 
-  Custom colors for palette. Default is `NULL`.
+  Custom colors used to create a color palette. Default is `NULL`.
 
 - aspect.ratio:
 
-  The aspect ratio of the plot. Default is `1`.
+  Aspect ratio of the panel. Default is `1`.
 
 - legend.position:
 
-  The position of the legend. Default is `"right"`.
+  The position of legends, one of `"none"`, `"left"`, `"right"`,
+  `"bottom"`, `"top"`. Default is `"right"`.
 
 - legend.direction:
 
-  The direction of the legend. Default is `"vertical"`.
+  The direction of the legend in the plot. Can be one of `"vertical"` or
+  `"horizontal"`.
 
 - theme_use:
 
-  The theme to use for the plot. Default is `"theme_scop"`.
+  Theme used. Can be a character string or a theme function. Default is
+  `"theme_scop"`.
 
 - theme_args:
 
-  The arguments to pass to the theme. Default is
+  Other arguments passed to the `theme_use`. Default is
   [`list()`](https://rdrr.io/r/base/list.html).
 
 - combine:
 
-  Whether to combine multiple plots into a single plot. Default is
-  `TRUE`.
+  Combine plots into a single `patchwork` object. If `FALSE`, return a
+  list of ggplot objects.
 
 - nrow:
 
-  The number of rows in the combined plot. Default is `NULL`, calculated
-  based on the number of plots.
+  Number of rows in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - ncol:
 
-  The number of columns in the combined plot. Default is `NULL`,
-  calculated based on the number of plots.
+  Number of columns in the combined plot. Default is `NULL`, which means
+  determined automatically based on the number of plots.
 
 - byrow:
 
-  Whether to fill the combined plot by row. Default is `TRUE`.
+  Whether to arrange the plots by row in the combined plot. Default is
+  `TRUE`.
 
 - seed:
 
-  The random seed to use. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 

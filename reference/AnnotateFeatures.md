@@ -33,8 +33,9 @@ AnnotateFeatures(
 
 - species:
 
-  Name of the species to be used for annotation. Default is
-  `"Homo_sapiens"`.
+  A character vector specifying the species for which the gene
+  annotation databases should be prepared. Can be `"Homo_sapiens"` or
+  `"Mus_musculus"`.
 
 - IDtype:
 
@@ -43,15 +44,20 @@ AnnotateFeatures(
 
 - db:
 
-  Vector of database names to be used for annotation. Default is `NULL`.
+  A character vector specifying the annotation sources to be included in
+  the gene annotation databases. Can be one or more of
+  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
 
 - db_update:
 
-  Whether to update the database. Default is `FALSE`.
+  Whether the gene annotation databases should be forcefully updated. If
+  set to FALSE, the function will attempt to load the cached databases
+  instead. Default is `FALSE`.
 
 - db_version:
 
-  Version of the database to use. Default is `"latest"`.
+  A character vector specifying the version of the gene annotation
+  databases to be retrieved. Default is `"latest"`.
 
 - convert_species:
 
@@ -60,7 +66,8 @@ AnnotateFeatures(
 
 - Ensembl_version:
 
-  Version of the Ensembl database to use. Default is `103`.
+  An integer specifying the Ensembl version. Default is `NULL`. If
+  `NULL`, the latest version will be used.
 
 - mirror:
 
