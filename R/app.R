@@ -1,10 +1,7 @@
-#' @title Create data file
-#'
-#' @description
-#' Creates a data file in HDF5 format from a Seurat object.
+#' @title Create HDF5 data file from Seurat object
 #'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param data_file Path to the output data file.
 #' If not provided, the file will be named `"data.hdf5"` in the current directory.
 #' @param name Name of the dataset.
@@ -170,7 +167,7 @@ CreateDataFile <- function(
 #' @title Create Meta File in HDF5 format from Seurat object
 #'
 #' @md
-#' @param srt A Seurat object.
+#' @inheritParams standard_scop
 #' @param meta_file Path to the output meta file.
 #' If not provided, the file will be named `"meta.hdf5"` in the current directory.
 #' @param name Name of the dataset.
@@ -485,7 +482,7 @@ PrepareSCExplorer <- function(
   }
   if (any(sapply(object, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "{.arg object} must be one Seurat object or a list of Seurat object",
+      "{.arg object} must be one {.cls Seurat} or a list of {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -498,7 +495,7 @@ PrepareSCExplorer <- function(
   if (length(names(object)) == 0) {
     names(object) <- make.names(sapply(object, function(x) x@project.name), unique = TRUE)
     log_message(
-      "Set the project name of each Seurat object to their dataset name"
+      "Set the project name of each {.cls Seurat} to their dataset name"
     )
   }
 
@@ -508,19 +505,19 @@ PrepareSCExplorer <- function(
     log_message("Prepare data for object: {.val {nm}}")
     if (length(SeuratObject::Reductions(srt)) == 0) {
       log_message(
-        "No reduction found in the Seurat object {.val {nm}}",
+        "No reduction found in {.cls Seurat} {.val {nm}}",
         message_type = "error"
       )
     }
     if (!any(assays %in% SeuratObject::Assays(srt))) {
       log_message(
-        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in the Seurat object {.val {nm}}",
+        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in {.cls Seurat} {.val {nm}}",
         message_type = "warning"
       )
       assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
         log_message(
-          "No assays found in the Seurat object {.val {nm}}. Use the default assay to create data file",
+          "No assays found in {.cls Seurat} {.val {nm}}. Use the default assay to create data file",
           message_type = "warning"
         )
         assays <- SeuratObject::DefaultAssay(srt)
@@ -553,11 +550,7 @@ PrepareSCExplorer <- function(
   return(invisible(NULL))
 }
 
-#' @title Fetch data from the hdf5 file
-#'
-#' @description
-#' This function fetches data from an hdf5 file.
-#' It can fetch gene expression data, metadata, and reduction data from the specified file and returns a Seurat object.
+#' @title Fetch data from the hdf5 file and returns a Seurat object
 #'
 #' @md
 #' @param data_file The path to the hdf5 file containing the data.
@@ -1014,7 +1007,8 @@ RunSCExplorer <- function(
       "bslib",
       "promises",
       "mengxu98/thisplot"
-    )
+    ),
+    verbose = FALSE
   )
   DataFile_full <- paste0(base_dir, "/", data_file)
   MetaFile_full <- paste0(base_dir, "/", meta_file)

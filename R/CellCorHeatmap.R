@@ -5,6 +5,10 @@
 #' It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 #'
 #' @md
+#' @inheritParams standard_scop
+#' @inheritParams RunKNNMap
+#' @inheritParams RunKNNPredict
+#' @inheritParams GroupHeatmap
 #' @param srt_query A Seurat object or count matrix representing the query dataset.
 #' This dataset will be used to calculate the similarities between cells.
 #' @param srt_ref A Seurat object or count matrix representing the reference dataset.
@@ -34,14 +38,7 @@
 #' If set to TRUE, the similarities will be calculated between query groups rather than individual cells.
 #' @param ref_collapsing Detail description of the `query_collapsing` argument.
 #' @param features A vector of feature names to include in the heatmap.
-#' If not provided, a default set of highly variable features (HVF) will be used.
-#' @param features_type The type of features to use.
-#' Options are `"HVF"` for highly variable features,
-#' `"DE"` for differentially expressed features between query and reference groups.
-#' @param feature_source The source of features to use.
-#' Options are `"query"` to use only features from the query dataset,
-#' `"ref"` to use only features from the reference dataset, or `"both"` to use features from both datasets.
-#' If not provided or set to "both", features will be selected from both datasets.
+#' If not provided, highly variable features (HVF) will be used.
 #' @param nfeatures The maximum number of features to include in the heatmap.
 #' Default is `2000`.
 #' @param DEtest_param The parameters to use for differential expression testing.
@@ -51,10 +48,6 @@
 #' Default parameters will be used.
 #' @param DE_threshold The threshold for differential expression.
 #' Only features with adjusted p-values below this threshold will be considered differentially expressed.
-#' @param distance_metric The distance metric to use for calculating similarities between cells.
-#' This can be any of the following:
-#' `"cosine"`, `"pearson"`, `"spearman"`, `"correlation"`, `"jaccard"`, `"ejaccard"`, `"dice"`, `"edice"`, `"hamman"`, `"simple matching"`, or `"faith"`.
-#' Default is `"cosine"`.
 #' @param k The number of nearest neighbors to use for calculating similarities.
 #' Default is `30`.
 #' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features.
@@ -182,11 +175,6 @@
 #' If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
 #' @param units The units to use for the width and height of the heatmap.
 #' Default is `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
-#' @param seed The random seed to use for reproducible results.
-#' Default is `11`.
-#' @param ht_params Additional parameters to customize the appearance of the heatmap.
-#' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
-#' Any conflicting parameters will override the defaults set by this function.
 #'
 #' @return
 #' A list with the following elements:

@@ -5,24 +5,19 @@
 #' The plot shows the velocity vectors of the cells in a specified reduction space.
 #'
 #' @md
-#' @param srt A Seurat object.
-#' @param reduction Name of the reduction in the Seurat object to use for plotting.
-#' @param dims Indices of the dimensions to use for plotting.
-#' @param cells Cells to include in the plot.
-#' If `NULL`, all cells will be included.
+#' @inheritParams CellDimPlot
+#' @inheritParams GraphPlot
 #' @param velocity Name of the velocity to use for plotting.
 #' Default is `"stochastic"`.
 #' @param plot_type Type of plot to create.
 #' Can be `"raw"`, `"grid"`, or `"stream"`.
-#' @param group_by Name of the column in the Seurat object metadata to group the cells by.
-#' Defaults is `NULL`.
 #' @param group_palette Name of the palette to use for coloring the groups.
 #' Defaults is `"Paired"`.
 #' @param group_palcolor Colors to use for coloring the groups.
 #' Defaults is `NULL`.
 #' @param n_neighbors Number of neighbors to include for the density estimation.
 #' Defaults is `ceiling(ncol(srt@assays[[1]]) / 50)`.
-#' @param density Propotion of cells to plot.
+#' @param density Proportion of cells to plot.
 #' Defaults is `1` (plot all cells).
 #' @param smooth Smoothing parameter for density estimation.
 #' Defaults is `0.5`.
@@ -58,28 +53,8 @@
 #' Defaults is `"white"`.
 #' @param streamline_bg_stroke Stroke width of the streamlines background.
 #' Defaults is `0.5`.
-#' @param aspect.ratio Aspect ratio of the plot.
-#' Defaults is `1`.
-#' @param title Title of the plot.
+#' @param title The text for the title.
 #' Defaults is `"Cell velocity"`.
-#' @param subtitle Subtitle of the plot.
-#' Defaults is `NULL`.
-#' @param xlab x-axis label.
-#' Defaults is `NULL`.
-#' @param ylab y-axis label.
-#' Defaults is `NULL`.
-#' @param legend.position Position of the legend.
-#' Defaults is `"right"`.
-#' @param legend.direction Direction of the legend.
-#' Defaults is `"vertical"`.
-#' @param theme_use Name of the theme to use for plotting.
-#' Defaults is `"theme_scop"`.
-#' @param theme_args List of theme arguments for customization.
-#' Defaults is `list()`.
-#' @param return_layer Whether to return the plot layers as a list.
-#' Defaults is `FALSE`.
-#' @param seed Random seed for reproducibility.
-#' Defaults is `11`.
 #'
 #' @seealso
 #' [RunSCVELO], [CellDimPlot]
@@ -92,7 +67,7 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSCVELO(
 #'   pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "pca",
 #'   nonlinear_reduction = "umap",
 #'   return_seurat = TRUE
@@ -105,7 +80,7 @@
 #' VelocityPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
-#'   group_by = "SubCellType"
+#'   group.by = "SubCellType"
 #' )
 #'
 #' VelocityPlot(
@@ -142,7 +117,7 @@ VelocityPlot <- function(
     cells = NULL,
     velocity = "stochastic",
     plot_type = c("raw", "grid", "stream"),
-    group_by = NULL,
+    group.by = NULL,
     group_palette = "Paired",
     group_palcolor = NULL,
     n_neighbors = ceiling(ncol(srt@assays[[1]]) / 50),
@@ -235,16 +210,16 @@ VelocityPlot <- function(
       mean(df_field[["length_perc"]], na.rm = TRUE), "npc"
     )
 
-    if (!is.null(group_by)) {
-      df_field[["group_by"]] <- srt@meta.data[
+    if (!is.null(group.by)) {
+      df_field[["group.by"]] <- srt@meta.data[
         rownames(df_field),
-        group_by,
+        group.by,
         drop = TRUE
       ]
       velocity_layer <- list(
         geom_segment(
           data = df_field,
-          aes(x = x, y = y, xend = x + u, yend = y + v, color = group_by),
+          aes(x = x, y = y, xend = x + u, yend = y + v, color = group.by),
           arrow = grid::arrow(
             length = arrow_length,
             type = "closed",
@@ -255,9 +230,9 @@ VelocityPlot <- function(
           inherit.aes = FALSE
         ),
         scale_color_manual(
-          name = group_by,
+          name = group.by,
           values = palette_colors(
-            df_field[["group_by"]],
+            df_field[["group.by"]],
             palette = group_palette,
             palcolor = group_palcolor
           ),

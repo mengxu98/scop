@@ -2,17 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction The reduction to be used.
-#' Default is `"pca"`.
-#' @param dims The dimensions to be used.
-#' Default is `NULL`.
-#' @param features The features to be used.
-#' Default is `NULL`.
-#' @param assay The assay to be used.
-#' Default is `NULL`.
-#' @param layer The layer to be used.
-#' Default is `"data"`.
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
 #' @param n_components The number of PaCMAP components.
 #' Default is `2`.
 #' @param n.neighbors A number of neighbors considered in the k-Nearest Neighbor graph.
@@ -39,8 +30,6 @@
 #' Default is `"pacmap"`.
 #' @param reduction.key The prefix for the column names of the PaCMAP embeddings.
 #' Default is `"PaCMAP_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to pacmap.PaCMAP.
 #'
 #' @rdname RunPaCMAP
@@ -88,13 +77,13 @@ RunPaCMAP.Seurat <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (sum(c(is.null(x = dims), is.null(x = features))) < 1) {
+  if (sum(c(is.null(dims), is.null(features))) < 1) {
     log_message(
       "Please specify only one of the following arguments: dims, features, or graph",
       message_type = "error"
     )
   }
-  if (!is.null(x = features)) {
+  if (!is.null(features)) {
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- as_matrix(
       Matrix::t(
@@ -105,23 +94,23 @@ RunPaCMAP.Seurat <- function(
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < n_components) {
+    if (ncol(data.use) < n_components) {
       log_message(
         "Please provide as many or more features than n_components: ",
-        length(x = features),
+        length(features),
         " features provided, ",
         n_components,
         " PaCMAP components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
+  } else if (!is.null(dims)) {
     data.use <- Embeddings(object[[reduction]])[, dims]
     assay <- DefaultAssay(object = object[[reduction]])
-    if (length(x = dims) < n_components) {
+    if (length(dims) < n_components) {
       log_message(
         "Please provide as many or more dims than n_components: ",
-        length(x = dims),
+        length(dims),
         " dims provided, ",
         n_components,
         " PaCMAP components requested",
@@ -173,7 +162,7 @@ RunPaCMAP.default <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (!is.null(x = seed.use)) {
+  if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
 
@@ -195,7 +184,7 @@ RunPaCMAP.default <- function(
   )
   embedding <- operator$fit_transform(object, init = init)
 
-  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(x = embedding)))
+  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   rownames(x = embedding) <- rownames(object)
 
   reduction <- SeuratObject::CreateDimReducObject(
