@@ -30,7 +30,7 @@ CellDimPlot3D(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
@@ -39,16 +39,20 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
 
-\item{palette}{Name of a color palette name collected in scop.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"Paired"}.}
 
-\item{palcolor}{Custom colors used to create a color palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
 \item{bg_color}{Color value for background(NA) points.}
 
-\item{pt.size}{Point size.}
+\item{pt.size}{The size of the points in the plot.}
 
-\item{cells.highlight}{A vector of cell names to highlight.}
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
+Default is \code{NULL}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
@@ -70,7 +74,8 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{save}{The name of the file to save the plot to. Must end in ".html".}
 
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.}
+\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
+Default is \code{FALSE}.}
 }
 \description{
 Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.

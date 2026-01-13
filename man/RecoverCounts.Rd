@@ -17,7 +17,8 @@ RecoverCounts(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{Name of assay to recover counts.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{trans}{The transformation function to applied when data is presumed to be log-normalized.}
 

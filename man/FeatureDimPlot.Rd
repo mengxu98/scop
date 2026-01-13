@@ -98,30 +98,36 @@ Features can be gene names in Assay or names of numeric columns in meta.data.}
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions.}
+\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
-\item{split.by}{Name of a column in meta.data to split plot by.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{cells}{Subset cells to plot.}
+\item{cells}{A character vector of cell names to use.}
 
-\item{layer}{Which layer to pull expression data from?
+\item{layer}{Which layer to use.
 Default is \code{data}.}
 
-\item{assay}{Which assay to pull expression data from. If \code{NULL}, will use the assay returned by \link[SeuratObject:DefaultAssay]{SeuratObject::DefaultAssay}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 
-\item{palette}{Name of a color palette name collected in scop.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{Custom colors used to create a color palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
-\item{pt.size}{Point size for plotting.}
+\item{pt.size}{The size of the points in the plot.}
 
-\item{pt.alpha}{Point transparency.}
+\item{pt.alpha}{The transparency of the data points.
+Default is \code{1}.}
 
 \item{bg_cutoff}{Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with \code{bg_color}.}
 
-\item{bg_color}{Color value for background points.}
+\item{bg_color}{Color value for background(NA) points.}
 
 \item{keep_scale}{How to handle the color scale across multiple plots. Options are:
 \itemize{
@@ -142,11 +148,13 @@ Default is \code{data}.}
 
 \item{density_filled_palcolor}{Custom colors used to fill contour bands.}
 
-\item{cells.highlight}{A vector of cell names to highlight.}
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
+Default is \code{NULL}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
-\item{sizes.highlight}{Size of highlighted cells.}
+\item{sizes.highlight}{Size of highlighted cell points.}
 
 \item{alpha.highlight}{Transparency of highlighted cell points.}
 
@@ -158,7 +166,7 @@ Default is \code{data}.}
 
 \item{color_blend_mode}{Blend mode to use when \code{compare_features = TRUE}}
 
-\item{label}{Whether the feature name is labeled in the center of the location of cells wieh high expression.}
+\item{label}{Whether the feature name is labeled in the center of the location of cells with high expression.}
 
 \item{label.size}{Size of labels.}
 
@@ -170,17 +178,18 @@ Default is \code{data}.}
 
 \item{label_insitu}{Whether the labels is feature names instead of numbers. Valid only when \code{compare_features = TRUE}.}
 
-\item{label_repel}{Logical value indicating whether the label is repel away from the center location.}
+\item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
 
 \item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
 
 \item{label_point_size}{Size of the center points.}
 
-\item{label_point_color}{Color of the center points}
+\item{label_point_color}{Color of the center points.}
 
 \item{label_segment_color}{Color of the line segment for labels.}
 
-\item{lineages}{Lineages/pseudotime to add to the plot. If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
+\item{lineages}{Lineages/pseudotime to add to the plot.
+If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
 
 \item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
 
@@ -222,40 +231,56 @@ Default is \code{data}.}
 
 \item{hex.binwidth}{Hexagonal bin width.}
 
-\item{raster}{Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells}
+\item{raster}{Convert points to raster format.
+Default is \code{NULL}, which automatically rasterizes if plotting more than 100,000 cells.}
 
-\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore().
+\item{raster.dpi}{Pixel resolution for rasterized plots.
 Default is \code{c(512, 512)}.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{The text for the title.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{x-axis label.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{y-axis label.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{The position of legends ("none", "left", "right", "bottom", "top").}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function. For example, \code{"theme_blank"} or \link[ggplot2:ggtheme]{ggplot2::theme_classic}.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object. If \code{FALSE}, return a list of ggplot objects.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{Number of rows in the combined plot.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{Number of columns in the combined plot.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Logical value indicating if the plots should be arrange by row (default) or by column.}
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
 
-\item{force}{Whether to force drawing regardless of the number of features greater than 100.}
+\item{force}{Whether to force drawing regardless of the number of features greater than 100.
+Default is \code{FALSE}.}
 
-\item{seed}{Random seed set for reproducibility}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 Plotting cell points on a reduced 2D plane and coloring according to the values of the features.

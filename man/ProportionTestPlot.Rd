@@ -41,37 +41,50 @@ If NULL, plots all comparisons.}
 \item{order_by}{Method to order clusters.
 Options: "name" (alphabetical), "value" (by log2FD value).}
 
-\item{pt.size}{The size of the points.}
+\item{pt.size}{The size of the points.
+Default is \code{1}.}
 
-\item{pt.alpha}{The transparency of the points.}
+\item{pt.alpha}{The transparency of the data points.
+Default is \code{1}.}
 
 \item{cols.sig}{Color for significant points and confidence intervals.}
 
 \item{cols.ns}{Color for non-significant points and confidence intervals.}
 
-\item{aspect.ratio}{The aspect ratio of the plot.}
+\item{aspect.ratio}{Aspect ratio of the panel.}
 
-\item{xlab}{A character string specifying the x-axis label.}
+\item{xlab}{A character string specifying the x-axis label.
+Default is \code{"Cell Type"}.}
 
-\item{ylab}{A character string specifying the y-axis label.}
+\item{ylab}{A character string specifying the y-axis label.
+Default is \code{"log2 (FD)"}.}
 
-\item{theme_use}{A character string specifying the theme to use for the plot.}
+\item{theme_use}{Theme used. Can be a character string or a theme function.
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{A list of theme arguments to pass to the \code{theme_use} function.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
-\item{legend.position}{Position of the legend.}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"bottom"}.}
 
-\item{legend.direction}{Direction of the legend.}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{legend.title}{Title of the legend.}
 
-\item{combine}{Whether to combine the plots for each comparison into a single plot.}
+\item{combine}{Combine plots into a single \code{patchwork} object.
+If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{An integer value specifying the number of rows in the combined plot.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{An integer value specifying the number of columns in the combined plot.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Whether to arrange the plots by row in the combined plot.}
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
 }
 \description{
 Generate proportion test plots based on the results from \link{RunProportionTest}.

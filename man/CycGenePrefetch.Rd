@@ -16,7 +16,8 @@ CycGenePrefetch(
 \arguments{
 \item{species}{Latin names for animals, i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
 
-\item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
+\item{Ensembl_version}{An integer specifying the Ensembl version.
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 

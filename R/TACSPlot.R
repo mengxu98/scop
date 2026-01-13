@@ -1,4 +1,5 @@
 #' @title Transcript-averaged cell scoring (TACS)
+#'
 #' @description TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-seq data.
 #' For each of two query features, 100 features with similar expression patterns are selected and ranked by their Pearson correlation with the query.
 #' In a process akin to compensation, the intersection of the feature lists is removed from each list.
@@ -7,15 +8,15 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
+#' @inheritParams CellDimPlot
+#' @inheritParams standard_scop
+#' @inheritParams FeatureDimPlot
 #' @param ref_srt A Seurat object.
 #' If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 #' for example if different time points are present or certain cell types are mostly depleted,
 #' you can feed in a reference srt, and TACS will choose axes based on the reference data.
 #' Default is `NULL`.
-#' @param assay The assay to use. Default is `"RNA"`.
-#' @param layer The layer to use. Default is `"data"`.
-#' @param group.by The variable to group the cells by. Default is `NULL`.
+#' @param assay Which assay to use. Default is `"RNA"`.
 #' @param feature1 Horizontal axis on plot mimics this feature.
 #' Character, usually length 1 but possibly longer.
 #' @param feature2 Vertical axis on plot mimics this feature. Character, usually length 1 but possibly longer.
@@ -27,21 +28,11 @@
 #' Options: `"sum"` (default), `"min"` (for "and"-like filter), `"max"`, or `"mean"`.
 #' @param cutoffs If given, divide plot into four quadrants and annotate with percentages.
 #' Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x and y axes respectively.
-#' @param palette The palette to use. Default is `"Paired"`.
 #' @param density If `TRUE`, plot contours instead of points.
 #' @param bins Number of bins for density plot. Default is `20`.
 #' @param h Bandwidth for density plot. Default is `NULL`.
 #' @param remove_outliers If `TRUE`, remove outliers from the plot. Default is `FALSE`.
-#' @param aspect.ratio The aspect ratio of the plot. Default is `1`.
-#' @param title The title of the plot.
-#' @param subtitle The subtitle of the plot.
-#' @param xlab The x-axis label.
-#' @param ylab The y-axis label.
 #' @param suffix The suffix of the axis labels. Default is `" expression level"`.
-#' @param legend.position The position of the legend. Default is `"right"`.
-#' @param legend.direction The direction of the legend. Default is `"vertical"`.
-#' @param theme_use The theme to use. Default is `"theme_scop"`.
-#' @param theme_args A list of arguments for the theme. Default is `list()`.
 #' @param include_all If `TRUE`, include a panel with all cells. Default is `FALSE`.
 #' @param all_color The color of the all cells panel. Default is `"grey20"`.
 #' @param quadrants_line_color The color of the quadrants lines. Default is `"grey30"`.
@@ -49,9 +40,6 @@
 #' @param quadrants_line_width The width of the quadrants lines. Default is `0.3`.
 #' @param quadrants_label_size The size of the quadrants labels. Default is `3`.
 #' @param density_alpha The alpha of the density plot. Default is `NULL`.
-#' @param nrow The number of rows for the facet plot. Default is `NULL`.
-#' @param ncol The number of columns for the facet plot.
-#' Default is `NULL`.
 #' @param ... Additional parameters passed to [ggplot2::stat_density2d].
 #'
 #' @export
@@ -454,16 +442,14 @@ div_by_sum <- function(x) {
   if (sum(x) == 0) 0 * x else x / sum(x)
 }
 
-#' @title Find genes with expression patterns similar to the genes you've specified.
-#' @description Given a Seurat object and a list of feature names,
-#' this function returns features that are strongly correlated with those markers.
+#' @title Find features with expression patterns similar to provided features
 #'
 #' @md
 #' @inheritParams TACSPlot
-#' @param features A character vector; giving feature names.
+#' @inheritParams FetchDataZero
 #' @param n An integer; number of results to return.
-#' @param features_use A character vector; list of features eligible to be returned.
-#' @param anticorr Whether to allow negatively correlated genes.
+#' @param features_use A character vector of features eligible to be returned.
+#' @param anticorr Whether to allow negatively correlated features.
 #' Default is `FALSE`.
 #'
 #' @return character vector.
@@ -535,19 +521,18 @@ GetSimilarFeatures <- function(
 }
 
 #' @title FetchData but with zeroes for unavailable genes
-#' @description FetchData but with zeroes for unavailable genes
 #'
 #' @md
 #' @inheritParams TACSPlot
 #' @param features A character vector of feature names.
-#' @param ... Other arguments to pass to FetchData
+#' @param ... Other arguments to pass to [Seurat::FetchData].
 #'
 #' @export
 FetchDataZero <- function(
     srt,
+    features,
     assay = "RNA",
     layer = "data",
-    features,
     verbose = TRUE,
     ...) {
   features <- features[stats::complete.cases(features)]
@@ -559,7 +544,7 @@ FetchDataZero <- function(
     verbose = verbose && length(unavail) > 0
   )
 
-  to_return <- FetchData(
+  to_return <- Seurat::FetchData(
     srt,
     avail,
     assay = assay,

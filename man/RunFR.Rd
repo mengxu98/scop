@@ -39,27 +39,24 @@ RunFR(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.}
+\item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.
+Default is \code{NULL}.}
 
 \item{...}{Additional arguments to be passed to \link[igraph:layout_with_fr]{igraph::layout_with_fr}.}
 
-\item{reduction}{The reduction to be used.
-Default is \code{NULL}.}
+\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
 
-\item{dims}{The dimensions to be used.
-Default is \code{NULL}.}
+\item{dims}{The dimensions to be used. Default is \code{NULL}.}
 
-\item{features}{The features to be used.
-Default is \code{NULL}.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
-\item{assay}{The assay to be used.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer to be used.
-Default is \code{"data"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{graph}{The name of the Graph object to be used.
-Default is \code{NULL}.}
+\item{graph}{The name of the Graph object to be used. Default is \code{NULL}.}
 
 \item{neighbor}{The name of the Neighbor object to be used.
 Default is \code{NULL}.}
@@ -82,7 +79,7 @@ Default is \code{"FR_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{The random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

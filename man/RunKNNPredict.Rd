@@ -62,7 +62,8 @@ Default is the first \code{30} dimensions.}
 \item{ref_dims}{A numeric vector specifying the dimensions to be used for the reference data.
 Default is the first \code{30} dimensions.}
 
-\item{query_collapsing}{A boolean value indicating whether the query data should be collapsed to group-level average expression values. If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.}
+\item{query_collapsing}{A boolean value indicating whether the query data should be collapsed to group-level average expression values.
+If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.}
 
 \item{ref_collapsing}{A boolean value indicating whether the reference data should be collapsed to group-level average expression values.
 If TRUE, the function will calculate the average expression values for each group in the reference data and the annotation will be performed separately for each group.
@@ -71,28 +72,45 @@ Otherwise it will use the raw expression values for each cell.}
 \item{return_full_distance_matrix}{A boolean value indicating whether the full distance matrix should be returned.
 If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.}
 
-\item{features}{A character vector specifying the features (genes) to be used for the KNN prediction. If NULL, all the features in the query and reference data will be used.}
+\item{features}{A character vector specifying the features to be used for the KNN prediction.
+If \code{NULL}, all the features in the query and reference data will be used.}
 
-\item{features_type}{A character vector specifying the type of features to be used for the KNN prediction. Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is \code{"HVF"}.}
+\item{features_type}{A character vector specifying the type of features to be used for the KNN prediction.
+Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is \code{"HVF"}.}
 
-\item{feature_source}{A character vector specifying the source of the features to be used for the KNN prediction. Must be one of "both", "query", or "ref". Default is \code{"both"}.}
+\item{feature_source}{The source of the features to be used.
+Must be one of "both", "query", or "ref".
+Default is \code{"both"}.}
 
-\item{nfeatures}{An integer specifying the maximum number of features to be used for the KNN prediction. Default is \code{2000}.}
+\item{nfeatures}{An integer specifying the maximum number of features to be used for the KNN prediction.
+Default is \code{2000}.}
 
 \item{DEtest_param}{A list of parameters to be passed to the differential expression test function if \code{features_type} is set to "DE". Default is \code{list(max.cells.per.ident = 200, test.use = "wilcox")}.}
 
 \item{DE_threshold}{Threshold used to filter the DE features.
-Default is \code{"p_val < 0.05"}. If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".}
+If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".
+Default is \code{"p_val < 0.05"}.}
 
-\item{nn_method}{A character vector specifying the method to be used for finding nearest neighbors. Must be one of "raw", "rann", or "annoy". Default is \code{"raw"}.}
+\item{nn_method}{A character string specifying the nearest neighbor search method to use.
+Options are "raw", "annoy", and "rann".
+If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
+If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
+If "rann" is selected, the function will use the RANN library for approximate nearest neighbor search.
+If not provided, the function will choose the search method based on the size of the query and reference datasets.}
 
-\item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells. Must be one of "cosine", "euclidean", "manhattan", or "hamming". Default is \code{"cosine"}.}
+\item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells.
+Must be one of "cosine", "euclidean", "manhattan", or "hamming".
+Default is \code{"cosine"}.}
 
-\item{k}{A number of nearest neighbors to be considered for the KNN prediction. Default is \code{30}.}
+\item{k}{A number of nearest neighbors to be considered for the KNN prediction.
+Default is \code{30}.}
 
-\item{filter_lowfreq}{An integer specifying the threshold for filtering low-frequency cell types from the predicted results. Cell types with a frequency lower than \code{filter_lowfreq} will be labelled as "unreliable". Default is \code{0}, which means no filtering will be performed.}
+\item{filter_lowfreq}{An integer specifying the threshold for filtering low-frequency cell types from the predicted results.
+Cell types with a frequency lower than \code{filter_lowfreq} will be labelled as "unreliable".
+Default is \code{0}, which means no filtering will be performed.}
 
-\item{prefix}{A character vector specifying the prefix to be added to the resulting annotations. Default is \code{"KNNPredict"}.}
+\item{prefix}{A character vector specifying the prefix to be added to the resulting annotations.
+Default is \code{"KNNPredict"}.}
 }
 \description{
 This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.

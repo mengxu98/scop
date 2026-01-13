@@ -2,17 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param object An object. This can be a Seurat object or a matrix-like object.
-#' @param reduction A character string specifying the reduction to be used.
-#' Default is `"pca"`.
-#' @param dims An integer vector specifying the dimensions to be used.
-#' Default is `NULL`.
-#' @param features A character vector specifying the features to be used.
-#' Default is `NULL`.
-#' @param assay A character string specifying the assay to be used.
-#' Default is `NULL`.
-#' @param layer A character string specifying the layer to be used.
-#' Default is `"data"`.
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
 #' @param n_components A number of TriMap components.
 #' Default is `2`.
 #' @param n_inliers A number of nearest neighbors for forming the nearest neighbor triplets.
@@ -37,8 +28,6 @@
 #' Default is `"trimap"`.
 #' @param reduction.key A character string specifying the prefix for the column names of the TriMap embeddings.
 #' Default is `"TriMap_"`.
-#' @param seed.use An integer specifying the random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to the trimap.TRIMAP function.
 #'
 #' @rdname RunTriMap
@@ -86,13 +75,13 @@ RunTriMap.Seurat <- function(
     verbose = TRUE,
     seed.use = 11L,
     ...) {
-  if (sum(c(is.null(x = dims), is.null(x = features))) == 2) {
+  if (sum(c(is.null(dims), is.null(features))) == 2) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
       message_type = "error"
     )
   }
-  if (!is.null(x = features)) {
+  if (!is.null(features)) {
     assay <- assay %||% DefaultAssay(object = object)
     data.use <- as_matrix(
       Matrix::t(
@@ -103,23 +92,23 @@ RunTriMap.Seurat <- function(
         )[features, ]
       )
     )
-    if (ncol(x = data.use) < n_components) {
+    if (ncol(data.use) < n_components) {
       log_message(
         "Please provide as many or more features than n_components: ",
-        length(x = features),
+        length(features),
         " features provided, ",
         n_components,
         " TriMap components requested",
         message_type = "error"
       )
     }
-  } else if (!is.null(x = dims)) {
+  } else if (!is.null(dims)) {
     data.use <- Embeddings(object[[reduction]])[, dims]
     assay <- DefaultAssay(object = object[[reduction]])
-    if (length(x = dims) < n_components) {
+    if (length(dims) < n_components) {
       log_message(
         "Please provide as many or more dims than n_components: ",
-        length(x = dims),
+        length(dims),
         " dims provided, ",
         n_components,
         " TriMap components requested",
@@ -191,7 +180,7 @@ RunTriMap.default <- function(
     ...
   )
   embedding <- operator$fit_transform(object)
-  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(x = embedding)))
+  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   if (inherits(x = object, what = "dist")) {
     rownames(x = embedding) <- attr(object, "Labels")
   } else {

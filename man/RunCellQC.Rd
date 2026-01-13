@@ -39,7 +39,7 @@ RunCellQC(
 \item{assay}{The name of the assay to be used for doublet-calling.
 Default is \code{"RNA"}.}
 
-\item{split.by}{Name of the sample variable to split the Seurat object.
+\item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
 
 \item{return_filtered}{Logical indicating whether to return a cell-filtered Seurat object.
@@ -101,14 +101,14 @@ Default is \code{NULL}.}
 \item{species_percent}{Percentage of UMI counts of the first species. Cells that exceed this threshold will be considered as kept.
 Default is \code{95}.}
 
-\item{seed}{Set a random seed.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \value{
 Returns Seurat object with the QC results stored in the meta.data layer.
 }
 \description{
-This function handles multiple quality control methods for single-cell RNA-seq data.
+Run cell-level quality control for single cell RNA-seq data.
 }
 \examples{
 data(pancreas_sub)

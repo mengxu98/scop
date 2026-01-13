@@ -23,10 +23,10 @@ RunSlingshot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{group.by}{The variable to group the cells by.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{reduction}{The reduction technique to use for dimensionality reduction.
-Default is \code{NULL}, which uses the default reduction for the Seurat object.}
+\item{reduction}{Which dimensionality reduction to use.
+If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{dims}{The dimensions to use for the Slingshot algorithm.
 Default is \code{NULL}, which uses first two dimensions.}
@@ -52,7 +52,8 @@ Default is \code{TRUE}.}
 \item{lineage_palette}{The color palette to use for the lineages in the plot.
 Default is \code{"Dark2"}.}
 
-\item{seed}{The random seed to use for reproducibility. Default is \code{11}.}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 
 \item{...}{Additional arguments to be passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 }

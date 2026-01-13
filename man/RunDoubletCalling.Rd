@@ -31,7 +31,7 @@ Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"}
 Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
 }
 \description{
-This function performs doublet-calling for single cell RNA-seq data.
+Run doublet-calling for single cell RNA-seq data.
 }
 \examples{
 data(pancreas_sub)

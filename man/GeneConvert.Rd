@@ -28,7 +28,8 @@ GeneConvert(
 
 \item{species_to}{Latin names for animals of the output geneID. e.g. \code{"Homo_sapiens"}, \code{"Mus_musculus"}.}
 
-\item{Ensembl_version}{Ensembl database version. If NULL, use the current release version.}
+\item{Ensembl_version}{An integer specifying the Ensembl version.
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{biomart}{The name of the BioMart database that you want to connect to.
 Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}

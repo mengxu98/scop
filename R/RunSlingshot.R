@@ -3,10 +3,7 @@
 #' Runs the Slingshot algorithm on a Seurat object.
 #'
 #' @md
-#' @param srt A Seurat object.
-#' @param group.by The variable to group the cells by.
-#' @param reduction The reduction technique to use for dimensionality reduction.
-#' Default is `NULL`, which uses the default reduction for the Seurat object.
+#' @inheritParams CellDimPlot
 #' @param dims The dimensions to use for the Slingshot algorithm.
 #' Default is `NULL`, which uses first two dimensions.
 #' @param start The starting group for the Slingshot algorithm.
@@ -23,7 +20,6 @@
 #' Default is `TRUE`.
 #' @param lineage_palette The color palette to use for the lineages in the plot.
 #' Default is `"Dark2"`.
-#' @param seed The random seed to use for reproducibility. Default is `11`.
 #' @param ... Additional arguments to be passed to the [slingshot::slingshot] function.
 #'
 #' @seealso [CellDimPlot] [RunDynamicFeatures]

@@ -155,14 +155,16 @@ Default is \code{"LogNormalize"}.}
 \item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
 Default is \code{"bonferroni"}.}
 
-\item{layer}{The layer used.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
 \item{assay}{Assay to use in differential expression testing}
 
-\item{seed}{An integer value specifying the seed.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
-\item{verbose}{Print a progress bar once expression testing begins}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}

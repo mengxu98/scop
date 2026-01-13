@@ -267,7 +267,7 @@ FeatureHeatmap <- function(
   if (any(!group.by %in% colnames(srt@meta.data))) {
     log_message(
       group.by[!group.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object.",
+      " is not in the meta data of {.cls Seurat}.",
       message_type = "error"
     )
   }
@@ -290,7 +290,7 @@ FeatureHeatmap <- function(
   if (any(!split.by %in% colnames(srt@meta.data))) {
     log_message(
       split.by[!split.by %in% colnames(srt@meta.data)],
-      " is not in the meta data of the Seurat object.",
+      " is not in the meta data of {.cls Seurat}.",
       message_type = "error"
     )
   }
@@ -395,7 +395,7 @@ FeatureHeatmap <- function(
           ],
           collapse = ","
         ),
-        " is not in the Seurat object.",
+        " is not in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -437,7 +437,7 @@ FeatureHeatmap <- function(
         ),
         " is not in the meta data of the ",
         assay,
-        " assay in the Seurat object.",
+        " assay in {.cls Seurat}.",
         message_type = "error"
       )
     }
@@ -1048,7 +1048,10 @@ FeatureHeatmap <- function(
         )
       } else {
         if (split_method == "mfuzz") {
-          status <- tryCatch(check_r("e1071", verbose = FALSE), error = identity)
+          status <- tryCatch(
+            check_r("e1071", verbose = FALSE),
+            error = identity
+          )
           if (inherits(status, "error")) {
             log_message(
               "The {.pkg e1071} package was not found. Switch {.arg split_method} to {.val kmeans}",

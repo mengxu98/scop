@@ -130,16 +130,17 @@ CellDimPlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{reduction}{Which dimensionality reduction to use.
 If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.}
+\item{split.by}{Name of a column in meta.data column to split plot by.
+Default is \code{NULL}.}
 
-\item{cells}{Subset cells to plot.}
+\item{cells}{A character vector of cell names to use.}
 
 \item{show_na}{Whether to assign a color from the color palette to NA group.
 If \code{TRUE}, cell points with NA level will be colored by \code{bg_color}.
@@ -147,14 +148,17 @@ If \code{FALSE}, cell points with NA level will be removed from the plot.}
 
 \item{show_stat}{Whether to show statistical information on the plot.}
 
-\item{pt.size}{Point size.}
+\item{pt.size}{The size of the points in the plot.}
 
-\item{pt.alpha}{Point transparency.}
+\item{pt.alpha}{The transparency of the data points.
+Default is \code{1}.}
 
-\item{palette}{Name of a color palette name collected in scop.
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
 Default is \code{"Paired"}.}
 
-\item{palcolor}{Custom colors used to create a color palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
 \item{bg_color}{Color value for background(NA) points.}
 
@@ -181,7 +185,9 @@ Default is \code{FALSE}, which using numbers instead of raw labels.}
 
 \item{label_segment_color}{Color of the line segment for labels.}
 
-\item{cells.highlight}{A vector of cell names to highlight.}
+\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
+If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
+Default is \code{NULL}.}
 
 \item{cols.highlight}{Color used to highlight the cells.}
 
@@ -344,42 +350,56 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{hex.binwidth}{Hexagonal bin width.}
 
-\item{raster}{Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells}
+\item{raster}{Convert points to raster format.
+Default is \code{NULL}, which automatically rasterizes if plotting more than 100,000 cells.}
 
-\item{raster.dpi}{Pixel resolution for rasterized plots, passed to geom_scattermore().
+\item{raster.dpi}{Pixel resolution for rasterized plots.
 Default is \code{c(512, 512)}.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.}
+\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
-\item{title}{The text for the title.}
+\item{title}{The text for the title.
+Default is \code{NULL}.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.}
+\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
+Default is \code{NULL}.}
 
-\item{xlab}{x-axis label.}
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{ylab}{y-axis label.}
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
-\item{legend.position}{The position of legends ("none", "left", "right", "bottom", "top").}
+\item{legend.position}{The position of legends,
+one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
+Default is \code{"right"}.}
 
-\item{legend.direction}{Layout of items in legends ("horizontal" or "vertical")}
+\item{legend.direction}{The direction of the legend in the plot.
+Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
-For example, \code{"theme_blank"} or \link[ggplot2:ggtheme]{ggplot2::theme_classic}.}
+Default is \code{"theme_scop"}.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.}
+\item{theme_args}{Other arguments passed to the \code{theme_use}.
+Default is \code{list()}.}
 
 \item{combine}{Combine plots into a single \code{patchwork} object.
 If \code{FALSE}, return a list of ggplot objects.}
 
-\item{nrow}{Number of rows in the combined plot.}
+\item{nrow}{Number of rows in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{ncol}{Number of columns in the combined plot.}
+\item{ncol}{Number of columns in the combined plot.
+Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
-\item{byrow}{Logical value indicating if the plots should be arrange by row (default) or by column.}
+\item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
 
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.}
+\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
+Default is \code{FALSE}.}
 
-\item{seed}{Random seed set for reproducibility}
+\item{seed}{Random seed for reproducibility.
+Default is \code{11}.}
 }
 \description{
 Visualize cell groups on a 2-dimensional reduction plot.

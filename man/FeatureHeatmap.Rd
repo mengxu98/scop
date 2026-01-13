@@ -122,16 +122,15 @@ FeatureHeatmap(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{features}{The features to include in the heatmap.
+\item{features}{A character vector of features to use.
 Default is \code{NULL}.}
 
-\item{cells}{A character vector specifying the cells to include in the heatmap.
+\item{cells}{A character vector of cell names to use.
 Default is \code{NULL}.}
 
-\item{group.by}{A character vector specifying the groups to group by.
-Default is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{split.by}{A character vector specifying the variable to split the heatmap by.
+\item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
 
 \item{within_groups}{Whether to create separate heatmap scales for each group or within each group.
@@ -149,11 +148,11 @@ Default is \code{TRUE}.}
 \item{flip}{Whether to flip the heatmap.
 Default is \code{FALSE}.}
 
-\item{layer}{A character vector specifying the layer in the Seurat object to use.
+\item{layer}{Which layer to use.
 Default is \code{"counts"}.}
 
-\item{assay}{A character vector specifying the assay in the Seurat object to use.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{exp_method}{A character vector specifying the method for calculating expression values.
 Options are \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"}, or \code{"log1p"}.
@@ -273,20 +272,21 @@ Default is \code{"symbol"}.}
 \item{species}{A character vector specifying the species for features.
 Default is \code{"Homo_sapiens"}.}
 
-\item{db_update}{Whether to update the database.
+\item{db_update}{Whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
 Default is \code{FALSE}.}
 
-\item{db_version}{A character vector specifying the version of the database.
+\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is \code{"latest"}.}
 
 \item{db_combine}{Whether to use a combined database.
 Default is \code{FALSE}.}
 
-\item{convert_species}{Whether to use a species-converted database if annotation is missing for \code{species}.
-Default is \code{FALSE}.}
+\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
+Default is \code{TRUE}.}
 
 \item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{103}.}
+Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 
 \item{mirror}{A character vector specifying the mirror for the Ensembl database.
 Default is \code{NULL}.}
@@ -418,10 +418,12 @@ Default is \code{NULL}.}
 \item{units}{A character vector specifying the units for the height and width.
 Default is \code{"inch"}.}
 
-\item{seed}{An integer specifying the random seed.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
-\item{ht_params}{A list specifying additional parameters passed to the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
+\item{ht_params}{Additional parameters to customize the appearance of the heatmap.
+This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
+Any conflicting parameters will override the defaults set by this function.
 Default is \code{list()}.}
 
 \item{verbose}{Whether to print the message.
