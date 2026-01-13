@@ -52,7 +52,8 @@ Default is \code{TRUE}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{assay}{The name of the assay to be used for downstream analysis.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{integration_method}{A character vector specifying the integration method to use.
 Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"},
@@ -142,7 +143,7 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{seed}{An integer specifying the random seed for reproducibility.
+\item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
 
 \item{verbose}{Whether to print the message.

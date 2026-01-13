@@ -845,7 +845,7 @@ Seurat_integrate <- function(
       params1
     )
 
-    log_message("Perform integration(Seurat)")
+    log_message("Perform integration({.pkg Seurat})")
     params2 <- list(
       anchorset = srt_anchors,
       new.assay.name = "Seuratcorrected",
@@ -917,7 +917,7 @@ Seurat_integrate <- function(
     }
     srt_anchors <- invoke_fun(Seurat::FindIntegrationAnchors, params1)
 
-    log_message("Perform integration(Seurat)")
+    log_message("Perform integration({.pkg Seurat})")
     params2 <- list(
       anchorset = srt_anchors,
       reductions = srt_merge[["lsi"]],

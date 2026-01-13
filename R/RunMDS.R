@@ -2,13 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, an assay object, or a matrix-like object.
-#' @param assay The assay to be used for the analysis.
-#' Default is `NULL`.
-#' @param layer The layer to be used for the analysis.
-#' Default is `"data"`.
-#' @param features The features to be used for the analysis.
-#' Default is `NULL`, which uses all variable features.
 #' @param nmds The number of dimensions to be computed.
 #' Default is `50`.
 #' @param dist.method The distance metric to be used.
@@ -24,8 +19,6 @@
 #' Default is `"mds"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"MDS_"`.
-#' @param seed.use The random seed to be used.
-#' Default is `11`.
 #' @param ... Additional arguments to be passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
 #'
 #' @rdname RunMDS
@@ -189,7 +182,7 @@ RunMDS.default <- function(
     verbose = TRUE,
     seed.use = 11,
     ...) {
-  if (!is.null(x = seed.use)) {
+  if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
   if (rev.mds) {

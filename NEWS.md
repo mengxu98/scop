@@ -1,5 +1,19 @@
 # scop
 
+# scop 0.8.0
+
+* **func**:
+  * `RunMonocle2()`: New function for performing [Monocle2](https://github.com/mengxu98/monocle) trajectory analysis with support for various dimensionality reduction methods (DDRTree, ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of monocle2 from [mengxu98/monocle](https://github.com/mengxu98/monocle).
+  * `RunMonocle3()`: New function for performing [Monocle3](https://github.com/cole-trapnell-lab/monocle3) trajectory analysis with support for cell ordering, trajectory learning, and pseudotime computation.
+  * `RunCytoTRACE()`: New function for running [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.
+  * `CytoTRACEPlot()`: New function for visualizing [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) analysis results.
+
+# scop 0.7.9
+
+* **docs**:
+  * Optimized `@inheritParams` usage to reduce redundant parameter definitions.
+  * Unified parameter naming: renamed `group_by` to `group.by` for consistency with Seurat conventions in `RunMonocle3()`, `RunPalantir()`, `RunSCVELO()`, `RunWOT()`, `CellCorHeatmap()`, and `RunDynamicFeatures()`.
+
 # scop 0.7.8
 
 * **bugs**:

@@ -4,6 +4,7 @@
 #' Generate proportion test plots based on the results from [RunProportionTest].
 #'
 #' @md
+#' @inheritParams CellDimPlot
 #' @param srt A Seurat object containing proportion test results.
 #' @param comparison A character string specifying which comparison to plot.
 #' If NULL, plots all comparisons.
@@ -12,21 +13,18 @@
 #' @param order_by Method to order clusters.
 #' Options: "name" (alphabetical), "value" (by log2FD value).
 #' @param pt.size The size of the points.
-#' @param pt.alpha The transparency of the points.
+#' Default is `1`.
 #' @param cols.sig Color for significant points and confidence intervals.
 #' @param cols.ns Color for non-significant points and confidence intervals.
-#' @param aspect.ratio The aspect ratio of the plot.
+#' @param aspect.ratio Aspect ratio of the panel.
 #' @param xlab A character string specifying the x-axis label.
+#' Default is `"Cell Type"`.
 #' @param ylab A character string specifying the y-axis label.
-#' @param theme_use A character string specifying the theme to use for the plot.
-#' @param theme_args A list of theme arguments to pass to the `theme_use` function.
-#' @param legend.position Position of the legend.
-#' @param legend.direction Direction of the legend.
+#' Default is `"log2 (FD)"`.
+#' @param legend.position The position of legends,
+#' one of `"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`.
+#' Default is `"bottom"`.
 #' @param legend.title Title of the legend.
-#' @param combine Whether to combine the plots for each comparison into a single plot.
-#' @param nrow An integer value specifying the number of rows in the combined plot.
-#' @param ncol An integer value specifying the number of columns in the combined plot.
-#' @param byrow Whether to arrange the plots by row in the combined plot.
 #'
 #' @seealso [RunProportionTest]
 #'

@@ -81,14 +81,13 @@ Can be a Seurat object, an assay object, or a matrix-like object.}
 
 \item{...}{Additional arguments to be passed to the \link[glmpca:glmpca]{glmpca::glmpca} function.}
 
-\item{assay}{The assay to be used for the analysis.
-Default is \code{NULL}.}
+\item{assay}{Which assay to use.
+If \code{NULL}, the default assay of the Seurat object will be used.}
 
-\item{layer}{The layer to be used for the analysis.
-Default is \code{"counts"}.}
+\item{layer}{Which layer to use.
+Default is \code{data}.}
 
-\item{features}{The features to be used for the analysis.
-Default is \code{NULL}, which uses all variable features.}
+\item{features}{A character vector of features to use. Default is \code{NULL}.}
 
 \item{L}{The number of components to be computed.
 Default is \code{5}.}
@@ -115,7 +114,7 @@ Default is \code{"GLMPC_"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{The random seed to be used.
+\item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
 }
 \description{

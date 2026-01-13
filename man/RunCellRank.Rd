@@ -166,11 +166,15 @@ Default is \code{FALSE}.}
 
 \item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
 
-\item{legend.position}{Position of legend in plots. Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+\item{legend.position}{Position of legend in plots.
+Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
 
-\item{palette}{The palette to use for coloring cells.}
+\item{palette}{Color palette name.
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
+Default is \code{"Paired"}.}
 
-\item{palcolor}{A vector of colors to use as the palette.}
+\item{palcolor}{Custom colors used to create a color palette.
+Default is \code{NULL}.}
 
 \item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
 

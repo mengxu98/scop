@@ -3,8 +3,8 @@
 #' @description Get the data from the `Assay`, `Assay5` or `Seurat` object.
 #'
 #' @md
+#' @inheritParams standard_scop
 #' @param object A `Assay`, `Assay5` or `Seurat` object.
-#' @param assay Assay name to use. Default is `NULL`.
 #' @param ... Additional arguments passed to the method.
 #'
 #' @return A data frame containing the features data.
@@ -99,7 +99,7 @@ AddFeaturesData.Assay <- function(
     object,
     features,
     ...) {
-  object@meta.features <- .check_features_data(object, features)
+  object@meta.features <- check_features_data(object, features)
   return(object)
 }
 
@@ -110,11 +110,11 @@ AddFeaturesData.Assay5 <- function(
     object,
     features,
     ...) {
-  object[[]] <- .check_features_data(object, features)
+  object[[]] <- check_features_data(object, features)
   return(object)
 }
 
-.check_features_data <- function(object, features) {
+check_features_data <- function(object, features) {
   features_rownames <- rownames(object)
   features_rownames_add <- rownames(features)
   if (is.null(features_rownames_add)) {

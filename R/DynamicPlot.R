@@ -1,13 +1,12 @@
 #' @title Plot dynamic features across pseudotime
 #'
 #' @md
-#' @param srt A Seurat object.
-#' @param features A character vector specifying the features to plot.
+#' @inheritParams standard_scop
+#' @inheritParams CellDimPlot
+#' @inheritParams GroupHeatmap
+#' @param features A character vector of features to use.
 #' @param lineages A character vector specifying the lineages to plot.
-#' @param group.by A character specifying a metadata column to group the cells by. Default is `NULL`.
-#' @param cells A character vector specifying the cells to include in the plot. Default is `NULL`.
-#' @param layer A character string specifying the layer to use for the analysis. Default is `"counts"`.
-#' @param assay A character string specifying the assay to use for the analysis. Default is `NULL`.
+#' @param cells A character vector of cell names to use. Default is `NULL`.
 #' @param family A character specifying the model used to calculate the dynamic features if needed.
 #' By default, this parameter is set to `NULL`, and the appropriate family will be automatically determined.
 #' @param exp_method A character specifying the method to transform the expression values.
@@ -31,16 +30,7 @@
 #' @param flip A boolean specifying whether to flip the x-axis. Default is `FALSE`.
 #' @param reverse A boolean specifying whether to reverse the x-axis. Default is `FALSE`.
 #' @param x_order A character specifying the order of the x-axis values. Default is `c("value", "rank")`.
-#' @param aspect.ratio A numeric specifying the aspect ratio of the plot. Default is `NULL`.
-#' @param legend.position A character string specifying the position of the legend in the plot. Default is `"right"`.
-#' @param legend.direction A character string specifying the direction of the legend in the plot. Default is `"vertical"`.
-#' @param theme_use A character string specifying the name of the theme to use for the plot. Default is `"theme_scop"`.
-#' @param theme_args A list specifying the arguments to pass to the theme function. Default is `list()`.
-#' @param combine A boolean specifying whether to combine multiple plots into a single plot. Default is `TRUE`.
-#' @param nrow A numeric specifying the number of rows in the combined plot. Default is `NULL`.
-#' @param ncol A numeric specifying the number of columns in the combined plot. Default is `NULL`.
-#' @param byrow A boolean specifying whether to fill plots by row in the combined plot. Default is `TRUE`.
-#' @param seed A numeric specifying the random seed. Default is `11`.
+#' @param aspect.ratio Aspect ratio of the panel. Default is `NULL`.
 #'
 #' @seealso [RunDynamicFeatures]
 #'
