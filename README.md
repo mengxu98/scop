@@ -12,8 +12,14 @@ The [scop](https://github.com/mengxu98/scop) package provides a comprehensive se
 - Integrated single-cell quality control methods, including doublet detection methods ([scDblFinder](https://github.com/plger/scDblFinder), [scds](https://github.com/kostkalab/scds), [Scrublet](https://github.com/swolock/scrublet), [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)).
 - Pipelines embedded with multiple methods for normalization, feature reduction (PCA, ICA, NMF, MDS, [GLMPCA](https://github.com/willtownes/glmpca), [UMAP](https://github.com/lmcinnes/umap), [TriMap](https://github.com/eamid/trimap), [LargeVis](https://github.com/lferry007/LargeVis), [PaCMAP](https://github.com/YingfanWang/PaCMAP), [PHATE](https://github.com/KrishnaswamyLab/PHATE), [DM](https://bioconductor.org/packages/release/bioc/html/destiny.html), FR), and cell population identification.
 - Pipelines embedded with multiple integration methods for scRNA-seq, including Uncorrected, [Seurat](https://github.com/satijalab/seurat), [scVI](https://github.com/scverse/scvi-tools), [MNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [fastMNN](http://www.bioconductor.org/packages/release/bioc/html/batchelor.html), [Harmony](https://github.com/immunogenomics/harmony), [Scanorama](https://github.com/brianhie/scanorama), [BBKNN](https://github.com/Teichlab/bbknn), [CSS](https://github.com/quadbiolab/simspec), [LIGER](https://github.com/welch-lab/liger), [Conos](https://github.com/kharchenkolab/conos), [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
-- Multiple single-cell downstream analyses such as identification of differential features, enrichment analysis, GSEA analysis, identification of dynamic features, [PAGA](https://github.com/theislab/paga), [RNA velocity](https://github.com/theislab/scvelo), [Palantir](https://github.com/dpeerlab/Palantir), [CellRank](https://github.com/theislab/cellrank), [WOT](https://github.com/broadinstitute/wot), [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), [CellChat](https://github.com/jinworks/CellChat), proportion test, dynamic enrichment analysis, and expressed marker identification.
 - Multiple methods for automatic annotation of single-cell data ([CellTypist](https://github.com/Teichlab/celltypist), [SingleR](https://github.com/dviraran/SingleR), [Scmap](https://github.com/hemberg-lab/scmap), KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
+- Multiple single-cell downstream analyses:
+  - **Differential expression analysis**: identification of differential features, expressed marker identification.
+  - **Enrichment analysis**: over-representation analysis, [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis, dynamic enrichment analysis.
+  - **Cellular potency**: [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) for predicting cellular differentiation potential.
+  - **RNA velocity**: [RNA velocity](https://github.com/theislab/scvelo), [PAGA](https://github.com/theislab/paga), [Palantir](https://github.com/dpeerlab/Palantir), [CellRank](https://github.com/theislab/cellrank), [WOT](https://github.com/broadinstitute/wot).
+  - **Trajectory inference**: [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html), [Monocle2](https://github.com/mengxu98/monocle), [Monocle3](https://github.com/cole-trapnell-lab/monocle3), identification of dynamic features.
+  - **Cell-Cell Communication**: [CellChat](https://github.com/jinworks/CellChat) for cell-cell communication.
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 
@@ -35,13 +41,18 @@ The functions in [scop](https://github.com/mengxu98/scop) are all developed arou
     - [Cell projection between single-cell datasets](#cell-projection-between-single-cell-datasets)
     - [Cell annotation using bulk RNA-seq datasets](#cell-annotation-using-bulk-rna-seq-datasets)
     - [Cell annotation using single-cell datasets](#cell-annotation-using-single-cell-datasets)
-    - [PAGA analysis](#paga-analysis)
+    - [Cellular potency](#cellular-potency)
+      - [CytoTRACE 2](#cytotrace-2)
     - [Velocity analysis](#velocity-analysis)
+      - [SCVELO](#scvelo)
+    - [Trajectory inference](#trajectory-inference)
+      - [PAGA analysis](#paga-analysis)
+      - [Slingshot](#slingshot)
+      - [Monocle3](#monocle3)
+    - [Dynamic features](#dynamic-features)
     - [Differential expression analysis](#differential-expression-analysis)
     - [Enrichment analysis(over-representation)](#enrichment-analysisover-representation)
     - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
-    - [Trajectory inference](#trajectory-inference)
-    - [Dynamic features](#dynamic-features)
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
@@ -144,7 +155,7 @@ print(pancreas_sub)
 
 ``` r
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = c("CellType", "SubCellType"),
   reduction = "UMAP",
   theme_use = "theme_blank"
@@ -155,7 +166,7 @@ CellDimPlot(
 
 ``` r
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   stat.by = "Phase",
   reduction = "UMAP",
@@ -167,7 +178,7 @@ CellDimPlot(
 
 ``` r
 FeatureDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = c("Sox9", "Neurog3", "Fev", "Rbp4"),
   reduction = "UMAP",
   theme_use = "theme_blank"
@@ -178,7 +189,7 @@ FeatureDimPlot(
 
 ``` r
 FeatureDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = c("Ins1", "Gcg", "Sst", "Ghrl"),
   compare_features = TRUE,
   label = TRUE,
@@ -192,7 +203,7 @@ FeatureDimPlot(
 
 ``` r
 ht <- GroupHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = c(
     "Sox9", "Anxa2", # Ductal
     "Neurog3", "Hes6", # EPs
@@ -215,21 +226,21 @@ print(ht$plot)
 ### CellQC
 
 ``` r
-pancreas_sub <- RunCellQC(srt = pancreas_sub)
-CellDimPlot(srt = pancreas_sub, group.by = "CellQC", reduction = "UMAP")
+pancreas_sub <- RunCellQC(pancreas_sub)
+CellDimPlot(pancreas_sub, group.by = "CellQC", reduction = "UMAP")
 ```
 
 <img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-CellStatPlot(srt = pancreas_sub, stat.by = "CellQC", group.by = "CellType", label = TRUE)
+CellStatPlot(pancreas_sub, stat.by = "CellQC", group.by = "CellType", label = TRUE)
 ```
 
 <img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellStatPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   stat.by = c(
     "db_qc", "outlier_qc",
     "umi_qc", "gene_qc",
@@ -246,9 +257,9 @@ CellStatPlot(
 ### Standard pipeline
 
 ``` r
-pancreas_sub <- standard_scop(srt = pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = c("CellType", "SubCellType"),
   reduction = "StandardUMAP2D",
   theme_use = "theme_blank"
@@ -259,7 +270,7 @@ CellDimPlot(
 
 ``` r
 CellDimPlot3D(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType"
 )
 ```
@@ -268,7 +279,7 @@ CellDimPlot3D(
 
 ``` r
 FeatureDimPlot3D(
-  srt = pancreas_sub,
+  pancreas_sub,
   features = c("Sox9", "Neurog3", "Fev", "Rbp4")
 )
 ```
@@ -287,7 +298,7 @@ panc8_sub <- integration_scop(
   integration_method = "Seurat"
 )
 CellDimPlot(
-  srt = panc8_sub,
+  panc8_sub,
   group.by = c("celltype", "tech"),
   reduction = "SeuratUMAP2D",
   title = "Seurat",
@@ -308,7 +319,7 @@ genenames <- make.unique(
 )
 names(genenames) <- rownames(panc8_sub)
 panc8_rename <- RenameFeatures(
-  srt = panc8_sub,
+  panc8_sub,
   newnames = genenames,
   assays = "RNA"
 )
@@ -336,7 +347,7 @@ pancreas_sub <- RunKNNPredict(
   filter_lowfreq = 20
 )
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
   label = TRUE
@@ -355,7 +366,7 @@ pancreas_sub <- RunKNNPredict(
   filter_lowfreq = 20
 )
 CellDimPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
   label = TRUE
@@ -380,40 +391,38 @@ print(ht$plot)
 
 <img src="man/figures/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### PAGA analysis
+### Cellular potency
+
+#### CytoTRACE 2
 
 ``` r
-PrepareEnv()
-pancreas_sub <- RunPAGA(
-  srt = pancreas_sub,
-  group_by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP"
+pancreas_sub <- RunCytoTRACE(
+  pancreas_sub,
+  species = "mouse"
 )
-PAGAPlot(
-  srt = pancreas_sub,
-  reduction = "UMAP",
-  label = TRUE,
-  label_insitu = TRUE,
-  label_repel = TRUE
+CytoTRACEPlot(
+  pancreas_sub,
+  group.by = "SubCellType"
 )
 ```
 
-<img src="man/figures/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="man/figures/RunCytoTRACE.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Velocity analysis
 
 To estimate RNA velocity, both “spliced” and “unspliced” assays in Seurat object. You can generate these matrices using [velocyto](http://velocyto.org/velocyto.py/index.html), [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
 
+#### SCVELO
+
 ``` r
 pancreas_sub <- RunSCVELO(
-  srt = pancreas_sub,
+  pancreas_sub,
   group_by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP"
 )
 VelocityPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   reduction = "UMAP",
   group_by = "SubCellType"
 )
@@ -423,7 +432,7 @@ VelocityPlot(
 
 ``` r
 VelocityPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   reduction = "UMAP",
   plot_type = "stream"
 )
@@ -431,166 +440,34 @@ VelocityPlot(
 
 <img src="man/figures/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"/>
 
-### Differential expression analysis
-
-``` r
-pancreas_sub <- RunDEtest(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  fc.threshold = 1,
-  only.pos = FALSE
-)
-VolcanoPlot(
-  srt = pancreas_sub,
-  group_by = "CellType"
-)
-```
-
-<img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
-DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
-# Annotate features with transcription factors and surface proteins
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
-ht <- FeatureHeatmap(
-  srt = pancreas_sub,
-  group.by = "CellType",
-  features = DEGs$gene,
-  feature_split = DEGs$group1,
-  species = "Mus_musculus",
-  db = c("GO_BP", "KEGG", "WikiPathway"),
-  anno_terms = TRUE,
-  feature_annotation = c("TF", "CSPA"),
-  feature_annotation_palcolor = list(
-    c("gold", "steelblue"), c("forestgreen")
-  ),
-  height = 5, width = 4
-)
-print(ht$plot)
-```
-
-<img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
-
-### Enrichment analysis(over-representation)
-
-``` r
-pancreas_sub <- RunEnrichment(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
-)
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "bar"
-)
-```
-
-<img src="man/figures/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "wordcloud"
-)
-```
-
-<img src="man/figures/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = c("Ductal", "Endocrine"),
-  plot_type = "wordcloud",
-  word_type = "feature"
-)
-```
-
-<img src="man/figures/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = "Ductal",
-  plot_type = "network"
-)
-```
-
-<img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
-
-To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
-
-``` r
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = "Ductal",
-  plot_type = "enrichmap"
-)
-```
-
-<img src="man/figures/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-EnrichmentPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  plot_type = "comparison"
-)
-```
-
-<img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
-
-### Enrichment analysis(GSEA)
-
-``` r
-pancreas_sub <- RunGSEA(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus",
-  DE_threshold = "p_val_adj < 0.05"
-)
-GSEAPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = "Endocrine",
-  id_use = "GO:0007186"
-)
-```
-
-<img src="man/figures/RunGSEA-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-GSEAPlot(
-  srt = pancreas_sub,
-  group_by = "CellType",
-  group_use = "Endocrine",
-  plot_type = "bar",
-  direction = "both",
-  topTerm = 20
-)
-```
-
-<img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
-
 ### Trajectory inference
+
+#### PAGA analysis
+
+``` r
+PrepareEnv()
+pancreas_sub <- RunPAGA(
+  pancreas_sub,
+  group_by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP"
+)
+PAGAPlot(
+  pancreas_sub,
+  reduction = "UMAP",
+  label = TRUE,
+  label_insitu = TRUE,
+  label_repel = TRUE
+)
+```
+
+<img src="man/figures/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
+
+#### Slingshot
 
 ``` r
 pancreas_sub <- RunSlingshot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
@@ -609,16 +486,27 @@ FeatureDimPlot(
 
 <img src="man/figures/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
 
+#### Monocle3
+
+``` r
+pancreas_sub <- RunMonocle3(
+  pancreas_sub,
+  group.by = "SubCellType"
+)
+```
+
+<img src="man/figures/RunMonocle3.png" width="100%" style="display: block; margin: auto;"/>
+
 ### Dynamic features
 
 ``` r
 pancreas_sub <- RunDynamicFeatures(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
 ht <- DynamicHeatmap(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   use_fitted = TRUE,
   n_split = 6,
@@ -650,7 +538,7 @@ print(ht$plot)
 
 ``` r
 DynamicPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   group.by = "SubCellType",
   features = c(
@@ -665,7 +553,7 @@ DynamicPlot(
 
 ``` r
 FeatureStatPlot(
-  srt = pancreas_sub,
+  pancreas_sub,
   group.by = "SubCellType",
   bg.by = "CellType",
   stat.by = c("Sox9", "Neurod2", "Isl1", "Rbp4"),
@@ -679,6 +567,161 @@ FeatureStatPlot(
 ```
 
 <img src="man/figures/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"/>
+
+### Differential expression analysis
+
+``` r
+pancreas_sub <- RunDEtest(
+  pancreas_sub,
+  group_by = "CellType",
+  fc.threshold = 1,
+  only.pos = FALSE
+)
+VolcanoPlot(
+  pancreas_sub,
+  group_by = "CellType"
+)
+```
+
+<img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
+DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
+# Annotate features with transcription factors and surface proteins
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("TF", "CSPA")
+)
+ht <- FeatureHeatmap(
+  pancreas_sub,
+  group.by = "CellType",
+  features = DEGs$gene,
+  feature_split = DEGs$group1,
+  species = "Mus_musculus",
+  db = c("GO_BP", "KEGG", "WikiPathway"),
+  anno_terms = TRUE,
+  feature_annotation = c("TF", "CSPA"),
+  feature_annotation_palcolor = list(
+    c("gold", "steelblue"), c("forestgreen")
+  ),
+  height = 5, width = 4
+)
+print(ht$plot)
+```
+
+<img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
+
+### Enrichment analysis(over-representation)
+
+``` r
+pancreas_sub <- RunEnrichment(
+  pancreas_sub,
+  group_by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus",
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
+)
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  plot_type = "bar"
+)
+```
+
+<img src="man/figures/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  plot_type = "wordcloud"
+)
+```
+
+<img src="man/figures/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = c("Ductal", "Endocrine"),
+  plot_type = "wordcloud",
+  word_type = "feature"
+)
+```
+
+<img src="man/figures/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = "Ductal",
+  plot_type = "network"
+)
+```
+
+<img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
+
+To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
+
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = "Ductal",
+  plot_type = "enrichmap"
+)
+```
+
+<img src="man/figures/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  plot_type = "comparison"
+)
+```
+
+<img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
+
+### Enrichment analysis(GSEA)
+
+``` r
+pancreas_sub <- RunGSEA(
+  pancreas_sub,
+  group_by = "CellType",
+  db = "GO_BP",
+  species = "Mus_musculus",
+  DE_threshold = "p_val_adj < 0.05"
+)
+GSEAPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = "Endocrine",
+  id_use = "GO:0007186"
+)
+```
+
+<img src="man/figures/RunGSEA-1.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+GSEAPlot(
+  pancreas_sub,
+  group_by = "CellType",
+  group_use = "Endocrine",
+  plot_type = "bar",
+  direction = "both",
+  topTerm = 20
+)
+```
+
+<img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Interactive data visualization with SCExplorer
 
