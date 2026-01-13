@@ -146,6 +146,9 @@ reference:
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
   - RunCellRank
+  - RunCytoTRACE
+  - RunMonocle2
+  - RunMonocle3
   - RunPAGA
   - RunPalantir
   - RunSlingshot
@@ -165,6 +168,7 @@ reference:
   - CellDensityPlot
   - CellCorHeatmap
   - CellStatPlot
+  - CytoTRACEPlot
   - DynamicPlot
   - DynamicHeatmap
   - EnrichmentPlot
