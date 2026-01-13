@@ -28,12 +28,11 @@ CheckDataType(object, verbose = TRUE, ...)
 
 - layer:
 
-  The layer in the `srt` object from which to extract the data. Default
-  is `"data"`.
+  Which layer to use. Default is `data`.
 
 - assay:
 
-  The assay to extract the data from. If not provided, the default assay
+  Which assay to use. If `NULL`, the default assay of the Seurat object
   will be used.
 
 - verbose:

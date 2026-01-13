@@ -24,6 +24,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CreateDataFile.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CreateMetaFile.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CycGenePrefetch.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CytoTRACEPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DefaultReduction.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicPlot.html</loc></url>
@@ -64,6 +65,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellQC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellRank.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellTypist.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCytoTRACE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDEtest.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDimReduction.html</loc></url>
@@ -79,6 +81,8 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunKNNPredict.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunLargeVis.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMDS.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunMonocle2.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunMonocle3.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunNMF.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPAGA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPCAMap.html</loc></url>

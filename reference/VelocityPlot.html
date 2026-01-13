@@ -9,7 +9,7 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 <span>  cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"grid"</span>, <span class="st">"stream"</span><span class="op">)</span>,</span>
-<span>  group_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
 <span>  group_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_neighbors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">srt</span><span class="op">@</span><span class="va">assays</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">50</span><span class="op">)</span>,</span>
@@ -99,16 +99,16 @@ The plot shows the velocity vectors of the cells in a specified reduction space.
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Name of the reduction in the Seurat object to use for plotting.</p></dd>
+<dd><p>Which dimensionality reduction to use.
+If not specified, will use the reduction returned by <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>Indices of the dimensions to use for plotting.</p></dd>
+<dd><p>Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>Cells to include in the plot.
-If <code>NULL</code>, all cells will be included.</p></dd>
+<dd><p>A character vector of cell names to use.</p></dd>
 
 
 <dt id="arg-velocity">velocity<a class="anchor" aria-label="anchor" href="#arg-velocity"></a></dt>
@@ -121,9 +121,8 @@ Default is <code>"stochastic"</code>.</p></dd>
 Can be <code>"raw"</code>, <code>"grid"</code>, or <code>"stream"</code>.</p></dd>
 
 
-<dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of the column in the Seurat object metadata to group the cells by.
-Defaults is <code>NULL</code>.</p></dd>
+<dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
+<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
 
 
 <dt id="arg-group-palette">group_palette<a class="anchor" aria-label="anchor" href="#arg-group-palette"></a></dt>
@@ -142,7 +141,7 @@ Defaults is <code>ceiling(ncol(srt@assays[[1]]) / 50)</code>.</p></dd>
 
 
 <dt id="arg-density">density<a class="anchor" aria-label="anchor" href="#arg-density"></a></dt>
-<dd><p>Propotion of cells to plot.
+<dd><p>Proportion of cells to plot.
 Defaults is <code>1</code> (plot all cells).</p></dd>
 
 
@@ -232,48 +231,48 @@ Defaults is <code>0.5</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>Aspect ratio of the plot.
-Defaults is <code>1</code>.</p></dd>
+<dd><p>Aspect ratio of the panel. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>Title of the plot.
+<dd><p>The text for the title.
 Defaults is <code>"Cell velocity"</code>.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>Subtitle of the plot.
-Defaults is <code>NULL</code>.</p></dd>
+<dd><p>The text for the subtitle for the plot which will be displayed below the title.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>x-axis label.
-Defaults is <code>NULL</code>.</p></dd>
+<dd><p>The x-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>y-axis label.
-Defaults is <code>NULL</code>.</p></dd>
+<dd><p>The y-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>Position of the legend.
-Defaults is <code>"right"</code>.</p></dd>
+<dd><p>The position of legends,
+one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
+Default is <code>"right"</code>.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>Direction of the legend.
-Defaults is <code>"vertical"</code>.</p></dd>
+<dd><p>The direction of the legend in the plot.
+Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Name of the theme to use for plotting.
-Defaults is <code>"theme_scop"</code>.</p></dd>
+<dd><p>Theme used. Can be a character string or a theme function.
+Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>List of theme arguments for customization.
-Defaults is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dd><p>Other arguments passed to the <code>theme_use</code>.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-return-layer">return_layer<a class="anchor" aria-label="anchor" href="#arg-return-layer"></a></dt>
@@ -283,7 +282,7 @@ Defaults is <code>FALSE</code>.</p></dd>
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed for reproducibility.
-Defaults is <code>11</code>.</p></dd>
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -298,7 +297,7 @@ Defaults is <code>11</code>.</p></dd>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSCVELO.html">RunSCVELO</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"pca"</span>,</span></span>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"umap"</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
@@ -311,7 +310,7 @@ Defaults is <code>11</code>.</p></dd>
 <span class="r-in"><span><span class="fu">VelocityPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">VelocityPlot</span><span class="op">(</span></span></span>

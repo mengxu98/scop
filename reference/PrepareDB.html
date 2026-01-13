@@ -11,7 +11,7 @@ The list contains the annotation data for each specified annotation source."></h
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,12 +79,12 @@ The list contains the annotation data for each specified annotation source.</p>
 
 <dl><dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
 <dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
-Default is <code>c("Homo_sapiens", "Mus_musculus")</code>.</p></dd>
+Can be <code>"Homo_sapiens"</code> or <code>"Mus_musculus"</code>.</p></dd>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
 <dd><p>A character vector specifying the annotation sources to be included in the gene annotation databases.
-Default is <code>c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF")</code>.</p></dd>
+Can be one or more of <code>"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"</code>.</p></dd>
 
 
 <dt id="arg-db-idtypes">db_IDtypes<a class="anchor" aria-label="anchor" href="#arg-db-idtypes"></a></dt>
@@ -109,7 +109,8 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
-<dd><p>Ensembl database version. If NULL, use the current release version.</p></dd>
+<dd><p>An integer specifying the Ensembl version.
+Default is <code>NULL</code>. If <code>NULL</code>, the latest version will be used.</p></dd>
 
 
 <dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>
@@ -161,12 +162,6 @@ Default is <code>TRUE</code>.</p></dd>
 <li><p><code>TERM2NAME</code>: mapping of terms to their names.</p></li>
 <li><p><code>semData</code>: semantic similarity data for gene sets (only for Gene Ontology terms).</p></li>
 </ul></div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The <code>PrepareDB</code> function prepares gene annotation databases for a given species and set of annotation sources.
-It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
-The function also supports creating custom databases based on user-provided gene sets.</p>
-    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="ListDB.html">ListDB</a></p></div>

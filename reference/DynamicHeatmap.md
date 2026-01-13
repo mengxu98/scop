@@ -206,13 +206,12 @@ DynamicHeatmap(
 
 - layer:
 
-  A character vector specifying the layer in the Seurat object to use.
-  Default is `"counts"`.
+  Which layer to use. Default is `"counts"`.
 
 - assay:
 
-  A character vector specifying the assay in the Seurat object to use.
-  Default is `NULL`.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - exp_method:
 
@@ -405,12 +404,14 @@ DynamicHeatmap(
 
 - db_update:
 
-  Whether to update the database. Default is `FALSE`.
+  Whether the gene annotation databases should be forcefully updated. If
+  set to FALSE, the function will attempt to load the cached databases
+  instead. Default is `FALSE`.
 
 - db_version:
 
-  A character vector specifying the version of the database. Default is
-  `"latest"`.
+  A character vector specifying the version of the gene annotation
+  databases to be retrieved. Default is `"latest"`.
 
 - db_combine:
 
@@ -418,12 +419,13 @@ DynamicHeatmap(
 
 - convert_species:
 
-  Whether to use a species-converted database if annotation is missing
-  for `species`. Default is `FALSE`.
+  Whether to use a species-converted database when the annotation is
+  missing for the specified species. Default is `TRUE`.
 
 - Ensembl_version:
 
-  An integer specifying the Ensembl version. Default is `103`.
+  An integer specifying the Ensembl version. Default is `NULL`. If
+  `NULL`, the latest version will be used.
 
 - mirror:
 
@@ -662,13 +664,17 @@ DynamicHeatmap(
 
 - seed:
 
-  An integer specifying the random seed. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 - ht_params:
 
-  A list specifying additional parameters passed to the
+  Additional parameters to customize the appearance of the heatmap. This
+  should be a list with named elements, where the names correspond to
+  parameter names in the
   [ComplexHeatmap::Heatmap](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html)
-  function. Default is [`list()`](https://rdrr.io/r/base/list.html).
+  function. Any conflicting parameters will override the defaults set by
+  this function. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 ## See also
 
@@ -681,41 +687,6 @@ DynamicHeatmap(
 options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> StandardPC_ 1 
-#> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 
-#>     Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 
-#>     Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 
-#> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 
-#>     Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 
-#>     Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 
-#> StandardPC_ 2 
-#> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b 
-#>     Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 
-#>     Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 
-#> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 
-#>     Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x 
-#>     Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 
-#> StandardPC_ 3 
-#> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 
-#>     2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr 
-#>     Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 
-#> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 
-#>     Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 
-#>     Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a 
-#> StandardPC_ 4 
-#> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx 
-#>     Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf 
-#>     Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam 
-#> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt 
-#>     G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a 
-#>     Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 
-#> StandardPC_ 5 
-#> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a 
-#>     Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 
-#>     Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 
-#> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 
-#>     Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b 
-#>     Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -736,15 +707,14 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2026-01-07 08:52:15] Running [1/231] Processing: 1  ETA: 14s
-#> ⠹ [2026-01-07 08:52:15] Running [20/231] Processing: 20  ETA:  5s
-#> ⠸ [2026-01-07 08:52:15] Running [131/231] Processing: 131  ETA:  3s
-#> ✔ [2026-01-07 08:52:15] Completed 231 tasks in 6.4s
+#> ⠙ [2026-01-13 08:50:31] Running for 1 [1/231] ■                                …
+#> ⠹ [2026-01-13 08:50:31] Running for 54 [54/231] ■■■■■■■■                       …
+#> ⠸ [2026-01-13 08:50:31] Running for 163 [163/231] ■■■■■■■■■■■■■■■■■■■■■■       …
+#> ✔ [2026-01-13 08:50:31] Completed 231 tasks in 6.5s
 #> 
-#> ⠙ [2026-01-07 08:52:22] Running [2/231] Processing: 2  ETA:  6s
-#> ⠹ [2026-01-07 08:52:22] Running [106/231] Processing: 106  ETA:  4s
-#> ⠸ [2026-01-07 08:52:22] Running [206/231] Processing: 206  ETA:  1s
-#> ✔ [2026-01-07 08:52:22] Completed 231 tasks in 6.8s
+#> ⠙ [2026-01-13 08:50:39] Running for 40 [40/231] ■■■■■■                         …
+#> ⠹ [2026-01-13 08:50:39] Running for 141 [141/231] ■■■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-13 08:50:39] Completed 231 tasks in 6.7s
 #> 
 
 ht1 <- DynamicHeatmap(
@@ -776,8 +746,8 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ⠙ [2026-01-07 08:52:33] Running [1/2] Processing: 1  ETA:  0s
-#> ✔ [2026-01-07 08:52:33] Completed 2 tasks in 42ms
+#> ⠙ [2026-01-13 08:50:49] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
+#> ✔ [2026-01-13 08:50:49] Completed 2 tasks in 46ms
 #> 
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
@@ -822,30 +792,6 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#>  
-#> → Will install 6 packages.
-#> → All 6 packages (0 B) are cached.
-#> + SparseM        1.84-2  
-#> + e1071          1.7-17  
-#> + mlbench        2.1-6   
-#> + proxy          0.4-29  
-#> + randomForest   4.7-1.2 
-#> + slam           0.1-55  
-#>   
-#> ℹ No downloads are needed, 6 pkgs are cached
-#> ✔ Got proxy 0.4-29 (x86_64-pc-linux-gnu-ubuntu-24.04) (172.19 kB)
-#> ✔ Got slam 0.1-55 (x86_64-pc-linux-gnu-ubuntu-24.04) (187.94 kB)
-#> ✔ Got e1071 1.7-17 (x86_64-pc-linux-gnu-ubuntu-24.04) (588.22 kB)
-#> ✔ Got SparseM 1.84-2 (x86_64-pc-linux-gnu-ubuntu-24.04) (887.98 kB)
-#> ✔ Got randomForest 4.7-1.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (218.82 kB)
-#> ✔ Got mlbench 2.1-6 (x86_64-pc-linux-gnu-ubuntu-24.04) (1.05 MB)
-#> ✔ Installed e1071 1.7-17  (62ms)
-#> ✔ Installed mlbench 2.1-6  (81ms)
-#> ✔ Installed proxy 0.4-29  (100ms)
-#> ✔ Installed randomForest 4.7-1.2  (131ms)
-#> ✔ Installed slam 0.1-55  (65ms)
-#> ✔ Installed SparseM 1.84-2  (46ms)
-#> ✔ 1 pkg + 13 deps: kept 8, added 6, dld 6 (3.11 MB) [2.3s]
 #> 'magick' package is suggested to install to give better rasterization.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.

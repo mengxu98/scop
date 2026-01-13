@@ -1,7 +1,6 @@
-# Find genes with expression patterns similar to the genes you've specified.
+# Find features with expression patterns similar to provided features
 
-Given a Seurat object and a list of feature names, this function returns
-features that are strongly correlated with those markers.
+Find features with expression patterns similar to provided features
 
 ## Usage
 
@@ -26,7 +25,7 @@ GetSimilarFeatures(
 
 - features:
 
-  A character vector; giving feature names.
+  A character vector of feature names.
 
 - n:
 
@@ -34,11 +33,11 @@ GetSimilarFeatures(
 
 - features_use:
 
-  A character vector; list of features eligible to be returned.
+  A character vector of features eligible to be returned.
 
 - anticorr:
 
-  Whether to allow negatively correlated genes. Default is `FALSE`.
+  Whether to allow negatively correlated features. Default is `FALSE`.
 
 - aggregator:
 
@@ -48,11 +47,11 @@ GetSimilarFeatures(
 
 - assay:
 
-  The assay to use. Default is `"RNA"`.
+  Which assay to use. Default is `"RNA"`.
 
 - layer:
 
-  The layer to use. Default is `"data"`.
+  Which layer to use. Default is `data`.
 
 ## Value
 

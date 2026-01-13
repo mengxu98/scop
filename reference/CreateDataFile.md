@@ -1,6 +1,6 @@
-# Create data file
+# Create HDF5 data file from Seurat object
 
-Creates a data file in HDF5 format from a Seurat object.
+Create HDF5 data file from Seurat object
 
 ## Usage
 

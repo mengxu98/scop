@@ -29,7 +29,8 @@ GetFeaturesData(object, ...)
 
 - assay:
 
-  Assay name to use. Default is `NULL`.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 ## Value
 

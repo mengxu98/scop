@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,28 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.0" id="scop-080">scop 0.8.0<a class="anchor" aria-label="anchor" href="#scop-080"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunMonocle2.html">RunMonocle2()</a></code>: New function for performing <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a> trajectory analysis with support for various dimensionality reduction methods (DDRTree, ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of monocle2 from <a href="https://github.com/mengxu98/monocle" class="external-link">mengxu98/monocle</a>.</li>
+<li>
+<code><a href="../reference/RunMonocle3.html">RunMonocle3()</a></code>: New function for performing <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a> trajectory analysis with support for cell ordering, trajectory learning, and pseudotime computation.</li>
+<li>
+<code><a href="../reference/RunCytoTRACE.html">RunCytoTRACE()</a></code>: New function for running <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.</li>
+<li>
+<code><a href="../reference/CytoTRACEPlot.html">CytoTRACEPlot()</a></code>: New function for visualizing <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> analysis results.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.9" id="scop-079">scop 0.7.9<a class="anchor" aria-label="anchor" href="#scop-079"></a></h2>
+<ul><li>
+<strong>docs</strong>:
+<ul><li>Optimized <code>@inheritParams</code> usage to reduce redundant parameter definitions.</li>
+<li>Unified parameter naming: renamed <code>group_by</code> to <code>group.by</code> for consistency with Seurat conventions in <code><a href="../reference/RunMonocle3.html">RunMonocle3()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>, <code><a href="../reference/CellCorHeatmap.html">CellCorHeatmap()</a></code>, and <code><a href="../reference/RunDynamicFeatures.html">RunDynamicFeatures()</a></code>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.8" id="scop-078">scop 0.7.8<a class="anchor" aria-label="anchor" href="#scop-078"></a></h2>
 <ul><li>

@@ -154,11 +154,13 @@ RunPAGA(
 
 - palette:
 
-  The palette to use for coloring cells.
+  Color palette name. Available palettes can be found in
+  [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
+  Default is `"Paired"`.
 
 - palcolor:
 
-  A vector of colors to use as the palette.
+  Custom colors used to create a color palette. Default is `NULL`.
 
 - legend.position:
 

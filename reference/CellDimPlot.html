@@ -9,7 +9,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -180,7 +180,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by (for example, orig.ident).</p></dd>
+<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
@@ -193,11 +193,12 @@ If not specified, will use the reduction returned by <a href="DefaultReduction.h
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>Name of a column in meta.data column to split plot by.</p></dd>
+<dd><p>Name of a column in meta.data column to split plot by.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>Subset cells to plot.</p></dd>
+<dd><p>A character vector of cell names to use.</p></dd>
 
 
 <dt id="arg-show-na">show_na<a class="anchor" aria-label="anchor" href="#arg-show-na"></a></dt>
@@ -211,20 +212,23 @@ If <code>FALSE</code>, cell points with NA level will be removed from the plot.<
 
 
 <dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>Point size.</p></dd>
+<dd><p>The size of the points in the plot.</p></dd>
 
 
 <dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>Point transparency.</p></dd>
+<dd><p>The transparency of the data points.
+Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Name of a color palette name collected in scop.
+<dd><p>Color palette name.
+Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
 Default is <code>"Paired"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.</p></dd>
+<dd><p>Custom colors used to create a color palette.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-bg-color">bg_color<a class="anchor" aria-label="anchor" href="#arg-bg-color"></a></dt>
@@ -277,7 +281,9 @@ Default is <code>FALSE</code>, which using numbers instead of raw labels.</p></d
 
 
 <dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
-<dd><p>A vector of cell names to highlight.</p></dd>
+<dd><p>A logical or character vector specifying the cells to highlight in the plot.
+If <code>TRUE</code>, all cells are highlighted. If <code>FALSE</code>, no cells are highlighted.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-cols-highlight">cols.highlight<a class="anchor" aria-label="anchor" href="#arg-cols-highlight"></a></dt>
@@ -598,49 +604,58 @@ If specified, curves will be fitted using <a href="https://rdrr.io/r/stats/loess
 
 
 <dt id="arg-raster">raster<a class="anchor" aria-label="anchor" href="#arg-raster"></a></dt>
-<dd><p>Convert points to raster format, default is NULL which automatically rasterizes if plotting more than 100,000 cells</p></dd>
+<dd><p>Convert points to raster format.
+Default is <code>NULL</code>, which automatically rasterizes if plotting more than 100,000 cells.</p></dd>
 
 
 <dt id="arg-raster-dpi">raster.dpi<a class="anchor" aria-label="anchor" href="#arg-raster-dpi"></a></dt>
-<dd><p>Pixel resolution for rasterized plots, passed to geom_scattermore().
+<dd><p>Pixel resolution for rasterized plots.
 Default is <code>c(512, 512)</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>Aspect ratio of the panel.</p></dd>
+<dd><p>Aspect ratio of the panel. Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>The text for the title.</p></dd>
+<dd><p>The text for the title.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
-<dd><p>The text for the subtitle for the plot which will be displayed below the title.</p></dd>
+<dd><p>The text for the subtitle for the plot which will be displayed below the title.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>x-axis label.</p></dd>
+<dd><p>The x-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>y-axis label.</p></dd>
+<dd><p>The y-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>The position of legends ("none", "left", "right", "bottom", "top").</p></dd>
+<dd><p>The position of legends,
+one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
+Default is <code>"right"</code>.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>Layout of items in legends ("horizontal" or "vertical")</p></dd>
+<dd><p>The direction of the legend in the plot.
+Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
 <dd><p>Theme used. Can be a character string or a theme function.
-For example, <code>"theme_blank"</code> or ggplot2::theme_classic.</p></dd>
+Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.</p></dd>
+<dd><p>Other arguments passed to the <code>theme_use</code>.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
@@ -649,23 +664,28 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Number of rows in the combined plot.</p></dd>
+<dd><p>Number of rows in the combined plot.
+Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns in the combined plot.</p></dd>
+<dd><p>Number of columns in the combined plot.
+Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
 
 
 <dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Logical value indicating if the plots should be arrange by row (default) or by column.</p></dd>
+<dd><p>Whether to arrange the plots by row in the combined plot.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
-<dd><p>Whether to force drawing regardless of maximum levels in any cell group is greater than 100.</p></dd>
+<dd><p>Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed set for reproducibility</p></dd>
+<dd><p>Random seed for reproducibility.
+Default is <code>11</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -677,41 +697,6 @@ If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Aplp1, Cpe, Gnas, Fam183b, Map1b, Hmgn3, Pcsk1n, Chga, Tuba1a, Bex2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Syt13, Isl1, 1700086L19Rik, Pax6, Chgb, Scgn, Rbp4, Scg3, Gch1, Camk2n1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cryba2, Pcsk2, Pyy, Tspan7, Mafb, Hist3h2ba, Dbpht2, Abcc8, Rap1b, Slc38a5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Spp1, Anxa2, Sparc, Dbi, 1700011H14Rik, Wfdc2, Gsta3, Adamts1, Clu, Mgst1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Bicc1, Ldha, Vim, Cldn3, Cyr61, Rps2, Mt1, Ptn, Phgdh, Nudt19 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Smtnl2, Smco4, Habp2, Mt2, Col18a1, Rpl12, Galk1, Cldn10, Acot1, Ccnd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Rbp4, Tagln2, Tuba1b, Fkbp2, Pyy, Pcsk2, Iapp, Tmem27, Meis2, Tubb4b </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Pcsk1n, Dbpht2, Rap1b, Dynll1, Tubb2a, Sdf2l1, Scgn, 1700086L19Rik, Scg2, Abcc8 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Atp1b1, Hspa5, Fam183b, Papss2, Slc38a5, Scg3, Mageh1, Tspan7, Ppp1r1a, Ociad2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Neurog3, Btbd17, Gadd45a, Ppp1r14a, Neurod2, Sox4, Smarcd2, Mdk, Pax4, Btg2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Sult2b1, Hes6, Grasp, Igfbpl1, Gpx2, Cbfa2t3, Foxa3, Shf, Mfng, Tmsb4x </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Amotl2, Gdpd1, Cdc14b, Epb42, Rcor2, Cotl1, Upk3bl, Rbfox3, Cldn6, Cer1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Nusap1, Top2a, Birc5, Aurkb, Cdca8, Pbk, Mki67, Tpx2, Plk1, Ccnb1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   2810417H13Rik, Incenp, Cenpf, Ccna2, Prc1, Racgap1, Cdk1, Aurka, Cdca3, Hmmr </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Spc24, Kif23, Sgol1, Cenpe, Cdc20, Hist1h1b, Cdca2, Mxd3, Kif22, Ska1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Anxa5, Pdzk1ip1, Acot1, Tpm1, Anxa2, Dcdc2a, Capg, Sparc, Ttr, Pamr1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Clu, Cxcl12, Ndrg2, Hnf1aos1, Gas6, Gsta3, Krt18, Ces1d, Atp1b1, Muc1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Hhex, Acadm, Spp1, Enpp2, Bcl2l14, Sat1, Smtnl2, 1700011H14Rik, Tgm2, Fam159a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Glud1, Tm4sf4, Akr1c19, Cldn4, Runx1t1, Fev, Pou3f4, Gm43861, Pgrmc1, Arx </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Cd200, Lrpprc, Hmgn3, Ppp1r14c, Pam, Etv1, Tsc22d1, Slc25a5, Akap17b, Pgf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Fam43a, Emb, Jun, Krt8, Dnajc12, Mid1ip1, Ids, Rgs17, Uchl1, Alcam </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Ins2, Ins1, Ppp1r1a, Nnat, Calr, Sytl4, Sdf2l1, Iapp, Pdia6, Mapt </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   G6pc2, C2cd4b, Npy, Gng12, P2ry1, Ero1lb, Adra2a, Papss2, Arhgap36, Fam151a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Dlk1, Creld2, Gip, Tmem215, Gm27033, Cntfr, Prss53, C2cd4a, Lyve1, Ociad2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> StandardPC_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Positive:  Pdx1, Nkx6-1, Npepl1, Cldn4, Cryba2, Fev, Jun, Chgb, Gng12, Adra2a </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mnx1, Sytl4, Pdk3, Gm27033, Nnat, Chga, Ins2, 1110012L19Rik, Enho, Krt7 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Mlxipl, Tmsb10, Flrt1, Pax4, Tubb3, Prrg2, Gars, Frzb, BC023829, Gm2694 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Negative:  Irx2, Irx1, Gcg, Ctxn2, Tmem27, Ctsz, Tmsb15l, Nap1l5, Pou6f2, Gria2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Ghrl, Peg10, Smarca1, Arx, Lrpap1, Rgs4, Ttr, Gast, Tmsb15b2, Serpina1b </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	   Slc16a10, Wnk3, Ly6e, Auts2, Sct, Arg1, Dusp10, Sphkap, Dock11, Edn3 </span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>

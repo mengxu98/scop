@@ -37,14 +37,14 @@ PrepareDB(
 - species:
 
   A character vector specifying the species for which the gene
-  annotation databases should be prepared. Default is
-  `c("Homo_sapiens", "Mus_musculus")`.
+  annotation databases should be prepared. Can be `"Homo_sapiens"` or
+  `"Mus_musculus"`.
 
 - db:
 
   A character vector specifying the annotation sources to be included in
-  the gene annotation databases. Default is
-  `c("GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF")`.
+  the gene annotation databases. Can be one or more of
+  `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"`.
 
 - db_IDtypes:
 
@@ -70,7 +70,8 @@ PrepareDB(
 
 - Ensembl_version:
 
-  Ensembl database version. If NULL, use the current release version.
+  An integer specifying the Ensembl version. Default is `NULL`. If
+  `NULL`, the latest version will be used.
 
 - mirror:
 
@@ -126,14 +127,6 @@ A list containing the prepared gene annotation databases:
 
 - `semData`: semantic similarity data for gene sets (only for Gene
   Ontology terms).
-
-## Details
-
-The `PrepareDB` function prepares gene annotation databases for a given
-species and set of annotation sources. It retrieves the necessary
-information from various annotation packages or external resources and
-organizes it into a list. The function also supports creating custom
-databases based on user-provided gene sets.
 
 ## See also
 

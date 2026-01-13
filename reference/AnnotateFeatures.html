@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,8 +72,8 @@
 
 
 <dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>Name of the species to be used for annotation.
-Default is <code>"Homo_sapiens"</code>.</p></dd>
+<dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
+Can be <code>"Homo_sapiens"</code> or <code>"Mus_musculus"</code>.</p></dd>
 
 
 <dt id="arg-idtype">IDtype<a class="anchor" aria-label="anchor" href="#arg-idtype"></a></dt>
@@ -83,17 +83,18 @@ Default is <code>"symbol"</code>.</p></dd>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>Vector of database names to be used for annotation.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A character vector specifying the annotation sources to be included in the gene annotation databases.
+Can be one or more of <code>"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF"</code>.</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
-<dd><p>Whether to update the database.
+<dd><p>Whether the gene annotation databases should be forcefully updated.
+If set to FALSE, the function will attempt to load the cached databases instead.
 Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
-<dd><p>Version of the database to use.
+<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
 Default is <code>"latest"</code>.</p></dd>
 
 
@@ -103,8 +104,8 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
-<dd><p>Version of the Ensembl database to use.
-Default is <code>103</code>.</p></dd>
+<dd><p>An integer specifying the Ensembl version.
+Default is <code>NULL</code>. If <code>NULL</code>, the latest version will be used.</p></dd>
 
 
 <dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>

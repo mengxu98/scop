@@ -101,8 +101,7 @@
 - [`GetFeaturesData()`](https://mengxu98.github.io/scop/reference/GetFeaturesData.md)
   : Get features data
 - [`GetSimilarFeatures()`](https://mengxu98.github.io/scop/reference/GetSimilarFeatures.md)
-  : Find genes with expression patterns similar to the genes you've
-  specified.
+  : Find features with expression patterns similar to provided features
 - [`RenameFeatures()`](https://mengxu98.github.io/scop/reference/RenameFeatures.md)
   : Rename features for the Seurat object
 
@@ -218,6 +217,12 @@
 
 - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md)
   : Run CellRank analysis with kernel-estimator architecture
+- [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md)
+  : Run CytoTRACE 2
+- [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+  : Run Monocle2 analysis
+- [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md)
+  : Run Monocle3 analysis
 - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md) :
   Run PAGA analysis
 - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md)
@@ -250,6 +255,8 @@
   : The Cell Correlation Heatmap
 - [`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
   : Statistical plot of cells
+- [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md)
+  : Plot CytoTRACE 2 Results
 - [`DynamicPlot()`](https://mengxu98.github.io/scop/reference/DynamicPlot.md)
   : Plot dynamic features across pseudotime
 - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
@@ -301,11 +308,11 @@
 ### SCExplorer
 
 - [`CreateDataFile()`](https://mengxu98.github.io/scop/reference/CreateDataFile.md)
-  : Create data file
+  : Create HDF5 data file from Seurat object
 - [`CreateMetaFile()`](https://mengxu98.github.io/scop/reference/CreateMetaFile.md)
   : Create Meta File in HDF5 format from Seurat object
 - [`FetchH5()`](https://mengxu98.github.io/scop/reference/FetchH5.md) :
-  Fetch data from the hdf5 file
+  Fetch data from the hdf5 file and returns a Seurat object
 - [`PrepareSCExplorer()`](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md)
   : Prepare Seurat objects for the SCExplorer
 - [`RunSCExplorer()`](https://mengxu98.github.io/scop/reference/RunSCExplorer.md)

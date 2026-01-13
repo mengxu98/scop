@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,8 @@
 
 
 <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
-<dd><p>An object. This can be a Seurat object or a matrix-like object.</p></dd>
+<dd><p>An object.
+This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -103,28 +104,25 @@
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>A character string specifying the reduction to be used.
-Default is <code>"pca"</code>.</p></dd>
+<dd><p>Which dimensionality reduction to use. Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>An integer vector specifying the dimensions to be used.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>The dimensions to be used. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to be used.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A character vector of features to use. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>A character string specifying the assay to be used.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Which assay to use.
+If <code>NULL</code>, the default assay of the Seurat object will be used.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>A character string specifying the layer to be used.
-Default is <code>"data"</code>.</p></dd>
+<dd><p>Which layer to use.
+Default is <code>data</code>.</p></dd>
 
 
 <dt id="arg-n-components">n_components<a class="anchor" aria-label="anchor" href="#arg-n-components"></a></dt>
@@ -190,7 +188,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed-use">seed.use<a class="anchor" aria-label="anchor" href="#arg-seed-use"></a></dt>
-<dd><p>An integer specifying the random seed to be used.
+<dd><p>Random seed for reproducibility.
 Default is <code>11</code>.</p></dd>
 
 </dl></div>

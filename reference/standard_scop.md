@@ -49,8 +49,8 @@ standard_scop(
 
 - assay:
 
-  The name of the assay to use for the analysis. If `NULL`, the default
-  assay of the Seurat object will be used.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - do_normalization:
 
@@ -177,15 +177,11 @@ standard_scop(
 
 - seed:
 
-  The random seed to use for reproducibility. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## Value
 
 A `Seurat` object.
-
-## See also
-
-[integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.md)
 
 ## Examples
 

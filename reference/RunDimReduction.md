@@ -40,16 +40,16 @@ RunDimReduction(
 
 - features:
 
-  Use features expression data to run linear or nonlinear dimensionality
-  reduction.
+  A character vector of features to use. Default is `NULL`.
 
 - assay:
 
-  Specific assay to get data from.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - layer:
 
-  Specific layer to get data from.
+  Which layer to use. Default is `"counts"`.
 
 - linear_reduction:
 
@@ -111,7 +111,7 @@ RunDimReduction(
 
 - seed:
 
-  Set a seed. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## See also
 

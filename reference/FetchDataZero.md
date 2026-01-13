@@ -7,9 +7,9 @@ FetchData but with zeroes for unavailable genes
 ``` r
 FetchDataZero(
   srt,
+  features,
   assay = "RNA",
   layer = "data",
-  features,
   verbose = TRUE,
   ...
 )
@@ -21,17 +21,17 @@ FetchDataZero(
 
   A Seurat object.
 
-- assay:
-
-  The assay to use. Default is `"RNA"`.
-
-- layer:
-
-  The layer to use. Default is `"data"`.
-
 - features:
 
   A character vector of feature names.
+
+- assay:
+
+  Which assay to use. Default is `"RNA"`.
+
+- layer:
+
+  Which layer to use. Default is `data`.
 
 - verbose:
 
@@ -39,4 +39,5 @@ FetchDataZero(
 
 - ...:
 
-  Other arguments to pass to FetchData
+  Other arguments to pass to
+  [Seurat::FetchData](https://satijalab.org/seurat/reference/reexports.html).

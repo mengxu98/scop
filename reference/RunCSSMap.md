@@ -84,12 +84,11 @@ RunCSSMap(
 
 - distance_metric:
 
-  A character string specifying the distance metric to use for
-  calculating the pairwise distances between cells. Options include:
-  "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
-  "dice", "edice", "hamman", "simple matching", and "faith". Additional
-  distance metrics can also be used, such as "euclidean", "manhattan",
-  "hamming", etc.
+  The distance metric to use for calculating the pairwise distances
+  between cells. Options include: "pearson", "spearman", "cosine",
+  "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman",
+  "simple matching", and "faith". Additional distance metrics can also
+  be used, such as "euclidean", "manhattan", "hamming", etc.
 
 - vote_fun:
 

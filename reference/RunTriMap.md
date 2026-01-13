@@ -55,7 +55,8 @@ RunTriMap(
 
 - object:
 
-  An object. This can be a Seurat object or a matrix-like object.
+  An object. This can be a Seurat object, a matrix-like object, a
+  Neighbor object, or a Graph object.
 
 - ...:
 
@@ -63,27 +64,24 @@ RunTriMap(
 
 - reduction:
 
-  A character string specifying the reduction to be used. Default is
-  `"pca"`.
+  Which dimensionality reduction to use. Default is `"pca"`.
 
 - dims:
 
-  An integer vector specifying the dimensions to be used. Default is
-  `NULL`.
+  The dimensions to be used. Default is `NULL`.
 
 - features:
 
-  A character vector specifying the features to be used. Default is
-  `NULL`.
+  A character vector of features to use. Default is `NULL`.
 
 - assay:
 
-  A character string specifying the assay to be used. Default is `NULL`.
+  Which assay to use. If `NULL`, the default assay of the Seurat object
+  will be used.
 
 - layer:
 
-  A character string specifying the layer to be used. Default is
-  `"data"`.
+  Which layer to use. Default is `data`.
 
 - n_components:
 
@@ -143,7 +141,7 @@ RunTriMap(
 
 - seed.use:
 
-  An integer specifying the random seed to be used. Default is `11`.
+  Random seed for reproducibility. Default is `11`.
 
 ## Examples
 
