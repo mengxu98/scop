@@ -153,10 +153,10 @@ pancreas_sub <- RunCytoTRACE(pancreas_sub)
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libnetcdf-dev make libcurl4-openssl-dev libssl-dev zlib1g-dev libglpk-dev libxml2-dev pandoc libpng-dev python3 libicu-dev`
 #> Reading package lists...
@@ -171,21 +171,21 @@ pancreas_sub <- RunCytoTRACE(pancreas_sub)
 #> libglpk-dev is already the newest version (5.0-1build2).
 #> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.6).
 #> pandoc is already the newest version (3.1.3+ds-2).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.1).
+#> libpng-dev is already the newest version (1.6.43-5ubuntu0.3).
 #> python3 is already the newest version (3.12.3-0ubuntu2.1).
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 100 not upgraded.
-#> ✔ Installed HiClimR 2.2.1  (68ms)
-#> ✔ Installed ncdf4 1.24  (94ms)
-#> ✔ Installed RcppParallel 5.1.11-1  (139ms)
-#> ✔ Installed Rfast 2.1.5.2  (156ms)
-#> ✔ Installed zigg 0.0.2  (80ms)
+#> 0 upgraded, 0 newly installed, 0 to remove and 102 not upgraded.
+#> ✔ Installed HiClimR 2.2.1  (81ms)
+#> ✔ Installed ncdf4 1.24  (98ms)
+#> ✔ Installed RcppParallel 5.1.11-1  (184ms)
+#> ✔ Installed Rfast 2.1.5.2  (203ms)
+#> ✔ Installed zigg 0.0.2  (92ms)
 #> ℹ Packaging CytoTRACE2 1.1.0
 #> ✔ Packaged CytoTRACE2 1.1.0 (4.8s)
 #> ℹ Building CytoTRACE2 1.1.0
-#> ✔ Built CytoTRACE2 1.1.0 (9.8s)
-#> ✔ Installed CytoTRACE2 1.1.0 (github::digitalcytometry/cytotrace2@1710d43) (1.1s)
-#> ✔ 1 pkg + 143 deps: kept 138, added 6, dld 6 (NA B) [50.7s]
+#> ✔ Built CytoTRACE2 1.1.0 (10.1s)
+#> ✔ Installed CytoTRACE2 1.1.0 (github::digitalcytometry/cytotrace2@1710d43) (129ms)
+#> ✔ 1 pkg + 143 deps: kept 138, added 6, dld 6 (NA B) [48.1s]
 #> Warning: replacing previous import ‘data.table::first’ by ‘dplyr::first’ when loading ‘CytoTRACE2’
 #> Warning: replacing previous import ‘data.table::last’ by ‘dplyr::last’ when loading ‘CytoTRACE2’
 #> Warning: replacing previous import ‘data.table::between’ by ‘dplyr::between’ when loading ‘CytoTRACE2’
