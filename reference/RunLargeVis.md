@@ -556,14 +556,14 @@ pancreas_sub <- RunLargeVis(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> 09:21:25 Read 1000 rows and found 2000 numeric columns
-#> 09:21:25 Normalizing by max-abs
-#> 09:21:25 Using FNN for neighbor search, n_neighbors = 150
-#> 09:21:28 Commencing calibration for perplexity = 50 using 2 threads
-#> 09:21:30 Initializing from random Gaussian with sd = 1e-4
-#> 09:21:30 Commencing optimization for 254033 epochs, with 194344 positive edges
-#> 09:21:30 Using rng type: pcg
-#> 09:23:55 Optimization finished
+#> 04:39:15 Read 1000 rows and found 2000 numeric columns
+#> 04:39:15 Normalizing by max-abs
+#> 04:39:15 Using FNN for neighbor search, n_neighbors = 150
+#> 04:39:18 Commencing calibration for perplexity = 50 using 2 threads
+#> 04:39:20 Initializing from random Gaussian with sd = 1e-4
+#> 04:39:20 Commencing optimization for 254033 epochs, with 194344 positive edges
+#> 04:39:20 Using rng type: pcg
+#> 04:41:46 Optimization finished
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

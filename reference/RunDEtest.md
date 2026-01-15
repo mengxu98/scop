@@ -274,8 +274,9 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "SubCellType"
 )
-#> ⠙ [2026-01-13 09:12:48] Running for Ductal [1/8] ■■■■■                         …
-#> ✔ [2026-01-13 09:12:48] Completed 8 tasks in 1.1s
+#> ⠙ [2026-01-15 04:30:36] Running for Ductal [1/8] ■■■■■                         …
+#> ⠹ [2026-01-15 04:30:36] Running for Epsilon [7/8] ■■■■■■■■■■■■■■■■■■■■■■■■■■■  …
+#> ✔ [2026-01-15 04:30:36] Completed 8 tasks in 1.1s
 #> 
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -319,8 +320,8 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ⠙ [2026-01-13 09:12:58] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-01-13 09:12:58] Completed 56 tasks in 4.2s
+#> ⠙ [2026-01-15 04:30:46] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-01-15 04:30:46] Completed 56 tasks in 4.5s
 #> 
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -358,8 +359,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2026-01-13 09:14:22] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-13 09:14:22] Completed 13 tasks in 6.2s
+#> ⠙ [2026-01-15 04:32:11] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-15 04:32:11] Completed 13 tasks in 6.1s
 #> 
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -398,8 +399,8 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2026-01-13 09:14:48] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
-#> ✔ [2026-01-13 09:14:48] Completed 5 tasks in 5.5s
+#> ⠙ [2026-01-15 04:32:38] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-01-15 04:32:38] Completed 5 tasks in 5.4s
 #> 
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
@@ -427,8 +428,8 @@ panc8_sub <- RunDEtest(
   markers_type = "disturbed",
   cores = 2
 )
-#> ⠙ [2026-01-13 09:15:05] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-13 09:15:05] Completed 13 tasks in 12.4s
+#> ⠙ [2026-01-15 04:32:55] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-15 04:32:55] Completed 13 tasks in 12.3s
 #> 
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,

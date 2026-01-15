@@ -186,8 +186,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2026-01-13 09:37:34] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-01-13 09:37:34] Completed 5 tasks in 743ms
+#> ⠙ [2026-01-15 04:55:30] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-01-15 04:55:30] Completed 5 tasks in 732ms
 #> 
 VolcanoPlot(
   pancreas_sub,

@@ -618,9 +618,8 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group_by = "CellType"
 )
-#> ⠙ [2026-01-13 08:57:23] Running for Ductal [1/5] ■■■■■■■                       …
-#> ⠹ [2026-01-13 08:57:23] Running for Ngn3-high-EP [2/5] ■■■■■■■■■■■■■           …
-#> ✔ [2026-01-13 08:57:23] Completed 5 tasks in 880ms
+#> ⠙ [2026-01-15 04:15:40] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-01-15 04:15:40] Completed 5 tasks in 860ms
 #> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
