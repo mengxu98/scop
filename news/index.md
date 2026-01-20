@@ -1,5 +1,36 @@
 # Changelog
 
+## scop 0.8.1
+
+- **bugs**:
+  - [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md):
+    Fixed `group_palcolor` when a named vector is passed: the function
+    previously used only the first color for all groups because
+    `group_palcolor[[1]]` on a vector returns a single element. Now when
+    `group.by` has length 1, a vector is automatically wrapped as a
+    list; when `within_groups = TRUE`, `group_palcolor` is expanded in
+    line with `group_palette`.
+  - [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md):
+    Same `group_palcolor` fix as
+    [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md):
+    support for named-vector input and correct expansion when
+    `within_groups = TRUE`.
+- **docs**:
+  - `group_by` modified to `group.by` to unify documentation, involving
+    functions:
+    [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md),
+    [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md),
+    [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md),
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md),
+    [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md),
+    [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md),
+    [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md),
+    [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md),
+    [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
+    [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md),
+    [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
+    releated to [\#120](https://github.com/mengxu98/scop/issues/120).
+
 ## scop 0.8.0
 
 - **func**:

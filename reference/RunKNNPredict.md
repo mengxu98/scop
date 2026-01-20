@@ -322,8 +322,8 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "ref",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2026-01-15 04:38:49] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-15 04:38:49] Completed 13 tasks in 3.5s
+#> ⠙ [2026-01-20 08:01:42] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-20 08:01:42] Completed 13 tasks in 8.6s
 #> 
 
 CellDimPlot(
@@ -348,11 +348,11 @@ pancreas_sub <- RunKNNPredict(
   feature_source = "both",
   DEtest_param = list(cores = 2)
 )
-#> ⠙ [2026-01-15 04:38:53] Running for Ductal... [4/8] ■■■■■■■■■■■■■■■■           …
-#> ✔ [2026-01-15 04:38:53] Completed 8 tasks in 1.4s
+#> ⠙ [2026-01-20 08:01:50] Running for Ductal... [4/8] ■■■■■■■■■■■■■■■■           …
+#> ✔ [2026-01-20 08:01:50] Completed 8 tasks in 1.5s
 #> 
-#> ⠙ [2026-01-15 04:38:57] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-15 04:38:57] Completed 13 tasks in 3.2s
+#> ⠙ [2026-01-20 08:01:54] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-20 08:01:54] Completed 13 tasks in 3.9s
 #> 
 
 CellDimPlot(

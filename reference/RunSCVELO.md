@@ -14,7 +14,7 @@ RunSCVELO(
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
-  group_by = NULL,
+  group.by = NULL,
   linear_reduction = NULL,
   nonlinear_reduction = NULL,
   basis = NULL,
@@ -90,9 +90,9 @@ RunSCVELO(
 
   Layer names for the `assay_y` in the Seurat object.
 
-- group_by:
+- group.by:
 
-  Variable to use for grouping cells in the Seurat object.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - linear_reduction:
 
@@ -238,9 +238,7 @@ RunSCVELO(
 
 - cores:
 
-  The number of cores to use for parallelization with
-  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
-  Default is `1`.
+  The number of cores to use for `cellrank`.
 
 - palette:
 
@@ -306,7 +304,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP"
 )
@@ -339,7 +337,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   mode = c("deterministic", "stochastic"),

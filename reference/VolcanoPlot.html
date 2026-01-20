@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Volcano Plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/VolcanoPlot.R" class="external-link"><code>R/VolcanoPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/VolcanoPlot.R" class="external-link"><code>R/VolcanoPlot.R</code></a></small>
       <div class="d-none name"><code>VolcanoPlot.Rd</code></div>
     </div>
 
@@ -46,7 +46,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">VolcanoPlot</span><span class="op">(</span></span>
 <span>  <span class="va">srt</span>,</span>
-<span>  group_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  test.use <span class="op">=</span> <span class="st">"wilcox"</span>,</span>
 <span>  DE_threshold <span class="op">=</span> <span class="st">"avg_log2FC &gt; 0 &amp; p_val_adj &lt; 0.05"</span>,</span>
 <span>  x_metric <span class="op">=</span> <span class="st">"diff_pct"</span>,</span>
@@ -84,9 +84,8 @@
 <dd><p>An object of class <code>Seurat</code> containing the results of differential expression analysis.</p></dd>
 
 
-<dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>A character vector specifying the column in <code>srt</code> to group the samples by.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
+<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
 
 
 <dt id="arg-test-use">test.use<a class="anchor" aria-label="anchor" href="#arg-test-use"></a></dt>
@@ -231,21 +230,21 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-01-15 04:55:30] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■                       </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-15 04:55:30] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">732ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-01-20 08:18:56] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■                       </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-20 08:18:56] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">778ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">VolcanoPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="VolcanoPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">VolcanoPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  DE_threshold <span class="op">=</span> <span class="st">"abs(diff_pct) &gt; 0.3 &amp; p_val_adj &lt; 0.05"</span>,</span></span>
 <span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -253,7 +252,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">VolcanoPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  x_metric <span class="op">=</span> <span class="st">"avg_log2FC"</span>,</span></span>
 <span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

@@ -7,7 +7,7 @@ Perform the enrichment analysis (over-representation) on the genes
 ``` r
 RunEnrichment(
   srt = NULL,
-  group_by = NULL,
+  group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   geneID = NULL,
@@ -46,10 +46,9 @@ RunEnrichment(
   extracted from the Seurat object automatically. If not specified, the
   `geneID` and `geneID_groups` arguments must be provided.
 
-- group_by:
+- group.by:
 
-  A character vector specifying the grouping variable in the Seurat
-  object. This argument is only used if `srt` is specified.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - test.use:
 
@@ -224,31 +223,36 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
-#> ⠙ [2026-01-15 04:36:05] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-01-15 04:36:05] Completed 5 tasks in 727ms
+#> ⠙ [2026-01-20 07:57:29] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-01-20 07:57:29] Completed 5 tasks in 720ms
 #> 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> Error in loadNamespace(x): there is no package called ‘R.cache’
+#> ⠙ [2026-01-20 07:57:52] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-01-20 07:57:52] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-01-20 07:57:52] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-01-20 07:57:52] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-01-20 07:57:52] Completed 5 tasks in 1m 16.1s
+#> 
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group_by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
+
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = c("MSigDB", "MSigDB_MH"),
   species = "Mus_musculus"
@@ -256,20 +260,20 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB_MH",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
   species = "Mus_musculus"
@@ -277,7 +281,7 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP_sim",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
@@ -301,7 +305,7 @@ EnrichmentPlot(
 # Use a combined database
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
   ),
@@ -311,7 +315,7 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "Combined",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 } # }

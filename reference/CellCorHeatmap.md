@@ -441,10 +441,11 @@ CellCorHeatmap(
 
 - raster_by_magick:
 
-  Whether to use the magick package for rendering rasters. If set to
-  `TRUE`, the magick package will be used instead of the raster package.
-  This can be useful for rendering large heatmaps more efficiently. If
-  the magick package is not installed, this argument will be ignored.
+  Whether to use the `magick` package for rendering rasters. If set to
+  `TRUE`, the `magick` package will be used instead of the raster
+  package. This can be useful for rendering large heatmaps more
+  efficiently. The `magick` package will automatically be installed if
+  it is not installed.
 
 - height:
 

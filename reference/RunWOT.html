@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run WOT analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
       <div class="d-none name"><code>RunWOT.Rd</code></div>
     </div>
 
@@ -51,7 +51,7 @@
 <span>  assay_y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spliced"</span>, <span class="st">"unspliced"</span><span class="op">)</span>,</span>
 <span>  layer_y <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  adata <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  group_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  time_field <span class="op">=</span> <span class="st">"Time"</span>,</span>
 <span>  growth_iters <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>  tmap_out <span class="op">=</span> <span class="st">"tmaps/tmap_out"</span>,</span>
@@ -101,8 +101,8 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 <dd><p>An anndata object. Default is <code>NULL</code>.</p></dd>
 
 
-<dt id="arg-group-by">group_by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Variable to use for grouping cells in the Seurat object.</p></dd>
+<dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
+<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
 
 
 <dt id="arg-time-field">time_field<a class="anchor" aria-label="anchor" href="#arg-time-field"></a></dt>
@@ -208,7 +208,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunWOT</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  time_field <span class="op">=</span> <span class="st">"Lineage1"</span>,</span></span>
 <span class="r-in"><span>  time_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineage1</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  time_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">Lineage1</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
@@ -223,7 +223,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunWOT</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  group_by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  time_field <span class="op">=</span> <span class="st">"Custom_Time"</span>,</span></span>
 <span class="r-in"><span>  time_from <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  time_to <span class="op">=</span> <span class="fl">10</span>,</span></span>

@@ -12,7 +12,7 @@ RunCytoTRACE(
   object,
   assay = NULL,
   layer = c("counts", "data"),
-  species = c("human", "mouse"),
+  species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
   parallelize_models = TRUE,
@@ -26,7 +26,7 @@ RunCytoTRACE(
 # Default S3 method
 RunCytoTRACE(
   object,
-  species = c("human", "mouse"),
+  species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
   parallelize_models = TRUE,
@@ -124,9 +124,18 @@ data.frame with the same columns as above, with cell IDs as row names.
 ## Examples
 
 ``` r
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunCytoTRACE(pancreas_sub, species = "mouse")
+if (thisplot::check_ci_env()) {
+  data(pancreas_sub)
+  pancreas_sub <- standard_scop(pancreas_sub)
+  pancreas_sub <- RunCytoTRACE(
+    pancreas_sub,
+    species = "Mus_musculus"
+  )
+  CytoTRACEPlot(
+    pancreas_sub,
+    group.by = "CellType"
+  )
+}
 #> cytotrace2: Started loading data
 #> Dataset contains 15998 genes and 1000 cells.
 #> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
@@ -142,5 +151,4 @@ pancreas_sub <- RunCytoTRACE(pancreas_sub, species = "mouse")
 #> cytotrace2: Running with slow mode (subsamples are processed sequentially)
 #> Number of cores for KNN: 1
 #> cytotrace2: Finished
-CytoTRACEPlot(pancreas_sub, group.by = "CellType")
 ```

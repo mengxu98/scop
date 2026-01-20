@@ -10,7 +10,7 @@ analysis.
 ``` r
 RunDEtest(
   srt,
-  group_by = NULL,
+  group.by = NULL,
   group1 = NULL,
   group2 = NULL,
   cells1 = NULL,
@@ -48,7 +48,7 @@ RunDEtest(
 
   A Seurat object.
 
-- group_by:
+- group.by:
 
   A grouping variable in the dataset to define the groups or conditions
   for the differential test. If not provided, the function uses the
@@ -57,13 +57,13 @@ RunDEtest(
 - group1:
 
   A vector of cell IDs or a character vector specifying the cells that
-  belong to the first group. If both group_by and group1 are provided,
+  belong to the first group. If both group.by and group1 are provided,
   group1 takes precedence.
 
 - group2:
 
   A vector of cell IDs or a character vector specifying the cells that
-  belong to the second group. This parameter is only used when group_by
+  belong to the second group. This parameter is only used when group.by
   or group1 is provided.
 
 - cells1:
@@ -272,11 +272,11 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "SubCellType"
+  group.by = "SubCellType"
 )
-#> ⠙ [2026-01-15 04:30:36] Running for Ductal [1/8] ■■■■■                         …
-#> ⠹ [2026-01-15 04:30:36] Running for Epsilon [7/8] ■■■■■■■■■■■■■■■■■■■■■■■■■■■  …
-#> ✔ [2026-01-15 04:30:36] Completed 8 tasks in 1.1s
+#> ⠙ [2026-01-20 07:48:03] Running for Ductal [1/8] ■■■■■                         …
+#> ⠹ [2026-01-20 07:48:03] Running for Epsilon [7/8] ■■■■■■■■■■■■■■■■■■■■■■■■■■■  …
+#> ✔ [2026-01-20 07:48:03] Completed 8 tasks in 1.1s
 #> 
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -288,9 +288,6 @@ ht1 <- GroupHeatmap(
   feature_split = AllMarkers$group1,
   group.by = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht1$plot
 
@@ -307,21 +304,18 @@ ht2 <- GroupHeatmap(
   group.by = "SubCellType",
   show_row_names = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht2$plot
 
 
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   markers_type = "paired",
   cores = 2
 )
-#> ⠙ [2026-01-15 04:30:46] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-01-15 04:30:46] Completed 56 tasks in 4.5s
+#> ⠙ [2026-01-20 07:48:13] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-01-20 07:48:13] Completed 56 tasks in 4.9s
 #> 
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
@@ -333,9 +327,6 @@ ht3 <- GroupHeatmap(
   feature_split = PairedMarkers$group1,
   group.by = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht3$plot
 
@@ -354,13 +345,13 @@ CellDimPlot(
 
 panc8_sub <- RunDEtest(
   srt = panc8_sub,
-  group_by = "celltype",
+  group.by = "celltype",
   grouping.var = "tech",
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2026-01-15 04:32:11] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-15 04:32:11] Completed 13 tasks in 6.1s
+#> ⠙ [2026-01-20 07:49:37] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-20 07:49:37] Completed 13 tasks in 6.5s
 #> 
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
@@ -375,9 +366,6 @@ ht4 <- GroupHeatmap(
   split.by = "celltype",
   within_groups = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
@@ -394,13 +382,13 @@ ht4$plot
 
 panc8_sub <- RunDEtest(
   srt = panc8_sub,
-  group_by = "tech",
+  group.by = "tech",
   grouping.var = "celltype",
   markers_type = "conserved",
   cores = 2
 )
-#> ⠙ [2026-01-15 04:32:38] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
-#> ✔ [2026-01-15 04:32:38] Completed 5 tasks in 5.4s
+#> ⠙ [2026-01-20 07:50:05] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-01-20 07:50:05] Completed 5 tasks in 6.5s
 #> 
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
@@ -414,22 +402,19 @@ ht4 <- GroupHeatmap(
   group.by = "tech",
   split.by = "celltype"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht4$plot
 
 
 panc8_sub <- RunDEtest(
   srt = panc8_sub,
-  group_by = "celltype",
+  group.by = "celltype",
   grouping.var = "tech",
   markers_type = "disturbed",
   cores = 2
 )
-#> ⠙ [2026-01-15 04:32:55] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-01-15 04:32:55] Completed 13 tasks in 12.3s
+#> ⠙ [2026-01-20 07:50:23] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-01-20 07:50:23] Completed 13 tasks in 13.7s
 #> 
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
@@ -443,9 +428,6 @@ ht5 <- GroupHeatmap(
   group.by = "celltype",
   split.by = "tech"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
@@ -467,9 +449,6 @@ ht6 <- GroupHeatmap(
   group.by = "celltype",
   split.by = "tech"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht6$plot
 
@@ -484,9 +463,6 @@ ht7 <- GroupHeatmap(
   grouping.var = "tech",
   numerator = "smartseq2"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht7$plot
 ```

@@ -85,7 +85,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
-  species = "mouse"
+  species = "Mus_musculus"
 )
 #> Error in loadNamespace(x): there is no package called ‘CellChat’
 

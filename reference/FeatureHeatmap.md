@@ -458,7 +458,7 @@ FeatureHeatmap(
 
 - nlabel:
 
-  A number of labels to include. Default is `0`.
+  A number of labels to include. Default is `20`.
 
 - features_label:
 
@@ -616,10 +616,10 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
-#> ⠙ [2026-01-15 04:15:40] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-01-15 04:15:40] Completed 5 tasks in 860ms
+#> ⠙ [2026-01-20 07:30:38] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-01-20 07:30:38] Completed 5 tasks in 908ms
 #> 
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -632,9 +632,6 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
@@ -664,9 +661,6 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht2$plot
 
@@ -682,12 +676,20 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
+#> ⠙ [2026-01-20 07:31:39] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-01-20 07:31:39] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-01-20 07:31:39] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-01-20 07:31:39] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-01-20 07:31:39] Completed 5 tasks in 1m 10s
+#> 
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> Error in loadNamespace(x): there is no package called ‘R.cache’
+
 ht3$plot
-#> Error: object 'ht3' not found
+
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -711,9 +713,6 @@ ht4 <- FeatureHeatmap(
   cell_annotation = c("SubCellType", "Lineage1"),
   cell_annotation_palette = c("Paired", "cividis")
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.

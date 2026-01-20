@@ -11,7 +11,7 @@ and can be visualized using
 RunCellChat(
   srt,
   group.by,
-  species = c("human", "mouse", "zebrafish"),
+  species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
   split.by = NULL,
   annotation_selected = NULL,
   group_column = NULL,
@@ -86,15 +86,18 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
-  species = "mouse"
+  species = "Mus_musculus"
 )
+#> Registered S3 method overwritten by 'ggnetwork':
+#>   method         from  
+#>   fortify.igraph ggtree
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-01-15 04:22:31.269906]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-01-15 04:23:40.856777]"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-01-20 07:40:04.010883]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-01-20 07:41:13.561644]"
 
 CellChatPlot(pancreas_sub)
 
