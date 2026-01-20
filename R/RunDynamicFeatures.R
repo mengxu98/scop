@@ -264,16 +264,15 @@ RunDynamicFeatures <- function(
       verbose = verbose
     )
     gam_out <- parallelize_fun(
-      seq_len(nrow(y_ordered)),
+      rownames(y_ordered),
       function(n) {
-        feature_nm <- rownames(y_ordered)[n]
-        family_current <- family[feature_nm]
+        family_current <- family[n]
         if (
-          min(y_ordered[feature_nm, ]) < 0 &&
+          min(y_ordered[n, ]) < 0 &&
             family_current %in% c("nb", "poisson", "binomial")
         ) {
           log_message(
-            "Negative values detected. Replace family with {.pkg gaussian} for the feature: {.val {feature_nm}}",
+            "Negative values detected. Replace family with {.pkg gaussian} for the feature: {.val {n}}",
             message_type = "warning",
             verbose = verbose
           )
@@ -281,7 +280,7 @@ RunDynamicFeatures <- function(
         } else {
           family_use <- family_current
         }
-        if (layer == "counts" && family_use != "gaussian" && !feature_nm %in% meta) {
+        if (layer == "counts" && family_use != "gaussian" && !n %in% meta) {
           l_libsize <- l_libsize
         } else {
           l_libsize <- rep(stats::median(y_libsize), ncol(y_ordered))
@@ -291,7 +290,7 @@ RunDynamicFeatures <- function(
           y ~ s(x, bs = "cs") + offset(log(l_libsize)),
           family = family_use,
           data = data.frame(
-            y = y_ordered[feature_nm, ],
+            y = y_ordered[n, ],
             x = t_ordered,
             l_libsize = l_libsize
           )
@@ -310,7 +309,7 @@ RunDynamicFeatures <- function(
         upr.values <- upr * sizefactror
         lwr.values <- lwr * sizefactror
         exp_ncells <- sum(
-          y_ordered[feature_nm, ] > min(y_ordered[feature_nm, ]),
+          y_ordered[n, ] > min(y_ordered[n, ]),
           na.rm = TRUE
         )
         peaktime <- stats::median(
@@ -325,7 +324,7 @@ RunDynamicFeatures <- function(
         )
 
         list(
-          features = feature_nm,
+          features = n,
           exp_ncells = exp_ncells,
           r.sq = r_sq,
           dev.expl = dev_expl,

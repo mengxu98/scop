@@ -36,7 +36,7 @@
 #' pancreas_sub <- RunCellChat(
 #'   pancreas_sub,
 #'   group.by = "CellType",
-#'   species = "mouse"
+#'   species = "Mus_musculus"
 #' )
 #'
 #' CellChatPlot(pancreas_sub, plot_type = "aggregate")

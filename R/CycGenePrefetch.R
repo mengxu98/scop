@@ -39,6 +39,7 @@ CycGenePrefetch <- function(
   res <- NULL
   if (species != "Homo_sapiens") {
     if (isTRUE(use_cached_gene)) {
+      check_r("R.cache", verbose = FALSE)
       res <- R.cache::loadCache(key = list(species))
     }
     if (is.null(res)) {

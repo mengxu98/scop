@@ -67,24 +67,26 @@ Default is \code{TRUE}.}
 Possible values are \code{"LogNormalize"}, \code{"SCT"}, and \code{"TFIDF"}.
 Default is \code{"LogNormalize"}.}
 
-\item{do_HVF_finding}{Whether highly variable feature (HVF) finding should be performed.
-Default is \code{TRUE}.}
+\item{do_HVF_finding}{Whether to perform high variable feature finding.
+If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
 
 \item{HVF_source}{The source of highly variable features.
 Possible values are \code{"global"} and \code{"separate"}.
 Default is \code{"separate"}.}
 
-\item{HVF_method}{The method for selecting highly variable features.
+\item{HVF_method}{The method to use for finding highly variable features.
+Options are \code{"vst"}, \code{"mvp"}, or \code{"disp"}.
 Default is \code{"vst"}.}
 
 \item{nHVF}{The number of highly variable features to select.
+If NULL, all highly variable features will be used.
 Default is \code{2000}.}
 
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
 Default is \code{1}.}
 
-\item{HVF}{A vector of highly variable features.
-Default is \code{NULL}.}
+\item{HVF}{A vector of feature names to use as highly variable features.
+If NULL, the function will use the highly variable features identified by the HVF method.}
 
 \item{do_scaling}{Whether to perform scaling.
 If \code{TRUE}, the function will force to scale the data using the \link[Seurat:ScaleData]{Seurat::ScaleData} function.}

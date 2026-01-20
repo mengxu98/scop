@@ -165,10 +165,10 @@
 #' @param raster_device The raster device to use for rendering the heatmap.
 #' This should be a character string specifying the device name, such as `"png"`, `"jpeg"`, or `"pdf"`.
 #' Default is `"png"`.
-#' @param raster_by_magick Whether to use the magick package for rendering rasters.
-#' If set to `TRUE`, the magick package will be used instead of the raster package.
+#' @param raster_by_magick Whether to use the `magick` package for rendering rasters.
+#' If set to `TRUE`, the `magick` package will be used instead of the raster package.
 #' This can be useful for rendering large heatmaps more efficiently.
-#' If the magick package is not installed, this argument will be ignored.
+#' The `magick` package will automatically be installed if it is not installed.
 #' @param width The width of the heatmap in the specified units.
 #' If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.
 #' @param height The height of the heatmap in the specified units.
