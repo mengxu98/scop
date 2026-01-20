@@ -43,10 +43,18 @@
 #' with cell IDs as row names.
 #'
 #' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunCytoTRACE(pancreas_sub, species = "mouse")
-#' CytoTRACEPlot(pancreas_sub, group.by = "CellType")
+#' if (thisplot::check_ci_env()) {
+#'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
+#'   pancreas_sub <- RunCytoTRACE(
+#'     pancreas_sub,
+#'     species = "Mus_musculus"
+#'   )
+#'   CytoTRACEPlot(
+#'     pancreas_sub,
+#'     group.by = "CellType"
+#'   )
+#' }
 RunCytoTRACE <- function(object, ...) {
   UseMethod(generic = "RunCytoTRACE", object = object)
 }
@@ -58,7 +66,7 @@ RunCytoTRACE.Seurat <- function(
     object,
     assay = NULL,
     layer = c("counts", "data"),
-    species = c("human", "mouse"),
+    species = c("Homo_sapiens", "Mus_musculus"),
     batch_size = 10000,
     smooth_batch_size = 1000,
     parallelize_models = TRUE,
@@ -84,6 +92,12 @@ RunCytoTRACE.Seurat <- function(
 
   layer <- match.arg(layer)
   species <- match.arg(species)
+  if (species == "Mus_musculus") {
+    species <- "mouse"
+  }
+  if (species == "Homo_sapiens") {
+    species <- "human"
+  }
 
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
 
@@ -123,7 +137,7 @@ RunCytoTRACE.Seurat <- function(
 #' @export
 RunCytoTRACE.default <- function(
     object,
-    species = c("human", "mouse"),
+    species = c("Homo_sapiens", "Mus_musculus"),
     batch_size = 10000,
     smooth_batch_size = 1000,
     parallelize_models = TRUE,
@@ -148,6 +162,12 @@ RunCytoTRACE.default <- function(
   }
 
   species <- match.arg(species)
+  if (species == "Mus_musculus") {
+    species <- "mouse"
+  }
+  if (species == "Homo_sapiens") {
+    species <- "human"
+  }
 
   if (inherits(object, c("matrix", "Matrix"))) {
     object <- as.data.frame(object)

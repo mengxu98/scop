@@ -6,7 +6,7 @@
 \usage{
 VolcanoPlot(
   srt,
-  group_by = NULL,
+  group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   x_metric = "diff_pct",
@@ -38,8 +38,7 @@ VolcanoPlot(
 \arguments{
 \item{srt}{An object of class \code{Seurat} containing the results of differential expression analysis.}
 
-\item{group_by}{A character vector specifying the column in \code{srt} to group the samples by.
-Default is \code{NULL}.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{test.use}{A character string specifying the type of statistical test to use.
 Default is \code{"wilcox"}.}
@@ -128,24 +127,24 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   ncol = 2
 )
 
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
 
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   x_metric = "avg_log2FC",
   ncol = 2
 )

@@ -337,7 +337,7 @@ Default is \code{20}.}
 Default is \code{NULL}.}
 
 \item{nlabel}{A number of labels to include.
-Default is \code{0}.}
+Default is \code{20}.}
 
 \item{features_label}{A character vector specifying the features to label.
 Default is \code{NULL}.}
@@ -437,7 +437,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,

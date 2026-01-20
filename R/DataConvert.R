@@ -241,7 +241,7 @@ srt_to_adata <- function(
 #' adata <- srt_to_adata(pancreas_sub)
 #' adata <- RunPAGA(
 #'   adata = adata,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "X_pca",
 #'   nonlinear_reduction = "X_umap"
 #' )

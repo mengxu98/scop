@@ -33,11 +33,11 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group.by = "CellType"
 #' )
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   DE_threshold = "p_val_adj < 0.05",
 #'   scoreType = "std",
 #'   db = "GO_BP",
@@ -46,20 +46,20 @@
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   group_use = "Ductal",
 #'   id_use = "GO:0006412"
 #' )
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   group_use = "Ductal",
 #'   id_use = c(
 #'     "GO:0046903", "GO:0015031", "GO:0007600"
@@ -69,7 +69,7 @@
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   db = "GO_BP",
 #'   GO_simplify = TRUE,
 #'   species = "Mus_musculus"
@@ -77,7 +77,7 @@
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP_sim",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #'
@@ -103,7 +103,7 @@
 #' # Use a combined database
 #' pancreas_sub <- RunGSEA(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   db = c(
 #'     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
 #'   ),
@@ -113,13 +113,13 @@
 #' GSEAPlot(
 #'   pancreas_sub,
 #'   db = "Combined",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #' }
 RunGSEA <- function(
     srt = NULL,
-    group_by = NULL,
+    group.by = NULL,
     test.use = "wilcox",
     DE_threshold = "p_val_adj < 0.05",
     scoreType = "std",
@@ -152,13 +152,13 @@ RunGSEA <- function(
 
   use_srt <- FALSE
   if (is.null(geneID)) {
-    if (is.null(group_by)) {
-      group_by <- "custom"
+    if (is.null(group.by)) {
+      group.by <- "custom"
     }
-    layer <- paste0("DEtest_", group_by)
+    layer <- paste0("DEtest_", group.by)
     if (!layer %in% names(srt@tools) || length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0) {
       log_message(
-        "Cannot find the DEtest result for {.val {group_by}}. Perform {.fn RunDEtest} first",
+        "Cannot find the DEtest result for {.val {group.by}}. Perform {.fn RunDEtest} first",
         message_type = "error"
       )
     }
@@ -488,7 +488,7 @@ RunGSEA <- function(
   )
   if (isTRUE(use_srt)) {
     res[["DE_threshold"]] <- DE_threshold
-    srt@tools[[paste("GSEA", group_by, test.use, sep = "_")]] <- res
+    srt@tools[[paste("GSEA", group.by, test.use, sep = "_")]] <- res
     return(srt)
   } else {
     return(res)
