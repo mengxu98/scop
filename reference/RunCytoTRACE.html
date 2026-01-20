@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run CytoTRACE 2</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCytoTrace.R" class="external-link"><code>R/RunCytoTrace.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCytoTrace.R" class="external-link"><code>R/RunCytoTrace.R</code></a></small>
       <div class="d-none name"><code>RunCytoTRACE.Rd</code></div>
     </div>
 
@@ -51,7 +51,7 @@
 <span>  <span class="va">object</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"counts"</span>, <span class="st">"data"</span><span class="op">)</span>,</span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"human"</span>, <span class="st">"mouse"</span><span class="op">)</span>,</span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Homo_sapiens"</span>, <span class="st">"Mus_musculus"</span><span class="op">)</span>,</span>
 <span>  batch_size <span class="op">=</span> <span class="fl">10000</span>,</span>
 <span>  smooth_batch_size <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  parallelize_models <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -65,7 +65,7 @@
 <span><span class="co"># Default S3 method</span></span>
 <span><span class="fu">RunCytoTRACE</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"human"</span>, <span class="st">"mouse"</span><span class="op">)</span>,</span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Homo_sapiens"</span>, <span class="st">"Mus_musculus"</span><span class="op">)</span>,</span>
 <span>  batch_size <span class="op">=</span> <span class="fl">10000</span>,</span>
 <span>  smooth_batch_size <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  parallelize_models <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -160,9 +160,18 @@ with cell IDs as row names.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCytoTRACE</span><span class="op">(</span><span class="va">pancreas_sub</span>, species <span class="op">=</span> <span class="st">"mouse"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/check_ci_env.html" class="external-link">check_ci_env</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCytoTRACE</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="CytoTRACEPlot.html">CytoTRACEPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">pancreas_sub</span>,</span></span>
+<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cytotrace2: Started loading data</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dataset contains 15998 genes and 1000 cells.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of cells in your dataset is less than 1000. Fast mode has been disabled.</span>
@@ -178,7 +187,6 @@ with cell IDs as row names.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cytotrace2: Running with slow mode (subsamples are processed sequentially)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Number of cores for KNN: 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cytotrace2: Finished</span>
-<span class="r-in"><span><span class="fu"><a href="CytoTRACEPlot.html">CytoTRACEPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunCytoTRACE-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

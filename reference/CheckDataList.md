@@ -54,8 +54,9 @@ CheckDataList(
 
 - do_HVF_finding:
 
-  Whether highly variable feature (HVF) finding should be performed.
-  Default is `TRUE`.
+  Whether to perform high variable feature finding. If `TRUE`, the
+  function will force to find the highly variable features (HVF) using
+  the specified HVF method.
 
 - HVF_source:
 
@@ -64,11 +65,13 @@ CheckDataList(
 
 - HVF_method:
 
-  The method for selecting highly variable features. Default is `"vst"`.
+  The method to use for finding highly variable features. Options are
+  `"vst"`, `"mvp"`, or `"disp"`. Default is `"vst"`.
 
 - nHVF:
 
-  The number of highly variable features to select. Default is `2000`.
+  The number of highly variable features to select. If NULL, all highly
+  variable features will be used. Default is `2000`.
 
 - HVF_min_intersection:
 
@@ -77,7 +80,9 @@ CheckDataList(
 
 - HVF:
 
-  A vector of highly variable features. Default is `NULL`.
+  A vector of feature names to use as highly variable features. If NULL,
+  the function will use the highly variable features identified by the
+  HVF method.
 
 - vars_to_regress:
 

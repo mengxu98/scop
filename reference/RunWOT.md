@@ -12,7 +12,7 @@ RunWOT(
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
   adata = NULL,
-  group_by = NULL,
+  group.by = NULL,
   time_field = "Time",
   growth_iters = 3L,
   tmap_out = "tmaps/tmap_out",
@@ -60,9 +60,9 @@ RunWOT(
 
   An anndata object. Default is `NULL`.
 
-- group_by:
+- group.by:
 
-  Variable to use for grouping cells in the Seurat object.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - time_field:
 
@@ -168,7 +168,7 @@ print(range(pancreas_sub$Lineage1, na.rm = TRUE))
 
 pancreas_sub <- RunWOT(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   time_field = "Lineage1",
   time_from = min(pancreas_sub$Lineage1, na.rm = TRUE),
   time_to = max(pancreas_sub$Lineage1, na.rm = TRUE),
@@ -183,7 +183,7 @@ pancreas_sub$Custom_Time <- sample(
 )
 pancreas_sub <- RunWOT(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   time_field = "Custom_Time",
   time_from = 1,
   time_to = 10,

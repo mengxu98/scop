@@ -482,7 +482,7 @@ GroupHeatmap(
 
 - nlabel:
 
-  A number of labels to include. Default is `0`.
+  A number of labels to include. Default is `20`.
 
 - features_label:
 
@@ -725,9 +725,6 @@ ht1 <- GroupHeatmap(
   ),
   group.by = c("CellType", "SubCellType")
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 ht1$plot
 
 
@@ -749,7 +746,7 @@ pancreas_sub <- AnnotateFeatures(
 )
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
 de_filter <- filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,

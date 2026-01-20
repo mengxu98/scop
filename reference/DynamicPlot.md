@@ -263,8 +263,8 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> ⠙ [2026-01-15 04:14:01] Running for 1 [1/3] ■■■■■■■■■■■                       3…
-#> ✔ [2026-01-15 04:14:01] Completed 3 tasks in 111ms
+#> ⠙ [2026-01-20 07:28:56] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-20 07:28:56] Completed 3 tasks in 126ms
 #> 
 
 
@@ -276,8 +276,8 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ⠙ [2026-01-15 04:14:05] Running for 1 [1/3] ■■■■■■■■■■■                       3…
-#> ✔ [2026-01-15 04:14:05] Completed 3 tasks in 91ms
+#> ⠙ [2026-01-20 07:28:58] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-20 07:28:58] Completed 3 tasks in 125ms
 #> 
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
@@ -297,8 +297,11 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ⠙ [2026-01-15 04:14:08] Running for 1 [1/3] ■■■■■■■■■■■                       3…
-#> ✔ [2026-01-15 04:14:08] Completed 3 tasks in 112ms
+#> ⠙ [2026-01-20 07:29:03] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-20 07:29:03] Completed 3 tasks in 125ms
+#> 
+#> ⠙ [2026-01-20 07:29:05] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-20 07:29:05] Completed 3 tasks in 102ms
 #> 
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.

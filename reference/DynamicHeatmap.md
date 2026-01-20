@@ -128,7 +128,7 @@ DynamicHeatmap(
   reverse_ht = NULL,
   use_raster = NULL,
   raster_device = "png",
-  raster_by_magick = FALSE,
+  raster_by_magick = TRUE,
   height = NULL,
   width = NULL,
   units = "inch",
@@ -502,7 +502,7 @@ DynamicHeatmap(
 
 - nlabel:
 
-  A number of labels to include. Default is `0`.
+  A number of labels to include. Default is `20`.
 
 - features_label:
 
@@ -707,14 +707,14 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ⠙ [2026-01-15 04:08:43] Running for 1 [1/231] ■                                …
-#> ⠹ [2026-01-15 04:08:43] Running for 104 [104/231] ■■■■■■■■■■■■■■■              …
-#> ⠸ [2026-01-15 04:08:43] Running for 210 [210/231] ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ …
-#> ✔ [2026-01-15 04:08:43] Completed 231 tasks in 6.7s
+#> ⠙ [2026-01-20 07:15:26] Running for Gcg [1/231] ■                              …
+#> ⠹ [2026-01-20 07:15:26] Running for Tuba1c [68/231] ■■■■■■■■■■                 …
+#> ⠸ [2026-01-20 07:15:26] Running for Ccl20 [180/231] ■■■■■■■■■■■■■■■■■■■■■■■■   …
+#> ✔ [2026-01-20 07:15:26] Completed 231 tasks in 6.3s
 #> 
-#> ⠙ [2026-01-15 04:08:52] Running for 77 [77/231] ■■■■■■■■■■■                    …
-#> ⠹ [2026-01-15 04:08:52] Running for 175 [175/231] ■■■■■■■■■■■■■■■■■■■■■■■■     …
-#> ✔ [2026-01-15 04:08:52] Completed 231 tasks in 6.9s
+#> ⠙ [2026-01-20 07:15:34] Running for Cdca3 [56/231] ■■■■■■■■                    …
+#> ⠹ [2026-01-20 07:15:34] Running for Pou3f1 [156/231] ■■■■■■■■■■■■■■■■■■■■■     …
+#> ✔ [2026-01-20 07:15:34] Completed 231 tasks in 6.6s
 #> 
 
 ht1 <- DynamicHeatmap(
@@ -724,9 +724,6 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht1$plot
 
@@ -746,12 +743,9 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ⠙ [2026-01-15 04:09:01] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
-#> ✔ [2026-01-15 04:09:01] Completed 2 tasks in 47ms
+#> ⠙ [2026-01-20 07:16:18] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
+#> ✔ [2026-01-20 07:16:18] Completed 2 tasks in 45ms
 #> 
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 ht2$plot
 
 
@@ -772,9 +766,6 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> 'magick' package is suggested to install to give better rasterization.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
 
 ht3$plot
 
@@ -792,12 +783,15 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> 'magick' package is suggested to install to give better rasterization.
+#> ⠙ [2026-01-20 07:26:04] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-01-20 07:26:04] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-01-20 07:26:04] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-01-20 07:26:04] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-01-20 07:26:04] Completed 5 tasks in 27.8s
 #> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> Error in loadNamespace(x): there is no package called ‘R.cache’
+
 ht4$plot
-#> Error: object 'ht4' not found
+
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(

@@ -8,7 +8,7 @@ results.
 ``` r
 VolcanoPlot(
   srt,
-  group_by = NULL,
+  group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   x_metric = "diff_pct",
@@ -45,10 +45,9 @@ VolcanoPlot(
   An object of class `Seurat` containing the results of differential
   expression analysis.
 
-- group_by:
+- group.by:
 
-  A character vector specifying the column in `srt` to group the samples
-  by. Default is `NULL`.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - test.use:
 
@@ -184,21 +183,21 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
-#> ⠙ [2026-01-15 04:55:30] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-01-15 04:55:30] Completed 5 tasks in 732ms
+#> ⠙ [2026-01-20 08:18:56] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-01-20 08:18:56] Completed 5 tasks in 778ms
 #> 
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   ncol = 2
 )
 
 
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
@@ -206,7 +205,7 @@ VolcanoPlot(
 
 VolcanoPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   x_metric = "avg_log2FC",
   ncol = 2
 )

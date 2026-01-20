@@ -9,7 +9,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ It takes in Seurat objects or expression matrices as input and calculates pairwi
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>The Cell Correlation Heatmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/CellCorHeatmap.R" class="external-link"><code>R/CellCorHeatmap.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/CellCorHeatmap.R" class="external-link"><code>R/CellCorHeatmap.R</code></a></small>
       <div class="d-none name"><code>CellCorHeatmap.Rd</code></div>
     </div>
 
@@ -481,10 +481,10 @@ Default is <code>"png"</code>.</p></dd>
 
 
 <dt id="arg-raster-by-magick">raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-raster-by-magick"></a></dt>
-<dd><p>Whether to use the magick package for rendering rasters.
-If set to <code>TRUE</code>, the magick package will be used instead of the raster package.
+<dd><p>Whether to use the <code>magick</code> package for rendering rasters.
+If set to <code>TRUE</code>, the <code>magick</code> package will be used instead of the raster package.
 This can be useful for rendering large heatmaps more efficiently.
-If the magick package is not installed, this argument will be ignored.</p></dd>
+The <code>magick</code> package will automatically be installed if it is not installed.</p></dd>
 
 
 <dt id="arg-height">height<a class="anchor" aria-label="anchor" href="#arg-height"></a></dt>

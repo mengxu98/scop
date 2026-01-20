@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,24 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.1" id="scop-081">scop 0.8.1<a class="anchor" aria-label="anchor" href="#scop-081"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>: Fixed <code>group_palcolor</code> when a named vector is passed: the function previously used only the first color for all groups because <code>group_palcolor[[1]]</code> on a vector returns a single element. Now when <code>group.by</code> has length 1, a vector is automatically wrapped as a list; when <code>within_groups = TRUE</code>, <code>group_palcolor</code> is expanded in line with <code>group_palette</code>.</li>
+<li>
+<code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>: Same <code>group_palcolor</code> fix as <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>: support for named-vector input and correct expansion when <code>within_groups = TRUE</code>.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>
+<code>group_by</code> modified to <code>group.by</code> to unify documentation, involving functions: <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, <code><a href="../reference/EnrichmentPlot.html">EnrichmentPlot()</a></code>, <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code>, <code><a href="../reference/GSEAPlot.html">GSEAPlot()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, releated to <a href="https://github.com/mengxu98/scop/issues/120" class="external-link">#120</a>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.0" id="scop-080">scop 0.8.0<a class="anchor" aria-label="anchor" href="#scop-080"></a></h2>
 <ul><li>

@@ -9,7 +9,7 @@ The results are stored in the Seurat object and can be visualized using CellChat
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ The results are stored in the Seurat object and can be visualized using CellChat
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run CellChat</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCellChat.R" class="external-link"><code>R/RunCellChat.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCellChat.R" class="external-link"><code>R/RunCellChat.R</code></a></small>
       <div class="d-none name"><code>RunCellChat.Rd</code></div>
     </div>
 
@@ -50,7 +50,7 @@ The results are stored in the Seurat object and can be visualized using <a href=
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunCellChat</span><span class="op">(</span></span>
 <span>  <span class="va">srt</span>,</span>
 <span>  <span class="va">group.by</span>,</span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"human"</span>, <span class="st">"mouse"</span>, <span class="st">"zebrafish"</span><span class="op">)</span>,</span>
+<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Homo_sapiens"</span>, <span class="st">"Mus_musculus"</span>, <span class="st">"zebrafish"</span><span class="op">)</span>,</span>
 <span>  split.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotation_selected <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -125,15 +125,18 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellChat</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"mouse"</span></span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'ggnetwork':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method         from  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   fortify.igraph ggtree</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 841 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-01-15 04:22:31.269906]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-01-15 04:23:40.856777]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-01-20 07:40:04.010883]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-01-20 07:41:13.561644]"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellChatPlot.html">CellChatPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunCellChat-1.png" alt="" width="700" height="433"></span>

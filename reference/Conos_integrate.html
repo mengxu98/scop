@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>The Conos integration function</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/integration.R" class="external-link"><code>R/integration.R</code></a></small>
       <div class="d-none name"><code>Conos_integrate.Rd</code></div>
     </div>
 
@@ -117,8 +117,8 @@ Default is <code>"LogNormalize"</code>.</p></dd>
 
 
 <dt id="arg-do-hvf-finding">do_HVF_finding<a class="anchor" aria-label="anchor" href="#arg-do-hvf-finding"></a></dt>
-<dd><p>Whether highly variable feature (HVF) finding should be performed.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to perform high variable feature finding.
+If <code>TRUE</code>, the function will force to find the highly variable features (HVF) using the specified HVF method.</p></dd>
 
 
 <dt id="arg-hvf-source">HVF_source<a class="anchor" aria-label="anchor" href="#arg-hvf-source"></a></dt>
@@ -128,12 +128,14 @@ Default is <code>"separate"</code>.</p></dd>
 
 
 <dt id="arg-hvf-method">HVF_method<a class="anchor" aria-label="anchor" href="#arg-hvf-method"></a></dt>
-<dd><p>The method for selecting highly variable features.
+<dd><p>The method to use for finding highly variable features.
+Options are <code>"vst"</code>, <code>"mvp"</code>, or <code>"disp"</code>.
 Default is <code>"vst"</code>.</p></dd>
 
 
 <dt id="arg-nhvf">nHVF<a class="anchor" aria-label="anchor" href="#arg-nhvf"></a></dt>
 <dd><p>The number of highly variable features to select.
+If NULL, all highly variable features will be used.
 Default is <code>2000</code>.</p></dd>
 
 
@@ -143,8 +145,8 @@ Default is <code>1</code>.</p></dd>
 
 
 <dt id="arg-hvf">HVF<a class="anchor" aria-label="anchor" href="#arg-hvf"></a></dt>
-<dd><p>A vector of highly variable features.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A vector of feature names to use as highly variable features.
+If NULL, the function will use the highly variable features identified by the HVF method.</p></dd>
 
 
 <dt id="arg-do-scaling">do_scaling<a class="anchor" aria-label="anchor" href="#arg-do-scaling"></a></dt>

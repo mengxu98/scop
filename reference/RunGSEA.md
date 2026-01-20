@@ -7,7 +7,7 @@ Perform the enrichment analysis (GSEA) on the genes
 ``` r
 RunGSEA(
   srt = NULL,
-  group_by = NULL,
+  group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "p_val_adj < 0.05",
   scoreType = "std",
@@ -48,10 +48,9 @@ RunGSEA(
   extracted from the Seurat object automatically. If not specified, the
   `geneID` and `geneID_groups` arguments must be provided.
 
-- group_by:
+- group.by:
 
-  A character vector specifying the grouping variable in the Seurat
-  object. This argument is only used if `srt` is specified.
+  Name of one or more meta.data columns to group (color) cells by.
 
 - test.use:
 
@@ -237,11 +236,11 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
 pancreas_sub <- RunGSEA(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   scoreType = "std",
   db = "GO_BP",
@@ -250,20 +249,20 @@ pancreas_sub <- RunGSEA(
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = "Ductal",
   id_use = "GO:0006412"
 )
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP",
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = "Ductal",
   id_use = c(
     "GO:0046903", "GO:0015031", "GO:0007600"
@@ -273,7 +272,7 @@ GSEAPlot(
 # Remove redundant GO terms
 pancreas_sub <- RunGSEA(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
   species = "Mus_musculus"
@@ -281,7 +280,7 @@ pancreas_sub <- RunGSEA(
 GSEAPlot(
   pancreas_sub,
   db = "GO_BP_sim",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
@@ -307,7 +306,7 @@ GSEAPlot(
 # Use a combined database
 pancreas_sub <- RunGSEA(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
   ),
@@ -317,7 +316,7 @@ pancreas_sub <- RunGSEA(
 GSEAPlot(
   pancreas_sub,
   db = "Combined",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 } # }
