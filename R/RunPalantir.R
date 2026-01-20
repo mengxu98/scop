@@ -28,7 +28,7 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunPalantir(
 #'   pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   early_group = "Ductal",
@@ -55,7 +55,7 @@ RunPalantir <- function(
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
     adata = NULL,
-    group_by = NULL,
+    group.by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
     basis = NULL,
@@ -95,9 +95,9 @@ RunPalantir <- function(
       message_type = "error"
     )
   }
-  if (is.null(group_by) && any(!is.null(early_group), !is.null(terminal_groups))) {
+  if (is.null(group.by) && any(!is.null(early_group), !is.null(terminal_groups))) {
     log_message(
-      "{.arg group_by} must be provided when {.arg early_group} or {.arg terminal_groups} provided.",
+      "{.arg group.by} must be provided when {.arg early_group} or {.arg terminal_groups} provided.",
       message_type = "error"
     )
   }
@@ -206,7 +206,11 @@ RunPalantir <- function(
       args[["basis"]] <- basis
     }
   }
-  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  if ("group.by" %in% names(args)) {
+    args[["group_by"]] <- args[["group.by"]]
+    args[["group.by"]] <- NULL
+  }
+  groups <- py_to_r2(args[["adata"]]$obs)[[group.by]]
   args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,

@@ -138,7 +138,7 @@
 #' @param words_excluded A character vector specifying the words to exclude.
 #' Default is `NULL`.
 #' @param nlabel A number of labels to include.
-#' Default is `0`.
+#' Default is `20`.
 #' @param features_label A character vector specifying the features to label.
 #' Default is `NULL`.
 #' @param label_size The size of labels.
@@ -270,7 +270,7 @@
 #' )
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group.by = "CellType"
 #' )
 #' de_filter <- filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -675,12 +675,32 @@ GroupHeatmap <- function(
     )
   }
   group_palette <- stats::setNames(group_palette, nm = group.by)
+  if (!is.null(group_palcolor)) {
+    if (!is.list(group_palcolor)) {
+      if (length(group.by) == 1) {
+        group_palcolor <- list(group_palcolor)
+      } else {
+        log_message(
+          "'group_palcolor' must be a list of the same length as 'group.by' when specifying custom colors for multiple groups.",
+          message_type = "error"
+        )
+      }
+    }
+    if (length(group_palcolor) != length(group.by)) {
+      log_message(
+        "'group_palcolor' must be the same length as 'group.by'.",
+        message_type = "error"
+      )
+    }
+  }
   raw_group_by <- group.by
   raw_group_palette <- group_palette
   if (isTRUE(within_groups)) {
     new.group.by <- c()
     new.group_palette <- group_palette
+    new.group_palcolor <- if (!is.null(group_palcolor)) list() else NULL
     for (g in group.by) {
+      j <- match(g, group.by)
       groups <- split(colnames(srt), srt[[g, drop = TRUE]])
       new.group_palette[g] <- list(rep(new.group_palette[g], length(groups)))
       for (nm in names(groups)) {
@@ -690,10 +710,16 @@ GroupHeatmap <- function(
         )
         srt[[make.names(nm)]][colnames(srt) %in% groups[[nm]], ] <- nm
         new.group.by <- c(new.group.by, make.names(nm))
+        if (!is.null(new.group_palcolor)) {
+          new.group_palcolor <- c(new.group_palcolor, list(group_palcolor[[j]]))
+        }
       }
     }
     group.by <- new.group.by
     group_palette <- unlist(new.group_palette)
+    if (!is.null(new.group_palcolor)) {
+      group_palcolor <- new.group_palcolor
+    }
   }
 
   if (!is.null(feature_split) && !is.factor(feature_split)) {
@@ -1020,18 +1046,30 @@ GroupHeatmap <- function(
     mat_perc_list[[cell_group]] <- mat_perc
   }
 
-  # data used to plot heatmap
+  all_agg <- do.call(cbind, mat_raw_list)
+  gene_mean <- rowMeans(all_agg, na.rm = TRUE)
+  gene_sd <- apply(all_agg, 1L, sd, na.rm = TRUE)
+  gene_sd[!is.finite(gene_sd) | gene_sd < 1e-10] <- 1
+
   mat_list <- list()
   for (cell_group in group.by) {
     mat_tmp <- mat_raw_list[[cell_group]]
     if (is.null(grouping.var)) {
-      mat_tmp <- matrix_process(mat_tmp, method = exp_method)
-      mat_tmp[is.infinite(mat_tmp)] <- max(
-        abs(mat_tmp[!is.infinite(mat_tmp)]),
-        na.rm = TRUE
-      ) *
+      if (ncol(mat_tmp) == 1L && !is.function(exp_method) &&
+        exp_method %in% c("zscore", "log2fc")) {
+        mat_tmp <- (mat_tmp - gene_mean[rownames(mat_tmp)]) /
+          gene_sd[rownames(mat_tmp)]
+      } else {
+        mat_tmp <- matrix_process(mat_tmp, method = exp_method)
+      }
+      finite_vals <- mat_tmp[!is.infinite(mat_tmp) & !is.na(mat_tmp)]
+      repl <- if (length(finite_vals) > 0L) max(abs(finite_vals), na.rm = TRUE) else 1
+      if (!is.finite(repl)) repl <- 1
+      mat_tmp[is.infinite(mat_tmp)] <- repl *
         ifelse(mat_tmp[is.infinite(mat_tmp)] > 0, 1, -1)
-      mat_tmp[is.na(mat_tmp)] <- mean(mat_tmp, na.rm = TRUE)
+      mean_val <- mean(mat_tmp, na.rm = TRUE)
+      if (!is.finite(mean_val)) mean_val <- 0
+      mat_tmp[is.na(mat_tmp)] <- mean_val
       mat_list[[cell_group]] <- mat_tmp
     } else {
       compare_groups <- strsplit(colnames(mat_tmp), " ; ")
@@ -1052,10 +1090,10 @@ GroupHeatmap <- function(
       )
       mat_tmp <- log2(mat_tmp[, group_TRUE] / mat_tmp[, group_FALSE])
       colnames(mat_tmp) <- gsub(" ; .*", "", colnames(mat_tmp))
-      mat_tmp[is.infinite(mat_tmp)] <- max(
-        abs(mat_tmp[!is.infinite(mat_tmp)]),
-        na.rm = TRUE
-      ) *
+      finite_vals <- mat_tmp[!is.infinite(mat_tmp) & !is.na(mat_tmp)]
+      repl <- if (length(finite_vals) > 0L) max(abs(finite_vals), na.rm = TRUE) else 1
+      if (!is.finite(repl)) repl <- 1
+      mat_tmp[is.infinite(mat_tmp)] <- repl *
         ifelse(mat_tmp[is.infinite(mat_tmp)] > 0, 1, -1)
       mat_tmp[is.na(mat_tmp)] <- 0
       mat_list[[cell_group]] <- mat_tmp
@@ -1079,12 +1117,14 @@ GroupHeatmap <- function(
           na.rm = TRUE
         ) * 2
       ) / 2
+      if (!is.finite(b) || b <= 0) b <- 2
       colors <- circlize::colorRamp2(
         seq(-b, b, length = 100),
         palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)
       )
     } else {
       b <- stats::quantile(do.call(cbind, mat_list), c(0.01, 0.99), na.rm = TRUE)
+      if (!all(is.finite(b)) || b[1] == b[2]) b <- c(0, 1)
       colors <- circlize::colorRamp2(
         seq(b[1], b[2], length = 100),
         palette_colors(palette = heatmap_palette, palcolor = heatmap_palcolor)

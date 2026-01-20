@@ -37,7 +37,7 @@
 #' pancreas_sub <- RunPAGA(
 #'   pancreas_sub,
 #'   assay_x = "RNA",
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP"
 #' )
@@ -58,7 +58,7 @@
 #'
 #' pancreas_sub <- RunPAGA(
 #'   pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   embedded_with_PAGA = TRUE,
@@ -88,7 +88,7 @@ RunPAGA <- function(
     layer_x = "counts",
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
-    group_by = NULL,
+    group.by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
     basis = NULL,
@@ -128,9 +128,9 @@ RunPAGA <- function(
       message_type = "error"
     )
   }
-  if (is.null(group_by)) {
+  if (is.null(group.by)) {
     log_message(
-      "{.arg group_by} must be provided",
+      "{.arg group.by} must be provided",
       message_type = "error"
     )
   }
@@ -215,7 +215,11 @@ RunPAGA <- function(
       layer_y = layer_y
     )
   }
-  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  if ("group.by" %in% names(args)) {
+    args[["group_by"]] <- args[["group.by"]]
+    args[["group.by"]] <- NULL
+  }
+  groups <- py_to_r2(args[["adata"]]$obs)[[group.by]]
   args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,

@@ -17,7 +17,7 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group.by = "CellType"
 #' )
 #' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
@@ -312,12 +312,32 @@ FeatureHeatmap <- function(
     )
   }
   group_palette <- stats::setNames(group_palette, nm = group.by)
+  if (!is.null(group_palcolor)) {
+    if (!is.list(group_palcolor)) {
+      if (length(group.by) == 1) {
+        group_palcolor <- list(group_palcolor)
+      } else {
+        log_message(
+          "'group_palcolor' must be a list of the same length as 'group.by' when specifying custom colors for multiple groups.",
+          message_type = "error"
+        )
+      }
+    }
+    if (length(group_palcolor) != length(group.by)) {
+      log_message(
+        "'group_palcolor' must be the same length as 'group.by'.",
+        message_type = "error"
+      )
+    }
+  }
   raw.group.by <- group.by
   raw.group_palette <- group_palette
   if (isTRUE(within_groups)) {
     new.group.by <- c()
     new.group_palette <- group_palette
+    new.group_palcolor <- if (!is.null(group_palcolor)) list() else NULL
     for (g in group.by) {
+      j <- match(g, group.by)
       groups <- split(colnames(srt), srt[[g, drop = TRUE]])
       new.group_palette[g] <- list(rep(new.group_palette[g], length(groups)))
       for (nm in names(groups)) {
@@ -327,10 +347,16 @@ FeatureHeatmap <- function(
         )
         srt[[make.names(nm)]][colnames(srt) %in% groups[[nm]], ] <- nm
         new.group.by <- c(new.group.by, make.names(nm))
+        if (!is.null(new.group_palcolor)) {
+          new.group_palcolor <- c(new.group_palcolor, list(group_palcolor[[j]]))
+        }
       }
     }
     group.by <- new.group.by
     group_palette <- unlist(new.group_palette)
+    if (!is.null(new.group_palcolor)) {
+      group_palcolor <- new.group_palcolor
+    }
   }
   if (is.null(feature_split_by)) {
     feature_split_by <- group.by
@@ -1570,6 +1596,7 @@ FeatureHeatmap <- function(
       }
     )
     if (!is.null(split.by) && isFALSE(cluster_column_slices)) {
+      n_slices <- length(levels(column_split_list[[cell_group]]))
       groups_order <- sapply(
         strsplit(levels(column_split_list[[cell_group]]), " : "),
         function(x) x[[1]]
@@ -1584,6 +1611,9 @@ FeatureHeatmap <- function(
         groups_order[2:length(groups_order)] ==
           groups_order[1:(length(groups_order) - 1)]
       ] <- grid::unit(0, "mm")
+      if (length(gaps) != 1L && length(gaps) != n_slices) {
+        gaps <- grid::unit(1, "mm")
+      }
       if (isTRUE(flip)) {
         ht_args[["row_gap"]] <- gaps
       } else {

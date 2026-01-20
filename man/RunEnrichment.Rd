@@ -6,7 +6,7 @@
 \usage{
 RunEnrichment(
   srt = NULL,
-  group_by = NULL,
+  group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
   geneID = NULL,
@@ -40,8 +40,7 @@ RunEnrichment(
 If specified, the genes and groups will be extracted from the Seurat object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{group_by}{A character vector specifying the grouping variable in the Seurat object.
-This argument is only used if \code{srt} is specified.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{test.use}{A character vector specifying the test to be used in differential expression analysis.
 This argument is only used if \code{srt} is specified.}
@@ -137,11 +136,11 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType"
 )
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = "GO_BP",
   species = "Mus_musculus"
@@ -149,14 +148,14 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
 \dontrun{
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   DE_threshold = "p_val_adj < 0.05",
   db = c("MSigDB", "MSigDB_MH"),
   species = "Mus_musculus"
@@ -164,20 +163,20 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 EnrichmentPlot(
   pancreas_sub,
   db = "MSigDB_MH",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
 # Remove redundant GO terms
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = "GO_BP",
   GO_simplify = TRUE,
   species = "Mus_musculus"
@@ -185,7 +184,7 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP_sim",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 
@@ -209,7 +208,7 @@ EnrichmentPlot(
 # Use a combined database
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = c(
     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
   ),
@@ -219,7 +218,7 @@ pancreas_sub <- RunEnrichment(
 EnrichmentPlot(
   pancreas_sub,
   db = "Combined",
-  group_by = "CellType",
+  group.by = "CellType",
   plot_type = "comparison"
 )
 }

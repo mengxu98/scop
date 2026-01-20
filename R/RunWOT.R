@@ -36,7 +36,7 @@
 #'
 #' pancreas_sub <- RunWOT(
 #'   pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   time_field = "Lineage1",
 #'   time_from = min(pancreas_sub$Lineage1, na.rm = TRUE),
 #'   time_to = max(pancreas_sub$Lineage1, na.rm = TRUE),
@@ -51,7 +51,7 @@
 #' )
 #' pancreas_sub <- RunWOT(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   time_field = "Custom_Time",
 #'   time_from = 1,
 #'   time_to = 10,
@@ -65,7 +65,7 @@ RunWOT <- function(
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
     adata = NULL,
-    group_by = NULL,
+    group.by = NULL,
     time_field = "Time",
     growth_iters = 3L,
     tmap_out = "tmaps/tmap_out",
@@ -91,9 +91,9 @@ RunWOT <- function(
       message_type = "error"
     )
   }
-  if (is.null(group_by)) {
+  if (is.null(group.by)) {
     log_message(
-      "{.arg group_by} must be provided",
+      "{.arg group.by} must be provided",
       message_type = "error"
     )
   }
@@ -170,7 +170,11 @@ RunWOT <- function(
       layer_y = layer_y
     )
   }
-  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  if ("group.by" %in% names(args)) {
+    args[["group_by"]] <- args[["group.by"]]
+    args[["group.by"]] <- NULL
+  }
+  groups <- py_to_r2(args[["adata"]]$obs)[[group.by]]
   args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,
