@@ -1,5 +1,14 @@
 # scop
 
+# scop 0.8.1
+
+* **bugs**:
+  * `FeatureHeatmap()`: Fixed `group_palcolor` when a named vector is passed: the function previously used only the first color for all groups because `group_palcolor[[1]]` on a vector returns a single element. Now when `group.by` has length 1, a vector is automatically wrapped as a list; when `within_groups = TRUE`, `group_palcolor` is expanded in line with `group_palette`.
+  * `GroupHeatmap()`: Same `group_palcolor` fix as `FeatureHeatmap()`: support for named-vector input and correct expansion when `within_groups = TRUE`.
+
+* **docs**:
+  * `group_by` modified to `group.by` to unify documentation, involving functions: `RunCellRank()`, `RunDEtest()`, `VolcanoPlot()`, `RunEnrichment()`, `EnrichmentPlot()`, `RunGSEA()`, `GSEAPlot()`, `RunPalantir()`, `RunPAGA()`, `RunWOT()`, `RunSCVELO()`, releated to [#120](https://github.com/mengxu98/scop/issues/120).
+
 # scop 0.8.0
 
 * **func**:
