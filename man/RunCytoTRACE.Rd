@@ -12,7 +12,7 @@ RunCytoTRACE(object, ...)
   object,
   assay = NULL,
   layer = c("counts", "data"),
-  species = c("human", "mouse"),
+  species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
   parallelize_models = TRUE,
@@ -25,7 +25,7 @@ RunCytoTRACE(object, ...)
 
 \method{RunCytoTRACE}{default}(
   object,
-  species = c("human", "mouse"),
+  species = c("Homo_sapiens", "Mus_musculus"),
   batch_size = 10000,
   smooth_batch_size = 1000,
   parallelize_models = TRUE,
@@ -96,8 +96,16 @@ with cell IDs as row names.
 Run CytoTRACE 2
 }
 \examples{
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunCytoTRACE(pancreas_sub, species = "mouse")
-CytoTRACEPlot(pancreas_sub, group.by = "CellType")
+if (thisplot::check_ci_env()) {
+  data(pancreas_sub)
+  pancreas_sub <- standard_scop(pancreas_sub)
+  pancreas_sub <- RunCytoTRACE(
+    pancreas_sub,
+    species = "Mus_musculus"
+  )
+  CytoTRACEPlot(
+    pancreas_sub,
+    group.by = "CellType"
+  )
+}
 }
