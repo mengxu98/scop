@@ -91,7 +91,7 @@ RenameFeatures <- function(
   return(srt)
 }
 
-#' Rename clusters for the Seurat object
+#' @title Rename clusters for the Seurat object
 #'
 #' @inheritParams standard_scop
 #' @param group.by The old group used to rename cells.
