@@ -684,7 +684,7 @@ CellDimPlot(
 # Show PAGA results on the plot
 pancreas_sub <- RunPAGA(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   return_seurat = TRUE
@@ -726,7 +726,7 @@ CellDimPlot(
 # Show RNA velocity results on the plot
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   mode = "stochastic",

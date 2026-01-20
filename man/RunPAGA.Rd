@@ -11,7 +11,7 @@ RunPAGA(
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
-  group_by = NULL,
+  group.by = NULL,
   linear_reduction = NULL,
   nonlinear_reduction = NULL,
   basis = NULL,
@@ -57,7 +57,7 @@ If provided, \code{adata} will be ignored.}
 
 \item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
 
-\item{group_by}{Variable to use for grouping cells in the Seurat object.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
 
@@ -110,8 +110,7 @@ Default is \code{NULL}.}
 \item{legend.position}{Position of legend in plots.
 Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
-Default is \code{1}.}
+\item{cores}{The number of cores to use for \code{cellrank}.}
 
 \item{show_plot}{Whether to show the plot.
 Default is \code{FALSE}.}
@@ -143,7 +142,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP"
 )
@@ -164,7 +163,7 @@ CellDimPlot(
 
 pancreas_sub <- RunPAGA(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
   embedded_with_PAGA = TRUE,
