@@ -26,6 +26,7 @@ RunNMF(object, ...)
   reduction.key = "BE_",
   verbose = TRUE,
   seed.use = 11,
+  cores = 0,
   ...
 )
 
@@ -44,6 +45,7 @@ RunNMF(object, ...)
   reduction.key = "BE_",
   verbose = TRUE,
   seed.use = 11,
+  cores = 0,
   ...
 )
 
@@ -62,6 +64,7 @@ RunNMF(object, ...)
   reduction.key = "BE_",
   verbose = TRUE,
   seed.use = 11,
+  cores = 0,
   ...
 )
 
@@ -78,6 +81,7 @@ RunNMF(object, ...)
   nfeatures.print = 30,
   reduction.key = "BE_",
   verbose = TRUE,
+  cores = 0,
   seed.use = 11,
   ...
 )
@@ -128,6 +132,10 @@ Default is \code{TRUE}.}
 
 \item{seed.use}{Random seed for reproducibility.
 Default is \code{11}.}
+
+\item{cores}{The number of threads to be used in \code{RcppML} functions that are parallelized with \code{OpenMP}.
+If \code{0}, the number of threads will be automatically determined by \code{\link[RcppML:setRcppMLthreads]{RcppML::setRcppMLthreads()}}.
+Default is \code{0}.}
 }
 \description{
 Run NMF (non-negative matrix factorization)
