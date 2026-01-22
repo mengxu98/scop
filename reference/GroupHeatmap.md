@@ -713,6 +713,22 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:40:37] Start standard scop workflow...
+#> ℹ [2026-01-22 03:40:37] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:40:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:40:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:40:39] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:40:40] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:40:40] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:40:40] Finished check
+#> ℹ [2026-01-22 03:40:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:40:41] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:40:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:40:42] Reorder clusters...
+#> ℹ [2026-01-22 03:40:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:40:42] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:40:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:40:49] Run scop standard workflow completed
 ht1 <- GroupHeatmap(
   pancreas_sub,
   features = c(

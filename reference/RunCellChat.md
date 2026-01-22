@@ -83,11 +83,28 @@ RunCellChat(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:43:40] Start standard scop workflow...
+#> ℹ [2026-01-22 03:43:40] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:43:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:43:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:43:42] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:43:43] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:43:43] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:43:43] Finished check
+#> ℹ [2026-01-22 03:43:43] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:43:44] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:43:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:43:45] Reorder clusters...
+#> ℹ [2026-01-22 03:43:45] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:43:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:43:48] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:43:52] Run scop standard workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
+#> ℹ [2026-01-22 03:43:52] Start CellChat analysis
 #> Registered S3 method overwritten by 'ggnetwork':
 #>   method         from  
 #>   fortify.igraph ggtree
@@ -96,11 +113,14 @@ pancreas_sub <- RunCellChat(
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-01-20 07:40:04.010883]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-01-20 07:41:13.561644]"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-01-22 03:45:10.357611]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-01-22 03:46:21.742769]"
+#> ✔ [2026-01-22 03:46:21] CellChat analysis completed
 
 CellChatPlot(pancreas_sub)
+#> ℹ [2026-01-22 03:46:21] Creating "aggregate" plot for condition "ALL"
 
 #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
 
+#> ✔ [2026-01-22 03:46:22] Plot creation completed
 ```

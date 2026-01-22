@@ -168,6 +168,22 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:16:10] Start standard scop workflow...
+#> ℹ [2026-01-22 03:16:11] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:16:11] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:16:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:16:13] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:16:13] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:16:13] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:16:14] Finished check
+#> ℹ [2026-01-22 03:16:14] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:16:14] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:16:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:16:16] Reorder clusters...
+#> ℹ [2026-01-22 03:16:16] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:16:16] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:16:19] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:16:22] Run scop standard workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -178,9 +194,15 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ⠙ [2026-01-20 07:10:00] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
-#> ✔ [2026-01-20 07:10:00] Completed 2 tasks in 134ms
+#> ℹ [2026-01-22 03:16:22] Start cell scoring
+#> ℹ [2026-01-22 03:16:22] Data type is log-normalized
+#> ℹ [2026-01-22 03:16:22] Number of feature lists to be scored: 2
+#> ℹ [2026-01-22 03:16:22] Using 1 core
+#> ⠙ [2026-01-22 03:16:22] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
+#> ✔ [2026-01-22 03:16:22] Completed 2 tasks in 131ms
 #> 
+#> ℹ [2026-01-22 03:16:22] Building results
+#> ✔ [2026-01-22 03:16:23] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.

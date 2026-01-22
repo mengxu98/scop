@@ -51,10 +51,28 @@ prediction scores stored in the meta.data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:57:11] Start standard scop workflow...
+#> ℹ [2026-01-22 03:57:11] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:57:11] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:57:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:57:13] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:57:14] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:57:14] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:57:14] Finished check
+#> ℹ [2026-01-22 03:57:15] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:57:15] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:57:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:57:16] Reorder clusters...
+#> ℹ [2026-01-22 03:57:16] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:57:16] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:57:20] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:57:25] Run scop standard workflow completed
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"
 )
+#> ℹ [2026-01-22 03:57:25] Data type is raw counts
+#> ℹ [2026-01-22 03:57:26] Data type is raw counts
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",

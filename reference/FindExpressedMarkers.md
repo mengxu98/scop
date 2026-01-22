@@ -238,6 +238,22 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:40:15] Start standard scop workflow...
+#> ℹ [2026-01-22 03:40:16] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:40:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:40:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:40:18] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:40:19] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:40:19] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:40:19] Finished check
+#> ℹ [2026-01-22 03:40:19] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:40:19] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:40:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:40:21] Reorder clusters...
+#> ℹ [2026-01-22 03:40:21] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:40:21] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:40:24] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:40:28] Run scop standard workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -245,10 +261,12 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ⠙ [2026-01-20 07:35:14] Running for 1 [1/6145] ■                               …
-#> ⠹ [2026-01-20 07:35:14] Running for 3316 [3316/6145] ■■■■■■■■■■■■■■■■■         …
-#> ✔ [2026-01-20 07:35:14] Completed 6145 tasks in 3.3s
+#> ℹ [2026-01-22 03:40:29] Using 1 core
+#> ⠙ [2026-01-22 03:40:29] Running for 1 [1/6145] ■                               …
+#> ⠹ [2026-01-22 03:40:29] Running for 875 [875/6145] ■■■■■                       …
+#> ✔ [2026-01-22 03:40:29] Completed 6145 tasks in 3.4s
 #> 
+#> ℹ [2026-01-22 03:40:29] Building results
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
 #> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33
