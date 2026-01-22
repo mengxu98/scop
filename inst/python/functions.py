@@ -2256,7 +2256,9 @@ def CellRank(
                 try:
                     estimator.compute_schur(n_states_schur, method=schur_method)
                 except (ValueError, RuntimeError) as schur_error:
-                    if "subspace_angles" in str(schur_error) or "invariant subspace" in str(schur_error):
+                    if "subspace_angles" in str(
+                        schur_error
+                    ) or "invariant subspace" in str(schur_error):
                         if schur_method == "brandts":
                             log_message(
                                 f"Schur decomposition with '{schur_method}' method failed: {schur_error}",
@@ -2861,26 +2863,35 @@ def CellRank(
                     try:
                         vkey = mode[-1] if isinstance(mode, list) else mode
                         velocity_graph_key = vkey + "_graph"
-                        
+
                         if velocity_graph_key in adata.uns:
                             adata.uns["velocity_graph"] = adata.uns[velocity_graph_key]
                             if velocity_graph_key + "_neg" in adata.uns:
-                                adata.uns["velocity_graph_neg"] = adata.uns[velocity_graph_key + "_neg"]
+                                adata.uns["velocity_graph_neg"] = adata.uns[
+                                    velocity_graph_key + "_neg"
+                                ]
                             else:
                                 log_message(
                                     "velocity_graph_neg not found, computing velocity graph...",
                                     message_type="info",
                                     verbose=verbose,
                                 )
-                                scv.tl.velocity_graph(adata, vkey=vkey, n_neighbors=n_neighbors, n_jobs=n_jobs)
+                                scv.tl.velocity_graph(
+                                    adata,
+                                    vkey=vkey,
+                                    n_neighbors=n_neighbors,
+                                    n_jobs=n_jobs,
+                                )
                         elif "velocity_graph" not in adata.uns:
                             log_message(
                                 "velocity_graph not found, computing velocity graph...",
                                 message_type="info",
                                 verbose=verbose,
                             )
-                            scv.tl.velocity_graph(adata, vkey=vkey, n_neighbors=n_neighbors, n_jobs=n_jobs)
-                        
+                            scv.tl.velocity_graph(
+                                adata, vkey=vkey, n_neighbors=n_neighbors, n_jobs=n_jobs
+                            )
+
                         scv.tl.recover_dynamics(adata, use_raw=False, n_jobs=n_jobs)
                         terminal_key = (
                             "to_terminal_states_probs"
@@ -3045,13 +3056,6 @@ def PAGA(
 
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-
-        if is_apple_silicon:
-            plt.rcParams["figure.max_open_warning"] = 0
-            plt.rcParams["figure.figsize"] = (4, 4)
-            plt.rcParams["axes.linewidth"] = 0.5
-            plt.rcParams["lines.linewidth"] = 0.5
-            plt.rcParams["font.size"] = 8
     except Exception as e:
         log_message(
             f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
@@ -4151,13 +4155,6 @@ def CellTypist(
 
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-
-        if is_apple_silicon:
-            plt.rcParams["figure.max_open_warning"] = 0
-            plt.rcParams["figure.figsize"] = (4, 4)
-            plt.rcParams["axes.linewidth"] = 0.5
-            plt.rcParams["lines.linewidth"] = 0.5
-            plt.rcParams["font.size"] = 8
     except Exception as e:
         log_message(
             f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
