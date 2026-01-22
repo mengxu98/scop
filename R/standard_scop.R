@@ -106,7 +106,7 @@
 #' patchwork::wrap_plots(plist1)
 #'
 #' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "fr"
+#'   "umap", "tsne", "fr"
 #' )
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
@@ -387,23 +387,15 @@ standard_scop <- function(
     )
   }
 
-  if (paste0(prefix, linear_reduction[1], "clusters") %in% colnames(srt@meta.data)) {
-    srt[[paste0(prefix, "clusters")]] <- srt[[paste0(
-      prefix,
-      linear_reduction[1],
-      "clusters"
-    )]]
+  cluster_name <- paste0(prefix, linear_reduction[1], "clusters")
+  if (cluster_name %in% colnames(srt@meta.data)) {
+    srt[[paste0(prefix, "clusters")]] <- srt[[cluster_name]]
   }
   for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
-      if (paste0(prefix, linear_reduction[1], toupper(nr), n, "D") %in% names(srt@reductions)) {
-        reduc <- srt@reductions[[paste0(
-          prefix,
-          linear_reduction[1],
-          toupper(nr),
-          n,
-          "D"
-        )]]
+      reductions_name <- paste0(prefix, linear_reduction[1], toupper(nr), n, "D")
+      if (reductions_name %in% names(srt@reductions)) {
+        reduc <- srt@reductions[[reductions_name]]
         srt@reductions[[paste0(prefix, toupper(nr), n, "D")]] <- reduc
       }
     }

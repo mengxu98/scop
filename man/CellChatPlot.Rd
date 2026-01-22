@@ -54,7 +54,6 @@ Default is \code{TRUE}.}
 \link{CellChatPlot} creates various visualizations for CellChat analysis results stored in a Seurat object.
 }
 \examples{
-options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
