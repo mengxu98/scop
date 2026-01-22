@@ -1048,7 +1048,7 @@ GroupHeatmap <- function(
 
   all_agg <- do.call(cbind, mat_raw_list)
   gene_mean <- rowMeans(all_agg, na.rm = TRUE)
-  gene_sd <- apply(all_agg, 1L, sd, na.rm = TRUE)
+  gene_sd <- apply(all_agg, 1L, stats::sd, na.rm = TRUE)
   gene_sd[!is.finite(gene_sd) | gene_sd < 1e-10] <- 1
 
   mat_list <- list()

@@ -165,7 +165,7 @@ plist1 <- lapply(
 patchwork::wrap_plots(plist1)
 
 nonlinear_reductions <- c(
-  "umap", "tsne", "dm", "fr"
+  "umap", "tsne", "fr"
 )
 pancreas_sub <- standard_scop(
   pancreas_sub,

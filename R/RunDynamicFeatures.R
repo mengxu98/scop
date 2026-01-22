@@ -1,7 +1,4 @@
-#' @title RunDynamicFeatures
-#'
-#' @description
-#' Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
+#' @title Calculates dynamic features for lineages
 #'
 #' @md
 #' @inheritParams thisutils::parallelize_fun
