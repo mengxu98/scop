@@ -11,14 +11,14 @@
 #'
 #' @examples
 #' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' names(pancreas_sub@reductions)
+#'
 #' DefaultReduction(pancreas_sub)
 #'
-#' # Searches for matches to "pca"
 #' DefaultReduction(pancreas_sub, pattern = "pca")
 #'
-#' # Searches for approximate matches to "pc"
-#' DefaultReduction(pancreas_sub, pattern = "pc")
+#' DefaultReduction(pancreas_sub, pattern = "umap")
 DefaultReduction <- function(
     srt,
     pattern = NULL,
