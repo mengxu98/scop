@@ -136,6 +136,23 @@ if (thisplot::check_ci_env()) {
     group.by = "CellType"
   )
 }
+#> ℹ [2026-01-22 03:51:46] Start standard scop workflow...
+#> ℹ [2026-01-22 03:51:47] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:51:47] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:51:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:51:49] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:51:49] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:51:49] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:51:50] Finished check
+#> ℹ [2026-01-22 03:51:50] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:51:50] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:51:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:51:51] Reorder clusters...
+#> ℹ [2026-01-22 03:51:51] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:51:51] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:51:55] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:52:00] Run scop standard workflow completed
+#> ◌ [2026-01-22 03:52:00] Running CytoTRACE2
 #> cytotrace2: Started loading data
 #> Dataset contains 15998 genes and 1000 cells.
 #> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
@@ -151,4 +168,5 @@ if (thisplot::check_ci_env()) {
 #> cytotrace2: Running with slow mode (subsamples are processed sequentially)
 #> Number of cores for KNN: 1
 #> cytotrace2: Finished
+#> ✔ [2026-01-22 03:53:05] CytoTRACE2 computed successfully
 ```

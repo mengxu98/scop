@@ -1079,7 +1079,7 @@ etc.
 - [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md) :
   Run WOT analysis
 - [`RunDynamicFeatures()`](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md)
-  : RunDynamicFeatures
+  : Calculates dynamic features for lineages
 
 ### Cell Communication Analysis
 

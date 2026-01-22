@@ -503,12 +503,35 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:07:20] Start standard scop workflow...
+#> ℹ [2026-01-22 03:07:21] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:07:21] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:22] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:23] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:07:23] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:07:23] Finished check
+#> ℹ [2026-01-22 03:07:23] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:07:24] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:07:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:07:25] Reorder clusters...
+#> ℹ [2026-01-22 03:07:25] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:07:25] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:07:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:07:30] Run scop standard workflow completed
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
 )
+#> ℹ [2026-01-22 03:07:30] Use the HVF to calculate distance metric
+#> ℹ [2026-01-22 03:07:30] Use [1] 2000 features to calculate distance.
 #> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
 #> This message is displayed once per session.
+#> ℹ [2026-01-22 03:07:30] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:30] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:30] Calculate similarity...
+#> ℹ [2026-01-22 03:07:30] Use raw method to find neighbors
+#> ℹ [2026-01-22 03:07:30] Predict cell type...
 ht1$plot
 
 
@@ -525,10 +548,31 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
+#> ℹ [2026-01-22 03:07:32] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
+#> ℹ [2026-01-22 03:07:32] Spliting `srt_merge` into `srt_list` by column "tech"...
+#> ℹ [2026-01-22 03:07:32] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:07:32] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:33] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
+#> ! [2026-01-22 03:07:34] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:35] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
+#> ! [2026-01-22 03:07:35] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:36] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
+#> ! [2026-01-22 03:07:36] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:37] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
+#> ! [2026-01-22 03:07:38] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:07:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:39] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
+#> ℹ [2026-01-22 03:07:39] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:07:39] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:07:40] Finished check
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -542,6 +586,13 @@ ht2 <- CellCorHeatmap(
   ref_annotation = "tech",
   ref_annotation_palette = "Set3"
 )
+#> ℹ [2026-01-22 03:07:44] Use the HVF to calculate distance metric
+#> ℹ [2026-01-22 03:07:44] Use [1] 632 features to calculate distance.
+#> ℹ [2026-01-22 03:07:44] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:44] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:44] Calculate similarity...
+#> ℹ [2026-01-22 03:07:44] Use raw method to find neighbors
+#> ℹ [2026-01-22 03:07:44] Predict cell type...
 ht2$plot
 
 
@@ -555,6 +606,13 @@ ht3 <- CellCorHeatmap(
   ref_collapsing = FALSE,
   cluster_columns = TRUE
 )
+#> ℹ [2026-01-22 03:07:53] Use the HVF to calculate distance metric
+#> ℹ [2026-01-22 03:07:53] Use [1] 632 features to calculate distance.
+#> ℹ [2026-01-22 03:07:55] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:55] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:07:55] Calculate similarity...
+#> ℹ [2026-01-22 03:07:55] Use raw method to find neighbors
+#> ℹ [2026-01-22 03:07:56] Predict cell type...
 ht3$plot
 
 
@@ -572,6 +630,13 @@ ht4 <- CellCorHeatmap(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   )
 )
+#> ℹ [2026-01-22 03:08:10] Use the HVF to calculate distance metric
+#> ℹ [2026-01-22 03:08:10] Use [1] 632 features to calculate distance.
+#> ℹ [2026-01-22 03:08:10] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:08:10] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-01-22 03:08:10] Calculate similarity...
+#> ℹ [2026-01-22 03:08:10] Use raw method to find neighbors
+#> ℹ [2026-01-22 03:08:10] Predict cell type...
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the

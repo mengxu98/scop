@@ -143,6 +143,22 @@ RunMDS(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 04:10:18] Start standard scop workflow...
+#> ℹ [2026-01-22 04:10:19] Checking a list of <Seurat>...
+#> ! [2026-01-22 04:10:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 04:10:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 04:10:21] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 04:10:21] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 04:10:21] Number of available HVF: 2000
+#> ℹ [2026-01-22 04:10:22] Finished check
+#> ℹ [2026-01-22 04:10:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 04:10:22] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 04:10:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 04:10:23] Reorder clusters...
+#> ℹ [2026-01-22 04:10:23] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 04:10:23] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 04:10:28] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 04:10:33] Run scop standard workflow completed
 pancreas_sub <- RunMDS(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

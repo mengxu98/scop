@@ -246,6 +246,22 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:16:23] Start standard scop workflow...
+#> ℹ [2026-01-22 03:16:24] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:16:24] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:16:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:16:26] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:16:26] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:16:26] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:16:27] Finished check
+#> ℹ [2026-01-22 03:16:27] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:16:27] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:16:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:16:28] Reorder clusters...
+#> ℹ [2026-01-22 03:16:28] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:16:28] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:16:31] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:16:34] Run scop standard workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -473,6 +489,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
+#> ! [2026-01-22 03:16:41] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -480,6 +497,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
+#> ! [2026-01-22 03:16:51] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -491,6 +509,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
+#> ! [2026-01-22 03:16:51] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -513,6 +532,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
+#> ! [2026-01-22 03:16:59] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -523,6 +543,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
+#> ! [2026-01-22 03:16:59] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the ggupset package.

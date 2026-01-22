@@ -34,16 +34,33 @@ Default reduction name.
 
 ``` r
 data(pancreas_sub)
+pancreas_sub <- standard_scop(pancreas_sub)
+#> ℹ [2026-01-22 03:19:49] Start standard scop workflow...
+#> ℹ [2026-01-22 03:19:49] Checking a list of <Seurat>...
+#> ! [2026-01-22 03:19:50] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-22 03:19:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:19:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-22 03:19:52] Use the separate HVF from srt_list
+#> ℹ [2026-01-22 03:19:52] Number of available HVF: 2000
+#> ℹ [2026-01-22 03:19:52] Finished check
+#> ℹ [2026-01-22 03:19:52] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-22 03:19:52] Perform pca linear dimension reduction
+#> ℹ [2026-01-22 03:19:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-22 03:19:53] Reorder clusters...
+#> ℹ [2026-01-22 03:19:53] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-22 03:19:53] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-22 03:19:57] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-22 03:20:00] Run scop standard workflow completed
 names(pancreas_sub@reductions)
-#> character(0)
+#> [1] "Standardpca"       "StandardpcaUMAP2D" "StandardpcaUMAP3D"
+#> [4] "StandardUMAP2D"    "StandardUMAP3D"   
+
 DefaultReduction(pancreas_sub)
-#> Error in DefaultReduction(pancreas_sub): Unable to find any reductions
+#> [1] "StandardUMAP2D"
 
-# Searches for matches to "pca"
 DefaultReduction(pancreas_sub, pattern = "pca")
-#> Error in DefaultReduction(pancreas_sub, pattern = "pca"): Unable to find any reductions
+#> [1] "Standardpca"
 
-# Searches for approximate matches to "pc"
-DefaultReduction(pancreas_sub, pattern = "pc")
-#> Error in DefaultReduction(pancreas_sub, pattern = "pc"): Unable to find any reductions
+DefaultReduction(pancreas_sub, pattern = "umap")
+#> [1] "StandardUMAP2D"
 ```
