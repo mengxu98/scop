@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunDynamicFeatures.R
 \name{RunDynamicFeatures}
 \alias{RunDynamicFeatures}
-\title{RunDynamicFeatures}
+\title{Calculates dynamic features for lineages}
 \usage{
 RunDynamicFeatures(
   srt,
@@ -67,7 +67,7 @@ Default is \code{11}.}
 Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.
 }
 \description{
-Calculates dynamic features for lineages in a single-cell RNA-seq dataset.
+Calculates dynamic features for lineages
 }
 \examples{
 data(pancreas_sub)
