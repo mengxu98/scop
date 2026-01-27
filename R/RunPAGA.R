@@ -181,6 +181,13 @@ RunPAGA <- function(
       }
     }
   )
+
+  args[["legend_loc"]] <- legend.position
+  args[["n_jobs"]] <- cores
+  args[["save"]] <- save_plot
+  args[["dpi"]] <- plot_dpi
+  args[["fileprefix"]] <- plot_prefix
+
   params <- c(
     "srt",
     "assay_x",
@@ -189,22 +196,14 @@ RunPAGA <- function(
     "layer_y",
     "return_seurat",
     "palette",
-    "palcolor"
+    "palcolor",
+    "save_plot",
+    "plot_dpi",
+    "plot_prefix",
+    "legend.position",
+    "cores"
   )
   args <- args[!names(args) %in% params]
-
-  # Map legend.position to legend_loc for Python
-  args[["legend_loc"]] <- legend.position
-  args <- args[!names(args) %in% c("legend.position")]
-
-  args[["n_jobs"]] <- cores
-  args <- args[!names(args) %in% c("cores")]
-
-  # Map new parameters to Python legacy parameters
-  args[["save"]] <- save_plot
-  args[["dpi"]] <- plot_dpi
-  args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix")]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
