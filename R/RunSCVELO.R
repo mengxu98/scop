@@ -223,26 +223,25 @@ RunSCVELO <- function(
   args[["n_jobs"]] <- cores
 
   args[["legend_loc"]] <- legend.position
-  args <- args[!names(args) %in% c("legend.position")]
 
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("plot_dpi", "plot_prefix")]
 
-  args <- args[
-    !names(args) %in%
-      c(
-        "srt",
-        "assay_x",
-        "layer_x",
-        "assay_y",
-        "layer_y",
-        "return_seurat",
-        "palette",
-        "palcolor",
-        "cores"
-      )
-  ]
+  params <- c(
+    "srt",
+    "assay_x",
+    "layer_x",
+    "assay_y",
+    "layer_y",
+    "return_seurat",
+    "palette",
+    "palcolor",
+    "cores",
+    "legend.position",
+    "plot_dpi",
+    "plot_prefix"
+  )
+  args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
