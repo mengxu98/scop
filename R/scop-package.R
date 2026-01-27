@@ -83,11 +83,8 @@ print.scop_logo <- function(x, ...) {
 
   verbose <- thisutils::get_verbose()
   if (isTRUE(verbose)) {
-    version <- utils::packageDescription(
-      pkgname,
-      fields = "Version"
-    )
     scop_env_init <- getOption("scop_env_init", default = FALSE)
+
     version <- utils::packageVersion(pkgname)
     date <- utils::packageDate(pkgname)
     url <- utils::packageDescription(pkgname, fields = "URL")
