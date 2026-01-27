@@ -145,21 +145,22 @@ RunWOT <- function(
   args[["save"]] <- save_plot
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("save_plot", "plot_dpi", "plot_prefix", "plot_format")]
 
-  args <- args[
-    !names(args) %in%
-      c(
-        "srt",
-        "assay_x",
-        "layer_x",
-        "assay_y",
-        "layer_y",
-        "return_seurat",
-        "palette",
-        "palcolor"
-      )
-  ]
+  params <- c(
+    "srt",
+    "assay_x",
+    "layer_x",
+    "assay_y",
+    "layer_y",
+    "return_seurat",
+    "palette",
+    "palcolor",
+    "save_plot",
+    "plot_dpi",
+    "plot_prefix",
+    "plot_format"
+  )
+  args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
