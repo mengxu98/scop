@@ -464,22 +464,22 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-22 03:34:47] Start standard scop workflow...
-#> ℹ [2026-01-22 03:34:48] Checking a list of <Seurat>...
-#> ! [2026-01-22 03:34:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-22 03:34:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-22 03:34:50] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-22 03:34:50] Use the separate HVF from srt_list
-#> ℹ [2026-01-22 03:34:50] Number of available HVF: 2000
-#> ℹ [2026-01-22 03:34:50] Finished check
-#> ℹ [2026-01-22 03:34:51] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-22 03:34:51] Perform pca linear dimension reduction
-#> ℹ [2026-01-22 03:34:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-22 03:34:52] Reorder clusters...
-#> ℹ [2026-01-22 03:34:52] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-22 03:34:52] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-22 03:34:56] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-22 03:34:59] Run scop standard workflow completed
+#> ℹ [2026-01-27 07:45:44] Start standard scop workflow...
+#> ℹ [2026-01-27 07:45:45] Checking a list of <Seurat>...
+#> ! [2026-01-27 07:45:45] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-27 07:45:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-27 07:45:47] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-27 07:45:48] Use the separate HVF from srt_list
+#> ℹ [2026-01-27 07:45:48] Number of available HVF: 2000
+#> ℹ [2026-01-27 07:45:48] Finished check
+#> ℹ [2026-01-27 07:45:48] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-27 07:45:49] Perform pca linear dimension reduction
+#> ℹ [2026-01-27 07:45:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-27 07:45:50] Reorder clusters...
+#> ℹ [2026-01-27 07:45:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-27 07:45:50] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-27 07:45:53] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-27 07:45:57] Run scop standard workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
