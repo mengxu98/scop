@@ -52,7 +52,7 @@
 #' pancreas_sub <- RunSCVELO(
 #'   pancreas_sub,
 #'   assay_x = "RNA",
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP"
 #' )
@@ -85,7 +85,7 @@
 #' pancreas_sub <- RunSCVELO(
 #'   pancreas_sub,
 #'   assay_x = "RNA",
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   linear_reduction = "PCA",
 #'   nonlinear_reduction = "UMAP",
 #'   mode = c("deterministic", "stochastic"),
@@ -104,7 +104,7 @@ RunSCVELO <- function(
     layer_x = "counts",
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
-    group_by = NULL,
+    group.by = NULL,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
     basis = NULL,
@@ -164,9 +164,9 @@ RunSCVELO <- function(
       message_type = "error"
     )
   }
-  if (is.null(group_by)) {
+  if (is.null(group.by)) {
     log_message(
-      "{.arg group_by} must be provided",
+      "{.arg group.by} must be provided",
       message_type = "error"
     )
   }
@@ -223,26 +223,25 @@ RunSCVELO <- function(
   args[["n_jobs"]] <- cores
 
   args[["legend_loc"]] <- legend.position
-  args <- args[!names(args) %in% c("legend.position")]
 
   args[["dpi"]] <- plot_dpi
   args[["fileprefix"]] <- plot_prefix
-  args <- args[!names(args) %in% c("plot_dpi", "plot_prefix")]
 
-  args <- args[
-    !names(args) %in%
-      c(
-        "srt",
-        "assay_x",
-        "layer_x",
-        "assay_y",
-        "layer_y",
-        "return_seurat",
-        "palette",
-        "palcolor",
-        "cores"
-      )
-  ]
+  params <- c(
+    "srt",
+    "assay_x",
+    "layer_x",
+    "assay_y",
+    "layer_y",
+    "return_seurat",
+    "palette",
+    "palcolor",
+    "cores",
+    "legend.position",
+    "plot_dpi",
+    "plot_prefix"
+  )
+  args <- args[!names(args) %in% params]
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
@@ -254,7 +253,11 @@ RunSCVELO <- function(
     )
   }
 
-  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  if ("group.by" %in% names(args)) {
+    args[["group_by"]] <- args[["group.by"]]
+    args[["group.by"]] <- NULL
+  }
+  groups <- py_to_r2(args[["adata"]]$obs)[[group.by]]
   args[["palette"]] <- palette_colors(
     levels(groups) %||% unique(groups),
     palette = palette,

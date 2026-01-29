@@ -130,19 +130,11 @@ CheckDataType.default <- function(
 #' @param normalization_method The normalization method to be used.
 #' Possible values are `"LogNormalize"`, `"SCT"`, and `"TFIDF"`.
 #' Default is `"LogNormalize"`.
-#' @param do_HVF_finding Whether highly variable feature (HVF) finding should be performed.
-#' Default is `TRUE`.
 #' @param HVF_source The source of highly variable features.
 #' Possible values are `"global"` and `"separate"`.
 #' Default is `"separate"`.
-#' @param HVF_method The method for selecting highly variable features.
-#' Default is `"vst"`.
-#' @param nHVF The number of highly variable features to select.
-#' Default is `2000`.
 #' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
 #' Default is `1`.
-#' @param HVF A vector of highly variable features.
-#' Default is `NULL`.
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.
 #' Default is `NULL`.
 #'

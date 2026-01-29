@@ -21,18 +21,26 @@
 #' [RunCytoTRACE], [CellDimPlot], [FeatureDimPlot]
 #'
 #' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunCytoTRACE(pancreas_sub)
+#' if (thisplot::check_ci_env()) {
+#'   data(pancreas_sub)
+#'   pancreas_sub <- standard_scop(pancreas_sub)
+#'   pancreas_sub <- RunCytoTRACE(
+#'     pancreas_sub,
+#'     species = "Mus_musculus"
+#'   )
 #'
-#' CytoTRACEPlot(pancreas_sub, group.by = "CellType")
+#'   CytoTRACEPlot(
+#'     pancreas_sub,
+#'     group.by = "CellType"
+#'   )
 #'
-#' plots <- CytoTRACEPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   combine = FALSE
-#' )
-#' plots$Boxplot
+#'   plots <- CytoTRACEPlot(
+#'     pancreas_sub,
+#'     group.by = "CellType",
+#'     combine = FALSE
+#'   )
+#'   plots$Boxplot
+#' }
 CytoTRACEPlot <- function(
     srt,
     reduction = NULL,

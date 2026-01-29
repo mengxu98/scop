@@ -23,6 +23,9 @@
 #' Default is `"nmf"`.
 #' @param reduction.key The prefix for the column names of the basis vectors.
 #' Default is `"BE_"`.
+#' @param cores The number of threads to be used in `RcppML` functions that are parallelized with `OpenMP`.
+#' If `0`, the number of threads will be automatically determined by [RcppML::setRcppMLthreads()].
+#' Default is `0`.
 #' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
 #'
 #' @rdname RunNMF
@@ -61,7 +64,11 @@ RunNMF.Seurat <- function(
     reduction.key = "BE_",
     verbose = TRUE,
     seed.use = 11,
+    cores = 0,
     ...) {
+  log_message("Running {.pkg NMF}...", verbose = verbose)
+  set.seed(seed = seed.use)
+
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
   assay_data <- Seurat::GetAssay(object = object, assay = assay)
@@ -80,10 +87,17 @@ RunNMF.Seurat <- function(
     nfeatures.print = nfeatures.print,
     reduction.key = reduction.key,
     seed.use = seed.use,
+    cores = cores,
     ...
   )
   object[[reduction.name]] <- reduction_data
   object <- Seurat::LogSeuratCommand(object = object)
+
+  log_message(
+    "{.pkg NMF} compute completed",
+    message_type = "success",
+    verbose = verbose
+  )
   return(object)
 }
 
@@ -105,6 +119,7 @@ RunNMF.Assay <- function(
     reduction.key = "BE_",
     verbose = TRUE,
     seed.use = 11,
+    cores = 0,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
@@ -155,6 +170,7 @@ RunNMF.Assay5 <- function(
     reduction.key = "BE_",
     verbose = TRUE,
     seed.use = 11,
+    cores = 0,
     ...) {
   features <- features %||% SeuratObject::VariableFeatures(object = object)
   data_use <- GetAssayData5(
@@ -182,6 +198,7 @@ RunNMF.Assay5 <- function(
     nfeatures.print = nfeatures.print,
     reduction.key = reduction.key,
     seed.use = seed.use,
+    cores = cores,
     ...
   )
   return(reduction_data)
@@ -203,25 +220,25 @@ RunNMF.default <- function(
     nfeatures.print = 30,
     reduction.key = "BE_",
     verbose = TRUE,
+    cores = 0,
     seed.use = 11,
     ...) {
   set.seed(seed = seed.use)
-
   if (rev.nmf) {
     object <- Matrix::t(x = object)
   }
   nbes <- min(nbes, nrow(x = object) - 1)
   if (nmf.method == "RcppML") {
     check_r("zdebruine/RcppML", verbose = FALSE)
-    options("RcppML.verbose" = verbose)
-    options("RcppML.threads" = 0)
+    options("RcppML.verbose" = FALSE)
+    RcppML::setRcppMLthreads(cores)
 
     nmf_results <- RcppML::nmf(
       Matrix::t(object),
       k = nbes,
       tol = tol,
       maxit = maxit,
-      verbose = verbose,
+      verbose = FALSE,
       ...
     )
     cell_embeddings <- nmf_results$w

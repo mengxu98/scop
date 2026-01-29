@@ -311,10 +311,10 @@ Default is determined based on the number of rows and columns in the heatmap.}
 This should be a character string specifying the device name, such as \code{"png"}, \code{"jpeg"}, or \code{"pdf"}.
 Default is \code{"png"}.}
 
-\item{raster_by_magick}{Whether to use the magick package for rendering rasters.
-If set to \code{TRUE}, the magick package will be used instead of the raster package.
+\item{raster_by_magick}{Whether to use the \code{magick} package for rendering rasters.
+If set to \code{TRUE}, the \code{magick} package will be used instead of the raster package.
 This can be useful for rendering large heatmaps more efficiently.
-If the magick package is not installed, this argument will be ignored.}
+The \code{magick} package will automatically be installed if it is not installed.}
 
 \item{height}{The height of the heatmap in the specified units.
 If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}

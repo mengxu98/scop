@@ -7,7 +7,7 @@
 RunCellChat(
   srt,
   group.by,
-  species = c("human", "mouse", "zebrafish"),
+  species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
   split.by = NULL,
   annotation_selected = NULL,
   group_column = NULL,
@@ -51,7 +51,7 @@ pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
-  species = "mouse"
+  species = "Mus_musculus"
 )
 
 CellChatPlot(pancreas_sub)
