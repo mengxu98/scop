@@ -164,37 +164,37 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-27 07:57:36] Start standard scop workflow...
-#> ℹ [2026-01-27 07:57:37] Checking a list of <Seurat>...
-#> ! [2026-01-27 07:57:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-27 07:57:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:57:39] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:57:39] Use the separate HVF from srt_list
-#> ℹ [2026-01-27 07:57:39] Number of available HVF: 2000
-#> ℹ [2026-01-27 07:57:40] Finished check
-#> ℹ [2026-01-27 07:57:40] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-27 07:57:40] Perform pca linear dimension reduction
-#> ℹ [2026-01-27 07:57:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-27 07:57:41] Reorder clusters...
-#> ℹ [2026-01-27 07:57:41] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-27 07:57:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-27 07:57:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-27 07:57:49] Run scop standard workflow completed
+#> ℹ [2026-01-29 13:07:08] Start standard scop workflow...
+#> ℹ [2026-01-29 13:07:09] Checking a list of <Seurat>...
+#> ! [2026-01-29 13:07:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-29 13:07:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 13:07:11] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 13:07:11] Use the separate HVF from srt_list
+#> ℹ [2026-01-29 13:07:12] Number of available HVF: 2000
+#> ℹ [2026-01-29 13:07:12] Finished check
+#> ℹ [2026-01-29 13:07:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-29 13:07:12] Perform pca linear dimension reduction
+#> ℹ [2026-01-29 13:07:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-29 13:07:13] Reorder clusters...
+#> ℹ [2026-01-29 13:07:13] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-29 13:07:13] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-29 13:07:17] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-29 13:07:20] Run scop standard workflow completed
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-01-27 07:57:49] Data type is raw counts
-#> ℹ [2026-01-27 07:57:49] Data type is raw counts
-#> ℹ [2026-01-27 07:57:50] Data type is raw counts
-#> ℹ [2026-01-27 08:02:41] >>> Total cells: [1] 1000
-#> ℹ [2026-01-27 08:02:41] >>> Cells which are filtered out: [1] 45
-#> ℹ [2026-01-27 08:02:41] >>> [1] 22 potential doublets
-#> ℹ [2026-01-27 08:02:41] >>> [1] 23 outlier cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0low-UMI cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0low-gene cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0high-mito cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0high-ribo cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0ribo_mito_ratio outlier cells
-#> ℹ [2026-01-27 08:02:41] >>> [1] 0species-contaminated cells
-#> ℹ [2026-01-27 08:02:41] >>> Remained cells after filtering: [1] 955
+#> ℹ [2026-01-29 13:07:21] Data type is raw counts
+#> ℹ [2026-01-29 13:07:21] Data type is raw counts
+#> ℹ [2026-01-29 13:07:22] Data type is raw counts
+#> ℹ [2026-01-29 13:12:04] >>> Total cells: [1] 1000
+#> ℹ [2026-01-29 13:12:04] >>> Cells which are filtered out: [1] 45
+#> ℹ [2026-01-29 13:12:04] >>> [1] 22 potential doublets
+#> ℹ [2026-01-29 13:12:04] >>> [1] 23 outlier cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0low-UMI cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0low-gene cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0high-mito cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0high-ribo cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2026-01-29 13:12:04] >>> [1] 0species-contaminated cells
+#> ℹ [2026-01-29 13:12:04] >>> Remained cells after filtering: [1] 955
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
@@ -206,7 +206,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-01-27 08:02:41] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-01-29 13:12:04] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> `geom_line()`: Each group consists of only one observation.
 #> ℹ Do you need to adjust the group aesthetic?
 #> `geom_line()`: Each group consists of only one observation.
@@ -224,35 +224,35 @@ ifnb_sub <- RunCellQC(
   UMI_threshold = 1000,
   gene_threshold = 550
 )
-#> ℹ [2026-01-27 08:02:42] Data type is raw counts
-#> ℹ [2026-01-27 08:02:42] Running QC for CTRL
-#> ℹ [2026-01-27 08:02:42] Data type is raw counts
-#> ℹ [2026-01-27 08:02:42] Data type is raw counts
-#> ℹ [2026-01-27 08:02:48] >>> Total cells: [1] 1000
-#> ℹ [2026-01-27 08:02:48] >>> Cells which are filtered out: [1] 310
-#> ℹ [2026-01-27 08:02:48] >>> [1] 49 potential doublets
-#> ℹ [2026-01-27 08:02:48] >>> [1] 8 outlier cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 28low-UMI cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 250low-gene cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 0high-mito cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 0high-ribo cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 0ribo_mito_ratio outlier cells
-#> ℹ [2026-01-27 08:02:48] >>> [1] 0species-contaminated cells
-#> ℹ [2026-01-27 08:02:48] >>> Remained cells after filtering: [1] 690
-#> ℹ [2026-01-27 08:02:49] Running QC for STIM
-#> ℹ [2026-01-27 08:02:49] Data type is raw counts
-#> ℹ [2026-01-27 08:02:49] Data type is raw counts
-#> ℹ [2026-01-27 08:02:55] >>> Total cells: [1] 1000
-#> ℹ [2026-01-27 08:02:55] >>> Cells which are filtered out: [1] 308
-#> ℹ [2026-01-27 08:02:55] >>> [1] 47 potential doublets
-#> ℹ [2026-01-27 08:02:55] >>> [1] 12 outlier cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 25low-UMI cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 251low-gene cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 0high-mito cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 0high-ribo cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 0ribo_mito_ratio outlier cells
-#> ℹ [2026-01-27 08:02:55] >>> [1] 0species-contaminated cells
-#> ℹ [2026-01-27 08:02:55] >>> Remained cells after filtering: [1] 692
+#> ℹ [2026-01-29 13:12:05] Data type is raw counts
+#> ℹ [2026-01-29 13:12:05] Running QC for CTRL
+#> ℹ [2026-01-29 13:12:05] Data type is raw counts
+#> ℹ [2026-01-29 13:12:05] Data type is raw counts
+#> ℹ [2026-01-29 13:12:11] >>> Total cells: [1] 1000
+#> ℹ [2026-01-29 13:12:11] >>> Cells which are filtered out: [1] 310
+#> ℹ [2026-01-29 13:12:11] >>> [1] 49 potential doublets
+#> ℹ [2026-01-29 13:12:11] >>> [1] 8 outlier cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 28low-UMI cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 250low-gene cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 0high-mito cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 0high-ribo cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2026-01-29 13:12:11] >>> [1] 0species-contaminated cells
+#> ℹ [2026-01-29 13:12:11] >>> Remained cells after filtering: [1] 690
+#> ℹ [2026-01-29 13:12:11] Running QC for STIM
+#> ℹ [2026-01-29 13:12:11] Data type is raw counts
+#> ℹ [2026-01-29 13:12:11] Data type is raw counts
+#> ℹ [2026-01-29 13:12:18] >>> Total cells: [1] 1000
+#> ℹ [2026-01-29 13:12:18] >>> Cells which are filtered out: [1] 308
+#> ℹ [2026-01-29 13:12:18] >>> [1] 47 potential doublets
+#> ℹ [2026-01-29 13:12:18] >>> [1] 12 outlier cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 25low-UMI cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 251low-gene cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 0high-mito cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 0high-ribo cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 0ribo_mito_ratio outlier cells
+#> ℹ [2026-01-29 13:12:18] >>> [1] 0species-contaminated cells
+#> ℹ [2026-01-29 13:12:18] >>> Remained cells after filtering: [1] 692
 CellStatPlot(
   srt = ifnb_sub,
   stat.by = c(
@@ -264,7 +264,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-01-27 08:02:55] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-01-29 13:12:18] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 table(ifnb_sub$CellQC)

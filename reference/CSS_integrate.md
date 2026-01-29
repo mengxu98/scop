@@ -112,7 +112,7 @@ CSS_integrate(
 
   Whether to perform scaling. If `TRUE`, the function will force to
   scale the data using the
-  [Seurat::ScaleData](https://satijalab.org/seurat/reference/ScaleData.html)
+  [Seurat::ScaleData](https://rdrr.io/pkg/Seurat/man/ScaleData.html)
   function.
 
 - vars_to_regress:
