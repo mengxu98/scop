@@ -3,11 +3,10 @@
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams PrepareDB
+#' @inheritParams CellDimPlot
 #' @param srt A Seurat object containing the results of differential expression analysis (RunDEtest).
 #' If specified, the genes and groups will be extracted from the Seurat object automatically.
 #' If not specified, the `geneID` and `geneID_groups` arguments must be provided.
-#' @param group_by A character vector specifying the grouping variable in the Seurat object.
-#' This argument is only used if `srt` is specified.
 #' @param test.use A character vector specifying the test to be used in differential expression analysis.
 #' This argument is only used if `srt` is specified.
 #' @param DE_threshold A character vector specifying the filter condition for differential expression analysis.
@@ -62,11 +61,11 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group.by = "CellType"
 #' )
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   DE_threshold = "p_val_adj < 0.05",
 #'   db = "GO_BP",
 #'   species = "Mus_musculus"
@@ -74,14 +73,14 @@
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #'
 #' \dontrun{
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   DE_threshold = "p_val_adj < 0.05",
 #'   db = c("MSigDB", "MSigDB_MH"),
 #'   species = "Mus_musculus"
@@ -89,20 +88,20 @@
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "MSigDB",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "MSigDB_MH",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #'
 #' # Remove redundant GO terms
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   db = "GO_BP",
 #'   GO_simplify = TRUE,
 #'   species = "Mus_musculus"
@@ -110,7 +109,7 @@
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "GO_BP_sim",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #'
@@ -134,7 +133,7 @@
 #' # Use a combined database
 #' pancreas_sub <- RunEnrichment(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   db = c(
 #'     "KEGG", "WikiPathway", "Reactome", "PFAM", "MP"
 #'   ),
@@ -144,13 +143,13 @@
 #' EnrichmentPlot(
 #'   pancreas_sub,
 #'   db = "Combined",
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   plot_type = "comparison"
 #' )
 #' }
 RunEnrichment <- function(
     srt = NULL,
-    group_by = NULL,
+    group.by = NULL,
     test.use = "wilcox",
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
     geneID = NULL,
@@ -181,16 +180,16 @@ RunEnrichment <- function(
   check_r("clusterProfiler", verbose = FALSE)
   use_srt <- FALSE
   if (is.null(geneID)) {
-    if (is.null(group_by)) {
-      group_by <- "custom"
+    if (is.null(group.by)) {
+      group.by <- "custom"
     }
-    layer <- paste0("DEtest_", group_by)
+    layer <- paste0("DEtest_", group.by)
     if (
       !layer %in% names(srt@tools) ||
         length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
     ) {
       log_message(
-        "Cannot find the DEtest result for the group {.val {group_by}}. ",
+        "Cannot find the DEtest result for the group {.val {group.by}}. ",
         "You may perform {.fn RunDEtest} first",
         message_type = "error"
       )
@@ -468,7 +467,7 @@ RunEnrichment <- function(
   )
   if (isTRUE(use_srt)) {
     res[["DE_threshold"]] <- DE_threshold
-    srt@tools[[paste("Enrichment", group_by, test.use, sep = "_")]] <- res
+    srt@tools[[paste("Enrichment", group.by, test.use, sep = "_")]] <- res
     return(srt)
   } else {
     return(res)

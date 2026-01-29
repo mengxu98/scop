@@ -195,12 +195,12 @@ WilcoxDETest <- function(
 #' @inheritParams Seurat::FindMarkers
 #' @inheritParams standard_scop
 #' @inheritParams FeatureDimPlot
-#' @param group_by A grouping variable in the dataset to define the groups or conditions for the differential test.
+#' @param group.by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
-#' If both group_by and group1 are provided, group1 takes precedence.
+#' If both group.by and group1 are provided, group1 takes precedence.
 #' @param group2 A vector of cell IDs or a character vector specifying the cells that belong to the second group.
-#' This parameter is only used when group_by or group1 is provided.
+#' This parameter is only used when group.by or group1 is provided.
 #' @param cells1 A vector of cell IDs specifying the cells that belong to group1. If provided, group1 is ignored.
 #' @param cells2 A vector of cell IDs specifying the cells that belong to group2.
 #' This parameter is only used when cells1 is provided.
@@ -230,7 +230,7 @@ WilcoxDETest <- function(
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "SubCellType"
+#'   group.by = "SubCellType"
 #' )
 #' AllMarkers <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
@@ -260,7 +260,7 @@ WilcoxDETest <- function(
 #'
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   markers_type = "paired",
 #'   cores = 2
 #' )
@@ -289,7 +289,7 @@ WilcoxDETest <- function(
 #'
 #' panc8_sub <- RunDEtest(
 #'   srt = panc8_sub,
-#'   group_by = "celltype",
+#'   group.by = "celltype",
 #'   grouping.var = "tech",
 #'   markers_type = "conserved",
 #'   cores = 2
@@ -311,7 +311,7 @@ WilcoxDETest <- function(
 #'
 #' panc8_sub <- RunDEtest(
 #'   srt = panc8_sub,
-#'   group_by = "tech",
+#'   group.by = "tech",
 #'   grouping.var = "celltype",
 #'   markers_type = "conserved",
 #'   cores = 2
@@ -332,7 +332,7 @@ WilcoxDETest <- function(
 #'
 #' panc8_sub <- RunDEtest(
 #'   srt = panc8_sub,
-#'   group_by = "celltype",
+#'   group.by = "celltype",
 #'   grouping.var = "tech",
 #'   markers_type = "disturbed",
 #'   cores = 2
@@ -378,7 +378,7 @@ WilcoxDETest <- function(
 #' ht7$plot
 RunDEtest <- function(
     srt,
-    group_by = NULL,
+    group.by = NULL,
     group1 = NULL,
     group2 = NULL,
     cells1 = NULL,
@@ -489,16 +489,16 @@ RunDEtest <- function(
 
   if (!is.null(cells1) || !is.null(group1)) {
     if (is.null(cells1)) {
-      if (is.null(group_by)) {
+      if (is.null(group.by)) {
         log_message(
-          "{.arg group_by} must be provided when {.arg group1} specified",
+          "{.arg group.by} must be provided when {.arg group1} specified",
           message_type = "error"
         )
       }
-      cells1 <- colnames(srt)[srt[[group_by, drop = TRUE]] %in% group1]
+      cells1 <- colnames(srt)[srt[[group.by, drop = TRUE]] %in% group1]
     }
     if (is.null(cells2) && !is.null(group2)) {
-      cells2 <- colnames(srt)[srt[[group_by, drop = TRUE]] %in% group2]
+      cells2 <- colnames(srt)[srt[[group.by, drop = TRUE]] %in% group2]
     }
     if (!all(cells1 %in% colnames(srt))) {
       log_message(
@@ -697,7 +697,7 @@ RunDEtest <- function(
         srt = srt_tmp,
         assay = assay,
         layer = layer,
-        group_by = grouping.var,
+        group.by = grouping.var,
         markers_type = "all",
         features = features,
         test.use = test.use,
@@ -740,11 +740,11 @@ RunDEtest <- function(
       }
     }
   } else {
-    if (is.null(group_by)) {
+    if (is.null(group.by)) {
       cell_group <- Seurat::Idents(srt)
-      group_by <- "active.ident"
+      group.by <- "active.ident"
     } else {
-      cell_group <- srt[[group_by, drop = TRUE]]
+      cell_group <- srt[[group.by, drop = TRUE]]
     }
     if (!is.factor(cell_group)) {
       cell_group <- factor(cell_group, levels = unique(cell_group))
@@ -849,12 +849,12 @@ RunDEtest <- function(
             paste0(colnames(AllMarkersMatrix)[x > 0], collapse = ";")
           }
         )[AllMarkers[, "gene"]]
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "AllMarkers_",
           test.use
         )]] <- AllMarkers
       } else {
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "AllMarkers_",
           test.use
         )]] <- data.frame()
@@ -916,11 +916,11 @@ RunDEtest <- function(
             paste0(colnames(PairedMarkersMatrix)[x > 0], collapse = ";")
           }
         )[PairedMarkers[, "gene"]]
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "PairedMarkers_",
           test.use
         )]] <- PairedMarkers
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "PairedMarkersMatrix_",
           test.use
         )]] <- PairedMarkersMatrix
@@ -930,11 +930,11 @@ RunDEtest <- function(
           message_type = "warning",
           verbose = verbose
         )
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "PairedMarkers_",
           test.use
         )]] <- data.frame()
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "PairedMarkersMatrix_",
           test.use
         )]] <- NULL
@@ -1032,7 +1032,7 @@ RunDEtest <- function(
           "test_group_number",
           "test_group"
         )]
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "ConservedMarkers_",
           test.use
         )]] <- ConservedMarkers
@@ -1042,7 +1042,7 @@ RunDEtest <- function(
           message_type = "warning",
           verbose = verbose
         )
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "ConservedMarkers_",
           test.use
         )]] <- data.frame()
@@ -1068,7 +1068,7 @@ RunDEtest <- function(
               srt = srt_tmp,
               assay = assay,
               layer = layer,
-              group_by = grouping.var,
+              group.by = grouping.var,
               markers_type = "all",
               features = features,
               test.use = test.use,
@@ -1131,7 +1131,7 @@ RunDEtest <- function(
             paste0(colnames(DisturbedMarkersMatrix)[x > 0], collapse = ";")
           }
         )[DisturbedMarkers[, "gene"]]
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "DisturbedMarkers_",
           test.use
         )]] <- DisturbedMarkers
@@ -1141,7 +1141,7 @@ RunDEtest <- function(
           message_type = "warning",
           verbose = verbose
         )
-        srt@tools[[paste0("DEtest_", group_by)]][[paste0(
+        srt@tools[[paste0("DEtest_", group.by)]][[paste0(
           "DisturbedMarkers_",
           test.use
         )]] <- data.frame()

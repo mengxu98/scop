@@ -22,6 +22,7 @@
 #' Default is `"vst"`.
 #' @param nHVF The number of highly variable features to select.
 #' If NULL, all highly variable features will be used.
+#' Default is `2000`.
 #' @param HVF A vector of feature names to use as highly variable features.
 #' If NULL, the function will use the highly variable features identified by the HVF method.
 #' @param do_scaling Whether to perform scaling.
@@ -70,7 +71,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(Matrix)
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
@@ -82,7 +82,7 @@
 #' # Use a combination of different linear
 #' # or non-linear dimension reduction methods
 #' linear_reductions <- c(
-#'   "pca", "nmf", "mds", "glmpca"
+#'   "pca", "nmf", "mds"
 #' )
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
@@ -103,11 +103,10 @@
 #'     )
 #'   }
 #' )
-#' patchwork::wrap_plots(plotlist = plist1)
+#' patchwork::wrap_plots(plist1)
 #'
 #' nonlinear_reductions <- c(
-#'   "umap", "tsne", "dm", "phate",
-#'   "pacmap", "trimap", "largevis", "fr"
+#'   "umap", "tsne", "fr"
 #' )
 #' pancreas_sub <- standard_scop(
 #'   pancreas_sub,
@@ -120,7 +119,7 @@
 #'       pancreas_sub,
 #'       group.by = "SubCellType",
 #'       reduction = paste0(
-#'         "Standardpca", toupper(nr), "2D"
+#'         "Standardpca", nr, "2D"
 #'       ),
 #'       xlab = "", ylab = "", title = nr,
 #'       legend.position = "none",
@@ -128,8 +127,7 @@
 #'     )
 #'   }
 #' )
-#' patchwork::wrap_plots(plotlist = plist2)
-#' }
+#' patchwork::wrap_plots(plist2)
 standard_scop <- function(
     srt,
     prefix = "Standard",
@@ -389,23 +387,15 @@ standard_scop <- function(
     )
   }
 
-  if (paste0(prefix, linear_reduction[1], "clusters") %in% colnames(srt@meta.data)) {
-    srt[[paste0(prefix, "clusters")]] <- srt[[paste0(
-      prefix,
-      linear_reduction[1],
-      "clusters"
-    )]]
+  cluster_name <- paste0(prefix, linear_reduction[1], "clusters")
+  if (cluster_name %in% colnames(srt@meta.data)) {
+    srt[[paste0(prefix, "clusters")]] <- srt[[cluster_name]]
   }
   for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
-      if (paste0(prefix, linear_reduction[1], toupper(nr), n, "D") %in% names(srt@reductions)) {
-        reduc <- srt@reductions[[paste0(
-          prefix,
-          linear_reduction[1],
-          toupper(nr),
-          n,
-          "D"
-        )]]
+      reductions_name <- paste0(prefix, linear_reduction[1], toupper(nr), n, "D")
+      if (reductions_name %in% names(srt@reductions)) {
+        reduc <- srt@reductions[[reductions_name]]
         srt@reductions[[paste0(prefix, toupper(nr), n, "D")]] <- reduc
       }
     }
@@ -416,7 +406,7 @@ standard_scop <- function(
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   log_message(
-    "Run scop standard workflow done",
+    "Run scop standard workflow completed",
     message_type = "success",
     verbose = verbose
   )

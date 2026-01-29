@@ -192,6 +192,8 @@ PrepareDB <- function(
     custom_IDtype = NULL,
     custom_version = NULL,
     verbose = TRUE) {
+
+  check_r("R.cache", verbose = FALSE)
   db_list <- list()
   for (sps in species) {
     log_message(

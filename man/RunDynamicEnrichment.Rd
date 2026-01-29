@@ -108,7 +108,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
-  group.by = "SubCellType",
+  group.by = "CellType",
   reduction = "UMAP"
 )
 pancreas_sub <- RunDynamicFeatures(
@@ -119,15 +119,14 @@ pancreas_sub <- RunDynamicFeatures(
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
-  cell_annotation = "SubCellType",
-  n_split = 4
+  cell_annotation = "CellType",
+  n_split = 3
 )
-ht1$plot
 
 pancreas_sub <- RunDynamicEnrichment(
   pancreas_sub,
   lineages = "Lineage1",
-  score_method = "UCell",
+  score_method = "AUCell",
   db = "GO_BP",
   species = "Mus_musculus"
 )
@@ -135,11 +134,10 @@ ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",
   lineages = "Lineage1_GO_BP",
-  cell_annotation = "SubCellType",
-  n_split = 4,
+  cell_annotation = "CellType",
+  n_split = 3,
   split_method = "kmeans-peaktime"
 )
-ht2$plot
 }
 \seealso{
 \link{RunDynamicFeatures}, \link{DynamicHeatmap}

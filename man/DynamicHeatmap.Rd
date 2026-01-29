@@ -127,7 +127,7 @@ DynamicHeatmap(
   reverse_ht = NULL,
   use_raster = NULL,
   raster_device = "png",
-  raster_by_magick = FALSE,
+  raster_by_magick = TRUE,
   height = NULL,
   width = NULL,
   units = "inch",
@@ -366,7 +366,7 @@ Default is \code{20}.}
 Default is \code{NULL}.}
 
 \item{nlabel}{A number of labels to include.
-Default is \code{0}.}
+Default is \code{20}.}
 
 \item{features_label}{A character vector specifying the features to label.
 Default is \code{NULL}.}
@@ -479,7 +479,6 @@ Default is \code{list()}.}
 Heatmap plot for dynamic features along lineages
 }
 \examples{
-options(log_message.verbose = FALSE)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 
