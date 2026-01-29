@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Plot CellChat analysis results</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/CellChatPlot.R" class="external-link"><code>R/CellChatPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/CellChatPlot.R" class="external-link"><code>R/CellChatPlot.R</code></a></small>
       <div class="d-none name"><code>CellChatPlot.Rd</code></div>
     </div>
 
@@ -125,30 +125,30 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:22] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:23] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-27 07:11:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:25] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:26] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:26] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:27] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:27] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:28] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:29] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:29] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:05] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:06] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-29 12:25:06] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:08] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:09] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:09] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:10] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:10] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:11] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:12] Reorder clusters...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once every 8 hours.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:29] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:29] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:32] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-27 07:11:34] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:12] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:15] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-29 12:25:17] Run scop standard workflow completed</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunCellChat.html">RunCellChat</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-27 07:11:34] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-29 12:25:17] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘CellChat’</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellChatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"aggregate"</span><span class="op">)</span></span></span>

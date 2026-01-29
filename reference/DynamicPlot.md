@@ -228,22 +228,22 @@ DynamicPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-27 07:44:44] Start standard scop workflow...
-#> ℹ [2026-01-27 07:44:45] Checking a list of <Seurat>...
-#> ! [2026-01-27 07:44:45] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-27 07:44:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:44:47] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:44:48] Use the separate HVF from srt_list
-#> ℹ [2026-01-27 07:44:48] Number of available HVF: 2000
-#> ℹ [2026-01-27 07:44:48] Finished check
-#> ℹ [2026-01-27 07:44:48] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-27 07:44:48] Perform pca linear dimension reduction
-#> ℹ [2026-01-27 07:44:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-27 07:44:49] Reorder clusters...
-#> ℹ [2026-01-27 07:44:49] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-27 07:44:49] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-27 07:44:53] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-27 07:44:57] Run scop standard workflow completed
+#> ℹ [2026-01-29 12:55:06] Start standard scop workflow...
+#> ℹ [2026-01-29 12:55:07] Checking a list of <Seurat>...
+#> ! [2026-01-29 12:55:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-29 12:55:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 12:55:09] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 12:55:09] Use the separate HVF from srt_list
+#> ℹ [2026-01-29 12:55:09] Number of available HVF: 2000
+#> ℹ [2026-01-29 12:55:10] Finished check
+#> ℹ [2026-01-29 12:55:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-29 12:55:10] Perform pca linear dimension reduction
+#> ℹ [2026-01-29 12:55:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-29 12:55:11] Reorder clusters...
+#> ℹ [2026-01-29 12:55:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-29 12:55:11] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-29 12:55:15] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-29 12:55:18] Run scop standard workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -279,18 +279,18 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> ℹ [2026-01-27 07:44:59] Start find dynamic features
-#> ℹ [2026-01-27 07:45:00] Data type is raw counts
-#> ℹ [2026-01-27 07:45:00] Number of candidate features (union): 3
-#> ℹ [2026-01-27 07:45:01] Data type is raw counts
-#> ! [2026-01-27 07:45:01] Negative values detected
-#> ℹ [2026-01-27 07:45:01] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-01-27 07:45:01] Using 1 core
-#> ⠙ [2026-01-27 07:45:01] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
-#> ✔ [2026-01-27 07:45:01] Completed 3 tasks in 138ms
+#> ℹ [2026-01-29 12:55:20] Start find dynamic features
+#> ℹ [2026-01-29 12:55:21] Data type is raw counts
+#> ℹ [2026-01-29 12:55:21] Number of candidate features (union): 3
+#> ℹ [2026-01-29 12:55:22] Data type is raw counts
+#> ! [2026-01-29 12:55:22] Negative values detected
+#> ℹ [2026-01-29 12:55:22] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-01-29 12:55:22] Using 1 core
+#> ⠙ [2026-01-29 12:55:22] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-29 12:55:22] Completed 3 tasks in 131ms
 #> 
-#> ℹ [2026-01-27 07:45:01] Building results
-#> ✔ [2026-01-27 07:45:01] Find dynamic features done
+#> ℹ [2026-01-29 12:55:22] Building results
+#> ✔ [2026-01-29 12:55:22] Find dynamic features done
 
 
 DynamicPlot(
@@ -301,27 +301,27 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-01-27 07:45:02] Start find dynamic features
-#> ℹ [2026-01-27 07:45:02] Data type is raw counts
-#> ℹ [2026-01-27 07:45:03] Number of candidate features (union): 3
-#> ℹ [2026-01-27 07:45:03] Data type is raw counts
-#> ! [2026-01-27 07:45:03] Negative values detected
-#> ℹ [2026-01-27 07:45:03] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-01-27 07:45:03] Using 1 core
-#> ℹ [2026-01-27 07:45:03] Building results
-#> ✔ [2026-01-27 07:45:03] Find dynamic features done
-#> ℹ [2026-01-27 07:45:03] Start find dynamic features
-#> ℹ [2026-01-27 07:45:04] Data type is raw counts
-#> ℹ [2026-01-27 07:45:04] Number of candidate features (union): 3
-#> ℹ [2026-01-27 07:45:05] Data type is raw counts
-#> ! [2026-01-27 07:45:05] Negative values detected
-#> ℹ [2026-01-27 07:45:05] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-01-27 07:45:05] Using 1 core
-#> ⠙ [2026-01-27 07:45:05] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
-#> ✔ [2026-01-27 07:45:05] Completed 3 tasks in 109ms
+#> ℹ [2026-01-29 12:55:23] Start find dynamic features
+#> ℹ [2026-01-29 12:55:23] Data type is raw counts
+#> ℹ [2026-01-29 12:55:24] Number of candidate features (union): 3
+#> ℹ [2026-01-29 12:55:24] Data type is raw counts
+#> ! [2026-01-29 12:55:24] Negative values detected
+#> ℹ [2026-01-29 12:55:24] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-01-29 12:55:24] Using 1 core
+#> ℹ [2026-01-29 12:55:24] Building results
+#> ✔ [2026-01-29 12:55:24] Find dynamic features done
+#> ℹ [2026-01-29 12:55:24] Start find dynamic features
+#> ℹ [2026-01-29 12:55:25] Data type is raw counts
+#> ℹ [2026-01-29 12:55:25] Number of candidate features (union): 3
+#> ℹ [2026-01-29 12:55:26] Data type is raw counts
+#> ! [2026-01-29 12:55:26] Negative values detected
+#> ℹ [2026-01-29 12:55:26] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-01-29 12:55:26] Using 1 core
+#> ⠙ [2026-01-29 12:55:26] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-29 12:55:26] Completed 3 tasks in 104ms
 #> 
-#> ℹ [2026-01-27 07:45:05] Building results
-#> ✔ [2026-01-27 07:45:05] Find dynamic features done
+#> ℹ [2026-01-29 12:55:26] Building results
+#> ✔ [2026-01-29 12:55:26] Find dynamic features done
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -340,27 +340,27 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ℹ [2026-01-27 07:45:06] Start find dynamic features
-#> ℹ [2026-01-27 07:45:07] Data type is raw counts
-#> ℹ [2026-01-27 07:45:07] Number of candidate features (union): 3
-#> ℹ [2026-01-27 07:45:08] Data type is raw counts
-#> ! [2026-01-27 07:45:08] Negative values detected
-#> ℹ [2026-01-27 07:45:08] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-01-27 07:45:08] Using 1 core
-#> ⠙ [2026-01-27 07:45:08] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
-#> ✔ [2026-01-27 07:45:08] Completed 3 tasks in 134ms
+#> ℹ [2026-01-29 12:55:27] Start find dynamic features
+#> ℹ [2026-01-29 12:55:28] Data type is raw counts
+#> ℹ [2026-01-29 12:55:28] Number of candidate features (union): 3
+#> ℹ [2026-01-29 12:55:29] Data type is raw counts
+#> ! [2026-01-29 12:55:29] Negative values detected
+#> ℹ [2026-01-29 12:55:29] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-01-29 12:55:29] Using 1 core
+#> ⠙ [2026-01-29 12:55:29] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-01-29 12:55:29] Completed 3 tasks in 131ms
 #> 
-#> ℹ [2026-01-27 07:45:08] Building results
-#> ✔ [2026-01-27 07:45:08] Find dynamic features done
-#> ℹ [2026-01-27 07:45:08] Start find dynamic features
-#> ℹ [2026-01-27 07:45:09] Data type is raw counts
-#> ℹ [2026-01-27 07:45:09] Number of candidate features (union): 3
-#> ℹ [2026-01-27 07:45:09] Data type is raw counts
-#> ! [2026-01-27 07:45:09] Negative values detected
-#> ℹ [2026-01-27 07:45:09] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-01-27 07:45:09] Using 1 core
-#> ℹ [2026-01-27 07:45:09] Building results
-#> ✔ [2026-01-27 07:45:10] Find dynamic features done
+#> ℹ [2026-01-29 12:55:29] Building results
+#> ✔ [2026-01-29 12:55:29] Find dynamic features done
+#> ℹ [2026-01-29 12:55:29] Start find dynamic features
+#> ℹ [2026-01-29 12:55:29] Data type is raw counts
+#> ℹ [2026-01-29 12:55:30] Number of candidate features (union): 3
+#> ℹ [2026-01-29 12:55:30] Data type is raw counts
+#> ! [2026-01-29 12:55:30] Negative values detected
+#> ℹ [2026-01-29 12:55:30] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-01-29 12:55:30] Using 1 core
+#> ℹ [2026-01-29 12:55:30] Building results
+#> ✔ [2026-01-29 12:55:30] Find dynamic features done
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the

@@ -458,22 +458,22 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-27 07:49:50] Start standard scop workflow...
-#> ℹ [2026-01-27 07:49:51] Checking a list of <Seurat>...
-#> ! [2026-01-27 07:49:51] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-27 07:49:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:49:53] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-27 07:49:54] Use the separate HVF from srt_list
-#> ℹ [2026-01-27 07:49:54] Number of available HVF: 2000
-#> ℹ [2026-01-27 07:49:54] Finished check
-#> ℹ [2026-01-27 07:49:54] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-27 07:49:54] Perform pca linear dimension reduction
-#> ℹ [2026-01-27 07:49:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-27 07:49:55] Reorder clusters...
-#> ℹ [2026-01-27 07:49:55] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-27 07:49:55] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-27 07:49:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-27 07:50:03] Run scop standard workflow completed
+#> ℹ [2026-01-29 13:00:06] Start standard scop workflow...
+#> ℹ [2026-01-29 13:00:06] Checking a list of <Seurat>...
+#> ! [2026-01-29 13:00:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-29 13:00:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 13:00:08] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-29 13:00:09] Use the separate HVF from srt_list
+#> ℹ [2026-01-29 13:00:09] Number of available HVF: 2000
+#> ℹ [2026-01-29 13:00:09] Finished check
+#> ℹ [2026-01-29 13:00:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-29 13:00:10] Perform pca linear dimension reduction
+#> ℹ [2026-01-29 13:00:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-29 13:00:11] Reorder clusters...
+#> ℹ [2026-01-29 13:00:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-29 13:00:11] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-29 13:00:14] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-29 13:00:18] Run scop standard workflow completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
@@ -672,12 +672,12 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ℹ [2026-01-27 07:50:25] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ℹ [2026-01-29 13:00:39] Detected more than 2 groups. Use "kruskal.test" for comparison
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> ℹ [2026-01-27 07:50:25] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ℹ [2026-01-29 13:00:40] Detected more than 2 groups. Use "kruskal.test" for comparison
 #> Warning: Groups with fewer than two datapoints have been dropped.
 #> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: Groups with fewer than two datapoints have been dropped.
@@ -809,7 +809,7 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2026-01-27 07:50:43] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-01-29 13:00:57] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -831,7 +831,7 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2026-01-27 07:50:44] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-01-29 13:00:58] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -852,7 +852,7 @@ FeatureStatPlot(
   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
   stack = TRUE
 )
-#> ℹ [2026-01-27 07:50:47] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-01-29 13:01:01] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(pancreas_sub,
@@ -866,7 +866,7 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2026-01-27 07:50:50] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-01-29 13:01:04] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 data <- GetAssayData5(

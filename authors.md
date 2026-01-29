@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/mengxu98/scop/blob/dev/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/mengxu98/scop/blob/main/DESCRIPTION)
 
 Meng X, Zhang H (2026). *scop: Single Cell Omics analysis Pipeline*. R
 package version 0.8.1, <https://mengxu98.github.io/scop/>.
