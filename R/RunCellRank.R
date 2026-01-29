@@ -15,7 +15,6 @@
 #' @param layer_x Layer name for `assay_x` in the Seurat object.
 #' @param assay_y Assay to convert in the anndata object.
 #' @param layer_y Layer names for the `assay_y` in the Seurat object.
-#' @param group_by Variable to use for grouping cells in the Seurat object.
 #' @param linear_reduction Linear reduction method to use, e.g., `"PCA"`.
 #' @param nonlinear_reduction Non-linear reduction method to use, e.g., `"UMAP"`.
 #' @param basis The basis to use for reduction, e.g., `"UMAP"`.
@@ -23,8 +22,7 @@
 #' Default is `30`.
 #' @param n_neighbors Number of neighbors to use for constructing the KNN graph.
 #' Default is `30`.
-#' @param cores The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
-#' Default is `1`.
+#' @param cores The number of cores to use for `cellrank`.
 #' @param legend.position Position of legend in plots.
 #' Can be `"on data"`, `"right margin"`, `"bottom right"`, etc. Default is `"on data"`.
 #' @param show_plot Whether to show the plot.
@@ -101,7 +99,7 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellRank(
 #'   srt = pancreas_sub,
-#'   group_by = "SubCellType",
+#'   group.by = "SubCellType",
 #'   cores = 6
 #' )
 #'
@@ -147,7 +145,7 @@ RunCellRank <- function(
     assay_y = c("spliced", "unspliced"),
     layer_y = "counts",
     adata = NULL,
-    group_by = NULL,
+    group.by = NULL,
     cores = 1,
     linear_reduction = NULL,
     nonlinear_reduction = NULL,
@@ -200,9 +198,9 @@ RunCellRank <- function(
       message_type = "error"
     )
   }
-  if (is.null(group_by)) {
+  if (is.null(group.by)) {
     log_message(
-      "{.arg group_by} must be provided",
+      "{.arg group.by} must be provided",
       message_type = "error"
     )
   }
@@ -284,7 +282,12 @@ RunCellRank <- function(
       layer_y = layer_y
     )
   }
-  groups <- py_to_r2(args[["adata"]]$obs)[[group_by]]
+  group_by_py <- group.by
+  if ("group.by" %in% names(args)) {
+    args[["group_by"]] <- args[["group.by"]]
+    args[["group.by"]] <- NULL
+  }
+  groups <- py_to_r2(args[["adata"]]$obs)[[group_by_py]]
   args[["legend_loc"]] <- legend.position
   args[["n_jobs"]] <- cores
   args[["dpi"]] <- plot_dpi

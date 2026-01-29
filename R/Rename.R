@@ -91,7 +91,7 @@ RenameFeatures <- function(
   return(srt)
 }
 
-#' Rename clusters for the Seurat object
+#' @title Rename clusters for the Seurat object
 #'
 #' @inheritParams standard_scop
 #' @param group.by The old group used to rename cells.
@@ -105,6 +105,7 @@ RenameFeatures <- function(
 #' data(pancreas_sub)
 #'
 #' # Rename all clusters
+#' pancreas_sub <- standard_scop(pancreas_sub)
 #' levels(pancreas_sub@meta.data[["SubCellType"]]) <- unique(
 #'   pancreas_sub@meta.data[["SubCellType"]]
 #' )

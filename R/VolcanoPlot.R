@@ -6,8 +6,6 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @param srt An object of class `Seurat` containing the results of differential expression analysis.
-#' @param group_by A character vector specifying the column in `srt` to group the samples by.
-#' Default is `NULL`.
 #' @param test.use A character string specifying the type of statistical test to use.
 #' Default is `"wilcox"`.
 #' @param DE_threshold A character string specifying the threshold for differential expression.
@@ -55,30 +53,30 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
 #'   pancreas_sub,
-#'   group_by = "CellType"
+#'   group.by = "CellType"
 #' )
 #' VolcanoPlot(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   ncol = 2
 #' )
 #'
 #' VolcanoPlot(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
 #'   ncol = 2
 #' )
 #'
 #' VolcanoPlot(
 #'   pancreas_sub,
-#'   group_by = "CellType",
+#'   group.by = "CellType",
 #'   x_metric = "avg_log2FC",
 #'   ncol = 2
 #' )
 VolcanoPlot <- function(
     srt,
-    group_by = NULL,
+    group.by = NULL,
     test.use = "wilcox",
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
     x_metric = "diff_pct",
@@ -105,17 +103,17 @@ VolcanoPlot <- function(
     nrow = NULL,
     ncol = NULL,
     byrow = TRUE) {
-  if (is.null(group_by)) {
-    group_by <- "custom"
+  if (is.null(group.by)) {
+    group.by <- "custom"
   }
-  layer <- paste0("DEtest_", group_by)
+  layer <- paste0("DEtest_", group.by)
   if (
     !layer %in% names(srt@tools) ||
       length(grep(pattern = "AllMarkers", names(srt@tools[[layer]]))) == 0
   ) {
     log_message(
       "Cannot find the DEtest result for the group '",
-      group_by,
+      group.by,
       "'. You may perform RunDEtest first.",
       message_type = "error"
     )
