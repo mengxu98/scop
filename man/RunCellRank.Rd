@@ -11,7 +11,7 @@ RunCellRank(
   assay_y = c("spliced", "unspliced"),
   layer_y = "counts",
   adata = NULL,
-  group_by = NULL,
+  group.by = NULL,
   cores = 1,
   linear_reduction = NULL,
   nonlinear_reduction = NULL,
@@ -69,10 +69,9 @@ If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
-\item{group_by}{Variable to use for grouping cells in the Seurat object.}
+\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
-Default is \code{1}.}
+\item{cores}{The number of cores to use for \code{cellrank}.}
 
 \item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
 
@@ -204,7 +203,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellRank(
   srt = pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   cores = 6
 )
 

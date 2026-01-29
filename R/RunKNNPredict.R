@@ -291,7 +291,7 @@ RunKNNPredict <- function(
             srt_query <- do.call(
               RunDEtest,
               c(
-                list(srt = srt_query, group_by = query_group),
+                list(srt = srt_query, group.by = query_group),
                 DEtest_param
               )
             )
@@ -444,7 +444,7 @@ RunKNNPredict <- function(
           ) {
             srt_ref <- do.call(
               RunDEtest,
-              c(list(srt = srt_ref, group_by = ref_group), DEtest_param)
+              c(list(srt = srt_ref, group.by = ref_group), DEtest_param)
             )
           }
           if ("test.use" %in% names(DEtest_param)) {

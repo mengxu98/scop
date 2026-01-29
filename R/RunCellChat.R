@@ -31,14 +31,14 @@
 #' pancreas_sub <- RunCellChat(
 #'   pancreas_sub,
 #'   group.by = "CellType",
-#'   species = "mouse"
+#'   species = "Mus_musculus"
 #' )
 #'
 #' CellChatPlot(pancreas_sub)
 RunCellChat <- function(
     srt,
     group.by,
-    species = c("human", "mouse", "zebrafish"),
+    species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
     split.by = NULL,
     annotation_selected = NULL,
     group_column = NULL,
@@ -96,14 +96,13 @@ RunCellChat <- function(
       )
     }
   }
-  available_species <- c("human", "mouse", "zebrafish")
-  if (isFALSE(species %in% available_species)) {
-    log_message(
-      "{.val {species}} is not a valid species. Must be one of {.val {available_species}}",
-      message_type = "error"
-    )
+  species <- match.arg(species)
+  if (species == "Mus_musculus") {
+    species <- "mouse"
   }
-
+  if (species == "Homo_sapiens") {
+    species <- "human"
+  }
   Idents(srt) <- srt@meta.data[, group.by]
 
   if (!is.null(split.by)) {
