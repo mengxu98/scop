@@ -168,22 +168,22 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-29 12:37:26] Start standard scop workflow...
-#> ℹ [2026-01-29 12:37:27] Checking a list of <Seurat>...
-#> ! [2026-01-29 12:37:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-29 12:37:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:37:28] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:37:29] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 12:37:29] Number of available HVF: 2000
-#> ℹ [2026-01-29 12:37:29] Finished check
-#> ℹ [2026-01-29 12:37:29] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 12:37:30] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 12:37:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 12:37:31] Reorder clusters...
-#> ℹ [2026-01-29 12:37:31] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 12:37:31] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 12:37:33] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-29 12:37:36] Run scop standard workflow completed
+#> ℹ [2026-01-30 16:27:46] Start standard scop workflow...
+#> ℹ [2026-01-30 16:27:47] Checking a list of <Seurat>...
+#> ! [2026-01-30 16:27:47] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-30 16:27:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:27:48] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:27:49] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 16:27:49] Number of available HVF: 2000
+#> ℹ [2026-01-30 16:27:49] Finished check
+#> ℹ [2026-01-30 16:27:49] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 16:27:50] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 16:27:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 16:27:51] Reorder clusters...
+#> ℹ [2026-01-30 16:27:51] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 16:27:51] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 16:27:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-30 16:27:57] Run scop standard workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -194,15 +194,15 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ℹ [2026-01-29 12:37:36] Start cell scoring
-#> ℹ [2026-01-29 12:37:37] Data type is log-normalized
-#> ℹ [2026-01-29 12:37:37] Number of feature lists to be scored: 2
-#> ℹ [2026-01-29 12:37:38] Using 1 core
-#> ⠙ [2026-01-29 12:37:38] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
-#> ✔ [2026-01-29 12:37:38] Completed 2 tasks in 129ms
+#> ℹ [2026-01-30 16:27:57] Start cell scoring
+#> ℹ [2026-01-30 16:27:58] Data type is log-normalized
+#> ℹ [2026-01-30 16:27:58] Number of feature lists to be scored: 2
+#> ℹ [2026-01-30 16:27:59] Using 1 core
+#> ⠙ [2026-01-30 16:27:59] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
+#> ✔ [2026-01-30 16:27:59] Completed 2 tasks in 150ms
 #> 
-#> ℹ [2026-01-29 12:37:38] Building results
-#> ✔ [2026-01-29 12:37:38] Cell scoring completed
+#> ℹ [2026-01-30 16:27:59] Building results
+#> ✔ [2026-01-30 16:27:59] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.

@@ -40,4 +40,4 @@ FetchDataZero(
 - ...:
 
   Other arguments to pass to
-  [Seurat::FetchData](https://rdrr.io/pkg/Seurat/man/reexports.html).
+  [Seurat::FetchData](https://satijalab.org/seurat/reference/reexports.html).

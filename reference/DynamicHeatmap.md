@@ -686,22 +686,22 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-29 12:41:18] Start standard scop workflow...
-#> ℹ [2026-01-29 12:41:19] Checking a list of <Seurat>...
-#> ! [2026-01-29 12:41:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-29 12:41:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:41:21] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:41:21] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 12:41:21] Number of available HVF: 2000
-#> ℹ [2026-01-29 12:41:21] Finished check
-#> ℹ [2026-01-29 12:41:22] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 12:41:23] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 12:41:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 12:41:24] Reorder clusters...
-#> ℹ [2026-01-29 12:41:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 12:41:24] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 12:41:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-29 12:41:30] Run scop standard workflow completed
+#> ℹ [2026-01-30 16:31:40] Start standard scop workflow...
+#> ℹ [2026-01-30 16:31:41] Checking a list of <Seurat>...
+#> ! [2026-01-30 16:31:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-30 16:31:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:31:43] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:31:43] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 16:31:43] Number of available HVF: 2000
+#> ℹ [2026-01-30 16:31:44] Finished check
+#> ℹ [2026-01-30 16:31:45] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 16:31:45] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 16:31:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 16:31:46] Reorder clusters...
+#> ℹ [2026-01-30 16:31:46] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 16:31:46] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 16:31:49] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-30 16:31:53] Run scop standard workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -722,26 +722,27 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ℹ [2026-01-29 12:41:31] Start find dynamic features
-#> ℹ [2026-01-29 12:41:35] Data type is raw counts
-#> ℹ [2026-01-29 12:41:36] Number of candidate features (union): 231
-#> ℹ [2026-01-29 12:41:37] Data type is raw counts
-#> ℹ [2026-01-29 12:41:37] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-01-29 12:41:37] Using 1 core
-#> ⠙ [2026-01-29 12:41:37] Running for Gcg [1/231] ■                              …
-#> ⠹ [2026-01-29 12:41:37] Running for Gip [101/231] ■■■■■■■■■■■■■■               …
-#> ⠸ [2026-01-29 12:41:37] Running for Pou3f4 [209/231] ■■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-01-29 12:41:37] Completed 231 tasks in 6.4s
+#> ℹ [2026-01-30 16:31:55] Start find dynamic features
+#> ℹ [2026-01-30 16:31:58] Data type is raw counts
+#> ℹ [2026-01-30 16:32:00] Number of candidate features (union): 231
+#> ℹ [2026-01-30 16:32:00] Data type is raw counts
+#> ℹ [2026-01-30 16:32:00] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-01-30 16:32:00] Using 1 core
+#> ⠙ [2026-01-30 16:32:00] Running for Gcg [1/231] ■                              …
+#> ⠹ [2026-01-30 16:32:00] Running for Cenpf [26/231] ■■■■                        …
+#> ⠸ [2026-01-30 16:32:00] Running for Ascl1 [133/231] ■■■■■■■■■■■■■■■■■■         …
+#> ✔ [2026-01-30 16:32:00] Completed 231 tasks in 6.6s
 #> 
-#> ℹ [2026-01-29 12:41:37] Building results
-#> ℹ [2026-01-29 12:41:43] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-01-29 12:41:43] Using 1 core
-#> ⠙ [2026-01-29 12:41:43] Running for Cartpt [81/231] ■■■■■■■■■■■■               …
-#> ⠹ [2026-01-29 12:41:43] Running for Tuba1a [184/231] ■■■■■■■■■■■■■■■■■■■■■■■■■ …
-#> ✔ [2026-01-29 12:41:43] Completed 231 tasks in 6.6s
+#> ℹ [2026-01-30 16:32:00] Building results
+#> ℹ [2026-01-30 16:32:07] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-01-30 16:32:07] Using 1 core
+#> ⠙ [2026-01-30 16:32:07] Running for Gast [6/231] ■■                            …
+#> ⠹ [2026-01-30 16:32:07] Running for Spc24 [109/231] ■■■■■■■■■■■■■■■            …
+#> ⠸ [2026-01-30 16:32:07] Running for Mapt [210/231] ■■■■■■■■■■■■■■■■■■■■■■■■■■■■…
+#> ✔ [2026-01-30 16:32:07] Completed 231 tasks in 6.8s
 #> 
-#> ℹ [2026-01-29 12:41:43] Building results
-#> ✔ [2026-01-29 12:41:50] Find dynamic features done
+#> ℹ [2026-01-30 16:32:07] Building results
+#> ✔ [2026-01-30 16:32:14] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -750,9 +751,9 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-01-29 12:42:12] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-01-30 16:32:36] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-01-29 12:42:13] 
+#> ℹ [2026-01-30 16:32:37] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -775,20 +776,20 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-01-29 12:42:15] Start find dynamic features
-#> ℹ [2026-01-29 12:42:16] Data type is raw counts
-#> ℹ [2026-01-29 12:42:16] Number of candidate features (union): 2
-#> ℹ [2026-01-29 12:42:17] Data type is raw counts
-#> ! [2026-01-29 12:42:17] Negative values detected
-#> ! [2026-01-29 12:42:17] Negative values detected
-#> ℹ [2026-01-29 12:42:17] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-01-29 12:42:17] Using 1 core
-#> ⠙ [2026-01-29 12:42:17] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
-#> ✔ [2026-01-29 12:42:17] Completed 2 tasks in 53ms
+#> ℹ [2026-01-30 16:32:39] Start find dynamic features
+#> ℹ [2026-01-30 16:32:40] Data type is raw counts
+#> ℹ [2026-01-30 16:32:40] Number of candidate features (union): 2
+#> ℹ [2026-01-30 16:32:41] Data type is raw counts
+#> ! [2026-01-30 16:32:41] Negative values detected
+#> ! [2026-01-30 16:32:41] Negative values detected
+#> ℹ [2026-01-30 16:32:41] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-01-30 16:32:41] Using 1 core
+#> ⠙ [2026-01-30 16:32:41] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
+#> ✔ [2026-01-30 16:32:41] Completed 2 tasks in 54ms
 #> 
-#> ℹ [2026-01-29 12:42:17] Building results
-#> ✔ [2026-01-29 12:42:17] Find dynamic features done
-#> ℹ [2026-01-29 12:42:17] Some features were missing in at least one lineage: 
+#> ℹ [2026-01-30 16:32:41] Building results
+#> ✔ [2026-01-30 16:32:41] Find dynamic features done
+#> ℹ [2026-01-30 16:32:41] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
@@ -810,9 +811,9 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-01-29 12:42:18] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-01-30 16:32:42] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-01-29 12:42:19] 
+#> ℹ [2026-01-30 16:32:43] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -833,34 +834,34 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-01-29 12:42:23] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-01-30 16:32:47] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-01-29 12:42:26] Start Enrichment analysis
-#> ℹ [2026-01-29 12:46:53] Species: "Mus_musculus"
-#> ℹ [2026-01-29 12:51:10] Preparing database: GO_BP
-#> ℹ [2026-01-29 12:51:31] Convert ID types for the GO_BP database
-#> ℹ [2026-01-29 12:51:31] Connect to the Ensembl archives...
-#> ℹ [2026-01-29 12:51:31] Using the 115 version of ensembl database...
-#> ℹ [2026-01-29 12:51:31] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-01-29 12:51:33] Searching the dataset mmusculus ...
-#> ℹ [2026-01-29 12:51:33] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-01-29 12:51:45] Converting the geneIDs...
-#> ℹ [2026-01-29 12:52:12] 23214 genes mapped with "entrez_id"
-#> ℹ [2026-01-29 12:52:12] ==============================
+#> ℹ [2026-01-30 16:32:50] Start Enrichment analysis
+#> ℹ [2026-01-30 16:37:26] Species: "Mus_musculus"
+#> ℹ [2026-01-30 16:41:50] Preparing database: GO_BP
+#> ℹ [2026-01-30 16:42:11] Convert ID types for the GO_BP database
+#> ℹ [2026-01-30 16:42:11] Connect to the Ensembl archives...
+#> ℹ [2026-01-30 16:42:11] Using the 115 version of ensembl database...
+#> ℹ [2026-01-30 16:42:11] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-01-30 16:42:13] Searching the dataset mmusculus ...
+#> ℹ [2026-01-30 16:42:13] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-01-30 16:42:13] Converting the geneIDs...
+#> ℹ [2026-01-30 16:42:20] 23214 genes mapped with "entrez_id"
+#> ℹ [2026-01-30 16:42:20] ==============================
 #> ℹ                       23214 genes mapped
 #> ℹ                       2516 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-01-29 12:52:25] Permform enrichment...
-#> ℹ [2026-01-29 12:52:25] Using 1 core
-#> ⠙ [2026-01-29 12:52:25] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-01-29 12:52:25] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-01-29 12:52:25] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-01-29 12:52:25] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-01-29 12:52:25] Completed 5 tasks in 28.3s
+#> ℹ [2026-01-30 16:42:34] Permform enrichment...
+#> ℹ [2026-01-30 16:42:34] Using 1 core
+#> ⠙ [2026-01-30 16:42:34] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-01-30 16:42:34] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-01-30 16:42:34] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-01-30 16:42:34] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-01-30 16:42:34] Completed 5 tasks in 30.3s
 #> 
-#> ℹ [2026-01-29 12:52:25] Building results
-#> ✔ [2026-01-29 12:52:54] Enrichment analysis done
-#> ℹ [2026-01-29 12:54:58] 
+#> ℹ [2026-01-30 16:42:34] Building results
+#> ✔ [2026-01-30 16:43:04] Enrichment analysis done
+#> ℹ [2026-01-30 16:45:12] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.

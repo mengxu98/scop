@@ -136,23 +136,23 @@ if (thisplot::check_ci_env()) {
     group.by = "CellType"
   )
 }
-#> ℹ [2026-01-29 13:12:20] Start standard scop workflow...
-#> ℹ [2026-01-29 13:12:20] Checking a list of <Seurat>...
-#> ! [2026-01-29 13:12:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-29 13:12:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:12:22] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:12:23] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 13:12:23] Number of available HVF: 2000
-#> ℹ [2026-01-29 13:12:23] Finished check
-#> ℹ [2026-01-29 13:12:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 13:12:24] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 13:12:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:12:25] Reorder clusters...
-#> ℹ [2026-01-29 13:12:25] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:12:25] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:12:29] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-29 13:12:33] Run scop standard workflow completed
-#> ◌ [2026-01-29 13:12:33] Running CytoTRACE2
+#> ℹ [2026-01-30 17:03:22] Start standard scop workflow...
+#> ℹ [2026-01-30 17:03:22] Checking a list of <Seurat>...
+#> ! [2026-01-30 17:03:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-30 17:03:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:03:24] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:03:25] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 17:03:25] Number of available HVF: 2000
+#> ℹ [2026-01-30 17:03:25] Finished check
+#> ℹ [2026-01-30 17:03:26] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 17:03:26] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 17:03:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:03:27] Reorder clusters...
+#> ℹ [2026-01-30 17:03:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:03:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:03:32] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-30 17:03:36] Run scop standard workflow completed
+#> ◌ [2026-01-30 17:03:36] Running CytoTRACE2
 #> cytotrace2: Started loading data
 #> Dataset contains 15998 genes and 1000 cells.
 #> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
@@ -168,5 +168,5 @@ if (thisplot::check_ci_env()) {
 #> cytotrace2: Running with slow mode (subsamples are processed sequentially)
 #> Number of cores for KNN: 1
 #> cytotrace2: Finished
-#> ✔ [2026-01-29 13:13:36] CytoTRACE2 computed successfully
+#> ✔ [2026-01-30 17:04:44] CytoTRACE2 computed successfully
 ```

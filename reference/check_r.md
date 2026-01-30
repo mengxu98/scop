@@ -46,5 +46,5 @@ Package installation status.
 
 ``` r
 check_r(c("ggplot2", "dplyr"))
-#> ✔ [2026-01-29 13:44:35] ggplot2 and dplyr installed successfully
+#> ✔ [2026-01-30 17:37:36] ggplot2 and dplyr installed successfully
 ```
