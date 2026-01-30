@@ -150,6 +150,7 @@ RunPalantir <- function(
     "palette",
     "palcolor",
     "save_plot",
+    "plot_format",
     "plot_dpi",
     "plot_prefix",
     "legend.position",
