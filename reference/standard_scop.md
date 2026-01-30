@@ -88,7 +88,7 @@ standard_scop(
 
   Whether to perform scaling. If `TRUE`, the function will force to
   scale the data using the
-  [Seurat::ScaleData](https://rdrr.io/pkg/Seurat/man/ScaleData.html)
+  [Seurat::ScaleData](https://satijalab.org/seurat/reference/ScaleData.html)
   function.
 
 - vars_to_regress:
@@ -189,22 +189,22 @@ A `Seurat` object.
 library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-29 13:47:20] Start standard scop workflow...
-#> ℹ [2026-01-29 13:47:20] Checking a list of <Seurat>...
-#> ! [2026-01-29 13:47:20] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-29 13:47:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:47:22] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:47:23] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 13:47:23] Number of available HVF: 2000
-#> ℹ [2026-01-29 13:47:23] Finished check
-#> ℹ [2026-01-29 13:47:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 13:47:24] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 13:47:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:47:25] Reorder clusters...
-#> ℹ [2026-01-29 13:47:25] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:47:25] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:47:29] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-29 13:47:34] Run scop standard workflow completed
+#> ℹ [2026-01-30 17:40:37] Start standard scop workflow...
+#> ℹ [2026-01-30 17:40:37] Checking a list of <Seurat>...
+#> ! [2026-01-30 17:40:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-30 17:40:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:40:40] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:40:40] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 17:40:40] Number of available HVF: 2000
+#> ℹ [2026-01-30 17:40:41] Finished check
+#> ℹ [2026-01-30 17:40:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 17:40:41] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 17:40:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:40:42] Reorder clusters...
+#> ℹ [2026-01-30 17:40:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:40:42] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:40:47] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-30 17:40:52] Run scop standard workflow completed
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType"
@@ -221,22 +221,22 @@ pancreas_sub <- standard_scop(
   linear_reduction = linear_reductions,
   nonlinear_reduction = "umap"
 )
-#> ℹ [2026-01-29 13:47:34] Start standard scop workflow...
-#> ℹ [2026-01-29 13:47:34] Checking a list of <Seurat>...
-#> ℹ [2026-01-29 13:47:35] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-01-29 13:47:35] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:47:35] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 13:47:35] Number of available HVF: 2000
-#> ℹ [2026-01-29 13:47:36] Finished check
-#> ℹ [2026-01-29 13:47:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 13:47:36] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 13:47:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:47:37] Reorder clusters...
-#> ℹ [2026-01-29 13:47:37] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:47:37] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:47:42] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:47:46] Perform nmf linear dimension reduction
-#> ℹ [2026-01-29 13:47:46] Running NMF...
+#> ℹ [2026-01-30 17:40:52] Start standard scop workflow...
+#> ℹ [2026-01-30 17:40:52] Checking a list of <Seurat>...
+#> ℹ [2026-01-30 17:40:53] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-01-30 17:40:53] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:40:53] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 17:40:54] Number of available HVF: 2000
+#> ℹ [2026-01-30 17:40:54] Finished check
+#> ℹ [2026-01-30 17:40:54] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 17:40:54] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 17:40:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:40:55] Reorder clusters...
+#> ℹ [2026-01-30 17:40:55] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:40:55] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:05] Perform nmf linear dimension reduction
+#> ℹ [2026-01-30 17:41:05] Running NMF...
 #> ℹ StandardBE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim 
@@ -272,19 +272,19 @@ pancreas_sub <- standard_scop(
 #> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 
 #> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
 #> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 
-#> ✔ [2026-01-29 13:47:51] NMF compute completed
-#> ℹ [2026-01-29 13:47:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:47:51] Reorder clusters...
-#> ℹ [2026-01-29 13:47:51] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:47:51] Non-linear dimensionality reduction (umap) using (Standardnmf) dims (1-50) as input
-#> ℹ [2026-01-29 13:47:56] Non-linear dimensionality reduction (umap) using (Standardnmf) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:00] Perform mds linear dimension reduction
-#> ℹ [2026-01-29 13:48:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:48:02] Reorder clusters...
-#> ℹ [2026-01-29 13:48:02] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:48:02] Non-linear dimensionality reduction (umap) using (Standardmds) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:06] Non-linear dimensionality reduction (umap) using (Standardmds) dims (1-50) as input
-#> ✔ [2026-01-29 13:48:11] Run scop standard workflow completed
+#> ✔ [2026-01-30 17:41:10] NMF compute completed
+#> ℹ [2026-01-30 17:41:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:41:10] Reorder clusters...
+#> ℹ [2026-01-30 17:41:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:41:11] Non-linear dimensionality reduction (umap) using (Standardnmf) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:16] Non-linear dimensionality reduction (umap) using (Standardnmf) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:21] Perform mds linear dimension reduction
+#> ℹ [2026-01-30 17:41:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:41:22] Reorder clusters...
+#> ℹ [2026-01-30 17:41:22] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:41:22] Non-linear dimensionality reduction (umap) using (Standardmds) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:27] Non-linear dimensionality reduction (umap) using (Standardmds) dims (1-50) as input
+#> ✔ [2026-01-30 17:41:32] Run scop standard workflow completed
 plist1 <- lapply(
   linear_reductions, function(lr) {
     CellDimPlot(
@@ -310,27 +310,27 @@ pancreas_sub <- standard_scop(
   linear_reduction = "pca",
   nonlinear_reduction = nonlinear_reductions
 )
-#> ℹ [2026-01-29 13:48:12] Start standard scop workflow...
-#> ℹ [2026-01-29 13:48:12] Checking a list of <Seurat>...
-#> ℹ [2026-01-29 13:48:12] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-01-29 13:48:12] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 13:48:13] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 13:48:13] Number of available HVF: 2000
-#> ℹ [2026-01-29 13:48:13] Finished check
-#> ℹ [2026-01-29 13:48:13] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 13:48:13] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 13:48:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 13:48:14] Reorder clusters...
-#> ℹ [2026-01-29 13:48:15] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 13:48:15] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:19] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:24] Perform tsne nonlinear dimension reduction
-#> ℹ [2026-01-29 13:48:24] Non-linear dimensionality reduction (tsne) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:26] Non-linear dimensionality reduction (tsne) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 13:48:30] Perform fr nonlinear dimension reduction
-#> ℹ [2026-01-29 13:48:30] Non-linear dimensionality reduction (fr) using (Standardpca_SNN) as input
-#> ℹ [2026-01-29 13:48:31] Non-linear dimensionality reduction (fr) using (Standardpca_SNN) as input
-#> ✔ [2026-01-29 13:48:32] Run scop standard workflow completed
+#> ℹ [2026-01-30 17:41:33] Start standard scop workflow...
+#> ℹ [2026-01-30 17:41:33] Checking a list of <Seurat>...
+#> ℹ [2026-01-30 17:41:33] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-01-30 17:41:33] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 17:41:34] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 17:41:34] Number of available HVF: 2000
+#> ℹ [2026-01-30 17:41:34] Finished check
+#> ℹ [2026-01-30 17:41:34] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 17:41:35] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 17:41:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 17:41:36] Reorder clusters...
+#> ℹ [2026-01-30 17:41:36] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 17:41:36] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:46] Perform tsne nonlinear dimension reduction
+#> ℹ [2026-01-30 17:41:46] Non-linear dimensionality reduction (tsne) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:48] Non-linear dimensionality reduction (tsne) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 17:41:51] Perform fr nonlinear dimension reduction
+#> ℹ [2026-01-30 17:41:51] Non-linear dimensionality reduction (fr) using (Standardpca_SNN) as input
+#> ℹ [2026-01-30 17:41:53] Non-linear dimensionality reduction (fr) using (Standardpca_SNN) as input
+#> ✔ [2026-01-30 17:41:54] Run scop standard workflow completed
 plist2 <- lapply(
   nonlinear_reductions, function(nr) {
     CellDimPlot(

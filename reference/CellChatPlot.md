@@ -79,30 +79,30 @@ CellChatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-29 12:25:05] Start standard scop workflow...
-#> ℹ [2026-01-29 12:25:06] Checking a list of <Seurat>...
-#> ! [2026-01-29 12:25:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-29 12:25:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:25:08] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-29 12:25:09] Use the separate HVF from srt_list
-#> ℹ [2026-01-29 12:25:09] Number of available HVF: 2000
-#> ℹ [2026-01-29 12:25:10] Finished check
-#> ℹ [2026-01-29 12:25:10] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-29 12:25:11] Perform pca linear dimension reduction
-#> ℹ [2026-01-29 12:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-29 12:25:12] Reorder clusters...
+#> ℹ [2026-01-30 16:15:00] Start standard scop workflow...
+#> ℹ [2026-01-30 16:15:01] Checking a list of <Seurat>...
+#> ! [2026-01-30 16:15:01] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-01-30 16:15:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:15:04] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-01-30 16:15:05] Use the separate HVF from srt_list
+#> ℹ [2026-01-30 16:15:05] Number of available HVF: 2000
+#> ℹ [2026-01-30 16:15:06] Finished check
+#> ℹ [2026-01-30 16:15:06] Perform `Seurat::ScaleData()`
+#> ℹ [2026-01-30 16:15:07] Perform pca linear dimension reduction
+#> ℹ [2026-01-30 16:15:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-01-30 16:15:08] Reorder clusters...
 #> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names
 #> This message is displayed once every 8 hours.
-#> ℹ [2026-01-29 12:25:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-29 12:25:12] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-29 12:25:15] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-29 12:25:17] Run scop standard workflow completed
+#> ℹ [2026-01-30 16:15:08] Perform umap nonlinear dimension reduction
+#> ℹ [2026-01-30 16:15:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-01-30 16:15:10] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-01-30 16:15:13] Run scop standard workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-01-29 12:25:17] Start CellChat analysis
+#> ℹ [2026-01-30 16:15:13] Start CellChat analysis
 #> Error in loadNamespace(x): there is no package called ‘CellChat’
 
 CellChatPlot(pancreas_sub, plot_type = "aggregate")
