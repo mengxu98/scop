@@ -934,6 +934,68 @@ StatPlot <- function(
             scalex +
             scaley
         }
+
+        textpath_layer <- NULL
+        if (plot_type == "rose" && g != "All.groups") {
+          check_r("geomtextpath", verbose = FALSE)
+          group_levels <- levels(dat[[g]])
+          group_levels <- group_levels[group_levels != ""]
+          n_grp <- length(group_levels)
+          if (n_grp > 0) {
+            if (position == "stack") {
+              y_total <- stats::aggregate(
+                dat[["value"]],
+                by = list(dat[[g]]), FUN = sum, na.rm = TRUE
+              )
+            } else {
+              y_total <- stats::aggregate(
+                dat[["value"]],
+                by = list(dat[[g]]), FUN = max, na.rm = TRUE
+              )
+            }
+            colnames(y_total) <- c("group", "y_max")
+            y_total <- y_total[y_total[["group"]] %in% group_levels, , drop = FALSE]
+            y_max_global <- max(y_total[["y_max"]], na.rm = TRUE)
+            y_outer <- y_max_global * 1.15
+            npt <- 40
+            path_margin <- 0.04
+            path_df <- do.call(
+              rbind, lapply(seq_along(group_levels), function(idx) {
+                lev <- group_levels[idx]
+                x_idx <- which(levels(dat[[g]]) == lev)
+                x_start <- x_idx - 0.5 + path_margin
+                x_end <- x_idx + 0.5 - path_margin
+                data.frame(
+                  x = seq(x_start, x_end, length.out = npt),
+                  y = y_outer,
+                  label = lev,
+                  group = idx
+                )
+              })
+            )
+            if (!is.null(path_df) && nrow(path_df) > 0) {
+              textpath_layer <- geomtextpath::geom_textpath(
+                aes(x = x, y = y, label = label, group = group),
+                data = path_df,
+                inherit.aes = FALSE,
+                size = label.size,
+                color = label.fg,
+                linewidth = 0,
+                upright = TRUE
+              )
+              y_lim_max <- max(
+                y_outer * 1.05,
+                if (position == "dodge") max(dat[["value"]], na.rm = TRUE) * 1.1 else max(dat[["value"]], na.rm = TRUE)
+              )
+              scaley <- scale_y_continuous(
+                limits = c(0, y_lim_max),
+                labels = if (stat_type == "count") scales::number else scales::percent,
+                expand = c(0, 0)
+              )
+            }
+          }
+        }
+
         if (plot_type == "rose") {
           p <- ggplot(
             dat,
@@ -949,7 +1011,8 @@ StatPlot <- function(
             ) +
             scalex +
             scaley +
-            coord_polar(theta = "x", start = ifelse(flip, pi / 2, 0))
+            coord_polar(theta = "x", start = ifelse(flip, pi / 2, 0)) +
+            textpath_layer
         }
         if (plot_type == "ring" || plot_type == "pie") {
           p <- ggplot(
@@ -1044,7 +1107,7 @@ StatPlot <- function(
           }
         }
         if (plot_type %in% c("rose")) {
-          axis_text_x <- element_text()
+          axis_text_x <- if (!is.null(textpath_layer)) element_blank() else element_text()
         } else if (plot_type %in% c("ring", "pie")) {
           axis_text_x <- element_text()
         } else {
