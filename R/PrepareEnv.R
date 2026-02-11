@@ -15,7 +15,7 @@
 #' If `TRUE`, the existing environment will be removed and recreated.
 #' Default is `FALSE`.
 #' @param version The Python version.
-#' Default is `"3.10-1"`.
+#' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows.
 #' @param pip_options Additional command line arguments to be passed to `uv`/`pip` when installing pip packages.
 #' @param ... Additional arguments passed to package installation functions.
 #'
@@ -24,7 +24,7 @@ PrepareEnv <- function(
     envname = NULL,
     conda = "auto",
     miniconda_repo = "https://repo.anaconda.com/miniconda",
-    version = "3.10-1",
+    version = if (is_windows()) "3.11-1" else "3.10-1",
     force = FALSE,
     pip_options = character(),
     ...) {
