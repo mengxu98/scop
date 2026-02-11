@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.8.1
-Date: 2026-01-20
+Version: 0.8.2
+Date: 2026-02-11
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -56,6 +56,7 @@ Suggests:
     ggupset,
     ggVennDiagram,
     ggwordcloud,
+    geomtextpath,
     glmpca,
     GO.db,
     GOSemSim,
