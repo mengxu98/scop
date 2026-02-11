@@ -11,7 +11,7 @@ dot plots, sankey plots, chord plots, venn diagrams, and upset plots."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -297,22 +297,22 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:32] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:33] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:36:33] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:35] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:36] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:36] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:36] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:37] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:37] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:38] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:38] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:38] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:38] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:36:43] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:36:48] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:53] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:54] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:19:54] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:56] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:57] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:57] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:57] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:57] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:58] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:59] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:59] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:19:59] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:20:03] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:20:08] Run scop standard workflow completed</span>
 <span class="r-in"><span><span class="va">meta.data</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span></span></span>
 <span class="r-in"><span><span class="fu">StatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">meta.data</span>,</span></span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -217,22 +217,22 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ref_scMCA</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:54] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:55] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:18:55] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:57] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:58] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:58] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:58] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:58] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:18:59] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:00] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:00] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:00] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:05] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:10] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:50] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:51] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:02:51] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:53] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:53] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:53] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:54] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:54] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:54] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:55] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:55] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:02:55] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:00] Non-linear dimensionality reduction (<span style="color: #0000BB;">umap</span>) using (<span style="color: #0000BB;">Standardpca</span>) dims (<span style="color: #0000BB;">1</span>-<span style="color: #0000BB;">50</span>) as input</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:04] Run scop standard workflow completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Set the number of threads for RcppParallel</span></span></span>
 <span class="r-in"><span><span class="co"># details see: ?RcppParallel::setThreadOptions</span></span></span>
@@ -243,12 +243,12 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:10] Use [1] 549 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:10] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:10] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:10] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:10] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:04] Use [1] 549 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:04] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:04] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:04] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:04] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -262,12 +262,12 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span>,</span></span>
 <span class="r-in"><span>  filter_lowfreq <span class="op">=</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Use [1] 549 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:11] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Use [1] 549 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:05] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -281,12 +281,12 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Use [1] 549 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:12] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Use [1] 549 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:06] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -308,44 +308,44 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  newnames <span class="op">=</span> <span class="va">genenames</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:13] Rename features for the assay: RNA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:07] Rename features for the assay: RNA</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="CheckDataMerge.html">CheckDataMerge</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  batch <span class="op">=</span> <span class="st">"tech"</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">[[</span><span class="st">"srt_merge"</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:13] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:14] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:19:14] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:16] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:19:16] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:18] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:19:18] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:20] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:19:20] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:22] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-01-30 17:19:23] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:25] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:25] Use the separate HVF from srt_list</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:26] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:07] Spliting `srt_merge` into `srt_list` by column <span style="color: #0000BB;">"tech"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:08] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:03:08] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:09] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:03:10] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:11] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:03:12] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:13] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:03:14] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:15] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-02-11 04:03:16] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:18] Perform `Seurat::FindVariableFeatures()` on the data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:18] Use the separate HVF from srt_list</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:18] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:19] Finished check</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/SplitLayers.html" class="external-link">JoinLayers</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunKNNPredict</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  srt_ref <span class="op">=</span> <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:30] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:30] Use [1] 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Use [1] 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -364,13 +364,13 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  ref_collapsing <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:32] Use [1] 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:33] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:33] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:33] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:33] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:33] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:24] Use [1] 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:25] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:25] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:25] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:25] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -389,13 +389,13 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Use the HVF to calculate distance metric</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Use [1] 632 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:34] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Use the HVF to calculate distance metric</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Use [1] 632 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:26] Predict cell type...</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span></span>
@@ -417,23 +417,23 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"ref"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:36] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:36] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:36] Find all markers(wilcox) among [1] 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:36] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-01-30 17:19:36] Running for <span style="color: #0000BB;">delta... </span>[<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■          </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:36] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">3.7s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:28] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:28] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:28] Find all markers(wilcox) among [1] 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:28] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-02-11 04:03:28] Running for <span style="color: #0000BB;">delta... </span>[<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■          </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:28] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">4s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:36] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:39] Differential expression test completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:39] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:39] DE features number of the ref data: [1] 1998</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:39] Use [1] 1998 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:40] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:40] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:40] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:40] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:40] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:28] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:32] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] DE features number of the ref data: [1] 1998</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Use [1] 1998 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:32] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:33] Predict cell type...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -457,34 +457,31 @@ Default is <code>"KNNPredict"</code>.</p></dd>
 <span class="r-in"><span>  feature_source <span class="op">=</span> <span class="st">"both"</span>,</span></span>
 <span class="r-in"><span>  DEtest_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:41] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:41] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:41] Find all markers(wilcox) among [1] 8 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:41] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-01-30 17:19:41] Running for <span style="color: #0000BB;">Ductal... </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">8</span>] <span style="color: #00BB00;">■■■■■■■■■■■■■■■■           </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:41] Completed <span style="color: #0000BB;">8</span> tasks in <span style="color: #0000BB;">1.8s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:34] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:34] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:34] Find all markers(wilcox) among [1] 8 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:34] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:34] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:35] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:35] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:35] DE features number of the query data: [1] 1998</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:36] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:36] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:36] Find all markers(wilcox) among [1] 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:36] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-02-11 04:03:36] Running for <span style="color: #0000BB;">delta... </span>[<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■          </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:36] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">3.6s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:41] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:43] Differential expression test completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:43] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:43] DE features number of the query data: [1] 1998</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:44] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:44] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:44] Find all markers(wilcox) among [1] 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:44] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-01-30 17:19:44] Running for <span style="color: #0000BB;">delta... </span>[<span style="color: #0000BB;">7</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■          </span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:44] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">3.8s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:44] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-01-30 17:19:48] Differential expression test completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:48] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:48] DE features number of the ref data: [1] 352</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:48] Use [1] 102 features to calculate distance.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:49] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:49] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:49] Calculate similarity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:49] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-01-30 17:19:49] Predict cell type...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:36] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-02-11 04:03:40] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Use the DE features from AllMarkers_wilcox to calculate distance metric.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] DE features number of the ref data: [1] 352</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Use [1] 102 features to calculate distance.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Calculate similarity...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-02-11 04:03:40] Predict cell type...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

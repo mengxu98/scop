@@ -1102,6 +1102,12 @@ etc.
   : Statistical plot of cells
 - [`CytoTRACEPlot()`](https://mengxu98.github.io/scop/reference/CytoTRACEPlot.md)
   : Plot CytoTRACE 2 Results
+- [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md)
+  : Differential Expression Test Plot
+- [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md)
+  : DEtest Manhattan Plot
+- [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md)
+  : DEtest Ring Plot
 - [`DynamicPlot()`](https://mengxu98.github.io/scop/reference/DynamicPlot.md)
   : Plot dynamic features across pseudotime
 - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)

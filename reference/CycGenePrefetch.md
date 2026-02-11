@@ -57,8 +57,8 @@ A list of S-phase and G2M-phase genes.
 
 ``` r
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-01-30 16:28:51] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-01-30 16:28:51] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-02-11 03:12:44] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-02-11 03:12:44] Cell cycle gene prefetching completed "Homo_sapiens"
 str(ccgenes)
 #> List of 3
 #>  $ res: NULL
@@ -66,20 +66,89 @@ str(ccgenes)
 #>  $ G2M: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...
 
 ccgenes <- CycGenePrefetch("Mus_musculus")
-#> ℹ [2026-01-30 16:28:51] Prefetching cell cycle genes for "Mus_musculus" ...
-#> ℹ [2026-01-30 16:29:11] Connect to the Ensembl archives...
-#> ℹ [2026-01-30 16:29:13] Using the 115 version of ensembl database...
-#> ℹ [2026-01-30 16:29:13] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-01-30 16:29:14] Searching the dataset hsapiens ...
-#> ℹ [2026-01-30 16:29:15] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-01-30 16:29:15] Converting the geneIDs...
-#> ℹ [2026-01-30 16:29:17] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-01-30 16:29:17] ==============================
+#> ℹ [2026-02-11 03:12:44] Prefetching cell cycle genes for "Mus_musculus" ...
+#> ℹ [2026-02-11 03:13:03] Connect to the Ensembl archives...
+#> ! [2026-02-11 03:13:14] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Send failure: Broken pipe
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::CycGenePrefetch("Mus_musculus")
+#> !                        45.                               └─scop::GeneConvert(...)
+#> !                        46.                                 ├─thisutils::try_get(...)
+#> !                        47.                                 │ ├─base::tryCatch(...)
+#> !                        48.                                 │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        49.                                 │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        50.                                 │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        51.                                 │ └─base::eval.parent(substitute(expr))
+#> !                        52.                                 │   └─base::eval(expr, p)
+#> !                        53.                                 │     └─base::eval(expr, p)
+#> !                        54.                                 └─biomaRt::listEnsemblArchives()
+#> !                        55.                                   └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        56.                                     └─biomaRt:::.checkArchiveList(http_config)
+#> !                        57.                                       └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        58.                                         └─httr2::req_perform(html_request)
+#> ! [2026-02-11 03:13:14] Get errors when connecting with EnsemblArchives...
+#> ! [2026-02-11 03:13:15] Retrying...
+#> ℹ [2026-02-11 03:13:24] Using the 115 version of ensembl database...
+#> ℹ [2026-02-11 03:13:24] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-02-11 03:13:26] Searching the dataset hsapiens ...
+#> ℹ [2026-02-11 03:13:26] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-02-11 03:13:28] Converting the geneIDs...
+#> ℹ [2026-02-11 03:13:30] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-02-11 03:13:30] ==============================
 #> ℹ                       97 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-01-30 16:29:17] Cached conversion results for "Mus_musculus"
-#> ✔ [2026-01-30 16:29:17] Cell cycle gene prefetching completed "Mus_musculus"
+#> ℹ [2026-02-11 03:13:30] Cached conversion results for "Mus_musculus"
+#> ✔ [2026-02-11 03:13:30] Cell cycle gene prefetching completed "Mus_musculus"
 str(ccgenes)
 #> List of 3
 #>  $ res:List of 7

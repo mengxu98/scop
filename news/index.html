@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,26 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.2" id="scop-082">scop 0.8.2<a class="anchor" aria-label="anchor" href="#scop-082"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>Add the <code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code> function, which calls the original <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code> and adds two plot types, Manhattan and Ring, controlled by the <code>plot_type</code> parameter (<code>c("volcano", "manhattan", "ring")</code>, default <code>"volcano"</code>). Add standalone functions <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code> and <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code> for direct use. This issue reported in <a href="https://github.com/mengxu98/scop/issues/121" class="external-link">#121</a>.</li>
+<li>Differential expression visualization (<code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>): added <code>res</code> parameter to accept existing DE results (data.frame). When <code>res</code> is provided, <code>srt</code> is ignored. Data processing supports: (1) <code>group1</code> or <code>cluster</code> column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when <code>gene</code> column is missing. This issue reported in <a href="https://github.com/mengxu98/scop/issues/129" class="external-link">#129</a>.</li>
+<li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Update <code>version</code> parameter to specify the <em>Python</em> version of the conda environment. Default is <code>"3.11-1"</code> on <em>Windows</em> and <code>"3.10-1"</code> on <em>macOS</em> and <em>Unix</em>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/103" class="external-link">#103</a> and <a href="https://github.com/mengxu98/scop/issues/88" class="external-link">#88</a>.</li>
+<li>
+<code><a href="../reference/StatPlot.html">StatPlot()</a></code>: Improve rose plot (<code>plot_type = "rose"</code>) text display using <strong>geomtextpath</strong>: labels follow the outer ring and are no longer placed next to each segment; all labels sit on a fixed outer radius for a cleaner layout.</li>
+<li>
+<code><a href="../reference/RunNMF.html">RunNMF()</a></code>: Add the <code>cores</code> parameter for <code><a href="../reference/RunNMF.html">RunNMF()</a></code> and optimize the printed message.</li>
+<li>Removed the setting in <em>Python</em> functions that prevents drawing functions from causing <em>R</em> crashes.</li>
+</ul></li>
+<li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in <a href="https://github.com/mengxu98/scop/issues/126" class="external-link">#126</a>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.1" id="scop-081">scop 0.8.1<a class="anchor" aria-label="anchor" href="#scop-081"></a></h2>
 <ul><li>
