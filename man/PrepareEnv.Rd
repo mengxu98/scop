@@ -8,7 +8,7 @@ PrepareEnv(
   envname = NULL,
   conda = "auto",
   miniconda_repo = "https://repo.anaconda.com/miniconda",
-  version = "3.10-1",
+  version = if (is_windows()) "3.11-1" else "3.10-1",
   force = FALSE,
   pip_options = character(),
   ...
@@ -26,7 +26,7 @@ Use \code{"auto"} to allow automatically finding an appropriate conda binary.}
 Default is \url{https://repo.anaconda.com/miniconda}.}
 
 \item{version}{The Python version.
-Default is \code{"3.10-1"}.}
+Default is \code{"3.10-1"} on macOS and Unix and \code{"3.11-1"} on Windows.}
 
 \item{force}{Whether to force recreation of the environment.
 If \code{TRUE}, the existing environment will be removed and recreated.
