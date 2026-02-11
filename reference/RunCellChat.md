@@ -83,28 +83,28 @@ RunCellChat(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-01-30 16:55:18] Start standard scop workflow...
-#> ℹ [2026-01-30 16:55:18] Checking a list of <Seurat>...
-#> ! [2026-01-30 16:55:18] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-01-30 16:55:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-30 16:55:20] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-01-30 16:55:21] Use the separate HVF from srt_list
-#> ℹ [2026-01-30 16:55:21] Number of available HVF: 2000
-#> ℹ [2026-01-30 16:55:21] Finished check
-#> ℹ [2026-01-30 16:55:21] Perform `Seurat::ScaleData()`
-#> ℹ [2026-01-30 16:55:22] Perform pca linear dimension reduction
-#> ℹ [2026-01-30 16:55:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-01-30 16:55:23] Reorder clusters...
-#> ℹ [2026-01-30 16:55:23] Perform umap nonlinear dimension reduction
-#> ℹ [2026-01-30 16:55:23] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-01-30 16:55:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-01-30 16:55:30] Run scop standard workflow completed
+#> ℹ [2026-02-11 03:40:22] Start standard scop workflow...
+#> ℹ [2026-02-11 03:40:22] Checking a list of <Seurat>...
+#> ! [2026-02-11 03:40:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-11 03:40:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-11 03:40:24] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-11 03:40:25] Use the separate HVF from srt_list
+#> ℹ [2026-02-11 03:40:25] Number of available HVF: 2000
+#> ℹ [2026-02-11 03:40:25] Finished check
+#> ℹ [2026-02-11 03:40:25] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-11 03:40:26] Perform pca linear dimension reduction
+#> ℹ [2026-02-11 03:40:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-11 03:40:27] Reorder clusters...
+#> ℹ [2026-02-11 03:40:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-11 03:40:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-11 03:40:30] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-11 03:40:34] Run scop standard workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-01-30 16:55:30] Start CellChat analysis
+#> ℹ [2026-02-11 03:40:34] Start CellChat analysis
 #> Registered S3 method overwritten by 'ggnetwork':
 #>   method         from  
 #>   fortify.igraph ggtree
@@ -113,14 +113,14 @@ pancreas_sub <- RunCellChat(
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-01-30 16:56:47.564762]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-01-30 16:57:59.054719]"
-#> ✔ [2026-01-30 16:57:59] CellChat analysis completed
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-02-11 03:41:48.396036]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-02-11 03:42:58.202989]"
+#> ✔ [2026-02-11 03:42:58] CellChat analysis completed
 
 CellChatPlot(pancreas_sub)
-#> ℹ [2026-01-30 16:57:59] Creating "aggregate" plot for condition "ALL"
+#> ℹ [2026-02-11 03:42:58] Creating "aggregate" plot for condition "ALL"
 
 #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
 
-#> ✔ [2026-01-30 16:57:59] Plot creation completed
+#> ✔ [2026-02-11 03:42:58] Plot creation completed
 ```

@@ -10,7 +10,7 @@ PrepareEnv(
   envname = NULL,
   conda = "auto",
   miniconda_repo = "https://repo.anaconda.com/miniconda",
-  version = "3.10-1",
+  version = if (is_windows()) "3.11-1" else "3.10-1",
   force = FALSE,
   pip_options = character(),
   ...
@@ -36,7 +36,8 @@ PrepareEnv(
 
 - version:
 
-  The Python version. Default is `"3.10-1"`.
+  The Python version. Default is `"3.10-1"` on macOS and Unix and
+  `"3.11-1"` on Windows.
 
 - force:
 
