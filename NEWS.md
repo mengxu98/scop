@@ -1,5 +1,18 @@
 # scop
 
+# scop 0.8.2
+
+* **func**:
+  * Add the `DEtestPlot()` function, which calls the original `VolcanoPlot()` and adds two plot types, Manhattan and Ring, controlled by the `plot_type` parameter (`c("volcano", "manhattan", "ring")`, default `"volcano"`). Add standalone functions `DEtestManhattanPlot()` and `DEtestRingPlot()` for direct use. This issue reported in [#121](https://github.com/mengxu98/scop/issues/121).
+  * Differential expression visualization (`DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `res` parameter to accept existing DE results (data.frame). When `res` is provided, `srt` is ignored. Data processing supports: (1) `group1` or `cluster` column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when `gene` column is missing. This issue reported in [#129](https://github.com/mengxu98/scop/issues/129).
+  * `PrepareEnv()`: Update `version` parameter to specify the *Python* version of the conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"` on *macOS* and *Unix*. This issue reported in [#103](https://github.com/mengxu98/scop/issues/103) and [#88](https://github.com/mengxu98/scop/issues/88).
+  * `StatPlot()`: Improve rose plot (`plot_type = "rose"`) text display using **geomtextpath**: labels follow the outer ring and are no longer placed next to each segment; all labels sit on a fixed outer radius for a cleaner layout.
+  * `RunNMF()`: Add the `cores` parameter for `RunNMF()` and optimize the printed message.
+  * Removed the setting in *Python* functions that prevents drawing functions from causing *R* crashes.
+
+* **bugs**:
+  * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in [#126](https://github.com/mengxu98/scop/issues/126).
+
 # scop 0.8.1
 
 * **bugs**:
