@@ -8,6 +8,7 @@
 .RData
 .Ruserdata
 .Rprofile
+..Rcheck
 
 # directories and files
 SCExplorer
