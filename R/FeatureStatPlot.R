@@ -1,6 +1,4 @@
-#' Statistical plot of features
-#'
-#' This function generates a statistical plot for features.
+#' @title Statistical plot of features
 #'
 #' @md
 #' @inheritParams standard_scop
@@ -85,22 +83,28 @@
 #' Default is `FALSE`.
 #' @param same.y.lims Whether to use the same y-axis limits for all plots.
 #' Default is `FALSE`.
-#' @param y.min A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+#' @param y.min A numeric or character value specifying the minimum y-axis limit.
+#' If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
 #' Default is `NULL`.
-#' @param y.max A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+#' @param y.max A numeric or character value specifying the maximum y-axis limit.
+#' If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
 #' Default is `NULL`.
 #' @param y.trans A string specifying the transformation to apply to the y-axis.
 #' Possible values are `"identity"` or `"log2"`.
 #' Default is `"identity"`.
 #' @param y.nbreaks A number of breaks to use for the y-axis.
 #' Default is `5`.
-#' @param sort A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order.
+#' @param sort A logical or character value specifying whether to sort the groups on the x-axis.
+#' If `TRUE`, groups are sorted in increasing order. If FALSE, groups are not sorted.
+#' If `"increasing"`, groups are sorted in increasing order.
+#' If `"decreasing"`, groups are sorted in decreasing order.
 #' Default is `FALSE`.
 #' @param stack A logical specifying whether to stack the plots on top of each other.
 #' Default is `FALSE`.
 #' @param flip A logical specifying whether to flip the plot vertically.
 #' Default is `FALSE`.
-#' @param comparisons A list of length-2 vectors. The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
+#' @param comparisons A list of length-2 vectors.
+#' The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
 #' @param ref_group A string specifying the reference group for pairwise comparisons.
 #' Default is `NULL`.
 #' @param pairwise_method Method to use for pairwise comparisons.
@@ -120,7 +124,7 @@
 #' Default is `"Expression level"`.
 #'
 #' @seealso
-#' [CellStatPlot], [StatPlot]
+#' [CellStatPlot]
 #'
 #' @export
 #'
@@ -434,6 +438,7 @@ FeatureStatPlot <- function(
     ylab = "Expression level",
     legend.position = "right",
     legend.direction = "vertical",
+    legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
     combine = TRUE,
@@ -443,7 +448,6 @@ FeatureStatPlot <- function(
     force = FALSE,
     seed = 11) {
   if (is.null(group.by)) {
-    # avoid having the same name with split.by. split.by will be All.groups by default
     group.by <- "All.groups"
     xlab <- "All groups"
     srt[[group.by]] <- factor("All groups")
@@ -576,6 +580,7 @@ FeatureStatPlot <- function(
           ylab = ylab,
           legend.position = legend.position,
           legend.direction = legend.direction,
+          legend.title = legend.title,
           theme_use = theme_use,
           theme_args = theme_args,
           force = force,
@@ -655,6 +660,7 @@ FeatureStatPlot <- function(
       ylab = ylab,
       legend.position = legend.position,
       legend.direction = legend.direction,
+      legend.title = legend.title,
       theme_use = theme_use,
       theme_args = theme_args,
       force = force,
