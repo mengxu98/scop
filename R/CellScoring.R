@@ -19,9 +19,6 @@
 #' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
 #' @param ... Additional arguments to be passed to the scoring methods.
 #'
-#' @seealso
-#' [PrepareDB], [ListDB], [RunDynamicFeatures]
-#'
 #' @export
 #'
 #' @examples

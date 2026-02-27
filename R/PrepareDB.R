@@ -919,7 +919,7 @@ PrepareDB <- function(
           download(
             url = "http://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
             destfile = temp
-          ) # 32.4 MB
+          )
           mp_gene <- utils::read.table(
             temp,
             header = FALSE,

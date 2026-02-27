@@ -41,13 +41,11 @@ reference:
 - subtitle: "Package Management"
 - contents:
   - check_python
-  - check_r
   - env_info
   - env_requirements
   - ListEnv
   - PrepareEnv
   - remove_python
-  - remove_r
   - RemoveEnv
 
 - subtitle: "scop pipeline"
@@ -187,7 +185,6 @@ reference:
   - PAGAPlot
   - ProjectionPlot
   - ProportionTestPlot
-  - StatPlot
   - TACSPlot
   - VelocityPlot
   - VolcanoPlot

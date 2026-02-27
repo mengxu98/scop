@@ -97,5 +97,5 @@ CellDimPlot(
 )
 }
 \seealso{
-\link{CellDimPlot} \link{RunDynamicFeatures}
+\link{CellDimPlot}, \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}
 }

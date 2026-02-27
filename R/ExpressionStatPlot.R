@@ -67,6 +67,7 @@ ExpressionStatPlot <- function(
     ylab = "Expression level",
     legend.position = "right",
     legend.direction = "vertical",
+    legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
     force = FALSE,
@@ -1151,18 +1152,19 @@ ExpressionStatPlot <- function(
         p <- p + scale_y_continuous(trans = y.trans, n.breaks = y.nbreaks)
       }
 
+      legend_title_use <- if (is.null(legend.title)) paste0(keynm, ":") else legend.title
       if (fill.by != "expression") {
         if (isTRUE(stack)) {
           p <- p +
             scale_fill_manual(
-              name = paste0(keynm, ":"),
+              name = legend_title_use,
               values = colors,
               breaks = levels_order,
               limits = levels_order,
               drop = FALSE
             ) +
             scale_color_manual(
-              name = paste0(keynm, ":"),
+              name = legend_title_use,
               values = colors,
               breaks = levels_order,
               limits = levels_order,
@@ -1171,13 +1173,13 @@ ExpressionStatPlot <- function(
         } else {
           p <- p +
             scale_fill_manual(
-              name = paste0(keynm, ":"),
+              name = legend_title_use,
               values = colors,
               breaks = levels_order,
               drop = FALSE
             ) +
             scale_color_manual(
-              name = paste0(keynm, ":"),
+              name = legend_title_use,
               values = colors,
               breaks = levels_order,
               drop = FALSE
@@ -1194,7 +1196,7 @@ ExpressionStatPlot <- function(
       } else {
         p <- p +
           scale_fill_gradientn(
-            name = paste0(keynm, ":"),
+            name = legend_title_use,
             colours = colors,
             limits = colors_limits
           ) +
