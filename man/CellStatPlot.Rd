@@ -50,21 +50,22 @@ CellStatPlot(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{srt}{A Seurat object.}
 
-\item{stat.by}{The column name(s) in \code{meta.data} specifying the variable(s) to be plotted.}
+\item{stat.by}{A character vector specifying the features to plot.}
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
 \item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
 
-\item{bg.by}{The column name in \code{meta.data} specifying the background variable for bar plots.}
+\item{bg.by}{A character vector specifying the variable to use as the background color.
+Default is \code{NULL}.}
 
 \item{cells}{A character vector of cell names to use.
 Default is \code{NULL}.}
 
-\item{flip}{Whether to flip the plot.
+\item{flip}{A logical specifying whether to flip the plot vertically.
 Default is \code{FALSE}.}
 
 \item{NA_color}{The color to use for missing values.}
@@ -72,18 +73,18 @@ Default is \code{FALSE}.}
 \item{NA_stat}{Whether to include missing values in the plot.
 Default is \code{TRUE}.}
 
-\item{keep_empty}{Whether to keep empty groups in the plot.
+\item{keep_empty}{Whether to keep empty levels in the plot.
 Default is \code{FALSE}.}
 
-\item{individual}{Whether to plot individual groups separately.
+\item{individual}{Whether to create individual plots for each group.
 Default is \code{FALSE}.}
 
 \item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
 Default is \code{NULL}.}
 
-\item{plot_type}{The type of plot to create.
-Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
-\code{"area"}, \code{"dot"}, \code{"sankey"}, \code{"chord"}, \code{"venn"}, or \code{"upset"}.}
+\item{plot_type}{A string specifying the type of plot to create.
+Possible values are \code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.
+Default is \code{"violin"}.}
 
 \item{stat_type}{The type of statistic to compute for the plot.
 Can be one of \code{"percent"} or \code{"count"}.}
@@ -98,13 +99,17 @@ Default is \code{"Paired"}.}
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
-\item{alpha}{The transparency level for the plot.}
+\item{alpha}{The transparency of the plot.
+Default is \code{1}.}
 
-\item{bg_palette}{The name of the background color palette to use for bar plots.}
+\item{bg_palette}{A string specifying the color palette to use for the background.
+Default is \code{"Paired"}.}
 
-\item{bg_palcolor}{The color to use in the background color palette.}
+\item{bg_palcolor}{A character vector specifying specific colors to use for the background.
+Default is \code{NULL}.}
 
-\item{bg_alpha}{The transparency level for the background color in bar plots.}
+\item{bg_alpha}{The transparency of the background.
+Default is \code{0.2}.}
 
 \item{label}{Whether to add labels on the plot.
 Default is \code{FALSE}.}
@@ -117,7 +122,8 @@ Default is \code{FALSE}.}
 
 \item{label.bg.r}{The radius of the rounded corners of the label background.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{NULL}.}
+\item{aspect.ratio}{Aspect ratio of the panel.
+Default is \code{NULL}.}
 
 \item{title}{The text for the title.
 Default is \code{NULL}.}
@@ -128,8 +134,8 @@ Default is \code{NULL}.}
 \item{xlab}{The x-axis label of the plot.
 Default is \code{NULL}.}
 
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
+\item{ylab}{A string specifying the label of the y-axis.
+Default is \code{"Expression level"}.}
 
 \item{legend.position}{The position of legends,
 one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
@@ -415,5 +421,5 @@ sum(
 )
 }
 \seealso{
-\link{StatPlot}
+\link{FeatureStatPlot}
 }
