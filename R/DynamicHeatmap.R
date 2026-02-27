@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams GroupHeatmap
-#' @param lineages A character vector specifying the lineages to plot.
+#' @inheritParams RunDynamicFeatures
 #' @param features A character vector specifying the features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 #' `min_expcells`, `r.sq`, `dev.expl`, `padjust` and `num_intersections`.
@@ -21,8 +21,6 @@
 #' Default is `100`.
 #' @param order_by The order of the heatmap.
 #' Default is `"peaktime"`.
-#' @param family The model used to calculate the dynamic features if needed.
-#' By default, this parameter is set to `NULL`, and the appropriate family will be automatically determined.
 #' @param cluster_features_by Which lineage to use when clustering features.
 #' By default, this parameter is set to `NULL`, which means that all lineages will be used.
 #' @param pseudotime_label The pseudotime label.
@@ -217,6 +215,13 @@ DynamicHeatmap <- function(
     lib_normalize = identical(layer, "counts"),
     libsize = NULL,
     family = NULL,
+    suffix = lineages,
+    n_candidates = 1000,
+    minfreq = 5,
+    fit_method = c("gam", "pretsa"),
+    knot = 0,
+    max_knot_allowed = 10,
+    padjust_method = "fdr",
     cluster_features_by = NULL,
     cluster_rows = FALSE,
     cluster_row_slices = FALSE,
@@ -324,6 +329,8 @@ DynamicHeatmap <- function(
     height = NULL,
     width = NULL,
     units = "inch",
+    cores = 1,
+    verbose = TRUE,
     seed = 11,
     ht_params = list()) {
   set.seed(seed)
@@ -372,7 +379,7 @@ DynamicHeatmap <- function(
 
   if (any(!feature_split_by %in% lineages)) {
     log_message(
-      "'feature_split_by' must be a subset of lineages.",
+      "'feature_split_by' must be a subset of lineages",
       message_type = "error"
     )
   }
@@ -714,10 +721,20 @@ DynamicHeatmap <- function(
           srt,
           lineages = l,
           features = features,
-          assay = assay,
-          layer = layer,
+          suffix = suffix,
+          n_candidates = n_candidates,
+          minfreq = minfreq,
           family = family,
-          libsize = libsize
+          layer = layer,
+          assay = assay,
+          libsize = libsize,
+          fit_method = fit_method,
+          knot = knot,
+          max_knot_allowed = max_knot_allowed,
+          padjust_method = padjust_method,
+          cores = cores,
+          verbose = verbose,
+          seed = seed
         )
         DynamicFeatures <- srt@tools[[paste0("DynamicFeatures_", l)]][[
           "DynamicFeatures"
@@ -728,10 +745,20 @@ DynamicHeatmap <- function(
           srt,
           lineages = l,
           features = features[!features %in% rownames(DynamicFeatures)],
-          assay = assay,
-          layer = layer,
+          suffix = suffix,
+          n_candidates = n_candidates,
+          minfreq = minfreq,
           family = family,
-          libsize = libsize
+          layer = layer,
+          assay = assay,
+          libsize = libsize,
+          fit_method = fit_method,
+          knot = knot,
+          max_knot_allowed = max_knot_allowed,
+          padjust_method = padjust_method,
+          cores = cores,
+          verbose = verbose,
+          seed = seed
         )
         DynamicFeatures <- rbind(
           DynamicFeatures,

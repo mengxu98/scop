@@ -1895,20 +1895,6 @@ GroupHeatmap <- function(
           featan_values <- factor(featan_values, levels = unique(featan_values))
         }
         ha_feature <- list()
-        # ha_feature[[featan]] <- ComplexHeatmap::anno_block(
-        #   align_to = split(seq_along(featan_values), featan_values),
-        #   panel_fun = function(index, nm) {
-        #     grid::grid.rect(gp = grid::gpar(
-        #       fill = palette_colors(
-        #         featan_values,
-        #         palette = palette[i],
-        #         palcolor = palcolor
-        #       )[nm],
-        #       col = NA
-        #     ))
-        #   },
-        #   which = ifelse(flip, "column", "row")
-        # )
         ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
           x = as.character(featan_values),
           col = palette_colors(
@@ -1965,16 +1951,6 @@ GroupHeatmap <- function(
           colors = palette_colors(palette = palette[i], palcolor = palcolor)
         )
         ha_feature <- list()
-        # ha_feature[[featan]] <- ComplexHeatmap::anno_block(
-        #   align_to = split(seq_along(featan_values), featan_values),
-        #   panel_fun = function(index, nm) {
-        #     grid::grid.rect(gp = grid::gpar(
-        #       fill = col_fun(featan_values[nm]),
-        #       col = NA
-        #     ))
-        #   },
-        #   which = ifelse(flip, "column", "row")
-        # )
         ha_feature[[featan]] <- ComplexHeatmap::anno_simple(
           x = featan_values,
           col = col_fun,

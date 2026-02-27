@@ -22,7 +22,7 @@
 #' Default is `"Dark2"`.
 #' @param ... Additional arguments to be passed to the [slingshot::slingshot] function.
 #'
-#' @seealso [CellDimPlot] [RunDynamicFeatures]
+#' @seealso [CellDimPlot], [RunDynamicFeatures], [RunDynamicEnrichment]
 #'
 #' @export
 #'

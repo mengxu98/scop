@@ -351,7 +351,6 @@ buildReferenceFromSeurat <- function(
     )
   }
   res <- list()
-  ## TODO: check that these objects are all correctly initialized
   res$Z_corr <- Matrix::t(
     SeuratObject::Embeddings(obj, harmony)
   )

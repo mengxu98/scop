@@ -194,7 +194,9 @@ RunDynamicEnrichment <- function(
         )
       ),
       suffix = paste(lineages, term, sep = "_"),
-      assay = term
+      assay = term,
+      cores = cores,
+      verbose = verbose
     )
   }
 
