@@ -27,6 +27,13 @@ DynamicHeatmap(
   lib_normalize = identical(layer, "counts"),
   libsize = NULL,
   family = NULL,
+  suffix = lineages,
+  n_candidates = 1000,
+  minfreq = 5,
+  fit_method = c("gam", "pretsa"),
+  knot = 0,
+  max_knot_allowed = 10,
+  padjust_method = "fdr",
   cluster_features_by = NULL,
   cluster_rows = FALSE,
   cluster_row_slices = FALSE,
@@ -131,6 +138,8 @@ DynamicHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
+  verbose = TRUE,
   seed = 11,
   ht_params = list()
 )
@@ -138,7 +147,7 @@ DynamicHeatmap(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{lineages}{A character vector specifying the lineages to plot.}
+\item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
 
 \item{features}{A character vector specifying the features to plot.
 By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
@@ -195,8 +204,33 @@ Default is \code{NULL}.}
 \item{libsize}{A numeric vector specifying the library size for each cell.
 Default is \code{NULL}.}
 
-\item{family}{The model used to calculate the dynamic features if needed.
-By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}
+\item{family}{A character or character vector specifying the family of distributions to use for the GAM.
+If family is set to NULL, the appropriate family will be automatically determined based on the data.
+If length(family) is 1, the same family will be used for all features.
+Otherwise, family must have the same length as features.}
+
+\item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
+Default is the lineage names.}
+
+\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.
+Default is \code{1000}.}
+
+\item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
+Features with a frequency less than minfreq will be excluded.
+Default is \code{5}.}
+
+\item{fit_method}{The method used for fitting features.
+Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).
+Default is \code{"gam"}.}
+
+\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.
+Default is \code{0}.}
+
+\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.
+Default is \code{10}.}
+
+\item{padjust_method}{The method used for p-value adjustment.
+Default is \code{"fdr"}.}
 
 \item{cluster_features_by}{Which lineage to use when clustering features.
 By default, this parameter is set to \code{NULL}, which means that all lineages will be used.}
@@ -466,6 +500,12 @@ Default is \code{NULL}.}
 
 \item{units}{A character vector specifying the units for the height and width.
 Default is \code{"inch"}.}
+
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
+
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
