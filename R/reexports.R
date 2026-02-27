@@ -1,14 +1,7 @@
 #' @import ggplot2 Seurat thisutils thisplot
-#' @importFrom ggplot2 %+replace%
 #' @importFrom ComplexHeatmap %v%
-#' @importFrom grDevices palette
-#' @importFrom igraph layout_with_fr cluster_fast_greedy
-#' @importFrom methods new
-#' @importFrom stats median
 #' @importFrom ggrepel GeomTextRepel
 #' @importFrom Signac RunSVD
-#' @importFrom thisutils wilkinsonp maximump minimump meanp votep sump log_message
-#' @importFrom thisplot theme_this
 #' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
 #' @export
@@ -18,7 +11,6 @@ dplyr::`%>%`
 #' @export
 rlang::`%||%`
 
-log_message <- thisutils::log_message
 theme_scop <- thisplot::theme_this
 
 utils::globalVariables(
