@@ -32,6 +32,7 @@
 #' Default is `"right"`.
 #' @param legend.direction The direction of the legend in the plot.
 #' Can be one of `"vertical"` or `"horizontal"`.
+#' @param legend.title Title for the legend. Default is `NULL`, which uses the group name.
 #' @param combine Combine plots into a single `patchwork` object.
 #' If `FALSE`, return a list of ggplot objects.
 #' @param nrow Number of rows in the combined plot.
@@ -669,6 +670,7 @@ CellDimPlot <- function(
     ylab = NULL,
     legend.position = "right",
     legend.direction = "vertical",
+    legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
     combine = TRUE,
@@ -1261,9 +1263,10 @@ CellDimPlot <- function(
           }
         }
       }
+      legend_title_use <- if (is.null(legend.title)) paste0(g, ":") else legend.title
       p <- p +
         scale_color_manual(
-          name = paste0(g, ":"),
+          name = legend_title_use,
           values = colors[names(labels_tb)],
           labels = label_use,
           na.value = bg_color,
@@ -1274,7 +1277,7 @@ CellDimPlot <- function(
           )
         ) +
         scale_fill_manual(
-          name = paste0(g, ":"),
+          name = legend_title_use,
           values = colors[names(labels_tb)],
           labels = label_use,
           na.value = bg_color,

@@ -79,6 +79,7 @@ FeatureDimPlot(
   ylab = NULL,
   legend.position = "right",
   legend.direction = "vertical",
+  legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -257,6 +258,8 @@ Default is \code{"right"}.}
 
 \item{legend.direction}{The direction of the legend in the plot.
 Can be one of \code{"vertical"} or \code{"horizontal"}.}
+
+\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
 
 \item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
