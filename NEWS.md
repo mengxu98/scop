@@ -1,5 +1,10 @@
 # scop
 
+# scop 0.8.4
+
+* **bugs**:
+  * `FeatureStatPlot()` / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment when `add_box = TRUE` with `split.by`. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent `position_dodge(width = 0.9)` to match the boxplot. This issue reported in [#123](https://github.com/mengxu98/scop/issues/123).
+
 # scop 0.8.3
 
 * **func**:
