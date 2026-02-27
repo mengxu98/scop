@@ -354,6 +354,7 @@ FeatureDimPlot <- function(
     ylab = NULL,
     legend.position = "right",
     legend.direction = "vertical",
+    legend.title = NULL,
     theme_use = "theme_scop",
     theme_args = list(),
     combine = TRUE,
@@ -776,9 +777,11 @@ FeatureDimPlot <- function(
               )
             )
           } else {
+            legend_title_use <- if (is.null(legend.title)) NULL else legend.title
             temp_geom[[i]] <- append(
               temp_geom[[i]],
               scale_color_gradientn(
+                name = legend_title_use,
                 colours = pal_list[[i]],
                 values = scales::rescale(value_list[[i]]),
                 na.value = bg_color,
@@ -1492,16 +1495,17 @@ FeatureDimPlot <- function(
                 bins = hex.bins,
                 binwidth = hex.binwidth
               )
+            legend_title_use <- if (is.null(legend.title)) "" else legend.title
             if (all(is.na(dat[["value"]]))) {
               p <- p +
                 scale_fill_gradient(
-                  name = "",
+                  name = legend_title_use,
                   na.value = bg_color
                 )
             } else {
               p <- p +
                 scale_fill_gradientn(
-                  name = "",
+                  name = legend_title_use,
                   colours = colors,
                   values = scales::rescale(colors_value),
                   limits = range(colors_value),
@@ -1575,17 +1579,18 @@ FeatureDimPlot <- function(
             p <- p + facet_grid(stats::formula(paste0(split.by, "~features")))
           }
         }
+        legend_title_use <- if (is.null(legend.title)) "" else legend.title
         if (all(is.na(dat[["value"]]))) {
           p <- p +
             scale_colour_gradient(
-              name = "",
+              name = legend_title_use,
               na.value = bg_color,
               aesthetics = c("color")
             )
         } else {
           p <- p +
             scale_color_gradientn(
-              name = "",
+              name = legend_title_use,
               colours = colors,
               values = scales::rescale(colors_value),
               limits = range(colors_value),
