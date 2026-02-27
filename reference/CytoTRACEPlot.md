@@ -147,24 +147,24 @@ if (thisplot::check_ci_env()) {
   )
   plots$Boxplot
 }
-#> ℹ [2026-02-27 15:24:21] Start standard scop workflow...
-#> ℹ [2026-02-27 15:24:22] Checking a list of <Seurat>...
-#> ! [2026-02-27 15:24:22] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 15:24:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 15:24:24] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 15:24:24] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 15:24:24] Number of available HVF: 2000
-#> ℹ [2026-02-27 15:24:25] Finished check
-#> ℹ [2026-02-27 15:24:25] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 15:24:25] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 15:24:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 15:24:26] Reorder clusters...
-#> ℹ [2026-02-27 15:24:26] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 15:24:26] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 15:24:29] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 15:24:32] Run scop standard workflow completed
-#> ◌ [2026-02-27 15:24:32] Running CytoTRACE2
-#> ℹ [2026-02-27 15:24:32] Package CytoTRACE2 is not installed. Installing from GitHub...
+#> ℹ [2026-02-27 17:43:36] Start standard scop workflow...
+#> ℹ [2026-02-27 17:43:37] Checking a list of <Seurat>...
+#> ! [2026-02-27 17:43:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 17:43:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 17:43:39] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 17:43:39] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 17:43:39] Number of available HVF: 2000
+#> ℹ [2026-02-27 17:43:40] Finished check
+#> ℹ [2026-02-27 17:43:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 17:43:40] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 17:43:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 17:43:41] Reorder clusters...
+#> ℹ [2026-02-27 17:43:41] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 17:43:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 17:43:44] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 17:43:47] Run scop standard workflow completed
+#> ◌ [2026-02-27 17:43:47] Running CytoTRACE2
+#> ℹ [2026-02-27 17:43:47] Package CytoTRACE2 is not installed. Installing from GitHub...
 #>  
 #> → Will install 6 packages.
 #> → All 6 packages (0 B) are cached.
@@ -186,12 +186,12 @@ if (thisplot::check_ci_env()) {
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 #> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
 #> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
 #> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
 #> Reading package lists...
 #> ℹ Executing `sudo sh -c apt-get -y install libnetcdf-dev make libcurl4-openssl-dev libssl-dev zlib1g-dev libglpk-dev libxml2-dev pandoc libpng-dev python3 libicu-dev`
 #> Reading package lists...
@@ -211,16 +211,16 @@ if (thisplot::check_ci_env()) {
 #> libicu-dev is already the newest version (74.2-1ubuntu3.1).
 #> 0 upgraded, 0 newly installed, 0 to remove and 24 not upgraded.
 #> ✔ Installed HiClimR 2.2.1  (75ms)
-#> ✔ Installed ncdf4 1.24  (97ms)
-#> ✔ Installed RcppParallel 5.1.11-1  (142ms)
-#> ✔ Installed Rfast 2.1.5.2  (164ms)
-#> ✔ Installed zigg 0.0.2  (87ms)
+#> ✔ Installed ncdf4 1.24  (95ms)
+#> ✔ Installed RcppParallel 5.1.11-1  (139ms)
+#> ✔ Installed Rfast 2.1.5.2  (157ms)
+#> ✔ Installed zigg 0.0.2  (83ms)
 #> ℹ Packaging CytoTRACE2 1.1.0
 #> ✔ Packaged CytoTRACE2 1.1.0 (4.9s)
 #> ℹ Building CytoTRACE2 1.1.0
-#> ✔ Built CytoTRACE2 1.1.0 (9.8s)
+#> ✔ Built CytoTRACE2 1.1.0 (10s)
 #> ✔ Installed CytoTRACE2 1.1.0 (github::digitalcytometry/cytotrace2@1710d43) (1.1s)
-#> ✔ 1 pkg + 143 deps: kept 135, added 6, dld 6 (NA B) [46.7s]
+#> ✔ 1 pkg + 143 deps: kept 135, added 6, dld 6 (NA B) [48s]
 #> Warning: replacing previous import ‘data.table::first’ by ‘dplyr::first’ when loading ‘CytoTRACE2’
 #> Warning: replacing previous import ‘data.table::between’ by ‘dplyr::between’ when loading ‘CytoTRACE2’
 #> Warning: replacing previous import ‘data.table::last’ by ‘dplyr::last’ when loading ‘CytoTRACE2’
@@ -239,5 +239,5 @@ if (thisplot::check_ci_env()) {
 #> cytotrace2: Running with slow mode (subsamples are processed sequentially)
 #> Number of cores for KNN: 1
 #> cytotrace2: Finished
-#> ✔ [2026-02-27 15:26:21] CytoTRACE2 computed successfully
+#> ✔ [2026-02-27 17:45:39] CytoTRACE2 computed successfully
 ```
