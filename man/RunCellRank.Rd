@@ -186,11 +186,6 @@ Default is \code{TRUE}.}
 \value{
 Returns a Seurat object if \code{return_seurat = TRUE} or an anndata object with CellRank results stored in \code{obsm}, \code{obs}, and \code{varm} slots.
 The estimator and kernel objects are stored in \code{srt@misc$cellrank}.
-
-Lineage pseudotime columns are automatically added to metadata with prefix \code{"Lineage_"}
-(e.g., \code{Lineage_Alpha}, \code{Lineage_Beta}), compatible with \link{LineagePlot}, \link{RunDynamicFeatures},
-and \link{RunDynamicEnrichment}. These are computed by combining base pseudotime
-(\code{cytotrace_pseudotime}, \code{dpt_pseudotime}, or \code{latent_time}) with fate probabilities.
 }
 \description{
 CellRank is a powerful toolkit for studying cellular dynamics using Markov state modeling.
