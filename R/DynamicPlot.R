@@ -4,6 +4,7 @@
 #' @inheritParams standard_scop
 #' @inheritParams CellDimPlot
 #' @inheritParams GroupHeatmap
+#' @inheritParams RunDynamicFeatures
 #' @param features A character vector of features to use.
 #' @param lineages A character vector specifying the lineages to plot.
 #' @param cells A character vector of cell names to use. Default is `NULL`.
@@ -120,6 +121,8 @@ DynamicPlot <- function(
     nrow = NULL,
     ncol = NULL,
     byrow = TRUE,
+    cores = 1,
+    verbose = TRUE,
     seed = 11) {
   set.seed(seed)
 
@@ -192,7 +195,9 @@ DynamicPlot <- function(
         assay = assay,
         layer = layer,
         family = family,
-        libsize = libsize
+        libsize = libsize,
+        cores = cores,
+        verbose = verbose
       )
       if (is.null(raw_matrix)) {
         raw_matrix <- fitted_matrix <- upr_matrix <- lwr_matrix <- matrix(
