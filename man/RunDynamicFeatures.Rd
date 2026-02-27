@@ -15,6 +15,10 @@ RunDynamicFeatures(
   layer = "counts",
   assay = NULL,
   libsize = NULL,
+  fit_method = c("gam", "pretsa"),
+  knot = 0,
+  max_knot_allowed = 10,
+  padjust_method = "fdr",
   cores = 1,
   verbose = TRUE,
   seed = 11
@@ -35,9 +39,10 @@ Default is the lineage names.}
 Default is \code{1000}.}
 
 \item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded. Default is \code{5}.}
+Features with a frequency less than minfreq will be excluded.
+Default is \code{5}.}
 
-\item{family}{A character or character vector specifying the family of distributions to use for the generalized additive models (GAMs).
+\item{family}{A character or character vector specifying the family of distributions to use for the GAM.
 If family is set to NULL, the appropriate family will be automatically determined based on the data.
 If length(family) is 1, the same family will be used for all features.
 Otherwise, family must have the same length as features.}
@@ -53,6 +58,19 @@ If NULL, the library size correction factors will be calculated based on the exp
 If length(libsize) is 1, the same value will be used for all cells.
 Otherwise, libsize must have the same length as the number of cells in srt.
 Default is \code{NULL}.}
+
+\item{fit_method}{The method used for fitting features.
+Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).
+Default is \code{"gam"}.}
+
+\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.
+Default is \code{0}.}
+
+\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.
+Default is \code{10}.}
+
+\item{padjust_method}{The method used for p-value adjustment.
+Default is \code{"fdr"}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
@@ -81,7 +99,8 @@ pancreas_sub <- RunSlingshot(
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
-  n_candidates = 200
+  n_candidates = 200,
+  fit_method = "gam"
 )
 
 names(
@@ -94,7 +113,7 @@ ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   cell_annotation = "SubCellType",
-  n_split = 6,
+  n_split = 3,
   reverse_ht = "Lineage1"
 )
 ht$plot
@@ -107,6 +126,37 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
+
+pancreas_sub <- RunDynamicFeatures(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  n_candidates = 200,
+  fit_method = "pretsa"
+)
+head(
+  pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
+)
+ht <- DynamicHeatmap(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  cell_annotation = "SubCellType",
+  n_split = 3,
+  reverse_ht = "Lineage1"
+)
+ht$plot
+
+DynamicPlot(
+  pancreas_sub,
+  lineages = c("Lineage1", "Lineage2"),
+  features = c("Arxes1", "Ncoa2"),
+  group.by = "SubCellType",
+  compare_lineages = TRUE,
+  compare_features = FALSE
+)
+}
+\references{
+Zhuang H, Ji Z. PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns.
+Genome Biol. 2026 Feb 12. doi: 10.1186/s13059-026-03994-3IF: 9.4 Q1 B1. Epub ahead of print. PMID: 41673899.
 }
 \seealso{
 \link{DynamicHeatmap}, \link{DynamicPlot}, \link{RunDynamicEnrichment}
