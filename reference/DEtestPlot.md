@@ -256,36 +256,36 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 15:26:37] Start standard scop workflow...
-#> ℹ [2026-02-27 15:26:38] Checking a list of <Seurat>...
-#> ! [2026-02-27 15:26:38] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 15:26:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 15:26:39] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 15:26:40] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 15:26:40] Number of available HVF: 2000
-#> ℹ [2026-02-27 15:26:40] Finished check
-#> ℹ [2026-02-27 15:26:40] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 15:26:40] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 15:26:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 15:26:41] Reorder clusters...
-#> ℹ [2026-02-27 15:26:41] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 15:26:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 15:26:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 15:26:48] Run scop standard workflow completed
+#> ℹ [2026-02-27 17:45:55] Start standard scop workflow...
+#> ℹ [2026-02-27 17:45:56] Checking a list of <Seurat>...
+#> ! [2026-02-27 17:45:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 17:45:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 17:45:58] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 17:45:58] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 17:45:58] Number of available HVF: 2000
+#> ℹ [2026-02-27 17:45:59] Finished check
+#> ℹ [2026-02-27 17:45:59] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 17:45:59] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 17:46:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 17:46:00] Reorder clusters...
+#> ℹ [2026-02-27 17:46:00] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 17:46:00] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 17:46:03] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 17:46:06] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-02-27 15:26:48] Data type is log-normalized
-#> ℹ [2026-02-27 15:26:48] Start differential expression test
-#> ℹ [2026-02-27 15:26:48] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-02-27 15:26:48] Using 1 core
-#> ⠙ [2026-02-27 15:26:48] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-02-27 15:26:48] Completed 5 tasks in 912ms
+#> ℹ [2026-02-27 17:46:07] Data type is log-normalized
+#> ℹ [2026-02-27 17:46:07] Start differential expression test
+#> ℹ [2026-02-27 17:46:07] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-02-27 17:46:07] Using 1 core
+#> ⠙ [2026-02-27 17:46:07] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-02-27 17:46:07] Completed 5 tasks in 911ms
 #> 
-#> ℹ [2026-02-27 15:26:48] Building results
-#> ✔ [2026-02-27 15:26:49] Differential expression test completed
+#> ℹ [2026-02-27 17:46:07] Building results
+#> ✔ [2026-02-27 17:46:08] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,

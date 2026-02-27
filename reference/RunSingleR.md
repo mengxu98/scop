@@ -142,64 +142,64 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-02-27 16:21:27] Rename features for the assay: RNA
+#> ℹ [2026-02-27 18:39:33] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2026-02-27 16:21:27] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2026-02-27 16:21:28] Checking a list of <Seurat>...
-#> ! [2026-02-27 16:21:28] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:29] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
-#> ! [2026-02-27 16:21:30] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:31] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
-#> ! [2026-02-27 16:21:32] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:33] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
-#> ! [2026-02-27 16:21:34] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:35] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
-#> ! [2026-02-27 16:21:36] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:38] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:38] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 16:21:38] Number of available HVF: 2000
-#> ℹ [2026-02-27 16:21:39] Finished check
+#> ℹ [2026-02-27 18:39:33] Spliting `srt_merge` into `srt_list` by column "tech"...
+#> ℹ [2026-02-27 18:39:34] Checking a list of <Seurat>...
+#> ! [2026-02-27 18:39:34] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:35] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
+#> ! [2026-02-27 18:39:36] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:37] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
+#> ! [2026-02-27 18:39:38] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:40] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
+#> ! [2026-02-27 18:39:40] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:42] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
+#> ! [2026-02-27 18:39:42] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:44] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:44] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 18:39:44] Number of available HVF: 2000
+#> ℹ [2026-02-27 18:39:45] Finished check
 
 # Annotation
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 16:21:41] Start standard scop workflow...
-#> ℹ [2026-02-27 16:21:42] Checking a list of <Seurat>...
-#> ! [2026-02-27 16:21:42] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 16:21:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:44] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 16:21:44] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 16:21:44] Number of available HVF: 2000
-#> ℹ [2026-02-27 16:21:44] Finished check
-#> ℹ [2026-02-27 16:21:45] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 16:21:45] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 16:21:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 16:21:46] Reorder clusters...
-#> ℹ [2026-02-27 16:21:46] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 16:21:46] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 16:21:50] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 16:21:55] Run scop standard workflow completed
+#> ℹ [2026-02-27 18:39:47] Start standard scop workflow...
+#> ℹ [2026-02-27 18:39:48] Checking a list of <Seurat>...
+#> ! [2026-02-27 18:39:48] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 18:39:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:50] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 18:39:50] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 18:39:51] Number of available HVF: 2000
+#> ℹ [2026-02-27 18:39:51] Finished check
+#> ℹ [2026-02-27 18:39:51] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 18:39:51] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 18:39:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 18:39:52] Reorder clusters...
+#> ℹ [2026-02-27 18:39:52] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 18:39:52] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 18:39:57] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 18:40:01] Run scop standard workflow completed
 pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = "Standardpca_SNN_res.0.6",
   ref_group = "celltype"
 )
-#> ℹ [2026-02-27 16:21:55] Start SingleR annotation
-#> ℹ [2026-02-27 16:28:39] Data type is log-normalized
-#> ℹ [2026-02-27 16:28:39] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-02-27 16:28:40] Data type is log-normalized
-#> ℹ [2026-02-27 16:28:40] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-02-27 16:28:43] Perform "SingleRCluster"
-#> ✔ [2026-02-27 16:28:44] SingleR annotation completed
+#> ℹ [2026-02-27 18:40:01] Start SingleR annotation
+#> ℹ [2026-02-27 18:46:44] Data type is log-normalized
+#> ℹ [2026-02-27 18:46:44] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-02-27 18:46:46] Data type is log-normalized
+#> ℹ [2026-02-27 18:46:46] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-02-27 18:46:49] Perform "SingleRCluster"
+#> ✔ [2026-02-27 18:46:50] SingleR annotation completed
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
@@ -212,13 +212,13 @@ pancreas_sub <- RunSingleR(
   query_group = NULL,
   ref_group = "celltype"
 )
-#> ℹ [2026-02-27 16:28:44] Start SingleR annotation
-#> ℹ [2026-02-27 16:28:45] Data type is log-normalized
-#> ℹ [2026-02-27 16:28:45] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-02-27 16:28:48] Data type is log-normalized
-#> ℹ [2026-02-27 16:28:48] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-02-27 16:28:51] Perform "SingleRCell"
-#> ✔ [2026-02-27 16:28:56] SingleR annotation completed
+#> ℹ [2026-02-27 18:46:50] Start SingleR annotation
+#> ℹ [2026-02-27 18:46:51] Data type is log-normalized
+#> ℹ [2026-02-27 18:46:51] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-02-27 18:46:54] Data type is log-normalized
+#> ℹ [2026-02-27 18:46:54] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-02-27 18:46:57] Perform "SingleRCell"
+#> ✔ [2026-02-27 18:47:02] SingleR annotation completed
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
