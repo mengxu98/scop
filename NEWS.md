@@ -1,12 +1,21 @@
 # scop
 
+# scop 0.8.3
+
+* **func**:
+  * `RunDynamicFeatures()`: Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for dynamic feature fitting. The [PreTSA](https://github.com/haotian-zhuang/PreTSA/) algorithm in `scop` has been re implemented to support parallelization for higher performance. Original research: [PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns](https://doi.org/10.1186/s13059-026-03994-3). Use `fit_method = "pretsa"` for B-spline-based piecewise truncated spline analysis; `fit_method = "gam"` (default) keeps generalized additive models. PreTSA supports `knot` (0 or `"auto"`) and `max_knot_allowed` when `knot = "auto"`. This issue reported in [#133](https://github.com/mengxu98/scop/issues/132).
+  * `CellDimPlot()` and `FeatureDimPlot()`: Added `legend.title` parameter (default `NULL`) to control the legend title. When `NULL`, default titles are used (e.g. group name for `CellDimPlot`, feature or empty for `FeatureDimPlot`).
+  * `ExpressionStatPlot()` and `FeatureStatPlot()`: Added `legend.title` parameter (default `NULL`) for single-legend plots. When `NULL`, the default title (e.g. `keynm` or feature/group name) is used. `FeatureStatPlot()` forwards `legend.title` to `ExpressionStatPlot()`.
+
+* **bugs**:
+  * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. This issue reported in [#133](https://github.com/mengxu98/scop/issues/133), @1228849000.
+
 # scop 0.8.2
 
 * **func**:
   * Add the `DEtestPlot()` function, which calls the original `VolcanoPlot()` and adds two plot types, Manhattan and Ring, controlled by the `plot_type` parameter (`c("volcano", "manhattan", "ring")`, default `"volcano"`). Add standalone functions `DEtestManhattanPlot()` and `DEtestRingPlot()` for direct use. This issue reported in [#121](https://github.com/mengxu98/scop/issues/121).
   * Differential expression visualization (`DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `res` parameter to accept existing DE results (data.frame). When `res` is provided, `srt` is ignored. Data processing supports: (1) `group1` or `cluster` column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when `gene` column is missing. This issue reported in [#129](https://github.com/mengxu98/scop/issues/129).
   * `PrepareEnv()`: Update `version` parameter to specify the *Python* version of the conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"` on *macOS* and *Unix*. This issue reported in [#103](https://github.com/mengxu98/scop/issues/103) and [#88](https://github.com/mengxu98/scop/issues/88).
-  * `StatPlot()`: Improve rose plot (`plot_type = "rose"`) text display using **geomtextpath**: labels follow the outer ring and are no longer placed next to each segment; all labels sit on a fixed outer radius for a cleaner layout.
   * `RunNMF()`: Add the `cores` parameter for `RunNMF()` and optimize the printed message.
   * Removed the setting in *Python* functions that prevents drawing functions from causing *R* crashes.
 

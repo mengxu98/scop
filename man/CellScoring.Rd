@@ -204,6 +204,3 @@ CellDimPlot(
 )
 }
 }
-\seealso{
-\link{PrepareDB}, \link{ListDB}, \link{RunDynamicFeatures}
-}
