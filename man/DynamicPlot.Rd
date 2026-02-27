@@ -40,6 +40,8 @@ DynamicPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  cores = 1,
+  verbose = TRUE,
   seed = 11
 )
 }
@@ -127,6 +129,12 @@ Default is \code{NULL}, which means determined automatically based on the number
 Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{byrow}{Whether to arrange the plots by row in the combined plot.
+Default is \code{TRUE}.}
+
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
+
+\item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.

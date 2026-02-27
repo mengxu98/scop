@@ -36,7 +36,7 @@ RunDynamicEnrichment(
 If specified, the genes and groups will be extracted from the Seurat object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{lineages}{A character vector specifying the lineages to plot.}
+\item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
 
 \item{score_method}{The method to use for scoring.
 Can be \code{"Seurat"}, \code{"AUCell"}, or \code{"UCell"}.

@@ -74,6 +74,7 @@ FeatureStatPlot(
   ylab = "Expression level",
   legend.position = "right",
   legend.direction = "vertical",
+  legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -231,10 +232,12 @@ Default is \code{FALSE}.}
 \item{same.y.lims}{Whether to use the same y-axis limits for all plots.
 Default is \code{FALSE}.}
 
-\item{y.min}{A numeric or character value specifying the minimum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+\item{y.min}{A numeric or character value specifying the minimum y-axis limit.
+If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
 Default is \code{NULL}.}
 
-\item{y.max}{A numeric or character value specifying the maximum y-axis limit. If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
+\item{y.max}{A numeric or character value specifying the maximum y-axis limit.
+If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
 Default is \code{NULL}.}
 
 \item{y.trans}{A string specifying the transformation to apply to the y-axis.
@@ -244,7 +247,10 @@ Default is \code{"identity"}.}
 \item{y.nbreaks}{A number of breaks to use for the y-axis.
 Default is \code{5}.}
 
-\item{sort}{A logical or character value specifying whether to sort the groups on the x-axis. If TRUE, groups are sorted in increasing order. If FALSE, groups are not sorted. If "increasing", groups are sorted in increasing order. If "decreasing", groups are sorted in decreasing order.
+\item{sort}{A logical or character value specifying whether to sort the groups on the x-axis.
+If \code{TRUE}, groups are sorted in increasing order. If FALSE, groups are not sorted.
+If \code{"increasing"}, groups are sorted in increasing order.
+If \code{"decreasing"}, groups are sorted in decreasing order.
 Default is \code{FALSE}.}
 
 \item{stack}{A logical specifying whether to stack the plots on top of each other.
@@ -253,7 +259,8 @@ Default is \code{FALSE}.}
 \item{flip}{A logical specifying whether to flip the plot vertically.
 Default is \code{FALSE}.}
 
-\item{comparisons}{A list of length-2 vectors. The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.}
+\item{comparisons}{A list of length-2 vectors.
+The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.}
 
 \item{ref_group}{A string specifying the reference group for pairwise comparisons.
 Default is \code{NULL}.}
@@ -296,6 +303,8 @@ Default is \code{"right"}.}
 \item{legend.direction}{The direction of the legend in the plot.
 Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
+\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
+
 \item{theme_use}{Theme used. Can be a character string or a theme function.
 Default is \code{"theme_scop"}.}
 
@@ -321,7 +330,7 @@ Default is \code{FALSE}.}
 Default is \code{11}.}
 }
 \description{
-This function generates a statistical plot for features.
+Statistical plot of features
 }
 \examples{
 data(pancreas_sub)
@@ -565,5 +574,5 @@ FeatureStatPlot(
 )
 }
 \seealso{
-\link{CellStatPlot}, \link{StatPlot}
+\link{CellStatPlot}
 }

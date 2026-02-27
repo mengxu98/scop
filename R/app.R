@@ -1006,7 +1006,8 @@ RunSCExplorer <- function(
       "plotly",
       "bslib",
       "promises",
-      "mengxu98/thisplot"
+      "thisutils",
+      "thisplot"
     ),
     verbose = FALSE
   )
@@ -2673,18 +2674,17 @@ server <- function(input, output, session) {
   }
   app_code <- c(
     "# !/usr/bin/env Rscript",
-    "if (!requireNamespace('scop', quietly = TRUE)) {
+    "if (!requireNamespace('thisutils', quietly = TRUE)) {
       if (!requireNamespace('pak', quietly = TRUE)) {
         install.packages('pak')
       }
-      pak::pak('mengxu98/scop')
+      pak::pak('thisutils')
     }",
-    "options(scop_env_init = FALSE)",
-    "scop::check_r(
+    "thisutils::check_r(
        c(
          'rhdf5', 'HDF5Array', 'shiny', 'ggplot2', 'ragg',
          'htmlwidgets', 'plotly', 'bslib', 'promises',
-         'mengxu98/thisplot', 'thisutils'
+         'thisplot'
        )
     )",
     "library(shiny)",

@@ -80,12 +80,16 @@ heatmap_enrichment <- function(
       simplify_method = simplify_method,
       simplify_similarityCutoff = simplify_similarityCutoff
     )
+    if (!is.null(TERM2GENE)) {
+      db <- "custom"
+    }
     if (isTRUE(db_combine)) {
       db <- "Combined"
     }
-    if (isTRUE(GO_simplify) && any(db %in% c("GO_BP", "GO_CC", "GO_MF"))) {
-      db[db %in% c("GO_BP", "GO_CC", "GO_MF")] <- paste0(
-        db[db %in% c("GO_BP", "GO_CC", "GO_MF")],
+    go_dbs <- c("GO_BP", "GO_CC", "GO_MF")
+    if (isTRUE(GO_simplify) && any(db %in% go_dbs)) {
+      db[db %in% go_dbs] <- paste0(
+        db[db %in% go_dbs],
         "_sim"
       )
     }
@@ -681,7 +685,7 @@ cluster_within_group2 <- function(mat, factor) {
       dend_list[[le]] <- structure(
         which(factor == le),
         class = "dendrogram",
-        leaf = TRUE, # height = 0,
+        leaf = TRUE,
         label = 1,
         members = 1
       )
