@@ -81,7 +81,7 @@ RunCytoTRACE.Seurat <- function(
     verbose = verbose
   )
 
-  if (!check_pkg_status("CytoTRACE2")) {
+  if (!get_namespace_fun("thisutils", "check_pkg_status")("CytoTRACE2")) {
     log_message(
       "Package {.pkg CytoTRACE2} is not installed. Installing from GitHub...",
       message_type = "info",
@@ -152,7 +152,7 @@ RunCytoTRACE.default <- function(
     verbose = verbose
   )
 
-  if (!check_pkg_status("CytoTRACE2")) {
+  if (!get_namespace_fun("thisutils", "check_pkg_status")("CytoTRACE2")) {
     log_message(
       "Package {.pkg CytoTRACE2} is not installed. Installing from GitHub...",
       message_type = "info",
