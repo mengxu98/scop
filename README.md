@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
+[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![issues](https://img.shields.io/github/issues/mengxu98/scop?color=red)](https://github.com/mengxu98/scop/issues) [![issues-closed](https://img.shields.io/github/issues-closed/mengxu98/scop?color=brightgreen)](https://github.com/mengxu98/scop/issues?q=is%3Aissue+is%3Aclosed) [![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
 
 <!-- badges: end -->
 
