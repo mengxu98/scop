@@ -55,12 +55,11 @@ CellStatPlot(
 
 - srt:
 
-  A `Seurat` object.
+  A Seurat object.
 
 - stat.by:
 
-  The column name(s) in `meta.data` specifying the variable(s) to be
-  plotted.
+  A character vector specifying the features to plot.
 
 - group.by:
 
@@ -73,8 +72,8 @@ CellStatPlot(
 
 - bg.by:
 
-  The column name in `meta.data` specifying the background variable for
-  bar plots.
+  A character vector specifying the variable to use as the background
+  color. Default is `NULL`.
 
 - cells:
 
@@ -82,7 +81,8 @@ CellStatPlot(
 
 - flip:
 
-  Whether to flip the plot. Default is `FALSE`.
+  A logical specifying whether to flip the plot vertically. Default is
+  `FALSE`.
 
 - NA_color:
 
@@ -94,11 +94,11 @@ CellStatPlot(
 
 - keep_empty:
 
-  Whether to keep empty groups in the plot. Default is `FALSE`.
+  Whether to keep empty levels in the plot. Default is `FALSE`.
 
 - individual:
 
-  Whether to plot individual groups separately. Default is `FALSE`.
+  Whether to create individual plots for each group. Default is `FALSE`.
 
 - stat_level:
 
@@ -107,9 +107,9 @@ CellStatPlot(
 
 - plot_type:
 
-  The type of plot to create. Can be one of `"bar"`, `"rose"`, `"ring"`,
-  `"pie"`, `"trend"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`,
-  `"venn"`, or `"upset"`.
+  A string specifying the type of plot to create. Possible values are
+  `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`. Default is
+  `"violin"`.
 
 - stat_type:
 
@@ -133,19 +133,21 @@ CellStatPlot(
 
 - alpha:
 
-  The transparency level for the plot.
+  The transparency of the plot. Default is `1`.
 
 - bg_palette:
 
-  The name of the background color palette to use for bar plots.
+  A string specifying the color palette to use for the background.
+  Default is `"Paired"`.
 
 - bg_palcolor:
 
-  The color to use in the background color palette.
+  A character vector specifying specific colors to use for the
+  background. Default is `NULL`.
 
 - bg_alpha:
 
-  The transparency level for the background color in bar plots.
+  The transparency of the background. Default is `0.2`.
 
 - label:
 
@@ -186,7 +188,8 @@ CellStatPlot(
 
 - ylab:
 
-  The y-axis label of the plot. Default is `NULL`.
+  A string specifying the label of the y-axis. Default is
+  `"Expression level"`.
 
 - legend.position:
 
@@ -239,40 +242,41 @@ CellStatPlot(
 
 ## See also
 
-[StatPlot](https://mengxu98.github.io/scop/reference/StatPlot.md)
+[FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
 
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:11:39] Start standard scop workflow...
-#> ℹ [2026-02-11 03:11:40] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:11:40] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:11:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:11:41] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:11:42] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:11:42] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:11:42] Finished check
-#> ℹ [2026-02-11 03:11:42] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:11:43] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:11:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:11:44] Reorder clusters...
-#> ℹ [2026-02-11 03:11:44] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:11:44] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:11:47] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:11:50] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:22:49] Start standard scop workflow...
+#> ℹ [2026-02-27 15:22:50] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:22:50] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:22:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:22:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:22:52] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:22:52] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:22:52] Finished check
+#> ℹ [2026-02-27 15:22:52] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:22:53] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:22:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:22:54] Reorder clusters...
+#> ℹ [2026-02-27 15:22:54] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:22:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:22:56] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:22:59] Run scop standard workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "SubCellType",
   label = TRUE
 )
+#> Error in theme_scop(): could not find function "theme_scop"
 p1
-
+#> Error: object 'p1' not found
 
 thisplot::panel_fix(p1, height = 2, width = 3)
-
+#> Error: object 'p1' not found
 
 CellStatPlot(
   pancreas_sub,
@@ -282,7 +286,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -293,44 +297,42 @@ CellStatPlot(
   stat_type = "count",
   position = "dodge"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "bar"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "rose"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "pie"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "dot"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -338,7 +340,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "bar"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -346,7 +348,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "rose"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
 
 CellStatPlot(
   pancreas_sub,
@@ -354,9 +356,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -364,7 +364,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "area"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -372,7 +372,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "dot"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -380,7 +380,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "trend"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -389,7 +389,7 @@ CellStatPlot(
   plot_type = "bar",
   individual = TRUE
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -398,7 +398,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "bar"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -407,7 +407,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "rose"
 )
-
+#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
 
 CellStatPlot(
   pancreas_sub,
@@ -416,9 +416,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -427,7 +425,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "area"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -436,7 +434,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "dot"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -445,7 +443,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "trend"
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -456,7 +454,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
@@ -467,7 +465,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-
+#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
 
 CellStatPlot(
   pancreas_sub,
@@ -478,18 +476,14 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-02-11 03:12:10] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-02-27 15:23:00] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -497,7 +491,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-02-11 03:12:21] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-02-27 15:23:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -509,8 +503,8 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-02-11 03:12:24] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
+#> ! [2026-02-27 15:23:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
@@ -532,8 +526,8 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-02-11 03:12:32] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-
+#> ! [2026-02-27 15:23:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 CellStatPlot(
   pancreas_sub,
@@ -543,12 +537,8 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-02-11 03:12:32] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the ggupset package.
-#>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
-
+#> ! [2026-02-27 15:23:01] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> Error in loadNamespace(x): there is no package called ‘ggupset’
 
 sum(
   pancreas_sub$Progenitor == "FALSE" &

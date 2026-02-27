@@ -1,5 +1,55 @@
 # Changelog
 
+## scop 0.8.4
+
+- **bugs**:
+  - [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
+    / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment
+    when `add_box = TRUE` with `split.by`. Groups with fewer than 2
+    observations are now filtered before violin density estimation (with
+    a warning), and the violin layer uses a consistent
+    `position_dodge(width = 0.9)` to match the boxplot. This issue
+    reported in [\#123](https://github.com/mengxu98/scop/issues/123).
+
+## scop 0.8.3
+
+- **func**:
+  - [`RunDynamicFeatures()`](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md):
+    Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for
+    dynamic feature fitting. The
+    [PreTSA](https://github.com/haotian-zhuang/PreTSA/) algorithm in
+    `scop` has been re implemented to support parallelization for higher
+    performance. Original research: [PreTSA: computationally efficient
+    modeling of temporal and spatial gene expression
+    patterns](https://doi.org/10.1186/s13059-026-03994-3). Use
+    `fit_method = "pretsa"` for B-spline-based piecewise truncated
+    spline analysis; `fit_method = "gam"` (default) keeps generalized
+    additive models. PreTSA supports `knot` (0 or `"auto"`) and
+    `max_knot_allowed` when `knot = "auto"`. This issue reported in
+    [\#133](https://github.com/mengxu98/scop/issues/132).
+  - [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+    and
+    [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md):
+    Added `legend.title` parameter (default `NULL`) to control the
+    legend title. When `NULL`, default titles are used (e.g. group name
+    for `CellDimPlot`, feature or empty for `FeatureDimPlot`).
+  - `ExpressionStatPlot()` and
+    [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md):
+    Added `legend.title` parameter (default `NULL`) for single-legend
+    plots. When `NULL`, the default title (e.g. `keynm` or feature/group
+    name) is used.
+    [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
+    forwards `legend.title` to `ExpressionStatPlot()`.
+- **bugs**:
+  - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
+    / `heatmap_enrichment()`: Fixed incorrect `db` handling when using
+    custom `TERM2GENE`/`TERM2NAME`. Enrichment results with
+    `Database = "custom"` could be incorrectly filtered by default `db`
+    values (e.g. `"GO_BP"`), causing false “No term enriched using the
+    threshold” warnings even when enrichment succeeded. This issue
+    reported in [\#133](https://github.com/mengxu98/scop/issues/133),
+    [@1228849000](https://github.com/1228849000).
+
 ## scop 0.8.2
 
 - **func**:
@@ -32,11 +82,6 @@
     on *macOS* and *Unix*. This issue reported in
     [\#103](https://github.com/mengxu98/scop/issues/103) and
     [\#88](https://github.com/mengxu98/scop/issues/88).
-  - [`StatPlot()`](https://mengxu98.github.io/scop/reference/StatPlot.md):
-    Improve rose plot (`plot_type = "rose"`) text display using
-    **geomtextpath**: labels follow the outer ring and are no longer
-    placed next to each segment; all labels sit on a fixed outer radius
-    for a cleaner layout.
   - [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md):
     Add the `cores` parameter for
     [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md)
@@ -348,8 +393,7 @@
   - [`cluster_within_group2()`](https://mengxu98.github.io/scop/reference/cluster_within_group2.md):
     New function for clustering within groups.
   - Multiple plotting functions: Replaced `geom_sankey()` with
-    [`ggsankey::geom_sankey()`](https://rdrr.io/pkg/ggsankey/man/geom_sankey.html)
-    for better Sankey diagram support.
+    `ggsankey::geom_sankey()` for better Sankey diagram support.
   - Multiple functions: Replaced `:::` operator with
     `get_namespace_fun()` for safer namespace access.
 - **refactor**:
@@ -518,9 +562,8 @@
     Removed conditional font face styling (`face = ifelse()` logic) for
     better text rendering consistency. Set the default value of
     `lineheight` from `0.5` to `0.7`.
-  - Updated
-    [`check_r()`](https://mengxu98.github.io/scop/reference/check_r.md)
-    function for improved package checking functionality.
+  - Updated `check_r()` function for improved package checking
+    functionality.
   - Updated reexports functionality.
 - **docs**:
   - Updated documentation formatting and consistency.
@@ -586,14 +629,11 @@
 ## scop 0.2.6
 
 - **func**:
-  - Added
-    [`remove_r()`](https://mengxu98.github.io/scop/reference/remove_r.md)
-    function for easy remove *R* packages.
+  - Added `remove_r()` function for easy remove *R* packages.
   - Rename function: `RemovePackages()` to
     [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md).
   - Removed other methods of installing *R* packages from the
-    [`check_r()`](https://mengxu98.github.io/scop/reference/check_r.md)
-    function, only retaining
+    `check_r()` function, only retaining
     [pak::pak](https://pak.r-lib.org/reference/pak.html).
   - Delete useless import packages: `BBmisc`, `BiocManager`, `covr`,
     `devtools`, `promises` and `withr`.

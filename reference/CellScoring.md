@@ -157,33 +157,27 @@ CellScoring(
 
   Additional arguments to be passed to the scoring methods.
 
-## See also
-
-[PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md),
-[ListDB](https://mengxu98.github.io/scop/reference/ListDB.md),
-[RunDynamicFeatures](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md)
-
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:11:27] Start standard scop workflow...
-#> ℹ [2026-02-11 03:11:28] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:11:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:11:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:11:29] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:11:30] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:11:30] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:11:30] Finished check
-#> ℹ [2026-02-11 03:11:30] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:11:30] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:11:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:11:31] Reorder clusters...
-#> ℹ [2026-02-11 03:11:31] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:11:31] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:11:34] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:11:37] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:22:37] Start standard scop workflow...
+#> ℹ [2026-02-27 15:22:38] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:22:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:22:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:22:39] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:22:40] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:22:40] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:22:40] Finished check
+#> ℹ [2026-02-27 15:22:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:22:40] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:22:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:22:41] Reorder clusters...
+#> ℹ [2026-02-27 15:22:41] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:22:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:22:44] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:22:47] Run scop standard workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -194,15 +188,15 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ℹ [2026-02-11 03:11:37] Start cell scoring
-#> ℹ [2026-02-11 03:11:38] Data type is log-normalized
-#> ℹ [2026-02-11 03:11:38] Number of feature lists to be scored: 2
-#> ℹ [2026-02-11 03:11:38] Using 1 core
-#> ⠙ [2026-02-11 03:11:38] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
-#> ✔ [2026-02-11 03:11:38] Completed 2 tasks in 133ms
+#> ℹ [2026-02-27 15:22:47] Start cell scoring
+#> ℹ [2026-02-27 15:22:48] Data type is log-normalized
+#> ℹ [2026-02-27 15:22:48] Number of feature lists to be scored: 2
+#> ℹ [2026-02-27 15:22:48] Using 1 core
+#> ⠙ [2026-02-27 15:22:48] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
+#> ✔ [2026-02-27 15:22:48] Completed 2 tasks in 132ms
 #> 
-#> ℹ [2026-02-11 03:11:38] Building results
-#> ✔ [2026-02-11 03:11:38] Cell scoring completed
+#> ℹ [2026-02-27 15:22:48] Building results
+#> ✔ [2026-02-27 15:22:48] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's fill values.

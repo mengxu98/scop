@@ -119,6 +119,7 @@ CellDimPlot(
   ylab = NULL,
   legend.position = "right",
   legend.direction = "vertical",
+  legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -606,6 +607,10 @@ CellDimPlot(
   The direction of the legend in the plot. Can be one of `"vertical"` or
   `"horizontal"`.
 
+- legend.title:
+
+  Title for the legend. Default is `NULL`, which uses the group name.
+
 - theme_use:
 
   Theme used. Can be a character string or a theme function. Default is
@@ -656,22 +661,22 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:10:22] Start standard scop workflow...
-#> ℹ [2026-02-11 03:10:23] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:10:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:10:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:10:24] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:10:25] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:10:25] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:10:25] Finished check
-#> ℹ [2026-02-11 03:10:25] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:10:26] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:10:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:10:27] Reorder clusters...
-#> ℹ [2026-02-11 03:10:27] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:10:27] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:10:30] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:10:33] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:21:38] Start standard scop workflow...
+#> ℹ [2026-02-27 15:21:38] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:21:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:21:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:21:40] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:21:40] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:21:41] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:21:41] Finished check
+#> ℹ [2026-02-27 15:21:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:21:41] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:21:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:21:42] Reorder clusters...
+#> ℹ [2026-02-27 15:21:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:21:42] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:21:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:21:48] Run scop standard workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -914,15 +919,7 @@ CellDimPlot(
   reduction = "UMAP",
   stat.by = "Phase"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellDimPlot(
   pancreas_sub,
@@ -933,39 +930,7 @@ CellDimPlot(
   stat_plot_label = TRUE,
   stat_plot_size = 0.15
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_col()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_text_repel()`).
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 CellDimPlot(
   pancreas_sub,
@@ -976,15 +941,7 @@ CellDimPlot(
   stat_type = "count",
   stat_plot_position = "dodge"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-
+#> Error in theme_scop(): could not find function "theme_scop"
 
 # Chane the plot type from point to the hexagonal bin
 CellDimPlot(

@@ -81,6 +81,7 @@ FeatureDimPlot(
   ylab = NULL,
   legend.position = "right",
   legend.direction = "vertical",
+  legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -416,6 +417,10 @@ FeatureDimPlot(
   The direction of the legend in the plot. Can be one of `"vertical"` or
   `"horizontal"`.
 
+- legend.title:
+
+  Title for the legend. Default is `NULL`, which uses the group name.
+
 - theme_use:
 
   Theme used. Can be a character string or a theme function. Default is
@@ -464,22 +469,22 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:31:43] Start standard scop workflow...
-#> ℹ [2026-02-11 03:31:44] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:31:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:31:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:31:46] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:31:46] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:31:46] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:31:47] Finished check
-#> ℹ [2026-02-11 03:31:47] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:31:47] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:31:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:31:48] Reorder clusters...
-#> ℹ [2026-02-11 03:31:48] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:31:48] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:31:52] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:31:55] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:43:01] Start standard scop workflow...
+#> ℹ [2026-02-27 15:43:02] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:43:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:43:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:43:04] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:43:05] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:43:05] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:43:05] Finished check
+#> ℹ [2026-02-27 15:43:05] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:43:05] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:43:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:43:06] Reorder clusters...
+#> ℹ [2026-02-27 15:43:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:43:06] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:43:10] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:43:13] Run scop standard workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"

@@ -11,7 +11,7 @@ which provides more flexibility and advanced features compared to the legacy API
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ which provides more flexibility and advanced features compared to the legacy API
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run CellRank analysis with kernel-estimator architecture</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCellRank.R" class="external-link"><code>R/RunCellRank.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCellRank.R" class="external-link"><code>R/RunCellRank.R</code></a></small>
       <div class="d-none name"><code>RunCellRank.Rd</code></div>
     </div>
 
@@ -333,10 +333,6 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Returns a Seurat object if <code>return_seurat = TRUE</code> or an anndata object with CellRank results stored in <code>obsm</code>, <code>obs</code>, and <code>varm</code> slots.
 The estimator and kernel objects are stored in <code>srt@misc$cellrank</code>.</p>
-<p>Lineage pseudotime columns are automatically added to metadata with prefix <code>"Lineage_"</code>
-(e.g., <code>Lineage_Alpha</code>, <code>Lineage_Beta</code>), compatible with <a href="LineagePlot.html">LineagePlot</a>, <a href="RunDynamicFeatures.html">RunDynamicFeatures</a>,
-and <a href="RunDynamicEnrichment.html">RunDynamicEnrichment</a>. These are computed by combining base pseudotime
-(<code>cytotrace_pseudotime</code>, <code>dpt_pseudotime</code>, or <code>latent_time</code>) with fate probabilities.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

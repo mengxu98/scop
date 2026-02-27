@@ -1,6 +1,6 @@
 # Statistical plot of features
 
-This function generates a statistical plot for features.
+Statistical plot of features
 
 ## Usage
 
@@ -75,6 +75,7 @@ FeatureStatPlot(
   ylab = "Expression level",
   legend.position = "right",
   legend.direction = "vertical",
+  legend.title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
@@ -327,9 +328,9 @@ FeatureStatPlot(
 - sort:
 
   A logical or character value specifying whether to sort the groups on
-  the x-axis. If TRUE, groups are sorted in increasing order. If FALSE,
-  groups are not sorted. If "increasing", groups are sorted in
-  increasing order. If "decreasing", groups are sorted in decreasing
+  the x-axis. If `TRUE`, groups are sorted in increasing order. If
+  FALSE, groups are not sorted. If `"increasing"`, groups are sorted in
+  increasing order. If `"decreasing"`, groups are sorted in decreasing
   order. Default is `FALSE`.
 
 - stack:
@@ -409,6 +410,10 @@ FeatureStatPlot(
   The direction of the legend in the plot. Can be one of `"vertical"` or
   `"horizontal"`.
 
+- legend.title:
+
+  Title for the legend. Default is `NULL`, which uses the group name.
+
 - theme_use:
 
   Theme used. Can be a character string or a theme function. Default is
@@ -450,30 +455,29 @@ FeatureStatPlot(
 
 ## See also
 
-[CellStatPlot](https://mengxu98.github.io/scop/reference/CellStatPlot.md),
-[StatPlot](https://mengxu98.github.io/scop/reference/StatPlot.md)
+[CellStatPlot](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
 
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:35:50] Start standard scop workflow...
-#> ℹ [2026-02-11 03:35:51] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:35:51] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:35:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:35:53] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:35:53] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:35:53] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:35:54] Finished check
-#> ℹ [2026-02-11 03:35:54] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:35:54] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:35:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:35:55] Reorder clusters...
-#> ℹ [2026-02-11 03:35:55] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:35:55] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:35:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:36:02] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:47:03] Start standard scop workflow...
+#> ℹ [2026-02-27 15:47:03] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:47:03] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:47:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:47:05] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:47:06] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:47:06] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:47:06] Finished check
+#> ℹ [2026-02-27 15:47:06] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:47:07] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:47:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:47:08] Reorder clusters...
+#> ℹ [2026-02-27 15:47:08] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:47:08] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:47:11] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:47:15] Run scop standard workflow completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
@@ -621,16 +625,10 @@ FeatureStatPlot(
   group.by = "SubCellType",
   split.by = "Phase"
 )
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> ! [2026-02-27 15:47:24] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-02-27 15:47:24] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -643,24 +641,10 @@ FeatureStatPlot(
   add_box = TRUE,
   add_trend = TRUE
 )
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> ! [2026-02-27 15:47:25] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ! [2026-02-27 15:47:25] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -672,26 +656,12 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ℹ [2026-02-11 03:36:24] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> ℹ [2026-02-11 03:36:24] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
+#> ! [2026-02-27 15:47:34] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-02-27 15:47:34] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> ! [2026-02-27 15:47:34] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-02-27 15:47:34] Detected more than 2 groups. Use "kruskal.test" for comparison
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
-#> Warning: Groups with fewer than two datapoints have been dropped.
-#> ℹ Set `drop = FALSE` to consider such groups for position adjustment purposes.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -809,7 +779,7 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2026-02-11 03:36:42] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-02-27 15:47:52] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -831,7 +801,7 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2026-02-11 03:36:43] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-02-27 15:47:53] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -852,7 +822,7 @@ FeatureStatPlot(
   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
   stack = TRUE
 )
-#> ℹ [2026-02-11 03:36:46] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-02-27 15:47:56] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureStatPlot(pancreas_sub,
@@ -866,7 +836,7 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2026-02-11 03:36:49] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-02-27 15:47:59] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 data <- GetAssayData5(
