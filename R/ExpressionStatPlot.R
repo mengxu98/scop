@@ -552,6 +552,22 @@ ExpressionStatPlot <- function(
       )
       dat <- dat[order(dat[["group.unique"]]), , drop = FALSE]
 
+      if (plot_type == "violin") {
+        group_counts <- table(dat[["group.unique"]])
+        remove_groups <- names(group_counts[group_counts < 2])
+        if (length(remove_groups) > 0) {
+          log_message(
+            "Removed {.val {length(remove_groups)}} group{?s} with < 2 observations for violin plot: {.val {remove_groups}}",
+            message_type = "warning"
+          )
+          dat <- dat[!dat[["group.unique"]] %in% remove_groups, , drop = FALSE]
+          dat[["group.unique"]] <- droplevels(dat[["group.unique"]])
+        }
+        if (nrow(dat) == 0) {
+          return(NULL)
+        }
+      }
+
       values <- dat[, "value"][is.finite(x = dat[, "value"])]
       if (is.null(y.max)) {
         y_max_use <- max(values, na.rm = TRUE)
@@ -804,9 +820,7 @@ ExpressionStatPlot <- function(
 
           y_max_use <- layer_scales(p)$y$range$range[2]
         } else {
-          # When using split.by, comparisons should be based on split.by groups
           if (split.by != "All.groups") {
-            # Filter comparisons to only include groups that exist in the data
             valid_comparisons <- list()
             for (comp in comparisons) {
               if (length(comp) == 2 && all(comp %in% levels(dat[["split.by"]]))) {
