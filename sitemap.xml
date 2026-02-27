@@ -105,14 +105,12 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunWOT.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Scanorama_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Seurat_integrate.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/StatPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/TACSPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Uncorrected_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/VelocityPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/VolcanoPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/adata_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/check_python.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/check_r.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/cluster_within_group2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/compute_velocity_on_grid.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/db_DoubletDetection.html</loc></url>
@@ -132,7 +130,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ref_scHCL.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/remove_python.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/remove_r.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop-package.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop_logo.html</loc></url>

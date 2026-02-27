@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,34 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.4" id="scop-084">scop 0.8.4<a class="anchor" aria-label="anchor" href="#scop-084"></a></h2>
+<ul><li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> / <code>ExpressionStatPlot()</code>: Fixed box and violin x-axis misalignment when <code>add_box = TRUE</code> with <code>split.by</code>. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent <code>position_dodge(width = 0.9)</code> to match the boxplot. This issue reported in <a href="https://github.com/mengxu98/scop/issues/123" class="external-link">#123</a>.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.3" id="scop-083">scop 0.8.3<a class="anchor" aria-label="anchor" href="#scop-083"></a></h2>
+<ul><li>
+<strong>func</strong>:
+<ul><li>
+<code><a href="../reference/RunDynamicFeatures.html">RunDynamicFeatures()</a></code>: Added <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> method for dynamic feature fitting. The <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> algorithm in <code>scop</code> has been re implemented to support parallelization for higher performance. Original research: <a href="https://doi.org/10.1186/s13059-026-03994-3" class="external-link">PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns</a>. Use <code>fit_method = "pretsa"</code> for B-spline-based piecewise truncated spline analysis; <code>fit_method = "gam"</code> (default) keeps generalized additive models. PreTSA supports <code>knot</code> (0 or <code>"auto"</code>) and <code>max_knot_allowed</code> when <code>knot = "auto"</code>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/132" class="external-link">#133</a>.</li>
+<li>
+<code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code> and <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code>: Added <code>legend.title</code> parameter (default <code>NULL</code>) to control the legend title. When <code>NULL</code>, default titles are used (e.g. group name for <code>CellDimPlot</code>, feature or empty for <code>FeatureDimPlot</code>).</li>
+<li>
+<code>ExpressionStatPlot()</code> and <code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code>: Added <code>legend.title</code> parameter (default <code>NULL</code>) for single-legend plots. When <code>NULL</code>, the default title (e.g. <code>keynm</code> or feature/group name) is used. <code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> forwards <code>legend.title</code> to <code>ExpressionStatPlot()</code>.</li>
+</ul></li>
+<li>
+<strong>bugs</strong>:
+<ul><li>
+<code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> / <code>heatmap_enrichment()</code>: Fixed incorrect <code>db</code> handling when using custom <code>TERM2GENE</code>/<code>TERM2NAME</code>. Enrichment results with <code>Database = "custom"</code> could be incorrectly filtered by default <code>db</code> values (e.g. <code>"GO_BP"</code>), causing false “No term enriched using the threshold” warnings even when enrichment succeeded. This issue reported in <a href="https://github.com/mengxu98/scop/issues/133" class="external-link">#133</a>, <a href="https://github.com/1228849000" class="external-link">@1228849000</a>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.2" id="scop-082">scop 0.8.2<a class="anchor" aria-label="anchor" href="#scop-082"></a></h2>
 <ul><li>
@@ -45,8 +70,6 @@
 <li>Differential expression visualization (<code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>): added <code>res</code> parameter to accept existing DE results (data.frame). When <code>res</code> is provided, <code>srt</code> is ignored. Data processing supports: (1) <code>group1</code> or <code>cluster</code> column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when <code>gene</code> column is missing. This issue reported in <a href="https://github.com/mengxu98/scop/issues/129" class="external-link">#129</a>.</li>
 <li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Update <code>version</code> parameter to specify the <em>Python</em> version of the conda environment. Default is <code>"3.11-1"</code> on <em>Windows</em> and <code>"3.10-1"</code> on <em>macOS</em> and <em>Unix</em>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/103" class="external-link">#103</a> and <a href="https://github.com/mengxu98/scop/issues/88" class="external-link">#88</a>.</li>
-<li>
-<code><a href="../reference/StatPlot.html">StatPlot()</a></code>: Improve rose plot (<code>plot_type = "rose"</code>) text display using <strong>geomtextpath</strong>: labels follow the outer ring and are no longer placed next to each segment; all labels sit on a fixed outer radius for a cleaner layout.</li>
 <li>
 <code><a href="../reference/RunNMF.html">RunNMF()</a></code>: Add the <code>cores</code> parameter for <code><a href="../reference/RunNMF.html">RunNMF()</a></code> and optimize the printed message.</li>
 <li>Removed the setting in <em>Python</em> functions that prevents drawing functions from causing <em>R</em> crashes.</li>
@@ -273,7 +296,7 @@
 <li>Python-based functions (<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) now automatically call <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> internally, eliminating the need for users to manually prepare the Python environment before using these functions.</li>
 <li>
 <code><a href="../reference/cluster_within_group2.html">cluster_within_group2()</a></code>: New function for clustering within groups.</li>
-<li>Multiple plotting functions: Replaced <code>geom_sankey()</code> with <code><a href="https://rdrr.io/pkg/ggsankey/man/geom_sankey.html" class="external-link">ggsankey::geom_sankey()</a></code> for better Sankey diagram support.</li>
+<li>Multiple plotting functions: Replaced <code>geom_sankey()</code> with <code>ggsankey::geom_sankey()</code> for better Sankey diagram support.</li>
 <li>Multiple functions: Replaced <code>:::</code> operator with <code>get_namespace_fun()</code> for safer namespace access.</li>
 </ul></li>
 <li>
@@ -420,7 +443,7 @@
 <strong>func</strong>:
 <ul><li>
 <code><a href="../reference/EnrichmentPlot.html">EnrichmentPlot()</a></code> and <code><a href="../reference/GSEAPlot.html">GSEAPlot()</a></code>: Removed conditional font face styling (<code>face = ifelse()</code> logic) for better text rendering consistency. Set the default value of <code>lineheight</code> from <code>0.5</code> to <code>0.7</code>.</li>
-<li>Updated <code><a href="../reference/check_r.html">check_r()</a></code> function for improved package checking functionality.</li>
+<li>Updated <code>check_r()</code> function for improved package checking functionality.</li>
 <li>Updated reexports functionality.</li>
 </ul></li>
 <li>
@@ -487,9 +510,9 @@
 <h2 class="pkg-version" data-toc-text="0.2.6" id="scop-026">scop 0.2.6<a class="anchor" aria-label="anchor" href="#scop-026"></a></h2>
 <ul><li>
 <strong>func</strong>:
-<ul><li>Added <code><a href="../reference/remove_r.html">remove_r()</a></code> function for easy remove <em>R</em> packages.</li>
+<ul><li>Added <code>remove_r()</code> function for easy remove <em>R</em> packages.</li>
 <li>Rename function: <code>RemovePackages()</code> to <code><a href="../reference/remove_python.html">remove_python()</a></code>.</li>
-<li>Removed other methods of installing <em>R</em> packages from the <code><a href="../reference/check_r.html">check_r()</a></code> function, only retaining <a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak</a>.</li>
+<li>Removed other methods of installing <em>R</em> packages from the <code>check_r()</code> function, only retaining <a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak</a>.</li>
 <li>Delete useless import packages: <code>BBmisc</code>, <code>BiocManager</code>, <code>covr</code>, <code>devtools</code>, <code>promises</code> and <code>withr</code>.</li>
 <li>Optimize the structure of <code>_pkgdown.yml</code> file.</li>
 </ul></li>

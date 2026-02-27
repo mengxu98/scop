@@ -28,6 +28,13 @@ DynamicHeatmap(
   lib_normalize = identical(layer, "counts"),
   libsize = NULL,
   family = NULL,
+  suffix = lineages,
+  n_candidates = 1000,
+  minfreq = 5,
+  fit_method = c("gam", "pretsa"),
+  knot = 0,
+  max_knot_allowed = 10,
+  padjust_method = "fdr",
   cluster_features_by = NULL,
   cluster_rows = FALSE,
   cluster_row_slices = FALSE,
@@ -132,6 +139,8 @@ DynamicHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
+  verbose = TRUE,
   seed = 11,
   ht_params = list()
 )
@@ -145,7 +154,8 @@ DynamicHeatmap(
 
 - lineages:
 
-  A character vector specifying the lineages to plot.
+  A character vector specifying the lineage names for which dynamic
+  features should be calculated.
 
 - features:
 
@@ -240,9 +250,47 @@ DynamicHeatmap(
 
 - family:
 
-  The model used to calculate the dynamic features if needed. By
-  default, this parameter is set to `NULL`, and the appropriate family
-  will be automatically determined.
+  A character or character vector specifying the family of distributions
+  to use for the GAM. If family is set to NULL, the appropriate family
+  will be automatically determined based on the data. If length(family)
+  is 1, the same family will be used for all features. Otherwise, family
+  must have the same length as features.
+
+- suffix:
+
+  A character vector specifying the suffix to append to the output layer
+  names for each lineage. Default is the lineage names.
+
+- n_candidates:
+
+  A number of candidate features to select when features is `NULL`.
+  Default is `1000`.
+
+- minfreq:
+
+  An integer specifying the minimum frequency threshold for candidate
+  features. Features with a frequency less than minfreq will be
+  excluded. Default is `5`.
+
+- fit_method:
+
+  The method used for fitting features. Either `"gam"` (generalized
+  additive models) or `"pretsa"` (Pattern recognition in Temporal and
+  Spatial Analyses). Default is `"gam"`.
+
+- knot:
+
+  For `fit_method = "pretsa"`: B-spline knots. `0` or `"auto"`. Default
+  is `0`.
+
+- max_knot_allowed:
+
+  For `fit_method = "pretsa"` when `knot = "auto"`: max knots. Default
+  is `10`.
+
+- padjust_method:
+
+  The method used for p-value adjustment. Default is `"fdr"`.
 
 - cluster_features_by:
 
@@ -662,6 +710,16 @@ DynamicHeatmap(
   A character vector specifying the units for the height and width.
   Default is `"inch"`.
 
+- cores:
+
+  The number of cores to use for parallelization with
+  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
+  Default is `1`.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
 - seed:
 
   Random seed for reproducibility. Default is `11`.
@@ -686,22 +744,22 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-11 03:16:59] Start standard scop workflow...
-#> ℹ [2026-02-11 03:17:00] Checking a list of <Seurat>...
-#> ! [2026-02-11 03:17:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-11 03:17:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:17:01] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-11 03:17:02] Use the separate HVF from srt_list
-#> ℹ [2026-02-11 03:17:02] Number of available HVF: 2000
-#> ℹ [2026-02-11 03:17:02] Finished check
-#> ℹ [2026-02-11 03:17:02] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-11 03:17:03] Perform pca linear dimension reduction
-#> ℹ [2026-02-11 03:17:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-11 03:17:04] Reorder clusters...
-#> ℹ [2026-02-11 03:17:04] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-11 03:17:04] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-11 03:17:07] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-11 03:17:10] Run scop standard workflow completed
+#> ℹ [2026-02-27 15:27:46] Start standard scop workflow...
+#> ℹ [2026-02-27 15:27:47] Checking a list of <Seurat>...
+#> ! [2026-02-27 15:27:47] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-02-27 15:27:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:27:49] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
+#> ℹ [2026-02-27 15:27:49] Use the separate HVF from srt_list
+#> ℹ [2026-02-27 15:27:49] Number of available HVF: 2000
+#> ℹ [2026-02-27 15:27:49] Finished check
+#> ℹ [2026-02-27 15:27:50] Perform `Seurat::ScaleData()`
+#> ℹ [2026-02-27 15:27:50] Perform pca linear dimension reduction
+#> ℹ [2026-02-27 15:27:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-02-27 15:27:51] Reorder clusters...
+#> ℹ [2026-02-27 15:27:51] Perform umap nonlinear dimension reduction
+#> ℹ [2026-02-27 15:27:51] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ℹ [2026-02-27 15:27:54] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
+#> ✔ [2026-02-27 15:27:57] Run scop standard workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -722,26 +780,26 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ℹ [2026-02-11 03:17:12] Start find dynamic features
-#> ℹ [2026-02-11 03:17:15] Data type is raw counts
-#> ℹ [2026-02-11 03:17:17] Number of candidate features (union): 231
-#> ℹ [2026-02-11 03:17:17] Data type is raw counts
-#> ℹ [2026-02-11 03:17:17] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-02-11 03:17:17] Using 1 core
-#> ⠙ [2026-02-11 03:17:17] Running for Gcg [1/231] ■                              …
-#> ⠹ [2026-02-11 03:17:17] Running for Gm8773 [87/231] ■■■■■■■■■■■■               …
-#> ⠸ [2026-02-11 03:17:17] Running for Tm4sf4 [199/231] ■■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-02-11 03:17:17] Completed 231 tasks in 6.3s
+#> ℹ [2026-02-27 15:27:59] Start find dynamic features
+#> ℹ [2026-02-27 15:28:02] Data type is raw counts
+#> ℹ [2026-02-27 15:28:04] Number of candidate features (union): 231
+#> ℹ [2026-02-27 15:28:04] Data type is raw counts
+#> ℹ [2026-02-27 15:28:04] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-02-27 15:28:04] Using 1 core
+#> ⠙ [2026-02-27 15:28:04] Running for Gcg [1/231] ■                              …
+#> ⠹ [2026-02-27 15:28:04] Running for Hap1 [65/231] ■■■■■■■■■                    …
+#> ⠸ [2026-02-27 15:28:04] Running for Pak3 [176/231] ■■■■■■■■■■■■■■■■■■■■■■■■    …
+#> ✔ [2026-02-27 15:28:04] Completed 231 tasks in 6.4s
 #> 
-#> ℹ [2026-02-11 03:17:17] Building results
-#> ℹ [2026-02-11 03:17:23] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-02-11 03:17:23] Using 1 core
-#> ⠙ [2026-02-11 03:17:23] Running for Tuba1c [68/231] ■■■■■■■■■■                 …
-#> ⠹ [2026-02-11 03:17:23] Running for Sox9 [171/231] ■■■■■■■■■■■■■■■■■■■■■■■     …
-#> ✔ [2026-02-11 03:17:23] Completed 231 tasks in 6.6s
+#> ℹ [2026-02-27 15:28:04] Building results
+#> ℹ [2026-02-27 15:28:11] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-02-27 15:28:11] Using 1 core
+#> ⠙ [2026-02-27 15:28:11] Running for Avp [51/231] ■■■■■■■■                      …
+#> ⠹ [2026-02-27 15:28:11] Running for Scgn [149/231] ■■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-02-27 15:28:11] Completed 231 tasks in 6.7s
 #> 
-#> ℹ [2026-02-11 03:17:23] Building results
-#> ✔ [2026-02-11 03:17:30] Find dynamic features done
+#> ℹ [2026-02-27 15:28:11] Building results
+#> ✔ [2026-02-27 15:28:17] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -750,9 +808,9 @@ ht1 <- DynamicHeatmap(
   split_method = "kmeans-peaktime",
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-02-11 03:18:04] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-02-27 15:28:36] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-11 03:18:05] 
+#> ℹ [2026-02-27 15:28:37] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -775,20 +833,20 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-02-11 03:18:07] Start find dynamic features
-#> ℹ [2026-02-11 03:18:07] Data type is raw counts
-#> ℹ [2026-02-11 03:18:08] Number of candidate features (union): 2
-#> ℹ [2026-02-11 03:18:08] Data type is raw counts
-#> ! [2026-02-11 03:18:08] Negative values detected
-#> ! [2026-02-11 03:18:08] Negative values detected
-#> ℹ [2026-02-11 03:18:08] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-02-11 03:18:08] Using 1 core
-#> ⠙ [2026-02-11 03:18:08] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
-#> ✔ [2026-02-11 03:18:08] Completed 2 tasks in 51ms
+#> ℹ [2026-02-27 15:28:39] Start find dynamic features
+#> ℹ [2026-02-27 15:28:39] Data type is raw counts
+#> ℹ [2026-02-27 15:28:40] Number of candidate features (union): 2
+#> ℹ [2026-02-27 15:28:40] Data type is raw counts
+#> ! [2026-02-27 15:28:40] Negative values detected
+#> ! [2026-02-27 15:28:40] Negative values detected
+#> ℹ [2026-02-27 15:28:40] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-02-27 15:28:40] Using 1 core
+#> ⠙ [2026-02-27 15:28:40] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
+#> ✔ [2026-02-27 15:28:40] Completed 2 tasks in 52ms
 #> 
-#> ℹ [2026-02-11 03:18:08] Building results
-#> ✔ [2026-02-11 03:18:08] Find dynamic features done
-#> ℹ [2026-02-11 03:18:08] Some features were missing in at least one lineage: 
+#> ℹ [2026-02-27 15:28:40] Building results
+#> ✔ [2026-02-27 15:28:40] Find dynamic features done
+#> ℹ [2026-02-27 15:28:40] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
@@ -810,9 +868,9 @@ ht3 <- DynamicHeatmap(
   cluster_rows = TRUE,
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-02-11 03:18:10] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-02-27 15:28:42] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-11 03:18:11] 
+#> ℹ [2026-02-27 15:28:43] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
@@ -833,34 +891,322 @@ ht4 <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-02-11 03:18:14] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-02-27 15:28:46] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-11 03:18:15] Start Enrichment analysis
-#> ℹ [2026-02-11 03:22:52] Species: "Mus_musculus"
-#> ℹ [2026-02-11 03:27:15] Preparing database: GO_BP
-#> ℹ [2026-02-11 03:27:36] Convert ID types for the GO_BP database
-#> ℹ [2026-02-11 03:27:36] Connect to the Ensembl archives...
-#> ℹ [2026-02-11 03:27:36] Using the 115 version of ensembl database...
-#> ℹ [2026-02-11 03:27:36] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-02-11 03:27:38] Searching the dataset mmusculus ...
-#> ℹ [2026-02-11 03:27:38] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-02-11 03:27:39] Converting the geneIDs...
-#> ℹ [2026-02-11 03:27:45] 23214 genes mapped with "entrez_id"
-#> ℹ [2026-02-11 03:27:45] ==============================
+#> ℹ [2026-02-27 15:28:47] Start Enrichment analysis
+#> ℹ [2026-02-27 15:33:05] Species: "Mus_musculus"
+#> ℹ [2026-02-27 15:37:25] Preparing database: GO_BP
+#> ℹ [2026-02-27 15:37:47] Convert ID types for the GO_BP database
+#> ℹ [2026-02-27 15:37:47] Connect to the Ensembl archives...
+#> ! [2026-02-27 15:37:57] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Operation timed out after 10001 milliseconds with 0 bytes received
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::DynamicHeatmap(...)
+#> !                        45.                               └─scop:::heatmap_enrichment(...)
+#> !                        46.                                 └─scop::RunEnrichment(...)
+#> !                        47.                                   └─scop::PrepareDB(...)
+#> !                        48.                                     └─scop::GeneConvert(...)
+#> !                        49.                                       ├─thisutils::try_get(...)
+#> !                        50.                                       │ ├─base::tryCatch(...)
+#> !                        51.                                       │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                       │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                       │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                       │ └─base::eval.parent(substitute(expr))
+#> !                        55.                                       │   └─base::eval(expr, p)
+#> !                        56.                                       │     └─base::eval(expr, p)
+#> !                        57.                                       └─biomaRt::listEnsemblArchives()
+#> !                        58.                                         └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        59.                                           └─biomaRt:::.checkArchiveList(http_config)
+#> !                        60.                                             └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        61.                                               └─httr2::req_perform(html_request)
+#> ! [2026-02-27 15:37:59] Get errors when connecting with EnsemblArchives...
+#> ! [2026-02-27 15:38:00] Retrying...
+#> ! [2026-02-27 15:38:10] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Operation timed out after 10002 milliseconds with 0 bytes received
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::DynamicHeatmap(...)
+#> !                        45.                               └─scop:::heatmap_enrichment(...)
+#> !                        46.                                 └─scop::RunEnrichment(...)
+#> !                        47.                                   └─scop::PrepareDB(...)
+#> !                        48.                                     └─scop::GeneConvert(...)
+#> !                        49.                                       ├─thisutils::try_get(...)
+#> !                        50.                                       │ ├─base::tryCatch(...)
+#> !                        51.                                       │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                       │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                       │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                       │ └─base::eval.parent(substitute(expr))
+#> !                        55.                                       │   └─base::eval(expr, p)
+#> !                        56.                                       │     └─base::eval(expr, p)
+#> !                        57.                                       └─biomaRt::listEnsemblArchives()
+#> !                        58.                                         └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        59.                                           └─biomaRt:::.checkArchiveList(http_config)
+#> !                        60.                                             └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        61.                                               └─httr2::req_perform(html_request)
+#> ! [2026-02-27 15:38:11] Get errors when connecting with EnsemblArchives...
+#> ! [2026-02-27 15:38:12] Retrying...
+#> ! [2026-02-27 15:38:22] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Operation timed out after 10002 milliseconds with 0 bytes received
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::DynamicHeatmap(...)
+#> !                        45.                               └─scop:::heatmap_enrichment(...)
+#> !                        46.                                 └─scop::RunEnrichment(...)
+#> !                        47.                                   └─scop::PrepareDB(...)
+#> !                        48.                                     └─scop::GeneConvert(...)
+#> !                        49.                                       ├─thisutils::try_get(...)
+#> !                        50.                                       │ ├─base::tryCatch(...)
+#> !                        51.                                       │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                       │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                       │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                       │ └─base::eval.parent(substitute(expr))
+#> !                        55.                                       │   └─base::eval(expr, p)
+#> !                        56.                                       │     └─base::eval(expr, p)
+#> !                        57.                                       └─biomaRt::listEnsemblArchives()
+#> !                        58.                                         └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        59.                                           └─biomaRt:::.checkArchiveList(http_config)
+#> !                        60.                                             └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        61.                                               └─httr2::req_perform(html_request)
+#> ! [2026-02-27 15:38:24] Get errors when connecting with EnsemblArchives...
+#> ! [2026-02-27 15:38:25] Retrying...
+#> ! [2026-02-27 15:38:35] <error/httr2_failure>
+#> !                       Error in `req_perform()`:
+#> !                       ! Failed to perform HTTP request.
+#> !                       Caused by error in `curl::curl_fetch_memory()`:
+#> !                       ! Timeout was reached [www.ensembl.org]:
+#> !                       Operation timed out after 10002 milliseconds with 0 bytes received
+#> !                       ---
+#> !                       Backtrace:
+#> !                            ▆
+#> !                         1. ├─base::tryCatch(...)
+#> !                         2. │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                         3. │   ├─base (local) tryCatchOne(...)
+#> !                         4. │   │ └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         5. │   └─base (local) tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#> !                         6. │     └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                         7. │       └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                         8. ├─base::withCallingHandlers(...)
+#> !                         9. ├─base::saveRDS(...)
+#> !                        10. ├─base::do.call(...)
+#> !                        11. ├─base (local) `<fn>`(...)
+#> !                        12. └─global `<fn>`(...)
+#> !                        13.   └─pkgdown::build_site(...)
+#> !                        14.     └─pkgdown:::build_site_local(...)
+#> !                        15.       └─pkgdown::build_reference(...)
+#> !                        16.         ├─pkgdown:::unwrap_purrr_error(...)
+#> !                        17.         │ └─base::withCallingHandlers(...)
+#> !                        18.         └─purrr::map(...)
+#> !                        19.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
+#> !                        20.             ├─purrr:::with_indexed_errors(...)
+#> !                        21.             │ └─base::withCallingHandlers(...)
+#> !                        22.             ├─purrr:::call_with_cleanup(...)
+#> !                        23.             └─pkgdown (local) .f(.x[[i]], ...)
+#> !                        24.               ├─base::withCallingHandlers(...)
+#> !                        25.               └─pkgdown:::data_reference_topic(...)
+#> !                        26.                 └─pkgdown:::run_examples(...)
+#> !                        27.                   └─pkgdown:::highlight_examples(code, topic, env = env)
+#> !                        28.                     └─downlit::evaluate_and_highlight(...)
+#> !                        29.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
+#> !                        30.                         ├─base::withRestarts(...)
+#> !                        31.                         │ └─base (local) withRestartList(expr, restarts)
+#> !                        32.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
+#> !                        33.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        34.                         │   └─base (local) withRestartList(expr, restarts[-nr])
+#> !                        35.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
+#> !                        36.                         │       └─base (local) doWithOneRestart(return(expr), restart)
+#> !                        37.                         ├─evaluate:::with_handlers(...)
+#> !                        38.                         │ ├─base::eval(call)
+#> !                        39.                         │ │ └─base::eval(call)
+#> !                        40.                         │ └─base::withCallingHandlers(...)
+#> !                        41.                         ├─base::withVisible(eval(expr, envir))
+#> !                        42.                         └─base::eval(expr, envir)
+#> !                        43.                           └─base::eval(expr, envir)
+#> !                        44.                             └─scop::DynamicHeatmap(...)
+#> !                        45.                               └─scop:::heatmap_enrichment(...)
+#> !                        46.                                 └─scop::RunEnrichment(...)
+#> !                        47.                                   └─scop::PrepareDB(...)
+#> !                        48.                                     └─scop::GeneConvert(...)
+#> !                        49.                                       ├─thisutils::try_get(...)
+#> !                        50.                                       │ ├─base::tryCatch(...)
+#> !                        51.                                       │ │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+#> !                        52.                                       │ │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#> !                        53.                                       │ │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+#> !                        54.                                       │ └─base::eval.parent(substitute(expr))
+#> !                        55.                                       │   └─base::eval(expr, p)
+#> !                        56.                                       │     └─base::eval(expr, p)
+#> !                        57.                                       └─biomaRt::listEnsemblArchives()
+#> !                        58.                                         └─biomaRt:::.listEnsemblArchives(http_config = list())
+#> !                        59.                                           └─biomaRt:::.checkArchiveList(http_config)
+#> !                        60.                                             └─biomaRt:::.getArchiveList(http_config = http_config)
+#> !                        61.                                               └─httr2::req_perform(html_request)
+#> ! [2026-02-27 15:38:36] Get errors when connecting with EnsemblArchives...
+#> ! [2026-02-27 15:38:37] Retrying...
+#> ℹ [2026-02-27 15:38:44] Using the 115 version of ensembl database...
+#> ℹ [2026-02-27 15:38:44] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-02-27 15:38:45] Searching the dataset mmusculus ...
+#> ℹ [2026-02-27 15:38:45] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-02-27 15:38:48] Converting the geneIDs...
+#> ℹ [2026-02-27 15:39:02] 23214 genes mapped with "entrez_id"
+#> ℹ [2026-02-27 15:39:02] ==============================
 #> ℹ                       23214 genes mapped
 #> ℹ                       2516 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-02-11 03:27:59] Permform enrichment...
-#> ℹ [2026-02-11 03:27:59] Using 1 core
-#> ⠙ [2026-02-11 03:27:59] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-02-11 03:27:59] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-02-11 03:27:59] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-02-11 03:27:59] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-02-11 03:27:59] Completed 5 tasks in 30.5s
+#> ℹ [2026-02-27 15:39:16] Permform enrichment...
+#> ℹ [2026-02-27 15:39:16] Using 1 core
+#> ⠙ [2026-02-27 15:39:16] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-02-27 15:39:16] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-02-27 15:39:16] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-02-27 15:39:16] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-02-27 15:39:16] Completed 5 tasks in 29.1s
 #> 
-#> ℹ [2026-02-11 03:27:59] Building results
-#> ✔ [2026-02-11 03:28:30] Enrichment analysis done
-#> ℹ [2026-02-11 03:30:37] 
+#> ℹ [2026-02-27 15:39:16] Building results
+#> ✔ [2026-02-27 15:39:45] Enrichment analysis done
+#> ℹ [2026-02-27 15:41:53] 
 #> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
 #> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
 #> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.

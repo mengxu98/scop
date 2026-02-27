@@ -12,8 +12,6 @@
 
 - [`check_python()`](https://mengxu98.github.io/scop/reference/check_python.md)
   : Check and install python packages
-- [`check_r()`](https://mengxu98.github.io/scop/reference/check_r.md) :
-  Check and install R packages
 - [`env_info()`](https://mengxu98.github.io/scop/reference/env_info.md)
   : Print environment information
 - [`env_requirements()`](https://mengxu98.github.io/scop/reference/env_requirements.md)
@@ -24,8 +22,6 @@
   : Prepare the python environment
 - [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md)
   : Remove Python packages from conda environment
-- [`remove_r()`](https://mengxu98.github.io/scop/reference/remove_r.md)
-  : Check and remove R packages
 - [`RemoveEnv()`](https://mengxu98.github.io/scop/reference/RemoveEnv.md)
   : Remove a conda environment
 
@@ -293,8 +289,6 @@
   : Projection Plot
 - [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
   : Proportion Test Plot
-- [`StatPlot()`](https://mengxu98.github.io/scop/reference/StatPlot.md)
-  : Statistic Plot
 - [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
   : Transcript-averaged cell scoring (TACS)
 - [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)

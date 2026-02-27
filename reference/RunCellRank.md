@@ -286,16 +286,6 @@ Returns a Seurat object if `return_seurat = TRUE` or an anndata object
 with CellRank results stored in `obsm`, `obs`, and `varm` slots. The
 estimator and kernel objects are stored in `srt@misc$cellrank`.
 
-Lineage pseudotime columns are automatically added to metadata with
-prefix `"Lineage_"` (e.g., `Lineage_Alpha`, `Lineage_Beta`), compatible
-with
-[LineagePlot](https://mengxu98.github.io/scop/reference/LineagePlot.md),
-[RunDynamicFeatures](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md),
-and
-[RunDynamicEnrichment](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md).
-These are computed by combining base pseudotime (`cytotrace_pseudotime`,
-`dpt_pseudotime`, or `latent_time`) with fate probabilities.
-
 ## See also
 
 [RunSCVELO](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
