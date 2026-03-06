@@ -21,6 +21,8 @@ RunMonocle3(
   close_loop = TRUE,
   root_pr_nodes = NULL,
   root_cells = NULL,
+  xlab = NULL,
+  ylab = NULL,
   seed = 11,
   verbose = TRUE
 )
@@ -74,6 +76,12 @@ Defaults to NULL.}
 \item{root_cells}{The root cells to order cells.
 If not specified, user will be prompted for input.
 Defaults to NULL.}
+
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
+
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
