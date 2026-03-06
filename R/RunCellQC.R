@@ -378,55 +378,6 @@ db_DoubletDetection <- function(
   return(srt)
 }
 
-#' @title Detect outliers using MAD (Median Absolute Deviation)
-#'
-#' @md
-#' @param x Numeric vector.
-#' @param nmads Number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
-#' Default is `2.5`.
-#' @param constant Constant factor to convert the MAD to a standard deviation.
-#' Default is `1.4826`, which is consistent with the MAD of a normal distribution.
-#' @param type Type of outliers to detect.
-#' Available options are `"both"`, `"lower"`, or `"higher"`.
-#' If `type` is `"both"`, it detects both lower and higher outliers.
-#' If `type` is `"lower"`, it detects only lower outliers.
-#' If `type` is `"higher"`, it detects only higher outliers.
-#'
-#' @return Numeric vector of indices indicating the positions of outliers in `x`.
-#'
-#' @export
-#'
-#' @examples
-#' x <- c(1, 2, 3, 4, 5, 100)
-#' is_outlier(x) # returns 6
-#'
-#' x <- c(3, 4, 5, NA, 6, 7)
-#' is_outlier(x, nmads = 1.5, type = "lower") # returns 4
-#'
-#' x <- c(10, 20, NA, 15, 35)
-#' is_outlier(x, nmads = 2, type = "higher") # returns 3, 5
-is_outlier <- function(
-    x,
-    nmads = 2.5,
-    constant = 1.4826,
-    type = c("both", "lower", "higher")) {
-  type <- match.arg(type, c("both", "lower", "higher"))
-  mad <- stats::mad(x, constant = constant, na.rm = TRUE)
-  upper <- stats::median(x, na.rm = TRUE) + nmads * mad
-  lower <- stats::median(x, na.rm = TRUE) - nmads * mad
-  if (type == "both") {
-    out <- which(x > upper | x < lower)
-  }
-  if (type == "lower") {
-    out <- which(x < lower)
-  }
-  if (type == "higher") {
-    out <- which(x > upper)
-  }
-  out <- c(which(is.na(x)), out)
-  return(out)
-}
-
 #' @title Run cell-level quality control for single cell RNA-seq data.
 #'
 #' @md
