@@ -145,20 +145,35 @@ The analysis is based on a subsetted version of [mouse pancreas data](https://do
 library(scop)
 data(pancreas_sub)
 print(pancreas_sub)
-#> An object of class Seurat
-#> 47886 features across 1000 samples within 3 assays
-#> Active assay: RNA (15962 features, 2000 variable features)
-#>  3 layers present: counts, data, scale.data
+#> An object of class Seurat 
+#> 47994 features across 1000 samples within 3 assays 
+#> Active assay: RNA (15998 features, 0 variable features)
+#>  1 layer present: counts
 #>  2 other assays present: spliced, unspliced
-#>  2 dimensional reductions calculated: pca, umap
 ```
 
+### Standard pipeline
+
 ``` r
+pancreas_sub <- standard_scop(pancreas_sub)
+print(pancreas_sub)
+#>  An object of class Seurat 
+#>  47994 features across 1000 samples within 3 assays 
+#>  Active assay: RNA (15998 features, 2000 variable features)
+#>   3 layers present: counts, data, scale.data
+#>   2 other assays present: spliced, unspliced
+#>   5 dimensional reductions calculated: Standardpca, StandardpcaUMAP2D, StandardpcaUMAP3D, StandardUMAP2D, StandardUMAP3D
+```
+
+```r
 CellDimPlot(
   pancreas_sub,
   group.by = c("CellType", "SubCellType"),
   reduction = "UMAP",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -170,7 +185,10 @@ CellDimPlot(
   group.by = "SubCellType",
   stat.by = "Phase",
   reduction = "UMAP",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -181,7 +199,9 @@ FeatureDimPlot(
   pancreas_sub,
   features = c("Sox9", "Neurog3", "Fev", "Rbp4"),
   reduction = "UMAP",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -195,7 +215,9 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE,
   reduction = "UMAP",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -212,11 +234,17 @@ ht <- GroupHeatmap(
     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
   ),
   group.by = c("CellType", "SubCellType"),
-  heatmap_palette = "YlOrRd",
+  heatmap_palette = "Spectral",
+  group_palette = "Chinese",
   cell_annotation = c("Phase", "G2M_score", "Cdh2"),
   cell_annotation_palette = c("Dark2", "Paired", "Paired"),
-  show_row_names = TRUE, row_names_side = "left",
-  add_dot = TRUE, add_reticle = TRUE
+  show_row_names = TRUE,
+  nlabel = 0,
+  row_names_side = "left",
+  add_dot = TRUE,
+  add_reticle = TRUE,
+  width = 2.2,
+  height = 2.5
 )
 print(ht$plot)
 ```
@@ -227,13 +255,13 @@ print(ht$plot)
 
 ``` r
 pancreas_sub <- RunCellQC(pancreas_sub)
-CellDimPlot(pancreas_sub, group.by = "CellQC", reduction = "UMAP")
+CellDimPlot(pancreas_sub, group.by = "CellQC", reduction = "UMAP", palette = "Chinese")
 ```
 
 <img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-CellStatPlot(pancreas_sub, stat.by = "CellQC", group.by = "CellType", label = TRUE)
+CellStatPlot(pancreas_sub, stat.by = "CellQC", group.by = "CellType", palette = "Chinese", label = TRUE)
 ```
 
 <img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
@@ -254,44 +282,12 @@ CellStatPlot(
 
 <img src="man/figures/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Standard pipeline
-
-``` r
-pancreas_sub <- standard_scop(pancreas_sub)
-CellDimPlot(
-  pancreas_sub,
-  group.by = c("CellType", "SubCellType"),
-  reduction = "StandardUMAP2D",
-  theme_use = "theme_blank"
-)
-```
-
-<img src="man/figures/standard_scop-1.png" width="100%" style="display: block; margin: auto;"/>
-
-``` r
-CellDimPlot3D(
-  pancreas_sub,
-  group.by = "SubCellType"
-)
-```
-
-![CellDimPlot3D](man/figures/CellDimPlot3D-1.png)
-
-``` r
-FeatureDimPlot3D(
-  pancreas_sub,
-  features = c("Sox9", "Neurog3", "Fev", "Rbp4")
-)
-```
-
-![FeatureDimPlot3D](man/figures/FeatureDimPlot3D-1.png)
-
 ### Integration pipeline
 
 Example data for integration is a subsetted version of [panc8(eight human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
 ``` r
-data("panc8_sub")
+data(panc8_sub)
 panc8_sub <- integration_scop(
   srt_merge = panc8_sub,
   batch = "tech",
@@ -300,9 +296,12 @@ panc8_sub <- integration_scop(
 CellDimPlot(
   panc8_sub,
   group.by = c("celltype", "tech"),
-  reduction = "SeuratUMAP2D",
+  reduction = "UMAP",
   title = "Seurat",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -331,7 +330,12 @@ ProjectionPlot(
   srt_query = srt_query,
   srt_ref = panc8_rename,
   query_group = "SubCellType",
-  ref_group = "celltype"
+  ref_group = "celltype",
+  ref_param = list(
+    palette = "Chinese",
+    xlab = "UMAP_1",
+    ylab = "UMAP_2"
+  )
 )
 ```
 
@@ -350,7 +354,10 @@ CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
-  label = TRUE
+  label = TRUE,
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -369,7 +376,10 @@ CellDimPlot(
   pancreas_sub,
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
-  label = TRUE
+  label = TRUE,
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -383,8 +393,11 @@ ht <- CellCorHeatmap(
   ref_group = "celltype",
   nlabel = 3,
   label_by = "row",
+  query_group_palette = "Chinese",
   show_row_names = TRUE,
-  show_column_names = TRUE
+  show_column_names = TRUE,
+  width = 4,
+  height = 2.5
 )
 print(ht$plot)
 ```
@@ -398,11 +411,14 @@ print(ht$plot)
 ``` r
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
-  species = "mouse"
+  species = "Mus_musculus"
 )
 CytoTRACEPlot(
   pancreas_sub,
-  group.by = "SubCellType"
+  group.by = "CellType",
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -417,14 +433,17 @@ To estimate RNA velocity, both “spliced” and “unspliced” assays in Seura
 ``` r
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP"
 )
 VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
-  group_by = "SubCellType"
+  group.by = "SubCellType",
+  group_palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -434,7 +453,9 @@ VelocityPlot(
 VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
-  plot_type = "stream"
+  plot_type = "stream",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -445,10 +466,9 @@ VelocityPlot(
 #### PAGA analysis
 
 ``` r
-PrepareEnv()
 pancreas_sub <- RunPAGA(
   pancreas_sub,
-  group_by = "SubCellType",
+  group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP"
 )
@@ -457,7 +477,10 @@ PAGAPlot(
   reduction = "UMAP",
   label = TRUE,
   label_insitu = TRUE,
-  label_repel = TRUE
+  label_repel = TRUE,
+  node_palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -469,7 +492,18 @@ PAGAPlot(
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
-  reduction = "UMAP"
+  reduction = "UMAP",
+  start = "Ductal",
+  end = c("Alpha", "Beta")
+)
+CellDimPlot(
+  pancreas_sub,
+  group.by = "SubCellType",
+  lineages = paste0("Lineage", 1:2),
+  reduction = "UMAP",
+  palette = "Chinese",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -478,9 +512,11 @@ pancreas_sub <- RunSlingshot(
 ``` r
 FeatureDimPlot(
   pancreas_sub,
-  features = paste0("Lineage", 1:3),
+  features = paste0("Lineage", 1:2),
   reduction = "UMAP",
-  theme_use = "theme_blank"
+  theme_use = "theme_blank",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
 )
 ```
 
@@ -493,6 +529,46 @@ pancreas_sub <- RunMonocle3(
   pancreas_sub,
   group.by = "SubCellType"
 )
+trajectory <- pancreas_sub@tools$Monocle3$trajectory
+milestones <- pancreas_sub@tools$Monocle3$milestones
+CellDimPlot(
+  pancreas_sub,
+  group.by = "Monocle3_partitions",
+  reduction = "UMAP",
+  label = TRUE,
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+) +
+  trajectory +
+  milestones +
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "Monocle3_clusters",
+    reduction = "UMAP",
+    label = TRUE,
+    palette = "Chinese",
+    xlab = "UMAP_1",
+    ylab = "UMAP_2"
+  ) +
+  trajectory +
+  CellDimPlot(
+    pancreas_sub,
+    group.by = "SubCellType",
+    reduction = "UMAP",
+    label = TRUE,
+    palette = "Chinese",
+    xlab = "UMAP_1",
+    ylab = "UMAP_2"
+  ) +
+  trajectory +
+  FeatureDimPlot(
+    pancreas_sub,
+    features = "Monocle3_Pseudotime",
+    reduction = "UMAP",
+    xlab = "UMAP_1",
+    ylab = "UMAP_2"
+  ) +
+  trajectory
 ```
 
 <img src="man/figures/RunMonocle3.png" width="100%" style="display: block; margin: auto;"/>
@@ -505,6 +581,12 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
+# Annotate features with transcription factors and surface proteins
+pancreas_sub <- AnnotateFeatures(
+  pancreas_sub,
+  species = "Mus_musculus",
+  db = c("TF", "CSPA")
+)
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -516,18 +598,21 @@ ht <- DynamicHeatmap(
   anno_terms = TRUE,
   anno_keys = TRUE,
   anno_features = TRUE,
+  exp_legend_title = "Z-score",
+  cell_annotation_palette = "Chinese",
   heatmap_palette = "viridis",
   cell_annotation = "SubCellType",
   separate_annotation = list(
     "SubCellType", c("Nnat", "Irx1")
   ),
-  separate_annotation_palette = c("Paired", "Set1"),
+  separate_annotation_palette = c("Chinese", "Set1"),
   feature_annotation = c("TF", "CSPA"),
   feature_annotation_palcolor = list(
     c("gold", "steelblue"), c("forestgreen")
   ),
   pseudotime_label = 25,
   pseudotime_label_color = "red",
+  cores = 6,
   height = 5,
   width = 2
 )
@@ -541,6 +626,7 @@ DynamicPlot(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   group.by = "SubCellType",
+  point_palette = "Chinese",
   features = c(
     "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2"
   ),
@@ -558,11 +644,15 @@ FeatureStatPlot(
   bg.by = "CellType",
   stat.by = c("Sox9", "Neurod2", "Isl1", "Rbp4"),
   add_box = TRUE,
+  palette = "Chinese",
+  bg_palette = "Chinese",
   comparisons = list(
     c("Ductal", "Ngn3 low EP"),
     c("Ngn3 high EP", "Pre-endocrine"),
     c("Alpha", "Beta")
   )
+) + patchwork::plot_layout(
+  guides = "collect"
 )
 ```
 
@@ -573,32 +663,55 @@ FeatureStatPlot(
 ``` r
 pancreas_sub <- RunDEtest(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   fc.threshold = 1,
   only.pos = FALSE
 )
-VolcanoPlot(
+DEtestPlot(
   pancreas_sub,
-  group_by = "CellType"
+  group.by = "CellType",
+  plot_type = "volcano",
+  label.size = 2
 )
 ```
 
 <img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "manhattan",
+  group_palette = "Chinese",
+  label.size = 2
+)
+```
+
+<img src="man/figures/RunDEtest-2.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
+DEtestPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "ring",
+  group_palette = "Chinese",
+  label.size = 2
+)
+```
+
+<img src="man/figures/RunDEtest-3.png" width="100%" style="display: block; margin: auto;"/>
+
+``` r
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
-# Annotate features with transcription factors and surface proteins
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
+
 ht <- FeatureHeatmap(
   pancreas_sub,
   group.by = "CellType",
   features = DEGs$gene,
   feature_split = DEGs$group1,
+  group_palette = "Chinese",
+  exp_legend_title = "Z-score",
   species = "Mus_musculus",
   db = c("GO_BP", "KEGG", "WikiPathway"),
   anno_terms = TRUE,
@@ -606,26 +719,29 @@ ht <- FeatureHeatmap(
   feature_annotation_palcolor = list(
     c("gold", "steelblue"), c("forestgreen")
   ),
-  height = 5, width = 4
+  cores = 6,
+  height = 5,
+  width = 3
 )
 print(ht$plot)
 ```
 
 <img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Enrichment analysis(over-representation)
+### Enrichment analysis (over-representation)
 
 ``` r
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
+  cores = 5
 )
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = c("Ductal", "Endocrine"),
   plot_type = "bar"
 )
@@ -636,7 +752,7 @@ EnrichmentPlot(
 ``` r
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = c("Ductal", "Endocrine"),
   plot_type = "wordcloud"
 )
@@ -647,7 +763,7 @@ EnrichmentPlot(
 ``` r
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = c("Ductal", "Endocrine"),
   plot_type = "wordcloud",
   word_type = "feature"
@@ -659,8 +775,8 @@ EnrichmentPlot(
 ``` r
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
-  group_use = "Ductal",
+  group.by = "CellType",
+  group_use = "Ngn3-low-EP",
   plot_type = "network"
 )
 ```
@@ -672,7 +788,7 @@ To ensure that labels are visible, you can adjust the size of the viewer panel o
 ``` r
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = "Ductal",
   plot_type = "enrichmap"
 )
@@ -683,26 +799,39 @@ EnrichmentPlot(
 ``` r
 EnrichmentPlot(
   pancreas_sub,
-  group_by = "CellType",
-  plot_type = "comparison"
+  group.by = "CellType",
+  plot_type = "comparison",
+  topTerm = 3
 )
 ```
 
 <img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Enrichment analysis(GSEA)
+``` r
+EnrichmentPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group_use = "Ductal",
+  plot_type = "lollipop"
+)
+```
+
+<img src="man/figures/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"/>
+
+### Enrichment analysis (GSEA)
 
 ``` r
 pancreas_sub <- RunGSEA(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "p_val_adj < 0.05"
+  DE_threshold = "p_val_adj < 0.05",
+  cores = 5
 )
 GSEAPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = "Endocrine",
   id_use = "GO:0007186"
 )
@@ -713,11 +842,11 @@ GSEAPlot(
 ``` r
 GSEAPlot(
   pancreas_sub,
-  group_by = "CellType",
+  group.by = "CellType",
   group_use = "Endocrine",
   plot_type = "bar",
   direction = "both",
-  topTerm = 20
+  topTerm = 10
 )
 ```
 
@@ -741,12 +870,16 @@ if (interactive()) {
 }
 ```
 
-![SCExplorer1](man/figures/SCExplorer-1.png)
+<img src="man/figures/SCExplorer-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Other visualization examples
 
-[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.png) 
 
-![Example1](man/figures/Example-1.jpg) [**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.jpg) [**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.jpg) [**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.jpg)
+[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.png)
+
+[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.png)
+
+[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.png)
 
 You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
