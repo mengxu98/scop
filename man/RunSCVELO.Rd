@@ -65,34 +65,48 @@ If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
-\item{assay_x}{Assay to convert in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
+Default is \code{"RNA"}.}
 
-\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.
+Default is \code{"counts"}.}
 
-\item{assay_y}{Assay to convert in the anndata object.}
+\item{assay_y}{Assays to convert as layers in the anndata object.
+Default is \code{c("spliced", "unspliced")}.}
 
-\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.
+Default is \code{"counts"}.}
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
-\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., \code{"UMAP"}.}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
 \item{mode}{Velocity estimation models to use.
-Can be a vector containing \code{"deterministic"}, \code{"stochastic"}, and/or \code{"dynamical"}.}
+Can be \code{"deterministic"}, \code{"stochastic"}, or \code{"dynamical"}.}
 
-\item{fitting_by}{Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".}
+\item{fitting_by}{Method used to fit gene velocities for dynamical modeling.
+Default is \code{"stochastic"}.}
 
-\item{magic_impute}{Flag indicating whether to perform magic imputation.}
+\item{magic_impute}{Flag indicating whether to perform magic imputation.
+Default is \code{FALSE}.}
 
-\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.}
+\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.
+Default is \code{5}.}
 
-\item{t}{power to which the diffusion operator is powered for \code{magic.MAGIC}.}
+\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.
+Default is \code{2}.}
 
-\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.}
+\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.
+Default is \code{30}.}
 
 \item{n_pcs}{Number of principal components to use for linear reduction.
 Default is \code{30}.}
@@ -119,11 +133,13 @@ Default is \code{30}.}
 \item{stream_density}{Controls the closeness of streamlines.
 When density = 2 (default), the domain is divided into a 60x60 grid,
 whereas density linearly scales this grid.
-Each cell in the grid can have, at most, one traversing streamline.}
+Each cell in the grid can have, at most, one traversing streamline.
+Default is \code{2}.}
 
 \item{arrow_length}{Length of arrows.}
 
-\item{arrow_size}{Size of arrows.}
+\item{arrow_size}{Size of arrows.
+Default is \code{5}.}
 
 \item{arrow_density}{Amount of velocities to show.}
 
@@ -217,25 +233,8 @@ CellDimPlot(
   pt.size = NA,
   velocity = "stochastic"
 )
-
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunSCVELO(
-  pancreas_sub,
-  assay_x = "RNA",
-  group.by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
-  mode = c("deterministic", "stochastic"),
-  filter_genes = TRUE,
-  min_counts = 5,
-  compute_velocity_confidence = TRUE,
-  compute_terminal_states = TRUE,
-  compute_pseudotime = TRUE,
-  compute_paga = TRUE
-)
 }
 }
 \seealso{
-\link{srt_to_adata}, \link{VelocityPlot}, \link{CellDimPlot}, \link{RunPAGA}
+\link{VelocityPlot}, \link{CellDimPlot}, \link{RunPAGA}
 }

@@ -1275,17 +1275,20 @@ CellDimPlot <- function(
             order = 1,
             override.aes = list(size = 4, alpha = 1)
           )
-        ) +
-        scale_fill_manual(
-          name = legend_title_use,
-          values = colors[names(labels_tb)],
-          labels = label_use,
-          na.value = bg_color,
-          guide = guide_legend(
-            title.hjust = 0,
-            order = 1
-          )
         )
+      if (isTRUE(hex)) {
+        p <- p +
+          scale_fill_manual(
+            name = legend_title_use,
+            values = colors[names(labels_tb)],
+            labels = label_use,
+            na.value = bg_color,
+            guide = guide_legend(
+              title.hjust = 0,
+              order = 1
+            )
+          )
+      }
       p_base <- p
 
       if (!is.null(stat.by)) {
@@ -1369,7 +1372,7 @@ CellDimPlot <- function(
           list(ggnewscale::new_scale("size")),
           velocity_layers
         )
-        if (velocity_plot_type != "raw") {
+        if (velocity_plot_type == "stream" && is.null(streamline_color)) {
           suppressMessages({
             legend_list[["velocity"]] <- get_legend(
               ggplot() +

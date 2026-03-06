@@ -96,7 +96,7 @@ with cell IDs as row names.
 Run CytoTRACE 2
 }
 \examples{
-if (thisplot::check_ci_env()) {
+if (thisutils::check_ci_env()) {
   data(pancreas_sub)
   pancreas_sub <- standard_scop(pancreas_sub)
   pancreas_sub <- RunCytoTRACE(

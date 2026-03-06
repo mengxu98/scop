@@ -35,13 +35,17 @@ RunWOT(
 \item{srt}{A Seurat object. Default is \code{NULL}.
 If provided, \code{adata} will be ignored.}
 
-\item{assay_x}{Assay to convert in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
+Default is \code{"RNA"}.}
 
-\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.
+Default is \code{"counts"}.}
 
-\item{assay_y}{Assay to convert in the anndata object.}
+\item{assay_y}{Assays to convert as layers in the anndata object.
+Default is \code{c("spliced", "unspliced")}.}
 
-\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.
+Default is \code{"counts"}.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
@@ -134,7 +138,4 @@ pancreas_sub <- RunWOT(
 \references{
 \href{https://doi.org/10.1016/j.cell.2019.01.006}{Geoffrey et al. (2019) Cell},
 \href{https://github.com/broadinstitute/wot}{GitHub}
-}
-\seealso{
-\link{srt_to_adata}
 }

@@ -40,8 +40,9 @@ If \code{NULL}, the default assay of the Seurat object will be used.}
 \item{layer}{Which layer to use.
 Default is \code{"counts"}.}
 
-\item{linear_reduction}{Method of linear dimensionality reduction.
-Options are \code{"pca"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}.}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
 \item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
 
@@ -49,8 +50,10 @@ Options are \code{"pca"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpc
 
 \item{force_linear_reduction}{Whether force to do linear dimensionality reduction.}
 
-\item{nonlinear_reduction}{Method of nonlinear dimensionality reduction.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}.}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{Total number of dimensions to compute and store for \code{nonlinear_reduction}.}
 

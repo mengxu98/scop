@@ -18,8 +18,6 @@
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param point_size The point size for plotting.
 #'
-#' @seealso [srt_to_adata]
-#'
 #' @export
 #'
 #' @examples
