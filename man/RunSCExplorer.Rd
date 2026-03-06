@@ -24,7 +24,7 @@ RunSCExplorer(
   initial_arrange = NULL,
   initial_raster = NULL,
   create_script = TRUE,
-  style_script = requireNamespace("styler", quietly = TRUE),
+  style_script = TRUE,
   overwrite = TRUE,
   return_app = TRUE
 )
@@ -132,6 +132,7 @@ list.files("./SCExplorer")
 
 # Run shiny app
 if (interactive()) {
+  check_r("shiny")
   shiny::runApp(app)
 }
 # Note: If scop installed in the isolated environment using renv,

@@ -126,6 +126,7 @@ GroupHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
   seed = 11,
   ht_params = list(),
   verbose = TRUE,
@@ -460,14 +461,17 @@ Default is \code{"png"}.}
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is \code{FALSE}.}
 
-\item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{height}{The height of the heatmap in the specified units.
+If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
 
-\item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{width}{The width of the heatmap in the specified units.
+If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
-\item{units}{A character vector specifying the units for the height and width.
-Default is \code{"inch"}.}
+\item{units}{The units to use for the width and height of the heatmap.
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
+
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
@@ -521,8 +525,6 @@ thisplot::panel_fix(
   dpi = 50
 )
 
-\dontrun{
-library(dplyr)
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
@@ -532,7 +534,7 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-de_filter <- filter(
+de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
@@ -561,11 +563,11 @@ ht3 <- GroupHeatmap(
 )
 ht3$plot
 
-de_top <- de_filter \%>\%
-  group_by(gene) \%>\%
-  top_n(1, avg_log2FC) \%>\%
-  group_by(group1) \%>\%
-  top_n(3, avg_log2FC)
+de_top <- de_filter |>
+  dplyr::group_by(gene) |>
+  dplyr::top_n(1, avg_log2FC) |>
+  dplyr::group_by(group1) |>
+  dplyr::top_n(3, avg_log2FC)
 ht4 <- GroupHeatmap(
   pancreas_sub,
   features = de_top$gene,
@@ -668,7 +670,6 @@ ht8 <- GroupHeatmap(
   )
 )
 ht8$plot
-}
 }
 \seealso{
 \link{RunDEtest}
