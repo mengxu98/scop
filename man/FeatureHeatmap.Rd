@@ -114,6 +114,7 @@ FeatureHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
   seed = 11,
   ht_params = list(),
   verbose = TRUE
@@ -409,14 +410,17 @@ Default is \code{"png"}.}
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is \code{FALSE}.}
 
-\item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{height}{The height of the heatmap in the specified units.
+If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
 
-\item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{width}{The width of the heatmap in the specified units.
+If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
-\item{units}{A character vector specifying the units for the height and width.
-Default is \code{"inch"}.}
+\item{units}{The units to use for the width and height of the heatmap.
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
+
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}

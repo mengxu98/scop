@@ -26,7 +26,7 @@
 #' @param min_group_size The minimum size of a group (as a fraction of the total number of cells) to consider it as a potential branching point.
 #'
 #' @seealso
-#' [srt_to_adata], [PAGAPlot], [CellDimPlot], [RunSCVELO]
+#' [PAGAPlot], [CellDimPlot], [RunSCVELO]
 #'
 #' @export
 #'

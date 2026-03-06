@@ -2,7 +2,6 @@
 #'
 #' @md
 #' @inheritParams GroupHeatmap
-#' @inheritParams thisutils::log_message
 #' @param max_cells An integer, maximum number of cells to sample per group.
 #' Default is `100`.
 #' @param cell_order A vector of cell names defining the order of cells.
@@ -229,6 +228,7 @@ FeatureHeatmap <- function(
     height = NULL,
     width = NULL,
     units = "inch",
+    cores = 1,
     seed = 11,
     ht_params = list(),
     verbose = TRUE) {
@@ -1505,7 +1505,8 @@ FeatureHeatmap <- function(
     topTerm = topTerm,
     show_termid = show_termid,
     topWord = topWord,
-    words_excluded = words_excluded
+    words_excluded = words_excluded,
+    cores = cores
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right

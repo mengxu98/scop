@@ -338,7 +338,6 @@ RunDynamicFeatures <- function(
         knot = knot,
         max_knot_allowed = max_knot_allowed,
         padjust_method = padjust_method,
-        cores = cores,
         verbose = verbose
       )
     }
@@ -517,7 +516,6 @@ dynamic_features_pretsa <- function(
     knot,
     max_knot_allowed,
     padjust_method,
-    cores,
     verbose) {
   gene_sub <- features[features %in% gene]
   meta_sub <- features[features %in% meta]

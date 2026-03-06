@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellRank.R
 \name{RunCellRank}
 \alias{RunCellRank}
-\title{Run CellRank analysis with kernel-estimator architecture}
+\title{Run CellRank analysis}
 \usage{
 RunCellRank(
   srt = NULL,
@@ -59,13 +59,17 @@ RunCellRank(
 \item{srt}{A Seurat object. Default is \code{NULL}.
 If provided, \code{adata} will be ignored.}
 
-\item{assay_x}{Assay to convert in the anndata object.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
+Default is \code{"RNA"}.}
 
-\item{layer_x}{Layer name for \code{assay_x} in the Seurat object.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.
+Default is \code{"counts"}.}
 
-\item{assay_y}{Assay to convert in the anndata object.}
+\item{assay_y}{Assays to convert as layers in the anndata object.
+Default is \code{c("spliced", "unspliced")}.}
 
-\item{layer_y}{Layer names for the \code{assay_y} in the Seurat object.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.
+Default is \code{"counts"}.}
 
 \item{adata}{An anndata object. Default is \code{NULL}.}
 
@@ -73,9 +77,14 @@ If provided, \code{adata} will be ignored.}
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
 
-\item{linear_reduction}{Linear reduction method to use, e.g., \code{"PCA"}.}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
-\item{nonlinear_reduction}{Non-linear reduction method to use, e.g., \code{"UMAP"}.}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
@@ -91,7 +100,7 @@ Default is \code{FALSE}.}
 \item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.
 Default is \code{5}.}
 
-\item{t}{power to which the diffusion operator is powered for \code{magic.MAGIC}.
+\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.
 Default is \code{2}.}
 
 \item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.
@@ -106,6 +115,9 @@ Default is \code{30}.}
 \item{stream_smooth}{Multiplication factor for scale in Gaussian kernel around grid point.}
 
 \item{stream_density}{Controls the closeness of streamlines.
+When density = 2 (default), the domain is divided into a 60x60 grid,
+whereas density linearly scales this grid.
+Each cell in the grid can have, at most, one traversing streamline.
 Default is \code{2}.}
 
 \item{arrow_size}{Size of arrows.
@@ -188,9 +200,7 @@ Returns a Seurat object if \code{return_seurat = TRUE} or an anndata object with
 The estimator and kernel objects are stored in \code{srt@misc$cellrank}.
 }
 \description{
-CellRank is a powerful toolkit for studying cellular dynamics using Markov state modeling.
-This function implements the modern kernel-estimator architecture recommended by CellRank,
-which provides more flexibility and advanced features compared to the legacy API.
+CellRank is a toolkit for studying cellular dynamics using Markov state modeling.
 }
 \examples{
 \dontrun{
@@ -198,8 +208,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellRank(
   srt = pancreas_sub,
-  group.by = "SubCellType",
-  cores = 6
+  group.by = "SubCellType"
 )
 
 CellDimPlot(

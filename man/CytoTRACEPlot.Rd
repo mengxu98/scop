@@ -80,7 +80,7 @@ If \code{combine = FALSE}, returns a named list of ggplot objects:
 Plot CytoTRACE 2 Results
 }
 \examples{
-if (thisplot::check_ci_env()) {
+if (thisutils::check_ci_env()) {
   data(pancreas_sub)
   pancreas_sub <- standard_scop(pancreas_sub)
   pancreas_sub <- RunCytoTRACE(

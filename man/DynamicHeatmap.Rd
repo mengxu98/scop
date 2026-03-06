@@ -492,14 +492,14 @@ Default is \code{"png"}.}
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is \code{FALSE}.}
 
-\item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{height}{The height of the heatmap in the specified units.
+If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
 
-\item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{width}{The width of the heatmap in the specified units.
+If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
-\item{units}{A character vector specifying the units for the height and width.
-Default is \code{"inch"}.}
+\item{units}{The units to use for the width and height of the heatmap.
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
@@ -535,10 +535,13 @@ pancreas_sub <- RunDynamicFeatures(
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   n_split = 5,
   split_method = "kmeans-peaktime",
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 2,
+  height = 3
 )
 ht1$plot
 
@@ -546,6 +549,7 @@ thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   features = c(
     "Sox9",
@@ -558,51 +562,72 @@ ht2 <- DynamicHeatmap(
 )
 ht2$plot
 
-thisplot::panel_fix(
-  ht2$plot,
-  height = 5,
-  width = 5,
-  raster = TRUE,
-  dpi = 50
-)
-
 ht3 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   n_split = 5,
+  nlabel = 10,
   split_method = "kmeans",
   cluster_rows = TRUE,
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 1,
+  height = 2
 )
 ht3$plot
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   cell_annotation = "SubCellType",
-  n_split = 5,
+  n_split = 3,
   split_method = "mfuzz",
   species = "Mus_musculus",
   db = "GO_BP",
   anno_terms = TRUE,
-  anno_keys = TRUE,
-  anno_features = TRUE
+  cores = 3,
+  width = 1,
+  height = 2
 )
-ht4$plot
 
-\dontrun{
+ht5 <- DynamicHeatmap(
+  pancreas_sub,
+  lineages = "Lineage1",
+  cell_annotation = "SubCellType",
+  n_split = 2,
+  split_method = "mfuzz",
+  species = "Mus_musculus",
+  db = "GO_BP",
+  cores = 2,
+  nlabel = 10,
+  anno_terms = TRUE,
+  anno_keys = TRUE,
+  anno_features = TRUE,
+  width = 1,
+  height = 2,
+  terms_width = grid::unit(1, "in"),
+  terms_fontsize = 6,
+  keys_width = grid::unit(0.5, "in"),
+  keys_fontsize = c(3, 6),
+  features_width = grid::unit(0.5, "in"),
+  features_fontsize = c(3, 6)
+)
+
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-ht5 <- DynamicHeatmap(
+ht6 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
@@ -626,16 +651,19 @@ ht5 <- DynamicHeatmap(
     c("forestgreen")
   ),
   pseudotime_label = 25,
-  pseudotime_label_color = "red"
+  pseudotime_label_color = "red",
+  width = 1,
+  height = 2
 )
-ht5$plot
 
-ht6 <- DynamicHeatmap(
+ht7 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
@@ -656,10 +684,11 @@ ht6 <- DynamicHeatmap(
   ),
   pseudotime_label = 25,
   pseudotime_label_color = "red",
-  flip = TRUE, column_title_rot = 45
+  flip = TRUE,
+  column_title_rot = 90,
+  width = 2,
+  height = 1
 )
-ht6$plot
-}
 }
 \seealso{
 \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}

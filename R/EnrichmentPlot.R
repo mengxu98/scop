@@ -1013,8 +1013,11 @@ EnrichmentPlot <- function(
           "grid" = igraph::layout_on_grid(graph)
         )
       } else {
+        layout_fun <- get_namespace_fun(
+          "igraph", paste0("layout_with_", network_layout)
+        )
         layout <- do.call(
-          paste0("layout_with_", network_layout), list(graph)
+          layout_fun, list(graph)
         )
       }
       df_graph <- igraph::as_data_frame(graph, what = "both")
@@ -1071,6 +1074,7 @@ EnrichmentPlot <- function(
         )
       )
 
+      check_r("shadowtext")
       shadowtextGrob <- get_namespace_fun("shadowtext", "shadowtextGrob")
       draw_key_cust <- function(data, params, size) {
         data_text <- data
@@ -1215,7 +1219,10 @@ EnrichmentPlot <- function(
           "grid" = igraph::layout_on_grid(graph)
         )
       } else {
-        layout <- do.call(paste0("layout_with_", enrichmap_layout), list(graph))
+        layout_fun <- get_namespace_fun(
+          "igraph", paste0("layout_with_", enrichmap_layout)
+        )
+        layout <- do.call(layout_fun, list(graph))
       }
       clusters <- do.call(paste0("cluster_", enrichmap_cluster), list(graph))
       df_graph <- igraph::as_data_frame(graph, what = "both")

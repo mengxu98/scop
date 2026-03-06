@@ -8,13 +8,6 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @param mode Velocity estimation models to use.
-#' Can be a vector containing `"deterministic"`, `"stochastic"`, and/or `"dynamical"`.
-#' @param fitting_by Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".
-#' @param magic_impute Flag indicating whether to perform magic imputation.
-#' @param knn The number of nearest neighbors for `magic.MAGIC`.
-#' @param t power to which the diffusion operator is powered for `magic.MAGIC`.
-#' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
 #' @param filter_genes Whether to filter genes based on minimum counts.
 #' @param min_counts Minimum counts for gene filtering.
 #' @param min_counts_u Minimum unspliced counts for gene filtering.
@@ -22,19 +15,8 @@
 #' @param log_transform Whether to apply log transformation.
 #' @param use_raw Whether to use raw data for dynamical modeling.
 #' @param diff_kinetics Whether to use differential kinetics.
-#' @param stream_smooth Multiplication factor for scale in Gaussian kernel around grid point.
-#' @param stream_density Controls the closeness of streamlines.
-#' When density = 2 (default), the domain is divided into a 60x60 grid,
-#' whereas density linearly scales this grid.
-#' Each cell in the grid can have, at most, one traversing streamline.
-#' @param arrow_length Length of arrows.
-#' @param arrow_size Size of arrows.
-#' @param arrow_density Amount of velocities to show.
-#' @param denoise Boolean flag indicating whether to denoise.
 #' @param denoise_topn Number of genes with highest likelihood selected to infer velocity directions.
-#' @param kinetics Boolean flag indicating whether to estimate RNA kinetics.
 #' @param kinetics_topn Number of genes with highest likelihood selected to infer velocity directions.
-#' @param calculate_velocity_genes Boolean flag indicating whether to calculate velocity genes.
 #' @param compute_velocity_confidence Whether to compute velocity confidence metrics.
 #' @param compute_terminal_states Whether to compute terminal states (root and end points).
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
@@ -42,7 +24,7 @@
 #' @param top_n The number of top features to plot.
 #'
 #' @seealso
-#' [srt_to_adata], [VelocityPlot], [CellDimPlot], [RunPAGA]
+#' [VelocityPlot], [CellDimPlot], [RunPAGA]
 #'
 #' @export
 #' @examples
@@ -78,23 +60,6 @@
 #'   reduction = "UMAP",
 #'   pt.size = NA,
 #'   velocity = "stochastic"
-#' )
-#'
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunSCVELO(
-#'   pancreas_sub,
-#'   assay_x = "RNA",
-#'   group.by = "SubCellType",
-#'   linear_reduction = "PCA",
-#'   nonlinear_reduction = "UMAP",
-#'   mode = c("deterministic", "stochastic"),
-#'   filter_genes = TRUE,
-#'   min_counts = 5,
-#'   compute_velocity_confidence = TRUE,
-#'   compute_terminal_states = TRUE,
-#'   compute_pseudotime = TRUE,
-#'   compute_paga = TRUE
 #' )
 #' }
 RunSCVELO <- function(

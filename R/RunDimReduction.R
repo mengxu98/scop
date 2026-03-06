@@ -3,14 +3,11 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams GroupHeatmap
+#' @inheritParams standard_scop
 #' @param prefix The prefix used to name the result.
-#' @param linear_reduction Method of linear dimensionality reduction.
-#' Options are `"pca"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`.
 #' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
 #' @param linear_reduction_params Other parameters passed to the `linear_reduction` method.
 #' @param force_linear_reduction Whether force to do linear dimensionality reduction.
-#' @param nonlinear_reduction Method of nonlinear dimensionality reduction.
-#' Options are `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`.
 #' @param nonlinear_reduction_dims Total number of dimensions to compute and store for `nonlinear_reduction`.
 #' @param reduction_use Which dimensional reduction to use as input for `nonlinear_reduction`.
 #' @param reduction_dims Which dimensions to use as input for `nonlinear_reduction`, used only if `features` is `NULL`.

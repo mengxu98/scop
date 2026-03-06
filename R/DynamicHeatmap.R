@@ -67,10 +67,13 @@
 #'
 #' ht1 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = "Lineage1",
 #'   n_split = 5,
 #'   split_method = "kmeans-peaktime",
-#'   cell_annotation = "SubCellType"
+#'   cell_annotation = "SubCellType",
+#'   width = 2,
+#'   height = 3
 #' )
 #' ht1$plot
 #'
@@ -78,6 +81,7 @@
 #'
 #' ht2 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = "Lineage1",
 #'   features = c(
 #'     "Sox9",
@@ -90,51 +94,72 @@
 #' )
 #' ht2$plot
 #'
-#' thisplot::panel_fix(
-#'   ht2$plot,
-#'   height = 5,
-#'   width = 5,
-#'   raster = TRUE,
-#'   dpi = 50
-#' )
-#'
 #' ht3 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   n_split = 5,
+#'   nlabel = 10,
 #'   split_method = "kmeans",
 #'   cluster_rows = TRUE,
-#'   cell_annotation = "SubCellType"
+#'   cell_annotation = "SubCellType",
+#'   width = 1,
+#'   height = 2
 #' )
 #' ht3$plot
 #'
 #' ht4 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   cell_annotation = "SubCellType",
-#'   n_split = 5,
+#'   n_split = 3,
 #'   split_method = "mfuzz",
 #'   species = "Mus_musculus",
 #'   db = "GO_BP",
 #'   anno_terms = TRUE,
-#'   anno_keys = TRUE,
-#'   anno_features = TRUE
+#'   cores = 3,
+#'   width = 1,
+#'   height = 2
 #' )
-#' ht4$plot
 #'
-#' \dontrun{
+#' ht5 <- DynamicHeatmap(
+#'   pancreas_sub,
+#'   lineages = "Lineage1",
+#'   cell_annotation = "SubCellType",
+#'   n_split = 2,
+#'   split_method = "mfuzz",
+#'   species = "Mus_musculus",
+#'   db = "GO_BP",
+#'   cores = 2,
+#'   nlabel = 10,
+#'   anno_terms = TRUE,
+#'   anno_keys = TRUE,
+#'   anno_features = TRUE,
+#'   width = 1,
+#'   height = 2,
+#'   terms_width = grid::unit(1, "in"),
+#'   terms_fontsize = 6,
+#'   keys_width = grid::unit(0.5, "in"),
+#'   keys_fontsize = c(3, 6),
+#'   features_width = grid::unit(0.5, "in"),
+#'   features_fontsize = c(3, 6)
+#' )
+#'
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
 #'   db = c("CSPA", "TF")
 #' )
-#' ht5 <- DynamicHeatmap(
+#' ht6 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   use_fitted = TRUE,
-#'   n_split = 6,
+#'   n_split = 3,
+#'   nlabel = 10,
 #'   split_method = "mfuzz",
 #'   heatmap_palette = "viridis",
 #'   cell_annotation = c(
@@ -158,16 +183,19 @@
 #'     c("forestgreen")
 #'   ),
 #'   pseudotime_label = 25,
-#'   pseudotime_label_color = "red"
+#'   pseudotime_label_color = "red",
+#'   width = 1,
+#'   height = 2
 #' )
-#' ht5$plot
 #'
-#' ht6 <- DynamicHeatmap(
+#' ht7 <- DynamicHeatmap(
 #'   pancreas_sub,
+#'   exp_legend_title = "Z-score",
 #'   lineages = c("Lineage1", "Lineage2"),
 #'   reverse_ht = "Lineage1",
 #'   use_fitted = TRUE,
-#'   n_split = 6,
+#'   n_split = 3,
+#'   nlabel = 10,
 #'   split_method = "mfuzz",
 #'   heatmap_palette = "viridis",
 #'   cell_annotation = c(
@@ -188,10 +216,11 @@
 #'   ),
 #'   pseudotime_label = 25,
 #'   pseudotime_label_color = "red",
-#'   flip = TRUE, column_title_rot = 45
+#'   flip = TRUE,
+#'   column_title_rot = 90,
+#'   width = 2,
+#'   height = 1
 #' )
-#' ht6$plot
-#' }
 DynamicHeatmap <- function(
     srt,
     lineages,
@@ -1114,7 +1143,6 @@ DynamicHeatmap <- function(
   }
 
   if (!is.null(separate_annotation)) {
-    subplots_list <- list()
     for (i in seq_along(separate_annotation)) {
       cellan <- separate_annotation[[i]]
       palette <- separate_annotation_palette[i]
@@ -1149,32 +1177,11 @@ DynamicHeatmap <- function(
             reverse = l %in% lineages[reverse_ht] || l %in% reverse_ht
           ) +
             theme_void()
-          subplots_list[[paste0(cellan, ":", l)]] <- subplots
-          graphics <- list()
           nm <- paste0(cellan, ":", l)
-          funbody <- paste0(
-            "
-            g <- as_grob(subplots_list[['",
-            nm,
-            "']] + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-            g$name <- '",
-            nm,
-            "';
-            grid::grid.draw(g);
-            grid::grid.rect(gp = grid::gpar(fill = 'transparent', col = 'black'));
-            "
-          )
-          funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-          eval(
-            parse(
-              text = paste(
-                "block_graphics <- function(index, levels) {",
-                funbody,
-                "}",
-                sep = ""
-              )
-            ),
-            envir = environment()
+          block_graphics <- annotation_block_graphics(
+            subplot = subplots,
+            name = nm,
+            border = TRUE
           )
 
           ha_cell <- list()
@@ -1238,36 +1245,11 @@ DynamicHeatmap <- function(
             reverse = l %in% lineages[reverse_ht] || l %in% reverse_ht
           ) +
             theme_void()
-          subplots_list[[paste0(
-            paste0(cellan, collapse = ","),
-            ":",
-            l
-          )]] <- subplots
-          graphics <- list()
           nm <- paste0(paste0(cellan, collapse = ","), ":", l)
-          funbody <- paste0(
-            "
-            g <- as_grob(subplots_list[['",
-            nm,
-            "']] + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-            g$name <- '",
-            nm,
-            "';
-            grid::grid.draw(g);
-            grid::grid.rect(gp = grid::gpar(fill = 'transparent', col = 'black'));
-            "
-          )
-          funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-          eval(
-            parse(
-              text = paste(
-                "block_graphics <- function(index, levels) {",
-                funbody,
-                "}",
-                sep = ""
-              )
-            ),
-            envir = environment()
+          block_graphics <- annotation_block_graphics(
+            subplot = subplots,
+            name = nm,
+            border = TRUE
           )
 
           ha_cell <- list()
@@ -1791,7 +1773,8 @@ DynamicHeatmap <- function(
     topTerm = topTerm,
     show_termid = show_termid,
     topWord = topWord,
-    words_excluded = words_excluded
+    words_excluded = words_excluded,
+    cores = cores
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right
