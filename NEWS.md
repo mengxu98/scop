@@ -2,34 +2,35 @@
 
 # scop 0.8.4
 
-* **bugs**:
-  * `FeatureStatPlot()` / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment when `add_box = TRUE` with `split.by`. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent `position_dodge(width = 0.9)` to match the boxplot. This issue reported in [#123](https://github.com/mengxu98/scop/issues/123).
+* **fix**:
+  * `FeatureStatPlot()` / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment when `add_box = TRUE` with `split.by`. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent `position_dodge(width = 0.9)` to match the boxplot. Related issue #123 (@oranges7). 
 
 # scop 0.8.3
 
-* **func**:
-  * `RunDynamicFeatures()`: Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for dynamic feature fitting. The [PreTSA](https://github.com/haotian-zhuang/PreTSA/) algorithm in `scop` has been re implemented to support parallelization for higher performance. Original research: [PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns](https://doi.org/10.1186/s13059-026-03994-3). Use `fit_method = "pretsa"` for B-spline-based piecewise truncated spline analysis; `fit_method = "gam"` (default) keeps generalized additive models. PreTSA supports `knot` (0 or `"auto"`) and `max_knot_allowed` when `knot = "auto"`. This issue reported in [#133](https://github.com/mengxu98/scop/issues/132).
+* **feat**:
+  * `RunDynamicFeatures()`: Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for dynamic feature fitting. The [PreTSA](https://github.com/haotian-zhuang/PreTSA/) algorithm in `scop` has been re implemented to support parallelization for higher performance. Original research: [PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns](https://doi.org/10.1186/s13059-026-03994-3). Use `fit_method = "pretsa"` for B-spline-based piecewise truncated spline analysis; `fit_method = "gam"` (default) keeps generalized additive models. PreTSA supports `knot` (`0` or `"auto"`) and `max_knot_allowed` when `knot = "auto"`. Relate issue #133.
   * `CellDimPlot()` and `FeatureDimPlot()`: Added `legend.title` parameter (default `NULL`) to control the legend title. When `NULL`, default titles are used (e.g. group name for `CellDimPlot`, feature or empty for `FeatureDimPlot`).
   * `ExpressionStatPlot()` and `FeatureStatPlot()`: Added `legend.title` parameter (default `NULL`) for single-legend plots. When `NULL`, the default title (e.g. `keynm` or feature/group name) is used. `FeatureStatPlot()` forwards `legend.title` to `ExpressionStatPlot()`.
+  * Moved `StatPlot` function to `thisplot::StatPlot`.
 
-* **bugs**:
-  * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. This issue reported in [#133](https://github.com/mengxu98/scop/issues/133), @1228849000.
+* **fix**:
+  * `DynamicHeatmap()` / `heatmap_enrichment()`: Fixed incorrect `db` handling when using custom `TERM2GENE`/`TERM2NAME`. Enrichment results with `Database = "custom"` could be incorrectly filtered by default `db` values (e.g. `"GO_BP"`), causing false "No term enriched using the threshold" warnings even when enrichment succeeded. Relate issue #133 (@1228849000).
 
 # scop 0.8.2
 
-* **func**:
-  * Add the `DEtestPlot()` function, which calls the original `VolcanoPlot()` and adds two plot types, Manhattan and Ring, controlled by the `plot_type` parameter (`c("volcano", "manhattan", "ring")`, default `"volcano"`). Add standalone functions `DEtestManhattanPlot()` and `DEtestRingPlot()` for direct use. This issue reported in [#121](https://github.com/mengxu98/scop/issues/121).
-  * Differential expression visualization (`DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `res` parameter to accept existing DE results (data.frame). When `res` is provided, `srt` is ignored. Data processing supports: (1) `group1` or `cluster` column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when `gene` column is missing. This issue reported in [#129](https://github.com/mengxu98/scop/issues/129).
-  * `PrepareEnv()`: Update `version` parameter to specify the *Python* version of the conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"` on *macOS* and *Unix*. This issue reported in [#103](https://github.com/mengxu98/scop/issues/103) and [#88](https://github.com/mengxu98/scop/issues/88).
+* **feat**:
+  * Add the `DEtestPlot()` function, which calls the original `VolcanoPlot()` and adds two plot types, Manhattan and Ring, controlled by the `plot_type` parameter (`c("volcano", "manhattan", "ring")`, default `"volcano"`). Add standalone functions `DEtestManhattanPlot()` and `DEtestRingPlot()` for direct use. Relate issue #121 (@ericavalentini).
+  * Differential expression visualization (`DEtestPlot()`, `VolcanoPlot()`, `DEtestManhattanPlot()`, `DEtestRingPlot()`): added `res` parameter to accept existing DE results (data.frame). When `res` is provided, `srt` is ignored. Data processing supports: (1) `group1` or `cluster` column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when `gene` column is missing. Relate issue #129 (@mengxu98).
+  * `PrepareEnv()`: Update `version` parameter to specify the *Python* version of the conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"` on *macOS* and *Unix*. Relate issue #103 (@PanSX-Dr).
   * `RunNMF()`: Add the `cores` parameter for `RunNMF()` and optimize the printed message.
   * Removed the setting in *Python* functions that prevents drawing functions from causing *R* crashes.
 
-* **bugs**:
-  * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in [#126](https://github.com/mengxu98/scop/issues/126).
+* **fix**:
+  * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue #126 (@christinejay990202-dev).
 
 # scop 0.8.1
 
-* **bugs**:
+* **fix**:
   * `FeatureHeatmap()`: Fixed `group_palcolor` when a named vector is passed: the function previously used only the first color for all groups because `group_palcolor[[1]]` on a vector returns a single element. Now when `group.by` has length 1, a vector is automatically wrapped as a list; when `within_groups = TRUE`, `group_palcolor` is expanded in line with `group_palette`.
   * `GroupHeatmap()`: Same `group_palcolor` fix as `FeatureHeatmap()`: support for named-vector input and correct expansion when `within_groups = TRUE`.
 
@@ -38,7 +39,7 @@
 
 # scop 0.8.0
 
-* **func**:
+* **feat**:
   * `RunMonocle2()`: New function for performing [Monocle2](https://github.com/mengxu98/monocle) trajectory analysis with support for various dimensionality reduction methods (DDRTree, ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of monocle2 from [mengxu98/monocle](https://github.com/mengxu98/monocle).
   * `RunMonocle3()`: New function for performing [Monocle3](https://github.com/cole-trapnell-lab/monocle3) trajectory analysis with support for cell ordering, trajectory learning, and pseudotime computation.
   * `RunCytoTRACE()`: New function for running [CytoTRACE 2](https://github.com/digitalcytometry/cytotrace2) analysis to predict cellular potency scores and categories (Differentiated, Unipotent, Oligopotent, Multipotent, Pluripotent, Totipotent) with support for human and mouse species.
@@ -52,13 +53,13 @@
 
 # scop 0.7.8
 
-* **bugs**:
-  * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in [#114](https://github.com/mengxu98/scop/issues/114).
+* **fix**:
+  * `RunPalantir()`: Fixed unused `plot_format` parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue #114 (@Moonerss).
   * `RunSCVELO()`: Fixed PAGA computation error by replacing `scv.tl.paga` with `sc.tl.paga` (scanpy implementation) for better stability. The function now uses the same PAGA implementation as `RunPAGA()` function.
   * `RunCellRank()`: Fixed GPCCA Schur decomposition error by adding fallback mechanism. When `brandts` method fails with "subspace_angles" error, the function automatically tries `krylov` method. If both methods fail, it automatically switches to CFLARE estimator for more robust computation.
   * `RunCellRank()`: Fixed `recover_dynamics` error by ensuring `velocity_graph` and `velocity_graph_neg` are properly set before calling `scv.tl.recover_dynamics()` for latent time computation.
 
-* **func**:
+* **feat**:
   * `adata_to_srt()`: Removed automatic removal of "X_" prefix from dimensionality reduction names in `obsm` keys. The function now preserves original reduction names as they are stored in AnnData objects.
 
 * **data**:
@@ -66,46 +67,46 @@
 
 # scop 0.7.7
 
-* **func**:
-  * `adata_to_srt()`: Enhanced to support multiple AnnData object types including *Python* AnnData objects (from scanpy/reticulate), R6 AnnData objects from the `anndata` package (AnnDataR6), and R6 AnnData objects from the `anndataR` package (InMemoryAnnData). Added internal helper functions `get_adata_element()` and `get_adata_names()` for better compatibility. This enhancement addresses the issue reported in [#67](https://github.com/mengxu98/scop/issues/67), [#91](https://github.com/mengxu98/scop/issues/91) and [91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
+* **feat**:
+  * `adata_to_srt()`: Enhanced to support multiple AnnData object types including *Python* AnnData objects (from scanpy/reticulate), R6 AnnData objects from the `anndata` package (AnnDataR6), and R6 AnnData objects from the `anndataR` package (InMemoryAnnData). Added internal helper functions `get_adata_element()` and `get_adata_names()` for better compatibility. Relate issues #67 (@lisch7), #91 (@mengxu98) and [commit91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
 
-* **bugs**:
-  * `RunDEtest()`: Fixed error when comparing one cluster against multiple clusters using `group1` and `group2` parameters. This issue reported in [#111](https://github.com/mengxu98/scop/issues/111).
+* **fix**:
+  * `RunDEtest()`: Fixed error when comparing one cluster against multiple clusters using `group1` and `group2` parameters. Relate issue #111 (@zhaoxiaoyan9225).
   * `AnnotateFeatures()`: Fixed bug where the function would fail when processing GTF file annotations due to column name matching issues during data naming. The function now correctly handles column name intersections when merging annotation data.
 
 # scop 0.7.6
 
-* **func**:
+* **feat**:
   * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
 
 # scop 0.7.5
 
-* **bugs**:
-  * `CellScoring()`: Fixed bug where the function failed to build results. This issue reported in [#98](https://github.com/mengxu98/scop/issues/98).
+* **fix**:
+  * `CellScoring()`: Fixed bug where the function failed to build results. Relate issue #98 (@SuperrNaruto).
 
-* **func**:
-  * `RunDEtest()`: Fixed compatibility issue with [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by replacing deprecated `Assays()` `slot` argument with `LayerData()`. This issue reported in [#100](https://github.com/mengxu98/scop/issues/100).
+* **feat**:
+  * `RunDEtest()`: Fixed compatibility issue with [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by replacing deprecated `Assays()` `slot` argument with `LayerData()`. Relate issue #100 (@mattizecos).
   * `RunDM()`: Added automatic PCA-based dimensionality reduction when using many features (>1000) to speed up diffusion map computation. The `npcs` parameter can be used to control the number of principal components used for pre-processing.
 
 # scop 0.7.3
 
-* **func**:
+* **feat**:
   * `RunCellTypist()`: New function for cell type annotation using the CellTypist method.
   * `CellTypistModels()`: New function for downloading and managing CellTypist pre-trained models.
 
 # scop 0.7.2
 
-* **func**:
+* **feat**:
   * `RunCellRank()`: Performance optimizations and code improvements.
 
 # scop 0.7.1
 
-* **bugs**:
-  * `CellDimPlot()`: Fixed issue where NA values appeared in labels. This issue reported in [#93](https://github.com/mengxu98/scop/issues/93).
+* **fix**:
+  * `CellDimPlot()`: Fixed issue where NA values appeared in labels. Relate issue #93 (@12345nkjil).
 
 # scop 0.7.0
 
-* **func**:
+* **feat**:
   * `PrepareEnv()`: Integrated `uv` as the primary *Python* package installer for improved installation speed.
   * `check_python()`: Now uses `uv` as the primary installation tool with `pip` as fallback, significantly improving package installation speed.
   * Added `find_uv()` and `install_uv()` internal functions for managing `uv` package manager installation and detection.
@@ -122,7 +123,7 @@
 
 # scop 0.6.5
 
-* **func**:
+* **feat**:
   * `PrepareEnv()`:
     * Added comprehensive environment variable configuration to prevent crashes when calling *Python* functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.
     * Added `accept_conda_tos()` function to automatically accept conda Terms of Service for required channels, improving the conda environment setup process.
@@ -139,7 +140,7 @@
 
 # scop 0.6.2
 
-* **func**:
+* **feat**:
   * `CellChatPlot()`: Adjusted the size of saved figures for better file size optimization.
 
 * **docs**:
@@ -147,7 +148,7 @@
 
 # scop 0.6.1
 
-* **func**:
+* **feat**:
   * `PrepareEnv()`: Improved message formatting and simplified log output for better user experience.
   * Added `get_conda_envs_dir()` helper function to centralize conda environment directory retrieval.
   * `integration_scop()`: Enhanced `integration_method` parameter definition with explicit method list for better code clarity.
@@ -163,7 +164,7 @@
 
 # scop 0.6.0
 
-* **func**:
+* **feat**:
   * `PrepareEnv()`: Enhanced with environment caching mechanism to avoid redundant environment preparation. Improved message formatting and error handling.
   * Python-based functions (`RunPAGA()`, `RunSCVELO()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) now automatically call `PrepareEnv()` internally, eliminating the need for users to manually prepare the Python environment before using these functions.
   * `cluster_within_group2()`: New function for clustering within groups.
@@ -190,18 +191,18 @@
 
 # scop 0.5.5
 
-* **bugs**:
+* **fix**:
   * Fixed `VelocityPlot()` function error in `plot_type = "grid"` mode: replaced vectorized arrow length with fixed-length arrows (using mean length) to resolve `vapply()` error that occurred when `grid::arrow()` received a vector instead of a single value, see [#72](https://github.com/mengxu98/scop/issues/72), [#74](https://github.com/mengxu98/scop/issues/74).
 
 # scop 0.5.4
 
-* **bugs**:
+* **fix**:
   * Fixed parameter name error in `CheckDataType()` function calls: changed `data` parameter to `object` in `RunKNNMap()`, `RunSymphonyMap()`, `RunScmap()`, `RunPCAMap()`, and `RunSingleR()` functions, see [#68](https://github.com/mengxu98/scop/issues/68).
   * Fixed `SingleCellExperiment` object creation in `RunScmap()` and `RunSingleR()` functions: changed from coercing `SummarizedExperiment` to directly constructing `SingleCellExperiment` objects.
 
 # scop 0.5.3
 
-* **func**:
+* **feat**:
   * `PrepareDB()`: Changed default `Ensembl_version` parameter from `103` to `NULL` for more flexible version handling.
   * Added *Python* version `log_message()` for Python-based functions (`RunSCVELO()`, `RunPAGA()`, `RunPalantir()`, `RunCellRank()`, `RunWOT()`) and added `verbose` parameter inheritance and improved message formatting using cli-style formatting.
 
@@ -220,7 +221,7 @@
 
 # scop 0.5.0
 
-* **func**:
+* **feat**:
   * `RunCellChat()`: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.
   * `CellChatPlot()`: New function to visualize CellChat analysis results with various plot types and customization options.
   * Multiple integration functions: Improved error messages and message formatting for better user experience.
@@ -238,7 +239,7 @@
 
 # scop 0.4.0
 
-* **func**:
+* **feat**:
   * `RunProportionTest()`: New function to perform Monte-carlo permutation test for quantifying cell proportion differences between conditions.
   * `ProportionTestPlot()`: New function to generate proportion test plots with customizable significance thresholds and visualization options.
   * Multiple *Python*-based functions: add `\dontrun{}` blocks for Github workfolw checking.
@@ -255,12 +256,12 @@
 
 # scop 0.3.3
 
-* **func**:
+* **feat**:
   * Multiple functions: Improved parameter documentation formatting and consistency across the package.
 
 # scop 0.3.2
 
-* **func**:
+* **feat**:
   * `GetFeaturesData()` and `AddFeaturesData()`: Enhanced argument clarity, added input validation, and standardized return values for `Seurat`, `Assay`, and `Assay5` objects.
   * `CellCorHeatmap()`: 
     - Renamed parameters: `query_cell_annotation` → `query_annotation`, `ref_cell_annotation` → `ref_annotation`.
@@ -273,7 +274,7 @@
 
 # scop 0.3.1
 
-* **func**:
+* **feat**:
   * `EnrichmentPlot()` and `GSEAPlot()`: Removed conditional font face styling (`face = ifelse()` logic) for better text rendering consistency. Set the default value of `lineheight` from `0.5` to `0.7`.
   * Updated `check_r()` function for improved package checking functionality.
   * Updated reexports functionality.
@@ -283,7 +284,7 @@
 
 # scop 0.3.0
 
-* **func**:
+* **feat**:
   * Fixed `segmentation faults` and `R crashes` on *M-series* MacBook when running *Python* functions.
   * `RunPAGA()`: Enhanced with *M-series* MacBook detection and automatic environment configuration.
   * `RunSCVELO()`: Added ARM64-specific optimizations to prevent crashes and ensure stable execution.
@@ -301,7 +302,7 @@
 
 # scop 0.2.9
 
-* **bugs**:
+* **fix**:
   * Fix bug for `RunSCVELO()`.
 
 * **docs**:
@@ -309,7 +310,7 @@
 
 # scop 0.2.7
 
-* **func**:
+* **feat**:
   * Added an internal function `.check_pkg_status()` to check if an *R* package is installed.
   * Update function `CheckDataType()` to *S4* class function.
   * Update function `standard_scop()`, make it more efficient.
@@ -320,7 +321,7 @@
 
 # scop 0.2.6
 
-* **func**:
+* **feat**:
   * Added `remove_r()` function for easy remove *R* packages.
   * Rename function: `RemovePackages()` to `remove_python()`.
   * Removed other methods of installing *R* packages from the `check_r()` function, only retaining [pak::pak](https://pak.r-lib.org/reference/pak.html). 
@@ -332,62 +333,62 @@
 
 # scop 0.2.5
 
-* **func**:
+* **feat**:
   * Rename function: `palette_scop()` to `palette_colors()`.
 
 # scop 0.2.4
 
-* **func**:
+* **feat**:
   * Rename functions: `check_srt_merge()` to `CheckDataMerge()`, `check_srt_list()` to `CheckDataList` and `check_data_type()` to `CheckDataType`.
 
 # scop 0.2.2
 
-* **func**:
+* **feat**:
   * Replace all `BiocParallel::bplapply()` with `thisutils::parallelize_fun()`.
 
-* **bugs**:
+* **fix**:
   * Fix bugs in `RunSingleR()`.
 
 # scop 0.2.0
 
-* **func**:
+* **feat**:
   * Added `remove_python()` function for easy remove *Python* packages.
 
-* **bugs**:
+* **fix**:
   * Corrected an issue in `py_to_r2()` function (intrinsic function), which ensures that Python-dependent functions like `RunPAGA()` and `RunSCVELO()` function run correctly.
 
 # scop 0.1.9
 
-* **func**:
+* **feat**:
   * Update `CellScoring()` and `AddModuleScore2()` functions. Now, new parameters `cores` and `verbose` have been added.
-  * `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html), and the `cores` parameter is used to control the number of cores in [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
+  * `AddModuleScore2()` function no longer uses the `BiocParallel::bpparam()` function to enable parallelization, but `thisutils::parallelize_fun`, and the `cores` parameter is used to control the number of cores in `thisutils::parallelize_fun`.
 
 # scop 0.1.5
 
-* **bugs**:
+* **fix**:
   * Fix error for `RunPalantir()` function, see [#23](https://github.com/mengxu98/scop/issues/23).
 
 # scop 0.1.4
 
-* **func**:
+* **feat**:
   * Update `.onAttach()`, now `.onAttach()` will print more information about *conda* and *Python*.
   * Update `PrepareEnv()` function for easy add or update a conda environments and install *Python* packages.
   * Added `ListEnv()` and `RemoveEnv()` functions for easy management of *conda* environment and *Python* packages.
 
 # scop 0.1.3
 
-* **func**:
+* **feat**:
   * Added `TACSPlot()` function for creating FACS-like plots. Please refer to [Kernfeld et al. paper](https://doi.org/10.1016/j.immuni.2018.04.015) and [Github](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271) for specific information.
 
 # scop 0.0.9
 
-* **bugs**:
+* **fix**:
   * Fix a bug for `PrepareEnv()` function.
   * The default *Python* version is now set to `3.10-1`.
 
 # scop 0.0.6
 
-* **func**:
+* **feat**:
   * Add `GetAssayData5()` function, a reimplementation of `GetAssayData()`, for compatibility with Seurat v5 `Assay` objects.
   * Updated `GetFeaturesData()` and `AddFeaturesData()` function to support retrieving and adding feature metadata.
 
@@ -395,3 +396,7 @@
 
 * **data**:
   * Updated the `pancreas_sub` and `panc8_sub` test datasets to the Seurat v5 object format.
+
+# scop 0.0.1
+
+* **Initial version**
