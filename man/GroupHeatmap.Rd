@@ -96,14 +96,14 @@ GroupHeatmap(
   fill_palcolor = NULL,
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   cell_split_palette = "simspec",
   cell_split_palcolor = NULL,
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -407,7 +407,7 @@ Default is \code{"RdBu"}.}
 Default is \code{NULL}.}
 
 \item{group_palette}{A character vector specifying the palette to use for groups.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{group_palcolor}{A character vector specifying the group color to use.
 Default is \code{NULL}.}
@@ -429,7 +429,7 @@ Default is \code{NULL}.}
 
 \item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
 The length of the vector should match the number of cell_annotation.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
 The length of the list should match the number of cell_annotation.
@@ -578,7 +578,7 @@ ht4 <- GroupHeatmap(
     "Phase", "G2M_score", "Neurod2"
   ),
   cell_annotation_palette = c(
-    "Dark2", "Paired", "Paired"
+    "Dark2", "Chinese", "Chinese"
   ),
   cell_annotation_params = list(
     height = grid::unit(10, "mm")
@@ -605,7 +605,7 @@ ht5 <- GroupHeatmap(
     "Phase", "G2M_score", "Neurod2"
   ),
   cell_annotation_palette = c(
-    "Dark2", "Paired", "Paired"
+    "Dark2", "Chinese", "Chinese"
   ),
   cell_annotation_params = list(
     width = grid::unit(10, "mm")

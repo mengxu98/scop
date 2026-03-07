@@ -10,7 +10,7 @@ CellDimPlot3D(
   reduction = NULL,
   dims = c(1, 2, 3),
   axis_labs = NULL,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   bg_color = "grey80",
   pt.size = 1.5,
@@ -41,7 +41,7 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

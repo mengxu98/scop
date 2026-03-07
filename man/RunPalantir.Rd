@@ -32,7 +32,7 @@ RunPalantir(
   max_iterations = 25,
   cores = 1,
   point_size = 20,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
   show_plot = FALSE,
@@ -114,7 +114,7 @@ Default is \code{30}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

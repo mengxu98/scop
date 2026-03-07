@@ -48,7 +48,7 @@ RunCellRank(
   plot_dpi = 300,
   plot_prefix = "cellrank",
   legend.position = "on data",
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   dirpath = "./cellrank",
   return_seurat = !is.null(srt),
@@ -182,7 +182,7 @@ Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Defa
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

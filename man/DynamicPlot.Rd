@@ -25,7 +25,7 @@ DynamicPlot(
   line_palcolor = NULL,
   add_point = TRUE,
   pt.size = 1,
-  point_palette = "Paired",
+  point_palette = "Chinese",
   point_palcolor = NULL,
   add_rug = TRUE,
   flip = FALSE,
@@ -92,7 +92,7 @@ Otherwise, it is set to \code{FALSE}.}
 
 \item{pt.size}{A numeric specifying the size of the points. Default is \code{1}.}
 
-\item{point_palette}{A character string specifying the name of the palette to use for the point colors. Default is \code{"Paired"}.}
+\item{point_palette}{A character string specifying the name of the palette to use for the point colors. Default is \code{"Chinese"}.}
 
 \item{point_palcolor}{A vector specifying the colors to use for the point palette. Default is \code{NULL}.}
 

@@ -10,7 +10,7 @@ DEtestRingPlot(
   test.use = "wilcox",
   res = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
@@ -52,7 +52,7 @@ The data.frame must contain columns: \code{gene}, \code{group1} (factor or chara
 Default is \code{"avg_log2FC > 0 & p_val_adj < 0.05"}.}
 
 \item{group_palette}{Palette for cell types (groups) in Manhattan plot.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.
 Default is \code{NULL}.}
