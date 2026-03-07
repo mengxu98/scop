@@ -271,6 +271,8 @@ db_Scrublet <- function(
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
+#' @param cores The number of CPU cores to use for `doubletdetection`.
+#' Default is `1`.
 #' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
 #'
 #' @export
@@ -296,6 +298,7 @@ db_DoubletDetection <- function(
     srt,
     assay = "RNA",
     db_rate = ncol(srt) / 1000 * 0.01,
+    cores = 1,
     ...) {
   Sys.setenv(NUMBA_NUM_THREADS = "1")
   Sys.setenv(NUMBA_DISABLE_JIT = "0")
@@ -314,20 +317,33 @@ db_DoubletDetection <- function(
       message_type = "error"
     )
   }
+  user_args <- list(...)
+
+  if (!"n_jobs" %in% names(user_args)) {
+    user_args[["n_jobs"]] <- as.integer(cores)
+  }
+  if (!"n_iters" %in% names(user_args)) {
+    user_args[["n_iters"]] <- as.integer(5)
+  }
+  if (!"standard_scaling" %in% names(user_args)) {
+    user_args[["standard_scaling"]] <- TRUE
+  }
+
   check_python("doubletdetection")
+  check_python("louvain")
+
   doubletdetection <- reticulate::import("doubletdetection")
   counts <- GetAssayData5(
     object = srt,
     assay = assay,
     layer = "counts"
   )
-  clf <- doubletdetection$BoostClassifier(
-    n_iters = as.integer(5),
-    standard_scaling = TRUE,
-    ...
-  )
-  labels <- clf$fit(Matrix::t(counts))$predict()
-  scores <- clf$doublet_score()
+  clf <- do.call(doubletdetection$BoostClassifier, user_args)
+
+  clf_fit <- clf$fit(Matrix::t(counts))
+
+  labels <- clf_fit$predict()
+  scores <- clf_fit$doublet_score()
 
   labels <- as.integer(reticulate::py_to_r(labels))
   scores <- as.numeric(reticulate::py_to_r(scores))
@@ -358,14 +374,20 @@ db_DoubletDetection <- function(
   scores <- unname(scores)
   labels <- unname(labels)
 
-  class_labels <- sapply(
-    labels, function(i) {
-      switch(as.character(i),
-        "0" = "singlet",
-        "1" = "doublet"
-      )
-    }
+  class_map <- c(
+    "0" = "singlet",
+    "1" = "doublet"
   )
+  class_labels <- unname(class_map[as.character(labels)])
+  idx_unknown <- is.na(class_labels)
+  if (any(idx_unknown)) {
+    log_message(
+      "Found {.val {sum(idx_unknown)}} cells with unexpected DoubletDetection labels; setting to {.val doublet}",
+      message_type = "warning"
+    )
+    class_labels[idx_unknown] <- "doublet"
+  }
+  class_labels <- factor(class_labels, levels = c("singlet", "doublet"))
 
   srt@meta.data$db.DoubletDetection_score <- scores
   srt@meta.data$db.DoubletDetection_class <- class_labels
