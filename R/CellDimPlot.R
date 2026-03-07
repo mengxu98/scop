@@ -13,7 +13,7 @@
 #' Default is `NULL`.
 #' @param palette Color palette name.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param palcolor Custom colors used to create a color palette.
 #' Default is `NULL`.
 #' @param bg_color Color value for background(NA) points.
@@ -568,7 +568,7 @@ CellDimPlot <- function(
     show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
     pt.size = NULL,
     pt.alpha = 1,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     bg_color = "grey80",
     label = FALSE,
@@ -1538,7 +1538,7 @@ CellDimPlot3D <- function(
     reduction = NULL,
     dims = c(1, 2, 3),
     axis_labs = NULL,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     bg_color = "grey80",
     pt.size = 1.5,

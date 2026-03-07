@@ -77,7 +77,7 @@
 #'   nlabel = 10,
 #'   cell_order = names(sort(pancreas_sub$Lineage1)),
 #'   cell_annotation = c("SubCellType", "Lineage1"),
-#'   cell_annotation_palette = c("Paired", "cividis")
+#'   cell_annotation_palette = c("Chinese", "cividis")
 #' )
 #' ht4$plot
 #'
@@ -200,14 +200,14 @@ FeatureHeatmap <- function(
     label_color = "black",
     heatmap_palette = "RdBu",
     heatmap_palcolor = NULL,
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     cell_split_palette = "simspec",
     cell_split_palcolor = NULL,
     feature_split_palette = "simspec",
     feature_split_palcolor = NULL,
     cell_annotation = NULL,
-    cell_annotation_palette = "Paired",
+    cell_annotation_palette = "Chinese",
     cell_annotation_palcolor = NULL,
     cell_annotation_params = if (flip) {
       list(width = grid::unit(5, "mm"))

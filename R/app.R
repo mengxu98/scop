@@ -889,7 +889,7 @@ CreateSeuratObject2 <- function(
 #' @param initial_label Whether to add labels in the initial plot.
 #' Default is `FALSE`.
 #' @param initial_cell_palette The initial color palette for cells.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param initial_feature_palette The initial color palette for features.
 #' Default is `"Spectral"`.
 #' @param initial_theme The initial theme for plots.
@@ -985,7 +985,7 @@ RunSCExplorer <- function(
     initial_assay = NULL,
     initial_slot = NULL,
     initial_label = FALSE,
-    initial_cell_palette = "Paired",
+    initial_cell_palette = "Chinese",
     initial_feature_palette = "Spectral",
     initial_theme = "theme_scop",
     initial_size = 4,
