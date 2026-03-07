@@ -15,16 +15,101 @@ _LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
 log_message = _LOG_MESSAGE_MODULE.log_message
 
 
+def configure_apple_silicon_env(
+    scanpy_settings=False,
+    scanpy_verbosity=False,
+    numba_threading=False,
+    numba_disable_jit=False,
+    configure_numba_runtime=False,
+    numba_runtime_optional=False,
+    verbose=True,
+):
+    log_message(
+        "Apple silicon detected: Applying specific configurations",
+        message_type="info",
+        verbose=verbose,
+    )
+    os.environ["PYTHONHASHSEED"] = "0"
+    os.environ["PYTHONUNBUFFERED"] = "1"
+    os.environ["MPLBACKEND"] = "Agg"
+    os.environ["DISPLAY"] = ""
 
+    if scanpy_settings:
+        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
+    if scanpy_verbosity:
+        os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
+    if numba_disable_jit:
+        os.environ["NUMBA_DISABLE_JIT"] = "1"
+    if numba_threading:
+        os.environ["NUMBA_NUM_THREADS"] = "1"
+        os.environ["NUMBA_THREADING_LAYER"] = "tbb"
+        os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
 
+    if configure_numba_runtime:
+        try:
+            import numba
 
-                )
+            numba.config.DISABLE_JIT = True
+            numba.set_num_threads(1)
+            log_message(
+                "{.pkg NUMBA} configured for Apple silicon",
+                message_type="success",
+                verbose=verbose,
+            )
+        except ImportError:
+            if not numba_runtime_optional:
+                raise
 
+    try:
+        import ctypes
+        import sys
 
+        prefixes = []
+        conda_prefix = os.environ.get("CONDA_PREFIX")
+        if conda_prefix:
+            prefixes.append(conda_prefix)
+        if sys.prefix:
+            prefixes.append(sys.prefix)
+
+        prefixes = list(dict.fromkeys(prefixes))
+        lib_dirs = [str(Path(p) / "lib") for p in prefixes if p]
+
+        existing_fallback = os.environ.get("DYLD_FALLBACK_LIBRARY_PATH", "")
+        existing_library = os.environ.get("DYLD_LIBRARY_PATH", "")
+        merged_fallback = ":".join(
+            lib_dirs + ([existing_fallback] if existing_fallback else [])
         )
+        merged_library = ":".join(
+            lib_dirs + ([existing_library] if existing_library else [])
+        )
+        if merged_fallback:
+            os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = merged_fallback
+        if merged_library:
+            os.environ["DYLD_LIBRARY_PATH"] = merged_library
+
+        loaded_omp = False
+        for prefix in prefixes:
+            lib_dir = Path(prefix) / "lib"
+            for lib_name in ("libomp.dylib", "libiomp5.dylib"):
+                lib_path = lib_dir / lib_name
+                if lib_path.exists():
+                    try:
+                        ctypes.CDLL(str(lib_path), mode=ctypes.RTLD_GLOBAL)
+                        log_message(
+                            "Loaded OpenMP runtime from {.val {%s}}" % lib_path,
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        loaded_omp = True
+                        break
+                    except Exception:
+                        pass
+            if loaded_omp:
+                break
+    except Exception:
+        pass
 
 
-# SCVELO analysis function
 def SCVELO(
     adata=None,
     h5ad=None,
@@ -90,24 +175,9 @@ def SCVELO(
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
-        log_message(
-            "Apple silicon detected: Applying specific configurations",
-            message_type="info",
-            verbose=verbose,
-        )
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-
-        import numba
-
-        numba.config.DISABLE_JIT = True
-        numba.set_num_threads(1)
-        log_message(
-            "NUMBA configured for Apple silicon",
-            message_type="success",
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            configure_numba_runtime=True,
             verbose=verbose,
         )
 
@@ -1046,24 +1116,9 @@ def CellRank(
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
-        log_message(
-            "Apple silicon detected: Applying specific configurations",
-            message_type="info",
-            verbose=verbose,
-        )
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-
-        import numba
-
-        numba.config.DISABLE_JIT = True
-        numba.set_num_threads(1)
-        log_message(
-            "NUMBA configured for Apple silicon",
-            message_type="success",
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            configure_numba_runtime=True,
             verbose=verbose,
         )
 
@@ -2535,16 +2590,15 @@ def PAGA(
 
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
     if is_apple_silicon:
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-        os.environ["NUMBA_NUM_THREADS"] = "1"
-        os.environ["NUMBA_DISABLE_JIT"] = "1"
-        os.environ["NUMBA_THREADING_LAYER"] = "tbb"
-        os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            scanpy_verbosity=True,
+            numba_threading=True,
+            numba_disable_jit=True,
+            configure_numba_runtime=True,
+            numba_runtime_optional=True,
+            verbose=verbose,
+        )
 
     try:
         import matplotlib
@@ -2559,19 +2613,22 @@ def PAGA(
         )
         plt = None
 
-    if is_apple_silicon:
-        try:
-            import numba
-
-            numba.config.DISABLE_JIT = True
-            numba.set_num_threads(1)
-        except:
-            pass
-
     try:
         import scanpy as sc
     except Exception as e:
-        log_message(f"scanpy import failed: {e}", message_type="error")
+        err = str(e)
+        if "___kmpc_dispatch_deinit" in err or "libomp.dylib" in err:
+            log_message(
+                "Detected {.pkg OpenMP} runtime conflict while importing {.pkg scanpy}/{.pkg python-igraph} on macOS.",
+                message_type="warning",
+                verbose=verbose,
+            )
+            log_message(
+                "Please recreate/update environment with {.pkg python-igraph} from pip and ensure {.pkg libomp} is installed in conda env.",
+                message_type="warning",
+                verbose=verbose,
+            )
+        log_message("{.pkg scanpy} import failed: {.val {e}}", message_type="error")
         raise
 
     try:
@@ -2969,25 +3026,9 @@ def Palantir(
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
-        log_message(
-            "Apple silicon detected: Applying specific configurations",
-            message_type="info",
-            verbose=verbose,
-        )
-
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-
-        import numba
-
-        numba.config.DISABLE_JIT = True
-        numba.set_num_threads(1)
-        log_message(
-            "NUMBA configured for Apple silicon",
-            message_type="success",
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            configure_numba_runtime=True,
             verbose=verbose,
         )
 
@@ -3309,25 +3350,9 @@ def WOT(
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
 
     if is_apple_silicon:
-        log_message(
-            "Apple silicon detected: Applying specific configurations",
-            message_type="info",
-            verbose=verbose,
-        )
-
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-
-        import numba
-
-        numba.config.DISABLE_JIT = True
-        numba.set_num_threads(1)
-        log_message(
-            "NUMBA configured for Apple silicon",
-            message_type="success",
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            configure_numba_runtime=True,
             verbose=verbose,
         )
 
@@ -3534,10 +3559,7 @@ def CellTypistModels(on_the_fly=False, verbose=True):
 
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
     if is_apple_silicon:
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
+        configure_apple_silicon_env(verbose=verbose)
 
     try:
         import celltypist
@@ -3644,16 +3666,15 @@ def CellTypist(
 
     is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
     if is_apple_silicon:
-        os.environ["PYTHONHASHSEED"] = "0"
-        os.environ["PYTHONUNBUFFERED"] = "1"
-        os.environ["SCANPY_SETTINGS"] = "scanpy_settings"
-        os.environ["SCANPY_SETTINGS_VERBOSITY"] = "1"
-        os.environ["MPLBACKEND"] = "Agg"
-        os.environ["DISPLAY"] = ""
-        os.environ["NUMBA_NUM_THREADS"] = "1"
-        os.environ["NUMBA_DISABLE_JIT"] = "1"
-        os.environ["NUMBA_THREADING_LAYER"] = "tbb"
-        os.environ["NUMBA_DEFAULT_NUM_THREADS"] = "1"
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            scanpy_verbosity=True,
+            numba_threading=True,
+            numba_disable_jit=True,
+            configure_numba_runtime=True,
+            numba_runtime_optional=True,
+            verbose=verbose,
+        )
 
     try:
         import matplotlib
@@ -3667,15 +3688,6 @@ def CellTypist(
             verbose=verbose,
         )
         plt = None
-
-    if is_apple_silicon:
-        try:
-            import numba
-
-            numba.config.DISABLE_JIT = True
-            numba.set_num_threads(1)
-        except:
-            pass
 
     try:
         import celltypist
@@ -3816,6 +3828,37 @@ def CellTypist(
                     )
             else:
                 over_clustering_value = over_clustering
+
+        if majority_voting and over_clustering_value is None:
+            # CellTypist may detect graph matrices in `obsp` but still requires
+            # `uns["neighbors"]` metadata for Scanpy Leiden over-clustering.
+            has_neighbors_uns = isinstance(adata.uns.get("neighbors"), dict)
+            has_graph_in_obsp = (
+                "connectivities" in adata.obsp and "distances" in adata.obsp
+            )
+
+            if not has_neighbors_uns:
+                if has_graph_in_obsp:
+                    adata.uns["neighbors"] = {
+                        "connectivities_key": "connectivities",
+                        "distances_key": "distances",
+                        "params": {
+                            "method": "umap",
+                            "metric": "euclidean",
+                        },
+                    }
+                    log_message(
+                        "Added missing {.field adata.uns['neighbors']} from existing graph in {.field adata.obsp} for majority voting.",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                else:
+                    log_message(
+                        "No precomputed neighbors graph found; computing neighbors for CellTypist majority voting...",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                    sc.pp.neighbors(adata, n_neighbors=15)
 
         log_message("Running CellTypist annotation...", verbose=verbose)
 
