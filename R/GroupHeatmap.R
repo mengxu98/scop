@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams thisutils::parallelize_fun
 #' @inheritParams standard_scop
 #' @inheritParams CellDimPlot
 #' @inheritParams PrepareDB
@@ -209,12 +210,12 @@
 #' Default is `"png"`.
 #' @param raster_by_magick Whether to use the 'magick' package for raster.
 #' Default is `FALSE`.
-#' @param height A numeric vector specifying the height(s) of the heatmap body.
-#' Default is `NULL`.
-#' @param width A numeric vector specifying the width(s) of the heatmap body.
-#' Default is `NULL`.
-#' @param units A character vector specifying the units for the height and width.
-#' Default is `"inch"`.
+#' @param width The width of the heatmap in the specified units.
+#' If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.
+#' @param height The height of the heatmap in the specified units.
+#' If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
+#' @param units The units to use for the width and height of the heatmap.
+#' Default is `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
 #' @param ht_params Additional parameters to customize the appearance of the heatmap.
 #' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
 #' Any conflicting parameters will override the defaults set by this function.
@@ -272,7 +273,7 @@
 #'   pancreas_sub,
 #'   group.by = "CellType"
 #' )
-#' de_filter <- filter(
+#' de_filter <- dplyr::filter(
 #'   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
@@ -301,11 +302,11 @@
 #' )
 #' ht3$plot
 #'
-#' de_top <- de_filter %>%
-#'   group_by(gene) %>%
-#'   top_n(1, avg_log2FC) %>%
-#'   group_by(group1) %>%
-#'   top_n(3, avg_log2FC)
+#' de_top <- de_filter |>
+#'   dplyr::group_by(gene) |>
+#'   dplyr::top_n(1, avg_log2FC) |>
+#'   dplyr::group_by(group1) |>
+#'   dplyr::top_n(3, avg_log2FC)
 #' ht4 <- GroupHeatmap(
 #'   pancreas_sub,
 #'   features = de_top$gene,
@@ -316,7 +317,7 @@
 #'     "Phase", "G2M_score", "Neurod2"
 #'   ),
 #'   cell_annotation_palette = c(
-#'     "Dark2", "Paired", "Paired"
+#'     "Dark2", "Chinese", "Chinese"
 #'   ),
 #'   cell_annotation_params = list(
 #'     height = grid::unit(10, "mm")
@@ -343,7 +344,7 @@
 #'     "Phase", "G2M_score", "Neurod2"
 #'   ),
 #'   cell_annotation_palette = c(
-#'     "Dark2", "Paired", "Paired"
+#'     "Dark2", "Chinese", "Chinese"
 #'   ),
 #'   cell_annotation_params = list(
 #'     width = grid::unit(10, "mm")
@@ -501,14 +502,14 @@ GroupHeatmap <- function(
     fill_palcolor = NULL,
     heatmap_palette = "RdBu",
     heatmap_palcolor = NULL,
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     cell_split_palette = "simspec",
     cell_split_palcolor = NULL,
     feature_split_palette = "simspec",
     feature_split_palcolor = NULL,
     cell_annotation = NULL,
-    cell_annotation_palette = "Paired",
+    cell_annotation_palette = "Chinese",
     cell_annotation_palcolor = NULL,
     cell_annotation_params = if (flip) {
       list(width = grid::unit(10, "mm"))
@@ -2028,7 +2029,8 @@ GroupHeatmap <- function(
     topTerm = topTerm,
     show_termid = show_termid,
     topWord = topWord,
-    words_excluded = words_excluded
+    words_excluded = words_excluded,
+    cores = cores
   )
   res <- enrichment$res
   ha_right <- enrichment$ha_right
