@@ -234,7 +234,7 @@ ht <- GroupHeatmap(
   group.by = c("CellType", "SubCellType"),
   heatmap_palette = "Spectral",
   cell_annotation = c("Phase", "G2M_score", "Cdh2"),
-  cell_annotation_palette = c("Dark2", "Paired", "Paired"),
+  cell_annotation_palette = c("Dark2", "Chinese", "Chinese"),
   show_row_names = TRUE,
   nlabel = 0,
   row_names_side = "left",
