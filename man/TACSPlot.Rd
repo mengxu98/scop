@@ -14,7 +14,7 @@ TACSPlot(
   feature2,
   cutoffs = NULL,
   density = FALSE,
-  palette = "Paired",
+  palette = "Chinese",
   num_features_add = 100,
   features_predetermined = FALSE,
   aggregator = "sum",
@@ -72,7 +72,7 @@ Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap).}
 

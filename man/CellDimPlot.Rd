@@ -15,7 +15,7 @@ CellDimPlot(
   show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
   pt.size = NULL,
   pt.alpha = 1,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   bg_color = "grey80",
   label = FALSE,
@@ -156,7 +156,7 @@ Default is \code{1}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
