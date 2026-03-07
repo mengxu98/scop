@@ -104,7 +104,7 @@ RunSCVELO <- function(
     compute_paga = TRUE,
     top_n = 6,
     cores = 1,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     legend.position = "on data",
     show_plot = TRUE,

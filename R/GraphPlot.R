@@ -65,7 +65,7 @@ GraphPlot <- function(
     transition = NULL,
     node_coord = c("x", "y"),
     node_group = NULL,
-    node_palette = "Paired",
+    node_palette = "Chinese",
     node_palcolor = NULL,
     node_size = 4,
     node_alpha = 1,

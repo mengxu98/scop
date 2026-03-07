@@ -93,7 +93,7 @@ TACSPlot <- function(
     feature2,
     cutoffs = NULL,
     density = FALSE,
-    palette = "Paired",
+    palette = "Chinese",
     num_features_add = 100,
     features_predetermined = FALSE,
     aggregator = "sum",

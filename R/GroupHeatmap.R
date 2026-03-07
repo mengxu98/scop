@@ -172,7 +172,7 @@
 #' @param heatmap_palcolor A character vector specifying the heatmap color to use.
 #' Default is `NULL`.
 #' @param group_palette A character vector specifying the palette to use for groups.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param group_palcolor A character vector specifying the group color to use.
 #' Default is `NULL`.
 #' @param cell_split_palette A character vector specifying the palette to use for cell splits.
@@ -187,7 +187,7 @@
 #' Default is `NULL`.
 #' @param cell_annotation_palette A character vector specifying the palette to use for cell annotations.
 #' The length of the vector should match the number of cell_annotation.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param cell_annotation_palcolor A list of character vector specifying the cell annotation color(s) to use.
 #' The length of the list should match the number of cell_annotation.
 #' Default is `NULL`.

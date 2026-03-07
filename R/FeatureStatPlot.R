@@ -25,7 +25,7 @@
 #' @param alpha The transparency of the plot.
 #' Default is `1`.
 #' @param bg_palette A string specifying the color palette to use for the background.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param bg_palcolor A character vector specifying specific colors to use for the background.
 #' Default is `NULL`.
 #' @param bg_alpha The transparency of the background.
@@ -382,10 +382,10 @@ FeatureStatPlot <- function(
     keep_empty = FALSE,
     individual = FALSE,
     plot_type = c("violin", "box", "bar", "dot", "col"),
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     alpha = 1,
-    bg_palette = "Paired",
+    bg_palette = "Chinese",
     bg_palcolor = NULL,
     bg_alpha = 0.2,
     add_box = FALSE,

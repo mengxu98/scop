@@ -12,7 +12,7 @@
 #' @param plot_type Type of plot to create.
 #' Can be `"raw"`, `"grid"`, or `"stream"`.
 #' @param group_palette Name of the palette to use for coloring the groups.
-#' Defaults is `"Paired"`.
+#' Defaults is `"Chinese"`.
 #' @param group_palcolor Colors to use for coloring the groups.
 #' Defaults is `NULL`.
 #' @param n_neighbors Number of neighbors to include for the density estimation.
@@ -118,7 +118,7 @@ VelocityPlot <- function(
     velocity = "stochastic",
     plot_type = c("raw", "grid", "stream"),
     group.by = NULL,
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     n_neighbors = ceiling(ncol(srt@assays[[1]]) / 50),
     density = 1,

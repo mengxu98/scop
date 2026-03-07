@@ -38,7 +38,7 @@
 #' @param separate_annotation Names of the annotations to be displayed in separate annotation blocks.
 #' Each name should match a column name in the metadata of the `Seurat` object.
 #' @param separate_annotation_palette The color palette to use for separate annotations.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param separate_annotation_palcolor The colors to use for each level of the separate annotations.
 #' Default is `NULL`.
 #' @param separate_annotation_params Other parameters to [ComplexHeatmap::HeatmapAnnotation] when creating a separate annotation blocks.
@@ -166,13 +166,13 @@
 #'     "SubCellType", "Phase", "G2M_score"
 #'   ),
 #'   cell_annotation_palette = c(
-#'     "Paired", "simspec", "Purples"
+#'     "Chinese", "simspec", "Purples"
 #'   ),
 #'   separate_annotation = list(
 #'     "SubCellType", c("Arxes1", "Ncoa2")
 #'   ),
 #'   separate_annotation_palette = c(
-#'     "Paired", "Set1"
+#'     "Chinese", "Set1"
 #'   ),
 #'   separate_annotation_params = list(
 #'     height = grid::unit(10, "mm")
@@ -202,12 +202,12 @@
 #'     "SubCellType", "Phase", "G2M_score"
 #'   ),
 #'   cell_annotation_palette = c(
-#'     "Paired", "simspec", "Purples"
+#'     "Chinese", "simspec", "Purples"
 #'   ),
 #'   separate_annotation = list(
 #'     "SubCellType", c("Arxes1", "Ncoa2")
 #'   ),
-#'   separate_annotation_palette = c("Paired", "Set1"),
+#'   separate_annotation_palette = c("Chinese", "Set1"),
 #'   separate_annotation_params = list(width = grid::unit(10, "mm")),
 #'   feature_annotation = c("TF", "CSPA"),
 #'   feature_annotation_palcolor = list(
@@ -328,7 +328,7 @@ DynamicHeatmap <- function(
     feature_split_palette = "simspec",
     feature_split_palcolor = NULL,
     cell_annotation = NULL,
-    cell_annotation_palette = "Paired",
+    cell_annotation_palette = "Chinese",
     cell_annotation_palcolor = NULL,
     cell_annotation_params = if (flip) {
       list(width = grid::unit(5, "mm"))
@@ -344,7 +344,7 @@ DynamicHeatmap <- function(
       list(width = grid::unit(5, "mm"))
     },
     separate_annotation = NULL,
-    separate_annotation_palette = "Paired",
+    separate_annotation_palette = "Chinese",
     separate_annotation_palcolor = NULL,
     separate_annotation_params = if (flip) {
       list(width = grid::unit(10, "mm"))
