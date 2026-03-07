@@ -1,541 +1,27 @@
-# LogMessage class and log_message function
-
-"""
-Python implementation of log_message function
-Provides formatted logging with timestamps, colors, and message types
-"""
-
-import sys
+import importlib.util
 import os
-import re
-import inspect
-from datetime import datetime
-from typing import Optional, List
+from pathlib import Path
+
+_LOG_MESSAGE_PATH = Path(__file__).resolve().parent / "log_message.py"
+_LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
+    "scop_log_message", _LOG_MESSAGE_PATH
+)
+if _LOG_MESSAGE_SPEC is None or _LOG_MESSAGE_SPEC.loader is None:
+    raise ImportError(f"Cannot load log_message module from {_LOG_MESSAGE_PATH}")
+
+_LOG_MESSAGE_MODULE = importlib.util.module_from_spec(_LOG_MESSAGE_SPEC)
+_LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
+
+log_message = _LOG_MESSAGE_MODULE.log_message
 
 
-class LogMessage:
-    """Log message formatter with color and style support"""
 
-    # ANSI color codes
-    COLORS = {
-        "black": "\033[30m",
-        "red": "\033[31m",
-        "green": "\033[32m",
-        "yellow": "\033[33m",
-        "blue": "\033[34m",
-        "magenta": "\033[35m",
-        "cyan": "\033[36m",
-        "white": "\033[37m",
-        "grey": "\033[90m",
-        "orange": "\033[38;2;255;165;0m",
-        "br_red": "\033[91m",
-        "br_green": "\033[92m",
-        "br_yellow": "\033[93m",
-        "br_blue": "\033[94m",
-        "br_magenta": "\033[95m",
-        "br_cyan": "\033[96m",
-        "br_white": "\033[97m",
-        "none": "\033[0m",
-    }
 
-    # Background colors
-    BG_COLORS = {
-        "black": "\033[40m",
-        "red": "\033[41m",
-        "green": "\033[42m",
-        "yellow": "\033[43m",
-        "blue": "\033[44m",
-        "magenta": "\033[45m",
-        "cyan": "\033[46m",
-        "white": "\033[47m",
-        "none": "\033[0m",
-    }
 
-    # Text styles
-    STYLES = {
-        "bold": "\033[1m",
-        "dim": "\033[2m",
-        "italic": "\033[3m",
-        "underline": "\033[4m",
-        "strikethrough": "\033[9m",
-        "inverse": "\033[7m",
-    }
-
-    # Message type symbols and colors
-    MESSAGE_TYPES = {
-        "info": {"symbol": "ℹ", "color": "blue"},
-        "success": {"symbol": "✓", "color": "green"},
-        "warning": {"symbol": "!", "color": "yellow"},
-        "error": {"symbol": "✗", "color": "red"},
-        "running": {"symbol": "◌", "color": "orange"},
-    }
-
-    RESET = "\033[0m"
-
-    # Inline format styles (cli-style)
-    INLINE_FORMATS = {
-        ".pkg": {"color": "blue", "style": []},
-        ".code": {"color": "grey", "style": []},
-        ".val": {"color": "blue", "style": []},
-        ".arg": {"color": "none", "style": []},
-        ".fun": {"color": "none", "style": []},
-        ".file": {"color": "blue", "style": []},
-        ".path": {"color": "blue", "style": []},
-        ".field": {"color": "blue", "style": []},
-        ".emph": {"color": "none", "style": ["italic"]},
-        ".strong": {"color": "none", "style": ["bold"]},
-    }
-
-    def __init__(self):
-        self._check_color_support()
-
-    def _check_color_support(self):
-        """Check if colors should be enabled (prefer enabled unless NO_COLOR is set)."""
-        self.color_support = os.environ.get("NO_COLOR") is None
-
-    def _hex_to_rgb(self, hex_color: str) -> tuple:
-        """Convert hex color to RGB tuple"""
-        hex_color = hex_color.lstrip("#")
-        if len(hex_color) != 6:
-            raise ValueError(f"Invalid hex color: #{hex_color}")
-        return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
-
-    def _rgb_to_ansi(self, rgb: tuple, bg: bool = False) -> str:
-        """Convert RGB to ANSI color code"""
-        r, g, b = rgb
-        if bg:
-            return f"\033[48;2;{r};{g};{b}m"
-        else:
-            return f"\033[38;2;{r};{g};{b}m"
-
-    def _apply_color(self, text: str, color: Optional[str], bg: bool = False) -> str:
-        """Apply color to text"""
-        if not self.color_support or not color:
-            return text
-
-        # Handle hex colors
-        if color.startswith("#"):
-            try:
-                rgb = self._hex_to_rgb(color)
-                ansi_color = self._rgb_to_ansi(rgb, bg)
-                return f"{ansi_color}{text}{self.RESET}"
-            except ValueError:
-                return text
-
-        # Handle named colors
-        color_map = self.BG_COLORS if bg else self.COLORS
-        if color in color_map:
-            return f"{color_map[color]}{text}{self.RESET}"
-
-        return text
-
-    def _apply_style(self, text: str, styles: Optional[List[str]]) -> str:
-        """Apply text styles"""
-        if not self.color_support or not styles:
-            return text
-
-        style_codes = []
-        for style in styles:
-            if style in self.STYLES:
-                style_codes.append(self.STYLES[style])
-
-        if style_codes:
-            return f"{''.join(style_codes)}{text}{self.RESET}"
-
-        return text
-
-    def _get_indent(self, level: int, symbol: str) -> str:
-        """Generate indentation string"""
-        if symbol != "  ":
-            return symbol * level + " "
-        elif level > 1:
-            return "  " * (level - 1)
-        else:
-            return ""
-
-    def _format_message(
-        self,
-        message: str,
-        message_type: str = "info",
-        timestamp: bool = True,
-        timestamp_format: str = "%Y-%m-%d %H:%M:%S",
-        level: int = 1,
-        symbol: str = "  ",
-        text_color: Optional[str] = None,
-        back_color: Optional[str] = None,
-        text_style: Optional[List[str]] = None,
-        multiline_indent: bool = False,
-        timestamp_style: bool = True,
-    ) -> str:
-        """Format the complete message"""
-
-        # Get message type info
-        msg_info = self.MESSAGE_TYPES.get(message_type, self.MESSAGE_TYPES["info"])
-        msg_symbol = msg_info["symbol"]
-        msg_color = msg_info["color"]
-
-        # Build timestamp
-        timestamp_str = ""
-        if timestamp:
-            timestamp_str = f"[{datetime.now().strftime(timestamp_format)}] "
-
-        # Build indentation
-        indent = self._get_indent(level, symbol)
-
-        # Prepare message-type symbol (with color)
-        symbol_colored = (
-            self._apply_color(msg_symbol, msg_color)
-            if self.color_support
-            else msg_symbol
-        )
-        symbol_part = f"{symbol_colored} "
-
-        # Handle multiline messages
-        if "\n" in message:
-            lines = message.split("\n")
-            formatted_lines = []
-
-            for i, line in enumerate(lines):
-                if i == 0 or multiline_indent:
-                    # First line or multiline_indent=True: full formatting (symbol before timestamp)
-                    prefix = symbol_part + timestamp_str + indent
-                else:
-                    # Subsequent lines: alignment spaces + indent
-                    alignment_spaces = (
-                        (" " * (len(symbol_part) + len(timestamp_str)))
-                        if timestamp
-                        else (" " * len(symbol_part))
-                    )
-                    prefix = alignment_spaces + indent
-
-                # Apply formatting to line
-                formatted_line = self._apply_formatting(
-                    line, text_color, back_color, text_style, timestamp_style, prefix
                 )
-                formatted_lines.append(formatted_line)
 
-            return "\n".join(formatted_lines)
 
-        # Single line message (symbol before timestamp)
-        prefix = symbol_part + timestamp_str + indent
-
-        # Apply formatting
-        formatted_msg = self._apply_formatting(
-            message, text_color, back_color, text_style, timestamp_style, prefix
         )
-
-        # Already added colored symbol in prefix
-        return formatted_msg
-
-    def _apply_formatting(
-        self,
-        text: str,
-        text_color: Optional[str],
-        back_color: Optional[str],
-        text_style: Optional[List[str]],
-        timestamp_style: bool,
-        prefix: str,
-    ) -> str:
-        """Apply all formatting to text"""
-
-        # Apply styles first
-        if text_style:
-            text = self._apply_style(text, text_style)
-
-        # Apply text color
-        if text_color:
-            text = self._apply_color(text, text_color)
-
-        # Apply background color
-        if back_color:
-            text = self._apply_color(text, back_color, bg=True)
-
-        return prefix + text
-
-    def _parse_inline_expressions(self, message: str, caller_frame=None) -> str:
-        """
-        Parse inline expressions with cli-style formatting
-
-        Supports:
-        - {.pkg package_name} / {pkg package_name}
-        - {.pkg {variable}} / {pkg {variable}}
-        - {.code some_code} / {code some_code}
-        - {.val {expression}} / {val {expression}}
-        - {expression}  # bare expression evaluation, no formatting
-        etc.
-        """
-        max_iterations = 15
-        iteration = 0
-
-        allowed_tags = set(t.lstrip(".") for t in self.INLINE_FORMATS.keys())
-
-        def eval_expression(expr: str) -> str:
-            expr = expr.strip()
-            if not expr:
-                return ""
-            if caller_frame is None:
-                return expr
-            try:
-                value = eval(expr, caller_frame.f_globals, caller_frame.f_locals)
-                return str(value)
-            except Exception:
-                return expr
-
-        while iteration < max_iterations:
-            iteration += 1
-
-            # 1) first parse the inline format: {.tag content} or {tag content}
-            # content can be non-curly brace text or single layer {expr}
-            format_match = re.search(
-                r"\{\.?([A-Za-z_][A-Za-z0-9_]*)\s+(\{[^{}]*\}|[^{}]+)\}", message
-            )
-
-            if format_match:
-                tag = format_match.group(1)
-                content = format_match.group(2)
-
-                # only process allowed tags
-                if tag in allowed_tags:
-                    if content.startswith("{") and content.endswith("}"):
-                        evaluated = eval_expression(content[1:-1])
-                    else:
-                        evaluated = content
-
-                    formatted = self._apply_inline_format(evaluated, f".{tag}")
-                    message = (
-                        message[: format_match.start()]
-                        + formatted
-                        + message[format_match.end() :]
-                    )
-                    # continue to next iteration
-                    continue
-                else:
-                    # non-supported tag, skip to bare expression stage
-                    pass
-
-            # 2) then parse the bare expression: {expr} (not starting with .tag or tag)
-            # to avoid conflict with format syntax, here exclude {.xxx ...} and {xxx ...}
-            bare_match = re.search(r"\{([^{}]+)\}", message)
-            if bare_match:
-                inner = bare_match.group(1).strip()
-                # if it looks like a format prefix (.tag or tag followed by space), skip this iteration
-                if re.match(r"^\.?[A-Za-z_][A-Za-z0-9_]*\s+", inner):
-                    # no bare expression to process, end loop
-                    break
-                evaluated = eval_expression(inner)
-                message = (
-                    message[: bare_match.start()]
-                    + evaluated
-                    + message[bare_match.end() :]
-                )
-                continue
-
-            # no content to parse, end loop
-            break
-
-        return message
-
-    def _apply_inline_format(self, text: str, format_type: str) -> str:
-        """Apply formatting to inline content"""
-        if format_type not in self.INLINE_FORMATS:
-            return text
-
-        fmt = self.INLINE_FORMATS[format_type]
-
-        # apply color
-        if fmt["color"] and fmt["color"] != "none":
-            text = self._apply_color(text, fmt["color"])
-
-        # apply style
-        if fmt["style"]:
-            text = self._apply_style(text, fmt["style"])
-
-        return text
-
-    def _format_traceback(self, depth: int = 1, skip_frames: int = 3) -> str:
-        """
-        Format traceback information for error messages
-
-        Parameters:
-        - depth: number of stack frames to show
-        - skip_frames: number of internal frames to skip
-
-        Returns:
-        - formatted stack information string
-        """
-        stack = inspect.stack()
-
-        # skip log_message internal call frames
-        # skip_frames: _format_traceback, log_message, _format_message, etc.
-        start_idx = skip_frames
-        end_idx = min(start_idx + depth, len(stack))
-
-        lines = []
-        for i in range(start_idx, end_idx):
-            frame_info = stack[i]
-            # format file location information
-            location = f'  File "{os.path.basename(frame_info.filename)}", line {frame_info.lineno}, in {frame_info.function}'
-            lines.append(location)
-
-            # show code line if available
-            if frame_info.code_context:
-                code_line = frame_info.code_context[0].strip()
-                lines.append(f"    {code_line}")
-
-        return "\n".join(lines) if lines else ""
-
-
-# Global instance
-_logger = LogMessage()
-
-
-def log_message(
-    *args,
-    verbose: bool = True,
-    message_type: str = "info",
-    timestamp: bool = True,
-    timestamp_format: str = "%Y-%m-%d %H:%M:%S",
-    level: int = 1,
-    symbol: str = "  ",
-    text_color: Optional[str] = None,
-    back_color: Optional[str] = None,
-    text_style: Optional[List[str]] = None,
-    multiline_indent: bool = False,
-    timestamp_style: bool = True,
-    show_traceback: bool = True,
-    traceback_depth: int = 1,
-) -> None:
-    """
-    Print formatted message with timestamp, colors, styling, and inline expressions
-
-    Parameters:
-    -----------
-    *args : str
-        Message parts to concatenate. Supports cli-style inline expressions:
-        - {.pkg package_name} - Package names (cyan + bold)
-        - {.code code_snippet} - Code snippets (grey)
-        - {.val variable_name} - Variable values (blue)
-        - {.arg parameter_name} - Function parameters (green)
-        - {.fun function_name} - Function names (magenta)
-        - {.file file_path} - File paths (underline)
-        - {.path directory_path} - Directory paths (underline)
-        - {.field field_name} - Object fields (cyan)
-        - {.emph text} - Emphasized text (italic)
-        - {.strong text} - Strong text (bold)
-
-        Expressions can be nested: {.pkg {package_name}}
-    verbose : bool, default True
-        Whether to print the message
-    message_type : str, default "info"
-        Type of message: "info", "success", "warning", "error", "running"
-    timestamp : bool, default True
-        Whether to show timestamp
-    timestamp_format : str, default "%Y-%m-%d %H:%M:%S"
-        Timestamp format string
-    level : int, default 1
-        Indentation level
-    symbol : str, default "  "
-        Symbol used for indentation
-    text_color : str, optional
-        Text color (named color or hex code)
-    back_color : str, optional
-        Background color (named color or hex code)
-    text_style : list, optional
-        Text styles: ["bold", "italic", "underline", "dim", "strikethrough", "inverse"]
-    multiline_indent : bool, default False
-        Whether to apply formatting to each line in multiline messages
-    timestamp_style : bool, default True
-        Whether to apply styling to timestamp
-    show_traceback : bool, default True
-        Whether to show traceback for error messages
-    traceback_depth : int, default 1
-        Number of stack frames to show in traceback
-
-    Returns:
-    --------
-    None
-    """
-
-    if not verbose:
-        return
-
-    # Validate message_type
-    valid_types = ["info", "success", "warning", "error", "running"]
-    if message_type not in valid_types:
-        message_type = "info"
-
-    # Get caller frame for inline expression evaluation and traceback
-    # Need to handle both direct calls and calls through convenience functions
-    current_frame = inspect.currentframe()
-    caller_frame = current_frame.f_back
-
-    # If called through convenience function (log_info, log_error, etc.), skip one more frame
-    if caller_frame and caller_frame.f_code.co_name in [
-        "log_info",
-        "log_success",
-        "log_warning",
-        "log_error",
-        "log_running",
-    ]:
-        caller_frame = caller_frame.f_back
-
-    # Build message from args
-    if not args:
-        message = ""
-    else:
-        message = "".join(str(arg) for arg in args)
-
-    # Parse inline expressions
-    message = _logger._parse_inline_expressions(message, caller_frame)
-
-    # Format and print message
-    formatted_message = _logger._format_message(
-        message=message,
-        message_type=message_type,
-        timestamp=timestamp,
-        timestamp_format=timestamp_format,
-        level=level,
-        symbol=symbol,
-        text_color=text_color,
-        back_color=back_color,
-        text_style=text_style,
-        multiline_indent=multiline_indent,
-        timestamp_style=timestamp_style,
-    )
-
-    # Add traceback for error messages
-    if message_type == "error" and show_traceback:
-        traceback_info = _logger._format_traceback(depth=traceback_depth)
-        if traceback_info:
-            formatted_message += "\n" + traceback_info
-
-    print(formatted_message)
-
-
-# Convenience functions for common message types
-def log_info(*args, **kwargs):
-    """Log info message"""
-    log_message(*args, message_type="info", **kwargs)
-
-
-def log_success(*args, **kwargs):
-    """Log success message"""
-    log_message(*args, message_type="success", **kwargs)
-
-
-def log_warning(*args, **kwargs):
-    """Log warning message"""
-    log_message(*args, message_type="warning", **kwargs)
-
-
-def log_error(*args, **kwargs):
-    """Log error message"""
-    log_message(*args, message_type="error", **kwargs)
-
-
-def log_running(*args, **kwargs):
-    """Log running message"""
-    log_message(*args, message_type="running", **kwargs)
 
 
 # SCVELO analysis function
@@ -647,7 +133,7 @@ def SCVELO(
         if not os.path.exists(expanded_path):
             os.makedirs(expanded_path, exist_ok=True)
             log_message(
-                f"Created directory: {expanded_path}",
+                "Created directory: {.val {expanded_path}}",
                 message_type="info",
                 verbose=verbose,
             )
@@ -704,7 +190,7 @@ def SCVELO(
 
         if basis not in adata.obsm:
             log_message(
-                "basis '{.val {basis}}' not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
+                "basis {.val {basis}} not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
                 message_type="error",
                 verbose=verbose,
             )
@@ -817,7 +303,7 @@ def SCVELO(
             if use_rep and max_dims > 0:
                 n_pcs = min(n_pcs, max_dims)
                 log_message(
-                    "Reducing n_pcs to {.val {n_pcs}} to match available dimensions in {.val {use_rep}}",
+                    "Reducing {.arg n_pcs} to {.val {n_pcs}} to match available dimensions in {.val {use_rep}}",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -825,7 +311,7 @@ def SCVELO(
                 use_rep = None
                 n_pcs = min(n_pcs, adata.X.shape[1])
                 log_message(
-                    "Using raw data with n_pcs={.val {n_pcs}}",
+                    "Using raw data with {.arg n_pcs}={.val {n_pcs}}",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -860,7 +346,9 @@ def SCVELO(
         )
 
         for m in mode:
-            log_message(f"Processing mode: {m}", message_type="info", verbose=verbose)
+            log_message(
+                "Processing mode: {.val {m}}", message_type="info", verbose=verbose
+            )
 
             if m == "dynamical":
                 log_message(
@@ -916,7 +404,7 @@ def SCVELO(
             )
             if basis not in adata.obsm:
                 log_message(
-                    f"Basis '{basis}' not found in adata.obsm. Available keys: {list(adata.obsm.keys())}",
+                    "Basis {.val {basis}} not found in adata.obsm. Available keys: {.val {list(adata.obsm.keys())}}",
                     message_type="error",
                     verbose=verbose,
                 )
@@ -927,7 +415,7 @@ def SCVELO(
             basis_embedding = adata.obsm[basis]
             if basis_embedding.shape[1] < 2:
                 log_message(
-                    f"Basis '{basis}' has only {basis_embedding.shape[1]} dimensions, need at least 2 for velocity embedding",
+                    "Basis {.val {basis}} has only {.val {basis_embedding.shape[1]}} dimensions, need at least 2 for velocity embedding",
                     message_type="error",
                     verbose=verbose,
                 )
@@ -939,7 +427,7 @@ def SCVELO(
             if x_basis_key not in adata.obsm:
                 adata.obsm[x_basis_key] = basis_embedding
                 log_message(
-                    f"Created '{x_basis_key}' in adata.obsm for scvelo compatibility",
+                    "Created {.val {x_basis_key}} in adata.obsm for scvelo compatibility",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1009,7 +497,9 @@ def SCVELO(
                     )
 
             if compute_paga:
-                log_message("Computing PAGA...", message_type="info", verbose=verbose)
+                log_message(
+                    "Computing {.pkg PAGA}...", message_type="info", verbose=verbose
+                )
                 try:
                     if "neighbors" not in adata.uns:
                         adata.uns["neighbors"] = {}
@@ -1026,7 +516,7 @@ def SCVELO(
                     sc.tl.paga(adata, groups=group_by, use_rna_velocity=True)
                 except Exception as e:
                     log_message(
-                        "PAGA computation failed ({.val {e}})",
+                        "{.pkg PAGA} computation failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1046,7 +536,7 @@ def SCVELO(
                         scv.tl.rank_dynamical_genes(adata, groupby=group_by)
                 except Exception as e:
                     log_message(
-                        "velocity genes ranking failed ({.val {e}})",
+                        "{.pkg velocity} genes ranking failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1109,14 +599,14 @@ def SCVELO(
                                 save_path_png, dpi=plot_dpi, bbox_inches="tight"
                             )
                             log_message(
-                                f"PDF save failed, saved as PNG instead: {save_path_png}",
+                                "PDF save failed, saved as PNG instead: {.val {save_path_png}}",
                                 message_type="warning",
                                 verbose=verbose,
                             )
                     plt.close()
                 except Exception as e:
                     log_message(
-                        "stream plot failed ({.val {e}})",
+                        "Stream plot failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1155,14 +645,14 @@ def SCVELO(
                                 save_path_png, dpi=plot_dpi, bbox_inches="tight"
                             )
                             log_message(
-                                f"PDF save failed, saved as PNG instead: {save_path_png}",
+                                "PDF save failed, saved as PNG instead: {.val {save_path_png}}",
                                 message_type="warning",
                                 verbose=verbose,
                             )
                     plt.close()
                 except Exception as e:
                     log_message(
-                        "arrow plot failed ({.val {e}})",
+                        "Arrow plot failed ({.val {e}})",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1209,7 +699,7 @@ def SCVELO(
                 if not os.listdir(figures_dir):
                     os.rmdir(figures_dir)
                     log_message(
-                        f"Removed empty figures directory: {figures_dir}",
+                        "Removed empty figures directory: {.val {figures_dir}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -1252,7 +742,7 @@ def compute_transition_matrix(kernel, verbose=True):
         if "not row stochastic" in str(e):
             if verbose:
                 log_message(
-                    f"Transition matrix validation failed: {e}. Attempting to fix...",
+                    "Transition matrix validation failed: {.val {e}}. Attempting to fix...",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -1298,7 +788,7 @@ def compute_transition_matrix(kernel, verbose=True):
             except Exception as fix_error:
                 if verbose:
                     log_message(
-                        f"Failed to fix transition matrix: {fix_error}",
+                        "Failed to fix transition matrix: {.val {fix_error}}",
                         message_type="error",
                         verbose=verbose,
                     )
@@ -1369,7 +859,7 @@ def fix_transition_matrix(kernel, verbose=True):
             if np.any(tmat.data < 0):
                 if verbose:
                     log_message(
-                        f"Clipping {(tmat.data < 0).sum()} negative values to zero...",
+                        "Clipping {.val {(tmat.data < 0).sum()}} negative values to zero...",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1394,7 +884,7 @@ def fix_transition_matrix(kernel, verbose=True):
             if np.any(needs_self_loop):
                 if verbose:
                     log_message(
-                        f"Adding self-loops to {needs_self_loop.sum()} cells for matrix primitivity...",
+                        "Adding self-loops to {.val {needs_self_loop.sum()}} cells for matrix primitivity...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -1411,7 +901,7 @@ def fix_transition_matrix(kernel, verbose=True):
         if np.any(zero_rows):
             if verbose:
                 log_message(
-                    f"Found {zero_rows.sum()} zero rows. Setting to self-loops...",
+                    "Found {.val {zero_rows.sum()}} zero rows. Setting to self-loops...",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -1431,7 +921,7 @@ def fix_transition_matrix(kernel, verbose=True):
 
         if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8):
             log_message(
-                f"Normalizing rows (current range: {row_sums.min():.8f} - {row_sums.max():.8f})...",
+                "Normalizing rows (current range: {.val {format(row_sums.min(), '.8f')}} - {.val {format(row_sums.max(), '.8f')}})...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1463,7 +953,7 @@ def fix_transition_matrix(kernel, verbose=True):
 
         if not rows_sum_to_one and verbose:
             log_message(
-                f"Warning: Matrix rows still don't sum to 1 (range: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                "Warning: Matrix rows still don't sum to 1 (range: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                 message_type="warning",
                 verbose=verbose,
             )
@@ -1472,13 +962,13 @@ def fix_transition_matrix(kernel, verbose=True):
             kernel._transition_matrix = tmat
             if verbose:
                 log_message(
-                    f"Matrix fixed and validated (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    "Matrix fixed and validated (row sums: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                     message_type="success",
                     verbose=verbose,
                 )
         elif verbose:
             log_message(
-                f"Matrix validation passed (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                "Matrix validation passed (row sums: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                 message_type="success",
                 verbose=verbose,
             )
@@ -1488,7 +978,7 @@ def fix_transition_matrix(kernel, verbose=True):
     except Exception as e:
         if verbose:
             log_message(
-                f"Matrix validation encountered error: {e}. Proceeding with original matrix...",
+                "Matrix validation encountered error: {.val {e}}. Proceeding with original matrix...",
                 message_type="warning",
                 verbose=verbose,
             )
@@ -1597,7 +1087,7 @@ def CellRank(
         if not os.path.exists(expanded_path):
             os.makedirs(expanded_path, exist_ok=True)
             log_message(
-                f"Created directory: {expanded_path}",
+                "Created directory: {.val {expanded_path}}",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1610,7 +1100,7 @@ def CellRank(
     sc.settings.file_format_figs = plot_format
     sc.settings.autosave = save_plot
     log_message(
-        f"CellRank figdir set to: {cr.settings.figdir}",
+        "{.pkg CellRank} figdir set to: {.val {cr.settings.figdir}}",
         message_type="info",
         verbose=verbose,
     )
@@ -1628,19 +1118,21 @@ def CellRank(
 
     try:
         if adata is None and h5ad is None:
-            log_message("adata or h5ad must be provided", message_type="error")
+            log_message(
+                "{.arg adata} or {.arg h5ad} must be provided", message_type="error"
+            )
             exit()
 
         if adata is None:
             adata = scv.read(h5ad)
 
         if group_by is None:
-            log_message("group_by must be provided", message_type="error")
+            log_message("{.arg group_by} must be provided", message_type="error")
             exit()
 
         if linear_reduction is None and nonlinear_reduction is None:
             log_message(
-                "linear_reduction or nonlinear_reduction must be provided at least one",
+                "{.arg linear_reduction} or {.arg nonlinear_reduction} must be provided at least one",
                 message_type="error",
             )
             exit()
@@ -1662,14 +1154,14 @@ def CellRank(
 
         if not fitting_by in ["deterministic", "stochastic"]:
             log_message(
-                "'fitting_by' must be one of 'deterministic' and 'stochastic'.",
+                "{.arg fitting_by} must be one of {.val deterministic} and {.val stochastic}.",
                 message_type="error",
             )
             exit()
 
         if not all([m in ["deterministic", "stochastic", "dynamical"] for m in mode]):
             log_message(
-                "Invalid mode name! Must be the 'deterministic', 'stochastic' or 'dynamical'.",
+                "Invalid mode name! Must be one of {.val deterministic}, {.val stochastic} or {.val dynamical}.",
                 message_type="error",
             )
             exit()
@@ -1677,7 +1169,9 @@ def CellRank(
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
 
         log_message(
-            f"Using kernel_type: '{kernel_type}'", message_type="info", verbose=verbose
+            "Using {.arg kernel_type}: {.val {kernel_type}}",
+            message_type="info",
+            verbose=verbose,
         )
 
         use_velocity = False
@@ -1691,12 +1185,12 @@ def CellRank(
 
             if not has_velocity_data:
                 log_message(
-                    "No spliced/unspliced data found. Consider using kernel_type='cytotrace' or 'pseudotime' for RNA-only data",
+                    "No spliced/unspliced data found. Consider using {.arg kernel_type}={.val cytotrace} or {.arg kernel_type}={.val pseudotime} for RNA-only data",
                     message_type="warning",
                     verbose=verbose,
                 )
                 log_message(
-                    "Falling back to ConnectivityKernel only",
+                    "Falling back to {.pkg ConnectivityKernel} only",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1706,7 +1200,7 @@ def CellRank(
 
                 if mode[-1] + "_graph" not in adata.obs.keys():
                     log_message(
-                        "Running scVelo to compute RNA velocity...",
+                        "Running {.pkg scVelo} to compute RNA velocity...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -1750,7 +1244,7 @@ def CellRank(
             use_pseudotime = True
             if time_key not in adata.obs:
                 log_message(
-                    f"Pseudotime '{time_key}' not found. Computing DPT pseudotime...",
+                    "Pseudotime {.val {time_key}} not found. Computing DPT pseudotime...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1758,7 +1252,7 @@ def CellRank(
                     rep_key = linear_reduction
                 else:
                     log_message(
-                        f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                        "{.arg linear_reduction} {.val {linear_reduction}} not found in adata.obsm",
                         message_type="error",
                         verbose=verbose,
                     )
@@ -1775,13 +1269,13 @@ def CellRank(
                 time_key = "dpt_pseudotime"
                 adata.obs["cellrank_pseudotime"] = adata.obs["dpt_pseudotime"]
                 log_message(
-                    "DPT pseudotime computed and stored in adata.obs['cellrank_pseudotime']",
+                    "{.pkg DPT} pseudotime computed and stored in {.val adata.obs['cellrank_pseudotime']}",
                     message_type="success",
                     verbose=verbose,
                 )
             else:
                 log_message(
-                    f"Using existing pseudotime from adata.obs['{time_key}']",
+                    "Using existing pseudotime from {.val adata.obs[{time_key}]}",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1789,13 +1283,13 @@ def CellRank(
         elif kernel_type == "cytotrace":
             use_cytotrace = True
             log_message(
-                "Using CytoTRACEKernel for RNA-only data...",
+                "Using {.pkg CytoTRACEKernel} for RNA-only data...",
                 message_type="info",
                 verbose=verbose,
             )
 
         log_message(
-            "Using CellRank kernel-estimator architecture...",
+            "Using {.pkg CellRank} kernel-estimator architecture...",
             message_type="info",
             verbose=verbose,
         )
@@ -1807,7 +1301,7 @@ def CellRank(
                 return linear_reduction
             else:
                 log_message(
-                    f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                    "{.arg linear_reduction} {.val {linear_reduction}} not found in adata.obsm",
                     message_type="error",
                     verbose=verbose,
                 )
@@ -1815,7 +1309,7 @@ def CellRank(
 
         if use_pseudotime:
             log_message(
-                f"Creating PseudotimeKernel with time_key='{time_key}'...",
+                "Creating {.pkg PseudotimeKernel} with {.arg time_key}={.val {time_key}}...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1824,13 +1318,13 @@ def CellRank(
                 compute_transition_matrix(pk, verbose=verbose)
                 main_kernel = pk
                 log_message(
-                    "PseudotimeKernel created successfully",
+                    "{.pkg PseudotimeKernel} created successfully",
                     message_type="success",
                     verbose=verbose,
                 )
             except Exception as e:
                 log_message(
-                    f"PseudotimeKernel failed: {e}. Falling back to ConnectivityKernel.",
+                    "{.pkg PseudotimeKernel} failed: {.val {e}}. Falling back to ConnectivityKernel.",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -1838,14 +1332,14 @@ def CellRank(
 
         elif use_cytotrace:
             log_message(
-                "Creating CytoTRACEKernel and computing CytoTRACE score...",
+                "Creating {.pkg CytoTRACEKernel} and computing {.pkg CytoTRACE} score...",
                 message_type="info",
                 verbose=verbose,
             )
             try:
                 if "Ms" not in adata.layers:
                     log_message(
-                        "Computing moments (required for CytoTRACEKernel)...",
+                        "Computing moments (required for {.pkg CytoTRACEKernel})...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -1898,13 +1392,13 @@ def CellRank(
                     )
 
                 log_message(
-                    "CytoTRACEKernel created successfully",
+                    "{.pkg CytoTRACEKernel} created successfully",
                     message_type="success",
                     verbose=verbose,
                 )
             except Exception as e:
                 log_message(
-                    f"CytoTRACEKernel failed: {e}. Falling back to ConnectivityKernel.",
+                    "{.pkg CytoTRACEKernel} failed: {.val {e}}. Falling back to ConnectivityKernel.",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -1921,7 +1415,7 @@ def CellRank(
                 connectivity_weight = 0.5
             elif velocity_weight <= 0:
                 log_message(
-                    "velocity_weight <= 0. Using ConnectivityKernel only.",
+                    "{.arg velocity_weight <= 0}. Using {.pkg ConnectivityKernel} only",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1929,7 +1423,7 @@ def CellRank(
                 connectivity_weight = 1.0
             elif connectivity_weight <= 0:
                 log_message(
-                    "connectivity_weight <= 0. Using VelocityKernel only.",
+                    "{.arg connectivity_weight <= 0}. Using {.pkg VelocityKernel} only.",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -1939,7 +1433,7 @@ def CellRank(
                 total_weight = velocity_weight + connectivity_weight
                 if abs(total_weight - 1.0) > 0.01:
                     log_message(
-                        f"Normalizing kernel weights ({velocity_weight}, {connectivity_weight}) to sum to 1.0",
+                        "Normalizing kernel weights ({.val {velocity_weight}}, {.val {connectivity_weight}}) to sum to 1.0",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -1948,7 +1442,7 @@ def CellRank(
 
         if use_velocity and velocity_weight > 0:
             log_message(
-                f"Creating VelocityKernel with model='{mode[-1]}', softmax_scale={softmax_scale}...",
+                "Creating {.pkg VelocityKernel} with {.arg model}={.val {mode[-1]}}, {.arg softmax_scale}={.val {softmax_scale}}...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1961,7 +1455,7 @@ def CellRank(
                 main_kernel = vk
             except Exception as e:
                 log_message(
-                    f"VelocityKernel computation failed: {e}",
+                    "{.pkg VelocityKernel} computation failed: {.val {e}}",
                     message_type="error",
                     verbose=verbose,
                 )
@@ -1977,7 +1471,7 @@ def CellRank(
                     main_kernel = vk
                 except Exception as e2:
                     log_message(
-                        f"VelocityKernel still failed: {e2}. Using ConnectivityKernel only.",
+                        "{.pkg VelocityKernel} still failed: {.val {e2}}. Using {.pkg ConnectivityKernel} only.",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -1995,7 +1489,7 @@ def CellRank(
                     adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
                 )
                 log_message(
-                    f"Neighbors computed successfully (n_neighbors={n_neighbors})",
+                    "Neighbors computed successfully (n_neighbors={.val {n_neighbors}})",
                     message_type="success",
                     verbose=verbose,
                 )
@@ -2007,7 +1501,7 @@ def CellRank(
         ):
             try:
                 log_message(
-                    "Creating ConnectivityKernel...",
+                    "Creating {.pkg ConnectivityKernel}...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2016,13 +1510,13 @@ def CellRank(
                 compute_transition_matrix(ck, verbose=verbose)
                 final_kernel = velocity_weight * main_kernel + connectivity_weight * ck
                 log_message(
-                    f"Combined kernels with weights: main={velocity_weight:.2f}, connectivity={connectivity_weight:.2f}",
+                    "Combined kernels with weights: main={.val {format(velocity_weight, '.2f')}}, connectivity={.val {format(connectivity_weight, '.2f')}}",
                     message_type="success",
                     verbose=verbose,
                 )
             except Exception as e:
                 log_message(
-                    f"Failed to combine kernels: {e}. Using main kernel only.",
+                    "Failed to combine kernels: {.val {e}}. Using main kernel only.",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2030,13 +1524,13 @@ def CellRank(
         elif main_kernel is not None:
             final_kernel = main_kernel
             log_message(
-                f"Using {type(main_kernel).__name__} only",
+                "Using {.val {type(main_kernel).__name__}} only",
                 message_type="info",
                 verbose=verbose,
             )
         else:
             log_message(
-                "Creating ConnectivityKernel (fallback)...",
+                "Creating {.pkg ConnectivityKernel} using neighbors by {.pkg compute_transition_matrix}...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -2045,7 +1539,7 @@ def CellRank(
             compute_transition_matrix(ck, verbose=verbose)
             final_kernel = ck
             log_message(
-                "Using ConnectivityKernel only (connectivity-based transitions)",
+                "Using {.pkg ConnectivityKernel} only (connectivity-based transitions)",
                 message_type="warning",
                 verbose=verbose,
             )
@@ -2058,7 +1552,7 @@ def CellRank(
             matrix_modified = False
 
             log_message(
-                "Validating and fixing transition matrix for GPCCA compatibility...",
+                "Validating and fixing transition matrix for {.pkg GPCCA} compatibility...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -2088,7 +1582,7 @@ def CellRank(
             if issparse(tmat):
                 if np.any(tmat.data < 0):
                     log_message(
-                        f"Clipping {(tmat.data < 0).sum()} negative values to zero...",
+                        "Clipping {.val {(tmat.data < 0).sum()}} negative values to zero...",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -2111,7 +1605,7 @@ def CellRank(
 
                 if np.any(needs_self_loop):
                     log_message(
-                        f"Adding self-loops to {needs_self_loop.sum()} cells for matrix primitivity...",
+                        "Adding self-loops to {.val {needs_self_loop.sum()}} cells for matrix primitivity...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -2127,7 +1621,7 @@ def CellRank(
 
             if np.any(zero_rows):
                 log_message(
-                    f"Found {zero_rows.sum()} zero rows. Setting to self-loops...",
+                    "Found {.val {zero_rows.sum()}} zero rows. Setting to self-loops...",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2147,7 +1641,7 @@ def CellRank(
 
             if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8):
                 log_message(
-                    f"Normalizing rows (current range: {row_sums.min():.8f} - {row_sums.max():.8f})...",
+                    "Normalizing rows (current range: {.val {format(row_sums.min(), '.8f')}} - {.val {format(row_sums.max(), '.8f')}})...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2179,7 +1673,7 @@ def CellRank(
 
             if not rows_sum_to_one:
                 log_message(
-                    f"Warning: Matrix rows still don't sum to 1 (range: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    "Warning: Matrix rows still don't sum to 1 (range: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2187,26 +1681,26 @@ def CellRank(
             if matrix_modified:
                 final_kernel._transition_matrix = tmat
                 log_message(
-                    f"Matrix fixed and validated (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    "Matrix fixed and validated (row sums: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                     message_type="success",
                     verbose=verbose,
                 )
             else:
                 log_message(
-                    f"Matrix validation passed (row sums: {final_row_sums.min():.8f} - {final_row_sums.max():.8f})",
+                    "Matrix validation passed (row sums: {.val {format(final_row_sums.min(), '.8f')}} - {.val {format(final_row_sums.max(), '.8f')}})",
                     message_type="success",
                     verbose=verbose,
                 )
 
         except Exception as e:
             log_message(
-                f"Matrix validation encountered error: {e}. Proceeding with original matrix...",
+                "Matrix validation encountered error: {.val {e}}. Proceeding with original matrix...",
                 message_type="warning",
                 verbose=verbose,
             )
 
         log_message(
-            f"Creating {estimator_type} estimator...",
+            "Creating {.val {estimator_type}} estimator...",
             message_type="info",
             verbose=verbose,
         )
@@ -2236,20 +1730,20 @@ def CellRank(
                         n_states_schur = 15
 
                     log_message(
-                        f"Auto-determined n_states={n_states_schur} for Schur (based on {n_cells} cells)",
+                        "Auto-determined n_states={.val {n_states_schur}} for Schur (based on {.val {n_cells}} cells)",
                         message_type="info",
                         verbose=verbose,
                     )
                 else:
                     n_states_schur = n_macrostates + 2
                     log_message(
-                        f"Using n_states={n_states_schur} for Schur (n_macrostates={n_macrostates} + 2)",
+                        "Using n_states={.val {n_states_schur}} for Schur (n_macrostates={.val {n_macrostates}} + 2)",
                         message_type="info",
                         verbose=verbose,
                     )
 
                 log_message(
-                    f"Computing Schur decomposition (n_states={n_states_schur}, method='{schur_method}')...",
+                    "Computing Schur decomposition (n_states={.val {n_states_schur}}, method={.val {schur_method}})...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2261,12 +1755,12 @@ def CellRank(
                     ) or "invariant subspace" in str(schur_error):
                         if schur_method == "brandts":
                             log_message(
-                                f"Schur decomposition with '{schur_method}' method failed: {schur_error}",
+                                "Schur decomposition with {.val {schur_method}} method failed: {.val {schur_error}}",
                                 message_type="warning",
                                 verbose=verbose,
                             )
                             log_message(
-                                "Trying with 'krylov' method instead...",
+                                "Trying with {.val krylov} method instead...",
                                 message_type="info",
                                 verbose=verbose,
                             )
@@ -2274,7 +1768,7 @@ def CellRank(
                                 estimator.compute_schur(n_states_schur, method="krylov")
                             except Exception as krylov_error:
                                 log_message(
-                                    f"Schur decomposition with 'krylov' method also failed: {krylov_error}",
+                                    "Schur decomposition with {.val krylov} method also failed: {.val {krylov_error}}",
                                     message_type="warning",
                                     verbose=verbose,
                                 )
@@ -2290,7 +1784,7 @@ def CellRank(
                     n_macro = n_macrostates
 
                 log_message(
-                    f"Computing macrostates (n_states={n_macro}, n_cells={n_cells_terminal})...",
+                    "Computing macrostates (n_states={.val {n_macro}}, n_cells={.val {n_cells_terminal}})...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2303,7 +1797,7 @@ def CellRank(
                         macro_error
                     ) or "0 samples" in str(macro_error):
                         log_message(
-                            f"Macrostates computation failed: {macro_error}",
+                            "Macrostates computation failed: {.val {macro_error}}",
                             message_type="warning",
                             verbose=verbose,
                         )
@@ -2312,25 +1806,24 @@ def CellRank(
                             message_type="info",
                             verbose=verbose,
                         )
-                        # Try with fewer macrostates
                         n_macro_reduced = max(2, n_macro - 2)
                         try:
                             estimator.compute_macrostates(
                                 n_states=n_macro_reduced, n_cells=n_cells_terminal
                             )
                             log_message(
-                                f"Macrostates computed successfully with n_states={n_macro_reduced}",
+                                "Macrostates computed successfully with n_states={.val {n_macro_reduced}}",
                                 message_type="success",
                                 verbose=verbose,
                             )
                         except Exception as e2:
                             log_message(
-                                f"Reduced macrostates also failed: {e2}",
+                                "Reduced macrostates also failed: {.val {e2}}",
                                 message_type="warning",
                                 verbose=verbose,
                             )
                             log_message(
-                                "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
+                                "Automatically switching to {.pkg CFLARE} estimator (more robust for problematic matrices)...",
                                 message_type="warning",
                                 verbose=verbose,
                             )
@@ -2342,14 +1835,14 @@ def CellRank(
 
                 if not gpcca_failed:
                     log_message(
-                        f"Setting terminal states (n_cells={n_cells_terminal})...",
+                        "Setting terminal states (n_cells={.val {n_cells_terminal}})...",
                         message_type="info",
                         verbose=verbose,
                     )
                     estimator.set_terminal_states(n_cells=n_cells_terminal)
 
                 log_message(
-                    "GPCCA estimator completed successfully",
+                    "{.pkg GPCCA} estimator completed successfully",
                     message_type="success",
                     verbose=verbose,
                 )
@@ -2366,12 +1859,12 @@ def CellRank(
                 ):
                     if not gpcca_failed:
                         log_message(
-                            f"GPCCA estimator failed: {e}",
+                            "{.pkg GPCCA} estimator failed: {.val {e}}",
                             message_type="warning",
                             verbose=verbose,
                         )
                         log_message(
-                            "Automatically switching to CFLARE estimator (more robust for problematic matrices)...",
+                            "Automatically switching to {.pkg CFLARE} estimator (more robust for problematic matrices)...",
                             message_type="warning",
                             verbose=verbose,
                         )
@@ -2382,7 +1875,7 @@ def CellRank(
                         raise
                 else:
                     log_message(
-                        f"GPCCA failed with unexpected error: {e}",
+                        "{.pkg GPCCA} failed with unexpected error: {.val {e}}",
                         message_type="error",
                         verbose=verbose,
                     )
@@ -2398,7 +1891,7 @@ def CellRank(
 
             predict_method = "leiden"
             log_message(
-                f"Predicting terminal states (use={n_macrostates}, method='{predict_method}')...",
+                "Predicting terminal states (use={.val {n_macrostates}}, method={.val {predict_method}})...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -2407,7 +1900,7 @@ def CellRank(
                 estimator.predict(use=n_macrostates, method=predict_method)
             except Exception as e:
                 log_message(
-                    f"Prediction with '{predict_method}' failed: {e}. Trying 'kmeans'...",
+                    "Prediction with {.val {predict_method}} failed: {.val {e}}. Trying {.val kmeans}...",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2415,7 +1908,7 @@ def CellRank(
 
             if gpcca_failed:
                 log_message(
-                    "Successfully switched to CFLARE estimator",
+                    "Successfully switched to {.pkg CFLARE} estimator",
                     message_type="success",
                     verbose=verbose,
                 )
@@ -2426,7 +1919,7 @@ def CellRank(
         estimator.compute_fate_probabilities()
 
         log_message(
-            f"Computing lineage drivers for cluster_key='{group_by}'...",
+            "Computing lineage drivers for {.arg cluster_key}={.val {group_by}}...",
             message_type="info",
             verbose=verbose,
         )
@@ -2443,7 +1936,9 @@ def CellRank(
                 raise
 
         log_message(
-            "CellRan analysis completed!", message_type="success", verbose=verbose
+            "{.pkg CellRank} analysis completed",
+            message_type="success",
+            verbose=verbose,
         )
 
         if "cellrank_pseudotime" not in adata.obs:
@@ -2463,13 +1958,13 @@ def CellRank(
                         max_probs = np.array(fate_probs.max(axis=1)).flatten()
                     adata.obs["cellrank_pseudotime"] = max_probs
                     log_message(
-                        "Created cellrank_pseudotime from fate probabilities",
+                        "Created {.val cellrank_pseudotime} from fate probabilities",
                         message_type="info",
                         verbose=verbose,
                     )
                 except Exception as e:
                     log_message(
-                        f"Failed to create cellrank_pseudotime from fate probabilities: {e}",
+                        "Failed to create {.val cellrank_pseudotime} from fate probabilities: {.val {e}}",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -2483,7 +1978,7 @@ def CellRank(
                 ext = plot_format if plot_format in ["png", "pdf", "svg"] else "png"
                 save_path = os.path.abspath(f"{plot_prefix}_{name}.{ext}")
                 log_message(
-                    f"Save path for {name}: {save_path}",
+                    "Save path for {.val {name}}: {.val {save_path}}",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2503,7 +1998,7 @@ def CellRank(
                 plt.close()
             except Exception as e:
                 log_message(
-                    f"Failed to plot spectrum: {e}",
+                    "Failed to plot spectrum: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2523,7 +2018,7 @@ def CellRank(
                     plt.close()
                 except Exception as e:
                     log_message(
-                        f"Failed to plot Schur matrix: {e}",
+                        "Failed to plot Schur matrix: {.val {e}}",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -2545,7 +2040,7 @@ def CellRank(
                     plt.close()
                 except Exception as e:
                     log_message(
-                        f"Failed to plot coarse T: {e}",
+                        "Failed to plot coarse T: {.val {e}}",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -2582,7 +2077,7 @@ def CellRank(
                 plt.close()
             except Exception as e:
                 log_message(
-                    f"Failed to plot macrostates: {e}",
+                    "Failed to plot macrostates: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2604,7 +2099,7 @@ def CellRank(
                 plt.close()
             except Exception as e:
                 log_message(
-                    f"Failed to plot fate probabilities: {e}",
+                    "Failed to plot fate probabilities: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2618,7 +2113,7 @@ def CellRank(
                 if fate_probs_key in adata.obsm:
                     lineages = adata.obsm[fate_probs_key].names
                     log_message(
-                        f"Plotting lineage drivers for {len(lineages)} lineages...",
+                        "Plotting lineage drivers for {.val {len(lineages)}} lineages...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -2636,20 +2131,20 @@ def CellRank(
                             plt.close()
                         except Exception as e:
                             log_message(
-                                f"Failed to plot lineage drivers for {lineage}: {e}",
+                                "Failed to plot lineage drivers for {.val {lineage}}: {.val {e}}",
                                 message_type="warning",
                                 verbose=verbose,
                             )
             except Exception as e:
                 log_message(
-                    f"Failed to plot lineage drivers: {e}",
+                    "Failed to plot lineage drivers: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
 
             try:
                 log_message(
-                    "Plotting aggregate fate probabilities (mode=paga_pie)...",
+                    "Plotting aggregate fate probabilities ({.arg mode}={.val paga_pie})...",
                     message_type="info",
                     verbose=verbose,
                 )
@@ -2666,7 +2161,7 @@ def CellRank(
                 plt.close()
             except Exception as e:
                 log_message(
-                    f"Failed to plot aggregate fates: {e}",
+                    "Failed to plot aggregate fates: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2686,7 +2181,7 @@ def CellRank(
                             20, columns=drivers_df.columns[0]
                         ).index.tolist()
                         log_message(
-                            f"Using top {len(top_genes)} driver genes",
+                            "Using top {.val {len(top_genes)}} driver genes",
                             message_type="info",
                             verbose=verbose,
                         )
@@ -2712,7 +2207,7 @@ def CellRank(
                         )
                 except Exception as e:
                     log_message(
-                        f"Failed to plot gene trends: {e}",
+                        "Failed to plot gene trends: {.val {e}}",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -2725,13 +2220,13 @@ def CellRank(
                 )
                 proj_basis = basis
                 log_message(
-                    f"Using basis: {proj_basis} for projection",
+                    "Using basis: {.val {proj_basis}} for projection",
                     message_type="info",
                     verbose=verbose,
                 )
                 if final_kernel is not None:
                     log_message(
-                        f"Final kernel type: {type(final_kernel).__name__}",
+                        "Final kernel type: {.val {type(final_kernel).__name__}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -2747,7 +2242,7 @@ def CellRank(
                             zip(groups, plt.cm.tab10(np.linspace(0, 1, len(groups))))
                         )
                         log_message(
-                            f"Created default palette for {len(groups)} groups",
+                            "Created default palette for {.val {len(groups)}} groups",
                             message_type="info",
                             verbose=verbose,
                         )
@@ -2764,14 +2259,14 @@ def CellRank(
                         )
                         plot_kwargs["save"] = save_path
                         log_message(
-                            f"Will save projection to: {save_path}",
+                            "Will save projection to: {.val {save_path}}",
                             message_type="info",
                             verbose=verbose,
                         )
                     if plot_dpi:
                         plot_kwargs["dpi"] = plot_dpi
                         log_message(
-                            f"Using DPI: {plot_dpi}",
+                            "Using DPI: {.val {plot_dpi}}",
                             message_type="info",
                             verbose=verbose,
                         )
@@ -2782,13 +2277,13 @@ def CellRank(
                             plot_kwargs["palette"] = plot_palette
                         plot_kwargs["legend_loc"] = legend_loc
                         log_message(
-                            f"Adding color information: color={group_by}, palette={'provided' if palette is not None else 'default'}",
+                            "Adding color information: color={.val {group_by}}, palette={.val {'provided' if palette is not None else 'default'}}",
                             message_type="info",
                             verbose=verbose,
                         )
 
                     log_message(
-                        "Calling final_kernel.plot_projection()...",
+                        "Calling {pkg final_kernel.plot_projection()}...",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -2815,7 +2310,7 @@ def CellRank(
                                         except Exception:
                                             pass
                                     log_message(
-                                        f"PDF save failed, CellRank saved as PNG: {png_path}",
+                                        "PDF save failed, {.pkg CellRank} saved as PNG: {.val {png_path}}",
                                         message_type="warning",
                                         verbose=verbose,
                                     )
@@ -2826,7 +2321,7 @@ def CellRank(
                         )
                     except Exception as e:
                         log_message(
-                            f"Failed to plot projection: {e}",
+                            "Failed to plot projection: {.val {e}}",
                             message_type="warning",
                             verbose=verbose,
                         )
@@ -2838,14 +2333,14 @@ def CellRank(
                     )
             except Exception as e:
                 log_message(
-                    f"Failed to plot projection: {e}",
+                    "Failed to plot projection: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
                 import traceback
 
                 log_message(
-                    f"Projection error traceback: {traceback.format_exc()}",
+                    "Projection error traceback: {.val {traceback.format_exc()}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2872,7 +2367,7 @@ def CellRank(
                                 ]
                             else:
                                 log_message(
-                                    "velocity_graph_neg not found, computing velocity graph...",
+                                    "{.val velocity_graph_neg} not found, computing velocity graph...",
                                     message_type="info",
                                     verbose=verbose,
                                 )
@@ -2884,7 +2379,7 @@ def CellRank(
                                 )
                         elif "velocity_graph" not in adata.uns:
                             log_message(
-                                "velocity_graph not found, computing velocity graph...",
+                                "{.val velocity_graph} not found, computing velocity graph...",
                                 message_type="info",
                                 verbose=verbose,
                             )
@@ -2918,7 +2413,7 @@ def CellRank(
                         )
                     except Exception as e:
                         log_message(
-                            f"recover_dynamics failed ({e}), skipping latent time computation...",
+                            "{.pkg recover_dynamics} failed ({.val {e}}), skipping latent time computation...",
                             message_type="warning",
                             verbose=verbose,
                         )
@@ -2946,7 +2441,7 @@ def CellRank(
                     )
             except Exception as e:
                 log_message(
-                    f"Latent time computation failed: {e}",
+                    "Latent time computation failed: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -2964,7 +2459,7 @@ def CellRank(
                 if not os.listdir(figures_dir):
                     os.rmdir(figures_dir)
                     log_message(
-                        f"Removed empty figures directory: {figures_dir}",
+                        "Removed empty figures directory: {.val {figures_dir}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -3058,7 +2553,9 @@ def PAGA(
         import matplotlib.pyplot as plt
     except Exception as e:
         log_message(
-            f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
+            "{.pkg matplotlib} setup failed: {.val {e}}",
+            message_type="warning",
+            verbose=verbose,
         )
         plt = None
 
@@ -3080,7 +2577,7 @@ def PAGA(
     try:
         import numpy as np
     except Exception as e:
-        log_message(f"numpy import failed: {e}", message_type="error")
+        log_message("{.pkg numpy} import failed: {.val {e}}", message_type="error")
         raise
 
     import statistics
@@ -3159,7 +2656,7 @@ def PAGA(
             obsm_keys = set(adata.obsm_keys())
             if linear_reduction not in obsm_keys:
                 log_message(
-                    f"linear_reduction '{linear_reduction}' not found in adata.obsm",
+                    "{.arg linear_reduction} {.val {linear_reduction}} not found in adata.obsm",
                     message_type="error",
                     verbose=verbose,
                 )
@@ -3235,7 +2732,7 @@ def PAGA(
                 )
         except Exception as e:
             log_message(
-                f"PAGA compare plot failed ({e}), continuing...",
+                "{.pkg PAGA} compare plot failed ({.val {e}}), continuing...",
                 message_type="warning",
             )
             if plt is not None:
@@ -3262,7 +2759,7 @@ def PAGA(
                 )
         except Exception as e:
             log_message(
-                f"PAGA layout plot failed ({e}), continuing...",
+                "{.pkg PAGA} layout plot failed ({.val {e}}), continuing...",
                 message_type="warning",
             )
             if plt is not None:
@@ -3295,7 +2792,8 @@ def PAGA(
                 )
         except Exception as e:
             log_message(
-                f"PAGA draw_graph failed ({e}), continuing...", message_type="warning"
+                "{.pkg PAGA} draw_graph failed ({.val {e}}), continuing...",
+                message_type="warning",
             )
             if plt is not None:
                 plt.clf()
@@ -3327,7 +2825,8 @@ def PAGA(
                     )
             except Exception as e:
                 log_message(
-                    f"PAGA UMAP failed ({e}), continuing...", message_type="warning"
+                    "{.pkg PAGA} UMAP failed ({.val {e}}), continuing...",
+                    message_type="warning",
                 )
                 if plt is not None:
                     plt.clf()
@@ -3378,7 +2877,7 @@ def PAGA(
                     )
             except Exception as e:
                 log_message(
-                    f"DPT pseudotime plot failed ({e}), continuing...",
+                    "DPT pseudotime plot failed ({.val {e}}), continuing...",
                     message_type="warning",
                 )
                 if plt is not None:
@@ -3392,7 +2891,7 @@ def PAGA(
                 if not os.listdir(figures_dir):
                     os.rmdir(figures_dir)
                     log_message(
-                        f"Removed empty figures directory: {figures_dir}",
+                        "Removed empty figures directory: {.val {figures_dir}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -3534,12 +3033,12 @@ def Palantir(
         if group_by is None and (
             early_group is not None or terminal_groups is not None
         ):
-            log_message("`group_by` must be provided", message_type="error")
+            log_message("{.arg group_by} must be provided", message_type="error")
             exit()
 
         if linear_reduction is None and nonlinear_reduction is None:
             log_message(
-                "`linear_reduction` or `nonlinear_reduction` must be provided at least one",
+                "{.arg linear_reduction} or {.arg nonlinear_reduction} must be provided at least one",
                 message_type="error",
             )
             exit()
@@ -3572,11 +3071,13 @@ def Palantir(
             early_cell = cell[dist.index(min(dist))]
 
         if early_cell is None:
-            log_message("`early_cell` must be provided", message_type="error")
+            log_message("{.arg early_cell} must be provided", message_type="error")
             exit()
         else:
             log_message(
-                f"`early_cell`: {early_cell}", message_type="info", verbose=verbose
+                "{.arg early_cell}: {.val {early_cell}}",
+                message_type="info",
+                verbose=verbose,
             )
 
         terminal_cells_dict = dict()
@@ -3604,10 +3105,12 @@ def Palantir(
             terminal_cells = list(terminal_cells_dict.keys())
 
         if terminal_cells is None:
-            log_message("`terminal_cells`: None", message_type="info", verbose=verbose)
+            log_message(
+                "{.arg terminal_cells}: None", message_type="info", verbose=verbose
+            )
         else:
             log_message(
-                f"`terminal_cells`: {terminal_cells}",
+                "{.arg terminal_cells}: {.val {terminal_cells}}",
                 message_type="info",
                 verbose=verbose,
             )
@@ -3752,7 +3255,7 @@ def Palantir(
                 if not os.listdir(figures_dir):
                     os.rmdir(figures_dir)
                     log_message(
-                        f"Removed empty figures directory: {figures_dir}",
+                        "Removed empty figures directory: {.val {figures_dir}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -3866,18 +3369,20 @@ def WOT(
 
     try:
         if adata is None and h5ad is None:
-            log_message("`adata` or `h5ad` must be provided", message_type="error")
+            log_message(
+                "{.arg adata} or {.arg h5ad} must be provided", message_type="error"
+            )
             exit()
 
         if adata is None:
             adata = sc.read(h5ad)
 
         if group_by is None:
-            log_message("`group_by` must be provided", message_type="error")
+            log_message("{.arg group_by} must be provided", message_type="error")
             exit()
 
         if time_field is None:
-            log_message("`time_field` must be provided", message_type="error")
+            log_message("{.arg time_field} must be provided", message_type="error")
             exit()
 
         adata.obs[group_by] = adata.obs[group_by].astype(dtype="category")
@@ -3888,7 +3393,7 @@ def WOT(
                 adata.obs["time_field"] = adata.obs[time_field].astype("float")
             except ValueError:
                 log_message(
-                    f"Unable to convert column `{time_field}` to float type",
+                    "Unable to convert column {.val {time_field}} to float type",
                     message_type="warning",
                 )
         else:
@@ -3896,7 +3401,7 @@ def WOT(
 
         time_dict = dict(zip(adata.obs[time_field], adata.obs["time_field"]))
         if time_from not in time_dict.keys():
-            log_message("`time_from` is incorrect", message_type="error")
+            log_message("{.arg time_from} is incorrect", message_type="error")
             exit()
 
         ot_model = wot.ot.OTModel(
@@ -3945,7 +3450,7 @@ def WOT(
 
         if time_to is not None:
             if time_to not in time_dict.keys():
-                log_message("`time_to` is incorrect", message_type="error")
+                log_message("{.arg time_to} is incorrect", message_type="error")
                 exit()
 
             to_populations = tmap_model.population_from_cell_sets(
@@ -3978,7 +3483,7 @@ def WOT(
                 if not os.listdir(figures_dir):
                     os.rmdir(figures_dir)
                     log_message(
-                        f"Removed empty figures directory: {figures_dir}",
+                        "Removed empty figures directory: {.val {figures_dir}}",
                         message_type="info",
                         verbose=verbose,
                     )
@@ -4039,7 +3544,7 @@ def CellTypistModels(on_the_fly=False, verbose=True):
         from celltypist import models
     except ImportError as e:
         log_message(
-            f"celltypist import failed: {e}",
+            "{.pkg celltypist} import failed: {.val {e}}",
             message_type="error",
             verbose=verbose,
         )
@@ -4050,7 +3555,7 @@ def CellTypistModels(on_the_fly=False, verbose=True):
         return models_df
     except Exception as e:
         log_message(
-            f"Failed to get model list: {e}",
+            "{.pkg celltypist} failed to get model list: {.val {e}}",
             message_type="error",
             verbose=verbose,
         )
@@ -4157,7 +3662,9 @@ def CellTypist(
         import matplotlib.pyplot as plt
     except Exception as e:
         log_message(
-            f"matplotlib setup failed: {e}", message_type="warning", verbose=verbose
+            "matplotlib setup failed: {.val {e}}",
+            message_type="warning",
+            verbose=verbose,
         )
         plt = None
 
@@ -4175,7 +3682,7 @@ def CellTypist(
         from celltypist import models
     except ImportError as e:
         log_message(
-            f"celltypist import failed: {e}",
+            "{.pkg celltypist} import failed: {.val {e}}",
             message_type="error",
             verbose=verbose,
         )
@@ -4190,7 +3697,7 @@ def CellTypist(
     try:
         if adata is None and h5ad is None:
             log_message(
-                "`adata` or `h5ad` must be provided",
+                "{.arg adata} or {.arg h5ad} must be provided",
                 message_type="error",
                 verbose=verbose,
             )
@@ -4220,14 +3727,13 @@ def CellTypist(
                 if min_val < 0 or max_val > 9.22:
                     needs_preprocessing = True
                     log_message(
-                        f"Data format invalid for CellTypist (min={min_val:.2f}, max={max_val:.2f}). "
-                        f"Will attempt to preprocess...",
+                        "Data format invalid for CellTypist (min={.val {format(min_val, '.2f')}}, max={.val {format(max_val, '.2f')}}). Will attempt to preprocess...",
                         message_type="warning",
                         verbose=verbose,
                     )
             except Exception as e:
                 log_message(
-                    f"Could not check data format: {e}. Attempting preprocessing...",
+                    "Could not check data format: {.val {e}}. Attempting preprocessing...",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -4270,7 +3776,7 @@ def CellTypist(
         if model is None:
             model = models.get_default_model()
             log_message(
-                f"Using default model: {model}",
+                "Using default model: {.val {model}}",
                 message_type="info",
                 verbose=verbose,
             )
@@ -4280,20 +3786,19 @@ def CellTypist(
                 if model in all_models:
                     model = models.get_model_path(model)
                     log_message(
-                        f"Using model: {model}",
+                        "Using model: {.val {model}}",
                         message_type="info",
                         verbose=verbose,
                     )
                 else:
                     log_message(
-                        f"Model '{model}' not found in downloaded models. "
-                        f"Will try to use as path or download if needed.",
+                        "Model {.val {model}} not found in downloaded models. Will try to use as path or download if needed.",
                         message_type="warning",
                         verbose=verbose,
                     )
             except Exception as e:
                 log_message(
-                    f"Could not check model list: {e}. Using model as provided.",
+                    "Could not check model list: {.val {e}}. Using model as provided.",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -4305,8 +3810,7 @@ def CellTypist(
                     over_clustering_value = adata.obs[over_clustering].values
                 else:
                     log_message(
-                        f"'{over_clustering}' not found in adata.obs. "
-                        f"Will use heuristic over-clustering.",
+                        "{.val {over_clustering}} not found in adata.obs. Will use heuristic over-clustering.",
                         message_type="warning",
                         verbose=verbose,
                     )
@@ -4345,7 +3849,7 @@ def CellTypist(
 
     except Exception as e:
         log_message(
-            f"CellTypist annotation failed: {e}",
+            "CellTypist annotation failed: {.val {e}}",
             message_type="error",
             verbose=verbose,
         )
