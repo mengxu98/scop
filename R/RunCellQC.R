@@ -119,7 +119,7 @@ db_scDblFinder <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -170,7 +170,7 @@ db_scds <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -367,7 +367,6 @@ db_DoubletDetection <- function(
     }
   )
 
-  # Add metadata directly to meta.data data frame
   srt@meta.data$db.DoubletDetection_score <- scores
   srt@meta.data$db.DoubletDetection_class <- class_labels
 
@@ -514,13 +513,13 @@ RunCellQC <- function(
   }
   if (isFALSE(assay %in% SeuratObject::Assays(srt))) {
     log_message(
-      "srt does not contain '", assay, "' assay.",
+      "{.arg srt} does not contain {.arg {assay}} assay",
       message_type = "error"
     )
   }
   if (length(species) != length(species_gene_prefix)) {
     log_message(
-      "'species_gene_prefix' must be the same length as 'species'.",
+      "{.arg species_gene_prefix} must be the same length as {.arg species}.",
       message_type = "error"
     )
   }
@@ -530,7 +529,7 @@ RunCellQC <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "warning"
     )
   }
@@ -562,7 +561,7 @@ RunCellQC <- function(
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
     if (!is.null(split.by)) {
-      log_message("Running QC for ", srt@meta.data[[split.by]][1])
+      log_message("Running QC for {.val {srt@meta.data[[split.by]][1]}}")
     }
     ntotal <- ncol(srt)
 
@@ -574,7 +573,7 @@ RunCellQC <- function(
         }
         if (db_rate >= 1) {
           log_message(
-            "The db_rate is equal to or greater than 1!",
+            "The db_rate is equal to or greater than 1",
             message_type = "error"
           )
         }
@@ -708,9 +707,7 @@ RunCellQC <- function(
             sapply(var, FUN = function(x) exists(x, where = environment()))
           if (any(!var_valid)) {
             log_message(
-              "Variable ",
-              paste0(names(var_valid)[!var_valid], collapse = ","),
-              " is not found in the srt object.",
+              "Variable {.val {names(var_valid)[!var_valid]}} is not found in the srt object",
               message_type = "error"
             )
           }
@@ -809,17 +806,20 @@ RunCellQC <- function(
         species_qc
       )
     )
-    log_message(">>> Total cells: ", ntotal)
-    log_message(">>> Cells which are filtered out: ", length(CellQC))
-    log_message(">>> ", length(db_qc), " potential doublets")
-    log_message(">>> ", length(outlier_qc), " outlier cells")
-    log_message(">>> ", length(umi_qc), "low-UMI cells")
-    log_message(">>> ", length(gene_qc), "low-gene cells")
-    log_message(">>> ", length(mito_qc), "high-mito cells")
-    log_message(">>> ", length(ribo_qc), "high-ribo cells")
-    log_message(">>> ", length(ribo_mito_ratio_qc), "ribo_mito_ratio outlier cells")
-    log_message(">>> ", length(species_qc), "species-contaminated cells")
-    log_message(">>> Remained cells after filtering: ", ntotal - length(CellQC))
+    log_message(
+      "{cli::symbol$record} Total cells: {.pkg {ntotal}}\n",
+      "{cli::symbol$circle_filled} {.pkg {ntotal - length(CellQC)}} cells remained\n",
+      "{cli::symbol$circle} {.pkg {length(CellQC)}} cells filtered out:\n",
+      "{cli::symbol$circle}   {.pkg {length(db_qc)}} potential doublets\n",
+      "{cli::symbol$circle}   {.pkg {length(outlier_qc)}} outlier cells\n",
+      "{cli::symbol$circle}   {.pkg {length(umi_qc)}} low-UMI cells\n",
+      "{cli::symbol$circle}   {.pkg {length(gene_qc)}} low-gene cells\n",
+      "{cli::symbol$circle}   {.pkg {length(mito_qc)}} high-mito cells\n",
+      "{cli::symbol$circle}   {.pkg {length(ribo_qc)}} high-ribo cells\n",
+      "{cli::symbol$circle}   {.pkg {length(ribo_mito_ratio_qc)}} ribo_mito_ratio outlier cells\n",
+      "{cli::symbol$circle}   {.pkg {length(species_qc)}} species-contaminated cells",
+      message_type = "success"
+    )
 
     qc_nm <- c(
       "db_qc",
@@ -833,8 +833,13 @@ RunCellQC <- function(
       "CellQC"
     )
     for (qc in qc_nm) {
-      srt[[qc]] <- ifelse(colnames(srt) %in% get(qc), "Fail", "Pass")
-      srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
+      srt[[qc]] <- ifelse(
+        colnames(srt) %in% get(qc), "Fail", "Pass"
+      )
+      srt[[qc]] <- factor(
+        srt[[qc, drop = TRUE]],
+        levels = c("Pass", "Fail")
+      )
     }
 
     if (return_filtered) {
