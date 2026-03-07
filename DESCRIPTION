@@ -16,7 +16,6 @@ LazyData: True
 LazyDataCompression: xz
 Depends:
     R (>= 4.1.0)
-biocViews: SingleCell, GeneExpression, SingleCellWorkflow, Visualization, ShinyApps
 Imports:
     cli,
     ComplexHeatmap,
@@ -36,7 +35,7 @@ Imports:
     Seurat,
     SeuratObject,
     thisplot (>= 0.3.5),
-    thisutils (>= 0.4.2),
+    thisutils (>= 0.4.3),
     uwot
 Suggests:
     AnnotationDbi,
@@ -47,7 +46,6 @@ Suggests:
     circlize,
     clusterProfiler,
     conos,
-    cowplot,
     dendextend,
     e1071,
     ggpubr,
@@ -73,7 +71,6 @@ Suggests:
     metR,
     MASS,
     NMF,
-    openxlsx,
     org.Hs.eg.db,
     org.Mm.eg.db,
     pak,
@@ -96,8 +93,6 @@ Suggests:
     scds,
     scDblFinder,
     scmap,
-    shiny,
-    styler,
     stringr,
     sva,
     symphony,
