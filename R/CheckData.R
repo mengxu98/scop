@@ -371,7 +371,7 @@ CheckDataList <- function(
     if (isTRUE(do_normalization)) {
       if (normalization_method == "LogNormalize") {
         log_message(
-          "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
         srt_list[[i]] <- NormalizeData(
@@ -388,7 +388,7 @@ CheckDataList <- function(
       }
       if (normalization_method == "TFIDF") {
         log_message(
-          "Perform {.fn RunTFIDF} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          "Perform {.fn RunTFIDF} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
         srt_list[[i]] <- Signac::RunTFIDF(
@@ -407,7 +407,7 @@ CheckDataList <- function(
       ) {
         if (type == "RNA") {
           log_message(
-            "Perform {.fn Seurat::FindVariableFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+            "Perform {.fn Seurat::FindVariableFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
             verbose = verbose
           )
           srt_list[[i]] <- Seurat::FindVariableFeatures(
@@ -420,7 +420,7 @@ CheckDataList <- function(
         }
         if (type == "Chromatin") {
           log_message(
-            "Perform {.fn FindTopFeatures} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+            "Perform {.fn FindTopFeatures} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
             verbose = verbose
           )
           srt_list[[i]] <- Signac::FindTopFeatures(
@@ -441,7 +441,7 @@ CheckDataList <- function(
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
         log_message(
-          "Perform {.fn Seurat::SCTransform} on the data {.val {i}}/{.val {length(srt_list)}} of the {.arg srt_list}...",
+          "Perform {.fn Seurat::SCTransform} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
         srt_list[[i]] <- Seurat::SCTransform(
@@ -514,7 +514,7 @@ CheckDataList <- function(
     }
     if (HVF_source == "separate") {
       log_message(
-        "Use the separate HVF from srt_list",
+        "Use the separate HVF from {.arg srt_list}",
         verbose = verbose
       )
       # if (type == "RNA") {
@@ -664,7 +664,7 @@ CheckDataMerge <- function(
   srt_merge_raw <- srt_merge
 
   log_message(
-    "Spliting {.arg srt_merge} into {.arg srt_list} by column {.val {batch}}...",
+    "Split {.arg srt_merge} into {.arg srt_list} by {.val {batch}}",
     verbose = verbose
   )
   srt_list <- Seurat::SplitObject(

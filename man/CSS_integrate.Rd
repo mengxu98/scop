@@ -110,7 +110,7 @@ If \code{NULL}, all dimensions will be used.}
 
 \item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
 
-\item{CSS_dims_use}{A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{CSS_dims_use}{A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and nonlinear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.

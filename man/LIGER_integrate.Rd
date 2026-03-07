@@ -21,7 +21,7 @@ LIGER_integrate(
   do_scaling = TRUE,
   vars_to_regress = NULL,
   regression_model = "linear",
-  LIGER_dims_use = NULL,
+  liger_dims_use = NULL,
   nonlinear_reduction = "umap",
   nonlinear_reduction_dims = c(2, 3),
   nonlinear_reduction_params = list(),
@@ -87,7 +87,7 @@ Default is \code{NULL}.}
 Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
 Default is \code{"linear"}.}
 
-\item{LIGER_dims_use}{A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{liger_dims_use}{A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and nonlinear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
@@ -119,10 +119,10 @@ Default is \code{"louvain"}.}
 Larger values result in fewer clusters.
 Default is \code{0.6}.}
 
-\item{optimizeALS_params}{A list of parameters for the \link[rliger:rliger-deprecated]{rliger::optimizeALS} function.
+\item{optimizeALS_params}{A list of parameters for the \link[rliger:runIntegration]{rliger::runIntegration} function.
 Default is \code{list()}.}
 
-\item{quantilenorm_params}{A list of parameters for the \link[rliger:rliger-deprecated]{rliger::quantile_norm} function.
+\item{quantilenorm_params}{A list of parameters for the \link[rliger:quantileNorm]{rliger::quantileNorm} function.
 Default is \code{list()}.}
 
 \item{verbose}{Whether to print the message.
@@ -133,4 +133,15 @@ Default is \code{11}.}
 }
 \description{
 The LIGER integration function
+}
+\examples{
+data(panc8_sub)
+panc8_sub <- LIGER_integrate(
+  panc8_sub,
+  batch = "tech"
+)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
+)
 }

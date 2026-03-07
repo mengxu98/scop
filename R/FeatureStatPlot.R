@@ -262,6 +262,21 @@
 #'
 #' FeatureStatPlot(
 #'   pancreas_sub,
+#'   stat.by = "Fev",
+#'   group.by = "SubCellType",
+#'   split.by = "Phase",
+#'   comparisons = TRUE
+#' ) + FeatureStatPlot(
+#'   pancreas_sub,
+#'   stat.by = "Fev",
+#'   group.by = "SubCellType",
+#'   split.by = "Phase",
+#'   comparisons = TRUE,
+#'   y.max = 5
+#' )
+#'
+#' FeatureStatPlot(
+#'   pancreas_sub,
 #'   stat.by = c("Rbp4", "Pyy"),
 #'   group.by = "SubCellType",
 #'   bg.by = "CellType",

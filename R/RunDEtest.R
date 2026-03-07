@@ -443,7 +443,7 @@ RunDEtest <- function(
   if (layer == "data" && status != "log_normalized_counts") {
     if (status == "raw_counts") {
       log_message(
-        "Data in the {.arg data} layer is raw counts. Perform {.fun NormalizeData}({.val LogNormalize}) on the data",
+        "Data in the {.arg data} layer is raw counts. Perform {.fun NormalizeData}({.val LogNormalize})",
         message_type = "warning",
         verbose = verbose
       )
@@ -456,7 +456,7 @@ RunDEtest <- function(
     }
     if (status == "raw_normalized_counts") {
       log_message(
-        "Data in the {.arg data} layer is raw_normalized_counts. Perform {.fun NormalizeData}({.val LogNormalize}) on the data",
+        "Data in the {.arg data} layer is raw_normalized_counts. Perform {.fun NormalizeData}({.val LogNormalize})",
         message_type = "warning",
         verbose = verbose
       )
