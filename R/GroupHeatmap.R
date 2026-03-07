@@ -262,8 +262,6 @@
 #'   dpi = 50
 #' )
 #'
-#' \dontrun{
-#' library(dplyr)
 #' pancreas_sub <- AnnotateFeatures(
 #'   pancreas_sub,
 #'   species = "Mus_musculus",
@@ -409,7 +407,6 @@
 #'   )
 #' )
 #' ht8$plot
-#' }
 GroupHeatmap <- function(
     srt,
     features = NULL,
@@ -530,6 +527,7 @@ GroupHeatmap <- function(
     height = NULL,
     width = NULL,
     units = "inch",
+    cores = 1,
     seed = 11,
     ht_params = list(),
     verbose = TRUE,
