@@ -1046,8 +1046,8 @@ Seurat_integrate <- function(
 #' Default is `list()`.
 #' @param PEAKVI_params A list of parameters for the PEAKVI model.
 #' Default is `list()`.
-#' @param num_threads An integer setting the number of threads for scVI.
-#' Default is `8`.
+#' @param cores An integer setting the number of threads for `scVI`.
+#' Default is `1`.
 #'
 #' @export
 scVI_integrate <- function(
@@ -1076,7 +1076,7 @@ scVI_integrate <- function(
     model = "SCVI",
     SCVI_params = list(),
     PEAKVI_params = list(),
-    num_threads = 1,
+    cores = 1,
     verbose = TRUE,
     seed = 11) {
   nonlinear_reductions <- c(
