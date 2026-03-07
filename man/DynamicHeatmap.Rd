@@ -105,7 +105,7 @@ DynamicHeatmap(
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(5, "mm"))
@@ -123,7 +123,7 @@ DynamicHeatmap(
      list(width = grid::unit(5, "mm"))
  },
   separate_annotation = NULL,
-  separate_annotation_palette = "Paired",
+  separate_annotation_palette = "Chinese",
   separate_annotation_palcolor = NULL,
   separate_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -446,7 +446,7 @@ Default is \code{NULL}.}
 
 \item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
 The length of the vector should match the number of cell_annotation.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
 The length of the list should match the number of cell_annotation.
@@ -473,7 +473,7 @@ Default is \code{list()}.}
 Each name should match a column name in the metadata of the \code{Seurat} object.}
 
 \item{separate_annotation_palette}{The color palette to use for separate annotations.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{separate_annotation_palcolor}{The colors to use for each level of the separate annotations.
 Default is \code{NULL}.}
@@ -634,13 +634,13 @@ ht6 <- DynamicHeatmap(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
   separate_annotation_palette = c(
-    "Paired", "Set1"
+    "Chinese", "Set1"
   ),
   separate_annotation_params = list(
     height = grid::unit(10, "mm")
@@ -670,12 +670,12 @@ ht7 <- DynamicHeatmap(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
-  separate_annotation_palette = c("Paired", "Set1"),
+  separate_annotation_palette = c("Chinese", "Set1"),
   separate_annotation_params = list(width = grid::unit(10, "mm")),
   feature_annotation = c("TF", "CSPA"),
   feature_annotation_palcolor = list(

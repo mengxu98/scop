@@ -19,7 +19,7 @@ RunWOT(
   time_to = NULL,
   get_coupling = FALSE,
   recalculate = FALSE,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   show_plot = FALSE,
   save_plot = FALSE,
@@ -71,7 +71,7 @@ Default is \code{FALSE}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

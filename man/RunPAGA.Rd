@@ -29,7 +29,7 @@ RunPAGA(
   n_dcs = 10,
   n_branchings = 0,
   min_group_size = 0.01,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
   cores = 1,
@@ -111,7 +111,7 @@ Edges for weights below this threshold will not be drawn.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

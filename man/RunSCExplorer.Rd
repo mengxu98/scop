@@ -16,7 +16,7 @@ RunSCExplorer(
   initial_assay = NULL,
   initial_slot = NULL,
   initial_label = FALSE,
-  initial_cell_palette = "Paired",
+  initial_cell_palette = "Chinese",
   initial_feature_palette = "Spectral",
   initial_theme = "theme_scop",
   initial_size = 4,
@@ -64,7 +64,7 @@ Default is \code{NULL}.}
 Default is \code{FALSE}.}
 
 \item{initial_cell_palette}{The initial color palette for cells.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{initial_feature_palette}{The initial color palette for features.
 Default is \code{"Spectral"}.}
