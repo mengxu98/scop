@@ -30,7 +30,7 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
-  num_threads = 1,
+  cores = 1,
   verbose = TRUE,
   seed = 11
 )
@@ -118,8 +118,8 @@ Default is `list()`.}
 \item{PEAKVI_params}{A list of parameters for the PEAKVI model.
 Default is `list()`.}
 
-\item{num_threads}{An integer setting the number of threads for scVI.
-Default is `8`.}
+\item{cores}{An integer setting the number of threads for `scVI`.
+Default is `1`.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
