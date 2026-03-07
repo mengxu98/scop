@@ -171,7 +171,6 @@ CellDimPlot(
   group.by = c("CellType", "SubCellType"),
   reduction = "UMAP",
   theme_use = "theme_blank",
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -186,7 +185,6 @@ CellDimPlot(
   stat.by = "Phase",
   reduction = "UMAP",
   theme_use = "theme_blank",
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -235,7 +233,6 @@ ht <- GroupHeatmap(
   ),
   group.by = c("CellType", "SubCellType"),
   heatmap_palette = "Spectral",
-  group_palette = "Chinese",
   cell_annotation = c("Phase", "G2M_score", "Cdh2"),
   cell_annotation_palette = c("Dark2", "Paired", "Paired"),
   show_row_names = TRUE,
@@ -255,13 +252,22 @@ print(ht$plot)
 
 ``` r
 pancreas_sub <- RunCellQC(pancreas_sub)
-CellDimPlot(pancreas_sub, group.by = "CellQC", reduction = "UMAP", palette = "Chinese")
+CellDimPlot(
+  pancreas_sub,
+  group.by = "CellQC",
+  reduction = "UMAP"
+)
 ```
 
 <img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
-CellStatPlot(pancreas_sub, stat.by = "CellQC", group.by = "CellType", palette = "Chinese", label = TRUE)
+CellStatPlot(
+  pancreas_sub,
+  stat.by = "CellQC",
+  group.by = "CellType",
+  label = TRUE
+)
 ```
 
 <img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
@@ -299,7 +305,6 @@ CellDimPlot(
   reduction = "UMAP",
   title = "Seurat",
   theme_use = "theme_blank",
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -332,7 +337,6 @@ ProjectionPlot(
   query_group = "SubCellType",
   ref_group = "celltype",
   ref_param = list(
-    palette = "Chinese",
     xlab = "UMAP_1",
     ylab = "UMAP_2"
   )
@@ -355,7 +359,6 @@ CellDimPlot(
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
   label = TRUE,
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -377,7 +380,6 @@ CellDimPlot(
   group.by = "KNNPredict_classification",
   reduction = "UMAP",
   label = TRUE,
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -393,7 +395,6 @@ ht <- CellCorHeatmap(
   ref_group = "celltype",
   nlabel = 3,
   label_by = "row",
-  query_group_palette = "Chinese",
   show_row_names = TRUE,
   show_column_names = TRUE,
   width = 4,
@@ -416,7 +417,6 @@ pancreas_sub <- RunCytoTRACE(
 CytoTRACEPlot(
   pancreas_sub,
   group.by = "CellType",
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -441,7 +441,6 @@ VelocityPlot(
   pancreas_sub,
   reduction = "UMAP",
   group.by = "SubCellType",
-  group_palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -478,7 +477,6 @@ PAGAPlot(
   label = TRUE,
   label_insitu = TRUE,
   label_repel = TRUE,
-  node_palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -501,7 +499,6 @@ CellDimPlot(
   group.by = "SubCellType",
   lineages = paste0("Lineage", 1:2),
   reduction = "UMAP",
-  palette = "Chinese",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -546,7 +543,6 @@ CellDimPlot(
     group.by = "Monocle3_clusters",
     reduction = "UMAP",
     label = TRUE,
-    palette = "Chinese",
     xlab = "UMAP_1",
     ylab = "UMAP_2"
   ) +
@@ -556,7 +552,6 @@ CellDimPlot(
     group.by = "SubCellType",
     reduction = "UMAP",
     label = TRUE,
-    palette = "Chinese",
     xlab = "UMAP_1",
     ylab = "UMAP_2"
   ) +
@@ -599,7 +594,6 @@ ht <- DynamicHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE,
   exp_legend_title = "Z-score",
-  cell_annotation_palette = "Chinese",
   heatmap_palette = "viridis",
   cell_annotation = "SubCellType",
   separate_annotation = list(
@@ -626,7 +620,6 @@ DynamicPlot(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   group.by = "SubCellType",
-  point_palette = "Chinese",
   features = c(
     "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2"
   ),
@@ -644,8 +637,6 @@ FeatureStatPlot(
   bg.by = "CellType",
   stat.by = c("Sox9", "Neurod2", "Isl1", "Rbp4"),
   add_box = TRUE,
-  palette = "Chinese",
-  bg_palette = "Chinese",
   comparisons = list(
     c("Ductal", "Ngn3 low EP"),
     c("Ngn3 high EP", "Pre-endocrine"),
@@ -682,7 +673,6 @@ DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan",
-  group_palette = "Chinese",
   label.size = 2
 )
 ```
@@ -694,7 +684,6 @@ DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring",
-  group_palette = "Chinese",
   label.size = 2
 )
 ```
@@ -710,7 +699,6 @@ ht <- FeatureHeatmap(
   group.by = "CellType",
   features = DEGs$gene,
   feature_split = DEGs$group1,
-  group_palette = "Chinese",
   exp_legend_title = "Z-score",
   species = "Mus_musculus",
   db = c("GO_BP", "KEGG", "WikiPathway"),
