@@ -169,12 +169,6 @@
 #' If set to `TRUE`, the `magick` package will be used instead of the raster package.
 #' This can be useful for rendering large heatmaps more efficiently.
 #' The `magick` package will automatically be installed if it is not installed.
-#' @param width The width of the heatmap in the specified units.
-#' If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.
-#' @param height The height of the heatmap in the specified units.
-#' If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.
-#' @param units The units to use for the width and height of the heatmap.
-#' Default is `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
 #'
 #' @return
 #' A list with the following elements:
