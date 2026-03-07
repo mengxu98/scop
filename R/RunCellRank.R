@@ -173,7 +173,7 @@ RunCellRank <- function(
     plot_dpi = 300,
     plot_prefix = "cellrank",
     legend.position = "on data",
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     dirpath = "./cellrank",
     return_seurat = !is.null(srt),

@@ -51,7 +51,7 @@ CytoTRACEPlot <- function(
     byrow = TRUE,
     pt.size = NULL,
     pt.alpha = 1,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     theme_use = "theme_scop",
     theme_args = list(),

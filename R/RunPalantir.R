@@ -74,7 +74,7 @@ RunPalantir <- function(
     max_iterations = 25,
     cores = 1,
     point_size = 20,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     legend.position = "on data",
     show_plot = FALSE,

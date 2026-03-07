@@ -106,7 +106,7 @@ RunPAGA <- function(
     n_dcs = 10,
     n_branchings = 0,
     min_group_size = 0.01,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     legend.position = "on data",
     cores = 1,
