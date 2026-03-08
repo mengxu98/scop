@@ -88,7 +88,7 @@
 #' @param stat.by The name of a metadata column to stat.
 #' @param stat_type Set stat types ("percent" or "count").
 #' @param stat_plot_type Set the statistical plot type.
-#' @param stat_plot_size Set the statistical plot size. Default is `0.1`.
+#' @param stat_plot_size Set the statistical plot size. Default is `0.2`.
 #' @param stat_plot_palette Color palette used in statistical plot.
 #' @param stat_palcolor Custom colors used in statistical plot
 #' @param stat_plot_position Position adjustment in statistical plot.
@@ -613,7 +613,7 @@ CellDimPlot <- function(
     stat_type = "percent",
     stat_plot_type = "pie",
     stat_plot_position = c("stack", "dodge"),
-    stat_plot_size = 0.15,
+    stat_plot_size = 0.2,
     stat_plot_palette = "Set1",
     stat_palcolor = NULL,
     stat_plot_alpha = 1,
