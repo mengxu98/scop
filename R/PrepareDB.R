@@ -1608,7 +1608,7 @@ PrepareDB <- function(
           check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: CSPA")
           temp <- tempfile(fileext = ".xlsx")
-          url <- "https://wlab.ethz.ch/cspa/data/S1_File.xlsx"
+          url <- "https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"
           download(
             url = url,
             destfile = temp
