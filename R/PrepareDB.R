@@ -862,12 +862,7 @@ PrepareDB <- function(
               db_species["MP"] <- "Mus_musculus"
             } else {
               log_message(
-                "{.pkg MP} database only support Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg MP} database only support {.val Mus_musculus}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1081,12 +1076,7 @@ PrepareDB <- function(
               db_species["HPO"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg HPO} database only support Homo_sapiens. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg HPO} database only support {.val Homo_sapiens}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1610,11 +1600,7 @@ PrepareDB <- function(
               db_species["CSPA"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CSPA} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CSPA} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1625,11 +1611,11 @@ PrepareDB <- function(
           url <- "https://wlab.ethz.ch/cspa/data/S1_File.xlsx"
           download(
             url = url,
-            destfile = temp,
-            mode = ifelse(.Platform$OS.type == "windows", "wb", "w"),
-            extra = "--no-check-certificate"
+            destfile = temp
           )
-          surfacepro <- get_namespace_fun("openxlsx", "read.xlsx")(temp, sheet = 1)
+          surfacepro <- get_namespace_fun(
+            "openxlsx", "read.xlsx"
+          )(temp, sheet = 1)
           unlink(temp)
           surfacepro <- surfacepro[
             surfacepro[["organism"]] ==
@@ -1684,11 +1670,7 @@ PrepareDB <- function(
               db_species["Surfaceome"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg Surfaceome} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg Surfaceome} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1762,11 +1744,7 @@ PrepareDB <- function(
               db_species["SPRomeDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg SPRomeDB} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg SPRomeDB} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1850,11 +1828,6 @@ PrepareDB <- function(
             } else {
               log_message(
                 "{.pkg VerSeDa} database only support {.val {verseda_sps}}. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1956,11 +1929,6 @@ PrepareDB <- function(
             } else {
               log_message(
                 "{.pkg TFLink} database only support {.val {tflink_sp}}. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -2017,12 +1985,7 @@ PrepareDB <- function(
               db_species["hTFtarget"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg hTFtarget} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg hTFtarget} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2079,12 +2042,7 @@ PrepareDB <- function(
               db_species["TRRUST"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg TRRUST} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg TRRUST} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2155,12 +2113,7 @@ PrepareDB <- function(
               db_species["JASPAR"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg JASPAR} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg JASPAR} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2212,12 +2165,7 @@ PrepareDB <- function(
               db_species["ENCODE"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg ENCODE} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg ENCODE} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2271,12 +2219,7 @@ PrepareDB <- function(
               db_species["MSigDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg MSigDB} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg MSigDB} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2447,12 +2390,7 @@ PrepareDB <- function(
               db_species["CellTalk"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CellTalk} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CellTalk} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2532,12 +2470,7 @@ PrepareDB <- function(
               db_species["CellChat"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CellChat} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CellChat} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2663,11 +2596,6 @@ PrepareDB <- function(
           } else {
             log_message(
               "{.pkg {db}} database only support {.val {custom_species}}. Consider using {.arg convert_species=TRUE}",
-              message_type = "warning",
-              verbose = verbose
-            )
-            log_message(
-              "Stop the preparation",
               message_type = "error"
             )
           }
