@@ -35,7 +35,7 @@
 ### Data Processing
 
 - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md)
-  : Convert an anndata object to a seurat object using reticulate
+  : Convert an anndata object to a seurat object
 
 - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md)
   : Cell scoring
@@ -69,9 +69,6 @@
   :
 
   Get expression data from `Assay5` or Seurat object
-
-- [`is_outlier()`](https://mengxu98.github.io/scop/reference/is_outlier.md)
-  : Detect outliers using MAD (Median Absolute Deviation)
 
 - [`RecoverCounts()`](https://mengxu98.github.io/scop/reference/RecoverCounts.md)
   : Attempt to recover raw counts from the normalized matrix
@@ -119,7 +116,7 @@
 ### Dimensionality Reduction and Clustering
 
 - [`RunDimReduction()`](https://mengxu98.github.io/scop/reference/RunDimReduction.md)
-  : Run dimensionality reduction
+  : Run dimension reduction
 - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md) : Run
   diffusion map (DM)
 - [`RunFR()`](https://mengxu98.github.io/scop/reference/RunFR.md) : Run
@@ -212,7 +209,7 @@
 ### Dynamic Trajectory Analysis
 
 - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md)
-  : Run CellRank analysis with kernel-estimator architecture
+  : Run CellRank analysis
 - [`RunCytoTRACE()`](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md)
   : Run CytoTRACE 2
 - [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
@@ -232,7 +229,7 @@
 - [`RunDynamicFeatures()`](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md)
   : Calculates dynamic features for lineages
 
-### Cell Communication Analysis
+### Cell-Cell Communication Analysis
 
 - [`RunCellChat()`](https://mengxu98.github.io/scop/reference/RunCellChat.md)
   : Run CellChat
@@ -300,8 +297,6 @@
 
 - [`compute_velocity_on_grid()`](https://mengxu98.github.io/scop/reference/compute_velocity_on_grid.md)
   : Compute velocity on grid
-- [`cluster_within_group2()`](https://mengxu98.github.io/scop/reference/cluster_within_group2.md)
-  : Cluster within group
 - [`print(`*`<scop_logo>`*`)`](https://mengxu98.github.io/scop/reference/print.scop_logo.md)
   : print scop logo
 

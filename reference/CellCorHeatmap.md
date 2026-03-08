@@ -56,12 +56,12 @@ CellCorHeatmap(
   label_size = 10,
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
-  query_group_palette = "Paired",
+  query_group_palette = "Chinese",
   query_group_palcolor = NULL,
   ref_group_palette = "simspec",
   ref_group_palcolor = NULL,
   query_annotation = NULL,
-  query_annotation_palette = "Paired",
+  query_annotation_palette = "Chinese",
   query_annotation_palcolor = NULL,
   query_cell_annotation_params = if (flip) {
      list(height = grid::unit(10, "mm"))
@@ -70,7 +70,7 @@ CellCorHeatmap(
      list(width = grid::unit(10, "mm"))
  },
   ref_annotation = NULL,
-  ref_annotation_palette = "Paired",
+  ref_annotation_palette = "Chinese",
   ref_annotation_palcolor = NULL,
   ref_cell_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -348,7 +348,7 @@ CellCorHeatmap(
 
   The color palette to use for the query group legend. This can be any
   of the palettes available in the circlize package. Default is
-  `"Paired"`.
+  `"Chinese"`.
 
 - query_group_palcolor:
 
@@ -379,7 +379,7 @@ CellCorHeatmap(
   can be any of the palettes available in the circlize package. If a
   single color palette is provided, it will be used for all cell
   annotation tracks. If multiple color palettes are provided, each track
-  will be assigned a separate palette. Default is `"Paired"`.
+  will be assigned a separate palette. Default is `"Chinese"`.
 
 - query_annotation_palcolor:
 
@@ -411,7 +411,7 @@ CellCorHeatmap(
   This can be any of the palettes available in the circlize package. If
   a single color palette is provided, it will be used for all cell
   annotation tracks. If multiple color palettes are provided, each track
-  will be assigned a separate palette. Default is `"Paired"`.
+  will be assigned a separate palette. Default is `"Chinese"`.
 
 - ref_annotation_palcolor:
 
@@ -503,35 +503,35 @@ A list with the following elements:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:34:28] Start standard scop workflow...
-#> ℹ [2026-02-27 17:34:29] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:34:29] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:30] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:31] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:34:31] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:34:31] Finished check
-#> ℹ [2026-02-27 17:34:31] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:34:31] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:34:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:34:33] Reorder clusters...
-#> ℹ [2026-02-27 17:34:33] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:34:33] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:34:35] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:34:37] Run scop standard workflow completed
+#> ℹ [2026-03-08 06:50:09] Start standard scop workflow...
+#> ℹ [2026-03-08 06:50:10] Checking a list of <Seurat>...
+#> ! [2026-03-08 06:50:10] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:50:11] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:50:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 06:50:12] Number of available HVF: 2000
+#> ℹ [2026-03-08 06:50:12] Finished check
+#> ℹ [2026-03-08 06:50:12] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 06:50:13] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 06:50:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 06:50:14] Reorder clusters...
+#> ℹ [2026-03-08 06:50:14] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 06:50:14] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 06:50:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 06:50:19] Run scop standard workflow completed
 ht1 <- CellCorHeatmap(
   srt_query = pancreas_sub,
   query_group = "SubCellType"
 )
-#> ℹ [2026-02-27 17:34:37] Use the HVF to calculate distance metric
-#> ℹ [2026-02-27 17:34:37] Use [1] 2000 features to calculate distance.
+#> ℹ [2026-03-08 06:50:19] Use the HVF to calculate distance metric
+#> ℹ [2026-03-08 06:50:19] Use [1] 2000 features to calculate distance.
 #> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
 #> This message is displayed once per session.
-#> ℹ [2026-02-27 17:34:37] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:37] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:37] Calculate similarity...
-#> ℹ [2026-02-27 17:34:37] Use raw method to find neighbors
-#> ℹ [2026-02-27 17:34:37] Predict cell type...
+#> ℹ [2026-03-08 06:50:19] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:19] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:19] Calculate similarity...
+#> ℹ [2026-03-08 06:50:19] Use raw method to find neighbors
+#> ℹ [2026-03-08 06:50:19] Predict cell type...
 ht1$plot
 
 
@@ -548,31 +548,31 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-02-27 17:34:39] Rename features for the assay: RNA
+#> ℹ [2026-03-08 06:50:20] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2026-02-27 17:34:39] Spliting `srt_merge` into `srt_list` by column "tech"...
-#> ℹ [2026-02-27 17:34:40] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:34:40] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:41] Perform `Seurat::FindVariableFeatures()` on the data 1/5 of the `srt_list`...
-#> ! [2026-02-27 17:34:41] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 2/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:42] Perform `Seurat::FindVariableFeatures()` on the data 2/5 of the `srt_list`...
-#> ! [2026-02-27 17:34:42] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 3/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:43] Perform `Seurat::FindVariableFeatures()` on the data 3/5 of the `srt_list`...
-#> ! [2026-02-27 17:34:44] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 4/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:44] Perform `Seurat::FindVariableFeatures()` on the data 4/5 of the `srt_list`...
-#> ! [2026-02-27 17:34:45] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:34:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 5/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:46] Perform `Seurat::FindVariableFeatures()` on the data 5/5 of the `srt_list`...
-#> ℹ [2026-02-27 17:34:46] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:34:46] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:34:47] Finished check
+#> ℹ [2026-03-08 06:50:21] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-03-08 06:50:21] Checking a list of <Seurat>...
+#> ! [2026-03-08 06:50:21] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:22] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-03-08 06:50:22] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:23] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-03-08 06:50:24] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:25] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-03-08 06:50:25] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:26] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-03-08 06:50:26] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:50:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:27] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-03-08 06:50:28] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 06:50:28] Number of available HVF: 2000
+#> ℹ [2026-03-08 06:50:29] Finished check
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -586,16 +586,15 @@ ht2 <- CellCorHeatmap(
   ref_annotation = "tech",
   ref_annotation_palette = "Set3"
 )
-#> ℹ [2026-02-27 17:34:51] Use the HVF to calculate distance metric
-#> ℹ [2026-02-27 17:34:51] Use [1] 632 features to calculate distance.
-#> ℹ [2026-02-27 17:34:51] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:51] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:51] Calculate similarity...
-#> ℹ [2026-02-27 17:34:51] Use raw method to find neighbors
-#> ℹ [2026-02-27 17:34:51] Predict cell type...
-#> Error in theme_scop(): could not find function "theme_scop"
+#> ℹ [2026-03-08 06:50:32] Use the HVF to calculate distance metric
+#> ℹ [2026-03-08 06:50:32] Use [1] 632 features to calculate distance.
+#> ℹ [2026-03-08 06:50:33] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:33] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:33] Calculate similarity...
+#> ℹ [2026-03-08 06:50:33] Use raw method to find neighbors
+#> ℹ [2026-03-08 06:50:33] Predict cell type...
 ht2$plot
-#> Error: object 'ht2' not found
+
 
 ht3 <- CellCorHeatmap(
   srt_query = pancreas_sub,
@@ -607,13 +606,13 @@ ht3 <- CellCorHeatmap(
   ref_collapsing = FALSE,
   cluster_columns = TRUE
 )
-#> ℹ [2026-02-27 17:34:55] Use the HVF to calculate distance metric
-#> ℹ [2026-02-27 17:34:55] Use [1] 632 features to calculate distance.
-#> ℹ [2026-02-27 17:34:57] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:57] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:34:57] Calculate similarity...
-#> ℹ [2026-02-27 17:34:57] Use raw method to find neighbors
-#> ℹ [2026-02-27 17:34:58] Predict cell type...
+#> ℹ [2026-03-08 06:50:43] Use the HVF to calculate distance metric
+#> ℹ [2026-03-08 06:50:43] Use [1] 632 features to calculate distance.
+#> ℹ [2026-03-08 06:50:44] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:44] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:50:44] Calculate similarity...
+#> ℹ [2026-03-08 06:50:44] Use raw method to find neighbors
+#> ℹ [2026-03-08 06:50:45] Predict cell type...
 ht3$plot
 
 
@@ -631,18 +630,18 @@ ht4 <- CellCorHeatmap(
     "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
   )
 )
-#> ℹ [2026-02-27 17:35:13] Use the HVF to calculate distance metric
-#> ℹ [2026-02-27 17:35:13] Use [1] 632 features to calculate distance.
-#> ℹ [2026-02-27 17:35:13] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:35:13] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-02-27 17:35:13] Calculate similarity...
-#> ℹ [2026-02-27 17:35:14] Use raw method to find neighbors
-#> ℹ [2026-02-27 17:35:14] Predict cell type...
-#> ! [2026-02-27 17:35:21] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-02-27 17:35:23] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-02-27 17:35:26] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-02-27 17:35:28] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
-#> ! [2026-02-27 17:35:31] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ℹ [2026-03-08 06:50:59] Use the HVF to calculate distance metric
+#> ℹ [2026-03-08 06:50:59] Use [1] 632 features to calculate distance.
+#> ℹ [2026-03-08 06:51:00] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:51:00] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-03-08 06:51:00] Calculate similarity...
+#> ℹ [2026-03-08 06:51:00] Use raw method to find neighbors
+#> ℹ [2026-03-08 06:51:00] Predict cell type...
+#> ! [2026-03-08 06:51:08] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-03-08 06:51:11] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-03-08 06:51:13] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-03-08 06:51:16] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-03-08 06:51:19] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
@@ -665,8 +664,183 @@ ht4 <- CellCorHeatmap(
 #> data's colour values.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
-#> ! [2026-02-27 17:35:33] Cannot convert object of <NULL> into a grob
-#> Error in UseMethod("grid.draw"): no applicable method for 'grid.draw' applied to an object of class "list"
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
 ht4$plot
-#> Error: object 'ht4' not found
 ```

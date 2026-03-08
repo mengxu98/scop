@@ -43,22 +43,22 @@ data(pancreas_sub)
 
 # Rename all clusters
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:09:23] Start standard scop workflow...
-#> ℹ [2026-02-27 18:09:24] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:09:24] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:09:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:09:26] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:09:26] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:09:26] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:09:27] Finished check
-#> ℹ [2026-02-27 18:09:27] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:09:27] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:09:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:09:28] Reorder clusters...
-#> ℹ [2026-02-27 18:09:28] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:09:28] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:09:32] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:09:35] Run scop standard workflow completed
+#> ℹ [2026-03-08 07:38:35] Start standard scop workflow...
+#> ℹ [2026-03-08 07:38:36] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:38:36] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:38:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:38:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:38:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:38:38] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:38:38] Finished check
+#> ℹ [2026-03-08 07:38:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 07:38:39] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 07:38:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 07:38:40] Reorder clusters...
+#> ℹ [2026-03-08 07:38:40] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 07:38:40] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 07:38:43] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 07:38:47] Run scop standard workflow completed
 levels(pancreas_sub@meta.data[["SubCellType"]]) <- unique(
   pancreas_sub@meta.data[["SubCellType"]]
 )
@@ -68,8 +68,6 @@ pancreas_sub <- RenameClusters(
   nameslist = letters[1:8]
 )
 CellDimPlot(pancreas_sub, "newclusters")
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Rename specified clusters
@@ -78,8 +76,6 @@ pancreas_sub <- RenameClusters(pancreas_sub,
   nameslist = list("a" = "Alpha", "b" = "Beta")
 )
 CellDimPlot(pancreas_sub, "newclusters")
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Merge and rename clusters
@@ -93,6 +89,4 @@ pancreas_sub <- RenameClusters(
   keep_levels = TRUE
 )
 CellDimPlot(pancreas_sub, "Merged")
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 ```

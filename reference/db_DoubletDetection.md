@@ -5,7 +5,13 @@ Run doublet-calling with DoubletDetection
 ## Usage
 
 ``` r
-db_DoubletDetection(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
+db_DoubletDetection(
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt)/1000 * 0.01,
+  cores = 1,
+  ...
+)
 ```
 
 ## Arguments
@@ -23,6 +29,10 @@ db_DoubletDetection(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 
   The expected doublet rate. Default is calculated as
   `ncol(srt) / 1000 * 0.01`.
+
+- cores:
+
+  The number of CPU cores to use for `doubletdetection`. Default is `1`.
 
 - ...:
 

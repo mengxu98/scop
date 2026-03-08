@@ -106,7 +106,7 @@ DynamicHeatmap(
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(5, "mm"))
@@ -124,7 +124,7 @@ DynamicHeatmap(
      list(width = grid::unit(5, "mm"))
  },
   separate_annotation = NULL,
-  separate_annotation_palette = "Paired",
+  separate_annotation_palette = "Chinese",
   separate_annotation_palcolor = NULL,
   separate_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -620,7 +620,7 @@ DynamicHeatmap(
 
   A character vector specifying the palette to use for cell annotations.
   The length of the vector should match the number of cell_annotation.
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - cell_annotation_palcolor:
 
@@ -665,7 +665,7 @@ DynamicHeatmap(
 - separate_annotation_palette:
 
   The color palette to use for separate annotations. Default is
-  `"Paired"`.
+  `"Chinese"`.
 
 - separate_annotation_palcolor:
 
@@ -697,18 +697,20 @@ DynamicHeatmap(
 
 - height:
 
-  A numeric vector specifying the height(s) of the heatmap body. Default
-  is `NULL`.
+  The height of the heatmap in the specified units. If not provided, the
+  height will be automatically determined based on the number of rows in
+  the heatmap and the default unit.
 
 - width:
 
-  A numeric vector specifying the width(s) of the heatmap body. Default
-  is `NULL`.
+  The width of the heatmap in the specified units. If not provided, the
+  width will be automatically determined based on the number of columns
+  in the heatmap and the default unit.
 
 - units:
 
-  A character vector specifying the units for the height and width.
-  Default is `"inch"`.
+  The units to use for the width and height of the heatmap. Default is
+  `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
 
 - cores:
 
@@ -744,32 +746,28 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:47:05] Start standard scop workflow...
-#> ℹ [2026-02-27 17:47:06] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:47:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:47:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:47:08] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:47:08] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:47:08] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:47:09] Finished check
-#> ℹ [2026-02-27 17:47:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:47:09] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:47:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:47:10] Reorder clusters...
-#> ℹ [2026-02-27 17:47:10] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:47:10] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:47:13] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:47:16] Run scop standard workflow completed
+#> ℹ [2026-03-08 07:04:58] Start standard scop workflow...
+#> ℹ [2026-03-08 07:04:59] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:04:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:04:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:05:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:05:01] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:05:01] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:05:01] Finished check
+#> ℹ [2026-03-08 07:05:01] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 07:05:01] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 07:05:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 07:05:02] Reorder clusters...
+#> ℹ [2026-03-08 07:05:02] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 07:05:02] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 07:05:06] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 07:05:09] Run scop standard workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
@@ -780,41 +778,39 @@ pancreas_sub <- RunDynamicFeatures(
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
-#> ℹ [2026-02-27 17:47:18] Start find dynamic features
-#> ℹ [2026-02-27 17:47:21] Data type is raw counts
-#> ℹ [2026-02-27 17:47:23] Number of candidate features (union): 231
-#> ℹ [2026-02-27 17:47:23] Data type is raw counts
-#> ℹ [2026-02-27 17:47:24] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-02-27 17:47:24] Using 1 core
-#> ⠙ [2026-02-27 17:47:24] Running for Gcg [1/231] ■                              …
-#> ⠹ [2026-02-27 17:47:24] Running for Cks2 [37/231] ■■■■■■                       …
-#> ⠸ [2026-02-27 17:47:24] Running for Lig1 [145/231] ■■■■■■■■■■■■■■■■■■■■        …
-#> ✔ [2026-02-27 17:47:24] Completed 231 tasks in 6.4s
+#> ℹ [2026-03-08 07:05:11] Start find dynamic features
+#> ℹ [2026-03-08 07:05:14] Data type is raw counts
+#> ℹ [2026-03-08 07:05:16] Number of candidate features (union): 231
+#> ℹ [2026-03-08 07:05:16] Data type is raw counts
+#> ℹ [2026-03-08 07:05:16] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-03-08 07:05:16] Using 1 core
+#> ⠙ [2026-03-08 07:05:16] Running for Gcg [1/231] ■                              …
+#> ⠹ [2026-03-08 07:05:16] Running for Irs4 [60/231] ■■■■■■■■■                    …
+#> ⠸ [2026-03-08 07:05:16] Running for Psat1 [169/231] ■■■■■■■■■■■■■■■■■■■■■■■    …
+#> ✔ [2026-03-08 07:05:16] Completed 231 tasks in 6.4s
 #> 
-#> ℹ [2026-02-27 17:47:24] Building results
-#> ℹ [2026-02-27 17:47:30] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-02-27 17:47:30] Using 1 core
-#> ⠙ [2026-02-27 17:47:30] Running for Pcsk2 [22/231] ■■■■                        …
-#> ⠹ [2026-02-27 17:47:30] Running for Resp18 [122/231] ■■■■■■■■■■■■■■■■■         …
-#> ⠸ [2026-02-27 17:47:30] Running for Cldn3 [226/231] ■■■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-02-27 17:47:30] Completed 231 tasks in 6.7s
+#> ℹ [2026-03-08 07:05:16] Building results
+#> ℹ [2026-03-08 07:05:22] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-03-08 07:05:22] Using 1 core
+#> ⠙ [2026-03-08 07:05:22] Running for Top2a [43/231] ■■■■■■■                     …
+#> ⠹ [2026-03-08 07:05:22] Running for Wfdc2 [142/231] ■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-03-08 07:05:22] Completed 231 tasks in 6.7s
 #> 
-#> ℹ [2026-02-27 17:47:30] Building results
-#> ✔ [2026-02-27 17:47:37] Find dynamic features done
+#> ℹ [2026-03-08 07:05:22] Building results
+#> ✔ [2026-03-08 07:05:29] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   n_split = 5,
   split_method = "kmeans-peaktime",
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 2,
+  height = 3
 )
-#> ℹ [2026-02-27 17:47:56] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-03-08 07:05:58] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-27 17:47:57] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht1$plot
 
@@ -824,134 +820,162 @@ thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   features = c(
     "Sox9",
     "Neurod2",
     "Isl1",
     "Rbp4",
-    "Pyy", "S_score", "G2M_score"
+    "Pyy",
+    "S_score",
+    "G2M_score"
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-02-27 17:47:59] Start find dynamic features
-#> ℹ [2026-02-27 17:47:59] Data type is raw counts
-#> ℹ [2026-02-27 17:48:00] Number of candidate features (union): 2
-#> ℹ [2026-02-27 17:48:00] Data type is raw counts
-#> ! [2026-02-27 17:48:00] Negative values detected
-#> ! [2026-02-27 17:48:00] Negative values detected
-#> ℹ [2026-02-27 17:48:00] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-02-27 17:48:00] Using 1 core
-#> ⠙ [2026-02-27 17:48:00] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
-#> ✔ [2026-02-27 17:48:00] Completed 2 tasks in 79ms
+#> ℹ [2026-03-08 07:06:00] Start find dynamic features
+#> ℹ [2026-03-08 07:06:01] Data type is raw counts
+#> ℹ [2026-03-08 07:06:01] Number of candidate features (union): 2
+#> ℹ [2026-03-08 07:06:02] Data type is raw counts
+#> ! [2026-03-08 07:06:02] Negative values detected
+#> ! [2026-03-08 07:06:02] Negative values detected
+#> ℹ [2026-03-08 07:06:02] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-03-08 07:06:02] Using 1 core
+#> ⠙ [2026-03-08 07:06:02] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
+#> ✔ [2026-03-08 07:06:02] Completed 2 tasks in 51ms
 #> 
-#> ℹ [2026-02-27 17:48:00] Building results
-#> ✔ [2026-02-27 17:48:00] Find dynamic features done
-#> ℹ [2026-02-27 17:48:00] Some features were missing in at least one lineage: 
+#> ℹ [2026-03-08 07:06:02] Building results
+#> ✔ [2026-03-08 07:06:02] Find dynamic features done
+#> ℹ [2026-03-08 07:06:02] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
 
-thisplot::panel_fix(
-  ht2$plot,
-  height = 5,
-  width = 5,
-  raster = TRUE,
-  dpi = 50
-)
-
-
 ht3 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   n_split = 5,
+  nlabel = 10,
   split_method = "kmeans",
   cluster_rows = TRUE,
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 1,
+  height = 2
 )
-#> ℹ [2026-02-27 17:48:02] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-03-08 07:06:03] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-27 17:48:03] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   cell_annotation = "SubCellType",
-  n_split = 5,
+  n_split = 3,
   split_method = "mfuzz",
   species = "Mus_musculus",
   db = "GO_BP",
   anno_terms = TRUE,
-  anno_keys = TRUE,
-  anno_features = TRUE
+  width = 1,
+  height = 2
 )
-#> ℹ [2026-02-27 17:48:06] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ [2026-03-08 07:06:08] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
 #> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
-#> ℹ [2026-02-27 17:48:07] Start Enrichment analysis
-#> ℹ [2026-02-27 17:52:22] Species: "Mus_musculus"
-#> ℹ [2026-02-27 17:56:29] Preparing database: GO_BP
-#> ℹ [2026-02-27 17:56:50] Convert ID types for the GO_BP database
-#> ℹ [2026-02-27 17:56:50] Connect to the Ensembl archives...
-#> ℹ [2026-02-27 17:56:50] Using the 115 version of ensembl database...
-#> ℹ [2026-02-27 17:56:50] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-02-27 17:56:52] Searching the dataset mmusculus ...
-#> ℹ [2026-02-27 17:56:53] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-02-27 17:56:56] Converting the geneIDs...
-#> ℹ [2026-02-27 17:57:06] 23214 genes mapped with "entrez_id"
-#> ℹ [2026-02-27 17:57:06] ==============================
+#> ℹ [2026-03-08 07:06:09] Start Enrichment analysis
+#> ℹ [2026-03-08 07:10:38] Species: "Mus_musculus"
+#> ✔ [2026-03-08 07:14:30] org.Mm.eg.db installed successfully
+#> ℹ [2026-03-08 07:15:02] Preparing database: GO_BP
+#> ℹ [2026-03-08 07:15:22] Convert ID types for the GO_BP database
+#> ℹ [2026-03-08 07:15:22] Connect to the Ensembl archives...
+#> ℹ [2026-03-08 07:15:23] Using the 115 version of ensembl database...
+#> ℹ [2026-03-08 07:15:23] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
+#> ℹ [2026-03-08 07:15:25] Searching the dataset mmusculus ...
+#> ℹ [2026-03-08 07:15:26] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-03-08 07:15:29] Converting the geneIDs...
+#> ℹ [2026-03-08 07:15:36] 23214 genes mapped with "entrez_id"
+#> ℹ [2026-03-08 07:15:36] ==============================
 #> ℹ                       23214 genes mapped
 #> ℹ                       2516 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-02-27 17:57:19] Permform enrichment...
-#> ℹ [2026-02-27 17:57:20] Using 1 core
-#> ⠙ [2026-02-27 17:57:20] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-02-27 17:57:20] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-02-27 17:57:20] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-02-27 17:57:20] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-02-27 17:57:20] Completed 5 tasks in 30.8s
+#> ℹ [2026-03-08 07:15:50] Permform enrichment...
+#> ℹ [2026-03-08 07:15:50] Using 1 core
+#> ⠙ [2026-03-08 07:15:50] Running for 1 [1/3] ■■■■■■■■■■■                       3…
+#> ⠹ [2026-03-08 07:15:50] Running for 2 [2/3] ■■■■■■■■■■■■■■■■■■■■■             6…
+#> ✔ [2026-03-08 07:15:50] Completed 3 tasks in 21.1s
 #> 
-#> ℹ [2026-02-27 17:57:20] Building results
-#> ✔ [2026-02-27 17:57:50] Enrichment analysis done
-#> ℹ [2026-02-27 17:59:57] 
-#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
-ht4$plot
+#> ℹ [2026-03-08 07:15:50] Building results
+#> ✔ [2026-03-08 07:16:11] Enrichment analysis done
 
 
-if (FALSE) { # \dontrun{
+ht5 <- DynamicHeatmap(
+  pancreas_sub,
+  lineages = "Lineage1",
+  cell_annotation = "SubCellType",
+  n_split = 2,
+  split_method = "mfuzz",
+  species = "Mus_musculus",
+  db = "GO_BP",
+  cores = 2,
+  nlabel = 10,
+  anno_terms = TRUE,
+  anno_keys = TRUE,
+  anno_features = TRUE,
+  width = 1,
+  height = 2,
+  terms_width = grid::unit(1, "in"),
+  terms_fontsize = 6,
+  keys_width = grid::unit(0.5, "in"),
+  keys_fontsize = c(3, 6),
+  features_width = grid::unit(0.5, "in"),
+  features_fontsize = c(3, 6)
+)
+#> ℹ [2026-03-08 07:16:14] [1] 162 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
+#> ℹ [2026-03-08 07:16:15] Start Enrichment analysis
+#> ℹ [2026-03-08 07:16:15] Species: "Mus_musculus"
+#> ℹ [2026-03-08 07:16:15] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-08 07:15:49
+#> ℹ [2026-03-08 07:16:16] Permform enrichment...
+#> ℹ [2026-03-08 07:16:16] Using 2 cores
+#> ⠙ [2026-03-08 07:16:16] Running for 1... [1/2] ■■■■■■■■■■■■■■■■                …
+#> ✔ [2026-03-08 07:16:16] Completed 2 tasks in 15.6s
+#> 
+#> ℹ [2026-03-08 07:16:16] Building results
+#> ✔ [2026-03-08 07:16:32] Enrichment analysis done
+
+
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-ht5 <- DynamicHeatmap(
+#> ℹ [2026-03-08 07:18:16] Species: "Mus_musculus"
+#> ℹ [2026-03-08 07:18:16] Loading cached: CSPA version: CSPA nterm:1 created: 2026-03-08 06:46:46
+#> ℹ [2026-03-08 07:18:17] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-03-08 06:46:36
+ht6 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
   separate_annotation_palette = c(
-    "Paired", "Set1"
+    "Chinese", "Set1"
   ),
   separate_annotation_params = list(
     height = grid::unit(10, "mm")
@@ -962,28 +986,60 @@ ht5 <- DynamicHeatmap(
     c("forestgreen")
   ),
   pseudotime_label = 25,
-  pseudotime_label_color = "red"
+  pseudotime_label_color = "red",
+  width = 1,
+  height = 2
 )
-ht5$plot
+#> ℹ [2026-03-08 07:18:18] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
+#> ℹ [2026-03-08 07:18:18] Start find dynamic features
+#> ℹ [2026-03-08 07:18:19] Data type is raw counts
+#> ℹ [2026-03-08 07:18:19] Number of candidate features (union): 2
+#> ℹ [2026-03-08 07:18:20] Data type is raw counts
+#> ℹ [2026-03-08 07:18:20] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-03-08 07:18:20] Using 1 core
+#> ⠙ [2026-03-08 07:18:20] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-03-08 07:18:20] Completed 2 tasks in 136ms
+#> 
+#> ℹ [2026-03-08 07:18:20] Building results
+#> ✔ [2026-03-08 07:18:20] Find dynamic features done
+#> ℹ [2026-03-08 07:18:20] Start find dynamic features
+#> ℹ [2026-03-08 07:18:21] Data type is raw counts
+#> ℹ [2026-03-08 07:18:22] Number of candidate features (union): 2
+#> ℹ [2026-03-08 07:18:22] Data type is raw counts
+#> ℹ [2026-03-08 07:18:22] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-03-08 07:18:22] Using 1 core
+#> ⠙ [2026-03-08 07:18:22] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-03-08 07:18:22] Completed 2 tasks in 110ms
+#> 
+#> ℹ [2026-03-08 07:18:22] Building results
+#> ✔ [2026-03-08 07:18:22] Find dynamic features done
+#> Picking joint bandwidth of 22.6
+#> Picking joint bandwidth of 19.6
+#> Picking joint bandwidth of 22.6
+#> Picking joint bandwidth of 19.6
 
-ht6 <- DynamicHeatmap(
+
+ht7 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
-  separate_annotation_palette = c("Paired", "Set1"),
+  separate_annotation_palette = c("Chinese", "Set1"),
   separate_annotation_params = list(width = grid::unit(10, "mm")),
   feature_annotation = c("TF", "CSPA"),
   feature_annotation_palcolor = list(
@@ -992,8 +1048,37 @@ ht6 <- DynamicHeatmap(
   ),
   pseudotime_label = 25,
   pseudotime_label_color = "red",
-  flip = TRUE, column_title_rot = 45
+  flip = TRUE,
+  column_title_rot = 90,
+  width = 2,
+  height = 1
 )
-ht6$plot
-} # }
+#> ℹ [2026-03-08 07:18:26] [1] 180 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik,Chga...
+#> ℹ [2026-03-08 07:18:27] Start find dynamic features
+#> ℹ [2026-03-08 07:18:28] Data type is raw counts
+#> ℹ [2026-03-08 07:18:28] Number of candidate features (union): 2
+#> ℹ [2026-03-08 07:18:29] Data type is raw counts
+#> ℹ [2026-03-08 07:18:29] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-03-08 07:18:29] Using 1 core
+#> ⠙ [2026-03-08 07:18:29] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-03-08 07:18:29] Completed 2 tasks in 154ms
+#> 
+#> ℹ [2026-03-08 07:18:29] Building results
+#> ✔ [2026-03-08 07:18:29] Find dynamic features done
+#> ℹ [2026-03-08 07:18:29] Start find dynamic features
+#> ℹ [2026-03-08 07:18:30] Data type is raw counts
+#> ℹ [2026-03-08 07:18:30] Number of candidate features (union): 2
+#> ℹ [2026-03-08 07:18:31] Data type is raw counts
+#> ℹ [2026-03-08 07:18:31] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-03-08 07:18:31] Using 1 core
+#> ⠙ [2026-03-08 07:18:31] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-03-08 07:18:31] Completed 2 tasks in 134ms
+#> 
+#> ℹ [2026-03-08 07:18:31] Building results
+#> ✔ [2026-03-08 07:18:31] Find dynamic features done
+#> Picking joint bandwidth of 22.6
+#> Picking joint bandwidth of 19.6
+#> Picking joint bandwidth of 22.6
+#> Picking joint bandwidth of 19.6
 ```

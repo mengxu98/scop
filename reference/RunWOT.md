@@ -20,7 +20,7 @@ RunWOT(
   time_to = NULL,
   get_coupling = FALSE,
   recalculate = FALSE,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   show_plot = FALSE,
   save_plot = FALSE,
@@ -42,19 +42,22 @@ RunWOT(
 
 - assay_x:
 
-  Assay to convert in the anndata object.
+  Assay to convert as the main data matrix in the anndata object.
+  Default is `"RNA"`.
 
 - layer_x:
 
-  Layer name for `assay_x` in the Seurat object.
+  Layer name for assay_x in the Seurat object. Default is `"counts"`.
 
 - assay_y:
 
-  Assay to convert in the anndata object.
+  Assays to convert as layers in the anndata object. Default is
+  `c("spliced", "unspliced")`.
 
 - layer_y:
 
-  Layer names for the `assay_y` in the Seurat object.
+  Layer names for the assay_y in the Seurat object. Default is
+  `"counts"`.
 
 - adata:
 
@@ -103,7 +106,7 @@ RunWOT(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -147,10 +150,6 @@ RunWOT(
 [Geoffrey et al. (2019)
 Cell](https://doi.org/10.1016/j.cell.2019.01.006),
 [GitHub](https://github.com/broadinstitute/wot)
-
-## See also
-
-[srt_to_adata](https://mengxu98.github.io/scop/reference/srt_to_adata.md)
 
 ## Examples
 

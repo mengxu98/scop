@@ -85,14 +85,14 @@ FeatureHeatmap(
   label_color = "black",
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   cell_split_palette = "simspec",
   cell_split_palcolor = NULL,
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(5, "mm"))
@@ -115,6 +115,7 @@ FeatureHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
   seed = 11,
   ht_params = list(),
   verbose = TRUE
@@ -487,7 +488,7 @@ FeatureHeatmap(
 - group_palette:
 
   A character vector specifying the palette to use for groups. Default
-  is `"Paired"`.
+  is `"Chinese"`.
 
 - group_palcolor:
 
@@ -523,7 +524,7 @@ FeatureHeatmap(
 
   A character vector specifying the palette to use for cell annotations.
   The length of the vector should match the number of cell_annotation.
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - cell_annotation_palcolor:
 
@@ -574,18 +575,26 @@ FeatureHeatmap(
 
 - height:
 
-  A numeric vector specifying the height(s) of the heatmap body. Default
-  is `NULL`.
+  The height of the heatmap in the specified units. If not provided, the
+  height will be automatically determined based on the number of rows in
+  the heatmap and the default unit.
 
 - width:
 
-  A numeric vector specifying the width(s) of the heatmap body. Default
-  is `NULL`.
+  The width of the heatmap in the specified units. If not provided, the
+  width will be automatically determined based on the number of columns
+  in the heatmap and the default unit.
 
 - units:
 
-  A character vector specifying the units for the height and width.
-  Default is `"inch"`.
+  The units to use for the width and height of the heatmap. Default is
+  `"inch"`, Options are `"mm"`, `"cm"`, or `"inch"`.
+
+- cores:
+
+  The number of cores to use for parallelization with
+  [foreach::foreach](https://rdrr.io/pkg/foreach/man/foreach.html).
+  Default is `1`.
 
 - seed:
 
@@ -614,36 +623,36 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:01:54] Start standard scop workflow...
-#> ℹ [2026-02-27 18:01:55] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:01:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:01:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:01:56] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:01:57] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:01:57] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:01:57] Finished check
-#> ℹ [2026-02-27 18:01:57] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:01:58] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:01:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:01:59] Reorder clusters...
-#> ℹ [2026-02-27 18:01:59] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:01:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:02:02] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:02:06] Run scop standard workflow completed
+#> ℹ [2026-03-08 07:20:29] Start standard scop workflow...
+#> ℹ [2026-03-08 07:20:29] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:20:30] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:20:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:20:31] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:20:32] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:20:32] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:20:32] Finished check
+#> ℹ [2026-03-08 07:20:32] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 07:20:33] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 07:20:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 07:20:34] Reorder clusters...
+#> ℹ [2026-03-08 07:20:34] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 07:20:34] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 07:20:37] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 07:20:41] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-02-27 18:02:06] Data type is log-normalized
-#> ℹ [2026-02-27 18:02:06] Start differential expression test
-#> ℹ [2026-02-27 18:02:06] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-02-27 18:02:06] Using 1 core
-#> ⠙ [2026-02-27 18:02:06] Running for Ductal [1/5] ■■■■■■■                       …
-#> ⠹ [2026-02-27 18:02:06] Running for Ngn3-low-EP [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-02-27 18:02:06] Completed 5 tasks in 753ms
+#> ℹ [2026-03-08 07:20:41] Data type is log-normalized
+#> ℹ [2026-03-08 07:20:41] Start differential expression test
+#> ℹ [2026-03-08 07:20:41] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-08 07:20:41] Using 1 core
+#> ⠙ [2026-03-08 07:20:41] Running for Ductal [1/5] ■■■■■■■                       …
+#> ⠹ [2026-03-08 07:20:41] Running for Ngn3-low-EP [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■…
+#> ✔ [2026-03-08 07:20:41] Completed 5 tasks in 764ms
 #> 
-#> ℹ [2026-02-27 18:02:06] Building results
-#> ✔ [2026-02-27 18:02:07] Differential expression test completed
+#> ℹ [2026-03-08 07:20:41] Building results
+#> ✔ [2026-03-08 07:20:42] Differential expression test completed
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -684,9 +693,9 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> ℹ [2026-02-27 18:02:20] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-02-27 18:02:20] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-02-27 18:02:20] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-08 07:20:56] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-08 07:20:56] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-08 07:20:56] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht2$plot
 
@@ -702,27 +711,27 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-02-27 18:02:47] Start Enrichment analysis
-#> ℹ [2026-02-27 18:02:49] Species: "Mus_musculus"
-#> ℹ [2026-02-27 18:02:49] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-02-27 17:57:19
-#> ℹ [2026-02-27 18:02:50] Permform enrichment...
-#> ℹ [2026-02-27 18:02:50] Using 1 core
-#> ⠙ [2026-02-27 18:02:50] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-02-27 18:02:50] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-02-27 18:02:50] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-02-27 18:02:50] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-02-27 18:02:50] Completed 5 tasks in 1m 12.6s
+#> ℹ [2026-03-08 07:21:23] Start Enrichment analysis
+#> ℹ [2026-03-08 07:21:24] Species: "Mus_musculus"
+#> ℹ [2026-03-08 07:21:24] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-08 07:15:49
+#> ℹ [2026-03-08 07:21:25] Permform enrichment...
+#> ℹ [2026-03-08 07:21:26] Using 1 core
+#> ⠙ [2026-03-08 07:21:26] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-03-08 07:21:26] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-03-08 07:21:26] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-03-08 07:21:26] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-03-08 07:21:26] Completed 5 tasks in 1m 12.3s
 #> 
-#> ℹ [2026-02-27 18:02:50] Building results
-#> ✔ [2026-02-27 18:04:04] Enrichment analysis done
+#> ℹ [2026-03-08 07:21:26] Building results
+#> ✔ [2026-03-08 07:22:38] Enrichment analysis done
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-02-27 18:04:41] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-02-27 18:04:41] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-02-27 18:04:41] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-08 07:23:17] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-08 07:23:17] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-08 07:23:17] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
@@ -732,10 +741,6 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
@@ -747,7 +752,7 @@ ht4 <- FeatureHeatmap(
   nlabel = 10,
   cell_order = names(sort(pancreas_sub$Lineage1)),
   cell_annotation = c("SubCellType", "Lineage1"),
-  cell_annotation_palette = c("Paired", "cividis")
+  cell_annotation_palette = c("Chinese", "cividis")
 )
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
@@ -757,12 +762,14 @@ ht4 <- FeatureHeatmap(
 ht4$plot
 
 
-if (FALSE) { # \dontrun{
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
+#> ℹ [2026-03-08 07:23:31] Species: "Mus_musculus"
+#> ℹ [2026-03-08 07:23:31] Loading cached: CSPA version: CSPA nterm:1 created: 2026-03-08 06:46:46
+#> ℹ [2026-03-08 07:23:31] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-03-08 06:46:36
 
 ht5 <- FeatureHeatmap(
   pancreas_sub,
@@ -777,7 +784,17 @@ ht5 <- FeatureHeatmap(
   cell_annotation = c("Phase", "G2M_score"),
   cell_annotation_palette = c("Dark2", "Purples")
 )
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 rows. You can control `use_raster` argument by explicitly setting
+#> TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> ℹ [2026-03-08 07:23:36] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-08 07:23:36] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-08 07:23:36] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+
 ht5$plot
+
 
 ht6 <- FeatureHeatmap(
   pancreas_sub,
@@ -794,6 +811,14 @@ ht6 <- FeatureHeatmap(
   flip = TRUE,
   column_title_rot = 45
 )
+#> `use_raster` is automatically set to TRUE for a matrix with more than
+#> 2000 columns You can control `use_raster` argument by explicitly
+#> setting TRUE/FALSE to it.
+#> 
+#> Set `ht_opt$message = FALSE` to turn off this message.
+#> ℹ [2026-03-08 07:23:48] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-08 07:23:48] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-08 07:23:48] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+
 ht6$plot
-} # }
 ```

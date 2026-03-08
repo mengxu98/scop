@@ -1,6 +1,6 @@
-# Run dimensionality reduction
+# Run dimension reduction
 
-Run dimensionality reduction
+Run dimension reduction
 
 ## Usage
 
@@ -53,8 +53,9 @@ RunDimReduction(
 
 - linear_reduction:
 
-  Method of linear dimensionality reduction. Options are `"pca"`,
-  `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`.
+  The linear dimensionality reduction method to use. Options are
+  `"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, or `"glmpca"`. Default is
+  `"pca"`.
 
 - linear_reduction_dims:
 
@@ -67,13 +68,13 @@ RunDimReduction(
 
 - force_linear_reduction:
 
-  Whether force to do linear dimensionality reduction.
+  Whether force to do linear dimension reduction.
 
 - nonlinear_reduction:
 
-  Method of nonlinear dimensionality reduction. Options are `"umap"`,
-  `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`,
-  `"largevis"`.
+  The nonlinear dimensionality reduction method to use. Options are
+  `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`,
+  `"trimap"`, `"largevis"`, or `"fr"`. Default is `"umap"`.
 
 - nonlinear_reduction_dims:
 
@@ -103,7 +104,7 @@ RunDimReduction(
 
 - force_nonlinear_reduction:
 
-  Whether force to do nonlinear dimensionality reduction.
+  Whether force to do nonlinear dimension reduction.
 
 - verbose:
 

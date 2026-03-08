@@ -187,35 +187,35 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:49:14] Start standard scop workflow...
-#> ℹ [2026-02-27 18:49:15] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:49:15] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:49:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:49:17] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:49:18] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:49:18] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:49:18] Finished check
-#> ℹ [2026-02-27 18:49:18] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:49:19] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:49:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:49:20] Reorder clusters...
-#> ℹ [2026-02-27 18:49:20] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:49:20] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:49:24] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:49:29] Run scop standard workflow completed
+#> ℹ [2026-03-08 08:16:55] Start standard scop workflow...
+#> ℹ [2026-03-08 08:16:56] Checking a list of <Seurat>...
+#> ! [2026-03-08 08:16:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 08:16:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:16:58] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:16:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 08:16:59] Number of available HVF: 2000
+#> ℹ [2026-03-08 08:16:59] Finished check
+#> ℹ [2026-03-08 08:16:59] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 08:17:00] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 08:17:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 08:17:01] Reorder clusters...
+#> ℹ [2026-03-08 08:17:01] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 08:17:01] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 08:17:06] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 08:17:10] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-02-27 18:49:29] Data type is log-normalized
-#> ℹ [2026-02-27 18:49:29] Start differential expression test
-#> ℹ [2026-02-27 18:49:29] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-02-27 18:49:29] Using 1 core
-#> ⠙ [2026-02-27 18:49:29] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-02-27 18:49:29] Completed 5 tasks in 789ms
+#> ℹ [2026-03-08 08:17:11] Data type is log-normalized
+#> ℹ [2026-03-08 08:17:11] Start differential expression test
+#> ℹ [2026-03-08 08:17:11] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-08 08:17:11] Using 1 core
+#> ⠙ [2026-03-08 08:17:11] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-03-08 08:17:11] Completed 5 tasks in 820ms
 #> 
-#> ℹ [2026-02-27 18:49:29] Building results
-#> ✔ [2026-02-27 18:49:30] Differential expression test completed
+#> ℹ [2026-03-08 08:17:11] Building results
+#> ✔ [2026-03-08 08:17:12] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",

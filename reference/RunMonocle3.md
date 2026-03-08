@@ -22,6 +22,8 @@ RunMonocle3(
   close_loop = TRUE,
   root_pr_nodes = NULL,
   root_cells = NULL,
+  xlab = NULL,
+  ylab = NULL,
   seed = 11,
   verbose = TRUE
 )
@@ -101,6 +103,14 @@ RunMonocle3(
 
   The root cells to order cells. If not specified, user will be prompted
   for input. Defaults to NULL.
+
+- xlab:
+
+  The x-axis label of the plot. Default is `NULL`.
+
+- ylab:
+
+  The y-axis label of the plot. Default is `NULL`.
 
 - seed:
 

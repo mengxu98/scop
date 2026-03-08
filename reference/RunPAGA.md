@@ -31,7 +31,7 @@ RunPAGA(
   n_dcs = 10,
   n_branchings = 0,
   min_group_size = 0.01,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
   cores = 1,
@@ -59,19 +59,22 @@ RunPAGA(
 
 - assay_x:
 
-  Assay to convert in the anndata object.
+  Assay to convert as the main data matrix in the anndata object.
+  Default is `"RNA"`.
 
 - layer_x:
 
-  Layer name for `assay_x` in the Seurat object.
+  Layer name for assay_x in the Seurat object. Default is `"counts"`.
 
 - assay_y:
 
-  Assay to convert in the anndata object.
+  Assays to convert as layers in the anndata object. Default is
+  `c("spliced", "unspliced")`.
 
 - layer_y:
 
-  Layer names for the `assay_y` in the Seurat object.
+  Layer names for the assay_y in the Seurat object. Default is
+  `"counts"`.
 
 - group.by:
 
@@ -79,11 +82,15 @@ RunPAGA(
 
 - linear_reduction:
 
-  Linear reduction method to use, e.g., `"PCA"`.
+  The linear dimensionality reduction method to use. Options are
+  `"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, or `"glmpca"`. Default is
+  `"pca"`.
 
 - nonlinear_reduction:
 
-  Non-linear reduction method to use, e.g., `"UMAP"`.
+  The nonlinear dimensionality reduction method to use. Options are
+  `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`,
+  `"trimap"`, `"largevis"`, or `"fr"`. Default is `"umap"`.
 
 - basis:
 
@@ -156,7 +163,7 @@ RunPAGA(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -206,7 +213,6 @@ RunPAGA(
 
 ## See also
 
-[srt_to_adata](https://mengxu98.github.io/scop/reference/srt_to_adata.md),
 [PAGAPlot](https://mengxu98.github.io/scop/reference/PAGAPlot.md),
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md),
 [RunSCVELO](https://mengxu98.github.io/scop/reference/RunSCVELO.md)

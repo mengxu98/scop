@@ -118,29 +118,29 @@ RunFR(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:29:31] Start standard scop workflow...
-#> ℹ [2026-02-27 18:29:31] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:29:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:29:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:29:34] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:29:34] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:29:34] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:29:35] Finished check
-#> ℹ [2026-02-27 18:29:35] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:29:35] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:29:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:29:36] Reorder clusters...
-#> ℹ [2026-02-27 18:29:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:29:36] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:29:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:29:45] Run scop standard workflow completed
+#> ℹ [2026-03-08 07:59:34] Start standard scop workflow...
+#> ℹ [2026-03-08 07:59:35] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:59:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:59:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:59:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:59:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:59:38] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:59:38] Finished check
+#> ℹ [2026-03-08 07:59:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 07:59:39] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 07:59:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 07:59:40] Reorder clusters...
+#> ℹ [2026-03-08 07:59:40] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 07:59:40] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 07:59:45] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 07:59:49] Run scop standard workflow completed
 pancreas_sub <- RunFR(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> ℹ [2026-02-27 18:29:45] Running force-directed layout
-#> ℹ [2026-02-27 18:29:45] Computing nearest neighbor graph and SNN
-#> ℹ [2026-02-27 18:29:51] Force-directed layout computed
+#> ℹ [2026-03-08 07:59:49] Running force-directed layout
+#> ℹ [2026-03-08 07:59:50] Computing nearest neighbor graph and SNN
+#> ℹ [2026-03-08 07:59:55] Force-directed layout computed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",

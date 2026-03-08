@@ -17,7 +17,7 @@ CellDimPlot(
   show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
   pt.size = NULL,
   pt.alpha = 1,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   bg_color = "grey80",
   label = FALSE,
@@ -62,7 +62,7 @@ CellDimPlot(
   stat_type = "percent",
   stat_plot_type = "pie",
   stat_plot_position = c("stack", "dodge"),
-  stat_plot_size = 0.15,
+  stat_plot_size = 0.2,
   stat_plot_palette = "Set1",
   stat_palcolor = NULL,
   stat_plot_alpha = 1,
@@ -183,7 +183,7 @@ CellDimPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -374,7 +374,7 @@ CellDimPlot(
 
 - stat_plot_size:
 
-  Set the statistical plot size. Default is `0.1`.
+  Set the statistical plot size. Default is `0.2`.
 
 - stat_plot_palette:
 
@@ -661,30 +661,28 @@ CellDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:41:43] Start standard scop workflow...
-#> ℹ [2026-02-27 17:41:43] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:41:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:41:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:41:45] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:41:46] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:41:46] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:41:46] Finished check
-#> ℹ [2026-02-27 17:41:46] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:41:46] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:41:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:41:47] Reorder clusters...
-#> ℹ [2026-02-27 17:41:48] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:41:48] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:41:50] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:41:53] Run scop standard workflow completed
+#> ℹ [2026-03-08 06:57:50] Start standard scop workflow...
+#> ℹ [2026-03-08 06:57:51] Checking a list of <Seurat>...
+#> ! [2026-03-08 06:57:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:57:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:57:53] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:57:53] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 06:57:53] Number of available HVF: 2000
+#> ℹ [2026-03-08 06:57:54] Finished check
+#> ℹ [2026-03-08 06:57:54] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 06:57:54] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 06:57:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 06:57:55] Reorder clusters...
+#> ℹ [2026-03-08 06:57:55] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 06:57:55] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 06:57:58] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 06:58:01] Run scop standard workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
 p1
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 thisplot::panel_fix(
@@ -693,8 +691,6 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 30
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -703,8 +699,6 @@ CellDimPlot(
   reduction = "UMAP",
   theme_use = "theme_blank"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -714,8 +708,6 @@ CellDimPlot(
   theme_use = ggplot2::theme_classic,
   theme_args = list(base_size = 16)
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Highlight cells
@@ -727,8 +719,6 @@ CellDimPlot(
     pancreas_sub
   )[pancreas_sub$SubCellType == "Epsilon"]
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -740,12 +730,6 @@ CellDimPlot(
   theme_use = "theme_blank",
   legend.position = "none"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Add group labels
@@ -755,8 +739,6 @@ CellDimPlot(
   reduction = "UMAP",
   label = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -768,8 +750,6 @@ CellDimPlot(
   label.bg = "red",
   label.size = 5
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -779,8 +759,6 @@ CellDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -792,8 +770,6 @@ CellDimPlot(
   label_repel = TRUE,
   label_segment_color = "red"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Add various shape of marks
@@ -803,8 +779,6 @@ CellDimPlot(
   reduction = "UMAP",
   add_mark = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -814,8 +788,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_expand = grid::unit(1, "mm")
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -825,8 +797,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_alpha = 0.3
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -836,8 +806,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_linetype = 2
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -847,8 +815,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "ellipse"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -858,8 +824,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "rect"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -869,8 +833,6 @@ CellDimPlot(
   add_mark = TRUE,
   mark_type = "circle"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Add a density layer
@@ -880,8 +842,6 @@ CellDimPlot(
   reduction = "UMAP",
   add_density = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -891,8 +851,6 @@ CellDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
 
@@ -906,8 +864,6 @@ CellDimPlot(
   density_filled_palette = "Blues",
   cells.highlight = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 396 rows containing missing values or values outside the scale range
 #> (`geom_raster()`).
 
@@ -919,7 +875,7 @@ CellDimPlot(
   reduction = "UMAP",
   stat.by = "Phase"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellDimPlot(
   pancreas_sub,
@@ -930,7 +886,31 @@ CellDimPlot(
   stat_plot_label = TRUE,
   stat_plot_size = 0.15
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -941,7 +921,7 @@ CellDimPlot(
   stat_type = "count",
   stat_plot_position = "dodge"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 # Chane the plot type from point to the hexagonal bin
 CellDimPlot(
@@ -983,8 +963,6 @@ CellDimPlot(
   reduction = "UMAP",
   graph = "Standardpca_SNN"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 CellDimPlot(
@@ -994,8 +972,6 @@ CellDimPlot(
   graph = "Standardpca_SNN",
   edge_color = "grey80"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 # Show lineages based on the pseudotime
@@ -1019,10 +995,6 @@ CellDimPlot(
   reduction = "UMAP",
   lineages = paste0("Lineage", 1:2)
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
@@ -1036,10 +1008,6 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_whiskers = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_segment()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
@@ -1055,10 +1023,6 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 
 
 if (FALSE) { # \dontrun{

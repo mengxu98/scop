@@ -1,7 +1,6 @@
 # Convert a Seurat object to an AnnData object
 
-This function takes a Seurat object and converts it to an anndata object
-using the reticulate package.
+Convert a Seurat object to an AnnData object
 
 ## Usage
 
@@ -64,6 +63,10 @@ srt_to_adata(
 ## Value
 
 A `anndata` object.
+
+## See also
+
+[adata_to_srt](https://mengxu98.github.io/scop/reference/adata_to_srt.md)
 
 ## Examples
 

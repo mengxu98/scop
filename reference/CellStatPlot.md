@@ -22,10 +22,10 @@ CellStatPlot(
     "venn", "upset"),
   stat_type = c("percent", "count"),
   position = c("stack", "dodge"),
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   alpha = 1,
-  bg_palette = "Paired",
+  bg_palette = "Chinese",
   bg_palcolor = NULL,
   bg_alpha = 0.2,
   label = FALSE,
@@ -125,7 +125,7 @@ CellStatPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -138,7 +138,7 @@ CellStatPlot(
 - bg_palette:
 
   A string specifying the color palette to use for the background.
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - bg_palcolor:
 
@@ -249,34 +249,35 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:42:54] Start standard scop workflow...
-#> ℹ [2026-02-27 17:42:55] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:42:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:42:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:42:56] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:42:57] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:42:57] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:42:57] Finished check
-#> ℹ [2026-02-27 17:42:57] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:42:57] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:42:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:42:58] Reorder clusters...
-#> ℹ [2026-02-27 17:42:58] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:42:58] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:43:01] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:43:04] Run scop standard workflow completed
+#> ℹ [2026-03-08 06:59:07] Start standard scop workflow...
+#> ℹ [2026-03-08 06:59:08] Checking a list of <Seurat>...
+#> ! [2026-03-08 06:59:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:59:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:59:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:59:10] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 06:59:10] Number of available HVF: 2000
+#> ℹ [2026-03-08 06:59:10] Finished check
+#> ℹ [2026-03-08 06:59:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 06:59:10] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 06:59:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 06:59:12] Reorder clusters...
+#> ℹ [2026-03-08 06:59:12] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 06:59:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 06:59:15] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 06:59:18] Run scop standard workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   group.by = "SubCellType",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
 p1
-#> Error: object 'p1' not found
 
-thisplot::panel_fix(p1, height = 2, width = 3)
-#> Error: object 'p1' not found
+
+thisplot::panel_fix(
+  p1, height = 2, width = 3
+)
+
 
 CellStatPlot(
   pancreas_sub,
@@ -286,7 +287,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -297,42 +298,44 @@ CellStatPlot(
   stat_type = "count",
   position = "dodge"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "bar"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "rose"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "ring"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "pie"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "dot"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -340,7 +343,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "bar"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -356,7 +359,9 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
@@ -364,7 +369,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "area"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -372,7 +377,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "dot"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -380,7 +385,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "trend"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -389,7 +394,7 @@ CellStatPlot(
   plot_type = "bar",
   individual = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -398,7 +403,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "bar"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -416,7 +421,9 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
@@ -425,7 +432,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "area"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -434,7 +441,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "dot"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -443,7 +450,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "trend"
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -454,7 +461,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -476,14 +483,18 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in theme_scop(): could not find function "theme_scop"
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-02-27 17:43:05] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-08 06:59:24] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -491,7 +502,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-02-27 17:43:06] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-08 06:59:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -503,7 +514,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-02-27 17:43:06] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-08 06:59:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -526,7 +537,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-02-27 17:43:06] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-08 06:59:26] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 CellStatPlot(
@@ -537,7 +548,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-02-27 17:43:06] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-08 06:59:26] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggupset’
 
 sum(

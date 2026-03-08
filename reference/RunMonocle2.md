@@ -20,6 +20,8 @@ RunMonocle2(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  xlab = NULL,
+  ylab = NULL,
   seed = 11,
   verbose = TRUE
 )
@@ -95,6 +97,14 @@ RunMonocle2(
 
   The state to use as the root of the trajectory. If NULL, will prompt
   for user input.
+
+- xlab:
+
+  The x-axis label of the plot. Default is `NULL`.
+
+- ylab:
+
+  The y-axis label of the plot. Default is `NULL`.
 
 - seed:
 

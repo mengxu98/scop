@@ -22,7 +22,7 @@ LIGER_integrate(
   do_scaling = TRUE,
   vars_to_regress = NULL,
   regression_model = "linear",
-  LIGER_dims_use = NULL,
+  liger_dims_use = NULL,
   nonlinear_reduction = "umap",
   nonlinear_reduction_dims = c(2, 3),
   nonlinear_reduction_params = list(),
@@ -120,10 +120,10 @@ LIGER_integrate(
   The regression model to use for scaling. Options are `"linear"`,
   `"poisson"`, or `"negativebinomial"`. Default is `"linear"`.
 
-- LIGER_dims_use:
+- liger_dims_use:
 
   A vector specifying the dimensions returned by LIGER that will be
-  utilized for downstream cell cluster finding and non-linear reduction.
+  utilized for downstream cell cluster finding and nonlinear reduction.
   If set to NULL, all the returned dimensions will be used by default.
 
 - nonlinear_reduction:
@@ -172,13 +172,15 @@ LIGER_integrate(
 
 - optimizeALS_params:
 
-  A list of parameters for the rliger::optimizeALS function. Default is
-  [`list()`](https://rdrr.io/r/base/list.html).
+  A list of parameters for the
+  [rliger::runIntegration](https://welch-lab.github.io/liger/reference/runIntegration.html)
+  function. Default is [`list()`](https://rdrr.io/r/base/list.html).
 
 - quantilenorm_params:
 
-  A list of parameters for the rliger::quantile_norm function. Default
-  is [`list()`](https://rdrr.io/r/base/list.html).
+  A list of parameters for the
+  [rliger::quantileNorm](https://welch-lab.github.io/liger/reference/quantileNorm.html)
+  function. Default is [`list()`](https://rdrr.io/r/base/list.html).
 
 - verbose:
 
@@ -187,3 +189,44 @@ LIGER_integrate(
 - seed:
 
   Random seed for reproducibility. Default is `11`.
+
+## Examples
+
+``` r
+data(panc8_sub)
+panc8_sub <- LIGER_integrate(
+  panc8_sub,
+  batch = "tech"
+)
+#> ℹ [2026-03-08 07:35:24] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-03-08 07:35:24] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:35:24] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:35:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:26] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-03-08 07:35:26] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:35:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:28] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-03-08 07:35:28] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:35:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:30] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-03-08 07:35:30] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:35:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:31] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-03-08 07:35:32] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:35:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:33] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-03-08 07:35:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:35:34] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:35:34] Finished check
+#> Warning: Layer ‘ligerScaleData’ is empty
+#> ℹ [2026-03-08 07:35:39] Prepare rliger layer "ligerScaleData" ...
+#> ℹ [2026-03-08 07:35:40] Perform LIGER integration
+#> ℹ [2026-03-08 07:35:50] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-03-08 07:35:50] Reorder clusters...
+#> ℹ [2026-03-08 07:35:50] Perform umap nonlinear dimension reduction using LIGER (1:20)
+#> ℹ [2026-03-08 07:35:54] Perform umap nonlinear dimension reduction using LIGER (1:20)
+CellDimPlot(
+  panc8_sub,
+  group.by = c("tech", "celltype")
+)
+```

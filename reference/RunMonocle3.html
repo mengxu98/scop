@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run Monocle3 analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunMonocle.R" class="external-link"><code>R/RunMonocle.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunMonocle.R" class="external-link"><code>R/RunMonocle.R</code></a></small>
       <div class="d-none name"><code>RunMonocle3.Rd</code></div>
     </div>
 
@@ -61,6 +61,8 @@
 <span>  close_loop <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  root_pr_nodes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  root_cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -149,6 +151,16 @@ Defaults to NULL.</p></dd>
 <dd><p>The root cells to order cells.
 If not specified, user will be prompted for input.
 Defaults to NULL.</p></dd>
+
+
+<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
+<dd><p>The x-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
+<dd><p>The y-axis label of the plot.
+Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>

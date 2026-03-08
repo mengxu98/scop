@@ -31,7 +31,7 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
-  num_threads = 1,
+  cores = 1,
   verbose = TRUE,
   seed = 11
 )
@@ -105,7 +105,7 @@ scVI_integrate(
 - scVI_dims_use:
 
   A vector specifying the dimensions returned by scVI that will be
-  utilized for downstream cell cluster finding and non-linear reduction.
+  utilized for downstream cell cluster finding and nonlinear reduction.
   If set to NULL, all the returned dimensions will be used by default.
 
 - nonlinear_reduction:
@@ -165,9 +165,10 @@ scVI_integrate(
 
   A list of parameters for the PEAKVI model. Default is \`list()\`.
 
-- num_threads:
+- cores:
 
-  An integer setting the number of threads for scVI. Default is \`8\`.
+  An integer setting the number of threads for \`scVI\`. Default is
+  \`1\`.
 
 - verbose:
 

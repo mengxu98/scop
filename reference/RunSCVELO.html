@@ -38,7 +38,7 @@ version compatibility, and modular design."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run scVelo workflow</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunSCVELO.R" class="external-link"><code>R/RunSCVELO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunSCVELO.R" class="external-link"><code>R/RunSCVELO.R</code></a></small>
       <div class="d-none name"><code>RunSCVELO.Rd</code></div>
     </div>
 
@@ -92,7 +92,7 @@ version compatibility, and modular design.</p>
 <span>  compute_paga <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend.position <span class="op">=</span> <span class="st">"on data"</span>,</span>
 <span>  show_plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -120,19 +120,23 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-assay-x">assay_x<a class="anchor" aria-label="anchor" href="#arg-assay-x"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assay to convert as the main data matrix in the anndata object.
+Default is <code>"RNA"</code>.</p></dd>
 
 
 <dt id="arg-layer-x">layer_x<a class="anchor" aria-label="anchor" href="#arg-layer-x"></a></dt>
-<dd><p>Layer name for <code>assay_x</code> in the Seurat object.</p></dd>
+<dd><p>Layer name for assay_x in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-assay-y">assay_y<a class="anchor" aria-label="anchor" href="#arg-assay-y"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assays to convert as layers in the anndata object.
+Default is <code>c("spliced", "unspliced")</code>.</p></dd>
 
 
 <dt id="arg-layer-y">layer_y<a class="anchor" aria-label="anchor" href="#arg-layer-y"></a></dt>
-<dd><p>Layer names for the <code>assay_y</code> in the Seurat object.</p></dd>
+<dd><p>Layer names for the assay_y in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -140,11 +144,16 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
-<dd><p>Linear reduction method to use, e.g., <code>"PCA"</code>.</p></dd>
+<dd><p>The linear dimensionality reduction method to use.
+Options are <code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, or <code>"glmpca"</code>.
+Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
-<dd><p>Non-linear reduction method to use, e.g., <code>"UMAP"</code>.</p></dd>
+<dd><p>The nonlinear dimensionality reduction method to use.
+Options are <code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>,
+<code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, or <code>"fr"</code>.
+Default is <code>"umap"</code>.</p></dd>
 
 
 <dt id="arg-basis">basis<a class="anchor" aria-label="anchor" href="#arg-basis"></a></dt>
@@ -153,27 +162,32 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
 <dd><p>Velocity estimation models to use.
-Can be a vector containing <code>"deterministic"</code>, <code>"stochastic"</code>, and/or <code>"dynamical"</code>.</p></dd>
+Can be <code>"deterministic"</code>, <code>"stochastic"</code>, or <code>"dynamical"</code>.</p></dd>
 
 
 <dt id="arg-fitting-by">fitting_by<a class="anchor" aria-label="anchor" href="#arg-fitting-by"></a></dt>
-<dd><p>Method used to fit gene velocities for dynamical modeling, e.g., "stochastic".</p></dd>
+<dd><p>Method used to fit gene velocities for dynamical modeling.
+Default is <code>"stochastic"</code>.</p></dd>
 
 
 <dt id="arg-magic-impute">magic_impute<a class="anchor" aria-label="anchor" href="#arg-magic-impute"></a></dt>
-<dd><p>Flag indicating whether to perform magic imputation.</p></dd>
+<dd><p>Flag indicating whether to perform magic imputation.
+Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-knn">knn<a class="anchor" aria-label="anchor" href="#arg-knn"></a></dt>
-<dd><p>The number of nearest neighbors for <code>magic.MAGIC</code>.</p></dd>
+<dd><p>The number of nearest neighbors for <code>magic.MAGIC</code>.
+Default is <code>5</code>.</p></dd>
 
 
 <dt id="arg-t">t<a class="anchor" aria-label="anchor" href="#arg-t"></a></dt>
-<dd><p>power to which the diffusion operator is powered for <code>magic.MAGIC</code>.</p></dd>
+<dd><p>Power to which the diffusion operator is powered for <code>magic.MAGIC</code>.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-min-shared-counts">min_shared_counts<a class="anchor" aria-label="anchor" href="#arg-min-shared-counts"></a></dt>
-<dd><p>Minimum number of counts (both unspliced and spliced) required for a gene.</p></dd>
+<dd><p>Minimum number of counts (both unspliced and spliced) required for a gene.
+Default is <code>30</code>.</p></dd>
 
 
 <dt id="arg-n-pcs">n_pcs<a class="anchor" aria-label="anchor" href="#arg-n-pcs"></a></dt>
@@ -222,7 +236,8 @@ Default is <code>30</code>.</p></dd>
 <dd><p>Controls the closeness of streamlines.
 When density = 2 (default), the domain is divided into a 60x60 grid,
 whereas density linearly scales this grid.
-Each cell in the grid can have, at most, one traversing streamline.</p></dd>
+Each cell in the grid can have, at most, one traversing streamline.
+Default is <code>2</code>.</p></dd>
 
 
 <dt id="arg-arrow-length">arrow_length<a class="anchor" aria-label="anchor" href="#arg-arrow-length"></a></dt>
@@ -230,7 +245,8 @@ Each cell in the grid can have, at most, one traversing streamline.</p></dd>
 
 
 <dt id="arg-arrow-size">arrow_size<a class="anchor" aria-label="anchor" href="#arg-arrow-size"></a></dt>
-<dd><p>Size of arrows.</p></dd>
+<dd><p>Size of arrows.
+Default is <code>5</code>.</p></dd>
 
 
 <dt id="arg-arrow-density">arrow_density<a class="anchor" aria-label="anchor" href="#arg-arrow-density"></a></dt>
@@ -284,7 +300,7 @@ Each cell in the grid can have, at most, one traversing streamline.</p></dd>
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
 <dd><p>Color palette name.
 Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Paired"</code>.</p></dd>
+Default is <code>"Chinese"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
@@ -334,7 +350,7 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a>, <a href="VelocityPlot.html">VelocityPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="RunPAGA.html">RunPAGA</a></p></div>
+    <div class="dont-index"><p><a href="VelocityPlot.html">VelocityPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="RunPAGA.html">RunPAGA</a></p></div>
     </div>
 
     <div class="section level2">
@@ -371,23 +387,6 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="cn">NA</span>,</span></span>
 <span class="r-in"><span>  velocity <span class="op">=</span> <span class="st">"stochastic"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunSCVELO</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay_x <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
-<span class="r-in"><span>  linear_reduction <span class="op">=</span> <span class="st">"PCA"</span>,</span></span>
-<span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
-<span class="r-in"><span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deterministic"</span>, <span class="st">"stochastic"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  filter_genes <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  min_counts <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  compute_velocity_confidence <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  compute_terminal_states <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  compute_pseudotime <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  compute_paga <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

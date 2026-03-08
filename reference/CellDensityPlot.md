@@ -17,7 +17,7 @@ CellDensityPlot(
   reverse = FALSE,
   x_order = c("value", "rank"),
   decreasing = NULL,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   cells = NULL,
   keep_empty = FALSE,
@@ -89,7 +89,7 @@ CellDensityPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -192,22 +192,22 @@ CellDensityPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:35:36] Start standard scop workflow...
-#> ℹ [2026-02-27 17:35:37] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:35:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:35:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:35:38] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:35:39] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:35:39] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:35:39] Finished check
-#> ℹ [2026-02-27 17:35:39] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:35:40] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:35:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:35:41] Reorder clusters...
-#> ℹ [2026-02-27 17:35:41] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:35:41] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:35:43] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:35:45] Run scop standard workflow completed
+#> ℹ [2026-03-08 06:51:41] Start standard scop workflow...
+#> ℹ [2026-03-08 06:51:41] Checking a list of <Seurat>...
+#> ! [2026-03-08 06:51:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 06:51:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:51:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 06:51:43] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 06:51:43] Number of available HVF: 2000
+#> ℹ [2026-03-08 06:51:44] Finished check
+#> ℹ [2026-03-08 06:51:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 06:51:44] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 06:51:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 06:51:45] Reorder clusters...
+#> ℹ [2026-03-08 06:51:45] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 06:51:45] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 06:51:48] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 06:51:50] Run scop standard workflow completed
 CellDensityPlot(
   pancreas_sub,
   features = "Sox9",
@@ -221,10 +221,6 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's fill values.
 #> Warning: Removed 3 rows containing missing values or values outside the scale range
 #> (`geom_path()`).
 #> Warning: Removed 3 rows containing missing values or values outside the scale range

@@ -15,7 +15,7 @@ VelocityPlot(
   velocity = "stochastic",
   plot_type = c("raw", "grid", "stream"),
   group.by = NULL,
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   n_neighbors = ceiling(ncol(srt@assays[[1]])/50),
   density = 1,
@@ -86,7 +86,7 @@ VelocityPlot(
 - group_palette:
 
   Name of the palette to use for coloring the groups. Defaults is
-  `"Paired"`.
+  `"Chinese"`.
 
 - group_palcolor:
 
