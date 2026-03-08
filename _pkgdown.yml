@@ -1,0 +1,218 @@
+destination: docs
+
+toc:
+  depth: 3
+
+url: https://mengxu98.github.io/scop/
+
+template:
+  bootstrap: 5
+  light-switch: true
+  package: thistemplate
+
+navbar:
+  structure:
+    left:  [articles, reference, tutorials, news]
+    right: [github, mengxu, lightswitch]
+
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/mengxu98/scop
+      title: GitHub
+      aria-label: GitHub repository
+
+    mengxu:
+      icon: fas fa-home fa-lg
+      href: https://github.com/mengxu98
+      title: MengXu
+      aria-label: MengXu's GitHub profile
+
+    reference:
+      text: Reference
+      href: reference/index.html
+
+reference:
+- subtitle: "Single-Cell Omics analysis Pipeline"
+- contents:
+  - scop-package
+  - scop_logo
+
+- subtitle: "Package Management"
+- contents:
+  - check_python
+  - env_info
+  - env_requirements
+  - ListEnv
+  - PrepareEnv
+  - remove_python
+  - RemoveEnv
+
+- subtitle: "scop pipeline"
+- contents:
+  - integration_scop
+  - standard_scop
+
+- subtitle: "Data Processing"
+- contents:
+  - adata_to_srt
+  - CellScoring
+  - CheckDataType
+  - CheckDataList
+  - CheckDataMerge
+  - CycGenePrefetch
+  - DefaultReduction
+  - FetchDataZero
+  - GeneConvert
+  - GetAssayData5
+  - RecoverCounts
+  - RenameClusters
+  - srt_append
+  - srt_to_adata
+  - srt_reorder
+
+- subtitle: "Feature Processing"
+- contents:
+  - AddFeaturesData
+  - AnnotateFeatures
+  - GetFeaturesData
+  - GetSimilarFeatures
+  - RenameFeatures
+
+- subtitle: "Quality Control"
+- contents:
+  - db_DoubletDetection
+  - db_scDblFinder
+  - db_scds
+  - db_Scrublet
+  - RunCellQC
+  - RunDoubletCalling
+
+- subtitle: "Dimensionality Reduction and Clustering"
+- contents:
+  - RunDimReduction
+  - RunDM
+  - RunFR
+  - RunGLMPCA
+  - RunMDS
+  - RunNMF
+  - RunUMAP2
+  - RunPaCMAP
+  - RunTriMap
+  - RunPHATE
+  - RunLargeVis
+
+- subtitle: "Data Integration and Batch Effect Removal"
+- contents:
+  - RunCSSMap
+  - RunHarmony2
+  - RunPCAMap
+  - RunSeuratMap
+  - RunSymphonyMap
+  - BBKNN_integrate
+  - CSS_integrate
+  - ComBat_integrate
+  - Conos_integrate
+  - Harmony_integrate
+  - LIGER_integrate
+  - MNN_integrate
+  - Scanorama_integrate
+  - Seurat_integrate
+  - scVI_integrate
+  - Uncorrected_integrate
+  - fastMNN_integrate
+
+- subtitle: "Cell Type Annotation"
+- contents:
+  - CellTypistModels
+  - RunCellTypist
+  - RunKNNMap
+  - RunKNNPredict
+  - RunSingleR
+  - RunScmap
+
+- subtitle: "Differential Analysis and Enrichment"
+- contents:
+  - FindExpressedMarkers
+  - RunDEtest
+  - RunGSEA
+  - RunEnrichment
+  - RunDynamicEnrichment
+  - RunProportionTest
+
+- subtitle: "Dynamic Trajectory Analysis"
+- contents:
+  - RunCellRank
+  - RunCytoTRACE
+  - RunMonocle2
+  - RunMonocle3
+  - RunPAGA
+  - RunPalantir
+  - RunSlingshot
+  - RunSCVELO
+  - RunWOT
+  - RunDynamicFeatures
+
+- subtitle: "Cell-Cell Communication Analysis"
+- contents:
+  - RunCellChat
+
+- subtitle: "Visualization Functions"
+- contents:
+  - CellChatPlot
+  - CellDimPlot
+  - CellDimPlot3D
+  - CellDensityPlot
+  - CellCorHeatmap
+  - CellStatPlot
+  - CytoTRACEPlot
+  - DEtestPlot
+  - DEtestManhattanPlot
+  - DEtestRingPlot
+  - DynamicPlot
+  - DynamicHeatmap
+  - EnrichmentPlot
+  - FeatureDimPlot
+  - FeatureDimPlot3D
+  - FeatureHeatmap
+  - FeatureCorPlot
+  - FeatureStatPlot
+  - GraphPlot
+  - GroupHeatmap
+  - GSEAPlot
+  - LineagePlot
+  - PAGAPlot
+  - ProjectionPlot
+  - ProportionTestPlot
+  - TACSPlot
+  - VelocityPlot
+  - VolcanoPlot
+
+- subtitle: "Plotting Functions"
+- contents:
+  - compute_velocity_on_grid
+  - cluster_within_group2
+  - print.scop_logo
+
+- subtitle: "SCExplorer"
+- contents:
+  - CreateDataFile
+  - CreateMetaFile
+  - FetchH5
+  - PrepareSCExplorer
+  - RunSCExplorer
+
+- subtitle: "Database Operations"
+- contents:
+  - ListDB
+  - PrepareDB
+
+- subtitle: "Data"
+- contents:
+  - ifnb_sub
+  - panc8_sub
+  - pancreas_sub
+  - ref_scHCL
+  - ref_scMCA
+  - ref_scZCL
+  - words_excluded
