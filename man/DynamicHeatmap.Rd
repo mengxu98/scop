@@ -556,7 +556,9 @@ ht2 <- DynamicHeatmap(
     "Neurod2",
     "Isl1",
     "Rbp4",
-    "Pyy", "S_score", "G2M_score"
+    "Pyy",
+    "S_score",
+    "G2M_score"
   ),
   cell_annotation = "SubCellType"
 )
@@ -587,7 +589,6 @@ ht4 <- DynamicHeatmap(
   species = "Mus_musculus",
   db = "GO_BP",
   anno_terms = TRUE,
-  cores = 3,
   width = 1,
   height = 2
 )
