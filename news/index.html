@@ -34,56 +34,96 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="scop-development-version">scop (development version)<a class="anchor" aria-label="anchor" href="#scop-development-version"></a></h2>
+<ul><li>
+<strong>feat</strong>:
+<ul><li>Default palette changed from <code>"Paired"</code> to <code>"Chinese"</code>. See <code><a href="https://mengxu98.github.io/thisplot/reference/ChineseColors.html" class="external-link">thisplot::ChineseColors()</a></code> for details.</li>
+<li>Unified the <code>cores</code> parameter across multiple functions (<code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code>, <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>, <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>, and <code>heatmap_enrichment()</code>), ensuring <code>cores</code> is correctly threaded through to <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>.</li>
+<li>
+<code><a href="../reference/RunMonocle2.html">RunMonocle2()</a></code> and <code><a href="../reference/RunMonocle3.html">RunMonocle3()</a></code>: Added <code>xlab</code> and <code>ylab</code> parameters, passed through to internal <code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code> and <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code> calls.</li>
+<li>
+<code><a href="../reference/ListDB.html">ListDB()</a></code>: Now supports multiple species in the <code>species</code> parameter simultaneously and adds <code>Species</code> and <code>DB</code> columns to the output data frame for clearer identification.</li>
+<li>Moved <code>is_outlier</code> to <code><a href="https://mengxu98.github.io/thisutils/reference/is_outlier.html" class="external-link">thisutils::is_outlier()</a></code>.</li>
+<li>
+<code>configure_apple_silicon_env()</code> (<em>Python</em> function): Added OpenMP compatibility handling on macOS arm64 by prepending environment <code>lib</code> paths to <code>DYLD_FALLBACK_LIBRARY_PATH</code>/<code>DYLD_LIBRARY_PATH</code> and preloading <code>libomp.dylib</code>/<code>libiomp5.dylib</code> via <code>ctypes.CDLL(..., RTLD_GLOBAL)</code> to reduce <code>scanpy</code>/<code>python-igraph</code> import conflicts.</li>
+<li>
+<code><a href="../reference/scVI_integrate.html">scVI_integrate()</a></code>: Unified parameter naming by renaming <code>num_threads</code> to <code>cores</code> for consistency across integration functions.</li>
+<li>Added <code>find_neighbors_and_clusters()</code> and <code>run_nonlinear_reduction()</code> helper functions to unify operations across integration functions and reduce redundant code.</li>
+</ul></li>
+<li>
+<strong>fix</strong>:
+<ul><li>
+<code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>:
+<ul><li>TF database now uses <a href="https://github.com/mengxu98/AnimalTFDB4" class="external-link">AnimalTFDB4</a> as the data source.</li>
+<li>MP database - the Web Archive URL year is now dynamically determined from the current date, and the archive snapshot date for all MP-related file downloads (<code>VOC_MammalianPhenotype.rpt</code>, <code>MGI_Gene_Model_Coord.rpt</code>, <code>MGI_GenePheno.rpt</code>) is extracted from the server index page to ensure consistent versioning.</li>
+<li>hTFtarget data download URL has been changed from <code>"http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"</code> to <code>"https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"</code>.</li>
+<li>CSPA data download URL has been changed from <code>"https://wlab.ethz.ch/cspa/data/S1_File.xlsx"</code> to <code>"https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"</code>.</li>
+</ul>
+Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="external-link">#76</a> (<a href="https://github.com/hwa2Hu" class="external-link">@hwa2Hu</a>), <a href="https://github.com/mengxu98/scop/issues/139" class="external-link">#139</a> (<a href="https://github.com/pengding774-dot" class="external-link">@pengding774-dot</a>), <a href="https://github.com/mengxu98/scop/issues/140" class="external-link">#140</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
+<li>
+<code><a href="../reference/LIGER_integrate.html">LIGER_integrate()</a></code>
+<ul><li>Migrated to the <code>rliger</code> 2.x workflow (<code><a href="https://welch-lab.github.io/liger/reference/runIntegration.html" class="external-link">rliger::runIntegration()</a></code> + <code><a href="https://welch-lab.github.io/liger/reference/quantileNorm.html" class="external-link">rliger::quantileNorm()</a></code> on <code>Seurat</code> object) and now prepares/uses the <code>ligerScaleData</code> layer via <code><a href="https://welch-lab.github.io/liger/reference/scaleNotCenter.html" class="external-link">rliger::scaleNotCenter()</a></code> before integration.</li>
+<li>Updated argument naming/style from <code>LIGER_dims_use</code> to <code>liger_dims_use</code>, and removed legacy quantile-normalization parameter compatibility mapping (<code>ref_dataset</code>), keeping <code>reference</code> as the supported interface.</li>
+</ul></li>
+<li>Optimized the installation of some <em>Python</em> packages on Apple Silicon devices.</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated README example code and visualizations. After regenerating figures, the package size was reduced by ~3 MB.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.4" id="scop-084">scop 0.8.4<a class="anchor" aria-label="anchor" href="#scop-084"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> / <code>ExpressionStatPlot()</code>: Fixed box and violin x-axis misalignment when <code>add_box = TRUE</code> with <code>split.by</code>. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent <code>position_dodge(width = 0.9)</code> to match the boxplot. This issue reported in <a href="https://github.com/mengxu98/scop/issues/123" class="external-link">#123</a>.</li>
+<code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> / <code>ExpressionStatPlot()</code>: Fixed box and violin x-axis misalignment when <code>add_box = TRUE</code> with <code>split.by</code>. Groups with fewer than 2 observations are now filtered before violin density estimation (with a warning), and the violin layer uses a consistent <code>position_dodge(width = 0.9)</code> to match the boxplot. Related issue <a href="https://github.com/mengxu98/scop/issues/123" class="external-link">#123</a> (<a href="https://github.com/oranges7" class="external-link">@oranges7</a>).</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.3" id="scop-083">scop 0.8.3<a class="anchor" aria-label="anchor" href="#scop-083"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
-<code><a href="../reference/RunDynamicFeatures.html">RunDynamicFeatures()</a></code>: Added <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> method for dynamic feature fitting. The <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> algorithm in <code>scop</code> has been re implemented to support parallelization for higher performance. Original research: <a href="https://doi.org/10.1186/s13059-026-03994-3" class="external-link">PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns</a>. Use <code>fit_method = "pretsa"</code> for B-spline-based piecewise truncated spline analysis; <code>fit_method = "gam"</code> (default) keeps generalized additive models. PreTSA supports <code>knot</code> (0 or <code>"auto"</code>) and <code>max_knot_allowed</code> when <code>knot = "auto"</code>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/132" class="external-link">#133</a>.</li>
+<code><a href="../reference/RunDynamicFeatures.html">RunDynamicFeatures()</a></code>: Added <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> method for dynamic feature fitting. The <a href="https://github.com/haotian-zhuang/PreTSA/" class="external-link">PreTSA</a> algorithm in <code>scop</code> has been re implemented to support parallelization for higher performance. Original research: <a href="https://doi.org/10.1186/s13059-026-03994-3" class="external-link">PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns</a>. Use <code>fit_method = "pretsa"</code> for B-spline-based piecewise truncated spline analysis; <code>fit_method = "gam"</code> (default) keeps generalized additive models. PreTSA supports <code>knot</code> (<code>0</code> or <code>"auto"</code>) and <code>max_knot_allowed</code> when <code>knot = "auto"</code>. Relate issue <a href="https://github.com/mengxu98/scop/issues/133" class="external-link">#133</a>.</li>
 <li>
 <code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code> and <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code>: Added <code>legend.title</code> parameter (default <code>NULL</code>) to control the legend title. When <code>NULL</code>, default titles are used (e.g. group name for <code>CellDimPlot</code>, feature or empty for <code>FeatureDimPlot</code>).</li>
 <li>
 <code>ExpressionStatPlot()</code> and <code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code>: Added <code>legend.title</code> parameter (default <code>NULL</code>) for single-legend plots. When <code>NULL</code>, the default title (e.g. <code>keynm</code> or feature/group name) is used. <code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> forwards <code>legend.title</code> to <code>ExpressionStatPlot()</code>.</li>
+<li>Moved <code>StatPlot</code> function to <code><a href="https://mengxu98.github.io/thisplot/reference/StatPlot.html" class="external-link">thisplot::StatPlot</a></code>.</li>
 </ul></li>
 <li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> / <code>heatmap_enrichment()</code>: Fixed incorrect <code>db</code> handling when using custom <code>TERM2GENE</code>/<code>TERM2NAME</code>. Enrichment results with <code>Database = "custom"</code> could be incorrectly filtered by default <code>db</code> values (e.g. <code>"GO_BP"</code>), causing false “No term enriched using the threshold” warnings even when enrichment succeeded. This issue reported in <a href="https://github.com/mengxu98/scop/issues/133" class="external-link">#133</a>, <a href="https://github.com/1228849000" class="external-link">@1228849000</a>.</li>
+<code><a href="../reference/DynamicHeatmap.html">DynamicHeatmap()</a></code> / <code>heatmap_enrichment()</code>: Fixed incorrect <code>db</code> handling when using custom <code>TERM2GENE</code>/<code>TERM2NAME</code>. Enrichment results with <code>Database = "custom"</code> could be incorrectly filtered by default <code>db</code> values (e.g. <code>"GO_BP"</code>), causing false “No term enriched using the threshold” warnings even when enrichment succeeded. Relate issue <a href="https://github.com/mengxu98/scop/issues/133" class="external-link">#133</a> (<a href="https://github.com/1228849000" class="external-link">@1228849000</a>).</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.2" id="scop-082">scop 0.8.2<a class="anchor" aria-label="anchor" href="#scop-082"></a></h2>
 <ul><li>
-<strong>func</strong>:
-<ul><li>Add the <code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code> function, which calls the original <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code> and adds two plot types, Manhattan and Ring, controlled by the <code>plot_type</code> parameter (<code>c("volcano", "manhattan", "ring")</code>, default <code>"volcano"</code>). Add standalone functions <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code> and <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code> for direct use. This issue reported in <a href="https://github.com/mengxu98/scop/issues/121" class="external-link">#121</a>.</li>
-<li>Differential expression visualization (<code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>): added <code>res</code> parameter to accept existing DE results (data.frame). When <code>res</code> is provided, <code>srt</code> is ignored. Data processing supports: (1) <code>group1</code> or <code>cluster</code> column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when <code>gene</code> column is missing. This issue reported in <a href="https://github.com/mengxu98/scop/issues/129" class="external-link">#129</a>.</li>
+<strong>feat</strong>:
+<ul><li>Add the <code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code> function, which calls the original <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code> and adds two plot types, Manhattan and Ring, controlled by the <code>plot_type</code> parameter (<code>c("volcano", "manhattan", "ring")</code>, default <code>"volcano"</code>). Add standalone functions <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code> and <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code> for direct use. Relate issue <a href="https://github.com/mengxu98/scop/issues/121" class="external-link">#121</a> (<a href="https://github.com/ericavalentini" class="external-link">@ericavalentini</a>).</li>
+<li>Differential expression visualization (<code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestManhattanPlot.html">DEtestManhattanPlot()</a></code>, <code><a href="../reference/DEtestRingPlot.html">DEtestRingPlot()</a></code>): added <code>res</code> parameter to accept existing DE results (data.frame). When <code>res</code> is provided, <code>srt</code> is ignored. Data processing supports: (1) <code>group1</code> or <code>cluster</code> column for grouped plots; (2) no grouping column for a single panel; (3) gene names from row names when <code>gene</code> column is missing. Relate issue <a href="https://github.com/mengxu98/scop/issues/129" class="external-link">#129</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
 <li>
-<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Update <code>version</code> parameter to specify the <em>Python</em> version of the conda environment. Default is <code>"3.11-1"</code> on <em>Windows</em> and <code>"3.10-1"</code> on <em>macOS</em> and <em>Unix</em>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/103" class="external-link">#103</a> and <a href="https://github.com/mengxu98/scop/issues/88" class="external-link">#88</a>.</li>
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Update <code>version</code> parameter to specify the <em>Python</em> version of the conda environment. Default is <code>"3.11-1"</code> on <em>Windows</em> and <code>"3.10-1"</code> on <em>macOS</em> and <em>Unix</em>. Relate issue <a href="https://github.com/mengxu98/scop/issues/103" class="external-link">#103</a> (<a href="https://github.com/PanSX-Dr" class="external-link">@PanSX-Dr</a>).</li>
 <li>
 <code><a href="../reference/RunNMF.html">RunNMF()</a></code>: Add the <code>cores</code> parameter for <code><a href="../reference/RunNMF.html">RunNMF()</a></code> and optimize the printed message.</li>
 <li>Removed the setting in <em>Python</em> functions that prevents drawing functions from causing <em>R</em> crashes.</li>
 </ul></li>
 <li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in <a href="https://github.com/mengxu98/scop/issues/126" class="external-link">#126</a>.</li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue <a href="https://github.com/mengxu98/scop/issues/126" class="external-link">#126</a> (<a href="https://github.com/christinejay990202-dev" class="external-link">@christinejay990202-dev</a>).</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.1" id="scop-081">scop 0.8.1<a class="anchor" aria-label="anchor" href="#scop-081"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
 <code><a href="../reference/FeatureHeatmap.html">FeatureHeatmap()</a></code>: Fixed <code>group_palcolor</code> when a named vector is passed: the function previously used only the first color for all groups because <code>group_palcolor[[1]]</code> on a vector returns a single element. Now when <code>group.by</code> has length 1, a vector is automatically wrapped as a list; when <code>within_groups = TRUE</code>, <code>group_palcolor</code> is expanded in line with <code>group_palette</code>.</li>
 <li>
@@ -98,7 +138,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.0" id="scop-080">scop 0.8.0<a class="anchor" aria-label="anchor" href="#scop-080"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunMonocle2.html">RunMonocle2()</a></code>: New function for performing <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a> trajectory analysis with support for various dimensionality reduction methods (DDRTree, ICA, tSNE, SimplePPT, L1-graph, SGL-tree). Uses the fixed version of monocle2 from <a href="https://github.com/mengxu98/monocle" class="external-link">mengxu98/monocle</a>.</li>
 <li>
@@ -120,9 +160,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.8" id="scop-078">scop 0.7.8<a class="anchor" aria-label="anchor" href="#scop-078"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. This issue reported in <a href="https://github.com/mengxu98/scop/issues/114" class="external-link">#114</a>.</li>
+<code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>: Fixed unused <code>plot_format</code> parameter error. The parameter is now properly excluded from arguments passed to Python functions. Relate issue <a href="https://github.com/mengxu98/scop/issues/114" class="external-link">#114</a> (<a href="https://github.com/Moonerss" class="external-link">@Moonerss</a>).</li>
 <li>
 <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>: Fixed PAGA computation error by replacing <code>scv.tl.paga</code> with <code>sc.tl.paga</code> (scanpy implementation) for better stability. The function now uses the same PAGA implementation as <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> function.</li>
 <li>
@@ -131,7 +171,7 @@
 <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Fixed <code>recover_dynamics</code> error by ensuring <code>velocity_graph</code> and <code>velocity_graph_neg</code> are properly set before calling <code>scv.tl.recover_dynamics()</code> for latent time computation.</li>
 </ul></li>
 <li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Removed automatic removal of “X_” prefix from dimensionality reduction names in <code>obsm</code> keys. The function now preserves original reduction names as they are stored in AnnData objects.</li>
 </ul></li>
@@ -143,14 +183,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.7" id="scop-077">scop 0.7.7<a class="anchor" aria-label="anchor" href="#scop-077"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
-<code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Enhanced to support multiple AnnData object types including <em>Python</em> AnnData objects (from scanpy/reticulate), R6 AnnData objects from the <code>anndata</code> package (AnnDataR6), and R6 AnnData objects from the <code>anndataR</code> package (InMemoryAnnData). Added internal helper functions <code>get_adata_element()</code> and <code>get_adata_names()</code> for better compatibility. This enhancement addresses the issue reported in <a href="https://github.com/mengxu98/scop/issues/67" class="external-link">#67</a>, <a href="https://github.com/mengxu98/scop/issues/91" class="external-link">#91</a> and <a href="https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993" class="external-link">91#issuecomment</a>.</li>
+<code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Enhanced to support multiple AnnData object types including <em>Python</em> AnnData objects (from scanpy/reticulate), R6 AnnData objects from the <code>anndata</code> package (AnnDataR6), and R6 AnnData objects from the <code>anndataR</code> package (InMemoryAnnData). Added internal helper functions <code>get_adata_element()</code> and <code>get_adata_names()</code> for better compatibility. Relate issues <a href="https://github.com/mengxu98/scop/issues/67" class="external-link">#67</a> (<a href="https://github.com/lisch7" class="external-link">@lisch7</a>), <a href="https://github.com/mengxu98/scop/issues/91" class="external-link">#91</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>) and <a href="https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993" class="external-link">commit91#issuecomment</a>.</li>
 </ul></li>
 <li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed error when comparing one cluster against multiple clusters using <code>group1</code> and <code>group2</code> parameters. This issue reported in <a href="https://github.com/mengxu98/scop/issues/111" class="external-link">#111</a>.</li>
+<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed error when comparing one cluster against multiple clusters using <code>group1</code> and <code>group2</code> parameters. Relate issue <a href="https://github.com/mengxu98/scop/issues/111" class="external-link">#111</a> (<a href="https://github.com/zhaoxiaoyan9225" class="external-link">@zhaoxiaoyan9225</a>).</li>
 <li>
 <code><a href="../reference/AnnotateFeatures.html">AnnotateFeatures()</a></code>: Fixed bug where the function would fail when processing GTF file annotations due to column name matching issues during data naming. The function now correctly handles column name intersections when merging annotation data.</li>
 </ul></li>
@@ -158,7 +198,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.6" id="scop-076">scop 0.7.6<a class="anchor" aria-label="anchor" href="#scop-076"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunDM.html">RunDM()</a></code>: Added automatic PCA-based dimensionality reduction when using many features (&gt;1000) to speed up diffusion map computation. The <code>npcs</code> parameter can be used to control the number of principal components used for pre-processing.</li>
 </ul></li>
@@ -166,14 +206,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.5" id="scop-075">scop 0.7.5<a class="anchor" aria-label="anchor" href="#scop-075"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/CellScoring.html">CellScoring()</a></code>: Fixed bug where the function failed to build results. This issue reported in <a href="https://github.com/mengxu98/scop/issues/98" class="external-link">#98</a>.</li>
+<code><a href="../reference/CellScoring.html">CellScoring()</a></code>: Fixed bug where the function failed to build results. Relate issue <a href="https://github.com/mengxu98/scop/issues/98" class="external-link">#98</a> (<a href="https://github.com/SuperrNaruto" class="external-link">@SuperrNaruto</a>).</li>
 </ul></li>
 <li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
-<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed compatibility issue with <a href="https://satijalab.github.io/seurat-object/" class="external-link">SeuratObject</a> 5.0.0+ by replacing deprecated <code><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Assays()</a></code> <code>slot</code> argument with <code><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">LayerData()</a></code>. This issue reported in <a href="https://github.com/mengxu98/scop/issues/100" class="external-link">#100</a>.</li>
+<code><a href="../reference/RunDEtest.html">RunDEtest()</a></code>: Fixed compatibility issue with <a href="https://satijalab.github.io/seurat-object/" class="external-link">SeuratObject</a> 5.0.0+ by replacing deprecated <code><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Assays()</a></code> <code>slot</code> argument with <code><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">LayerData()</a></code>. Relate issue <a href="https://github.com/mengxu98/scop/issues/100" class="external-link">#100</a> (<a href="https://github.com/mattizecos" class="external-link">@mattizecos</a>).</li>
 <li>
 <code><a href="../reference/RunDM.html">RunDM()</a></code>: Added automatic PCA-based dimensionality reduction when using many features (&gt;1000) to speed up diffusion map computation. The <code>npcs</code> parameter can be used to control the number of principal components used for pre-processing.</li>
 </ul></li>
@@ -181,7 +221,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.3" id="scop-073">scop 0.7.3<a class="anchor" aria-label="anchor" href="#scop-073"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunCellTypist.html">RunCellTypist()</a></code>: New function for cell type annotation using the CellTypist method.</li>
 <li>
@@ -191,7 +231,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.2" id="scop-072">scop 0.7.2<a class="anchor" aria-label="anchor" href="#scop-072"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>: Performance optimizations and code improvements.</li>
 </ul></li>
@@ -199,15 +239,15 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.1" id="scop-071">scop 0.7.1<a class="anchor" aria-label="anchor" href="#scop-071"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>
-<code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code>: Fixed issue where NA values appeared in labels. This issue reported in <a href="https://github.com/mengxu98/scop/issues/93" class="external-link">#93</a>.</li>
+<code><a href="../reference/CellDimPlot.html">CellDimPlot()</a></code>: Fixed issue where NA values appeared in labels. Relate issue <a href="https://github.com/mengxu98/scop/issues/93" class="external-link">#93</a> (<a href="https://github.com/12345nkjil" class="external-link">@12345nkjil</a>).</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="scop-070">scop 0.7.0<a class="anchor" aria-label="anchor" href="#scop-070"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Integrated <code>uv</code> as the primary <em>Python</em> package installer for improved installation speed.</li>
 <li>
@@ -231,7 +271,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.5" id="scop-065">scop 0.6.5<a class="anchor" aria-label="anchor" href="#scop-065"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>:
 <ul><li>Added comprehensive environment variable configuration to prevent crashes when calling <em>Python</em> functions, including setting thread limits for OMP, OPENBLAS, MKL, NUMBA, and other libraries. This improves stability on all platforms, especially Apple silicon Macs.</li>
@@ -255,7 +295,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.2" id="scop-062">scop 0.6.2<a class="anchor" aria-label="anchor" href="#scop-062"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/CellChatPlot.html">CellChatPlot()</a></code>: Adjusted the size of saved figures for better file size optimization.</li>
 </ul></li>
@@ -267,7 +307,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.1" id="scop-061">scop 0.6.1<a class="anchor" aria-label="anchor" href="#scop-061"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Improved message formatting and simplified log output for better user experience.</li>
 <li>Added <code>get_conda_envs_dir()</code> helper function to centralize conda environment directory retrieval.</li>
@@ -290,12 +330,12 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="scop-060">scop 0.6.0<a class="anchor" aria-label="anchor" href="#scop-060"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>: Enhanced with environment caching mechanism to avoid redundant environment preparation. Improved message formatting and error handling.</li>
 <li>Python-based functions (<code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) now automatically call <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> internally, eliminating the need for users to manually prepare the Python environment before using these functions.</li>
 <li>
-<code><a href="../reference/cluster_within_group2.html">cluster_within_group2()</a></code>: New function for clustering within groups.</li>
+<code>cluster_within_group2()</code>: New function for clustering within groups.</li>
 <li>Multiple plotting functions: Replaced <code>geom_sankey()</code> with <code>ggsankey::geom_sankey()</code> for better Sankey diagram support.</li>
 <li>Multiple functions: Replaced <code>:::</code> operator with <code>get_namespace_fun()</code> for safer namespace access.</li>
 </ul></li>
@@ -324,14 +364,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.5" id="scop-055">scop 0.5.5<a class="anchor" aria-label="anchor" href="#scop-055"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fixed <code><a href="../reference/VelocityPlot.html">VelocityPlot()</a></code> function error in <code>plot_type = "grid"</code> mode: replaced vectorized arrow length with fixed-length arrows (using mean length) to resolve <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> error that occurred when <code><a href="https://rdrr.io/r/grid/arrow.html" class="external-link">grid::arrow()</a></code> received a vector instead of a single value, see <a href="https://github.com/mengxu98/scop/issues/72" class="external-link">#72</a>, <a href="https://github.com/mengxu98/scop/issues/74" class="external-link">#74</a>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.4" id="scop-054">scop 0.5.4<a class="anchor" aria-label="anchor" href="#scop-054"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fixed parameter name error in <code><a href="../reference/CheckDataType.html">CheckDataType()</a></code> function calls: changed <code>data</code> parameter to <code>object</code> in <code><a href="../reference/RunKNNMap.html">RunKNNMap()</a></code>, <code><a href="../reference/RunSymphonyMap.html">RunSymphonyMap()</a></code>, <code><a href="../reference/RunScmap.html">RunScmap()</a></code>, <code><a href="../reference/RunPCAMap.html">RunPCAMap()</a></code>, and <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code> functions, see <a href="https://github.com/mengxu98/scop/issues/68" class="external-link">#68</a>.</li>
 <li>Fixed <code>SingleCellExperiment</code> object creation in <code><a href="../reference/RunScmap.html">RunScmap()</a></code> and <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code> functions: changed from coercing <code>SummarizedExperiment</code> to directly constructing <code>SingleCellExperiment</code> objects.</li>
 </ul></li>
@@ -339,7 +379,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.3" id="scop-053">scop 0.5.3<a class="anchor" aria-label="anchor" href="#scop-053"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>: Changed default <code>Ensembl_version</code> parameter from <code>103</code> to <code>NULL</code> for more flexible version handling.</li>
 <li>Added <em>Python</em> version <code>log_message()</code> for Python-based functions (<code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>, <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, <code><a href="../reference/RunWOT.html">RunWOT()</a></code>) and added <code>verbose</code> parameter inheritance and improved message formatting using cli-style formatting.</li>
@@ -365,7 +405,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="scop-050">scop 0.5.0<a class="anchor" aria-label="anchor" href="#scop-050"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunCellChat.html">RunCellChat()</a></code>: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.</li>
 <li>
@@ -390,7 +430,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="scop-040">scop 0.4.0<a class="anchor" aria-label="anchor" href="#scop-040"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/RunProportionTest.html">RunProportionTest()</a></code>: New function to perform Monte-carlo permutation test for quantifying cell proportion differences between conditions.</li>
 <li>
@@ -414,14 +454,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.3" id="scop-033">scop 0.3.3<a class="anchor" aria-label="anchor" href="#scop-033"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Multiple functions: Improved parameter documentation formatting and consistency across the package.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="scop-032">scop 0.3.2<a class="anchor" aria-label="anchor" href="#scop-032"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/GetFeaturesData.html">GetFeaturesData()</a></code> and <code><a href="../reference/AddFeaturesData.html">AddFeaturesData()</a></code>: Enhanced argument clarity, added input validation, and standardized return values for <code>Seurat</code>, <code>Assay</code>, and <code>Assay5</code> objects.</li>
 <li>
@@ -440,7 +480,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="scop-031">scop 0.3.1<a class="anchor" aria-label="anchor" href="#scop-031"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>
 <code><a href="../reference/EnrichmentPlot.html">EnrichmentPlot()</a></code> and <code><a href="../reference/GSEAPlot.html">GSEAPlot()</a></code>: Removed conditional font face styling (<code>face = ifelse()</code> logic) for better text rendering consistency. Set the default value of <code>lineheight</code> from <code>0.5</code> to <code>0.7</code>.</li>
 <li>Updated <code>check_r()</code> function for improved package checking functionality.</li>
@@ -454,7 +494,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="scop-030">scop 0.3.0<a class="anchor" aria-label="anchor" href="#scop-030"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Fixed <code>segmentation faults</code> and <code>R crashes</code> on <em>M-series</em> MacBook when running <em>Python</em> functions.</li>
 <li>
 <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code>: Enhanced with <em>M-series</em> MacBook detection and automatic environment configuration.</li>
@@ -484,7 +524,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="scop-029">scop 0.2.9<a class="anchor" aria-label="anchor" href="#scop-029"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fix bug for <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code>.</li>
 </ul></li>
 <li>
@@ -495,7 +535,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.7" id="scop-027">scop 0.2.7<a class="anchor" aria-label="anchor" href="#scop-027"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Added an internal function <code>.check_pkg_status()</code> to check if an <em>R</em> package is installed.</li>
 <li>Update function <code><a href="../reference/CheckDataType.html">CheckDataType()</a></code> to <em>S4</em> class function.</li>
 <li>Update function <code><a href="../reference/standard_scop.html">standard_scop()</a></code>, make it more efficient.</li>
@@ -509,7 +549,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="scop-026">scop 0.2.6<a class="anchor" aria-label="anchor" href="#scop-026"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Added <code>remove_r()</code> function for easy remove <em>R</em> packages.</li>
 <li>Rename function: <code>RemovePackages()</code> to <code><a href="../reference/remove_python.html">remove_python()</a></code>.</li>
 <li>Removed other methods of installing <em>R</em> packages from the <code>check_r()</code> function, only retaining <a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak</a>.</li>
@@ -524,59 +564,59 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="scop-025">scop 0.2.5<a class="anchor" aria-label="anchor" href="#scop-025"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Rename function: <code>palette_scop()</code> to <code>palette_colors()</code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.4" id="scop-024">scop 0.2.4<a class="anchor" aria-label="anchor" href="#scop-024"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Rename functions: <code>check_srt_merge()</code> to <code><a href="../reference/CheckDataMerge.html">CheckDataMerge()</a></code>, <code>check_srt_list()</code> to <code>CheckDataList</code> and <code>check_data_type()</code> to <code>CheckDataType</code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="scop-022">scop 0.2.2<a class="anchor" aria-label="anchor" href="#scop-022"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Replace all <code><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html" class="external-link">BiocParallel::bplapply()</a></code> with <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun()</a></code>.</li>
 </ul></li>
 <li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fix bugs in <code><a href="../reference/RunSingleR.html">RunSingleR()</a></code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="scop-020">scop 0.2.0<a class="anchor" aria-label="anchor" href="#scop-020"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Added <code><a href="../reference/remove_python.html">remove_python()</a></code> function for easy remove <em>Python</em> packages.</li>
 </ul></li>
 <li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Corrected an issue in <code>py_to_r2()</code> function (intrinsic function), which ensures that Python-dependent functions like <code><a href="../reference/RunPAGA.html">RunPAGA()</a></code> and <code><a href="../reference/RunSCVELO.html">RunSCVELO()</a></code> function run correctly.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.9" id="scop-019">scop 0.1.9<a class="anchor" aria-label="anchor" href="#scop-019"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Update <code><a href="../reference/CellScoring.html">CellScoring()</a></code> and <code>AddModuleScore2()</code> functions. Now, new parameters <code>cores</code> and <code>verbose</code> have been added.</li>
 <li>
-<code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a>, and the <code>cores</code> parameter is used to control the number of cores in <a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a>.</li>
+<code>AddModuleScore2()</code> function no longer uses the <code><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">BiocParallel::bpparam()</a></code> function to enable parallelization, but <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>, and the <code>cores</code> parameter is used to control the number of cores in <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="scop-015">scop 0.1.5<a class="anchor" aria-label="anchor" href="#scop-015"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fix error for <code><a href="../reference/RunPalantir.html">RunPalantir()</a></code> function, see <a href="https://github.com/mengxu98/scop/issues/23" class="external-link">#23</a>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.4" id="scop-014">scop 0.1.4<a class="anchor" aria-label="anchor" href="#scop-014"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Update <code>.onAttach()</code>, now <code>.onAttach()</code> will print more information about <em>conda</em> and <em>Python</em>.</li>
 <li>Update <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function for easy add or update a conda environments and install <em>Python</em> packages.</li>
 <li>Added <code><a href="../reference/ListEnv.html">ListEnv()</a></code> and <code><a href="../reference/RemoveEnv.html">RemoveEnv()</a></code> functions for easy management of <em>conda</em> environment and <em>Python</em> packages.</li>
@@ -585,14 +625,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="scop-013">scop 0.1.3<a class="anchor" aria-label="anchor" href="#scop-013"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Added <code><a href="../reference/TACSPlot.html">TACSPlot()</a></code> function for creating FACS-like plots. Please refer to <a href="https://doi.org/10.1016/j.immuni.2018.04.015" class="external-link">Kernfeld et al. paper</a> and <a href="https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271" class="external-link">Github</a> for specific information.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="scop-009">scop 0.0.9<a class="anchor" aria-label="anchor" href="#scop-009"></a></h2>
 <ul><li>
-<strong>bugs</strong>:
+<strong>fix</strong>:
 <ul><li>Fix a bug for <code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code> function.</li>
 <li>The default <em>Python</em> version is now set to <code>3.10-1</code>.</li>
 </ul></li>
@@ -600,7 +640,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.6" id="scop-006">scop 0.0.6<a class="anchor" aria-label="anchor" href="#scop-006"></a></h2>
 <ul><li>
-<strong>func</strong>:
+<strong>feat</strong>:
 <ul><li>Add <code><a href="../reference/GetAssayData5.html">GetAssayData5()</a></code> function, a reimplementation of <code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData()</a></code>, for compatibility with Seurat v5 <code>Assay</code> objects.</li>
 <li>Updated <code><a href="../reference/GetFeaturesData.html">GetFeaturesData()</a></code> and <code><a href="../reference/AddFeaturesData.html">AddFeaturesData()</a></code> function to support retrieving and adding feature metadata.</li>
 </ul></li>
@@ -611,6 +651,10 @@
 <strong>data</strong>:
 <ul><li>Updated the <code>pancreas_sub</code> and <code>panc8_sub</code> test datasets to the Seurat v5 object format.</li>
 </ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.1" id="scop-001">scop 0.0.1<a class="anchor" aria-label="anchor" href="#scop-001"></a></h2>
+<ul><li><strong>Initial version</strong></li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

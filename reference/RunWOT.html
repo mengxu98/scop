@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run WOT analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunWOT.R" class="external-link"><code>R/RunWOT.R</code></a></small>
       <div class="d-none name"><code>RunWOT.Rd</code></div>
     </div>
 
@@ -59,7 +59,7 @@
 <span>  time_to <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  get_coupling <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  recalculate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -82,19 +82,23 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-assay-x">assay_x<a class="anchor" aria-label="anchor" href="#arg-assay-x"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assay to convert as the main data matrix in the anndata object.
+Default is <code>"RNA"</code>.</p></dd>
 
 
 <dt id="arg-layer-x">layer_x<a class="anchor" aria-label="anchor" href="#arg-layer-x"></a></dt>
-<dd><p>Layer name for <code>assay_x</code> in the Seurat object.</p></dd>
+<dd><p>Layer name for assay_x in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-assay-y">assay_y<a class="anchor" aria-label="anchor" href="#arg-assay-y"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assays to convert as layers in the anndata object.
+Default is <code>c("spliced", "unspliced")</code>.</p></dd>
 
 
 <dt id="arg-layer-y">layer_y<a class="anchor" aria-label="anchor" href="#arg-layer-y"></a></dt>
-<dd><p>Layer names for the <code>assay_y</code> in the Seurat object.</p></dd>
+<dd><p>Layer names for the assay_y in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
@@ -140,7 +144,7 @@ Default is <code>FALSE</code>.</p></dd>
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
 <dd><p>Color palette name.
 Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Paired"</code>.</p></dd>
+Default is <code>"Chinese"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
@@ -187,10 +191,6 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p><a href="https://doi.org/10.1016/j.cell.2019.01.006" class="external-link">Geoffrey et al. (2019) Cell</a>,
 <a href="https://github.com/broadinstitute/wot" class="external-link">GitHub</a></p>
-    </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a></p></div>
     </div>
 
     <div class="section level2">

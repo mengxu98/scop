@@ -185,24 +185,24 @@ library(Matrix)
 #>     expand
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:35:59] Start standard scop workflow...
-#> ℹ [2026-02-27 18:36:00] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:36:00] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:36:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:36:02] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:36:02] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:36:02] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:36:03] Finished check
-#> ℹ [2026-02-27 18:36:03] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:36:03] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:36:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:36:04] Reorder clusters...
-#> ℹ [2026-02-27 18:36:04] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:36:04] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:36:09] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:36:13] Run scop standard workflow completed
+#> ℹ [2026-03-08 08:03:16] Start standard scop workflow...
+#> ℹ [2026-03-08 08:03:17] Checking a list of <Seurat>...
+#> ! [2026-03-08 08:03:17] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 08:03:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:03:19] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:03:20] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 08:03:20] Number of available HVF: 2000
+#> ℹ [2026-03-08 08:03:20] Finished check
+#> ℹ [2026-03-08 08:03:20] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 08:03:21] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 08:03:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 08:03:22] Reorder clusters...
+#> ℹ [2026-03-08 08:03:22] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 08:03:22] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 08:03:27] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 08:03:31] Run scop standard workflow completed
 pancreas_sub <- RunNMF(pancreas_sub)
-#> ℹ [2026-02-27 18:36:13] Running NMF...
+#> ℹ [2026-03-08 08:03:31] Running NMF...
 #> ℹ BE_ 1 
 #> ℹ Positive:  Ccnd1, Spp1, Mdk, Rps2, Ldha, Pebp1, Cd24a, Dlk1, Krt8, Mgst1 
 #> ℹ      Clu, Gapdh, Eno1, Prdx1, Cldn10, Mif, Cldn7, Npm1, Dbi, Vim 
@@ -238,10 +238,21 @@ pancreas_sub <- RunNMF(pancreas_sub)
 #> ℹ Negative:  1110002L01Rik, Aacs, Wipi1, B830012L14Rik, Tmcc3, Trib1, Fgf12, Plekho1, Ppp2r2b, Lama1 
 #> ℹ      Tenm4, Trf, Gm5420, Man1c1, Jam3, Mgst2, Kcnip3, Tnr, Gm15915, Cbfa2t2 
 #> ℹ      Sh2d4a, Bbc3, Fkbp9, Ano6, Prkcb, Megf6, Fam46d, Slc52a3, Ankrd2, Tox2 
-#> ✔ [2026-02-27 18:36:18] NMF compute completed
+#> ✔ [2026-03-08 08:03:36] NMF compute completed
 CellDimPlot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "nmf"
+)
+
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("BE_1", "BE_2", "BE_3"),
+  reduction = "UMAP",
+  palette = "RdBu",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  theme_use = "theme_blank"
 )
 ```

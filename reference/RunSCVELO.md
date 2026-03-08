@@ -49,7 +49,7 @@ RunSCVELO(
   compute_paga = TRUE,
   top_n = 6,
   cores = 1,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
   show_plot = TRUE,
@@ -76,19 +76,22 @@ RunSCVELO(
 
 - assay_x:
 
-  Assay to convert in the anndata object.
+  Assay to convert as the main data matrix in the anndata object.
+  Default is `"RNA"`.
 
 - layer_x:
 
-  Layer name for `assay_x` in the Seurat object.
+  Layer name for assay_x in the Seurat object. Default is `"counts"`.
 
 - assay_y:
 
-  Assay to convert in the anndata object.
+  Assays to convert as layers in the anndata object. Default is
+  `c("spliced", "unspliced")`.
 
 - layer_y:
 
-  Layer names for the `assay_y` in the Seurat object.
+  Layer names for the assay_y in the Seurat object. Default is
+  `"counts"`.
 
 - group.by:
 
@@ -96,11 +99,15 @@ RunSCVELO(
 
 - linear_reduction:
 
-  Linear reduction method to use, e.g., `"PCA"`.
+  The linear dimensionality reduction method to use. Options are
+  `"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, or `"glmpca"`. Default is
+  `"pca"`.
 
 - nonlinear_reduction:
 
-  Non-linear reduction method to use, e.g., `"UMAP"`.
+  The nonlinear dimensionality reduction method to use. Options are
+  `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`,
+  `"trimap"`, `"largevis"`, or `"fr"`. Default is `"umap"`.
 
 - basis:
 
@@ -108,30 +115,32 @@ RunSCVELO(
 
 - mode:
 
-  Velocity estimation models to use. Can be a vector containing
-  `"deterministic"`, `"stochastic"`, and/or `"dynamical"`.
+  Velocity estimation models to use. Can be `"deterministic"`,
+  `"stochastic"`, or `"dynamical"`.
 
 - fitting_by:
 
-  Method used to fit gene velocities for dynamical modeling, e.g.,
-  "stochastic".
+  Method used to fit gene velocities for dynamical modeling. Default is
+  `"stochastic"`.
 
 - magic_impute:
 
-  Flag indicating whether to perform magic imputation.
+  Flag indicating whether to perform magic imputation. Default is
+  `FALSE`.
 
 - knn:
 
-  The number of nearest neighbors for `magic.MAGIC`.
+  The number of nearest neighbors for `magic.MAGIC`. Default is `5`.
 
 - t:
 
-  power to which the diffusion operator is powered for `magic.MAGIC`.
+  Power to which the diffusion operator is powered for `magic.MAGIC`.
+  Default is `2`.
 
 - min_shared_counts:
 
   Minimum number of counts (both unspliced and spliced) required for a
-  gene.
+  gene. Default is `30`.
 
 - n_pcs:
 
@@ -180,7 +189,7 @@ RunSCVELO(
   Controls the closeness of streamlines. When density = 2 (default), the
   domain is divided into a 60x60 grid, whereas density linearly scales
   this grid. Each cell in the grid can have, at most, one traversing
-  streamline.
+  streamline. Default is `2`.
 
 - arrow_length:
 
@@ -188,7 +197,7 @@ RunSCVELO(
 
 - arrow_size:
 
-  Size of arrows.
+  Size of arrows. Default is `5`.
 
 - arrow_density:
 
@@ -244,7 +253,7 @@ RunSCVELO(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -290,7 +299,6 @@ RunSCVELO(
 
 ## See also
 
-[srt_to_adata](https://mengxu98.github.io/scop/reference/srt_to_adata.md),
 [VelocityPlot](https://mengxu98.github.io/scop/reference/VelocityPlot.md),
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md),
 [RunPAGA](https://mengxu98.github.io/scop/reference/RunPAGA.md)
@@ -330,23 +338,6 @@ CellDimPlot(
   reduction = "UMAP",
   pt.size = NA,
   velocity = "stochastic"
-)
-
-data(pancreas_sub)
-pancreas_sub <- standard_scop(pancreas_sub)
-pancreas_sub <- RunSCVELO(
-  pancreas_sub,
-  assay_x = "RNA",
-  group.by = "SubCellType",
-  linear_reduction = "PCA",
-  nonlinear_reduction = "UMAP",
-  mode = c("deterministic", "stochastic"),
-  filter_genes = TRUE,
-  min_counts = 5,
-  compute_velocity_confidence = TRUE,
-  compute_terminal_states = TRUE,
-  compute_pseudotime = TRUE,
-  compute_paga = TRUE
 )
 } # }
 ```

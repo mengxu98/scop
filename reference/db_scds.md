@@ -45,24 +45,24 @@ db_scds(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:49:48] Start standard scop workflow...
-#> ℹ [2026-02-27 18:49:48] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:49:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:49:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:49:51] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:49:51] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:49:51] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:49:52] Finished check
-#> ℹ [2026-02-27 18:49:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:49:52] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:49:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:49:53] Reorder clusters...
-#> ℹ [2026-02-27 18:49:53] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:49:53] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:49:58] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:50:02] Run scop standard workflow completed
+#> ℹ [2026-03-08 08:17:21] Start standard scop workflow...
+#> ℹ [2026-03-08 08:17:22] Checking a list of <Seurat>...
+#> ! [2026-03-08 08:17:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 08:17:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:17:24] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:17:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 08:17:25] Number of available HVF: 2000
+#> ℹ [2026-03-08 08:17:25] Finished check
+#> ℹ [2026-03-08 08:17:25] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 08:17:26] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 08:17:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 08:17:27] Reorder clusters...
+#> ℹ [2026-03-08 08:17:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 08:17:27] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 08:17:32] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 08:17:36] Run scop standard workflow completed
 pancreas_sub <- db_scds(pancreas_sub, method = "hybrid")
-#> ℹ [2026-02-27 18:50:03] Data type is raw counts
+#> ℹ [2026-03-08 08:17:37] Data type is raw counts
 #> Registered S3 method overwritten by 'pROC':
 #>   method   from            
 #>   plot.roc spatstat.explore

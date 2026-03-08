@@ -34,7 +34,7 @@ Conos_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   buildGraph_params = list(),
-  num_threads = 2,
+  cores = 2,
   verbose = TRUE,
   seed = 11
 )
@@ -186,9 +186,10 @@ Conos_integrate(
   A list of parameters for the buildGraph function. Default is
   \`list()\`.
 
-- num_threads:
+- cores:
 
-  An integer setting the number of threads for Conos. Default is \`2\`.
+  An integer setting the number of threads for \`Conos\`. Default is
+  \`2\`.
 
 - verbose:
 

@@ -36,7 +36,7 @@ This function runs the PAGA analysis on a Seurat object."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run PAGA analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunPAGA.R" class="external-link"><code>R/RunPAGA.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunPAGA.R" class="external-link"><code>R/RunPAGA.R</code></a></small>
       <div class="d-none name"><code>RunPAGA.Rd</code></div>
     </div>
 
@@ -72,7 +72,7 @@ This function runs the PAGA analysis on a Seurat object.</p>
 <span>  n_dcs <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  n_branchings <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  min_group_size <span class="op">=</span> <span class="fl">0.01</span>,</span>
-<span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend.position <span class="op">=</span> <span class="st">"on data"</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -101,19 +101,23 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-assay-x">assay_x<a class="anchor" aria-label="anchor" href="#arg-assay-x"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assay to convert as the main data matrix in the anndata object.
+Default is <code>"RNA"</code>.</p></dd>
 
 
 <dt id="arg-layer-x">layer_x<a class="anchor" aria-label="anchor" href="#arg-layer-x"></a></dt>
-<dd><p>Layer name for <code>assay_x</code> in the Seurat object.</p></dd>
+<dd><p>Layer name for assay_x in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-assay-y">assay_y<a class="anchor" aria-label="anchor" href="#arg-assay-y"></a></dt>
-<dd><p>Assay to convert in the anndata object.</p></dd>
+<dd><p>Assays to convert as layers in the anndata object.
+Default is <code>c("spliced", "unspliced")</code>.</p></dd>
 
 
 <dt id="arg-layer-y">layer_y<a class="anchor" aria-label="anchor" href="#arg-layer-y"></a></dt>
-<dd><p>Layer names for the <code>assay_y</code> in the Seurat object.</p></dd>
+<dd><p>Layer names for the assay_y in the Seurat object.
+Default is <code>"counts"</code>.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -121,11 +125,16 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
-<dd><p>Linear reduction method to use, e.g., <code>"PCA"</code>.</p></dd>
+<dd><p>The linear dimensionality reduction method to use.
+Options are <code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, or <code>"glmpca"</code>.
+Default is <code>"pca"</code>.</p></dd>
 
 
 <dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
-<dd><p>Non-linear reduction method to use, e.g., <code>"UMAP"</code>.</p></dd>
+<dd><p>The nonlinear dimensionality reduction method to use.
+Options are <code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>,
+<code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, or <code>"fr"</code>.
+Default is <code>"umap"</code>.</p></dd>
 
 
 <dt id="arg-basis">basis<a class="anchor" aria-label="anchor" href="#arg-basis"></a></dt>
@@ -198,7 +207,7 @@ Edges for weights below this threshold will not be drawn.</p></dd>
 <dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
 <dd><p>Color palette name.
 Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Paired"</code>.</p></dd>
+Default is <code>"Chinese"</code>.</p></dd>
 
 
 <dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
@@ -252,7 +261,7 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="srt_to_adata.html">srt_to_adata</a>, <a href="PAGAPlot.html">PAGAPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="RunSCVELO.html">RunSCVELO</a></p></div>
+    <div class="dont-index"><p><a href="PAGAPlot.html">PAGAPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="RunSCVELO.html">RunSCVELO</a></p></div>
     </div>
 
     <div class="section level2">

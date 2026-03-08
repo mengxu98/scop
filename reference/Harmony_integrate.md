@@ -160,7 +160,7 @@ Harmony_integrate(
 - harmony_dims_use:
 
   A vector specifying the dimensions returned by RunHarmony that will be
-  utilized for downstream cell cluster finding and non-linear reduction.
+  utilized for downstream cell cluster finding and nonlinear reduction.
   If set to NULL, all the returned dimensions will be used by default.
 
 - nonlinear_reduction:

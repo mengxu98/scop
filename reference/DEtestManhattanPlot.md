@@ -12,7 +12,7 @@ DEtestManhattanPlot(
   test.use = "wilcox",
   res = NULL,
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
@@ -72,7 +72,7 @@ DEtestManhattanPlot(
 - group_palette:
 
   Palette for cell types (groups) in Manhattan plot. Default is
-  `"Paired"`.
+  `"Chinese"`.
 
 - group_palcolor:
 
@@ -189,36 +189,36 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 17:45:40] Start standard scop workflow...
-#> ℹ [2026-02-27 17:45:41] Checking a list of <Seurat>...
-#> ! [2026-02-27 17:45:41] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 17:45:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:45:42] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 17:45:43] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 17:45:43] Number of available HVF: 2000
-#> ℹ [2026-02-27 17:45:43] Finished check
-#> ℹ [2026-02-27 17:45:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 17:45:44] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 17:45:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 17:45:45] Reorder clusters...
-#> ℹ [2026-02-27 17:45:45] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 17:45:45] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 17:45:48] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 17:45:51] Run scop standard workflow completed
+#> ℹ [2026-03-08 07:03:34] Start standard scop workflow...
+#> ℹ [2026-03-08 07:03:35] Checking a list of <Seurat>...
+#> ! [2026-03-08 07:03:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 07:03:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:03:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 07:03:37] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 07:03:37] Number of available HVF: 2000
+#> ℹ [2026-03-08 07:03:37] Finished check
+#> ℹ [2026-03-08 07:03:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 07:03:38] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 07:03:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 07:03:39] Reorder clusters...
+#> ℹ [2026-03-08 07:03:39] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 07:03:39] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 07:03:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 07:03:45] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-02-27 17:45:51] Data type is log-normalized
-#> ℹ [2026-02-27 17:45:51] Start differential expression test
-#> ℹ [2026-02-27 17:45:51] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-02-27 17:45:51] Using 1 core
-#> ⠙ [2026-02-27 17:45:51] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-02-27 17:45:51] Completed 5 tasks in 1.1s
+#> ℹ [2026-03-08 07:03:46] Data type is log-normalized
+#> ℹ [2026-03-08 07:03:46] Start differential expression test
+#> ℹ [2026-03-08 07:03:46] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-08 07:03:46] Using 1 core
+#> ⠙ [2026-03-08 07:03:46] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-03-08 07:03:46] Completed 5 tasks in 1.1s
 #> 
-#> ℹ [2026-02-27 17:45:51] Building results
-#> ✔ [2026-02-27 17:45:53] Differential expression test completed
+#> ℹ [2026-03-08 07:03:46] Building results
+#> ✔ [2026-03-08 07:03:47] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"

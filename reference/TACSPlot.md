@@ -23,7 +23,7 @@ TACSPlot(
   feature2,
   cutoffs = NULL,
   density = FALSE,
-  palette = "Paired",
+  palette = "Chinese",
   num_features_add = 100,
   features_predetermined = FALSE,
   aggregator = "sum",
@@ -104,7 +104,7 @@ TACSPlot(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - num_features_add:
 
@@ -238,22 +238,22 @@ TACSPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-02-27 18:48:53] Start standard scop workflow...
-#> ℹ [2026-02-27 18:48:54] Checking a list of <Seurat>...
-#> ! [2026-02-27 18:48:54] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-02-27 18:48:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:48:56] Perform `Seurat::FindVariableFeatures()` on the data 1/1 of the `srt_list`...
-#> ℹ [2026-02-27 18:48:57] Use the separate HVF from srt_list
-#> ℹ [2026-02-27 18:48:57] Number of available HVF: 2000
-#> ℹ [2026-02-27 18:48:57] Finished check
-#> ℹ [2026-02-27 18:48:57] Perform `Seurat::ScaleData()`
-#> ℹ [2026-02-27 18:48:58] Perform pca linear dimension reduction
-#> ℹ [2026-02-27 18:48:59] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-02-27 18:48:59] Reorder clusters...
-#> ℹ [2026-02-27 18:48:59] Perform umap nonlinear dimension reduction
-#> ℹ [2026-02-27 18:48:59] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ℹ [2026-02-27 18:49:03] Non-linear dimensionality reduction (umap) using (Standardpca) dims (1-50) as input
-#> ✔ [2026-02-27 18:49:08] Run scop standard workflow completed
+#> ℹ [2026-03-08 08:16:33] Start standard scop workflow...
+#> ℹ [2026-03-08 08:16:34] Checking a list of <Seurat>...
+#> ! [2026-03-08 08:16:34] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-08 08:16:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:16:36] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-08 08:16:37] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-08 08:16:37] Number of available HVF: 2000
+#> ℹ [2026-03-08 08:16:37] Finished check
+#> ℹ [2026-03-08 08:16:37] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-08 08:16:38] Perform pca linear dimension reduction
+#> ℹ [2026-03-08 08:16:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-08 08:16:39] Reorder clusters...
+#> ℹ [2026-03-08 08:16:39] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-08 08:16:39] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-08 08:16:44] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-08 08:16:48] Run scop standard workflow completed
 TACSPlot(
   pancreas_sub,
   feature1 = "H3f3b",

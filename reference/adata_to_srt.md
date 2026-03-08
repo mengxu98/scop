@@ -1,6 +1,6 @@
-# Convert an anndata object to a seurat object using reticulate
+# Convert an anndata object to a seurat object
 
-Convert an anndata object to a seurat object using reticulate
+Convert an anndata object to a seurat object
 
 ## Usage
 
@@ -13,13 +13,16 @@ adata_to_srt(adata, verbose = TRUE)
 - adata:
 
   An AnnData object. Can be a Python AnnData object (from
-  scanpy/reticulate), an R6 AnnData object from the `anndata` package
-  (AnnDataR6), or an R6 AnnData object from the `anndataR` package
-  (InMemoryAnnData).
+  `scanpy`/``` reticulate``), an  ```AnnDataR6`object from the`anndata`package, or an`InMemoryAnnData`object from the`anndataR\`
+  package.
 
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+## See also
+
+[srt_to_adata](https://mengxu98.github.io/scop/reference/srt_to_adata.md)
 
 ## Examples
 

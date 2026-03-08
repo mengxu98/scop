@@ -1,19 +1,101 @@
 # Changelog
 
+## scop (development version)
+
+- **feat**:
+  - Default palette changed from `"Paired"` to `"Chinese"`. See
+    [`thisplot::ChineseColors()`](https://mengxu98.github.io/thisplot/reference/ChineseColors.html)
+    for details.
+  - Unified the `cores` parameter across multiple functions
+    ([`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md),
+    [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md),
+    [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md),
+    and `heatmap_enrichment()`), ensuring `cores` is correctly threaded
+    through to
+    [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md).
+  - [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+    and
+    [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md):
+    Added `xlab` and `ylab` parameters, passed through to internal
+    [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
+    and
+    [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+    calls.
+  - [`ListDB()`](https://mengxu98.github.io/scop/reference/ListDB.md):
+    Now supports multiple species in the `species` parameter
+    simultaneously and adds `Species` and `DB` columns to the output
+    data frame for clearer identification.
+  - Moved `is_outlier` to
+    [`thisutils::is_outlier()`](https://mengxu98.github.io/thisutils/reference/is_outlier.html).
+  - `configure_apple_silicon_env()` (*Python* function): Added OpenMP
+    compatibility handling on macOS arm64 by prepending environment
+    `lib` paths to `DYLD_FALLBACK_LIBRARY_PATH`/`DYLD_LIBRARY_PATH` and
+    preloading `libomp.dylib`/`libiomp5.dylib` via
+    `ctypes.CDLL(..., RTLD_GLOBAL)` to reduce `scanpy`/`python-igraph`
+    import conflicts.
+  - [`scVI_integrate()`](https://mengxu98.github.io/scop/reference/scVI_integrate.md):
+    Unified parameter naming by renaming `num_threads` to `cores` for
+    consistency across integration functions.
+  - Added `find_neighbors_and_clusters()` and
+    `run_nonlinear_reduction()` helper functions to unify operations
+    across integration functions and reduce redundant code.
+- **fix**:
+  - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
+    - TF database now uses
+      [AnimalTFDB4](https://github.com/mengxu98/AnimalTFDB4) as the data
+      source.
+    - MP database - the Web Archive URL year is now dynamically
+      determined from the current date, and the archive snapshot date
+      for all MP-related file downloads (`VOC_MammalianPhenotype.rpt`,
+      `MGI_Gene_Model_Coord.rpt`, `MGI_GenePheno.rpt`) is extracted from
+      the server index page to ensure consistent versioning.
+    - hTFtarget data download URL has been changed from
+      `"http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"`
+      to
+      `"https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"`.
+    - CSPA data download URL has been changed from
+      `"https://wlab.ethz.ch/cspa/data/S1_File.xlsx"` to
+      `"https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"`.
+
+    Related issus [\#76](https://github.com/mengxu98/scop/issues/76)
+    ([@hwa2Hu](https://github.com/hwa2Hu)),
+    [\#139](https://github.com/mengxu98/scop/issues/139)
+    ([@pengding774-dot](https://github.com/pengding774-dot)),
+    [\#140](https://github.com/mengxu98/scop/issues/140)
+    ([@mengxu98](https://github.com/mengxu98)).
+  - [`LIGER_integrate()`](https://mengxu98.github.io/scop/reference/LIGER_integrate.md)
+    - Migrated to the `rliger` 2.x workflow
+      ([`rliger::runIntegration()`](https://welch-lab.github.io/liger/reference/runIntegration.html) +
+      [`rliger::quantileNorm()`](https://welch-lab.github.io/liger/reference/quantileNorm.html)
+      on `Seurat` object) and now prepares/uses the `ligerScaleData`
+      layer via
+      [`rliger::scaleNotCenter()`](https://welch-lab.github.io/liger/reference/scaleNotCenter.html)
+      before integration.
+    - Updated argument naming/style from `LIGER_dims_use` to
+      `liger_dims_use`, and removed legacy quantile-normalization
+      parameter compatibility mapping (`ref_dataset`), keeping
+      `reference` as the supported interface.
+  - Optimized the installation of some *Python* packages on Apple
+    Silicon devices.
+- **docs**:
+  - Updated README example code and visualizations. After regenerating
+    figures, the package size was reduced by ~3 MB.
+
 ## scop 0.8.4
 
-- **bugs**:
+- **fix**:
   - [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
     / `ExpressionStatPlot()`: Fixed box and violin x-axis misalignment
     when `add_box = TRUE` with `split.by`. Groups with fewer than 2
     observations are now filtered before violin density estimation (with
     a warning), and the violin layer uses a consistent
-    `position_dodge(width = 0.9)` to match the boxplot. This issue
-    reported in [\#123](https://github.com/mengxu98/scop/issues/123).
+    `position_dodge(width = 0.9)` to match the boxplot. Related issue
+    [\#123](https://github.com/mengxu98/scop/issues/123)
+    ([@oranges7](https://github.com/oranges7)).
 
 ## scop 0.8.3
 
-- **func**:
+- **feat**:
   - [`RunDynamicFeatures()`](https://mengxu98.github.io/scop/reference/RunDynamicFeatures.md):
     Added [PreTSA](https://github.com/haotian-zhuang/PreTSA/) method for
     dynamic feature fitting. The
@@ -24,9 +106,9 @@
     patterns](https://doi.org/10.1186/s13059-026-03994-3). Use
     `fit_method = "pretsa"` for B-spline-based piecewise truncated
     spline analysis; `fit_method = "gam"` (default) keeps generalized
-    additive models. PreTSA supports `knot` (0 or `"auto"`) and
-    `max_knot_allowed` when `knot = "auto"`. This issue reported in
-    [\#133](https://github.com/mengxu98/scop/issues/132).
+    additive models. PreTSA supports `knot` (`0` or `"auto"`) and
+    `max_knot_allowed` when `knot = "auto"`. Relate issue
+    [\#133](https://github.com/mengxu98/scop/issues/133).
   - [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
     and
     [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md):
@@ -40,19 +122,21 @@
     name) is used.
     [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
     forwards `legend.title` to `ExpressionStatPlot()`.
-- **bugs**:
+  - Moved `StatPlot` function to
+    [`thisplot::StatPlot`](https://mengxu98.github.io/thisplot/reference/StatPlot.html).
+- **fix**:
   - [`DynamicHeatmap()`](https://mengxu98.github.io/scop/reference/DynamicHeatmap.md)
     / `heatmap_enrichment()`: Fixed incorrect `db` handling when using
     custom `TERM2GENE`/`TERM2NAME`. Enrichment results with
     `Database = "custom"` could be incorrectly filtered by default `db`
     values (e.g. `"GO_BP"`), causing false “No term enriched using the
-    threshold” warnings even when enrichment succeeded. This issue
-    reported in [\#133](https://github.com/mengxu98/scop/issues/133),
-    [@1228849000](https://github.com/1228849000).
+    threshold” warnings even when enrichment succeeded. Relate issue
+    [\#133](https://github.com/mengxu98/scop/issues/133)
+    ([@1228849000](https://github.com/1228849000)).
 
 ## scop 0.8.2
 
-- **func**:
+- **feat**:
   - Add the
     [`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md)
     function, which calls the original
@@ -63,8 +147,9 @@
     [`DEtestManhattanPlot()`](https://mengxu98.github.io/scop/reference/DEtestManhattanPlot.md)
     and
     [`DEtestRingPlot()`](https://mengxu98.github.io/scop/reference/DEtestRingPlot.md)
-    for direct use. This issue reported in
-    [\#121](https://github.com/mengxu98/scop/issues/121).
+    for direct use. Relate issue
+    [\#121](https://github.com/mengxu98/scop/issues/121)
+    ([@ericavalentini](https://github.com/ericavalentini)).
   - Differential expression visualization
     ([`DEtestPlot()`](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
     [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md),
@@ -74,30 +159,31 @@
     When `res` is provided, `srt` is ignored. Data processing
     supports: (1) `group1` or `cluster` column for grouped plots; (2) no
     grouping column for a single panel; (3) gene names from row names
-    when `gene` column is missing. This issue reported in
-    [\#129](https://github.com/mengxu98/scop/issues/129).
+    when `gene` column is missing. Relate issue
+    [\#129](https://github.com/mengxu98/scop/issues/129)
+    ([@mengxu98](https://github.com/mengxu98)).
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     Update `version` parameter to specify the *Python* version of the
     conda environment. Default is `"3.11-1"` on *Windows* and `"3.10-1"`
-    on *macOS* and *Unix*. This issue reported in
-    [\#103](https://github.com/mengxu98/scop/issues/103) and
-    [\#88](https://github.com/mengxu98/scop/issues/88).
+    on *macOS* and *Unix*. Relate issue
+    [\#103](https://github.com/mengxu98/scop/issues/103)
+    ([@PanSX-Dr](https://github.com/PanSX-Dr)).
   - [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md):
     Add the `cores` parameter for
     [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md)
     and optimize the printed message.
   - Removed the setting in *Python* functions that prevents drawing
     functions from causing *R* crashes.
-- **bugs**:
+- **fix**:
   - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
     Fixed unused `plot_format` parameter error. The parameter is now
-    properly excluded from arguments passed to Python functions. This
-    issue reported in
-    [\#126](https://github.com/mengxu98/scop/issues/126).
+    properly excluded from arguments passed to Python functions. Relate
+    issue [\#126](https://github.com/mengxu98/scop/issues/126)
+    ([@christinejay990202-dev](https://github.com/christinejay990202-dev)).
 
 ## scop 0.8.1
 
-- **bugs**:
+- **fix**:
   - [`FeatureHeatmap()`](https://mengxu98.github.io/scop/reference/FeatureHeatmap.md):
     Fixed `group_palcolor` when a named vector is passed: the function
     previously used only the first color for all groups because
@@ -128,7 +214,7 @@
 
 ## scop 0.8.0
 
-- **func**:
+- **feat**:
   - [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md):
     New function for performing
     [Monocle2](https://github.com/mengxu98/monocle) trajectory analysis
@@ -168,12 +254,12 @@
 
 ## scop 0.7.8
 
-- **bugs**:
+- **fix**:
   - [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md):
     Fixed unused `plot_format` parameter error. The parameter is now
-    properly excluded from arguments passed to Python functions. This
-    issue reported in
-    [\#114](https://github.com/mengxu98/scop/issues/114).
+    properly excluded from arguments passed to Python functions. Relate
+    issue [\#114](https://github.com/mengxu98/scop/issues/114)
+    ([@Moonerss](https://github.com/Moonerss)).
   - [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md):
     Fixed PAGA computation error by replacing `scv.tl.paga` with
     `sc.tl.paga` (scanpy implementation) for better stability. The
@@ -190,7 +276,7 @@
     Fixed `recover_dynamics` error by ensuring `velocity_graph` and
     `velocity_graph_neg` are properly set before calling
     `scv.tl.recover_dynamics()` for latent time computation.
-- **func**:
+- **feat**:
   - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md):
     Removed automatic removal of “X\_” prefix from dimensionality
     reduction names in `obsm` keys. The function now preserves original
@@ -200,22 +286,25 @@
 
 ## scop 0.7.7
 
-- **func**:
+- **feat**:
   - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md):
     Enhanced to support multiple AnnData object types including *Python*
     AnnData objects (from scanpy/reticulate), R6 AnnData objects from
     the `anndata` package (AnnDataR6), and R6 AnnData objects from the
     `anndataR` package (InMemoryAnnData). Added internal helper
     functions `get_adata_element()` and `get_adata_names()` for better
-    compatibility. This enhancement addresses the issue reported in
-    [\#67](https://github.com/mengxu98/scop/issues/67),
-    [\#91](https://github.com/mengxu98/scop/issues/91) and
-    [91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
-- **bugs**:
+    compatibility. Relate issues
+    [\#67](https://github.com/mengxu98/scop/issues/67)
+    ([@lisch7](https://github.com/lisch7)),
+    [\#91](https://github.com/mengxu98/scop/issues/91)
+    ([@mengxu98](https://github.com/mengxu98)) and
+    [commit91#issuecomment](https://github.com/mengxu98/scop/issues/91#issuecomment-3659404993).
+- **fix**:
   - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md):
     Fixed error when comparing one cluster against multiple clusters
-    using `group1` and `group2` parameters. This issue reported in
-    [\#111](https://github.com/mengxu98/scop/issues/111).
+    using `group1` and `group2` parameters. Relate issue
+    [\#111](https://github.com/mengxu98/scop/issues/111)
+    ([@zhaoxiaoyan9225](https://github.com/zhaoxiaoyan9225)).
   - [`AnnotateFeatures()`](https://mengxu98.github.io/scop/reference/AnnotateFeatures.md):
     Fixed bug where the function would fail when processing GTF file
     annotations due to column name matching issues during data naming.
@@ -224,7 +313,7 @@
 
 ## scop 0.7.6
 
-- **func**:
+- **feat**:
   - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md):
     Added automatic PCA-based dimensionality reduction when using many
     features (\>1000) to speed up diffusion map computation. The `npcs`
@@ -233,11 +322,12 @@
 
 ## scop 0.7.5
 
-- **bugs**:
+- **fix**:
   - [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md):
-    Fixed bug where the function failed to build results. This issue
-    reported in [\#98](https://github.com/mengxu98/scop/issues/98).
-- **func**:
+    Fixed bug where the function failed to build results. Relate issue
+    [\#98](https://github.com/mengxu98/scop/issues/98)
+    ([@SuperrNaruto](https://github.com/SuperrNaruto)).
+- **feat**:
   - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md):
     Fixed compatibility issue with
     [SeuratObject](https://satijalab.github.io/seurat-object/) 5.0.0+ by
@@ -245,8 +335,8 @@
     [`Assays()`](https://satijalab.github.io/seurat-object/reference/ObjectAccess.html)
     `slot` argument with
     [`LayerData()`](https://satijalab.github.io/seurat-object/reference/Layers.html).
-    This issue reported in
-    [\#100](https://github.com/mengxu98/scop/issues/100).
+    Relate issue [\#100](https://github.com/mengxu98/scop/issues/100)
+    ([@mattizecos](https://github.com/mattizecos)).
   - [`RunDM()`](https://mengxu98.github.io/scop/reference/RunDM.md):
     Added automatic PCA-based dimensionality reduction when using many
     features (\>1000) to speed up diffusion map computation. The `npcs`
@@ -255,7 +345,7 @@
 
 ## scop 0.7.3
 
-- **func**:
+- **feat**:
   - [`RunCellTypist()`](https://mengxu98.github.io/scop/reference/RunCellTypist.md):
     New function for cell type annotation using the CellTypist method.
   - [`CellTypistModels()`](https://mengxu98.github.io/scop/reference/CellTypistModels.md):
@@ -264,20 +354,21 @@
 
 ## scop 0.7.2
 
-- **func**:
+- **feat**:
   - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md):
     Performance optimizations and code improvements.
 
 ## scop 0.7.1
 
-- **bugs**:
+- **fix**:
   - [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md):
-    Fixed issue where NA values appeared in labels. This issue reported
-    in [\#93](https://github.com/mengxu98/scop/issues/93).
+    Fixed issue where NA values appeared in labels. Relate issue
+    [\#93](https://github.com/mengxu98/scop/issues/93)
+    ([@12345nkjil](https://github.com/12345nkjil)).
 
 ## scop 0.7.0
 
-- **func**:
+- **feat**:
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     Integrated `uv` as the primary *Python* package installer for
     improved installation speed.
@@ -303,7 +394,7 @@
 
 ## scop 0.6.5
 
-- **func**:
+- **feat**:
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     - Added comprehensive environment variable configuration to prevent
       crashes when calling *Python* functions, including setting thread
@@ -338,7 +429,7 @@
 
 ## scop 0.6.2
 
-- **func**:
+- **feat**:
   - [`CellChatPlot()`](https://mengxu98.github.io/scop/reference/CellChatPlot.md):
     Adjusted the size of saved figures for better file size
     optimization.
@@ -348,7 +439,7 @@
 
 ## scop 0.6.1
 
-- **func**:
+- **feat**:
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     Improved message formatting and simplified log output for better
     user experience.
@@ -375,7 +466,7 @@
 
 ## scop 0.6.0
 
-- **func**:
+- **feat**:
   - [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md):
     Enhanced with environment caching mechanism to avoid redundant
     environment preparation. Improved message formatting and error
@@ -390,8 +481,8 @@
     [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
     internally, eliminating the need for users to manually prepare the
     Python environment before using these functions.
-  - [`cluster_within_group2()`](https://mengxu98.github.io/scop/reference/cluster_within_group2.md):
-    New function for clustering within groups.
+  - `cluster_within_group2()`: New function for clustering within
+    groups.
   - Multiple plotting functions: Replaced `geom_sankey()` with
     `ggsankey::geom_sankey()` for better Sankey diagram support.
   - Multiple functions: Replaced `:::` operator with
@@ -424,7 +515,7 @@
 
 ## scop 0.5.5
 
-- **bugs**:
+- **fix**:
   - Fixed
     [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
     function error in `plot_type = "grid"` mode: replaced vectorized
@@ -437,7 +528,7 @@
 
 ## scop 0.5.4
 
-- **bugs**:
+- **fix**:
   - Fixed parameter name error in
     [`CheckDataType()`](https://mengxu98.github.io/scop/reference/CheckDataType.md)
     function calls: changed `data` parameter to `object` in
@@ -457,7 +548,7 @@
 
 ## scop 0.5.3
 
-- **func**:
+- **feat**:
   - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md):
     Changed default `Ensembl_version` parameter from `103` to `NULL` for
     more flexible version handling.
@@ -485,7 +576,7 @@
 
 ## scop 0.5.0
 
-- **func**:
+- **feat**:
   - [`RunCellChat()`](https://mengxu98.github.io/scop/reference/RunCellChat.md):
     New function to perform CellChat analysis for investigating
     cell-to-cell communication with support for human, mouse, and
@@ -508,7 +599,7 @@
 
 ## scop 0.4.0
 
-- **func**:
+- **feat**:
   - [`RunProportionTest()`](https://mengxu98.github.io/scop/reference/RunProportionTest.md):
     New function to perform Monte-carlo permutation test for quantifying
     cell proportion differences between conditions.
@@ -530,13 +621,13 @@
 
 ## scop 0.3.3
 
-- **func**:
+- **feat**:
   - Multiple functions: Improved parameter documentation formatting and
     consistency across the package.
 
 ## scop 0.3.2
 
-- **func**:
+- **feat**:
   - [`GetFeaturesData()`](https://mengxu98.github.io/scop/reference/GetFeaturesData.md)
     and
     [`AddFeaturesData()`](https://mengxu98.github.io/scop/reference/AddFeaturesData.md):
@@ -555,7 +646,7 @@
 
 ## scop 0.3.1
 
-- **func**:
+- **feat**:
   - [`EnrichmentPlot()`](https://mengxu98.github.io/scop/reference/EnrichmentPlot.md)
     and
     [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md):
@@ -570,7 +661,7 @@
 
 ## scop 0.3.0
 
-- **func**:
+- **feat**:
   - Fixed `segmentation faults` and `R crashes` on *M-series* MacBook
     when running *Python* functions.
   - [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md):
@@ -603,7 +694,7 @@
 
 ## scop 0.2.9
 
-- **bugs**:
+- **fix**:
   - Fix bug for
     [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md).
 - **docs**:
@@ -611,7 +702,7 @@
 
 ## scop 0.2.7
 
-- **func**:
+- **feat**:
   - Added an internal function `.check_pkg_status()` to check if an *R*
     package is installed.
   - Update function
@@ -628,7 +719,7 @@
 
 ## scop 0.2.6
 
-- **func**:
+- **feat**:
   - Added `remove_r()` function for easy remove *R* packages.
   - Rename function: `RemovePackages()` to
     [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md).
@@ -643,12 +734,12 @@
 
 ## scop 0.2.5
 
-- **func**:
+- **feat**:
   - Rename function: `palette_scop()` to `palette_colors()`.
 
 ## scop 0.2.4
 
-- **func**:
+- **feat**:
   - Rename functions: `check_srt_merge()` to
     [`CheckDataMerge()`](https://mengxu98.github.io/scop/reference/CheckDataMerge.md),
     `check_srt_list()` to `CheckDataList` and `check_data_type()` to
@@ -656,22 +747,22 @@
 
 ## scop 0.2.2
 
-- **func**:
+- **feat**:
   - Replace all
     [`BiocParallel::bplapply()`](https://rdrr.io/pkg/BiocParallel/man/bplapply.html)
     with
     [`thisutils::parallelize_fun()`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
-- **bugs**:
+- **fix**:
   - Fix bugs in
     [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md).
 
 ## scop 0.2.0
 
-- **func**:
+- **feat**:
   - Added
     [`remove_python()`](https://mengxu98.github.io/scop/reference/remove_python.md)
     function for easy remove *Python* packages.
-- **bugs**:
+- **fix**:
   - Corrected an issue in `py_to_r2()` function (intrinsic function),
     which ensures that Python-dependent functions like
     [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md)
@@ -681,7 +772,7 @@
 
 ## scop 0.1.9
 
-- **func**:
+- **feat**:
   - Update
     [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md)
     and `AddModuleScore2()` functions. Now, new parameters `cores` and
@@ -689,20 +780,20 @@
   - `AddModuleScore2()` function no longer uses the
     [`BiocParallel::bpparam()`](https://rdrr.io/pkg/BiocParallel/man/register.html)
     function to enable parallelization, but
-    [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html),
+    [`thisutils::parallelize_fun`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html),
     and the `cores` parameter is used to control the number of cores in
-    [thisutils::parallelize_fun](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
+    [`thisutils::parallelize_fun`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html).
 
 ## scop 0.1.5
 
-- **bugs**:
+- **fix**:
   - Fix error for
     [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md)
     function, see [\#23](https://github.com/mengxu98/scop/issues/23).
 
 ## scop 0.1.4
 
-- **func**:
+- **feat**:
   - Update `.onAttach()`, now `.onAttach()` will print more information
     about *conda* and *Python*.
   - Update
@@ -718,7 +809,7 @@
 
 ## scop 0.1.3
 
-- **func**:
+- **feat**:
   - Added
     [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
     function for creating FACS-like plots. Please refer to [Kernfeld et
@@ -728,7 +819,7 @@
 
 ## scop 0.0.9
 
-- **bugs**:
+- **fix**:
   - Fix a bug for
     [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
     function.
@@ -736,7 +827,7 @@
 
 ## scop 0.0.6
 
-- **func**:
+- **feat**:
   - Add
     [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
     function, a reimplementation of
@@ -753,3 +844,7 @@
 - **data**:
   - Updated the `pancreas_sub` and `panc8_sub` test datasets to the
     Seurat v5 object format.
+
+## scop 0.0.1
+
+- **Initial version**

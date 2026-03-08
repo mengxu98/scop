@@ -1,9 +1,7 @@
-# Run CellRank analysis with kernel-estimator architecture
+# Run CellRank analysis
 
-CellRank is a powerful toolkit for studying cellular dynamics using
-Markov state modeling. This function implements the modern
-kernel-estimator architecture recommended by CellRank, which provides
-more flexibility and advanced features compared to the legacy API.
+CellRank is a toolkit for studying cellular dynamics using Markov state
+modeling.
 
 ## Usage
 
@@ -52,7 +50,7 @@ RunCellRank(
   plot_dpi = 300,
   plot_prefix = "cellrank",
   legend.position = "on data",
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   dirpath = "./cellrank",
   return_seurat = !is.null(srt),
@@ -69,19 +67,22 @@ RunCellRank(
 
 - assay_x:
 
-  Assay to convert in the anndata object.
+  Assay to convert as the main data matrix in the anndata object.
+  Default is `"RNA"`.
 
 - layer_x:
 
-  Layer name for `assay_x` in the Seurat object.
+  Layer name for assay_x in the Seurat object. Default is `"counts"`.
 
 - assay_y:
 
-  Assay to convert in the anndata object.
+  Assays to convert as layers in the anndata object. Default is
+  `c("spliced", "unspliced")`.
 
 - layer_y:
 
-  Layer names for the `assay_y` in the Seurat object.
+  Layer names for the assay_y in the Seurat object. Default is
+  `"counts"`.
 
 - adata:
 
@@ -97,11 +98,15 @@ RunCellRank(
 
 - linear_reduction:
 
-  Linear reduction method to use, e.g., `"PCA"`.
+  The linear dimensionality reduction method to use. Options are
+  `"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, or `"glmpca"`. Default is
+  `"pca"`.
 
 - nonlinear_reduction:
 
-  Non-linear reduction method to use, e.g., `"UMAP"`.
+  The nonlinear dimensionality reduction method to use. Options are
+  `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`,
+  `"trimap"`, `"largevis"`, or `"fr"`. Default is `"umap"`.
 
 - basis:
 
@@ -128,7 +133,7 @@ RunCellRank(
 
 - t:
 
-  power to which the diffusion operator is powered for `magic.MAGIC`.
+  Power to which the diffusion operator is powered for `magic.MAGIC`.
   Default is `2`.
 
 - min_shared_counts:
@@ -152,7 +157,10 @@ RunCellRank(
 
 - stream_density:
 
-  Controls the closeness of streamlines. Default is `2`.
+  Controls the closeness of streamlines. When density = 2 (default), the
+  domain is divided into a 60x60 grid, whereas density linearly scales
+  this grid. Each cell in the grid can have, at most, one traversing
+  streamline. Default is `2`.
 
 - arrow_size:
 
@@ -261,7 +269,7 @@ RunCellRank(
 
   Color palette name. Available palettes can be found in
   [thisplot::show_palettes](https://mengxu98.github.io/thisplot/reference/show_palettes.html).
-  Default is `"Paired"`.
+  Default is `"Chinese"`.
 
 - palcolor:
 
@@ -302,8 +310,7 @@ data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellRank(
   srt = pancreas_sub,
-  group.by = "SubCellType",
-  cores = 6
+  group.by = "SubCellType"
 )
 
 CellDimPlot(
