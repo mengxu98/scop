@@ -868,7 +868,7 @@ Seurat_integrate <- function(
       )
       if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
         log_message(
-          "Perform ScaleData on {.val {i}} of {.arg srt_list}"
+          "Perform {.fn Seurat::ScaleData} on {.arg srt}"
         )
         srt <- Seurat::ScaleData(
           object = srt,
@@ -942,7 +942,7 @@ Seurat_integrate <- function(
       )
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
-      log_message("Perform ScaleData on {.val {i}} of {.arg srt_list}")
+      log_message("Perform ScaleData on {.arg srt_integrated}")
       srt_integrated <- Seurat::ScaleData(
         object = srt_integrated,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
