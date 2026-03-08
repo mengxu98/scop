@@ -1224,7 +1224,10 @@ EnrichmentPlot <- function(
         )
         layout <- do.call(layout_fun, list(graph))
       }
-      clusters <- do.call(paste0("cluster_", enrichmap_cluster), list(graph))
+      cluster_fun <- get_namespace_fun(
+        "igraph", paste0("cluster_", enrichmap_cluster)
+      )
+      clusters <- do.call(cluster_fun, list(graph))
       df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices
