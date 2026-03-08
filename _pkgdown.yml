@@ -191,7 +191,6 @@ reference:
 - subtitle: "Plotting Functions"
 - contents:
   - compute_velocity_on_grid
-  - cluster_within_group2
   - print.scop_logo
 
 - subtitle: "SCExplorer"
