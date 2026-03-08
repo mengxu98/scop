@@ -65,7 +65,6 @@ reference:
   - FetchDataZero
   - GeneConvert
   - GetAssayData5
-  - is_outlier
   - RecoverCounts
   - RenameClusters
   - srt_append
@@ -154,7 +153,7 @@ reference:
   - RunWOT
   - RunDynamicFeatures
 
-- subtitle: "Cell Communication Analysis"
+- subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCellChat
 
