@@ -841,6 +841,29 @@ GroupHeatmap <- function(
     names(height) <- group.by
   }
 
+  if (!is.null(cell_annotation_params)) {
+    if (isTRUE(flip) && !"width" %in% names(cell_annotation_params) &&
+      "height" %in% names(cell_annotation_params)) {
+      cell_annotation_params[["width"]] <- cell_annotation_params[["height"]]
+      cell_annotation_params[["height"]] <- NULL
+      log_message(
+        "When {.arg flip = TRUE}, {.arg cell_annotation_params$height} is interpreted as {.arg cell_annotation_params$width}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    if (!isTRUE(flip) && !"height" %in% names(cell_annotation_params) &&
+      "width" %in% names(cell_annotation_params)) {
+      cell_annotation_params[["height"]] <- cell_annotation_params[["width"]]
+      cell_annotation_params[["width"]] <- NULL
+      log_message(
+        "When {.arg flip = FALSE}, {.arg cell_annotation_params$width} is interpreted as {.arg cell_annotation_params$height}.",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+  }
+
   if (isTRUE(flip)) {
     cluster_rows_raw <- cluster_rows
     cluster_columns_raw <- cluster_columns
@@ -1227,32 +1250,10 @@ GroupHeatmap <- function(
     }
 
     if (cell_group != "All.groups") {
-      funbody <- paste0(
-        "
-        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-        paste0(
-          "c('",
-          paste0(levels(srt@meta.data[[cell_group]]), collapse = "','"),
-          "')"
-        ),
-        ",palette = '",
-        group_palette[i],
-        "',palcolor=c(",
-        paste0("'", paste0(group_palcolor[[i]], collapse = "','"), "'"),
-        "))[nm]))
-      "
-      )
-      funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-      eval(
-        parse(
-          text = paste(
-            "panel_fun <- function(index, nm) {",
-            funbody,
-            "}",
-            sep = ""
-          )
-        ),
-        envir = environment()
+      block_graphics <- annotation_block_fill_graphics(
+        levels = levels(srt@meta.data[[cell_group]]),
+        palette = group_palette[i],
+        palcolor = group_palcolor[[i]]
       )
 
       anno <- list()
@@ -1265,7 +1266,7 @@ GroupHeatmap <- function(
             x = levels(cell_groups[[cell_group]])
           )
         ),
-        panel_fun = methods::getFunction("panel_fun", where = environment()),
+        panel_fun = block_graphics,
         which = ifelse(flip, "row", "column"),
         show_name = FALSE
       )
@@ -1283,32 +1284,10 @@ GroupHeatmap <- function(
     }
 
     if (!is.null(split.by)) {
-      funbody <- paste0(
-        "
-      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-        paste0(
-          "c('",
-          paste0(levels(srt@meta.data[[split.by]]), collapse = "','"),
-          "')"
-        ),
-        ",palette = '",
-        cell_split_palette,
-        "',palcolor=c(",
-        paste0("'", paste0(unlist(cell_split_palcolor), collapse = "','"), "'"),
-        "))[nm]))
-    "
-      )
-      funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-      eval(
-        parse(
-          text = paste(
-            "panel_fun <- function(index, nm) {",
-            funbody,
-            "}",
-            sep = ""
-          )
-        ),
-        envir = environment()
+      block_graphics <- annotation_block_fill_graphics(
+        levels = levels(srt@meta.data[[split.by]]),
+        palette = cell_split_palette,
+        palcolor = unlist(cell_split_palcolor)
       )
 
       anno <- list()
@@ -1321,7 +1300,7 @@ GroupHeatmap <- function(
             x = levels(cell_groups[[cell_group]])
           )
         ),
-        panel_fun = methods::getFunction("panel_fun", where = environment()),
+        panel_fun = block_graphics,
         which = ifelse(flip, "row", "column"),
         show_name = i == 1
       )
@@ -1377,7 +1356,6 @@ GroupHeatmap <- function(
   }
 
   if (!is.null(cell_annotation)) {
-    subplots_list <- list()
     for (i in seq_along(cell_annotation)) {
       cellan <- cell_annotation[i]
       palette <- cell_annotation_palette[i]
@@ -1405,38 +1383,10 @@ GroupHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          subplots_list[[paste0(cellan, ":", cell_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(subplots_list[['",
-              cellan,
-              ":",
-              cell_group,
-              "']]",
-              "[['",
-              nm,
-              "']]  + facet_null() + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", cell_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", cell_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[[cell_group]]), " : "),
             function(x) {
@@ -1448,46 +1398,64 @@ GroupHeatmap <- function(
             }
           )
 
-          ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
-            x = x_nm,
-            graphics = graphics,
-            which = ifelse(flip, "row", "column"),
-            border = TRUE,
-            verbose = FALSE
+          ha_top <- tryCatch(
+            {
+              ha_cell <- list()
+              ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+                x = x_nm,
+                graphics = graphics,
+                which = ifelse(flip, "row", "column"),
+                border = TRUE,
+                verbose = FALSE
+              )
+              build_heatmap_annotation(
+                annotations = ha_cell,
+                which = ifelse(flip, "row", "column"),
+                show_annotation_name = cell_group == group.by[1],
+                annotation_name_side = ifelse(flip, "top", "left"),
+                params = cell_annotation_params
+              )
+            },
+            error = function(e) {
+              log_message(
+                "Failed to build custom cell annotation '",
+                cellan,
+                "' for group '",
+                cell_group,
+                "'. Skip this annotation. Detail: ",
+                conditionMessage(e),
+                message_type = "warning",
+                verbose = verbose
+              )
+              NULL
+            }
           )
-          anno_args <- c(
-            ha_cell,
-            which = ifelse(flip, "row", "column"),
-            show_annotation_name = cell_group == group.by[1],
-            annotation_name_side = ifelse(flip, "top", "left")
-          )
-          anno_args <- c(
-            anno_args,
-            cell_annotation_params[setdiff(
-              names(cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (is.null(ha_top_list[[cell_group]])) {
-            ha_top_list[[cell_group]] <- ha_top
-          } else {
-            ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
+          if (!is.null(ha_top)) {
+            if (is.null(ha_top_list[[cell_group]])) {
+              ha_top_list[[cell_group]] <- ha_top
+            } else {
+              ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
+            }
           }
         }
-        lgd[[cellan]] <- ComplexHeatmap::Legend(
-          title = cellan,
-          labels = levels(cell_anno),
-          legend_gp = grid::gpar(
-            fill = palette_colors(
-              cell_anno,
-              palette = palette,
-              palcolor = palcolor
-            )
-          ),
-          border = TRUE
-        )
+        cell_levels <- levels(cell_anno)
+        cell_levels <- cell_levels[!is.na(cell_levels) & nzchar(cell_levels)]
+        if (length(cell_levels) > 0) {
+          lgd[[cellan]] <- ComplexHeatmap::Legend(
+            title = cellan,
+            labels = cell_levels,
+            legend_gp = grid::gpar(
+              fill = palette_colors(
+                cell_levels,
+                palette = palette,
+                palcolor = palcolor
+              )
+            ),
+            border = TRUE
+          )
+        } else {
+          lgd[[cellan]] <- NULL
+        }
       } else {
         for (cell_group in group.by) {
           subplots <- FeatureStatPlot(
@@ -1506,38 +1474,10 @@ GroupHeatmap <- function(
             individual = TRUE,
             combine = FALSE
           )
-          subplots_list[[paste0(cellan, ":", cell_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(subplots_list[['",
-              cellan,
-              ":",
-              cell_group,
-              "']]",
-              "[['",
-              nm,
-              "']]  + facet_null() + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", cell_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", cell_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[[cell_group]]), " : "),
             function(x) {
@@ -1548,32 +1488,44 @@ GroupHeatmap <- function(
               }
             }
           )
-          ha_cell <- list()
-          ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
-            x = x_nm,
-            graphics = graphics,
-            which = ifelse(flip, "row", "column"),
-            border = TRUE,
-            verbose = FALSE
+          ha_top <- tryCatch(
+            {
+              ha_cell <- list()
+              ha_cell[[cellan]] <- ComplexHeatmap::anno_customize(
+                x = x_nm,
+                graphics = graphics,
+                which = ifelse(flip, "row", "column"),
+                border = TRUE,
+                verbose = FALSE
+              )
+              build_heatmap_annotation(
+                annotations = ha_cell,
+                which = ifelse(flip, "row", "column"),
+                show_annotation_name = cell_group == group.by[1],
+                annotation_name_side = ifelse(flip, "top", "left"),
+                params = cell_annotation_params
+              )
+            },
+            error = function(e) {
+              log_message(
+                "Failed to build custom cell annotation '",
+                cellan,
+                "' for group '",
+                cell_group,
+                "'. Skip this annotation. Detail: ",
+                conditionMessage(e),
+                message_type = "warning",
+                verbose = verbose
+              )
+              NULL
+            }
           )
-          anno_args <- c(
-            ha_cell,
-            which = ifelse(flip, "row", "column"),
-            show_annotation_name = cell_group == group.by[1],
-            annotation_name_side = ifelse(flip, "top", "left")
-          )
-          anno_args <- c(
-            anno_args,
-            cell_annotation_params[setdiff(
-              names(cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_top <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
-          if (is.null(ha_top_list[[cell_group]])) {
-            ha_top_list[[cell_group]] <- ha_top
-          } else {
-            ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
+          if (!is.null(ha_top)) {
+            if (is.null(ha_top_list[[cell_group]])) {
+              ha_top_list[[cell_group]] <- ha_top
+            } else {
+              ha_top_list[[cell_group]] <- c(ha_top_list[[cell_group]], ha_top)
+            }
           }
         }
       }
@@ -1723,37 +1675,15 @@ GroupHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    funbody <- paste0(
-      "
-      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-      paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"),
-      ",palette = '",
-      feature_split_palette,
-      "',palcolor=c(",
-      paste0(
-        "'",
-        paste0(unlist(feature_split_palcolor), collapse = "','"),
-        "'"
-      ),
-      "))[nm]))
-    "
-    )
-    funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-    eval(
-      parse(
-        text = paste(
-          "panel_fun <- function(index, nm) {",
-          funbody,
-          "}",
-          sep = ""
-        )
-      ),
-      envir = environment()
+    block_graphics <- annotation_block_fill_graphics(
+      levels = levels(row_split_raw),
+      palette = feature_split_palette,
+      palcolor = unlist(feature_split_palcolor)
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(
         align_to = split(seq_along(row_split_raw), row_split_raw),
-        panel_fun = methods::getFunction("panel_fun", where = environment()),
+        panel_fun = block_graphics,
         width = grid::unit(0.1, "in"),
         height = grid::unit(0.1, "in"),
         show_name = FALSE,
@@ -1905,41 +1835,37 @@ GroupHeatmap <- function(
           na_col = "transparent",
           border = TRUE
         )
-        anno_args <- c(
-          ha_feature,
+        ha_feature <- build_heatmap_annotation(
+          annotations = ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE
-        )
-        anno_args <- c(
-          anno_args,
-          feature_annotation_params[setdiff(
-            names(feature_annotation_params),
-            names(anno_args)
-          )]
-        )
-        ha_feature <- do.call(
-          ComplexHeatmap::HeatmapAnnotation,
-          args = anno_args
+          border = TRUE,
+          params = feature_annotation_params
         )
         if (is.null(ha_right)) {
           ha_right <- ha_feature
         } else {
           ha_right <- c(ha_right, ha_feature)
         }
-        lgd[[featan]] <- ComplexHeatmap::Legend(
-          title = featan,
-          labels = levels(featan_values),
-          legend_gp = grid::gpar(
-            fill = palette_colors(
-              featan_values,
-              palette = palette,
-              palcolor = palcolor
-            )
-          ),
-          border = TRUE
-        )
+        featan_levels <- levels(featan_values)
+        featan_levels <- featan_levels[!is.na(featan_levels) & nzchar(featan_levels)]
+        if (length(featan_levels) > 0) {
+          lgd[[featan]] <- ComplexHeatmap::Legend(
+            title = featan,
+            labels = featan_levels,
+            legend_gp = grid::gpar(
+              fill = palette_colors(
+                featan_levels,
+                palette = palette,
+                palcolor = palcolor
+              )
+            ),
+            border = TRUE
+          )
+        } else {
+          lgd[[featan]] <- NULL
+        }
       } else {
         col_fun <- circlize::colorRamp2(
           breaks = seq(
@@ -1957,23 +1883,13 @@ GroupHeatmap <- function(
           na_col = "transparent",
           border = TRUE
         )
-        anno_args <- c(
-          ha_feature,
+        ha_feature <- build_heatmap_annotation(
+          annotations = ha_feature,
           which = ifelse(flip, "column", "row"),
           show_annotation_name = TRUE,
           annotation_name_side = ifelse(flip, "left", "top"),
-          border = TRUE
-        )
-        anno_args <- c(
-          anno_args,
-          feature_annotation_params[setdiff(
-            names(feature_annotation_params),
-            names(anno_args)
-          )]
-        )
-        ha_feature <- do.call(
-          ComplexHeatmap::HeatmapAnnotation,
-          args = anno_args
+          border = TRUE,
+          params = feature_annotation_params
         )
         if (is.null(ha_right)) {
           ha_right <- ha_feature

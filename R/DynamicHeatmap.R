@@ -88,7 +88,9 @@
 #'     "Neurod2",
 #'     "Isl1",
 #'     "Rbp4",
-#'     "Pyy", "S_score", "G2M_score"
+#'     "Pyy",
+#'     "S_score",
+#'     "G2M_score"
 #'   ),
 #'   cell_annotation = "SubCellType"
 #' )
@@ -119,7 +121,6 @@
 #'   species = "Mus_musculus",
 #'   db = "GO_BP",
 #'   anno_terms = TRUE,
-#'   cores = 3,
 #'   width = 1,
 #'   height = 2
 #' )
@@ -1433,37 +1434,15 @@ DynamicHeatmap <- function(
         row_split <- length(unique(row_split_raw))
       }
     }
-    funbody <- paste0(
-      "
-      grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-      paste0("c('", paste0(levels(row_split_raw), collapse = "','"), "')"),
-      ",palette = '",
-      feature_split_palette,
-      "',palcolor=c(",
-      paste0(
-        "'",
-        paste0(unlist(feature_split_palcolor), collapse = "','"),
-        "'"
-      ),
-      "))[nm]))
-    "
-    )
-    funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-    eval(
-      parse(
-        text = paste(
-          "panel_fun <- function(index, nm) {",
-          funbody,
-          "}",
-          sep = ""
-        )
-      ),
-      envir = environment()
+    block_graphics <- annotation_block_fill_graphics(
+      levels = levels(row_split_raw),
+      palette = feature_split_palette,
+      palcolor = unlist(feature_split_palcolor)
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(
         align_to = split(seq_along(row_split_raw), row_split_raw),
-        panel_fun = methods::getFunction("panel_fun", where = environment()),
+        panel_fun = block_graphics,
         width = grid::unit(0.1, "in"),
         height = grid::unit(0.1, "in"),
         show_name = FALSE,
