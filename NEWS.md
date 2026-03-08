@@ -1,5 +1,33 @@
 # scop
 
+# scop (development version)
+
+* **feat**:
+  * Default palette changed from `"Paired"` to `"Chinese"`. See `thisplot::ChineseColors()` for details.
+  * Unified the `cores` parameter across multiple functions (`DynamicHeatmap()`, `FeatureHeatmap()`, `GroupHeatmap()`, and `heatmap_enrichment()`), ensuring `cores` is correctly threaded through to `RunEnrichment()`.
+  * `RunMonocle2()` and `RunMonocle3()`: Added `xlab` and `ylab` parameters, passed through to internal `CellDimPlot()` and `FeatureDimPlot()` calls.
+  * `ListDB()`: Now supports multiple species in the `species` parameter simultaneously and adds `Species` and `DB` columns to the output data frame for clearer identification.
+  * Moved `is_outlier` to `thisutils::is_outlier()`.
+  * `configure_apple_silicon_env()` (*Python* function): Added OpenMP compatibility handling on macOS arm64 by prepending environment `lib` paths to `DYLD_FALLBACK_LIBRARY_PATH`/`DYLD_LIBRARY_PATH` and preloading `libomp.dylib`/`libiomp5.dylib` via `ctypes.CDLL(..., RTLD_GLOBAL)` to reduce `scanpy`/`python-igraph` import conflicts.
+  * `scVI_integrate()`: Unified parameter naming by renaming `num_threads` to `cores` for consistency across integration functions.
+  * Added `find_neighbors_and_clusters()` and `run_nonlinear_reduction()` helper functions to unify operations across integration functions and reduce redundant code.
+
+* **fix**:
+  * `PrepareDB()`: 
+    * TF database now uses [AnimalTFDB4](https://github.com/mengxu98/AnimalTFDB4) as the data source.
+    * MP database - the Web Archive URL year is now dynamically determined from the current date, and the archive snapshot date for all MP-related file downloads (`VOC_MammalianPhenotype.rpt`, `MGI_Gene_Model_Coord.rpt`, `MGI_GenePheno.rpt`) is extracted from the server index page to ensure consistent versioning.
+    * hTFtarget data download URL has been changed from `"http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"` to `"https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"`.
+    * CSPA data download URL has been changed from `"https://wlab.ethz.ch/cspa/data/S1_File.xlsx"` to `"https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"`.
+
+    Related issus #76 (@hwa2Hu), #139 (@pengding774-dot), #140 (@mengxu98).
+  * `LIGER_integrate()`
+    * Migrated to the `rliger` 2.x workflow (`rliger::runIntegration()` + `rliger::quantileNorm()` on `Seurat` object) and now prepares/uses the `ligerScaleData` layer via `rliger::scaleNotCenter()` before integration.
+    * Updated argument naming/style from `LIGER_dims_use` to `liger_dims_use`, and removed legacy quantile-normalization parameter compatibility mapping (`ref_dataset`), keeping `reference` as the supported interface.
+  * Optimized the installation of some *Python* packages on Apple Silicon devices.
+
+* **docs**:
+  * Updated README example code and visualizations. After regenerating figures, the package size was reduced by ~3 MB.
+
 # scop 0.8.4
 
 * **fix**:
