@@ -1,0 +1,252 @@
+#' @title Run LargeVis (Dimensionality Reduction with a LargeVis-like method)
+#'
+#' @md
+#' @inheritParams uwot::lvish
+#' @inheritParams thisutils::log_message
+#' @inheritParams RunUMAP2
+#' @inheritParams RunDM
+#' @param n_components The number of LargeVis components.
+#' Default is `2`.
+#' @param pca_method Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
+#' Allowed values are: `"irlba"`, `"rsvd"`, `"bigstatsr"`, `"svd"`, `"auto"`.
+#' Uses `"irlba"`, unless more than 50 case `"svd"` is used.
+#' @param reduction.name The name of the reduction to be stored in the Seurat object.
+#' Default is `"largevis"`.
+#' @param reduction.key The prefix for the column names of the LargeVis embeddings.
+#' Default is `"LargeVis_"`.
+#' @param ... Additional arguments to be passed to [uwot::lvish].
+#'
+#' @rdname RunLargeVis
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- standard_scop(pancreas_sub)
+#' pancreas_sub <- RunLargeVis(
+#'   object = pancreas_sub,
+#'   features = SeuratObject::VariableFeatures(pancreas_sub)
+#' )
+#' CellDimPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   reduction = "largevis"
+#' )
+#' }
+RunLargeVis <- function(object, ...) {
+  UseMethod(generic = "RunLargeVis", object = object)
+}
+
+#' @rdname RunLargeVis
+#' @method RunLargeVis Seurat
+#' @export
+RunLargeVis.Seurat <- function(
+    object,
+    reduction = "pca",
+    dims = NULL,
+    features = NULL,
+    assay = NULL,
+    layer = "data",
+    perplexity = 50,
+    n_neighbors = perplexity * 3,
+    n_components = 2,
+    metric = "euclidean",
+    n_epochs = -1,
+    learning_rate = 1,
+    scale = "maxabs",
+    init = "lvrandom",
+    init_sdev = NULL,
+    repulsion_strength = 7,
+    negative_sample_rate = 5,
+    nn_method = NULL,
+    n_trees = 50,
+    search_k = 2 * n_neighbors * n_trees,
+    n_threads = NULL,
+    n_sgd_threads = 0,
+    grain_size = 1,
+    kernel = "gauss",
+    pca = NULL,
+    pca_center = TRUE,
+    pcg_rand = TRUE,
+    fast_sgd = FALSE,
+    batch = FALSE,
+    opt_args = NULL,
+    epoch_callback = NULL,
+    pca_method = NULL,
+    reduction.name = "largevis",
+    reduction.key = "LargeVis_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
+  if (sum(c(is.null(dims), is.null(features))) == 3) {
+    log_message(
+      "Please specify only one of the following arguments: dims, features",
+      message_type = "error"
+    )
+  }
+  if (!is.null(features)) {
+    assay <- assay %||% SeuratObject::DefaultAssay(object = object)
+    data.use <- as_matrix(
+      Matrix::t(
+        GetAssayData5(
+          object = object,
+          layer = layer,
+          assay = assay
+        )[features, ]
+      )
+    )
+    if (ncol(data.use) < n_components) {
+      log_message(
+        "Please provide as many or more features than n_components: ",
+        length(features),
+        " features provided, ",
+        n_components,
+        " LargeVis components requested",
+        message_type = "error"
+      )
+    }
+  } else if (!is.null(dims)) {
+    data.use <- Seurat::Embeddings(
+      object[[reduction]]
+    )[, dims]
+    assay <- SeuratObject::DefaultAssay(
+      object = object[[reduction]]
+    )
+    if (length(dims) < n_components) {
+      log_message(
+        "Please provide as many or more dims than n_components: ",
+        length(dims),
+        " dims provided, ",
+        n_components,
+        " LargeVis components requested",
+        message_type = "error"
+      )
+    }
+  } else {
+    log_message(
+      "Please specify one of dims, features",
+      message_type = "error"
+    )
+  }
+  object[[reduction.name]] <- RunLargeVis(
+    object = data.use,
+    assay = assay,
+    perplexity = perplexity,
+    n_neighbors = n_neighbors,
+    n_components = n_components,
+    metric = metric,
+    n_epochs = n_epochs,
+    learning_rate = learning_rate,
+    scale = scale,
+    init = init,
+    init_sdev = init_sdev,
+    repulsion_strength = repulsion_strength,
+    negative_sample_rate = negative_sample_rate,
+    nn_method = nn_method,
+    n_trees = n_trees,
+    search_k = search_k,
+    n_threads = n_threads,
+    n_sgd_threads = n_sgd_threads,
+    grain_size = grain_size,
+    kernel = kernel,
+    pca = pca,
+    pca_center = pca_center,
+    pcg_rand = pcg_rand,
+    fast_sgd = fast_sgd,
+    batch = batch,
+    opt_args = opt_args,
+    epoch_callback = epoch_callback,
+    pca_method = pca_method,
+    reduction.key = reduction.key,
+    verbose = verbose,
+    seed.use = seed.use
+  )
+  object <- Seurat::LogSeuratCommand(object = object)
+  return(object)
+}
+
+#' @rdname RunLargeVis
+#' @method RunLargeVis default
+#' @export
+RunLargeVis.default <- function(
+    object,
+    assay = NULL,
+    perplexity = 50,
+    n_neighbors = perplexity * 3,
+    n_components = 2,
+    metric = "euclidean",
+    n_epochs = -1,
+    learning_rate = 1,
+    scale = "maxabs",
+    init = "lvrandom",
+    init_sdev = NULL,
+    repulsion_strength = 7,
+    negative_sample_rate = 5,
+    nn_method = NULL,
+    n_trees = 50,
+    search_k = 2 * n_neighbors * n_trees,
+    n_threads = NULL,
+    n_sgd_threads = 0,
+    grain_size = 1,
+    kernel = "gauss",
+    pca = NULL,
+    pca_center = TRUE,
+    pcg_rand = TRUE,
+    fast_sgd = FALSE,
+    batch = FALSE,
+    opt_args = NULL,
+    epoch_callback = NULL,
+    pca_method = NULL,
+    reduction.key = "LargeVis_",
+    verbose = TRUE,
+    seed.use = 11L,
+    ...) {
+  if (!is.null(seed.use)) {
+    set.seed(seed = seed.use)
+  }
+
+  embedding <- uwot::lvish(
+    X = object,
+    perplexity = perplexity,
+    n_neighbors = n_neighbors,
+    n_components = n_components,
+    metric = metric,
+    n_epochs = n_epochs,
+    learning_rate = learning_rate,
+    scale = scale,
+    init = init,
+    init_sdev = init_sdev,
+    repulsion_strength = repulsion_strength,
+    negative_sample_rate = negative_sample_rate,
+    nn_method = nn_method,
+    n_trees = n_trees,
+    search_k = search_k,
+    n_threads = n_threads,
+    n_sgd_threads = n_sgd_threads,
+    grain_size = grain_size,
+    kernel = kernel,
+    pca = pca,
+    pca_center = pca_center,
+    pcg_rand = pcg_rand,
+    fast_sgd = fast_sgd,
+    verbose = verbose,
+    batch = batch,
+    opt_args = opt_args,
+    epoch_callback = epoch_callback,
+    pca_method = pca_method,
+    ...
+  )
+  colnames(x = embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
+  if (inherits(x = object, what = "dist")) {
+    rownames(x = embedding) <- attr(object, "Labels")
+  } else {
+    rownames(x = embedding) <- rownames(object)
+  }
+  reduction <- Seurat::CreateDimReducObject(
+    embeddings = embedding,
+    key = reduction.key,
+    assay = assay,
+    global = TRUE
+  )
+  return(reduction)
+}
