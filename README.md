@@ -170,7 +170,6 @@ CellDimPlot(
   pancreas_sub,
   group.by = c("CellType", "SubCellType"),
   reduction = "UMAP",
-  theme_use = "theme_blank",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
@@ -265,9 +264,8 @@ CellDimPlot(
 CellStatPlot(
   pancreas_sub,
   stat.by = "CellQC",
-  group.by = "CellType",
-  label = TRUE
-)
+  group.by = "CellType"
+) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
 <img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
@@ -283,7 +281,7 @@ CellStatPlot(
   ),
   plot_type = "upset",
   stat_level = "Fail"
-)
+) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
 <img src="man/figures/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
@@ -297,16 +295,13 @@ data(panc8_sub)
 panc8_sub <- integration_scop(
   srt_merge = panc8_sub,
   batch = "tech",
-  integration_method = "Seurat"
+  integration_method = "Harmony"
 )
 CellDimPlot(
   panc8_sub,
-  group.by = c("celltype", "tech"),
-  reduction = "UMAP",
-  title = "Seurat",
-  theme_use = "theme_blank",
-  xlab = "UMAP_1",
-  ylab = "UMAP_2"
+  group.by = c("tech", "celltype"),
+  reduction = "HarmonyUMAP",
+  theme_use = "theme_blank"
 )
 ```
 
@@ -674,7 +669,7 @@ DEtestPlot(
   group.by = "CellType",
   plot_type = "manhattan",
   label.size = 2
-)
+) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
 <img src="man/figures/RunDEtest-2.png" width="100%" style="display: block; margin: auto;"/>
