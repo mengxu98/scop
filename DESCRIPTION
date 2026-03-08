@@ -1,0 +1,105 @@
+Package: scop
+Type: Package
+Title: Single Cell Omics analysis Pipeline
+Version: 0.8.4
+Date: 2026-02-27
+Authors@R:
+    c(
+    person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
+    person(given = "Hao", family = "Zhang", email = "haozhang@njmu.edu.cn", role = c("aut"))
+    )
+Maintainer: Meng Xu <mengxu98@qq.com>
+Description: An end-to-end Single-Cell Omics analysis Pipeline designed to facilitate comprehensive analysis and exploration of single-cell omics data.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: True
+LazyDataCompression: xz
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli,
+    ComplexHeatmap,
+    dplyr,
+    ggnewscale,
+    ggrepel,
+    ggforce,
+    gtable,
+    igraph,
+    reticulate,
+    rlang,
+    ggplot2,
+    methods,
+    mgcv,
+    Matrix,
+    Signac,
+    Seurat,
+    SeuratObject,
+    thisplot (>= 0.3.6),
+    thisutils (>= 0.4.3),
+    uwot
+Suggests:
+    AnnotationDbi,
+    AUCell,
+    batchelor,
+    biomaRt,
+    CellChat,
+    circlize,
+    clusterProfiler,
+    conos,
+    e1071,
+    ggpubr,
+    ggridges,
+    ggwordcloud,
+    geomtextpath,
+    glmpca,
+    GO.db,
+    GOSemSim,
+    GSVA,
+    grDevices,
+    grid,
+    harmony,
+    HDF5Array,
+    htmlwidgets,
+    httr,
+    intrinsicDimension,
+    limma,
+    MatrixGenerics,
+    metR,
+    MASS,
+    NMF,
+    pak,
+    patchwork,
+    purrr,
+    PFAM.db,
+    plotly,
+    proxyC,
+    reactome.db,
+    RcppML,
+    R.cache,
+    R.utils,
+    reshape2,
+    rliger,
+    rhdf5,
+    scales,
+    simplifyEnrichment,
+    slingshot,
+    scattermore,
+    scds,
+    scDblFinder,
+    scmap,
+    stringr,
+    sva,
+    symphony,
+    S4Vectors,
+    SingleR,
+    SingleCellExperiment,
+    SummarizedExperiment,
+    umap,
+    UCell
+Remotes:
+    jinworks/CellChat
+RoxygenNote: 7.3.2
+Config/Needs/website: mengxu98/thistemplate
+Config/testthat/edition: 3
+URL: https://mengxu98.github.io/scop/
+BugReports: https://github.com/mengxu98/scop/issues
