@@ -360,11 +360,14 @@ PrepareDB <- function(
             )
           }
         }
-        suppressPackageStartupMessages(require(
-          org_sp,
-          character.only = TRUE,
-          quietly = TRUE
-        ))
+        check_r(org_sp)
+        suppressPackageStartupMessages(
+          require(
+            org_sp,
+            character.only = TRUE,
+            quietly = TRUE
+          )
+        )
         orgdb <- get(org_sp)
       }
       if ("PFAM" %in% db) {

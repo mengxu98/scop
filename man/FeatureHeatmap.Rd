@@ -506,7 +506,6 @@ ht4 <- FeatureHeatmap(
 )
 ht4$plot
 
-\dontrun{
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
@@ -544,7 +543,6 @@ ht6 <- FeatureHeatmap(
   column_title_rot = 45
 )
 ht6$plot
-}
 }
 \seealso{
 \link{RunDEtest}

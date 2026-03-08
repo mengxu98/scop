@@ -91,7 +91,7 @@ Default is \code{TRUE}.}
 \item{style_script}{Whether to style the SCExplorer app script.
 Default is \code{TRUE}.}
 
-\item{overwrite}{Whether to overwrite existing files.
+\item{overwrite}{Whether to overwrite existing data in the data file.
 Default is \code{TRUE}.}
 
 \item{return_app}{Whether to return the SCExplorer app.

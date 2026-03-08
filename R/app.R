@@ -866,6 +866,7 @@ CreateSeuratObject2 <- function(
 #' @title Run SCExplorer
 #'
 #' @md
+#' @inheritParams CreateDataFile
 #' @param base_dir The base directory of the SCExplorer app.
 #' Default is `"SCExplorer"`.
 #' @param data_file The name of the HDF5 file that stores data matrices for each dataset.
@@ -906,8 +907,6 @@ CreateSeuratObject2 <- function(
 #' @param create_script Whether to create the SCExplorer app script.
 #' Default is `TRUE`.
 #' @param style_script Whether to style the SCExplorer app script.
-#' Default is `TRUE`.
-#' @param overwrite Whether to overwrite existing files.
 #' Default is `TRUE`.
 #' @param return_app Whether to return the SCExplorer app.
 #' Default is `TRUE`.

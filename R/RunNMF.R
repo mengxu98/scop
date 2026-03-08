@@ -49,7 +49,6 @@
 #'   palette = "RdBu",
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2",
-#'   palette = "RdBu",
 #'   theme_use = "theme_blank"
 #' )
 RunNMF <- function(object, ...) {
