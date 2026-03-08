@@ -744,35 +744,10 @@ CellCorHeatmap <- function(
         query_annotation_palcolor %||% list(NULL)
       )
     } else {
-      funbody <- paste0(
-        "
-        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-        paste0(
-          "c('",
-          paste0(
-            levels(srt_query[[query_group, drop = TRUE]]),
-            collapse = "','"
-          ),
-          "')"
-        ),
-        ",palette = '",
-        query_group_palette,
-        "',palcolor=c(",
-        paste0("'", paste0(query_group_palcolor, collapse = "','"), "'"),
-        "))[nm]))
-      "
-      )
-      funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-      eval(
-        parse(
-          text = paste(
-            "panel_fun <- function(index, nm) {",
-            funbody,
-            "}",
-            sep = ""
-          )
-        ),
-        envir = environment()
+      block_graphics <- annotation_block_fill_graphics(
+        levels = levels(srt_query[[query_group, drop = TRUE]]),
+        palette = query_group_palette,
+        palcolor = query_group_palcolor
       )
 
       anno <- list()
@@ -783,7 +758,7 @@ CellCorHeatmap <- function(
             seq_along(levels(cell_groups[["query_group"]])),
             levels(cell_groups[["query_group"]])
           ),
-          panel_fun = methods::getFunction("panel_fun", where = environment()),
+          panel_fun = block_graphics,
           which = ifelse(flip, "column", "row"),
           show_name = FALSE
         )
@@ -793,7 +768,7 @@ CellCorHeatmap <- function(
             seq_along(cell_groups[["query_group"]]),
             cell_groups[["query_group"]]
           ),
-          panel_fun = methods::getFunction("panel_fun", where = environment()),
+          panel_fun = block_graphics,
           which = ifelse(flip, "column", "row"),
           show_name = FALSE
         )
@@ -841,32 +816,10 @@ CellCorHeatmap <- function(
         ref_annotation_palcolor %||% list(NULL)
       )
     } else {
-      funbody <- paste0(
-        "
-        grid::grid.rect(gp = grid::gpar(fill = palette_colors(",
-        paste0(
-          "c('",
-          paste0(levels(srt_ref[[ref_group, drop = TRUE]]), collapse = "','"),
-          "')"
-        ),
-        ",palette = '",
-        ref_group_palette,
-        "',palcolor=c(",
-        paste0("'", paste0(ref_group_palcolor, collapse = "','"), "'"),
-        "))[nm]))
-      "
-      )
-      funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-      eval(
-        parse(
-          text = paste(
-            "panel_fun <- function(index, nm) {",
-            funbody,
-            "}",
-            sep = ""
-          )
-        ),
-        envir = environment()
+      block_graphics <- annotation_block_fill_graphics(
+        levels = levels(srt_ref[[ref_group, drop = TRUE]]),
+        palette = ref_group_palette,
+        palcolor = ref_group_palcolor
       )
 
       anno <- list()
@@ -877,7 +830,7 @@ CellCorHeatmap <- function(
             seq_along(levels(cell_groups[["ref_group"]])),
             levels(cell_groups[["ref_group"]])
           ),
-          panel_fun = methods::getFunction("panel_fun", where = environment()),
+          panel_fun = block_graphics,
           which = ifelse(!flip, "column", "row"),
           show_name = FALSE
         )
@@ -887,7 +840,7 @@ CellCorHeatmap <- function(
             seq_along(cell_groups[["ref_group"]]),
             cell_groups[["ref_group"]]
           ),
-          panel_fun = methods::getFunction("panel_fun", where = environment()),
+          panel_fun = block_graphics,
           which = ifelse(!flip, "column", "row"),
           show_name = FALSE
         )
@@ -947,37 +900,10 @@ CellCorHeatmap <- function(
             combine = FALSE
           )
           query_subplots_list[[paste0(cellan, ":", query_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(query_subplots_list[['",
-              cellan,
-              ":",
-              query_group,
-              "']]",
-              "[['",
-              nm,
-              "']] + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", query_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", query_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[["query_group"]]), " : "),
             function(x) {
@@ -997,22 +923,12 @@ CellCorHeatmap <- function(
             border = TRUE,
             verbose = FALSE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_query <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom")
-          )
-          anno_args <- c(
-            anno_args,
-            query_cell_annotation_params[setdiff(
-              names(query_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_query <- do.call(
-            ComplexHeatmap::HeatmapAnnotation,
-            args = anno_args
+            annotation_name_side = ifelse(flip, "left", "bottom"),
+            params = query_cell_annotation_params
           )
           query_group_name <- paste0(c("Query", query_group), collapse = ":")
           if (is.null(ha_query_list[[query_group_name]])) {
@@ -1039,22 +955,12 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = TRUE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_query <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom")
-          )
-          anno_args <- c(
-            anno_args,
-            query_cell_annotation_params[setdiff(
-              names(query_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_query <- do.call(
-            ComplexHeatmap::HeatmapAnnotation,
-            args = anno_args
+            annotation_name_side = ifelse(flip, "left", "bottom"),
+            params = query_cell_annotation_params
           )
           query_group_name <- paste0(c("Query", query_group), collapse = ":")
           if (is.null(ha_query_list[[query_group_name]])) {
@@ -1097,37 +1003,10 @@ CellCorHeatmap <- function(
             combine = FALSE
           )
           query_subplots_list[[paste0(cellan, ":", query_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(query_subplots_list[['",
-              cellan,
-              ":",
-              query_group,
-              "']]",
-              "[['",
-              nm,
-              "']]  + facet_null() + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", query_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", query_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[["query_group"]]), " : "),
             function(x) {
@@ -1146,20 +1025,13 @@ CellCorHeatmap <- function(
             border = TRUE,
             verbose = FALSE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_query <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom")
+            annotation_name_side = ifelse(flip, "left", "bottom"),
+            params = query_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            query_cell_annotation_params[setdiff(
-              names(query_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_query <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           if (
             is.null(ha_query_list[[paste0(
               c("Query", query_group),
@@ -1199,20 +1071,13 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = TRUE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_query <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(flip, "left", "bottom")
+            annotation_name_side = ifelse(flip, "left", "bottom"),
+            params = query_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            query_cell_annotation_params[setdiff(
-              names(query_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_query <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           if (
             is.null(ha_query_list[[paste0(
               c("Query", query_group),
@@ -1271,37 +1136,10 @@ CellCorHeatmap <- function(
             combine = FALSE
           )
           ref_subplots_list[[paste0(cellan, ":", ref_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(ref_subplots_list[['",
-              cellan,
-              ":",
-              ref_group,
-              "']]",
-              "[['",
-              nm,
-              "']] + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", ref_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", ref_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[["ref_group"]]), " : "),
             function(x) {
@@ -1321,20 +1159,13 @@ CellCorHeatmap <- function(
             border = TRUE,
             verbose = FALSE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_ref <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(!flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom")
+            annotation_name_side = ifelse(!flip, "left", "bottom"),
+            params = ref_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            ref_cell_annotation_params[setdiff(
-              names(ref_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
           if (is.null(ha_ref_list[[ref_group_name]])) {
             ha_ref_list[[ref_group_name]] <- ha_ref
@@ -1360,20 +1191,13 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = TRUE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_ref <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(!flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom")
+            annotation_name_side = ifelse(!flip, "left", "bottom"),
+            params = ref_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            ref_cell_annotation_params[setdiff(
-              names(ref_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
           if (is.null(ha_ref_list[[ref_group_name]])) {
             ha_ref_list[[ref_group_name]] <- ha_ref
@@ -1415,37 +1239,10 @@ CellCorHeatmap <- function(
             combine = FALSE
           )
           ref_subplots_list[[paste0(cellan, ":", ref_group)]] <- subplots
-          graphics <- list()
-          for (nm in names(subplots)) {
-            funbody <- paste0(
-              "
-              g <- as_grob(ref_subplots_list[['",
-              cellan,
-              ":",
-              ref_group,
-              "']]",
-              "[['",
-              nm,
-              "']]  + facet_null() + theme_void() + theme(plot.title = element_blank(), plot.subtitle = element_blank(), legend.position = 'none'));
-              g$name <- '",
-              paste0(cellan, ":", ref_group, "-", nm),
-              "';
-              grid::grid.draw(g)
-              "
-            )
-            funbody <- gsub(pattern = "\n", replacement = "", x = funbody)
-            eval(
-              parse(
-                text = paste(
-                  "graphics[[nm]] <- function(x, y, w, h) {",
-                  funbody,
-                  "}",
-                  sep = ""
-                )
-              ),
-              envir = environment()
-            )
-          }
+          graphics <- annotation_graphics(
+            subplots = subplots,
+            prefix = paste0(cellan, ":", ref_group)
+          )
           x_nm <- sapply(
             strsplit(levels(cell_groups[["ref_group"]]), " : "),
             function(x) {
@@ -1464,20 +1261,13 @@ CellCorHeatmap <- function(
             border = TRUE,
             verbose = FALSE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_ref <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(!flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom")
+            annotation_name_side = ifelse(!flip, "left", "bottom"),
+            params = ref_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            ref_cell_annotation_params[setdiff(
-              names(ref_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
           if (is.null(ha_ref_list[[ref_group_name]])) {
             ha_ref_list[[ref_group_name]] <- ha_ref
@@ -1504,20 +1294,13 @@ CellCorHeatmap <- function(
             na_col = "transparent",
             border = TRUE
           )
-          anno_args <- c(
-            ha_cell,
+          ha_ref <- build_heatmap_annotation(
+            annotations = ha_cell,
             which = ifelse(!flip, "column", "row"),
             show_annotation_name = TRUE,
-            annotation_name_side = ifelse(!flip, "left", "bottom")
+            annotation_name_side = ifelse(!flip, "left", "bottom"),
+            params = ref_cell_annotation_params
           )
-          anno_args <- c(
-            anno_args,
-            ref_cell_annotation_params[setdiff(
-              names(ref_cell_annotation_params),
-              names(anno_args)
-            )]
-          )
-          ha_ref <- do.call(ComplexHeatmap::HeatmapAnnotation, args = anno_args)
           ref_group_name <- paste0(c("Ref", ref_group), collapse = ":")
           if (is.null(ha_ref_list[[ref_group_name]])) {
             ha_ref_list[[ref_group_name]] <- ha_ref
