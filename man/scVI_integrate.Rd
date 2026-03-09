@@ -30,7 +30,7 @@ scVI_integrate(
   model = "SCVI",
   SCVI_params = list(),
   PEAKVI_params = list(),
-  num_threads = 1,
+  cores = 1,
   verbose = TRUE,
   seed = 11
 )
@@ -76,7 +76,7 @@ Default is \code{1}.}
 \item{HVF}{A vector of feature names to use as highly variable features.
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
-\item{scVI_dims_use}{A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{scVI_dims_use}{A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and nonlinear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
@@ -118,8 +118,8 @@ Default is `list()`.}
 \item{PEAKVI_params}{A list of parameters for the PEAKVI model.
 Default is `list()`.}
 
-\item{num_threads}{An integer setting the number of threads for scVI.
-Default is `8`.}
+\item{cores}{An integer setting the number of threads for `scVI`.
+Default is `1`.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

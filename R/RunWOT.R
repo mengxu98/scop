@@ -15,7 +15,6 @@
 #' @param recalculate Whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location.
 #' Default is `FALSE`.
 #'
-#' @seealso [srt_to_adata]
 #' @export
 #'
 #' @references
@@ -73,7 +72,7 @@ RunWOT <- function(
     time_to = NULL,
     get_coupling = FALSE,
     recalculate = FALSE,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     show_plot = FALSE,
     save_plot = FALSE,

@@ -866,6 +866,7 @@ CreateSeuratObject2 <- function(
 #' @title Run SCExplorer
 #'
 #' @md
+#' @inheritParams CreateDataFile
 #' @param base_dir The base directory of the SCExplorer app.
 #' Default is `"SCExplorer"`.
 #' @param data_file The name of the HDF5 file that stores data matrices for each dataset.
@@ -889,7 +890,7 @@ CreateSeuratObject2 <- function(
 #' @param initial_label Whether to add labels in the initial plot.
 #' Default is `FALSE`.
 #' @param initial_cell_palette The initial color palette for cells.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param initial_feature_palette The initial color palette for features.
 #' Default is `"Spectral"`.
 #' @param initial_theme The initial theme for plots.
@@ -906,8 +907,6 @@ CreateSeuratObject2 <- function(
 #' @param create_script Whether to create the SCExplorer app script.
 #' Default is `TRUE`.
 #' @param style_script Whether to style the SCExplorer app script.
-#' Default is `TRUE`.
-#' @param overwrite Whether to overwrite existing files.
 #' Default is `TRUE`.
 #' @param return_app Whether to return the SCExplorer app.
 #' Default is `TRUE`.
@@ -949,6 +948,7 @@ CreateSeuratObject2 <- function(
 #'
 #' # Run shiny app
 #' if (interactive()) {
+#'   check_r("shiny")
 #'   shiny::runApp(app)
 #' }
 #' # Note: If scop installed in the isolated environment using renv,
@@ -984,7 +984,7 @@ RunSCExplorer <- function(
     initial_assay = NULL,
     initial_slot = NULL,
     initial_label = FALSE,
-    initial_cell_palette = "Paired",
+    initial_cell_palette = "Chinese",
     initial_feature_palette = "Spectral",
     initial_theme = "theme_scop",
     initial_size = 4,
@@ -992,7 +992,7 @@ RunSCExplorer <- function(
     initial_arrange = NULL,
     initial_raster = NULL,
     create_script = TRUE,
-    style_script = requireNamespace("styler", quietly = TRUE),
+    style_script = TRUE,
     overwrite = TRUE,
     return_app = TRUE) {
   check_r(
@@ -2711,9 +2711,10 @@ server <- function(input, output, session) {
       file.copy(from = temp, to = app_file, overwrite = TRUE)
       if (isTRUE(style_script)) {
         log_message("Styling the script...")
+        check_r("styler", verbose = FALSE)
         invisible(
           utils::capture.output(
-            styler::style_file(app_file)
+            get_namespace_fun("styler", "style_file")(app_file)
           )
         )
       }
@@ -2727,7 +2728,7 @@ server <- function(input, output, session) {
   unlink(temp)
 
   if (isTRUE(return_app)) {
-    app <- shiny::shinyAppDir(base_dir)
+    app <- get_namespace_fun("shiny", "shinyAppDir")(base_dir)
     return(app)
   } else {
     return(invisible(NULL))

@@ -84,14 +84,14 @@ FeatureHeatmap(
   label_color = "black",
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   cell_split_palette = "simspec",
   cell_split_palcolor = NULL,
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(5, "mm"))
@@ -114,6 +114,7 @@ FeatureHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
+  cores = 1,
   seed = 11,
   ht_params = list(),
   verbose = TRUE
@@ -355,7 +356,7 @@ Default is \code{"RdBu"}.}
 Default is \code{NULL}.}
 
 \item{group_palette}{A character vector specifying the palette to use for groups.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{group_palcolor}{A character vector specifying the group color to use.
 Default is \code{NULL}.}
@@ -377,7 +378,7 @@ Default is \code{NULL}.}
 
 \item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
 The length of the vector should match the number of cell_annotation.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
 The length of the list should match the number of cell_annotation.
@@ -409,14 +410,17 @@ Default is \code{"png"}.}
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is \code{FALSE}.}
 
-\item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{height}{The height of the heatmap in the specified units.
+If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
 
-\item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{width}{The width of the heatmap in the specified units.
+If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
-\item{units}{A character vector specifying the units for the height and width.
-Default is \code{"inch"}.}
+\item{units}{The units to use for the width and height of the heatmap.
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
+
+\item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
+Default is \code{1}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}
@@ -498,11 +502,10 @@ ht4 <- FeatureHeatmap(
   nlabel = 10,
   cell_order = names(sort(pancreas_sub$Lineage1)),
   cell_annotation = c("SubCellType", "Lineage1"),
-  cell_annotation_palette = c("Paired", "cividis")
+  cell_annotation_palette = c("Chinese", "cividis")
 )
 ht4$plot
 
-\dontrun{
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
@@ -540,7 +543,6 @@ ht6 <- FeatureHeatmap(
   column_title_rot = 45
 )
 ht6$plot
-}
 }
 \seealso{
 \link{RunDEtest}

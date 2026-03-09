@@ -20,7 +20,7 @@ FeatureCorPlot(
   add_r2 = TRUE,
   add_pvalue = TRUE,
   add_smooth = TRUE,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   cor_palette = "RdBu",
   cor_palcolor = NULL,
@@ -95,7 +95,7 @@ Default is \code{TRUE}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}

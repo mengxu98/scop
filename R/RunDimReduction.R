@@ -1,23 +1,20 @@
-#' @title Run dimensionality reduction
+#' @title Run dimension reduction
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams GroupHeatmap
+#' @inheritParams standard_scop
 #' @param prefix The prefix used to name the result.
-#' @param linear_reduction Method of linear dimensionality reduction.
-#' Options are `"pca"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`.
 #' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
 #' @param linear_reduction_params Other parameters passed to the `linear_reduction` method.
-#' @param force_linear_reduction Whether force to do linear dimensionality reduction.
-#' @param nonlinear_reduction Method of nonlinear dimensionality reduction.
-#' Options are `"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`.
+#' @param force_linear_reduction Whether force to do linear dimension reduction.
 #' @param nonlinear_reduction_dims Total number of dimensions to compute and store for `nonlinear_reduction`.
 #' @param reduction_use Which dimensional reduction to use as input for `nonlinear_reduction`.
 #' @param reduction_dims Which dimensions to use as input for `nonlinear_reduction`, used only if `features` is `NULL`.
 #' @param neighbor_use Name of neighbor to use for the `nonlinear_reduction`.
 #' @param graph_use Name of graph to use for the `nonlinear_reduction`.
 #' @param nonlinear_reduction_params  Other parameters passed to the `nonlinear_reduction` method.
-#' @param force_nonlinear_reduction Whether force to do nonlinear dimensionality reduction.
+#' @param force_nonlinear_reduction Whether force to do nonlinear dimension reduction.
 #'
 #' @seealso
 #' [DefaultReduction]
@@ -88,46 +85,72 @@ RunDimReduction <- function(
     }
 
     if (is.null(features) && is.null(reduction_use) && is.null(neighbor_use) && is.null(graph_use)) {
+      inputs <- c("features", "reduction_use", "neighbor_use", "graph_use")
       log_message(
-        "'features', 'reduction_use', 'neighbor_use', or 'graph_use' must be provided when running non-linear dimensionality reduction",
+        "One of {.arg {inputs}} must be provided when performing nonlinear dimension reduction",
         message_type = "error"
       )
     }
 
+    base_message <- "Perform {.pkg {nonlinear_reduction}} nonlinear dimension reduction using "
+    graph_message <- paste0(
+      base_message,
+      "{.pkg {graph_use}}"
+    )
+    neighbor_message <- paste0(
+      base_message,
+      "{.pkg {neighbor_use}}"
+    )
+    features_message <- paste0(
+      base_message,
+      "{.val {length(features)}} features"
+    )
+    reduction_message <- paste0(
+      base_message,
+      "{.pkg {reduction_use}} ({.val {min(reduction_dims)}}:{.val {max(reduction_dims)}})"
+    )
     if (nonlinear_reduction %in% c("fr")) {
       if (!is.null(graph_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {graph_use}}) as input"
+          graph_message,
+          verbose = verbose
         )
       } else if (!is.null(neighbor_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {neighbor_use}}) as input"
+          neighbor_message,
+          verbose = verbose
         )
       } else if (!is.null(features)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.val {length(features)}} features) as input"
+          features_message,
+          verbose = verbose
         )
       } else if (!is.null(reduction_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {reduction_use}}) dims ({.val {min(reduction_dims)}}-{.val {max(reduction_dims)}}) as input"
+          reduction_message,
+          verbose = verbose
         )
       }
     } else {
       if (!is.null(features)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.val {length(features)}} features) as input"
+          features_message,
+          verbose = verbose
         )
       } else if (!is.null(reduction_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {reduction_use}}) dims ({.val {min(reduction_dims)}}-{.val {max(reduction_dims)}}) as input"
+          reduction_message,
+          verbose = verbose
         )
       } else if (!is.null(neighbor_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {neighbor_use}}) as input"
+          neighbor_message,
+          verbose = verbose
         )
       } else if (!is.null(graph_use)) {
         log_message(
-          "Non-linear dimensionality reduction ({.pkg {nonlinear_reduction}}) using ({.pkg {graph_use}}) as input"
+          graph_message,
+          verbose = verbose
         )
       }
     }
@@ -147,7 +170,7 @@ RunDimReduction <- function(
           return(srt)
         } else {
           log_message(
-            "assay.used is {.val {srt[[linear_reduction]]@assay.used}}, which is not the same as the {.val {assay}} specified. Recalculate the linear reduction (pca)"
+            "{.arg assay.used} is {.val {srt[[linear_reduction]]@assay.used}}, which is not the same as the {.val {assay}} specified. Recalculate {.pkg pca} linear reduction"
           )
           linear_reduction <- "pca"
         }
@@ -155,7 +178,7 @@ RunDimReduction <- function(
     }
 
     if (is.null(features) || length(features) == 0) {
-      log_message("No features provided. Use variable features.")
+      log_message("No features provided. Use variable features")
       if (length(SeuratObject::DefaultAssay(srt)) == 0) {
         srt <- Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE)
       }
@@ -256,7 +279,8 @@ RunDimReduction <- function(
         error = function(e) {
           log_message(
             "Can not estimate intrinsic dimensions with {.pkg maxLikGlobalDimEst}",
-            message_type = "warning"
+            message_type = "warning",
+            verbose = verbose
           )
           NA
         }
@@ -283,7 +307,9 @@ RunDimReduction <- function(
       if (nonlinear_reduction %in% reduction_exist) {
         if (srt[[nonlinear_reduction]]@assay.used == assay) {
           log_message(
-            "{.arg nonlinear_reduction} {.pkg {nonlinear_reduction}} is already existed. Skip calculation"
+            "{.arg nonlinear_reduction} {.pkg {nonlinear_reduction}} is already existed. Skip calculation",
+            message_type = "warning",
+            verbose = verbose
           )
           reduc <- srt[[nonlinear_reduction]]
           SeuratObject::Key(reduc) <- paste0(prefix, nonlinear_reduction, "_")
@@ -292,7 +318,9 @@ RunDimReduction <- function(
           return(srt)
         } else {
           log_message(
-            "assay.used is {.val {srt[[nonlinear_reduction]]@assay.used}}, which is not the same as the {.val {assay}} specified. Recalculate the nonlinear reduction (umap)"
+            "{.arg assay.used} is {.val {srt[[nonlinear_reduction]]@assay.used}}, which is not the same as the {.val {assay}} specified. Recalculate {.pkg umap} nonlinear reduction",
+            message_type = "warning",
+            verbose = verbose
           )
           nonlinear_reduction <- "umap"
         }

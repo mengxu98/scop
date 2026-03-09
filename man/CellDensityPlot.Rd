@@ -15,7 +15,7 @@ CellDensityPlot(
   reverse = FALSE,
   x_order = c("value", "rank"),
   decreasing = NULL,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   cells = NULL,
   keep_empty = FALSE,
@@ -66,7 +66,7 @@ Default is \code{NULL}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
