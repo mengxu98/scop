@@ -747,7 +747,8 @@ CellCorHeatmap <- function(
       block_graphics <- annotation_block_fill_graphics(
         levels = levels(srt_query[[query_group, drop = TRUE]]),
         palette = query_group_palette,
-        palcolor = query_group_palcolor
+        palcolor = query_group_palcolor,
+        border = border
       )
 
       anno <- list()
@@ -819,7 +820,8 @@ CellCorHeatmap <- function(
       block_graphics <- annotation_block_fill_graphics(
         levels = levels(srt_ref[[ref_group, drop = TRUE]]),
         palette = ref_group_palette,
-        palcolor = ref_group_palcolor
+        palcolor = ref_group_palcolor,
+        border = border
       )
 
       anno <- list()
