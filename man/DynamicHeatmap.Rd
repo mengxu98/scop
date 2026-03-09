@@ -529,7 +529,8 @@ pancreas_sub <- RunSlingshot(
 )
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
-  lineages = c("Lineage1", "Lineage2"),
+  lineages = c("Lineage1", "Lineage2"),,
+  fit_method = "pretsa",
   n_candidates = 200
 )
 
@@ -585,6 +586,7 @@ ht4 <- DynamicHeatmap(
   reverse_ht = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   species = "Mus_musculus",
   db = "GO_BP",
@@ -595,6 +597,7 @@ ht4 <- DynamicHeatmap(
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   cell_annotation = "SubCellType",
   n_split = 2,
