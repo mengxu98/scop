@@ -42,8 +42,8 @@
 #' @export
 #'
 #' @references
-#' Zhuang H, Ji Z. PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns.
-#' Genome Biol. 2026 Feb 12. doi: 10.1186/s13059-026-03994-3IF: 9.4 Q1 B1. Epub ahead of print. PMID: 41673899.
+#' Zhuang, H., Ji, Z. PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns.
+#' Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3
 #'
 #' @examples
 #' data(pancreas_sub)
