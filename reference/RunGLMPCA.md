@@ -149,22 +149,22 @@ RunGLMPCA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 07:59:56] Start standard scop workflow...
-#> ℹ [2026-03-08 07:59:57] Checking a list of <Seurat>...
-#> ! [2026-03-08 07:59:57] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 07:59:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:59:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:59:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 07:59:59] Number of available HVF: 2000
-#> ℹ [2026-03-08 08:00:00] Finished check
-#> ℹ [2026-03-08 08:00:00] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 08:00:00] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 08:00:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 08:00:01] Reorder clusters...
-#> ℹ [2026-03-08 08:00:01] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 08:00:01] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 08:00:06] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 08:00:11] Run scop standard workflow completed
+#> ℹ [2026-03-09 08:33:30] Start standard scop workflow...
+#> ℹ [2026-03-09 08:33:31] Checking a list of <Seurat>...
+#> ! [2026-03-09 08:33:31] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 08:33:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:33:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:33:33] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 08:33:34] Number of available HVF: 2000
+#> ℹ [2026-03-09 08:33:34] Finished check
+#> ℹ [2026-03-09 08:33:34] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 08:33:34] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 08:33:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 08:33:35] Reorder clusters...
+#> ℹ [2026-03-09 08:33:35] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 08:33:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 08:33:40] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 08:33:45] Run scop standard workflow completed
 pancreas_sub <- RunGLMPCA(pancreas_sub)
 #> ℹ GLMPC_ 1 
 #> ℹ Positive:  Barx2, Cartpt, Ptger3, Gm3448, Cypt3, Kng2, Gad1, 3930402G23Rik, Mesp1, Il1r2 

@@ -186,36 +186,36 @@ DEtestRingPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 07:04:31] Start standard scop workflow...
-#> ℹ [2026-03-08 07:04:32] Checking a list of <Seurat>...
-#> ! [2026-03-08 07:04:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 07:04:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:04:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:04:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 07:04:34] Number of available HVF: 2000
-#> ℹ [2026-03-08 07:04:35] Finished check
-#> ℹ [2026-03-08 07:04:35] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 07:04:35] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 07:04:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 07:04:36] Reorder clusters...
-#> ℹ [2026-03-08 07:04:36] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 07:04:36] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 07:04:39] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 07:04:42] Run scop standard workflow completed
+#> ℹ [2026-03-09 07:37:12] Start standard scop workflow...
+#> ℹ [2026-03-09 07:37:13] Checking a list of <Seurat>...
+#> ! [2026-03-09 07:37:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 07:37:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 07:37:15] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 07:37:15] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 07:37:15] Number of available HVF: 2000
+#> ℹ [2026-03-09 07:37:16] Finished check
+#> ℹ [2026-03-09 07:37:16] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 07:37:16] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 07:37:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 07:37:17] Reorder clusters...
+#> ℹ [2026-03-09 07:37:17] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 07:37:17] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 07:37:20] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 07:37:23] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-03-08 07:04:43] Data type is log-normalized
-#> ℹ [2026-03-08 07:04:43] Start differential expression test
-#> ℹ [2026-03-08 07:04:43] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-08 07:04:43] Using 1 core
-#> ⠙ [2026-03-08 07:04:43] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-03-08 07:04:43] Completed 5 tasks in 889ms
+#> ℹ [2026-03-09 07:37:24] Data type is log-normalized
+#> ℹ [2026-03-09 07:37:24] Start differential expression test
+#> ℹ [2026-03-09 07:37:24] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-09 07:37:24] Using 1 core
+#> ⠙ [2026-03-09 07:37:24] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-03-09 07:37:24] Completed 5 tasks in 1.7s
 #> 
-#> ℹ [2026-03-08 07:04:43] Building results
-#> ✔ [2026-03-08 07:04:44] Differential expression test completed
+#> ℹ [2026-03-09 07:37:24] Building results
+#> ✔ [2026-03-09 07:37:26] Differential expression test completed
 DEtestRingPlot(
   pancreas_sub,
   group.by = "CellType"

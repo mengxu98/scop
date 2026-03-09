@@ -249,22 +249,22 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 06:59:07] Start standard scop workflow...
-#> ℹ [2026-03-08 06:59:08] Checking a list of <Seurat>...
-#> ! [2026-03-08 06:59:08] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 06:59:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 06:59:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 06:59:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 06:59:10] Number of available HVF: 2000
-#> ℹ [2026-03-08 06:59:10] Finished check
-#> ℹ [2026-03-08 06:59:10] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 06:59:10] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 06:59:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 06:59:12] Reorder clusters...
-#> ℹ [2026-03-08 06:59:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 06:59:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 06:59:15] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 06:59:18] Run scop standard workflow completed
+#> ℹ [2026-03-09 07:33:11] Start standard scop workflow...
+#> ℹ [2026-03-09 07:33:12] Checking a list of <Seurat>...
+#> ! [2026-03-09 07:33:12] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 07:33:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 07:33:14] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 07:33:14] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 07:33:14] Number of available HVF: 2000
+#> ℹ [2026-03-09 07:33:15] Finished check
+#> ℹ [2026-03-09 07:33:15] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 07:33:15] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 07:33:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 07:33:16] Reorder clusters...
+#> ℹ [2026-03-09 07:33:16] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 07:33:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 07:33:19] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 07:33:22] Run scop standard workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -494,7 +494,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-03-08 06:59:24] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-09 07:33:28] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -502,7 +502,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-03-08 06:59:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-09 07:33:29] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -514,7 +514,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-03-08 06:59:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-09 07:33:29] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -537,7 +537,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-03-08 06:59:26] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-09 07:33:30] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
 
 CellStatPlot(
@@ -548,7 +548,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-03-08 06:59:26] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-09 07:33:30] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggupset’
 
 sum(

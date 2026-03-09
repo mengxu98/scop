@@ -402,7 +402,8 @@ panc8_rename <- RenameFeatures(
 srt_query <- RunKNNMap(
   srt_query = pancreas_sub,
   srt_ref = panc8_rename,
-  ref_umap = "SeuratUMAP2D")
+  ref_umap = "HarmonyUMAP2D"
+)
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = panc8_rename,
@@ -697,10 +698,9 @@ DynamicPlot(
   lineages = c("Lineage1", "Lineage2"),
   group.by = "SubCellType",
   features = c(
-    "Plk1", "Hes1", "Neurod2", "Ghrl", "Gcg", "Ins2"
-  ),
-  compare_lineages = TRUE,
-  compare_features = FALSE
+    "Plk1", "Hes1", "Neurod2",
+    "Ghrl", "Gcg", "Ins2"
+  )
 )
 ```
 

@@ -79,10 +79,10 @@ pancreas_sub <- RunProportionTest(
   split.by = "Phase",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-03-08 08:04:19] Start proportion test
-#> ℹ [2026-03-08 08:04:19] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-03-08 08:04:27] Running comparison: "G2M" vs "G1"
-#> ✔ [2026-03-08 08:04:34] Proportion test completed
+#> ℹ [2026-03-09 08:37:53] Start proportion test
+#> ℹ [2026-03-09 08:37:53] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-03-09 08:38:00] Running comparison: "G2M" vs "G1"
+#> ✔ [2026-03-09 08:38:07] Proportion test completed
 
 # Include all cell types from the dataset
 pancreas_sub <- RunProportionTest(
@@ -92,10 +92,10 @@ pancreas_sub <- RunProportionTest(
   comparison = list(c("G2M", "G1")),
   include_all_cells = TRUE
 )
-#> ℹ [2026-03-08 08:04:34] Start proportion test
-#> ℹ [2026-03-08 08:04:34] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-03-08 08:04:41] Running comparison: "G2M" vs "G1"
-#> ✔ [2026-03-08 08:04:48] Proportion test completed
+#> ℹ [2026-03-09 08:38:07] Start proportion test
+#> ℹ [2026-03-09 08:38:07] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-03-09 08:38:14] Running comparison: "G2M" vs "G1"
+#> ✔ [2026-03-09 08:38:21] Proportion test completed
 
 ProportionTestPlot(
   pancreas_sub

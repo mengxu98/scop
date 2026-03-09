@@ -83,28 +83,28 @@ RunCellChat(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 07:38:49] Start standard scop workflow...
-#> ℹ [2026-03-08 07:38:50] Checking a list of <Seurat>...
-#> ! [2026-03-08 07:38:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 07:38:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:38:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:38:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 07:38:52] Number of available HVF: 2000
-#> ℹ [2026-03-08 07:38:52] Finished check
-#> ℹ [2026-03-08 07:38:53] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 07:38:53] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 07:38:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 07:38:54] Reorder clusters...
-#> ℹ [2026-03-08 07:38:54] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 07:38:54] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 07:38:58] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 07:39:01] Run scop standard workflow completed
+#> ℹ [2026-03-09 08:13:13] Start standard scop workflow...
+#> ℹ [2026-03-09 08:13:14] Checking a list of <Seurat>...
+#> ! [2026-03-09 08:13:14] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 08:13:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:13:16] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:13:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 08:13:16] Number of available HVF: 2000
+#> ℹ [2026-03-09 08:13:17] Finished check
+#> ℹ [2026-03-09 08:13:17] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 08:13:17] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 08:13:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 08:13:18] Reorder clusters...
+#> ℹ [2026-03-09 08:13:18] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 08:13:18] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 08:13:22] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 08:13:25] Run scop standard workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-08 07:39:01] Start CellChat analysis
+#> ℹ [2026-03-09 08:13:25] Start CellChat analysis
 #> Registered S3 method overwritten by 'ggnetwork':
 #>   method         from  
 #>   fortify.igraph ggtree
@@ -113,14 +113,14 @@ pancreas_sub <- RunCellChat(
 #> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-03-08 07:40:46.469401]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-03-08 07:41:08.265587]"
-#> ✔ [2026-03-08 07:41:08] CellChat analysis completed
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-03-09 08:14:40.746984]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-03-09 08:15:04.474641]"
+#> ✔ [2026-03-09 08:15:04] CellChat analysis completed
 
 CellChatPlot(pancreas_sub)
-#> ℹ [2026-03-08 07:41:08] Creating "aggregate" plot for condition "ALL"
+#> ℹ [2026-03-09 08:15:04] Creating "aggregate" plot for condition "ALL"
 
 #> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
 
-#> ✔ [2026-03-08 07:41:08] Plot creation completed
+#> ✔ [2026-03-09 08:15:04] Plot creation completed
 ```

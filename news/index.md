@@ -1,6 +1,6 @@
 # Changelog
 
-## scop (development version)
+## scop 0.8.5
 
 - **feat**:
   - Default palette changed from `"Paired"` to `"Chinese"`. See
