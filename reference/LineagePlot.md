@@ -168,22 +168,22 @@ LineagePlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 07:36:03] Start standard scop workflow...
-#> ℹ [2026-03-08 07:36:04] Checking a list of <Seurat>...
-#> ! [2026-03-08 07:36:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 07:36:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:36:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 07:36:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 07:36:07] Number of available HVF: 2000
-#> ℹ [2026-03-08 07:36:07] Finished check
-#> ℹ [2026-03-08 07:36:07] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 07:36:07] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 07:36:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 07:36:08] Reorder clusters...
-#> ℹ [2026-03-08 07:36:09] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 07:36:09] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 07:36:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 07:36:16] Run scop standard workflow completed
+#> ℹ [2026-03-09 08:10:25] Start standard scop workflow...
+#> ℹ [2026-03-09 08:10:27] Checking a list of <Seurat>...
+#> ! [2026-03-09 08:10:27] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 08:10:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:10:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:10:29] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 08:10:30] Number of available HVF: 2000
+#> ℹ [2026-03-09 08:10:30] Finished check
+#> ℹ [2026-03-09 08:10:30] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 08:10:30] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 08:10:31] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 08:10:31] Reorder clusters...
+#> ℹ [2026-03-09 08:10:32] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 08:10:32] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 08:10:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 08:10:39] Run scop standard workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

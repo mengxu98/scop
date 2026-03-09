@@ -238,22 +238,22 @@ TACSPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-08 08:16:33] Start standard scop workflow...
-#> ℹ [2026-03-08 08:16:34] Checking a list of <Seurat>...
-#> ! [2026-03-08 08:16:34] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-08 08:16:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 08:16:36] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-08 08:16:37] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-08 08:16:37] Number of available HVF: 2000
-#> ℹ [2026-03-08 08:16:37] Finished check
-#> ℹ [2026-03-08 08:16:37] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-08 08:16:38] Perform pca linear dimension reduction
-#> ℹ [2026-03-08 08:16:39] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-08 08:16:39] Reorder clusters...
-#> ℹ [2026-03-08 08:16:39] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-08 08:16:39] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-08 08:16:44] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-08 08:16:48] Run scop standard workflow completed
+#> ℹ [2026-03-09 08:49:45] Start standard scop workflow...
+#> ℹ [2026-03-09 08:49:46] Checking a list of <Seurat>...
+#> ! [2026-03-09 08:49:46] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-09 08:49:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:49:48] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-09 08:49:48] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-09 08:49:48] Number of available HVF: 2000
+#> ℹ [2026-03-09 08:49:49] Finished check
+#> ℹ [2026-03-09 08:49:49] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-09 08:49:49] Perform pca linear dimension reduction
+#> ℹ [2026-03-09 08:49:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-09 08:49:50] Reorder clusters...
+#> ℹ [2026-03-09 08:49:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-09 08:49:50] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-09 08:49:55] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-09 08:49:59] Run scop standard workflow completed
 TACSPlot(
   pancreas_sub,
   feature1 = "H3f3b",
