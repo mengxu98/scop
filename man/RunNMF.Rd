@@ -150,4 +150,14 @@ CellDimPlot(
   group.by = "CellType",
   reduction = "nmf"
 )
+
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("BE_1", "BE_2", "BE_3"),
+  reduction = "UMAP",
+  palette = "RdBu",
+  xlab = "UMAP_1",
+  ylab = "UMAP_2",
+  theme_use = "theme_blank"
+)
 }

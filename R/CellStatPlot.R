@@ -33,7 +33,9 @@
 #' )
 #' p1
 #'
-#' thisplot::panel_fix(p1, height = 2, width = 3)
+#' thisplot::panel_fix(
+#'   p1, height = 2, width = 3
+#' )
 #'
 #' CellStatPlot(
 #'   pancreas_sub,
@@ -298,10 +300,10 @@ CellStatPlot <- function(
     ),
     stat_type = c("percent", "count"),
     position = c("stack", "dodge"),
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     alpha = 1,
-    bg_palette = "Paired",
+    bg_palette = "Chinese",
     bg_palcolor = NULL,
     bg_alpha = 0.2,
     label = FALSE,
@@ -326,6 +328,9 @@ CellStatPlot <- function(
     seed = 11) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
+  if (theme_use == "theme_scop") {
+    theme_use <- "theme_this"
+  }
 
   plot <- StatPlot(
     meta_data,

@@ -4,7 +4,13 @@
 \alias{db_DoubletDetection}
 \title{Run doublet-calling with DoubletDetection}
 \usage{
-db_DoubletDetection(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
+db_DoubletDetection(
+  srt,
+  assay = "RNA",
+  db_rate = ncol(srt)/1000 * 0.01,
+  cores = 1,
+  ...
+)
 }
 \arguments{
 \item{srt}{A Seurat object.}
@@ -14,6 +20,9 @@ Default is \code{"RNA"}.}
 
 \item{db_rate}{The expected doublet rate.
 Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
+
+\item{cores}{The number of CPU cores to use for \code{doubletdetection}.
+Default is \code{1}.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/JonathanShor/DoubletDetection}{doubletdetection.BoostClassifier}.}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunDimReduction.R
 \name{RunDimReduction}
 \alias{RunDimReduction}
-\title{Run dimensionality reduction}
+\title{Run dimension reduction}
 \usage{
 RunDimReduction(
   srt,
@@ -40,17 +40,20 @@ If \code{NULL}, the default assay of the Seurat object will be used.}
 \item{layer}{Which layer to use.
 Default is \code{"counts"}.}
 
-\item{linear_reduction}{Method of linear dimensionality reduction.
-Options are \code{"pca"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}.}
+\item{linear_reduction}{The linear dimensionality reduction method to use.
+Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
+Default is \code{"pca"}.}
 
 \item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
 
 \item{linear_reduction_params}{Other parameters passed to the \code{linear_reduction} method.}
 
-\item{force_linear_reduction}{Whether force to do linear dimensionality reduction.}
+\item{force_linear_reduction}{Whether force to do linear dimension reduction.}
 
-\item{nonlinear_reduction}{Method of nonlinear dimensionality reduction.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}.}
+\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
+Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
+\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
+Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{Total number of dimensions to compute and store for \code{nonlinear_reduction}.}
 
@@ -64,7 +67,7 @@ Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \cod
 
 \item{nonlinear_reduction_params}{Other parameters passed to the \code{nonlinear_reduction} method.}
 
-\item{force_nonlinear_reduction}{Whether force to do nonlinear dimensionality reduction.}
+\item{force_nonlinear_reduction}{Whether force to do nonlinear dimension reduction.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -73,7 +76,7 @@ Default is \code{TRUE}.}
 Default is \code{11}.}
 }
 \description{
-Run dimensionality reduction
+Run dimension reduction
 }
 \seealso{
 \link{DefaultReduction}

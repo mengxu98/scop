@@ -25,7 +25,7 @@
 #' @param line_palcolor A vector specifying the colors to use for the line palette. Default is `NULL`.
 #' @param add_point A boolean specifying whether to add points to the plot. Default is `TRUE`.
 #' @param pt.size A numeric specifying the size of the points. Default is `1`.
-#' @param point_palette A character string specifying the name of the palette to use for the point colors. Default is `"Paired"`.
+#' @param point_palette A character string specifying the name of the palette to use for the point colors. Default is `"Chinese"`.
 #' @param point_palcolor A vector specifying the colors to use for the point palette. Default is `NULL`.
 #' @param add_rug A boolean specifying whether to add rugs to the plot. Default is `TRUE`.
 #' @param flip A boolean specifying whether to flip the x-axis. Default is `FALSE`.
@@ -106,7 +106,7 @@ DynamicPlot <- function(
     line_palcolor = NULL,
     add_point = TRUE,
     pt.size = 1,
-    point_palette = "Paired",
+    point_palette = "Chinese",
     point_palcolor = NULL,
     add_rug = TRUE,
     flip = FALSE,
