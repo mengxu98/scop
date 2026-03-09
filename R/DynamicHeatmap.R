@@ -1437,7 +1437,8 @@ DynamicHeatmap <- function(
     block_graphics <- annotation_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
-      palcolor = unlist(feature_split_palcolor)
+      palcolor = unlist(feature_split_palcolor),
+      border = border
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(

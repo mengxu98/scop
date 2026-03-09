@@ -1253,7 +1253,8 @@ GroupHeatmap <- function(
       block_graphics <- annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[cell_group]]),
         palette = group_palette[i],
-        palcolor = group_palcolor[[i]]
+        palcolor = group_palcolor[[i]],
+        border = border
       )
 
       anno <- list()
@@ -1287,7 +1288,8 @@ GroupHeatmap <- function(
       block_graphics <- annotation_block_fill_graphics(
         levels = levels(srt@meta.data[[split.by]]),
         palette = cell_split_palette,
-        palcolor = unlist(cell_split_palcolor)
+        palcolor = unlist(cell_split_palcolor),
+        border = border
       )
 
       anno <- list()
@@ -1678,7 +1680,8 @@ GroupHeatmap <- function(
     block_graphics <- annotation_block_fill_graphics(
       levels = levels(row_split_raw),
       palette = feature_split_palette,
-      palcolor = unlist(feature_split_palcolor)
+      palcolor = unlist(feature_split_palcolor),
+      border = border
     )
     ha_clusters <- ComplexHeatmap::HeatmapAnnotation(
       features_split = ComplexHeatmap::anno_block(
