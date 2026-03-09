@@ -86,7 +86,7 @@ FeatureCorPlot <- function(
     add_r2 = TRUE,
     add_pvalue = TRUE,
     add_smooth = TRUE,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     cor_palette = "RdBu",
     cor_palcolor = NULL,

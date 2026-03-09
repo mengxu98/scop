@@ -16,7 +16,7 @@ RunSCExplorer(
   initial_assay = NULL,
   initial_slot = NULL,
   initial_label = FALSE,
-  initial_cell_palette = "Paired",
+  initial_cell_palette = "Chinese",
   initial_feature_palette = "Spectral",
   initial_theme = "theme_scop",
   initial_size = 4,
@@ -24,7 +24,7 @@ RunSCExplorer(
   initial_arrange = NULL,
   initial_raster = NULL,
   create_script = TRUE,
-  style_script = requireNamespace("styler", quietly = TRUE),
+  style_script = TRUE,
   overwrite = TRUE,
   return_app = TRUE
 )
@@ -64,7 +64,7 @@ Default is \code{NULL}.}
 Default is \code{FALSE}.}
 
 \item{initial_cell_palette}{The initial color palette for cells.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{initial_feature_palette}{The initial color palette for features.
 Default is \code{"Spectral"}.}
@@ -91,7 +91,7 @@ Default is \code{TRUE}.}
 \item{style_script}{Whether to style the SCExplorer app script.
 Default is \code{TRUE}.}
 
-\item{overwrite}{Whether to overwrite existing files.
+\item{overwrite}{Whether to overwrite existing data in the data file.
 Default is \code{TRUE}.}
 
 \item{return_app}{Whether to return the SCExplorer app.
@@ -132,6 +132,7 @@ list.files("./SCExplorer")
 
 # Run shiny app
 if (interactive()) {
+  check_r("shiny")
   shiny::runApp(app)
 }
 # Note: If scop installed in the isolated environment using renv,

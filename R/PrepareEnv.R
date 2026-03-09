@@ -227,6 +227,7 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
     conda = conda,
     envname = envname
   )
+
   reticulate::use_python(
     python_path,
     required = TRUE
@@ -395,7 +396,11 @@ env_requirements <- function(version = "3.10-1") {
   package_install_methods <- c(
     "leidenalg" = "conda",
     "tbb" = tbb_install_method,
-    "python-igraph" = "conda",
+    "python-igraph" = if (is_apple_silicon()) {
+      "pip"
+    } else {
+      "conda"
+    },
     "scvi-tools" = "conda",
     "matplotlib" = "pip",
     "numba" = "pip",
@@ -415,7 +420,12 @@ env_requirements <- function(version = "3.10-1") {
     "bbknn" = "pip",
     "scanorama" = "pip",
     "cellrank" = "pip",
-    "celltypist" = "pip"
+    "celltypist" = "pip",
+    if (is_apple_silicon()) {
+      c("llvm-openmp" = "conda")
+    } else {
+      NULL
+    }
   )
 
   package_versions <- c(
@@ -445,7 +455,12 @@ env_requirements <- function(version = "3.10-1") {
     "scanorama" = "scanorama==1.7.4",
     "scvi-tools" = "scvi-tools==1.2.1",
     "cellrank" = "cellrank==2.0.7",
-    "celltypist" = "celltypist"
+    "celltypist" = "celltypist",
+    if (is_apple_silicon()) {
+      c("llvm-openmp" = "llvm-openmp>=17")
+    } else {
+      NULL
+    }
   )
 
   package_aliases <- list(
