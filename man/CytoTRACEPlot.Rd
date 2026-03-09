@@ -14,7 +14,7 @@ CytoTRACEPlot(
   byrow = TRUE,
   pt.size = NULL,
   pt.alpha = 1,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
@@ -49,7 +49,7 @@ Default is \code{1}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
@@ -80,7 +80,7 @@ If \code{combine = FALSE}, returns a named list of ggplot objects:
 Plot CytoTRACE 2 Results
 }
 \examples{
-if (thisplot::check_ci_env()) {
+if (thisutils::check_ci_env()) {
   data(pancreas_sub)
   pancreas_sub <- standard_scop(pancreas_sub)
   pancreas_sub <- RunCytoTRACE(

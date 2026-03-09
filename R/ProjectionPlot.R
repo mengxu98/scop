@@ -59,7 +59,7 @@ ProjectionPlot <- function(
     ref_reduction = srt_query[[query_reduction]]@misc[["reduction.model"]] %||%
       NULL,
     query_param = list(palette = "Set1", cells.highlight = TRUE),
-    ref_param = list(palette = "Paired"),
+    ref_param = list(palette = "Chinese"),
     xlim = NULL,
     ylim = NULL,
     pt.size = 0.8,

@@ -18,10 +18,10 @@ FeatureStatPlot(
   keep_empty = FALSE,
   individual = FALSE,
   plot_type = c("violin", "box", "bar", "dot", "col"),
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   alpha = 1,
-  bg_palette = "Paired",
+  bg_palette = "Chinese",
   bg_palcolor = NULL,
   bg_alpha = 0.2,
   add_box = FALSE,
@@ -127,7 +127,7 @@ Default is \code{"violin"}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
@@ -136,7 +136,7 @@ Default is \code{NULL}.}
 Default is \code{1}.}
 
 \item{bg_palette}{A string specifying the color palette to use for the background.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{bg_palcolor}{A character vector specifying specific colors to use for the background.
 Default is \code{NULL}.}
@@ -462,6 +462,21 @@ FeatureStatPlot(
   group.by = "SubCellType",
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta")),
   sig_label = "p.format"
+)
+
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = "Fev",
+  group.by = "SubCellType",
+  split.by = "Phase",
+  comparisons = TRUE
+) + FeatureStatPlot(
+  pancreas_sub,
+  stat.by = "Fev",
+  group.by = "SubCellType",
+  split.by = "Phase",
+  comparisons = TRUE,
+  y.max = 5
 )
 
 FeatureStatPlot(

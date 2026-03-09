@@ -23,7 +23,7 @@
 #' Available palettes can be found in [thisplot::show_palettes].
 #' Default is `"RdBu"`.
 #' @param group_palette Palette for cell types (groups) in Manhattan plot.
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param group_palcolor Custom colors for cell types (groups) in Manhattan plot.
 #' Default is `NULL`.
 #' @param pt.size The size of the points.
@@ -150,7 +150,7 @@ DEtestPlot <- function(
     x_order = c("gene", "index"),
     palette = "RdBu",
     palcolor = NULL,
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     pt.size = 1,
     pt.alpha = 1,
@@ -464,7 +464,7 @@ DEtestManhattanPlot <- function(
     test.use = "wilcox",
     res = NULL,
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     pt.size = 1,
     pt.alpha = 1,
@@ -659,7 +659,7 @@ DEtestRingPlot <- function(
     test.use = "wilcox",
     res = NULL,
     DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
-    group_palette = "Paired",
+    group_palette = "Chinese",
     group_palcolor = NULL,
     pt.size = 1,
     pt.alpha = 1,

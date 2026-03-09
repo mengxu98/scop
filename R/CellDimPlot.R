@@ -13,7 +13,7 @@
 #' Default is `NULL`.
 #' @param palette Color palette name.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' Default is `"Paired"`.
+#' Default is `"Chinese"`.
 #' @param palcolor Custom colors used to create a color palette.
 #' Default is `NULL`.
 #' @param bg_color Color value for background(NA) points.
@@ -88,7 +88,7 @@
 #' @param stat.by The name of a metadata column to stat.
 #' @param stat_type Set stat types ("percent" or "count").
 #' @param stat_plot_type Set the statistical plot type.
-#' @param stat_plot_size Set the statistical plot size. Default is `0.1`.
+#' @param stat_plot_size Set the statistical plot size. Default is `0.2`.
 #' @param stat_plot_palette Color palette used in statistical plot.
 #' @param stat_palcolor Custom colors used in statistical plot
 #' @param stat_plot_position Position adjustment in statistical plot.
@@ -568,7 +568,7 @@ CellDimPlot <- function(
     show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
     pt.size = NULL,
     pt.alpha = 1,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     bg_color = "grey80",
     label = FALSE,
@@ -613,7 +613,7 @@ CellDimPlot <- function(
     stat_type = "percent",
     stat_plot_type = "pie",
     stat_plot_position = c("stack", "dodge"),
-    stat_plot_size = 0.15,
+    stat_plot_size = 0.2,
     stat_plot_palette = "Set1",
     stat_palcolor = NULL,
     stat_plot_alpha = 1,
@@ -1275,17 +1275,20 @@ CellDimPlot <- function(
             order = 1,
             override.aes = list(size = 4, alpha = 1)
           )
-        ) +
-        scale_fill_manual(
-          name = legend_title_use,
-          values = colors[names(labels_tb)],
-          labels = label_use,
-          na.value = bg_color,
-          guide = guide_legend(
-            title.hjust = 0,
-            order = 1
-          )
         )
+      if (isTRUE(hex)) {
+        p <- p +
+          scale_fill_manual(
+            name = legend_title_use,
+            values = colors[names(labels_tb)],
+            labels = label_use,
+            na.value = bg_color,
+            guide = guide_legend(
+              title.hjust = 0,
+              order = 1
+            )
+          )
+      }
       p_base <- p
 
       if (!is.null(stat.by)) {
@@ -1369,7 +1372,7 @@ CellDimPlot <- function(
           list(ggnewscale::new_scale("size")),
           velocity_layers
         )
-        if (velocity_plot_type != "raw") {
+        if (velocity_plot_type == "stream" && is.null(streamline_color)) {
           suppressMessages({
             legend_list[["velocity"]] <- get_legend(
               ggplot() +
@@ -1535,7 +1538,7 @@ CellDimPlot3D <- function(
     reduction = NULL,
     dims = c(1, 2, 3),
     axis_labs = NULL,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     bg_color = "grey80",
     pt.size = 1.5,

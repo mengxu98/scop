@@ -87,7 +87,7 @@ Default is \code{NULL}.}
 Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
 Default is \code{"linear"}.}
 
-\item{Scanorama_dims_use}{A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{Scanorama_dims_use}{A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and nonlinear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.

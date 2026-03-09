@@ -16,7 +16,7 @@ DEtestPlot(
   x_order = c("gene", "index"),
   palette = "RdBu",
   palcolor = NULL,
-  group_palette = "Paired",
+  group_palette = "Chinese",
   group_palcolor = NULL,
   pt.size = 1,
   pt.alpha = 1,
@@ -84,7 +84,7 @@ Default is \code{"RdBu"}.}
 Default is \code{NULL}.}
 
 \item{group_palette}{Palette for cell types (groups) in Manhattan plot.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.
 Default is \code{NULL}.}

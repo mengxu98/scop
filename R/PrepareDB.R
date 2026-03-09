@@ -192,7 +192,6 @@ PrepareDB <- function(
     custom_IDtype = NULL,
     custom_version = NULL,
     verbose = TRUE) {
-
   check_r("R.cache", verbose = FALSE)
   db_list <- list()
   for (sps in species) {
@@ -361,11 +360,14 @@ PrepareDB <- function(
             )
           }
         }
-        suppressPackageStartupMessages(require(
-          org_sp,
-          character.only = TRUE,
-          quietly = TRUE
-        ))
+        check_r(org_sp)
+        suppressPackageStartupMessages(
+          require(
+            org_sp,
+            character.only = TRUE,
+            quietly = TRUE
+          )
+        )
         orgdb <- get(org_sp)
       }
       if ("PFAM" %in% db) {
@@ -863,29 +865,47 @@ PrepareDB <- function(
               db_species["MP"] <- "Mus_musculus"
             } else {
               log_message(
-                "{.pkg MP} database only support Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg MP} database only support {.val Mus_musculus}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
           }
           log_message("Preparing {.pkg MP} database", verbose = verbose)
           temp <- tempfile()
-          download(
-            url = "http://www.informatics.jax.org/downloads/reports/",
-            destfile = temp
+          ver_info <- tryCatch(
+            {
+              download(
+                url = paste0(
+                  "https://web.archive.org/web/",
+                  format(Sys.Date(), "%Y"),
+                  "id_/http://www.informatics.jax.org/downloads/reports/"
+                ),
+                destfile = temp
+              )
+              ver_lines <- readLines(temp, warn = FALSE)
+              ver_lines <- ver_lines[grep("MGI_PhenoGenoMP.rpt", ver_lines)]
+              ver_datetime <- strsplit(
+                ver_lines,
+                split = "  </td><td align=\"right\">"
+              )[[1]][2]
+              ver_date <- gsub("-", "", sub(" .*", "", ver_datetime))
+              list(version = ver_datetime, archive_date = ver_date)
+            },
+            error = function(e) {
+              list(
+                version = as.character(Sys.Date()),
+                archive_date = gsub("-", "", as.character(Sys.Date()))
+              )
+            }
           )
-          version <- readLines(temp, warn = FALSE)
-          version <- version[grep("MGI_PhenoGenoMP.rpt", version)]
-          version <- strsplit(version, split = "  </td><td align=\"right\">")[[
-            1
-          ]][2]
+          version <- ver_info[["version"]]
+          archive_date <- ver_info[["archive_date"]]
           download(
-            url = "http://www.informatics.jax.org/downloads/reports/VOC_MammalianPhenotype.rpt",
+            url = paste0(
+              "https://web.archive.org/web/",
+              archive_date,
+              "id_/https://www.informatics.jax.org/downloads/reports/VOC_MammalianPhenotype.rpt"
+            ),
             destfile = temp
           )
           mp_name <- utils::read.table(
@@ -897,7 +917,11 @@ PrepareDB <- function(
           )
           rownames(mp_name) <- mp_name[, 1]
           download(
-            url = "http://www.informatics.jax.org/downloads/reports/MGI_Gene_Model_Coord.rpt",
+            url = paste0(
+              "https://web.archive.org/web/",
+              archive_date,
+              "id_/https://www.informatics.jax.org/downloads/reports/MGI_Gene_Model_Coord.rpt"
+            ),
             destfile = temp
           )
           gene_id <- utils::read.table(
@@ -917,7 +941,11 @@ PrepareDB <- function(
           rownames(gene_id) <- gene_id[, 1]
 
           download(
-            url = "http://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
+            url = paste0(
+              "https://web.archive.org/web/",
+              archive_date,
+              "id_/https://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt"
+            ),
             destfile = temp
           )
           mp_gene <- utils::read.table(
@@ -1051,12 +1079,7 @@ PrepareDB <- function(
               db_species["HPO"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg HPO} database only support Homo_sapiens. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg HPO} database only support {.val Homo_sapiens}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1382,15 +1405,13 @@ PrepareDB <- function(
             {
               temp <- tempfile()
               url <- paste0(
-                "https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/",
+                "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/TF_list_final/",
                 sps,
                 "_TF"
               )
               download(
                 url = url,
-                destfile = temp,
-                use_httr = TRUE,
-                extra = "--user-agent 'Mozilla/5.0'"
+                destfile = temp
               )
               tf <- utils::read.table(
                 temp,
@@ -1401,15 +1422,13 @@ PrepareDB <- function(
                 quote = ""
               )
               url <- paste0(
-                "https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/",
+                "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/Cof_list_final/",
                 sps,
                 "_Cof"
               )
               download(
                 url = url,
-                destfile = temp,
-                use_httr = TRUE,
-                extra = "--user-agent 'Mozilla/5.0'"
+                destfile = temp
               )
               tfco <- utils::read.table(
                 temp,
@@ -1430,9 +1449,9 @@ PrepareDB <- function(
                   )
                   db_species["TF"] <- "Homo_sapiens"
                   url <- paste0(
-                    "https://guolab.wchscu.cn/AnimalTFDB4_static/download/TF_list_final/Homo_sapiens_TF"
+                    "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/TF_list_final/Homo_sapiens_TF"
                   )
-                  download(url = url, destfile = temp, use_httr = TRUE)
+                  download(url = url, destfile = temp)
                   tf <- utils::read.table(
                     temp,
                     header = TRUE,
@@ -1442,9 +1461,9 @@ PrepareDB <- function(
                     quote = ""
                   )
                   url <- paste0(
-                    "https://guolab.wchscu.cn/AnimalTFDB4_static/download/Cof_list_final/Homo_sapiens_Cof"
+                    "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/Cof_list_final/Homo_sapiens_Cof"
                   )
-                  download(url = url, destfile = temp, use_httr = TRUE)
+                  download(url = url, destfile = temp)
                   tfco <- utils::read.table(
                     temp,
                     header = TRUE,
@@ -1519,7 +1538,10 @@ PrepareDB <- function(
                 url <- paste0(
                   "https://raw.githubusercontent.com/GuoBioinfoLab/AnimalTFDB3/master/AnimalTFDB3/static/AnimalTFDB3/download/Homo_sapiens_TF_cofactors"
                 )
-                download(url = url, destfile = temp, use_httr = TRUE, extra = "--user-agent 'Mozilla/5.0'")
+                download(
+                  url = url,
+                  destfile = temp
+                )
                 tfco <- utils::read.table(
                   temp,
                   header = TRUE,
@@ -1581,11 +1603,7 @@ PrepareDB <- function(
               db_species["CSPA"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CSPA} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CSPA} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1593,14 +1611,14 @@ PrepareDB <- function(
           check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: CSPA")
           temp <- tempfile(fileext = ".xlsx")
-          url <- "https://wlab.ethz.ch/cspa/data/S1_File.xlsx"
+          url <- "https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"
           download(
             url = url,
-            destfile = temp,
-            mode = ifelse(.Platform$OS.type == "windows", "wb", "w"),
-            extra = "--no-check-certificate"
+            destfile = temp
           )
-          surfacepro <- openxlsx::read.xlsx(temp, sheet = 1)
+          surfacepro <- get_namespace_fun(
+            "openxlsx", "read.xlsx"
+          )(temp, sheet = 1)
           unlink(temp)
           surfacepro <- surfacepro[
             surfacepro[["organism"]] ==
@@ -1655,11 +1673,7 @@ PrepareDB <- function(
               db_species["Surfaceome"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg Surfaceome} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg Surfaceome} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1673,7 +1687,7 @@ PrepareDB <- function(
             destfile = temp,
             mode = ifelse(.Platform$OS.type == "windows", "wb", "w")
           )
-          surfaceome <- openxlsx::read.xlsx(
+          surfaceome <- get_namespace_fun("openxlsx", "read.xlsx")(
             temp,
             sheet = 2,
             colNames = TRUE,
@@ -1733,11 +1747,7 @@ PrepareDB <- function(
               db_species["SPRomeDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg SPRomeDB} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning"
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg SPRomeDB} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -1821,11 +1831,6 @@ PrepareDB <- function(
             } else {
               log_message(
                 "{.pkg VerSeDa} database only support {.val {verseda_sps}}. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1927,11 +1932,6 @@ PrepareDB <- function(
             } else {
               log_message(
                 "{.pkg TFLink} database only support {.val {tflink_sp}}. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
                 message_type = "error"
               )
             }
@@ -1988,20 +1988,13 @@ PrepareDB <- function(
               db_species["hTFtarget"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg hTFtarget} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg hTFtarget} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
           }
           log_message("Preparing {.pkg hTFtarget} database", verbose = verbose)
-          url <- paste0(
-            "http://bioinfo.life.hust.edu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"
-          )
+          url <- "https://guolab.wchscu.cn/static/hTFtarget/file_download/tf-target-infomation.txt"
           temp <- tempfile()
           download(url = url, destfile = temp)
           TERM2GENE <- utils::read.table(temp, header = TRUE, fill = T, sep = "\t")
@@ -2052,12 +2045,7 @@ PrepareDB <- function(
               db_species["TRRUST"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg TRRUST} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg TRRUST} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2128,12 +2116,7 @@ PrepareDB <- function(
               db_species["JASPAR"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg JASPAR} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg JASPAR} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2185,12 +2168,7 @@ PrepareDB <- function(
               db_species["ENCODE"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg ENCODE} database only support Homo_sapiens. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg ENCODE} database only support {.val Homo_sapiens}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2244,12 +2222,7 @@ PrepareDB <- function(
               db_species["MSigDB"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg MSigDB} database only support Homo_sapiens and Mus_musculus. Consider setting {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg MSigDB} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider setting {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2420,12 +2393,7 @@ PrepareDB <- function(
               db_species["CellTalk"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CellTalk} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CellTalk} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2505,12 +2473,7 @@ PrepareDB <- function(
               db_species["CellChat"] <- "Homo_sapiens"
             } else {
               log_message(
-                "{.pkg CellChat} database only support Homo_sapiens and Mus_musculus. Consider using {.arg convert_species=TRUE}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              log_message(
-                "Stop the preparation",
+                "{.pkg CellChat} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
                 message_type = "error"
               )
             }
@@ -2636,11 +2599,6 @@ PrepareDB <- function(
           } else {
             log_message(
               "{.pkg {db}} database only support {.val {custom_species}}. Consider using {.arg convert_species=TRUE}",
-              message_type = "warning",
-              verbose = verbose
-            )
-            log_message(
-              "Stop the preparation",
               message_type = "error"
             )
           }
@@ -2677,10 +2635,12 @@ PrepareDB <- function(
       }
     }
 
-    # Convert species
     if (!all(db_species == sps)) {
       for (term in names(db_species[db_species != sps])) {
-        log_message("Convert species for the {.pkg {term}} database", verbose = verbose)
+        log_message(
+          "Convert species for the {.pkg {term}} database",
+          verbose = verbose
+        )
         sp_from <- db_species[term]
         db_info <- db_list[[sp_from]][[names(sp_from)]]
         TERM2GENE <- db_info[["TERM2GENE"]]
@@ -2749,7 +2709,6 @@ PrepareDB <- function(
         db_info[["version"]] <- version
         db_list[[sps]][[term]] <- db_info
         default_id_types[[term]] <- "ensembl_id"
-        # save cache
         R.cache::saveCache(
           db_list[[sps]][[term]],
           key = list(version, sps, term),
@@ -2766,7 +2725,6 @@ PrepareDB <- function(
       }
     }
 
-    # Convert ID types
     for (term in names(db_list[[sps]])) {
       IDtypes <- db_IDtypes[
         !db_IDtypes %in% colnames(db_list[[sps]][[term]][["TERM2GENE"]])
@@ -2818,7 +2776,6 @@ PrepareDB <- function(
           TERM2GENE <- unnest_fun(TERM2GENE, cols = type, keep_empty = TRUE)
         }
         db_list[[sps]][[term]][["TERM2GENE"]] <- TERM2GENE
-        # save cache
         version <- db_list[[sps]][[term]][["version"]]
         R.cache::saveCache(
           db_list[[sps]][[term]],
@@ -2837,65 +2794,6 @@ PrepareDB <- function(
     }
   }
   return(db_list)
-}
-
-#' @title List cached databases
-#'
-#' @description
-#' Retrieves information about databases based on a given species and database name.
-#'
-#' @md
-#' @param species The species for which to retrieve database information.
-#' Default is `"Homo_sapiens"`.
-#' @param db The pattern to match against the database names.
-#' Default is `NULL`, which matches all databases.
-#'
-#' @return A data frame containing information about the databases.
-#'
-#' @seealso [PrepareDB]
-#'
-#' @export
-#' @examples
-#' ListDB(species = "Homo_sapiens")
-#' ListDB(species = "Mus_musculus", db = "GO_BP")
-ListDB <- function(
-    species = "Homo_sapiens",
-    db = NULL) {
-  stopifnot(length(species) == 1)
-  pathnames <- dir(
-    path = R.cache::getCacheRootPath(),
-    pattern = "[.]Rcache$",
-    full.names = TRUE
-  )
-  if (length(pathnames) == 0) {
-    return(NULL)
-  }
-  dbinfo <- lapply(
-    pathnames, function(x) {
-      info <- R.cache::readCacheHeader(x)
-      info[["date"]] <- as.character(info[["timestamp"]])
-      info[["db_version"]] <- strsplit(info[["comment"]], "\\|")[[1]][1]
-      info[["db_name"]] <- strsplit(info[["comment"]], "\\|")[[1]][2]
-      info
-    }
-  )
-  dbinfo <- do.call(rbind.data.frame, dbinfo)
-  dbinfo[["file"]] <- pathnames
-
-  if (is.null(db)) {
-    db <- ".*"
-  }
-  patterns <- paste0("^", species, "-", db, "$")
-  dbinfo <- dbinfo[
-    unlist(lapply(patterns, function(pat) grep(pat, dbinfo[["db_name"]]))), ,
-    drop = FALSE
-  ]
-  dbinfo <- dbinfo[
-    order(dbinfo[["timestamp"]], decreasing = TRUE), ,
-    drop = FALSE
-  ]
-  rownames(dbinfo) <- NULL
-  return(dbinfo)
 }
 
 kegg_get <- function(url) {

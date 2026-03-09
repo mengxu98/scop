@@ -43,7 +43,7 @@
 #' with cell IDs as row names.
 #'
 #' @examples
-#' if (thisplot::check_ci_env()) {
+#' if (thisutils::check_ci_env()) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   pancreas_sub <- RunCytoTRACE(
@@ -81,7 +81,7 @@ RunCytoTRACE.Seurat <- function(
     verbose = verbose
   )
 
-  if (!get_namespace_fun("thisutils", "check_pkg_status")("CytoTRACE2")) {
+  if (!check_pkg_status("CytoTRACE2")) {
     log_message(
       "Package {.pkg CytoTRACE2} is not installed. Installing from GitHub...",
       message_type = "info",
@@ -152,7 +152,7 @@ RunCytoTRACE.default <- function(
     verbose = verbose
   )
 
-  if (!get_namespace_fun("thisutils", "check_pkg_status")("CytoTRACE2")) {
+  if (!check_pkg_status("CytoTRACE2")) {
     log_message(
       "Package {.pkg CytoTRACE2} is not installed. Installing from GitHub...",
       message_type = "info",

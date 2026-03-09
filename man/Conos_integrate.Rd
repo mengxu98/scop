@@ -33,7 +33,7 @@ Conos_integrate(
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
   buildGraph_params = list(),
-  num_threads = 2,
+  cores = 2,
   verbose = TRUE,
   seed = 11
 )
@@ -128,7 +128,7 @@ Default is \code{0.6}.}
 \item{buildGraph_params}{A list of parameters for the buildGraph function.
 Default is `list()`.}
 
-\item{num_threads}{An integer setting the number of threads for Conos.
+\item{cores}{An integer setting the number of threads for `Conos`.
 Default is `2`.}
 
 \item{verbose}{Whether to print the message.

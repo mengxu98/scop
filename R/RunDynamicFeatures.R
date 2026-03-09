@@ -42,8 +42,8 @@
 #' @export
 #'
 #' @references
-#' Zhuang H, Ji Z. PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns.
-#' Genome Biol. 2026 Feb 12. doi: 10.1186/s13059-026-03994-3IF: 9.4 Q1 B1. Epub ahead of print. PMID: 41673899.
+#' Zhuang, H., Ji, Z. PreTSA: computationally efficient modeling of temporal and spatial gene expression patterns.
+#' Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3
 #'
 #' @examples
 #' data(pancreas_sub)
@@ -338,7 +338,6 @@ RunDynamicFeatures <- function(
         knot = knot,
         max_knot_allowed = max_knot_allowed,
         padjust_method = padjust_method,
-        cores = cores,
         verbose = verbose
       )
     }
@@ -517,7 +516,6 @@ dynamic_features_pretsa <- function(
     knot,
     max_knot_allowed,
     padjust_method,
-    cores,
     verbose) {
   gene_sub <- features[features %in% gene]
   meta_sub <- features[features %in% meta]

@@ -65,7 +65,6 @@ reference:
   - FetchDataZero
   - GeneConvert
   - GetAssayData5
-  - is_outlier
   - RecoverCounts
   - RenameClusters
   - srt_append
@@ -154,7 +153,7 @@ reference:
   - RunWOT
   - RunDynamicFeatures
 
-- subtitle: "Cell Communication Analysis"
+- subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCellChat
 
@@ -192,7 +191,6 @@ reference:
 - subtitle: "Plotting Functions"
 - contents:
   - compute_velocity_on_grid
-  - cluster_within_group2
   - print.scop_logo
 
 - subtitle: "SCExplorer"

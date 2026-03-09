@@ -123,7 +123,7 @@ PAGAPlot <- function(
     dims = c(1, 2),
     cells = NULL,
     show_transition = FALSE,
-    node_palette = "Paired",
+    node_palette = "Chinese",
     node_palcolor = NULL,
     node_size = 4,
     node_alpha = 1,
