@@ -2,20 +2,19 @@
 % Please edit documentation in R/DataConvert.R
 \name{adata_to_srt}
 \alias{adata_to_srt}
-\title{Convert an anndata object to a seurat object using reticulate}
+\title{Convert an anndata object to a seurat object}
 \usage{
 adata_to_srt(adata, verbose = TRUE)
 }
 \arguments{
-\item{adata}{An AnnData object. Can be a Python AnnData object (from scanpy/reticulate),
-an R6 AnnData object from the \code{anndata} package (AnnDataR6), or an R6 AnnData object
-from the \code{anndataR} package (InMemoryAnnData).}
+\item{adata}{An AnnData object.
+Can be a Python AnnData object (from \code{scanpy}/\verb{reticulate``), an }AnnDataR6\verb{object from the}anndata\verb{package, or an}InMemoryAnnData\verb{object from the}anndataR` package.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
-Convert an anndata object to a seurat object using reticulate
+Convert an anndata object to a seurat object
 }
 \examples{
 \dontrun{
@@ -37,4 +36,7 @@ adata <- sc$read_h5ad("pancreas.h5ad")
 srt <- adata_to_srt(adata)
 srt
 }
+}
+\seealso{
+\link{srt_to_adata}
 }

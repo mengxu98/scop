@@ -21,7 +21,7 @@
 #' [RunCytoTRACE], [CellDimPlot], [FeatureDimPlot]
 #'
 #' @examples
-#' if (thisplot::check_ci_env()) {
+#' if (thisutils::check_ci_env()) {
 #'   data(pancreas_sub)
 #'   pancreas_sub <- standard_scop(pancreas_sub)
 #'   pancreas_sub <- RunCytoTRACE(
@@ -51,7 +51,7 @@ CytoTRACEPlot <- function(
     byrow = TRUE,
     pt.size = NULL,
     pt.alpha = 1,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     theme_use = "theme_scop",
     theme_args = list(),

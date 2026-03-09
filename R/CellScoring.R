@@ -179,7 +179,7 @@ CellScoring <- function(
     status <- CheckDataType(srt, layer = "data", assay = assay)
     if (status == "raw_counts") {
       log_message(
-        "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data"
+        "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on {.arg srt}"
       )
       srt <- NormalizeData(
         object = srt,
@@ -190,7 +190,7 @@ CellScoring <- function(
     }
     if (status == "raw_normalized_counts") {
       log_message(
-        "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on the data"
+        "Perform {.fn NormalizeData} with {.arg normalization.method = 'LogNormalize'} on {.arg srt}"
       )
       srt <- NormalizeData(
         object = srt,

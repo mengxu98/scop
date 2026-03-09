@@ -139,7 +139,7 @@ CellDimPlot(
 )
 
 # Use a combination of different linear
-# or non-linear dimension reduction methods
+# or nonlinear dimension reduction methods
 linear_reductions <- c(
   "pca", "nmf", "mds"
 )

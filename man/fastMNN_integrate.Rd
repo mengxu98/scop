@@ -73,7 +73,7 @@ Default is \code{1}.}
 \item{HVF}{A vector of feature names to use as highly variable features.
 If NULL, the function will use the highly variable features identified by the HVF method.}
 
-\item{fastMNN_dims_use}{A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and non-linear reduction.
+\item{fastMNN_dims_use}{A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and nonlinear reduction.
 If set to NULL, all the returned dimensions will be used by default.}
 
 \item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.

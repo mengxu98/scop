@@ -77,7 +77,7 @@ CellDensityPlot <- function(
     reverse = FALSE,
     x_order = c("value", "rank"),
     decreasing = NULL,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     cells = NULL,
     keep_empty = FALSE,

@@ -19,6 +19,8 @@ RunMonocle2(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
+  xlab = NULL,
+  ylab = NULL,
   seed = 11,
   verbose = TRUE
 )
@@ -67,6 +69,12 @@ Default is 1.}
 
 \item{root_state}{The state to use as the root of the trajectory.
 If NULL, will prompt for user input.}
+
+\item{xlab}{The x-axis label of the plot.
+Default is \code{NULL}.}
+
+\item{ylab}{The y-axis label of the plot.
+Default is \code{NULL}.}
 
 \item{seed}{Random seed for reproducibility.
 Default is \code{11}.}

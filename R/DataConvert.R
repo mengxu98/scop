@@ -1,8 +1,5 @@
 #' @title Convert a Seurat object to an AnnData object
 #'
-#' @description
-#' This function takes a Seurat object and converts it to an anndata object using the reticulate package.
-#'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams standard_scop
@@ -22,6 +19,8 @@
 #' Default is all features in `assay_x`.
 #'
 #' @return A `anndata` object.
+#'
+#' @seealso [adata_to_srt]
 #'
 #' @export
 #'
@@ -224,15 +223,18 @@ srt_to_adata <- function(
   return(adata)
 }
 
-#' @title Convert an anndata object to a seurat object using reticulate
+#' @title Convert an anndata object to a seurat object
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param adata An AnnData object. Can be a Python AnnData object (from scanpy/reticulate),
-#'   an R6 AnnData object from the `anndata` package (AnnDataR6), or an R6 AnnData object
-#'   from the `anndataR` package (InMemoryAnnData).
+#' @param adata An AnnData object.
+#' Can be a Python AnnData object (from `scanpy`/`reticulate``),
+#' an `AnnDataR6` object from the `anndata` package,
+#' or an `InMemoryAnnData` object from the `anndataR` package.
 #'
 #' @export
+#'
+#' @seealso [srt_to_adata]
 #'
 #' @examples
 #' \dontrun{

@@ -1234,6 +1234,7 @@ GSEAPlot <- function(
         "Description"
       ]]))
 
+      check_r("shadowtext")
       shadowtextGrob <- get_namespace_fun("shadowtext", "shadowtextGrob")
       draw_key_cust <- function(data, params, size) {
         data_text <- data

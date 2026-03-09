@@ -105,7 +105,7 @@ DynamicHeatmap(
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
   cell_annotation = NULL,
-  cell_annotation_palette = "Paired",
+  cell_annotation_palette = "Chinese",
   cell_annotation_palcolor = NULL,
   cell_annotation_params = if (flip) {
      list(width = grid::unit(5, "mm"))
@@ -123,7 +123,7 @@ DynamicHeatmap(
      list(width = grid::unit(5, "mm"))
  },
   separate_annotation = NULL,
-  separate_annotation_palette = "Paired",
+  separate_annotation_palette = "Chinese",
   separate_annotation_palcolor = NULL,
   separate_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -446,7 +446,7 @@ Default is \code{NULL}.}
 
 \item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
 The length of the vector should match the number of cell_annotation.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
 The length of the list should match the number of cell_annotation.
@@ -473,7 +473,7 @@ Default is \code{list()}.}
 Each name should match a column name in the metadata of the \code{Seurat} object.}
 
 \item{separate_annotation_palette}{The color palette to use for separate annotations.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{separate_annotation_palcolor}{The colors to use for each level of the separate annotations.
 Default is \code{NULL}.}
@@ -492,14 +492,14 @@ Default is \code{"png"}.}
 \item{raster_by_magick}{Whether to use the 'magick' package for raster.
 Default is \code{FALSE}.}
 
-\item{height}{A numeric vector specifying the height(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{height}{The height of the heatmap in the specified units.
+If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
 
-\item{width}{A numeric vector specifying the width(s) of the heatmap body.
-Default is \code{NULL}.}
+\item{width}{The width of the heatmap in the specified units.
+If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
 
-\item{units}{A character vector specifying the units for the height and width.
-Default is \code{"inch"}.}
+\item{units}{The units to use for the width and height of the heatmap.
+Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
 
 \item{cores}{The number of cores to use for parallelization with \link[foreach:foreach]{foreach::foreach}.
 Default is \code{1}.}
@@ -529,16 +529,20 @@ pancreas_sub <- RunSlingshot(
 )
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
-  lineages = c("Lineage1", "Lineage2"),
+  lineages = c("Lineage1", "Lineage2"),,
+  fit_method = "pretsa",
   n_candidates = 200
 )
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   n_split = 5,
   split_method = "kmeans-peaktime",
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 2,
+  height = 3
 )
 ht1$plot
 
@@ -546,76 +550,101 @@ thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = "Lineage1",
   features = c(
     "Sox9",
     "Neurod2",
     "Isl1",
     "Rbp4",
-    "Pyy", "S_score", "G2M_score"
+    "Pyy",
+    "S_score",
+    "G2M_score"
   ),
   cell_annotation = "SubCellType"
 )
 ht2$plot
 
-thisplot::panel_fix(
-  ht2$plot,
-  height = 5,
-  width = 5,
-  raster = TRUE,
-  dpi = 50
-)
-
 ht3 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   n_split = 5,
+  nlabel = 10,
   split_method = "kmeans",
   cluster_rows = TRUE,
-  cell_annotation = "SubCellType"
+  cell_annotation = "SubCellType",
+  width = 1,
+  height = 2
 )
 ht3$plot
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   cell_annotation = "SubCellType",
-  n_split = 5,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   species = "Mus_musculus",
   db = "GO_BP",
   anno_terms = TRUE,
-  anno_keys = TRUE,
-  anno_features = TRUE
+  width = 1,
+  height = 2
 )
-ht4$plot
 
-\dontrun{
+ht5 <- DynamicHeatmap(
+  pancreas_sub,
+  exp_legend_title = "Z-score",
+  lineages = "Lineage1",
+  cell_annotation = "SubCellType",
+  n_split = 2,
+  split_method = "mfuzz",
+  species = "Mus_musculus",
+  db = "GO_BP",
+  cores = 2,
+  nlabel = 10,
+  anno_terms = TRUE,
+  anno_keys = TRUE,
+  anno_features = TRUE,
+  width = 1,
+  height = 2,
+  terms_width = grid::unit(1, "in"),
+  terms_fontsize = 6,
+  keys_width = grid::unit(0.5, "in"),
+  keys_fontsize = c(3, 6),
+  features_width = grid::unit(0.5, "in"),
+  features_fontsize = c(3, 6)
+)
+
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-ht5 <- DynamicHeatmap(
+ht6 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
   separate_annotation_palette = c(
-    "Paired", "Set1"
+    "Chinese", "Set1"
   ),
   separate_annotation_params = list(
     height = grid::unit(10, "mm")
@@ -626,28 +655,31 @@ ht5 <- DynamicHeatmap(
     c("forestgreen")
   ),
   pseudotime_label = 25,
-  pseudotime_label_color = "red"
+  pseudotime_label_color = "red",
+  width = 1,
+  height = 2
 )
-ht5$plot
 
-ht6 <- DynamicHeatmap(
+ht7 <- DynamicHeatmap(
   pancreas_sub,
+  exp_legend_title = "Z-score",
   lineages = c("Lineage1", "Lineage2"),
   reverse_ht = "Lineage1",
   use_fitted = TRUE,
-  n_split = 6,
+  n_split = 3,
+  nlabel = 10,
   split_method = "mfuzz",
   heatmap_palette = "viridis",
   cell_annotation = c(
     "SubCellType", "Phase", "G2M_score"
   ),
   cell_annotation_palette = c(
-    "Paired", "simspec", "Purples"
+    "Chinese", "simspec", "Purples"
   ),
   separate_annotation = list(
     "SubCellType", c("Arxes1", "Ncoa2")
   ),
-  separate_annotation_palette = c("Paired", "Set1"),
+  separate_annotation_palette = c("Chinese", "Set1"),
   separate_annotation_params = list(width = grid::unit(10, "mm")),
   feature_annotation = c("TF", "CSPA"),
   feature_annotation_palcolor = list(
@@ -656,10 +688,11 @@ ht6 <- DynamicHeatmap(
   ),
   pseudotime_label = 25,
   pseudotime_label_color = "red",
-  flip = TRUE, column_title_rot = 45
+  flip = TRUE,
+  column_title_rot = 90,
+  width = 2,
+  height = 1
 )
-ht6$plot
-}
 }
 \seealso{
 \link{RunDynamicFeatures}, \link{RunDynamicEnrichment}

@@ -119,7 +119,7 @@ db_scDblFinder <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -170,7 +170,7 @@ db_scds <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "error"
     )
   }
@@ -271,6 +271,8 @@ db_Scrublet <- function(
 #'
 #' @md
 #' @inheritParams RunDoubletCalling
+#' @param cores The number of CPU cores to use for `doubletdetection`.
+#' Default is `1`.
 #' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
 #'
 #' @export
@@ -296,6 +298,7 @@ db_DoubletDetection <- function(
     srt,
     assay = "RNA",
     db_rate = ncol(srt) / 1000 * 0.01,
+    cores = 1,
     ...) {
   Sys.setenv(NUMBA_NUM_THREADS = "1")
   Sys.setenv(NUMBA_DISABLE_JIT = "0")
@@ -314,20 +317,33 @@ db_DoubletDetection <- function(
       message_type = "error"
     )
   }
+  user_args <- list(...)
+
+  if (!"n_jobs" %in% names(user_args)) {
+    user_args[["n_jobs"]] <- as.integer(cores)
+  }
+  if (!"n_iters" %in% names(user_args)) {
+    user_args[["n_iters"]] <- as.integer(5)
+  }
+  if (!"standard_scaling" %in% names(user_args)) {
+    user_args[["standard_scaling"]] <- TRUE
+  }
+
   check_python("doubletdetection")
+  check_python("louvain")
+
   doubletdetection <- reticulate::import("doubletdetection")
   counts <- GetAssayData5(
     object = srt,
     assay = assay,
     layer = "counts"
   )
-  clf <- doubletdetection$BoostClassifier(
-    n_iters = as.integer(5),
-    standard_scaling = TRUE,
-    ...
-  )
-  labels <- clf$fit(Matrix::t(counts))$predict()
-  scores <- clf$doublet_score()
+  clf <- do.call(doubletdetection$BoostClassifier, user_args)
+
+  clf_fit <- clf$fit(Matrix::t(counts))
+
+  labels <- clf_fit$predict()
+  scores <- clf_fit$doublet_score()
 
   labels <- as.integer(reticulate::py_to_r(labels))
   scores <- as.numeric(reticulate::py_to_r(scores))
@@ -358,16 +374,21 @@ db_DoubletDetection <- function(
   scores <- unname(scores)
   labels <- unname(labels)
 
-  class_labels <- sapply(
-    labels, function(i) {
-      switch(as.character(i),
-        "0" = "singlet",
-        "1" = "doublet"
-      )
-    }
+  class_map <- c(
+    "0" = "singlet",
+    "1" = "doublet"
   )
+  class_labels <- unname(class_map[as.character(labels)])
+  idx_unknown <- is.na(class_labels)
+  if (any(idx_unknown)) {
+    log_message(
+      "Found {.val {sum(idx_unknown)}} cells with unexpected DoubletDetection labels; setting to {.val doublet}",
+      message_type = "warning"
+    )
+    class_labels[idx_unknown] <- "doublet"
+  }
+  class_labels <- factor(class_labels, levels = c("singlet", "doublet"))
 
-  # Add metadata directly to meta.data data frame
   srt@meta.data$db.DoubletDetection_score <- scores
   srt@meta.data$db.DoubletDetection_class <- class_labels
 
@@ -376,55 +397,6 @@ db_DoubletDetection <- function(
     message_type = "success"
   )
   return(srt)
-}
-
-#' @title Detect outliers using MAD (Median Absolute Deviation)
-#'
-#' @md
-#' @param x Numeric vector.
-#' @param nmads Number of median absolute deviations (MADs) from the median to define the boundaries for outliers.
-#' Default is `2.5`.
-#' @param constant Constant factor to convert the MAD to a standard deviation.
-#' Default is `1.4826`, which is consistent with the MAD of a normal distribution.
-#' @param type Type of outliers to detect.
-#' Available options are `"both"`, `"lower"`, or `"higher"`.
-#' If `type` is `"both"`, it detects both lower and higher outliers.
-#' If `type` is `"lower"`, it detects only lower outliers.
-#' If `type` is `"higher"`, it detects only higher outliers.
-#'
-#' @return Numeric vector of indices indicating the positions of outliers in `x`.
-#'
-#' @export
-#'
-#' @examples
-#' x <- c(1, 2, 3, 4, 5, 100)
-#' is_outlier(x) # returns 6
-#'
-#' x <- c(3, 4, 5, NA, 6, 7)
-#' is_outlier(x, nmads = 1.5, type = "lower") # returns 4
-#'
-#' x <- c(10, 20, NA, 15, 35)
-#' is_outlier(x, nmads = 2, type = "higher") # returns 3, 5
-is_outlier <- function(
-    x,
-    nmads = 2.5,
-    constant = 1.4826,
-    type = c("both", "lower", "higher")) {
-  type <- match.arg(type, c("both", "lower", "higher"))
-  mad <- stats::mad(x, constant = constant, na.rm = TRUE)
-  upper <- stats::median(x, na.rm = TRUE) + nmads * mad
-  lower <- stats::median(x, na.rm = TRUE) - nmads * mad
-  if (type == "both") {
-    out <- which(x > upper | x < lower)
-  }
-  if (type == "lower") {
-    out <- which(x < lower)
-  }
-  if (type == "higher") {
-    out <- which(x > upper)
-  }
-  out <- c(which(is.na(x)), out)
-  return(out)
 }
 
 #' @title Run cell-level quality control for single cell RNA-seq data.
@@ -563,13 +535,13 @@ RunCellQC <- function(
   }
   if (isFALSE(assay %in% SeuratObject::Assays(srt))) {
     log_message(
-      "srt does not contain '", assay, "' assay.",
+      "{.arg srt} does not contain {.arg {assay}} assay",
       message_type = "error"
     )
   }
   if (length(species) != length(species_gene_prefix)) {
     log_message(
-      "'species_gene_prefix' must be the same length as 'species'.",
+      "{.arg species_gene_prefix} must be the same length as {.arg species}.",
       message_type = "error"
     )
   }
@@ -579,7 +551,7 @@ RunCellQC <- function(
   status <- CheckDataType(srt, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
-      "Data type is not raw counts!",
+      "Data type is not raw counts",
       message_type = "warning"
     )
   }
@@ -611,7 +583,7 @@ RunCellQC <- function(
   for (i in seq_along(srt_list)) {
     srt <- srt_list[[i]]
     if (!is.null(split.by)) {
-      log_message("Running QC for ", srt@meta.data[[split.by]][1])
+      log_message("Running QC for {.val {srt@meta.data[[split.by]][1]}}")
     }
     ntotal <- ncol(srt)
 
@@ -623,7 +595,7 @@ RunCellQC <- function(
         }
         if (db_rate >= 1) {
           log_message(
-            "The db_rate is equal to or greater than 1!",
+            "The db_rate is equal to or greater than 1",
             message_type = "error"
           )
         }
@@ -757,9 +729,7 @@ RunCellQC <- function(
             sapply(var, FUN = function(x) exists(x, where = environment()))
           if (any(!var_valid)) {
             log_message(
-              "Variable ",
-              paste0(names(var_valid)[!var_valid], collapse = ","),
-              " is not found in the srt object.",
+              "Variable {.val {names(var_valid)[!var_valid]}} is not found in the srt object",
               message_type = "error"
             )
           }
@@ -858,17 +828,20 @@ RunCellQC <- function(
         species_qc
       )
     )
-    log_message(">>> Total cells: ", ntotal)
-    log_message(">>> Cells which are filtered out: ", length(CellQC))
-    log_message(">>> ", length(db_qc), " potential doublets")
-    log_message(">>> ", length(outlier_qc), " outlier cells")
-    log_message(">>> ", length(umi_qc), "low-UMI cells")
-    log_message(">>> ", length(gene_qc), "low-gene cells")
-    log_message(">>> ", length(mito_qc), "high-mito cells")
-    log_message(">>> ", length(ribo_qc), "high-ribo cells")
-    log_message(">>> ", length(ribo_mito_ratio_qc), "ribo_mito_ratio outlier cells")
-    log_message(">>> ", length(species_qc), "species-contaminated cells")
-    log_message(">>> Remained cells after filtering: ", ntotal - length(CellQC))
+    log_message(
+      "{cli::symbol$record} Total cells: {.pkg {ntotal}}\n",
+      "{cli::symbol$circle_filled} {.pkg {ntotal - length(CellQC)}} cells remained\n",
+      "{cli::symbol$circle} {.pkg {length(CellQC)}} cells filtered out:\n",
+      "{cli::symbol$circle}   {.pkg {length(db_qc)}} potential doublets\n",
+      "{cli::symbol$circle}   {.pkg {length(outlier_qc)}} outlier cells\n",
+      "{cli::symbol$circle}   {.pkg {length(umi_qc)}} low-UMI cells\n",
+      "{cli::symbol$circle}   {.pkg {length(gene_qc)}} low-gene cells\n",
+      "{cli::symbol$circle}   {.pkg {length(mito_qc)}} high-mito cells\n",
+      "{cli::symbol$circle}   {.pkg {length(ribo_qc)}} high-ribo cells\n",
+      "{cli::symbol$circle}   {.pkg {length(ribo_mito_ratio_qc)}} ribo_mito_ratio outlier cells\n",
+      "{cli::symbol$circle}   {.pkg {length(species_qc)}} species-contaminated cells",
+      message_type = "success"
+    )
 
     qc_nm <- c(
       "db_qc",
@@ -882,8 +855,13 @@ RunCellQC <- function(
       "CellQC"
     )
     for (qc in qc_nm) {
-      srt[[qc]] <- ifelse(colnames(srt) %in% get(qc), "Fail", "Pass")
-      srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
+      srt[[qc]] <- ifelse(
+        colnames(srt) %in% get(qc), "Fail", "Pass"
+      )
+      srt[[qc]] <- factor(
+        srt[[qc, drop = TRUE]],
+        levels = c("Pass", "Fail")
+      )
     }
 
     if (return_filtered) {

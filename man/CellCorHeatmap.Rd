@@ -52,12 +52,12 @@ CellCorHeatmap(
   label_size = 10,
   heatmap_palette = "RdBu",
   heatmap_palcolor = NULL,
-  query_group_palette = "Paired",
+  query_group_palette = "Chinese",
   query_group_palcolor = NULL,
   ref_group_palette = "simspec",
   ref_group_palcolor = NULL,
   query_annotation = NULL,
-  query_annotation_palette = "Paired",
+  query_annotation_palette = "Chinese",
   query_annotation_palcolor = NULL,
   query_cell_annotation_params = if (flip) {
      list(height = grid::unit(10, "mm"))
@@ -66,7 +66,7 @@ CellCorHeatmap(
      list(width = grid::unit(10, "mm"))
  },
   ref_annotation = NULL,
-  ref_annotation_palette = "Paired",
+  ref_annotation_palette = "Chinese",
   ref_annotation_palcolor = NULL,
   ref_cell_annotation_params = if (flip) {
      list(width = grid::unit(10, "mm"))
@@ -252,7 +252,7 @@ Default is \code{NULL}.}
 
 \item{query_group_palette}{The color palette to use for the query group legend.
 This can be any of the palettes available in the circlize package.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{query_group_palcolor}{The specific colors to use for the query group palette.
 This should be a vector of color names or RGB values.
@@ -274,7 +274,7 @@ If not provided, no cell annotations will be shown.}
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{query_annotation_palcolor}{The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
@@ -293,7 +293,7 @@ If not provided, no cell annotations will be shown.}
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
 If multiple color palettes are provided, each track will be assigned a separate palette.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{ref_annotation_palcolor}{The specific colors to use for the reference cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.

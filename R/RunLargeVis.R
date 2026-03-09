@@ -20,6 +20,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunLargeVis(
@@ -31,6 +32,7 @@
 #'   group.by = "CellType",
 #'   reduction = "largevis"
 #' )
+#' }
 RunLargeVis <- function(object, ...) {
   UseMethod(generic = "RunLargeVis", object = object)
 }

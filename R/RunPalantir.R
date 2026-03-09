@@ -18,8 +18,6 @@
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param point_size The point size for plotting.
 #'
-#' @seealso [srt_to_adata]
-#'
 #' @export
 #'
 #' @examples
@@ -76,7 +74,7 @@ RunPalantir <- function(
     max_iterations = 25,
     cores = 1,
     point_size = 20,
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     legend.position = "on data",
     show_plot = FALSE,

@@ -1,22 +1,16 @@
-#' @title Run CellRank analysis with kernel-estimator architecture
+#' @title Run CellRank analysis
 #'
 #' @description
-#' CellRank is a powerful toolkit for studying cellular dynamics using Markov state modeling.
-#' This function implements the modern kernel-estimator architecture recommended by CellRank,
-#' which provides more flexibility and advanced features compared to the legacy API.
+#' CellRank is a toolkit for studying cellular dynamics using Markov state modeling.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
+#' @inheritParams srt_to_adata
+#' @inheritParams standard_scop
 #' @param srt A Seurat object. Default is `NULL`.
 #' If provided, `adata` will be ignored.
 #' @param adata An anndata object. Default is `NULL`.
-#' @param assay_x Assay to convert in the anndata object.
-#' @param layer_x Layer name for `assay_x` in the Seurat object.
-#' @param assay_y Assay to convert in the anndata object.
-#' @param layer_y Layer names for the `assay_y` in the Seurat object.
-#' @param linear_reduction Linear reduction method to use, e.g., `"PCA"`.
-#' @param nonlinear_reduction Non-linear reduction method to use, e.g., `"UMAP"`.
 #' @param basis The basis to use for reduction, e.g., `"UMAP"`.
 #' @param n_pcs Number of principal components to use for linear reduction.
 #' Default is `30`.
@@ -42,12 +36,15 @@
 #' Default is `FALSE`.
 #' @param knn The number of nearest neighbors for `magic.MAGIC`.
 #' Default is `5`.
-#' @param t power to which the diffusion operator is powered for `magic.MAGIC`.
+#' @param t Power to which the diffusion operator is powered for `magic.MAGIC`.
 #' Default is `2`.
 #' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
 #' Default is `30`.
 #' @param stream_smooth Multiplication factor for scale in Gaussian kernel around grid point.
 #' @param stream_density Controls the closeness of streamlines.
+#' When density = 2 (default), the domain is divided into a 60x60 grid,
+#' whereas density linearly scales this grid.
+#' Each cell in the grid can have, at most, one traversing streamline.
 #' Default is `2`.
 #' @param arrow_size Size of arrows.
 #' Default is `5`.
@@ -94,8 +91,7 @@
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunCellRank(
 #'   srt = pancreas_sub,
-#'   group.by = "SubCellType",
-#'   cores = 6
+#'   group.by = "SubCellType"
 #' )
 #'
 #' CellDimPlot(
@@ -177,7 +173,7 @@ RunCellRank <- function(
     plot_dpi = 300,
     plot_prefix = "cellrank",
     legend.position = "on data",
-    palette = "Paired",
+    palette = "Chinese",
     palcolor = NULL,
     dirpath = "./cellrank",
     return_seurat = !is.null(srt),

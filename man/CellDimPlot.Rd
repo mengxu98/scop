@@ -15,7 +15,7 @@ CellDimPlot(
   show_stat = ifelse(identical(theme_use, "theme_blank"), FALSE, TRUE),
   pt.size = NULL,
   pt.alpha = 1,
-  palette = "Paired",
+  palette = "Chinese",
   palcolor = NULL,
   bg_color = "grey80",
   label = FALSE,
@@ -60,7 +60,7 @@ CellDimPlot(
   stat_type = "percent",
   stat_plot_type = "pie",
   stat_plot_position = c("stack", "dodge"),
-  stat_plot_size = 0.15,
+  stat_plot_size = 0.2,
   stat_plot_palette = "Set1",
   stat_palcolor = NULL,
   stat_plot_alpha = 1,
@@ -156,7 +156,7 @@ Default is \code{1}.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Paired"}.}
+Default is \code{"Chinese"}.}
 
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
@@ -255,7 +255,7 @@ If specified, curves will be fitted using \link[stats:loess]{stats::loess} metho
 
 \item{stat_plot_position}{Position adjustment in statistical plot.}
 
-\item{stat_plot_size}{Set the statistical plot size. Default is \code{0.1}.}
+\item{stat_plot_size}{Set the statistical plot size. Default is \code{0.2}.}
 
 \item{stat_plot_palette}{Color palette used in statistical plot.}
 

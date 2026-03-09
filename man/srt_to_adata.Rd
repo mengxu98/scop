@@ -47,7 +47,7 @@ Default is \code{TRUE}.}
 A \code{anndata} object.
 }
 \description{
-This function takes a Seurat object and converts it to an anndata object using the reticulate package.
+Convert a Seurat object to an AnnData object
 }
 \examples{
 \dontrun{
@@ -64,4 +64,7 @@ adata$write_loom(
   write_obsm_varm = TRUE
 )
 }
+}
+\seealso{
+\link{adata_to_srt}
 }

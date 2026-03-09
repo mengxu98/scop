@@ -4,6 +4,7 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams standard_scop
 #' @inheritParams GroupHeatmap
+#' @inheritParams CellDimPlot
 #' @param expressionFamily The distribution family to use for modeling gene expression.
 #' Default is `"negbinomial.size"`.
 #' @param features A character vector of features to use.
@@ -106,6 +107,8 @@ RunMonocle2 <- function(
     residualModelFormulaStr = NULL,
     pseudo_expr = 1,
     root_state = NULL,
+    xlab = NULL,
+    ylab = NULL,
     seed = 11,
     verbose = TRUE) {
   log_message("Run {.pkg monocle2}...", verbose = verbose)
@@ -226,7 +229,9 @@ RunMonocle2 <- function(
     group.by = "Monocle2_State",
     reduction = reduction_method,
     label = TRUE,
-    force = TRUE
+    force = TRUE,
+    xlab = xlab,
+    ylab = ylab
   ) +
     trajectory
   if (!is.null(group.by)) {
@@ -235,7 +240,9 @@ RunMonocle2 <- function(
       group.by = group.by,
       reduction = reduction_method,
       label = TRUE,
-      force = TRUE
+      force = TRUE,
+      xlab = xlab,
+      ylab = ylab
     ) +
       trajectory
     print(p1 + p2)
@@ -266,7 +273,9 @@ RunMonocle2 <- function(
   p3 <- FeatureDimPlot(
     srt,
     features = "Monocle2_Pseudotime",
-    reduction = reduction_method
+    reduction = reduction_method,
+    xlab = xlab,
+    ylab = ylab
   ) +
     trajectory
 
@@ -291,6 +300,7 @@ RunMonocle2 <- function(
 #' @inheritParams standard_scop
 #' @inheritParams FeatureDimPlot
 #' @inheritParams GroupHeatmap
+#' @inheritParams CellDimPlot
 #' @param clusters The cluster variable in the Seurat object to use for analysis.
 #' Defaults to NULL, in which case use Monocle clusters is used.
 #' @param graph The name of the graph slot in the Seurat object to use for analysis.
@@ -473,6 +483,8 @@ RunMonocle3 <- function(
     close_loop = TRUE,
     root_pr_nodes = NULL,
     root_cells = NULL,
+    xlab = NULL,
+    ylab = NULL,
     seed = 11,
     verbose = TRUE) {
   log_message("Run {.pkg monocle3}...", verbose = verbose)
@@ -681,7 +693,9 @@ RunMonocle3 <- function(
     group.by = "Monocle3_partitions",
     reduction = reduction,
     label = TRUE,
-    force = TRUE
+    force = TRUE,
+    xlab = xlab,
+    ylab = ylab
   ) +
     trajectory +
     milestones
@@ -690,7 +704,9 @@ RunMonocle3 <- function(
     group.by = "Monocle3_clusters",
     reduction = reduction,
     label = TRUE,
-    force = TRUE
+    force = TRUE,
+    xlab = xlab,
+    ylab = ylab
   ) +
     trajectory
   p3 <- p2 +
@@ -701,7 +717,9 @@ RunMonocle3 <- function(
       group.by = group.by,
       reduction = reduction,
       label = TRUE,
-      force = TRUE
+      force = TRUE,
+      xlab = xlab,
+      ylab = ylab
     ) +
       trajectory
     p5 <- p4 +
@@ -738,7 +756,9 @@ RunMonocle3 <- function(
   p6 <- FeatureDimPlot(
     srt,
     features = "Monocle3_Pseudotime",
-    reduction = reduction
+    reduction = reduction,
+    xlab = xlab,
+    ylab = ylab
   ) +
     theme(legend.position = "none") +
     trajectory
