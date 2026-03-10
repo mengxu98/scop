@@ -473,6 +473,8 @@ PAGAPlot(
   label = TRUE,
   label_insitu = TRUE,
   label_repel = TRUE,
+  edge_size = c(0.5, 1),
+  edge_color = "black",
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
