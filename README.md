@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![issues](https://img.shields.io/github/issues/mengxu98/scop?color=red)](https://github.com/mengxu98/scop/issues) [![issues-closed](https://img.shields.io/github/issues-closed/mengxu98/scop?color=brightgreen)](https://github.com/mengxu98/scop/issues?q=is%3Aissue+is%3Aclosed) [![license](https://img.shields.io/github/license/mengxu98/scop)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
+[![develop-ver](https://img.shields.io/github/r-package/v/mengxu98/scop?label=develop-ver&color=blue)](https://github.com/mengxu98/scop/blob/main/DESCRIPTION) [![pkgdown](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/mengxu98/scop/actions/workflows/pkgdown.yaml) [![codesize](https://img.shields.io/github/languages/code-size/mengxu98/scop.svg)](https://github.com/mengxu98/scop) [![stars](https://img.shields.io/github/stars/mengxu98/scop?style=flat&logo=github)](https://github.com/mengxu98/scop) [![issues](https://img.shields.io/github/issues/mengxu98/scop?color=red)](https://github.com/mengxu98/scop/issues) [![issues-closed](https://img.shields.io/github/issues-closed/mengxu98/scop?color=brightgreen)](https://github.com/mengxu98/scop/issues?q=is%3Aissue+is%3Aclosed) [![license](https://img.shields.io/github/license/mengxu98/scop?color=%23bd0000)](https://github.com/mengxu98/scop/blob/main/LICENSE.md) 
 
 <!-- badges: end -->
 
@@ -23,7 +23,7 @@ The [scop](https://github.com/mengxu98/scop) package provides a comprehensive se
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 
-The functions in [scop](https://github.com/mengxu98/scop) are all developed around the [Seurat](https://github.com/satijalab/seurat-object) object and are compatible with other Seurat functions.
+The functions in [scop](https://github.com/mengxu98/scop) are all developed around the [SeuratObject](https://github.com/satijalab/seurat-object) and are compatible with other [Seurat](https://github.com/satijalab/seurat) functions.
 
 ## Quick Start
 
@@ -175,7 +175,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellDimPlot(
@@ -189,7 +189,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -202,7 +202,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -218,7 +218,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/EDA-4.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 ht <- GroupHeatmap(
@@ -245,7 +245,7 @@ ht <- GroupHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/EDA-5.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png" width="100%" style="display: block; margin: auto;"/>
 
 ### CellQC
 
@@ -258,7 +258,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellStatPlot(
@@ -268,7 +268,7 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="man/figures/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 CellStatPlot(
@@ -284,7 +284,7 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="man/figures/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Integration pipeline
 
@@ -305,7 +305,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/integration_scop-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Cell projection between single-cell datasets
 
@@ -339,7 +339,7 @@ ProjectionPlot(
 )
 ```
 
-<img src="man/figures/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Cell annotation using bulk RNA-seq datasets
 
@@ -360,7 +360,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Cell annotation using single-cell datasets
 
@@ -381,7 +381,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 ht <- CellCorHeatmap(
@@ -399,7 +399,7 @@ ht <- CellCorHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Cellular potency
 
@@ -418,7 +418,7 @@ CytoTRACEPlot(
 )
 ```
 
-<img src="man/figures/RunCytoTRACE.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Velocity analysis
 
@@ -442,7 +442,7 @@ VelocityPlot(
 )
 ```
 
-<img src="man/figures/RunSCVELO-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 VelocityPlot(
@@ -454,7 +454,7 @@ VelocityPlot(
 )
 ```
 
-<img src="man/figures/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Trajectory inference
 
@@ -480,7 +480,7 @@ PAGAPlot(
 )
 ```
 
-<img src="man/figures/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
 
 #### Slingshot
 
@@ -502,7 +502,7 @@ CellDimPlot(
 )
 ```
 
-<img src="man/figures/RunSlingshot-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureDimPlot(
@@ -515,7 +515,7 @@ FeatureDimPlot(
 )
 ```
 
-<img src="man/figures/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
 
 #### Monocle3
 
@@ -564,7 +564,7 @@ CellDimPlot(
   trajectory
 ```
 
-<img src="man/figures/RunMonocle3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Dynamic features
 
@@ -611,7 +611,7 @@ ht <- DynamicHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/DynamicHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DynamicPlot(
@@ -625,7 +625,7 @@ DynamicPlot(
 )
 ```
 
-<img src="man/figures/DynamicPlot-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 FeatureStatPlot(
@@ -644,7 +644,7 @@ FeatureStatPlot(
 )
 ```
 
-<img src="man/figures/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Differential expression analysis
 
@@ -663,7 +663,7 @@ DEtestPlot(
 )
 ```
 
-<img src="man/figures/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DEtestPlot(
@@ -674,7 +674,7 @@ DEtestPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="man/figures/RunDEtest-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DEtestPlot(
@@ -685,7 +685,7 @@ DEtestPlot(
 )
 ```
 
-<img src="man/figures/RunDEtest-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
@@ -711,7 +711,7 @@ ht <- FeatureHeatmap(
 print(ht$plot)
 ```
 
-<img src="man/figures/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Enrichment analysis (over-representation)
 
@@ -732,7 +732,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -743,7 +743,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -755,7 +755,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -766,7 +766,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4.png" width="100%" style="display: block; margin: auto;"/>
 
 To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
 
@@ -779,7 +779,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -790,7 +790,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 EnrichmentPlot(
@@ -801,7 +801,7 @@ EnrichmentPlot(
 )
 ```
 
-<img src="man/figures/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Enrichment analysis (GSEA)
 
@@ -822,7 +822,7 @@ GSEAPlot(
 )
 ```
 
-<img src="man/figures/RunGSEA-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ``` r
 GSEAPlot(
@@ -835,7 +835,7 @@ GSEAPlot(
 )
 ```
 
-<img src="man/figures/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Interactive data visualization with SCExplorer
 
@@ -855,16 +855,16 @@ if (interactive()) {
 }
 ```
 
-<img src="man/figures/SCExplorer-1.png" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png" width="100%" style="display: block; margin: auto;"/>
 
 ### Other visualization examples
 
-[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](man/figures/Example-1.png) 
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.png) 
 
-[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](man/figures/Example-2.png)
+[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2.png)
 
-[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](man/figures/Example-3.png)
+[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-3.png)
 
-[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](man/figures/Example-4.png)
+[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4.png)
 
 You can also find more examples in the documentation of the function: [integration_scop](https://mengxu98.github.io/scop/reference/integration_scop.html), [RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.html), [RunPalantir](https://mengxu98.github.io/scop/reference/RunPalantir.html), etc.
