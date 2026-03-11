@@ -98,7 +98,7 @@ Suggests:
     UCell
 Remotes:
     jinworks/CellChat
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
 URL: https://mengxu98.github.io/scop/
