@@ -221,36 +221,35 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-09 08:31:29] Start standard scop workflow...
-#> ℹ [2026-03-09 08:31:30] Checking a list of <Seurat>...
-#> ! [2026-03-09 08:31:30] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-09 08:31:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:31:32] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:31:33] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-09 08:31:33] Number of available HVF: 2000
-#> ℹ [2026-03-09 08:31:33] Finished check
-#> ℹ [2026-03-09 08:31:33] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-09 08:31:33] Perform pca linear dimension reduction
-#> ℹ [2026-03-09 08:31:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-09 08:31:34] Reorder clusters...
-#> ℹ [2026-03-09 08:31:34] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-09 08:31:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-09 08:31:39] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-09 08:31:44] Run scop standard workflow completed
+#> ℹ [2026-03-11 17:41:51] Start standard scop workflow...
+#> ℹ [2026-03-11 17:41:52] Checking a list of <Seurat>...
+#> ! [2026-03-11 17:41:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-11 17:41:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:41:54] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:41:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-11 17:41:55] Number of available HVF: 2000
+#> ℹ [2026-03-11 17:41:55] Finished check
+#> ℹ [2026-03-11 17:41:55] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-11 17:41:56] Perform pca linear dimension reduction
+#> ℹ [2026-03-11 17:41:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-11 17:41:57] Reorder clusters...
+#> ℹ [2026-03-11 17:41:57] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-11 17:41:57] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-11 17:42:02] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-11 17:42:07] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-03-09 08:31:44] Data type is log-normalized
-#> ℹ [2026-03-09 08:31:44] Start differential expression test
-#> ℹ [2026-03-09 08:31:44] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-09 08:31:44] Using 1 core
-#> ⠙ [2026-03-09 08:31:44] Running for Ductal [1/5] ■■■■■■■                       …
-#> ⠹ [2026-03-09 08:31:44] Running for Ngn3-low-EP [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-03-09 08:31:44] Completed 5 tasks in 743ms
+#> ℹ [2026-03-11 17:42:07] Data type is log-normalized
+#> ℹ [2026-03-11 17:42:07] Start differential expression test
+#> ℹ [2026-03-11 17:42:07] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-11 17:42:07] Using 1 core
+#> ⠙ [2026-03-11 17:42:07] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-03-11 17:42:07] Completed 5 tasks in 751ms
 #> 
-#> ℹ [2026-03-09 08:31:44] Building results
-#> ✔ [2026-03-09 08:31:45] Differential expression test completed
+#> ℹ [2026-03-11 17:42:07] Building results
+#> ✔ [2026-03-11 17:42:08] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -258,19 +257,19 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-09 08:31:45] Start Enrichment analysis
-#> ℹ [2026-03-09 08:31:45] Species: "Mus_musculus"
-#> ℹ [2026-03-09 08:31:45] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-09 07:49:14
-#> ℹ [2026-03-09 08:31:47] Permform enrichment...
-#> ℹ [2026-03-09 08:31:47] Using 1 core
-#> ⠙ [2026-03-09 08:31:47] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-03-09 08:31:47] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-03-09 08:31:47] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-03-09 08:31:47] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-03-09 08:31:47] Completed 5 tasks in 1m 20.5s
+#> ℹ [2026-03-11 17:42:08] Start Enrichment analysis
+#> ℹ [2026-03-11 17:42:08] Species: "Mus_musculus"
+#> ℹ [2026-03-11 17:42:08] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-11 16:59:00
+#> ℹ [2026-03-11 17:42:09] Permform enrichment...
+#> ℹ [2026-03-11 17:42:09] Using 1 core
+#> ⠙ [2026-03-11 17:42:09] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-03-11 17:42:09] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-03-11 17:42:09] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-03-11 17:42:09] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-03-11 17:42:09] Completed 5 tasks in 1m 21.5s
 #> 
-#> ℹ [2026-03-09 08:31:47] Building results
-#> ✔ [2026-03-09 08:33:07] Enrichment analysis done
+#> ℹ [2026-03-11 17:42:09] Building results
+#> ✔ [2026-03-11 17:43:31] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",

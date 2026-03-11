@@ -82,8 +82,6 @@ RunCellQC(
 
   A character vector specifying the outlier threshold. Default is
   `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
-  See
-  [scuttle::isOutlier](https://rdrr.io/pkg/scuttle/man/isOutlier.html).
 
 - outlier_n:
 
@@ -164,27 +162,27 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-09 08:15:05] Start standard scop workflow...
-#> ℹ [2026-03-09 08:15:06] Checking a list of <Seurat>...
-#> ! [2026-03-09 08:15:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-09 08:15:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:15:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:15:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-09 08:15:09] Number of available HVF: 2000
-#> ℹ [2026-03-09 08:15:09] Finished check
-#> ℹ [2026-03-09 08:15:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-09 08:15:09] Perform pca linear dimension reduction
-#> ℹ [2026-03-09 08:15:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-09 08:15:10] Reorder clusters...
-#> ℹ [2026-03-09 08:15:10] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-09 08:15:10] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-09 08:15:14] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-09 08:15:18] Run scop standard workflow completed
+#> ℹ [2026-03-11 17:25:07] Start standard scop workflow...
+#> ℹ [2026-03-11 17:25:07] Checking a list of <Seurat>...
+#> ! [2026-03-11 17:25:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-11 17:25:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:25:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:25:10] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-11 17:25:10] Number of available HVF: 2000
+#> ℹ [2026-03-11 17:25:10] Finished check
+#> ℹ [2026-03-11 17:25:11] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-11 17:25:11] Perform pca linear dimension reduction
+#> ℹ [2026-03-11 17:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-11 17:25:12] Reorder clusters...
+#> ℹ [2026-03-11 17:25:12] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-11 17:25:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-11 17:25:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-11 17:25:20] Run scop standard workflow completed
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-03-09 08:15:19] Data type is raw counts
-#> ℹ [2026-03-09 08:15:19] Data type is raw counts
-#> ℹ [2026-03-09 08:15:20] Data type is raw counts
-#> ✔ [2026-03-09 08:20:03] ● Total cells: 1000
+#> ℹ [2026-03-11 17:25:21] Data type is raw counts
+#> ℹ [2026-03-11 17:25:21] Data type is raw counts
+#> ℹ [2026-03-11 17:25:22] Data type is raw counts
+#> ✔ [2026-03-11 17:30:19] ● Total cells: 1000
 #> ✔                       ◉ 957 cells remained
 #> ✔                       ◯ 43 cells filtered out:
 #> ✔                       ◯   20 potential doublets
@@ -206,7 +204,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-03-09 08:20:03] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-11 17:30:20] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggupset’
 table(pancreas_sub$CellQC)
 #> 
@@ -220,11 +218,11 @@ ifnb_sub <- RunCellQC(
   UMI_threshold = 1000,
   gene_threshold = 550
 )
-#> ℹ [2026-03-09 08:20:03] Data type is raw counts
-#> ℹ [2026-03-09 08:20:04] Running QC for "CTRL"
-#> ℹ [2026-03-09 08:20:04] Data type is raw counts
-#> ℹ [2026-03-09 08:20:04] Data type is raw counts
-#> ✔ [2026-03-09 08:20:10] ● Total cells: 1000
+#> ℹ [2026-03-11 17:30:20] Data type is raw counts
+#> ℹ [2026-03-11 17:30:20] Running QC for "CTRL"
+#> ℹ [2026-03-11 17:30:20] Data type is raw counts
+#> ℹ [2026-03-11 17:30:20] Data type is raw counts
+#> ✔ [2026-03-11 17:30:26] ● Total cells: 1000
 #> ✔                       ◉ 689 cells remained
 #> ✔                       ◯ 311 cells filtered out:
 #> ✔                       ◯   50 potential doublets
@@ -235,10 +233,10 @@ ifnb_sub <- RunCellQC(
 #> ✔                       ◯   0 high-ribo cells
 #> ✔                       ◯   0 ribo_mito_ratio outlier cells
 #> ✔                       ◯   0 species-contaminated cells
-#> ℹ [2026-03-09 08:20:10] Running QC for "STIM"
-#> ℹ [2026-03-09 08:20:10] Data type is raw counts
-#> ℹ [2026-03-09 08:20:10] Data type is raw counts
-#> ✔ [2026-03-09 08:20:16] ● Total cells: 1000
+#> ℹ [2026-03-11 17:30:27] Running QC for "STIM"
+#> ℹ [2026-03-11 17:30:27] Data type is raw counts
+#> ℹ [2026-03-11 17:30:27] Data type is raw counts
+#> ✔ [2026-03-11 17:30:33] ● Total cells: 1000
 #> ✔                       ◉ 699 cells remained
 #> ✔                       ◯ 301 cells filtered out:
 #> ✔                       ◯   40 potential doublets
@@ -260,7 +258,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-03-09 08:20:16] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-03-11 17:30:33] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Error in loadNamespace(x): there is no package called ‘ggupset’
 
 table(ifnb_sub$CellQC)

@@ -238,22 +238,22 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-09 07:59:46] Start standard scop workflow...
-#> ℹ [2026-03-09 07:59:47] Checking a list of <Seurat>...
-#> ! [2026-03-09 07:59:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-09 07:59:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 07:59:49] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 07:59:49] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-09 07:59:50] Number of available HVF: 2000
-#> ℹ [2026-03-09 07:59:50] Finished check
-#> ℹ [2026-03-09 07:59:50] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-09 07:59:50] Perform pca linear dimension reduction
-#> ℹ [2026-03-09 07:59:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-09 07:59:51] Reorder clusters...
-#> ℹ [2026-03-09 07:59:51] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-09 07:59:51] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-09 07:59:55] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-09 07:59:58] Run scop standard workflow completed
+#> ℹ [2026-03-11 17:08:51] Start standard scop workflow...
+#> ℹ [2026-03-11 17:08:52] Checking a list of <Seurat>...
+#> ! [2026-03-11 17:08:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-11 17:08:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:08:54] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:08:54] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-11 17:08:54] Number of available HVF: 2000
+#> ℹ [2026-03-11 17:08:54] Finished check
+#> ℹ [2026-03-11 17:08:55] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-11 17:08:55] Perform pca linear dimension reduction
+#> ℹ [2026-03-11 17:08:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-11 17:08:56] Reorder clusters...
+#> ℹ [2026-03-11 17:08:56] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-11 17:08:56] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-11 17:09:00] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-11 17:09:03] Run scop standard workflow completed
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -261,12 +261,12 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ℹ [2026-03-09 07:59:59] Using 1 core
-#> ⠙ [2026-03-09 07:59:59] Running for 1 [1/6145] ■                               …
-#> ⠹ [2026-03-09 07:59:59] Running for 1430 [1430/6145] ■■■■■■■■                  …
-#> ✔ [2026-03-09 07:59:59] Completed 6145 tasks in 3.3s
+#> ℹ [2026-03-11 17:09:04] Using 1 core
+#> ⠙ [2026-03-11 17:09:04] Running for 1 [1/6145] ■                               …
+#> ⠹ [2026-03-11 17:09:04] Running for 3222 [3222/6145] ■■■■■■■■■■■■■■■■■         …
+#> ✔ [2026-03-11 17:09:04] Completed 6145 tasks in 3.3s
 #> 
-#> ℹ [2026-03-09 07:59:59] Building results
+#> ℹ [2026-03-11 17:09:04] Building results
 head(markers)
 #>               p_val avg_log2FC pct.1 pct.2    p_val_adj
 #> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33
