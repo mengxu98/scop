@@ -189,7 +189,7 @@ def apply_inline_format(text: str, format_type: str, evaluated: bool = False) ->
         ".arg": {"kind": "backtick"},
         ".fun": {"kind": "function"},
         ".fn": {"kind": "function"},
-        ".file": {"kind": "blue_single_quote"},
+        ".file": {"kind": "blue_plain"},
         ".path": {"kind": "blue_plain"},
         ".field": {"kind": "plain"},
         ".emph": {"kind": "italic"},

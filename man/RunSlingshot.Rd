@@ -58,7 +58,7 @@ Default is \code{11}.}
 \item{...}{Additional arguments to be passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 }
 \description{
-Runs the Slingshot algorithm on a Seurat object.
+RunSlingshot
 }
 \examples{
 data(pancreas_sub)
