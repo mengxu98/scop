@@ -3860,7 +3860,7 @@ def CellTypist(
                     )
                     sc.pp.neighbors(adata, n_neighbors=15)
 
-        log_message("Running CellTypist annotation...", verbose=verbose)
+        log_message("Running {.pkg CellTypist} annotation...", verbose=verbose)
 
         predictions = celltypist.annotate(
             filename=adata,
