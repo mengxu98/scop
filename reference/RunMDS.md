@@ -143,22 +143,22 @@ RunMDS(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-09 08:36:32] Start standard scop workflow...
-#> ℹ [2026-03-09 08:36:32] Checking a list of <Seurat>...
-#> ! [2026-03-09 08:36:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-09 08:36:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:36:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 08:36:35] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-09 08:36:35] Number of available HVF: 2000
-#> ℹ [2026-03-09 08:36:36] Finished check
-#> ℹ [2026-03-09 08:36:36] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-09 08:36:36] Perform pca linear dimension reduction
-#> ℹ [2026-03-09 08:36:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-09 08:36:37] Reorder clusters...
-#> ℹ [2026-03-09 08:36:37] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-09 08:36:37] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-09 08:36:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-09 08:36:47] Run scop standard workflow completed
+#> ℹ [2026-03-11 17:46:50] Start standard scop workflow...
+#> ℹ [2026-03-11 17:46:51] Checking a list of <Seurat>...
+#> ! [2026-03-11 17:46:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-11 17:46:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:46:54] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:46:54] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-11 17:46:54] Number of available HVF: 2000
+#> ℹ [2026-03-11 17:46:55] Finished check
+#> ℹ [2026-03-11 17:46:55] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-11 17:46:55] Perform pca linear dimension reduction
+#> ℹ [2026-03-11 17:46:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-11 17:46:56] Reorder clusters...
+#> ℹ [2026-03-11 17:46:56] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-11 17:46:56] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-11 17:47:01] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-11 17:47:06] Run scop standard workflow completed
 pancreas_sub <- RunMDS(pancreas_sub)
 CellDimPlot(
   pancreas_sub,

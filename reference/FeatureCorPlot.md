@@ -264,22 +264,22 @@ FeatureCorPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-09 07:52:38] Start standard scop workflow...
-#> ℹ [2026-03-09 07:52:39] Checking a list of <Seurat>...
-#> ! [2026-03-09 07:52:39] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-09 07:52:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 07:52:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-09 07:52:42] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-09 07:52:42] Number of available HVF: 2000
-#> ℹ [2026-03-09 07:52:43] Finished check
-#> ℹ [2026-03-09 07:52:43] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-09 07:52:44] Perform pca linear dimension reduction
-#> ℹ [2026-03-09 07:52:44] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-09 07:52:45] Reorder clusters...
-#> ℹ [2026-03-09 07:52:45] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-09 07:52:45] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-09 07:52:48] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-09 07:52:52] Run scop standard workflow completed
+#> ℹ [2026-03-11 17:02:27] Start standard scop workflow...
+#> ℹ [2026-03-11 17:02:27] Checking a list of <Seurat>...
+#> ! [2026-03-11 17:02:27] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-11 17:02:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:02:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-11 17:02:30] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-11 17:02:30] Number of available HVF: 2000
+#> ℹ [2026-03-11 17:02:30] Finished check
+#> ℹ [2026-03-11 17:02:30] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-11 17:02:31] Perform pca linear dimension reduction
+#> ℹ [2026-03-11 17:02:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-11 17:02:32] Reorder clusters...
+#> ℹ [2026-03-11 17:02:32] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-11 17:02:32] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-11 17:02:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-11 17:02:39] Run scop standard workflow completed
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],
