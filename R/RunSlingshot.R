@@ -1,6 +1,4 @@
-#' RunSlingshot
-#'
-#' Runs the Slingshot algorithm on a Seurat object.
+#' @title RunSlingshot
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -78,7 +76,7 @@ RunSlingshot <- function(
   check_r("slingshot", verbose = FALSE)
   if (missing(group.by)) {
     log_message(
-      "group.by is missing",
+      "{.arg group.by} must be provided",
       message_type = "error"
     )
   }
@@ -96,8 +94,7 @@ RunSlingshot <- function(
   if (min(table(srt[[group.by]])) < 2) {
     celltypes <- names(which(table(srt[[group.by]]) < 2))
     log_message(
-      paste(celltypes, collapse = ", "),
-      " have less than 2 cells. Removed from the analysis.",
+      "{.val {celltypes}} have less than 2 cells. Removed them",
       message_type = "warning"
     )
     celltypes <- setdiff(names(table(srt[[group.by]])), celltypes)
@@ -145,10 +142,6 @@ RunSlingshot <- function(
       ncol(srt[[reduction]]@cell.embeddings) == 2 ||
         ncol(srt[[reduction]]@cell.embeddings) > 3
     ) {
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_colors(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
-      # lines(slingshot::SlingshotDataSet(sl), lwd = 2, type = "lineages", col = "black")
-      # plot(srt[[reduction]]@cell.embeddings, col = palette_colors(srt[[group.by, drop = TRUE]], matched = TRUE), asp = 1, pch = 16)
-      # lines(slingshot::SlingshotDataSet(sl), lwd = 3, col = 1:length(slingshot::SlingshotDataSet(sl)@lineages))
       p <- CellDimPlot(
         srt,
         group.by = group.by,

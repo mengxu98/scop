@@ -411,7 +411,6 @@ db_DoubletDetection <- function(
 #' Default is `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
 #' @param outlier_threshold A character vector specifying the outlier threshold.
 #' Default is `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
-#' See [scuttle::isOutlier].
 #' @param db_coefficient The coefficient used to calculate the doublet rate.
 #' Default is `0.01`. Doublet rate is calculated as `ncol(srt) / 1000 * db_coefficient`.
 #' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells.
