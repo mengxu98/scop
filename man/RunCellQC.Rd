@@ -113,37 +113,17 @@ Run cell-level quality control for single cell RNA-seq data.
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellQC(pancreas_sub)
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
     "db_qc", "outlier_qc",
     "umi_qc", "gene_qc",
     "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
+    "ribo_mito_ratio_qc",
+    "species_qc"
   ),
   plot_type = "upset",
   stat_level = "Fail"
 )
-table(pancreas_sub$CellQC)
-
-data(ifnb_sub)
-ifnb_sub <- RunCellQC(
-  srt = ifnb_sub,
-  split.by = "stim",
-  UMI_threshold = 1000,
-  gene_threshold = 550
-)
-CellStatPlot(
-  srt = ifnb_sub,
-  stat.by = c(
-    "db_qc", "outlier_qc",
-    "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
-  ),
-  plot_type = "upset",
-  stat_level = "Fail"
-)
-
-table(ifnb_sub$CellQC)
 }
