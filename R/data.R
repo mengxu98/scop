@@ -126,50 +126,11 @@ NULL
 #' @name panc8_sub
 NULL
 
-#' @title A subsetted version of 'ifnb' datasets
-#'
-#' @description
-#' Human PBMC control/IFNB-stimulated dataset
+#' @title Excluded words in keyword enrichment analysis and extraction
 #'
 #' @md
-#' @format A `Seurat` object.
-#' @concept data
-#' @source \href{https://www.nature.com/articles/nbt.4042}{paper_ifnb}
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   if (!require("SeuratData", quietly = TRUE)) {
-#'     pak::pak("satijalab/seurat-data")
-#'   }
-#'   library(SeuratData)
-#'   library(Seurat)
-#'   suppressWarnings(InstallData("ifnb"))
-#'   data(ifnb)
-#'   set.seed(11)
-#'   cells_sub <- unlist(
-#'     lapply(
-#'       split(colnames(ifnb), ifnb$stim),
-#'       function(x) sample(x, size = 1000)
-#'     )
-#'   )
-#'   ifnb_sub <- subset(ifnb, cells = cells_sub)
-#'   ifnb_sub <- ifnb_sub[Matrix::rowSums(
-#'     GetAssayData5(
-#'       ifnb_sub,
-#'       assay = "RNA",
-#'       layer = "counts"
-#'     )
-#'   ) > 0, ]
-#'   ifnb_sub <- UpdateSeuratObject(ifnb_sub)
-#'   usethis::use_data(ifnb_sub, compress = "xz")
-#' }
-#' }
-#' @name ifnb_sub
-NULL
-
-#' Excluded words in keyword enrichment analysis and extraction
-#'
-#' The variable "words_excluded" represents the words that are excluded during keyword enrichment analysis or keyword extraction process.
+#' @description
+#' The variable `words_excluded` represents the words that are excluded during keyword enrichment analysis or keyword extraction process.
 #' These mainly include words that are excessively redundant or of little value.
 #'
 #' @concept data
@@ -193,35 +154,21 @@ NULL
 #' @name words_excluded
 NULL
 
-#' Reference datasets for cell type annotation in single-cell RNA data
+#' @title Reference datasets for cell type annotation in single-cell RNA data
 #'
 #' @concept data
 #' @source
-#' \href{https://github.com/ggjlab/scHCL}{scHCL},
-#' \href{https://github.com/ggjlab/scMCA}{scMCA},
-#' \href{https://github.com/ggjlab/scZCL}{scZCL}
+#' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
 #'   library(Seurat)
-#'   check_r(c("ggjlab/scZCL", "ggjlab/scHCL", "ggjlab/scMCA"))
-#'   ref_scHCL <- NormalizeData(scHCL::ref.expr)
+#'   check_r(c("ggjlab/scMCA"))
 #'   ref_scMCA <- NormalizeData(scMCA::ref.expr)
-#'   ref_scZCL <- NormalizeData(scZCL::ref.expr)
-#'   Encoding(colnames(ref_scHCL)) <- "latin1"
-#'   colnames(ref_scHCL) <- iconv(colnames(ref_scHCL), "latin1", "UTF-8")
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#'   Encoding(colnames(ref_scZCL)) <- "latin1"
-#'   colnames(ref_scZCL) <- iconv(colnames(ref_scZCL), "latin1", "UTF-8")
-#'   # usethis::use_data(ref_scHCL, compress = "xz")
 #'   # usethis::use_data(ref_scMCA, compress = "xz")
-#'   # usethis::use_data(ref_scZCL, compress = "xz")
 #' }
 #' }
-#' @usage ref_scHCL
-#' @usage ref_scMCA
-#' @usage ref_scZCL
-#' @name ref_scHCL
-#' @aliases ref_scHCL ref_scMCA ref_scZCL
+#' @name ref_scMCA
 NULL
