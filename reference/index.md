@@ -110,6 +110,8 @@
   : Run doublet-calling with Scrublet
 - [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md)
   : Run cell-level quality control for single cell RNA-seq data.
+- [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+  : Run ambient RNA decontamination with decontX
 - [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
   : Run doublet-calling for single cell RNA-seq data.
 
@@ -141,6 +143,22 @@
 
 ### Data Integration and Batch Effect Removal
 
+- [`BBKNN_integrate()`](https://mengxu98.github.io/scop/reference/BBKNN_integrate.md)
+  : The BBKNN integration function
+- [`CSS_integrate()`](https://mengxu98.github.io/scop/reference/CSS_integrate.md)
+  : The CSS integration function
+- [`ComBat_integrate()`](https://mengxu98.github.io/scop/reference/ComBat_integrate.md)
+  : The ComBat integration function
+- [`Conos_integrate()`](https://mengxu98.github.io/scop/reference/Conos_integrate.md)
+  : The Conos integration function
+- [`fastMNN_integrate()`](https://mengxu98.github.io/scop/reference/fastMNN_integrate.md)
+  : The fastMNN integration function
+- [`Harmony_integrate()`](https://mengxu98.github.io/scop/reference/Harmony_integrate.md)
+  : The Harmony integration function
+- [`LIGER_integrate()`](https://mengxu98.github.io/scop/reference/LIGER_integrate.md)
+  : The LIGER integration function
+- [`MNN_integrate()`](https://mengxu98.github.io/scop/reference/MNN_integrate.md)
+  : The MNN integration function
 - [`RunCSSMap()`](https://mengxu98.github.io/scop/reference/RunCSSMap.md)
   : Single-cell reference mapping with CSS method
 - [`RunHarmony2()`](https://mengxu98.github.io/scop/reference/RunHarmony2.md)
@@ -151,20 +169,6 @@
   : Single-cell reference mapping with Seurat method
 - [`RunSymphonyMap()`](https://mengxu98.github.io/scop/reference/RunSymphonyMap.md)
   : Single-cell reference mapping with Symphony method
-- [`BBKNN_integrate()`](https://mengxu98.github.io/scop/reference/BBKNN_integrate.md)
-  : The BBKNN integration function
-- [`CSS_integrate()`](https://mengxu98.github.io/scop/reference/CSS_integrate.md)
-  : The CSS integration function
-- [`ComBat_integrate()`](https://mengxu98.github.io/scop/reference/ComBat_integrate.md)
-  : The ComBat integration function
-- [`Conos_integrate()`](https://mengxu98.github.io/scop/reference/Conos_integrate.md)
-  : The Conos integration function
-- [`Harmony_integrate()`](https://mengxu98.github.io/scop/reference/Harmony_integrate.md)
-  : The Harmony integration function
-- [`LIGER_integrate()`](https://mengxu98.github.io/scop/reference/LIGER_integrate.md)
-  : The LIGER integration function
-- [`MNN_integrate()`](https://mengxu98.github.io/scop/reference/MNN_integrate.md)
-  : The MNN integration function
 - [`Scanorama_integrate()`](https://mengxu98.github.io/scop/reference/Scanorama_integrate.md)
   : The Scanorama integration function
 - [`Seurat_integrate()`](https://mengxu98.github.io/scop/reference/Seurat_integrate.md)
@@ -173,8 +177,6 @@
   : The scVI integration function
 - [`Uncorrected_integrate()`](https://mengxu98.github.io/scop/reference/Uncorrected_integrate.md)
   : The Uncorrected integration function
-- [`fastMNN_integrate()`](https://mengxu98.github.io/scop/reference/fastMNN_integrate.md)
-  : The fastMNN integration function
 
 ### Cell Type Annotation
 
@@ -191,20 +193,27 @@
 - [`RunScmap()`](https://mengxu98.github.io/scop/reference/RunScmap.md)
   : Annotate single cells using scmap.
 
-### Differential Analysis and Enrichment
+### Differential Analysis
 
 - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md)
   : Find Expressed Markers
 - [`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md)
   : Differential gene test
-- [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md) :
-  Perform the enrichment analysis (GSEA) on the genes
-- [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
-  : Perform the enrichment analysis (over-representation) on the genes
-- [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md)
-  : RunDynamicEnrichment
 - [`RunProportionTest()`](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
   : Proportion Test
+
+### Enrichment Analysis
+
+- [`RunDynamicEnrichment()`](https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.md)
+  : RunDynamicEnrichment
+- [`RunEnrichment()`](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
+  : Perform the enrichment analysis (over-representation) on the genes
+- [`RunGSEA()`](https://mengxu98.github.io/scop/reference/RunGSEA.md) :
+  Perform the enrichment analysis (GSEA) on the genes
+- [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md) :
+  Perform Gene Set Variation Analysis (GSVA)
+- [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+  : Run metabolism pathway scoring
 
 ### Dynamic Trajectory Analysis
 
@@ -278,8 +287,12 @@
   : The Group Heatmap
 - [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
   : GSEA Plot
+- [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
+  : Plots for GSVA (Gene Set Variation Analysis)
 - [`LineagePlot()`](https://mengxu98.github.io/scop/reference/LineagePlot.md)
   : Lineage Plot
+- [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
+  : Plots for metabolism pathway scoring
 - [`PAGAPlot()`](https://mengxu98.github.io/scop/reference/PAGAPlot.md)
   : PAGA plot
 - [`ProjectionPlot()`](https://mengxu98.github.io/scop/reference/ProjectionPlot.md)
@@ -322,15 +335,11 @@
 
 ### Data
 
-- [`ifnb_sub`](https://mengxu98.github.io/scop/reference/ifnb_sub.md) :
-  A subsetted version of 'ifnb' datasets
 - [`panc8_sub`](https://mengxu98.github.io/scop/reference/panc8_sub.md)
   : A subsetted version of human 'panc8' datasets
 - [`pancreas_sub`](https://mengxu98.github.io/scop/reference/pancreas_sub.md)
   : A subsetted version of mouse 'pancreas' datasets
-- [`ref_scHCL`](https://mengxu98.github.io/scop/reference/ref_scHCL.md)
-  [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scHCL.md)
-  [`ref_scZCL`](https://mengxu98.github.io/scop/reference/ref_scHCL.md)
+- [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scMCA.md)
   : Reference datasets for cell type annotation in single-cell RNA data
 - [`words_excluded`](https://mengxu98.github.io/scop/reference/words_excluded.md)
   : Excluded words in keyword enrichment analysis and extraction

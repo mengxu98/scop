@@ -1,5 +1,57 @@
 # Changelog
 
+## scop 0.8.6
+
+- **feat**:
+  - Added
+    [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md)
+    for gene set variation analysis and
+    [`GSVAPlot()`](https://mengxu98.github.io/scop/reference/GSVAPlot.md)
+    for visualization of [GSVA](https://github.com/rcastelo/GSVA)
+    results. Related issue
+    [\#146](https://github.com/mengxu98/scop/issues/146)
+    ([@mengxu98](https://github.com/mengxu98)).
+  - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+    - Added
+      [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+      for single-cell metabolism pathway scoring with support for
+      `AUCell`, `GSVA`, `ssGSEA`, and optional `VISION`, and
+      [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
+      for visualization
+    - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
+      now uses [scMetabolism](https://github.com/wu-yc/scMetabolism)
+      KEGG / Reactome metabolism pathway definitions to identify
+      metabolism-related terms, then rebuilds pathway gene sets from
+      updated
+      [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+      annotations, enabling cached database updates and cross-species
+      metabolism scoring. Related issue
+      [\#146](https://github.com/mengxu98/scop/issues/146)
+      ([@mengxu98](https://github.com/mengxu98)).
+  - Added
+    [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+    and integrated optional `decontX` ambient RNA decontamination into
+    [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md),
+    including contamination metadata, optional decontaminated assay
+    output, and threshold-based QC filtering. Related issue
+    [\#147](https://github.com/mengxu98/scop/issues/147)
+    ([@mengxu98](https://github.com/mengxu98)).
+- **fix**:
+  - [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md):
+    Fixed duplicated X/Y axis titles and main title when `stack = TRUE`
+    with `theme_args` or `title`. Stack assembly now strips axis and
+    plot titles from non-edge panels and draws a single shared
+    ylab/title via gtable; theme styling from `theme_args`
+    (e.g. `axis.title.y`, `title`/`plot.title`) is applied to these
+    shared grobs. Related issue
+    [\#145](https://github.com/mengxu98/scop/issues/145)
+    ([@PanSX-Dr](https://github.com/PanSX-Dr)).
+- **docs**:
+  - Updated the README badge/logo.
+- **data**:
+  - Removed the example datasets `ifnb_sub`, `ref_scHCL`, and
+    `ref_scZCL`.
+
 ## scop 0.8.5
 
 - **feat**:

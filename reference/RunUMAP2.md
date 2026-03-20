@@ -224,22 +224,22 @@ RunUMAP2(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-11 18:00:03] Start standard scop workflow...
-#> ℹ [2026-03-11 18:00:03] Checking a list of <Seurat>...
-#> ! [2026-03-11 18:00:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 18:00:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 18:00:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 18:00:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-11 18:00:06] Number of available HVF: 2000
-#> ℹ [2026-03-11 18:00:06] Finished check
-#> ℹ [2026-03-11 18:00:07] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-11 18:00:07] Perform pca linear dimension reduction
-#> ℹ [2026-03-11 18:00:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-11 18:00:08] Reorder clusters...
-#> ℹ [2026-03-11 18:00:08] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-11 18:00:08] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-11 18:00:13] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-11 18:00:18] Run scop standard workflow completed
+#> ℹ [2026-03-20 09:50:32] Start standard scop workflow...
+#> ℹ [2026-03-20 09:50:33] Checking a list of <Seurat>...
+#> ! [2026-03-20 09:50:33] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:50:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:50:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:50:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-20 09:50:35] Number of available HVF: 2000
+#> ℹ [2026-03-20 09:50:36] Finished check
+#> ℹ [2026-03-20 09:50:36] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-20 09:50:36] Perform pca linear dimension reduction
+#> ℹ [2026-03-20 09:50:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-20 09:50:37] Reorder clusters...
+#> ℹ [2026-03-20 09:50:37] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-20 09:50:37] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-20 09:50:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-20 09:50:47] Run scop standard workflow completed
 pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 CellDimPlot(
   pancreas_sub,

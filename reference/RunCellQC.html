@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run cell-level quality control for single cell RNA-seq data.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCellQC.R" class="external-link"><code>R/RunCellQC.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCellQC.R" class="external-link"><code>R/RunCellQC.R</code></a></small>
       <div class="d-none name"><code>RunCellQC.Rd</code></div>
     </div>
 
@@ -48,12 +48,22 @@
 <span>  <span class="va">srt</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  split.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_filtered <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  qc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"doublets"</span>, <span class="st">"outlier"</span>, <span class="st">"umi"</span>, <span class="st">"gene"</span>, <span class="st">"mito"</span>, <span class="st">"ribo"</span>, <span class="st">"ribo_mito_ratio"</span>,</span>
-<span>    <span class="st">"species"</span><span class="op">)</span>,</span>
+<span>  qc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"doublets"</span>, <span class="st">"decontX"</span>, <span class="st">"outlier"</span>, <span class="st">"umi"</span>, <span class="st">"gene"</span>, <span class="st">"mito"</span>, <span class="st">"ribo"</span>,</span>
+<span>    <span class="st">"ribo_mito_ratio"</span>, <span class="st">"species"</span><span class="op">)</span>,</span>
 <span>  db_method <span class="op">=</span> <span class="st">"scDblFinder"</span>,</span>
 <span>  db_rate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  db_coefficient <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  decontX_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decontX_batch <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decontX_background <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decontX_background_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decontX_bg_batch <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decontX_assay_name <span class="op">=</span> <span class="st">"decontXcounts"</span>,</span>
+<span>  decontX_store_assay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  decontX_round_counts <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  decontX_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  outlier_threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"log10_nCount:lower:2.5"</span>, <span class="st">"log10_nCount:higher:5"</span>,</span>
 <span>    <span class="st">"log10_nFeature:lower:2.5"</span>, <span class="st">"log10_nFeature:higher:5"</span>, <span class="st">"featurecount_dist:lower:2.5"</span><span class="op">)</span>,</span>
 <span>  outlier_n <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -92,6 +102,12 @@ Default is <code>"RNA"</code>.</p></dd>
 Default is <code>NULL</code>.</p></dd>
 
 
+<dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
+<dd><p>Group labels passed to <code><a href="RunDecontX.html">RunDecontX()</a></code> when <code>"decontX"</code>
+is included in <code>qc_metrics</code>. Can be <code>NULL</code>, a meta.data column name, or a vector
+aligned to cells. Default is <code>NULL</code>.</p></dd>
+
+
 <dt id="arg-return-filtered">return_filtered<a class="anchor" aria-label="anchor" href="#arg-return-filtered"></a></dt>
 <dd><p>Logical indicating whether to return a cell-filtered Seurat object.
 Default is <code>FALSE</code>.</p></dd>
@@ -99,7 +115,9 @@ Default is <code>FALSE</code>.</p></dd>
 
 <dt id="arg-qc-metrics">qc_metrics<a class="anchor" aria-label="anchor" href="#arg-qc-metrics"></a></dt>
 <dd><p>A character vector specifying the quality control metrics to be applied.
-Default is <code>c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")</code>.</p></dd>
+Available metrics are <code>"doublets"</code>, <code>"decontX"</code>, <code>"outlier"</code>, <code>"umi"</code>, <code>"gene"</code>,
+<code>"mito"</code>, <code>"ribo"</code>, <code>"ribo_mito_ratio"</code>, and <code>"species"</code>.
+Default is <code>c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")</code>.</p></dd>
 
 
 <dt id="arg-db-method">db_method<a class="anchor" aria-label="anchor" href="#arg-db-method"></a></dt>
@@ -116,6 +134,57 @@ Default is calculated as <code>ncol(srt) / 1000 * 0.01</code>.</p></dd>
 <dt id="arg-db-coefficient">db_coefficient<a class="anchor" aria-label="anchor" href="#arg-db-coefficient"></a></dt>
 <dd><p>The coefficient used to calculate the doublet rate.
 Default is <code>0.01</code>. Doublet rate is calculated as <code>ncol(srt) / 1000 * db_coefficient</code>.</p></dd>
+
+
+<dt id="arg-decontx-threshold">decontX_threshold<a class="anchor" aria-label="anchor" href="#arg-decontx-threshold"></a></dt>
+<dd><p>Optional contamination threshold used to filter cells
+after running <code><a href="RunDecontX.html">RunDecontX()</a></code>. Cells with <code>decontX_contamination</code> greater than
+this value are marked as failed in <code>decontX_qc</code>. Default is <code>NULL</code>, which
+computes decontX results without filtering cells by contamination.</p></dd>
+
+
+<dt id="arg-decontx-batch">decontX_batch<a class="anchor" aria-label="anchor" href="#arg-decontx-batch"></a></dt>
+<dd><p>Batch labels passed to <code><a href="RunDecontX.html">RunDecontX()</a></code> when <code>"decontX"</code>
+is included in <code>qc_metrics</code>. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-decontx-background">decontX_background<a class="anchor" aria-label="anchor" href="#arg-decontx-background"></a></dt>
+<dd><p>Optional background / empty-droplet input passed to
+<code><a href="RunDecontX.html">RunDecontX()</a></code> when <code>"decontX"</code> is included in <code>qc_metrics</code>.
+Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-decontx-background-assay">decontX_background_assay<a class="anchor" aria-label="anchor" href="#arg-decontx-background-assay"></a></dt>
+<dd><p>Assay name used when <code>decontX_background</code> is a
+<code>Seurat</code> object or <code>SingleCellExperiment</code>. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-decontx-bg-batch">decontX_bg_batch<a class="anchor" aria-label="anchor" href="#arg-decontx-bg-batch"></a></dt>
+<dd><p>Batch labels for <code>decontX_background</code> passed to
+<code><a href="RunDecontX.html">RunDecontX()</a></code>. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-decontx-assay-name">decontX_assay_name<a class="anchor" aria-label="anchor" href="#arg-decontx-assay-name"></a></dt>
+<dd><p>Name of the assay used to store decontaminated counts
+from <code><a href="RunDecontX.html">RunDecontX()</a></code>. Default is <code>"decontXcounts"</code>.</p></dd>
+
+
+<dt id="arg-decontx-store-assay">decontX_store_assay<a class="anchor" aria-label="anchor" href="#arg-decontx-store-assay"></a></dt>
+<dd><p>Whether to store decontaminated counts as a new assay
+when running <code><a href="RunDecontX.html">RunDecontX()</a></code>. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-decontx-round-counts">decontX_round_counts<a class="anchor" aria-label="anchor" href="#arg-decontx-round-counts"></a></dt>
+<dd><p>Whether to round decontaminated counts before creating
+the assay in <code><a href="RunDecontX.html">RunDecontX()</a></code>. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-decontx-args">decontX_args<a class="anchor" aria-label="anchor" href="#arg-decontx-args"></a></dt>
+<dd><p>A named list of additional advanced arguments passed to
+<code><a href="RunDecontX.html">RunDecontX()</a></code> when <code>"decontX"</code> is included in <code>qc_metrics</code>.
+Explicit <code>decontX_*</code> parameters are preferred for common options and take
+precedence when both are supplied.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-outlier-threshold">outlier_threshold<a class="anchor" aria-label="anchor" href="#arg-outlier-threshold"></a></dt>
@@ -202,30 +271,37 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:07] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:07] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:25:08] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:10] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:10] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:10] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:10] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:11] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:11] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:12] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:16] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-11 17:25:20] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:37] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:37] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 09:12:37] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:39] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:40] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:40] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:40] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:41] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:42] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:46] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 09:12:50] Run scop standard workflow completed</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellQC</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:21] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:21] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:25:22] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-11 17:30:19] ● Total cells: <span style="color: #0000BB;">1000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:50] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:51] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:12:51] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:16:55] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:19:36] Running <span style="color: #0000BB;">decontX</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:19:48] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:19:48] decontX assay stored as decontXcounts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 09:19:48] <span style="color: #0000BB;">decontX</span> decontamination completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 09:19:48] <span style="color: #0000BB;">decontX</span> contamination estimates stored; no cells filtered because `decontX_threshold` is <span style="color: #0000BB;">"NULL"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 09:19:49] ● Total cells: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">957</span> cells remained</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">43</span> cells filtered out:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">20</span> potential doublets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-contamination cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">23</span> outlier cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-UMI cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-gene cells</span>
@@ -233,78 +309,25 @@ Default is <code>11</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-ribo cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ribo_mito_ratio outlier cells</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> species-contaminated cells</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"db_qc"</span>, <span class="st">"outlier_qc"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"db_qc"</span>, <span class="st">"decontX_qc"</span>, <span class="st">"outlier_qc"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"mito_qc"</span>, <span class="st">"ribo_qc"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"ribo_mito_ratio_qc"</span>, <span class="st">"species_qc"</span></span></span>
+<span class="r-in"><span>    <span class="st">"ribo_mito_ratio_qc"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"species_qc"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
 <span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:30:20] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘ggupset’</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellQC</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pass Fail </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  957   43 </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ifnb_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ifnb_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellQC</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  srt <span class="op">=</span> <span class="va">ifnb_sub</span>,</span></span>
-<span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"stim"</span>,</span></span>
-<span class="r-in"><span>  UMI_threshold <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>  gene_threshold <span class="op">=</span> <span class="fl">550</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:20] Running QC for <span style="color: #0000BB;">"CTRL"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-11 17:30:26] ● Total cells: <span style="color: #0000BB;">1000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">689</span> cells remained</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">311</span> cells filtered out:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">50</span> potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">8</span> outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">28</span> low-UMI cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">250</span> low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> species-contaminated cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:27] Running QC for <span style="color: #0000BB;">"STIM"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:27] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:30:27] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-11 17:30:33] ● Total cells: <span style="color: #0000BB;">1000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">699</span> cells remained</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">301</span> cells filtered out:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">40</span> potential doublets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">12</span> outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">25</span> low-UMI cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">251</span> low-gene cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-mito cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-ribo cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ribo_mito_ratio outlier cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> species-contaminated cells</span>
-<span class="r-in"><span><span class="fu"><a href="CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  srt <span class="op">=</span> <span class="va">ifnb_sub</span>,</span></span>
-<span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"db_qc"</span>, <span class="st">"outlier_qc"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"mito_qc"</span>, <span class="st">"ribo_qc"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"ribo_mito_ratio_qc"</span>, <span class="st">"species_qc"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span></span>
-<span class="r-in"><span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:30:33] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘ggupset’</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ifnb_sub</span><span class="op">$</span><span class="va">CellQC</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pass Fail </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1388  612 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 09:19:49] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
+<span class="r-plt img"><img src="RunCellQC-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

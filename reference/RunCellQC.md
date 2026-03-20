@@ -9,12 +9,22 @@ RunCellQC(
   srt,
   assay = "RNA",
   split.by = NULL,
+  group.by = NULL,
   return_filtered = FALSE,
-  qc_metrics = c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio",
-    "species"),
+  qc_metrics = c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo",
+    "ribo_mito_ratio", "species"),
   db_method = "scDblFinder",
   db_rate = NULL,
   db_coefficient = 0.01,
+  decontX_threshold = NULL,
+  decontX_batch = NULL,
+  decontX_background = NULL,
+  decontX_background_assay = NULL,
+  decontX_bg_batch = NULL,
+  decontX_assay_name = "decontXcounts",
+  decontX_store_assay = FALSE,
+  decontX_round_counts = TRUE,
+  decontX_args = list(),
   outlier_threshold = c("log10_nCount:lower:2.5", "log10_nCount:higher:5",
     "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5"),
   outlier_n = 1,
@@ -51,6 +61,14 @@ RunCellQC(
   Name of a column in meta.data column to split plot by. Default is
   `NULL`.
 
+- group.by:
+
+  Group labels passed to
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+  when `"decontX"` is included in `qc_metrics`. Can be `NULL`, a
+  meta.data column name, or a vector aligned to cells. Default is
+  `NULL`.
+
 - return_filtered:
 
   Logical indicating whether to return a cell-filtered Seurat object.
@@ -59,8 +77,10 @@ RunCellQC(
 - qc_metrics:
 
   A character vector specifying the quality control metrics to be
-  applied. Default is
-  `c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
+  applied. Available metrics are `"doublets"`, `"decontX"`, `"outlier"`,
+  `"umi"`, `"gene"`, `"mito"`, `"ribo"`, `"ribo_mito_ratio"`, and
+  `"species"`. Default is
+  `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
 
 - db_method:
 
@@ -77,6 +97,64 @@ RunCellQC(
 
   The coefficient used to calculate the doublet rate. Default is `0.01`.
   Doublet rate is calculated as `ncol(srt) / 1000 * db_coefficient`.
+
+- decontX_threshold:
+
+  Optional contamination threshold used to filter cells after running
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md).
+  Cells with `decontX_contamination` greater than this value are marked
+  as failed in `decontX_qc`. Default is `NULL`, which computes decontX
+  results without filtering cells by contamination.
+
+- decontX_batch:
+
+  Batch labels passed to
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+  when `"decontX"` is included in `qc_metrics`. Default is `NULL`.
+
+- decontX_background:
+
+  Optional background / empty-droplet input passed to
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+  when `"decontX"` is included in `qc_metrics`. Default is `NULL`.
+
+- decontX_background_assay:
+
+  Assay name used when `decontX_background` is a `Seurat` object or
+  `SingleCellExperiment`. Default is `NULL`.
+
+- decontX_bg_batch:
+
+  Batch labels for `decontX_background` passed to
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md).
+  Default is `NULL`.
+
+- decontX_assay_name:
+
+  Name of the assay used to store decontaminated counts from
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md).
+  Default is `"decontXcounts"`.
+
+- decontX_store_assay:
+
+  Whether to store decontaminated counts as a new assay when running
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md).
+  Default is `FALSE`.
+
+- decontX_round_counts:
+
+  Whether to round decontaminated counts before creating the assay in
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md).
+  Default is `TRUE`.
+
+- decontX_args:
+
+  A named list of additional advanced arguments passed to
+  [`RunDecontX()`](https://mengxu98.github.io/scop/reference/RunDecontX.md)
+  when `"decontX"` is included in `qc_metrics`. Explicit `decontX_*`
+  parameters are preferred for common options and take precedence when
+  both are supplied. Default is
+  [`list()`](https://rdrr.io/r/base/list.html).
 
 - outlier_threshold:
 
@@ -162,30 +240,37 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-11 17:25:07] Start standard scop workflow...
-#> ℹ [2026-03-11 17:25:07] Checking a list of <Seurat>...
-#> ! [2026-03-11 17:25:08] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:25:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:25:10] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:25:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-11 17:25:10] Number of available HVF: 2000
-#> ℹ [2026-03-11 17:25:10] Finished check
-#> ℹ [2026-03-11 17:25:11] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-11 17:25:11] Perform pca linear dimension reduction
-#> ℹ [2026-03-11 17:25:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-11 17:25:12] Reorder clusters...
-#> ℹ [2026-03-11 17:25:12] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-11 17:25:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-11 17:25:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-11 17:25:20] Run scop standard workflow completed
+#> ℹ [2026-03-20 09:12:37] Start standard scop workflow...
+#> ℹ [2026-03-20 09:12:37] Checking a list of <Seurat>...
+#> ! [2026-03-20 09:12:37] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:12:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:12:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:12:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-20 09:12:40] Number of available HVF: 2000
+#> ℹ [2026-03-20 09:12:40] Finished check
+#> ℹ [2026-03-20 09:12:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-20 09:12:41] Perform pca linear dimension reduction
+#> ℹ [2026-03-20 09:12:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-20 09:12:42] Reorder clusters...
+#> ℹ [2026-03-20 09:12:42] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-20 09:12:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-20 09:12:46] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-20 09:12:50] Run scop standard workflow completed
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-03-11 17:25:21] Data type is raw counts
-#> ℹ [2026-03-11 17:25:21] Data type is raw counts
-#> ℹ [2026-03-11 17:25:22] Data type is raw counts
-#> ✔ [2026-03-11 17:30:19] ● Total cells: 1000
+#> ℹ [2026-03-20 09:12:50] Data type is raw counts
+#> ℹ [2026-03-20 09:12:51] Data type is raw counts
+#> ℹ [2026-03-20 09:12:51] Data type is raw counts
+#> ℹ [2026-03-20 09:16:55] Data type is raw counts
+#> ℹ [2026-03-20 09:19:36] Running decontX
+#> ℹ [2026-03-20 09:19:48] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-03-20 09:19:48] decontX assay stored as decontXcounts
+#> ✔ [2026-03-20 09:19:48] decontX decontamination completed
+#> ℹ [2026-03-20 09:19:48] decontX contamination estimates stored; no cells filtered because `decontX_threshold` is "NULL".
+#> ✔ [2026-03-20 09:19:49] ● Total cells: 1000
 #> ✔                       ◉ 957 cells remained
 #> ✔                       ◯ 43 cells filtered out:
 #> ✔                       ◯   20 potential doublets
+#> ✔                       ◯   0 high-contamination cells
 #> ✔                       ◯   23 outlier cells
 #> ✔                       ◯   0 low-UMI cells
 #> ✔                       ◯   0 low-gene cells
@@ -193,76 +278,22 @@ pancreas_sub <- RunCellQC(pancreas_sub)
 #> ✔                       ◯   0 high-ribo cells
 #> ✔                       ◯   0 ribo_mito_ratio outlier cells
 #> ✔                       ◯   0 species-contaminated cells
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "db_qc", "outlier_qc",
+    "db_qc", "decontX_qc", "outlier_qc",
     "umi_qc", "gene_qc",
     "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
+    "ribo_mito_ratio_qc",
+    "species_qc"
   ),
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-03-11 17:30:20] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘ggupset’
-table(pancreas_sub$CellQC)
-#> 
-#> Pass Fail 
-#>  957   43 
-
-data(ifnb_sub)
-ifnb_sub <- RunCellQC(
-  srt = ifnb_sub,
-  split.by = "stim",
-  UMI_threshold = 1000,
-  gene_threshold = 550
-)
-#> ℹ [2026-03-11 17:30:20] Data type is raw counts
-#> ℹ [2026-03-11 17:30:20] Running QC for "CTRL"
-#> ℹ [2026-03-11 17:30:20] Data type is raw counts
-#> ℹ [2026-03-11 17:30:20] Data type is raw counts
-#> ✔ [2026-03-11 17:30:26] ● Total cells: 1000
-#> ✔                       ◉ 689 cells remained
-#> ✔                       ◯ 311 cells filtered out:
-#> ✔                       ◯   50 potential doublets
-#> ✔                       ◯   8 outlier cells
-#> ✔                       ◯   28 low-UMI cells
-#> ✔                       ◯   250 low-gene cells
-#> ✔                       ◯   0 high-mito cells
-#> ✔                       ◯   0 high-ribo cells
-#> ✔                       ◯   0 ribo_mito_ratio outlier cells
-#> ✔                       ◯   0 species-contaminated cells
-#> ℹ [2026-03-11 17:30:27] Running QC for "STIM"
-#> ℹ [2026-03-11 17:30:27] Data type is raw counts
-#> ℹ [2026-03-11 17:30:27] Data type is raw counts
-#> ✔ [2026-03-11 17:30:33] ● Total cells: 1000
-#> ✔                       ◉ 699 cells remained
-#> ✔                       ◯ 301 cells filtered out:
-#> ✔                       ◯   40 potential doublets
-#> ✔                       ◯   12 outlier cells
-#> ✔                       ◯   25 low-UMI cells
-#> ✔                       ◯   251 low-gene cells
-#> ✔                       ◯   0 high-mito cells
-#> ✔                       ◯   0 high-ribo cells
-#> ✔                       ◯   0 ribo_mito_ratio outlier cells
-#> ✔                       ◯   0 species-contaminated cells
-CellStatPlot(
-  srt = ifnb_sub,
-  stat.by = c(
-    "db_qc", "outlier_qc",
-    "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
-  ),
-  plot_type = "upset",
-  stat_level = "Fail"
-)
-#> ! [2026-03-11 17:30:33] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘ggupset’
-
-table(ifnb_sub$CellQC)
-#> 
-#> Pass Fail 
-#> 1388  612 
+#> ! [2026-03-20 09:19:49] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> `geom_line()`: Each group consists of only one observation.
+#> ℹ Do you need to adjust the group aesthetic?
+#> `geom_line()`: Each group consists of only one observation.
+#> ℹ Do you need to adjust the group aesthetic?
 ```

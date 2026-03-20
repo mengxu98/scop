@@ -1,6 +1,6 @@
 # Excluded words in keyword enrichment analysis and extraction
 
-The variable "words_excluded" represents the words that are excluded
+The variable `words_excluded` represents the words that are excluded
 during keyword enrichment analysis or keyword extraction process. These
 mainly include words that are excessively redundant or of little value.
 

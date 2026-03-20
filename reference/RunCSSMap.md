@@ -25,22 +25,24 @@ RunCSSMap(
 
 - srt_query:
 
-  A Seurat object storing the query cells.
+  An object of class Seurat to be annotated with cell types.
 
 - srt_ref:
 
-  A Seurat object storing the reference cells.
+  A Seurat object or count matrix representing the reference object. If
+  provided, the similarities will be calculated between cells from the
+  query and reference objects. If not provided, the similarities will be
+  calculated within the query object.
 
 - query_assay:
 
-  A character string specifying the assay name for the query cells. If
-  not provided, the default assay for the query object will be used.
+  The assay to use for the query object. If not provided, the default
+  assay of the query object will be used.
 
 - ref_assay:
 
-  A character string specifying the assay name for the reference cells.
-  If not provided, the default assay for the reference object will be
-  used.
+  The assay to use for the reference object. If not provided, the
+  default assay of the reference object will be used.
 
 - ref_css:
 
@@ -55,8 +57,9 @@ RunCSSMap(
 
 - ref_group:
 
-  A character string specifying a metadata column name in the reference
-  object to use for grouping.
+  The grouping variable in the reference object. This variable will be
+  used to group cells in the heatmap columns. If not provided, all cells
+  will be treated as one group.
 
 - projection_method:
 
