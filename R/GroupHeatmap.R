@@ -2257,6 +2257,10 @@ GroupHeatmap <- function(
     fix <- FALSE
   }
 
+  if (length(lgd) > 0) {
+    lgd <- lgd[!vapply(lgd, is.null, logical(1))]
+  }
+
   rendersize <- heatmap_rendersize(
     width = width,
     height = height,
