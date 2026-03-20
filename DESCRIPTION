@@ -45,7 +45,6 @@ Suggests:
     CellChat,
     circlize,
     clusterProfiler,
-    conos,
     e1071,
     ggpubr,
     ggridges,
