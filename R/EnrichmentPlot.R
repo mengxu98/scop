@@ -1642,3 +1642,72 @@ EnrichmentPlot <- function(
     return(plist)
   }
 }
+
+EnrichmentHeatmap <- function(
+    scores,
+    group.by,
+    ...) {
+  if (is.null(dim(scores)) || length(dim(scores)) != 2) {
+    log_message(
+      "{.arg scores} must be a 2D matrix-like object",
+      message_type = "error"
+    )
+  }
+  scores <- as.matrix(scores)
+  if (is.null(rownames(scores)) || any(!nzchar(rownames(scores)))) {
+    log_message(
+      "{.arg scores} must have non-empty rownames (gene set names)",
+      message_type = "error"
+    )
+  }
+  if (is.null(colnames(scores)) || any(!nzchar(colnames(scores)))) {
+    log_message(
+      "{.arg scores} must have non-empty colnames (group names)",
+      message_type = "error"
+    )
+  }
+
+  matrix_group_name <- group.by %||% "Group"
+
+  srt_tmp <- Seurat::CreateSeuratObject(counts = scores)
+  srt_tmp <- Seurat::NormalizeData(
+    object = srt_tmp,
+    normalization.method = "LogNormalize",
+    verbose = FALSE
+  )
+  srt_tmp@meta.data[[matrix_group_name]] <- factor(
+    colnames(scores),
+    levels = colnames(scores)
+  )
+
+  base_args <- list(
+    srt = srt_tmp,
+    matrix = NULL,
+    matrix_group.by = matrix_group_name,
+    features = rownames(scores),
+    group.by = matrix_group_name,
+    split.by = NULL,
+    within_groups = FALSE,
+    cells = colnames(scores),
+    aggregate_fun = base::mean,
+    exp_cutoff = 0,
+    flip = FALSE,
+    layer = "counts",
+    assay = SeuratObject::DefaultAssay(srt_tmp),
+    exp_method = "raw",
+    exp_legend_title = NULL,
+    limits = NULL,
+    lib_normalize = FALSE
+  )
+
+  user_args <- list(...)
+  if (!is.null(user_args[["palette"]])) {
+    user_args[["heatmap_palette"]] <- user_args[["palette"]]
+    user_args[["palette"]] <- NULL
+  }
+  if (!is.null(user_args[["palcolor"]])) {
+    user_args[["heatmap_palcolor"]] <- user_args[["palcolor"]]
+    user_args[["palcolor"]] <- NULL
+  }
+  do.call(GroupHeatmap, c(base_args, user_args))
+}
