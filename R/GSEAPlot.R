@@ -216,14 +216,14 @@ GSEAPlot <- function(
   if (is.null(res)) {
     if (is.null(group.by)) {
       log_message(
-        "'group.by' must be provided.",
+        "{.arg group.by} must be provided",
         message_type = "error"
       )
     }
     layer <- paste("GSEA", group.by, test.use, sep = "_")
     if (!layer %in% names(srt@tools)) {
       log_message(
-        "No enrichment result found. You may perform RunGSEA first.",
+        "No enrichment result found. You may perform {.fn RunGSEA} first",
         message_type = "error"
       )
     }
@@ -707,10 +707,7 @@ GSEAPlot <- function(
           ]
           if (length(gene_drop) > 0) {
             log_message(
-              "Gene ",
-              paste(gene_drop, collapse = ","),
-              " is not in the geneset of the ",
-              gsdata$Description[1],
+              "Gene {.val {gene_drop}} is not in the geneset of the {.val {gsdata$Description[1]}}",
               message_type = "warning"
             )
           }
@@ -1182,7 +1179,10 @@ GSEAPlot <- function(
           "grid" = igraph::layout_on_grid(graph)
         )
       } else {
-        layout <- do.call(paste0("layout_with_", network_layout), list(graph))
+        layout_fun <- get_namespace_fun(
+          "igraph", paste0("layout_with_", network_layout)
+        )
+        layout <- do.call(layout_fun, list(graph))
       }
       df_graph <- igraph::as_data_frame(graph, what = "both")
 
@@ -1425,9 +1425,15 @@ GSEAPlot <- function(
           "grid" = igraph::layout_on_grid(graph)
         )
       } else {
-        layout <- do.call(paste0("layout_with_", enrichmap_layout), list(graph))
+        layout_fun <- get_namespace_fun(
+          "igraph", paste0("layout_with_", enrichmap_layout)
+        )
+        layout <- do.call(layout_fun, list(graph))
       }
-      clusters <- do.call(paste0("cluster_", enrichmap_cluster), list(graph))
+      cluster_fun <- get_namespace_fun(
+        "igraph", paste0("cluster_", enrichmap_cluster)
+      )
+      clusters <- do.call(cluster_fun, list(graph))
       df_graph <- igraph::as_data_frame(graph, what = "both")
 
       df_nodes <- df_graph$vertices

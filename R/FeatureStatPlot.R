@@ -286,11 +286,16 @@
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
 #'   ),
 #'   legend.position = "top",
 #'   legend.direction = "horizontal",
@@ -302,11 +307,16 @@
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
 #'   ),
 #'   fill.by = "feature",
 #'   plot_type = "box",
@@ -347,18 +357,27 @@
 #'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
 #'   group.by = "CellType",
 #'   plot.by = "feature",
-#'   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
+#'   comparisons = list(
+#'     c("Neurog3", "Rbp4"),
+#'     c("Rbp4", "Ins1")
+#'   ),
 #'   stack = TRUE
 #' )
 #'
 #' FeatureStatPlot(pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-#'   ), group.by = "SubCellType",
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
+#'   ),
+#'   group.by = "SubCellType",
 #'   plot.by = "feature",
 #'   stack = TRUE
 #' )
