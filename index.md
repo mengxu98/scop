@@ -2,16 +2,18 @@
 
 ## Introduction
 
-The [scop](https://github.com/mengxu98/scop) package provides a
-comprehensive set of tools for single-cell omics data processing and
-downstream analysis:
+The [scop](https://github.com/mengxu98/scop) package provides a unified
+and extensible framework for single-cell omics data processing and
+downstream analysis in [Seurat](https://github.com/satijalab/seurat):
 
 - Integrated single-cell quality control methods, including doublet
   detection methods
   ([scDblFinder](https://github.com/plger/scDblFinder),
   [scds](https://github.com/kostkalab/scds),
   [Scrublet](https://github.com/swolock/scrublet),
-  [DoubletDetection](https://github.com/JonathanShor/DoubletDetection)).
+  [DoubletDetection](https://github.com/JonathanShor/DoubletDetection))
+  and ambient RNA decontamination via
+  [decontX](https://github.com/campbio/decontX).
 - Pipelines embedded with multiple methods for normalization, feature
   reduction (PCA, ICA, NMF, MDS,
   [GLMPCA](https://github.com/willtownes/glmpca),
@@ -41,26 +43,25 @@ downstream analysis:
   for projection between single-cell datasets (CSSMap, PCAMap,
   SeuratMap, [SymphonyMap](https://github.com/immunogenomics/symphony)).
 - Multiple single-cell downstream analyses:
-  - **Differential expression analysis**: identification of differential
+  - Differential expression analysis: identification of differential
     features, expressed marker identification.
-  - **Enrichment analysis**: over-representation analysis,
+  - Enrichment analysis: over-representation analysis,
     [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp) analysis, dynamic
     enrichment analysis.
-  - **Cellular potency**: [CytoTRACE
+  - Cellular potency: [CytoTRACE
     2](https://github.com/digitalcytometry/cytotrace2) for predicting
     cellular differentiation potential.
-  - **RNA velocity**: [RNA
-    velocity](https://github.com/theislab/scvelo),
+  - RNA velocity: [RNA velocity](https://github.com/theislab/scvelo),
     [PAGA](https://github.com/theislab/paga),
     [Palantir](https://github.com/dpeerlab/Palantir),
     [CellRank](https://github.com/theislab/cellrank),
     [WOT](https://github.com/broadinstitute/wot).
-  - **Trajectory inference**:
+  - Trajectory inference:
     [Slingshot](https://bioconductor.org/packages/release/bioc/html/slingshot.html),
     [Monocle2](https://github.com/mengxu98/monocle),
     [Monocle3](https://github.com/cole-trapnell-lab/monocle3),
     identification of dynamic features.
-  - **Cell-Cell Communication**:
+  - Cell-Cell Communication:
     [CellChat](https://github.com/jinworks/CellChat) for cell-cell
     communication.
 - High-quality data visualization methods.
@@ -68,46 +69,40 @@ downstream analysis:
   [shiny](https://shiny.rstudio.com/) app that provides an interactive
   visualization interface.
 
-The functions in [scop](https://github.com/mengxu98/scop) are all
-developed around the
-[SeuratObject](https://github.com/satijalab/seurat-object) and are
-compatible with other [Seurat](https://github.com/satijalab/seurat)
-functions.
-
-## Quick Start
+## Table of Contents
 
 - [scop: Single-Cell Omics analysis
   Pipeline](#scop-single-cell-omics-analysis-pipeline)
   - [Introduction](#introduction)
-  - [Quick Start](#quick-start)
+  - [Table of Contents](#table-of-contents)
   - [Credits](#credits)
   - [Installation](#installation)
-    - [R version requirement](#r-version-requirement)
-    - [Prepare python environment](#prepare-python-environment)
+    - [*R* requirement](#r-requirement)
+    - [*Python* environment](#python-environment)
+  - [Pipeline](#pipeline)
     - [Data exploration](#data-exploration)
-    - [CellQC](#cellqc)
-    - [Standard pipeline](#standard-pipeline)
+    - [Quality control](#quality-control)
     - [Integration pipeline](#integration-pipeline)
-    - [Cell projection between single-cell
-      datasets](#cell-projection-between-single-cell-datasets)
-    - [Cell annotation using bulk RNA-seq
-      datasets](#cell-annotation-using-bulk-rna-seq-datasets)
-    - [Cell annotation using single-cell
-      datasets](#cell-annotation-using-single-cell-datasets)
+    - [Cell annotation](#cell-annotation)
+      - [Cell projection between single-cell
+        datasets](#cell-projection-between-single-cell-datasets)
+      - [Cell annotation using bulk RNA-seq
+        datasets](#cell-annotation-using-bulk-rna-seq-datasets)
+      - [Cell annotation using single-cell
+        datasets](#cell-annotation-using-single-cell-datasets)
     - [Cellular potency](#cellular-potency)
       - [CytoTRACE 2](#cytotrace-2)
-    - [Velocity analysis](#velocity-analysis)
-      - [SCVELO](#scvelo)
     - [Trajectory inference](#trajectory-inference)
-      - [PAGA analysis](#paga-analysis)
+      - [RNA Velocity analysis](#rna-velocity-analysis)
+      - [PAGA](#paga)
       - [Slingshot](#slingshot)
       - [Monocle3](#monocle3)
     - [Dynamic features](#dynamic-features)
     - [Differential expression
       analysis](#differential-expression-analysis)
-    - [Enrichment
-      analysis(over-representation)](#enrichment-analysisover-representation)
-    - [Enrichment analysis(GSEA)](#enrichment-analysisgsea)
+    - [Enrichment analysis](#enrichment-analysis)
+      - [Over-representation](#over-representation)
+      - [GSEA](#gsea)
     - [Interactive data visualization with
       SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
@@ -115,13 +110,34 @@ functions.
 ## Credits
 
 The [scop](https://github.com/mengxu98/scop) package is developed based
-on the [SCP](https://github.com/zhanghao-njmu/SCP) package, making it
-compatible with [Seurat](https://github.com/mojaveazure/seurat) V5 and
-adding support for single-cell omics data.
+on the [SCP](https://github.com/zhanghao-njmu/SCP) package, with the
+following major improvements:
+
+1.  Compatibility: full support for [Seurat
+    v5](https://github.com/satijalab/seurat).
+2.  Stability: a large number of known issues have been fixed, and all
+    functions have passed `devtools::check()`.
+3.  Usability: the *Python* environment setup workflow has been
+    improved, allowing a new complete environment to be deployed within
+    minutes; standardized console messages via
+    [`thisutils::log_message`](https://mengxu98.github.io/thisutils/reference/log_message.html)
+    for consistent, readable function outputs.
+4.  Performance: a new parallel framework has been developed based on
+    [`thisutils::parallelize_fun`](https://mengxu98.github.io/thisutils/reference/parallelize_fun.html),
+    providing a consistent experience across *Linux*, *macOS*, and
+    *Windows*.
+5.  Functionality: more analysis methods have been added, including
+    [CellRank](https://github.com/scverse/cellrank),
+    [CellTypist](https://github.com/Teichlab/celltypist), [CytoTRACE
+    2](https://github.com/digitalcytometry/cytotrace2),
+    [CellChat](https://github.com/jinworks/CellChat),
+    [GSVA](https://github.com/rcastelo/GSVA),
+    [scMetabolism](https://github.com/wu-yc/scMetabolism) and
+    [scProportionTest](https://github.com/rpolicastro/scProportionTest).
 
 ## Installation
 
-### R version requirement
+### *R* requirement
 
 - R \>= 4.1.0
 
@@ -137,15 +153,15 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-### Prepare python environment
+### *Python* environment
 
 To run functions such as
 [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
 [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
 [scop](https://github.com/mengxu98/scop) requires
 [conda](https://docs.conda.io/en/latest/miniconda.html) to create a
-separate python environment. The default environment name is
-`"scop_env"`. You can specify the environment name for scop by setting
+separate environment. The default environment name is `"scop_env"`. You
+can specify the environment name for scop by setting
 `options(scop_envname = "new_name")`.
 
 Now, you can run
@@ -177,41 +193,26 @@ scop::PrepareEnv(
 )
 ```
 
-Available miniconda repositories:
+- Available miniconda repositories:
+  - <https://repo.anaconda.com/miniconda> (default)
+  - <http://mirrors.aliyun.com/anaconda/miniconda>
+  - <https://mirrors.bfsu.edu.cn/anaconda/miniconda>
+  - <https://mirrors.pku.edu.cn/anaconda/miniconda>
+  - <https://mirror.nju.edu.cn/anaconda/miniconda>
+  - <https://mirrors.sustech.edu.cn/anaconda/miniconda>
+  - <https://mirrors.xjtu.edu.cn/anaconda/miniconda>
+  - <https://mirrors.hit.edu.cn/anaconda/miniconda>
+- Available PyPI mirrors:
+  - <https://pypi.python.org/simple> (default)
+  - <https://mirrors.aliyun.com/pypi/simple>
+  - <https://pypi.tuna.tsinghua.edu.cn/simple>
+  - <https://mirrors.pku.edu.cn/pypi/simple>
+  - <https://mirror.nju.edu.cn/pypi/web/simple>
+  - <https://mirrors.sustech.edu.cn/pypi/simple>
+  - <https://mirrors.xjtu.edu.cn/pypi/simple>
+  - <https://mirrors.hit.edu.cn/pypi/web/simple>
 
-- <https://repo.anaconda.com/miniconda> (default)
-
-- <http://mirrors.aliyun.com/anaconda/miniconda>
-
-- <https://mirrors.bfsu.edu.cn/anaconda/miniconda>
-
-- <https://mirrors.pku.edu.cn/anaconda/miniconda>
-
-- <https://mirror.nju.edu.cn/anaconda/miniconda>
-
-- <https://mirrors.sustech.edu.cn/anaconda/miniconda>
-
-- <https://mirrors.xjtu.edu.cn/anaconda/miniconda>
-
-- <https://mirrors.hit.edu.cn/anaconda/miniconda>
-
-Available PyPI mirrors:
-
-- <https://pypi.python.org/simple> (default)
-
-- <https://mirrors.aliyun.com/pypi/simple>
-
-- <https://pypi.tuna.tsinghua.edu.cn/simple>
-
-- <https://mirrors.pku.edu.cn/pypi/simple>
-
-- <https://mirror.nju.edu.cn/pypi/web/simple>
-
-- <https://mirrors.sustech.edu.cn/pypi/simple>
-
-- <https://mirrors.xjtu.edu.cn/pypi/simple>
-
-- <https://mirrors.hit.edu.cn/pypi/web/simple>
+## Pipeline
 
 ### Data exploration
 
@@ -228,8 +229,6 @@ print(pancreas_sub)
 #>  1 layer present: counts
 #>  2 other assays present: spliced, unspliced
 ```
-
-### Standard pipeline
 
 ``` r
 pancreas_sub <- standard_scop(pancreas_sub)
@@ -324,7 +323,7 @@ print(ht$plot)
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png)
 
-### CellQC
+### Quality control
 
 ``` r
 pancreas_sub <- RunCellQC(pancreas_sub)
@@ -351,7 +350,7 @@ CellStatPlot(
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "db_qc", "outlier_qc",
+    "db_qc", "decontX_qc", "outlier_qc",
     "umi_qc", "gene_qc",
     "mito_qc", "ribo_qc",
     "ribo_mito_ratio_qc", "species_qc"
@@ -385,14 +384,16 @@ CellDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.png)
 
-### Cell projection between single-cell datasets
+### Cell annotation
+
+#### Cell projection between single-cell datasets
 
 ``` r
 genenames <- make.unique(
   thisutils::capitalize(
-    rownames(panc8_sub[["RNA"]]
-  ),
-  force_tolower = TRUE)
+    rownames(panc8_sub[["RNA"]]),
+    force_tolower = TRUE
+  )
 )
 names(genenames) <- rownames(panc8_sub)
 panc8_rename <- RenameFeatures(
@@ -419,10 +420,10 @@ ProjectionPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png)
 
-### Cell annotation using bulk RNA-seq datasets
+#### Cell annotation using bulk RNA-seq datasets
 
 ``` r
-data("ref_scMCA")
+data(ref_scMCA)
 pancreas_sub <- RunKNNPredict(
   srt_query = pancreas_sub,
   bulk_ref = ref_scMCA,
@@ -440,7 +441,7 @@ CellDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png)
 
-### Cell annotation using single-cell datasets
+#### Cell annotation using single-cell datasets
 
 ``` r
 pancreas_sub <- RunKNNPredict(
@@ -498,15 +499,15 @@ CytoTRACEPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.png)
 
-### Velocity analysis
+### Trajectory inference
 
-To estimate RNA velocity, both “spliced” and “unspliced” assays in
-Seurat object. You can generate these matrices using
+#### RNA Velocity analysis
+
+To estimate RNA velocity, both “spliced” and “unspliced” assays are
+required in the Seurat object. You can generate these matrices using
 [velocyto](http://velocyto.org/velocyto.py/index.md),
 [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or
 [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
-
-#### SCVELO
 
 ``` r
 pancreas_sub <- RunSCVELO(
@@ -538,9 +539,7 @@ VelocityPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png)
 
-### Trajectory inference
-
-#### PAGA analysis
+#### PAGA
 
 ``` r
 pancreas_sub <- RunPAGA(
@@ -795,7 +794,9 @@ print(ht$plot)
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png)
 
-### Enrichment analysis (over-representation)
+### Enrichment analysis
+
+#### Over-representation
 
 ``` r
 pancreas_sub <- RunEnrichment(
@@ -886,7 +887,7 @@ EnrichmentPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png)
 
-### Enrichment analysis (GSEA)
+#### GSEA
 
 ``` r
 pancreas_sub <- RunGSEA(

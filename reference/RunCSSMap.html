@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Single-cell reference mapping with CSS method</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCSSMap.R" class="external-link"><code>R/RunCSSMap.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCSSMap.R" class="external-link"><code>R/RunCSSMap.R</code></a></small>
       <div class="d-none name"><code>RunCSSMap.Rd</code></div>
     </div>
 
@@ -65,21 +65,23 @@
 
 
 <dl><dt id="arg-srt-query">srt_query<a class="anchor" aria-label="anchor" href="#arg-srt-query"></a></dt>
-<dd><p>A Seurat object storing the query cells.</p></dd>
+<dd><p>An object of class Seurat to be annotated with cell types.</p></dd>
 
 
 <dt id="arg-srt-ref">srt_ref<a class="anchor" aria-label="anchor" href="#arg-srt-ref"></a></dt>
-<dd><p>A Seurat object storing the reference cells.</p></dd>
+<dd><p>A Seurat object or count matrix representing the reference object.
+If provided, the similarities will be calculated between cells from the query and reference objects.
+If not provided, the similarities will be calculated within the query object.</p></dd>
 
 
 <dt id="arg-query-assay">query_assay<a class="anchor" aria-label="anchor" href="#arg-query-assay"></a></dt>
-<dd><p>A character string specifying the assay name for the query cells.
-If not provided, the default assay for the query object will be used.</p></dd>
+<dd><p>The assay to use for the query object.
+If not provided, the default assay of the query object will be used.</p></dd>
 
 
 <dt id="arg-ref-assay">ref_assay<a class="anchor" aria-label="anchor" href="#arg-ref-assay"></a></dt>
-<dd><p>A character string specifying the assay name for the reference cells.
-If not provided, the default assay for the reference object will be used.</p></dd>
+<dd><p>The assay to use for the reference object.
+If not provided, the default assay of the reference object will be used.</p></dd>
 
 
 <dt id="arg-ref-css">ref_css<a class="anchor" aria-label="anchor" href="#arg-ref-css"></a></dt>
@@ -92,7 +94,9 @@ If not provided, the first UMAP reduction found in the reference object will be 
 
 
 <dt id="arg-ref-group">ref_group<a class="anchor" aria-label="anchor" href="#arg-ref-group"></a></dt>
-<dd><p>A character string specifying a metadata column name in the reference object to use for grouping.</p></dd>
+<dd><p>The grouping variable in the reference object.
+This variable will be used to group cells in the heatmap columns.
+If not provided, all cells will be treated as one group.</p></dd>
 
 
 <dt id="arg-projection-method">projection_method<a class="anchor" aria-label="anchor" href="#arg-projection-method"></a></dt>

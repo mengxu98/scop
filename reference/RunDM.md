@@ -126,28 +126,28 @@ RunDM(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-11 17:35:35] Start standard scop workflow...
-#> ℹ [2026-03-11 17:35:36] Checking a list of <Seurat>...
-#> ! [2026-03-11 17:35:36] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:35:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:35:38] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:35:39] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-11 17:35:39] Number of available HVF: 2000
-#> ℹ [2026-03-11 17:35:39] Finished check
-#> ℹ [2026-03-11 17:35:39] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-11 17:35:40] Perform pca linear dimension reduction
-#> ℹ [2026-03-11 17:35:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-11 17:35:41] Reorder clusters...
-#> ℹ [2026-03-11 17:35:41] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-11 17:35:41] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-11 17:35:45] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-11 17:35:50] Run scop standard workflow completed
+#> ℹ [2026-03-20 09:24:51] Start standard scop workflow...
+#> ℹ [2026-03-20 09:24:52] Checking a list of <Seurat>...
+#> ! [2026-03-20 09:24:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:24:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:24:54] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:24:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-20 09:24:55] Number of available HVF: 2000
+#> ℹ [2026-03-20 09:24:55] Finished check
+#> ℹ [2026-03-20 09:24:56] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-20 09:24:56] Perform pca linear dimension reduction
+#> ℹ [2026-03-20 09:24:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-20 09:24:57] Reorder clusters...
+#> ℹ [2026-03-20 09:24:57] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-20 09:24:57] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-20 09:25:02] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-20 09:25:06] Run scop standard workflow completed
 pancreas_sub <- RunDM(
   object = pancreas_sub,
   features = SeuratObject::VariableFeatures(pancreas_sub)
 )
-#> ◌ [2026-03-11 17:35:50] Running destiny::DiffusionMap
-#> ℹ [2026-03-11 17:35:57] Using 50 principal components to speed up computation (provided 2000 features)
+#> ◌ [2026-03-20 09:25:06] Running destiny::DiffusionMap
+#> ℹ [2026-03-20 09:25:14] Using 50 principal components to speed up computation (provided 2000 features)
 #> Error in loadNamespace(name): there is no package called ‘destiny’
 
 CellDimPlot(

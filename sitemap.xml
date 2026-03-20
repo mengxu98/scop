@@ -41,6 +41,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/FetchH5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/FindExpressedMarkers.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GSEAPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/GSVAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GeneConvert.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetAssayData5.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GetFeaturesData.html</loc></url>
@@ -53,6 +54,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/ListDB.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ListEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/MNN_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/MetabolismPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PAGAPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareDB.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareEnv.html</loc></url>
@@ -71,6 +73,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunCytoTRACE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDEtest.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDM.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunDecontX.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDimReduction.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDoubletCalling.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.html</loc></url>
@@ -79,11 +82,13 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunFR.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGLMPCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunGSEA.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunGSVA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunHarmony2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunKNNMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunKNNPredict.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunLargeVis.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMDS.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunMetabolism.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle3.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunNMF.html</loc></url>
@@ -119,14 +124,13 @@
 <url><loc>https://mengxu98.github.io/scop/reference/env_info.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_requirements.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/fastMNN_integrate.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/ifnb_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/integration_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/panc8_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/pancreas_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/print.scop_logo.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/ref_scHCL.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ref_scMCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/remove_python.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop-package.html</loc></url>

@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,55 +61,57 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package provides a comprehensive set of tools for single-cell omics data processing and downstream analysis:</p>
+<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package provides a unified and extensible framework for single-cell omics data processing and downstream analysis in <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a>:</p>
 <ul>
-<li>Integrated single-cell quality control methods, including doublet detection methods (<a href="https://github.com/plger/scDblFinder" class="external-link">scDblFinder</a>, <a href="https://github.com/kostkalab/scds" class="external-link">scds</a>, <a href="https://github.com/swolock/scrublet" class="external-link">Scrublet</a>, <a href="https://github.com/JonathanShor/DoubletDetection" class="external-link">DoubletDetection</a>).</li>
+<li>Integrated single-cell quality control methods, including doublet detection methods (<a href="https://github.com/plger/scDblFinder" class="external-link">scDblFinder</a>, <a href="https://github.com/kostkalab/scds" class="external-link">scds</a>, <a href="https://github.com/swolock/scrublet" class="external-link">Scrublet</a>, <a href="https://github.com/JonathanShor/DoubletDetection" class="external-link">DoubletDetection</a>) and ambient RNA decontamination via <a href="https://github.com/campbio/decontX" class="external-link">decontX</a>.</li>
 <li>Pipelines embedded with multiple methods for normalization, feature reduction (PCA, ICA, NMF, MDS, <a href="https://github.com/willtownes/glmpca" class="external-link">GLMPCA</a>, <a href="https://github.com/lmcinnes/umap" class="external-link">UMAP</a>, <a href="https://github.com/eamid/trimap" class="external-link">TriMap</a>, <a href="https://github.com/lferry007/LargeVis" class="external-link">LargeVis</a>, <a href="https://github.com/YingfanWang/PaCMAP" class="external-link">PaCMAP</a>, <a href="https://github.com/KrishnaswamyLab/PHATE" class="external-link">PHATE</a>, <a href="https://bioconductor.org/packages/release/bioc/html/destiny.html" class="external-link">DM</a>, FR), and cell population identification.</li>
 <li>Pipelines embedded with multiple integration methods for scRNA-seq, including Uncorrected, <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a>, <a href="https://github.com/scverse/scvi-tools" class="external-link">scVI</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">MNN</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">fastMNN</a>, <a href="https://github.com/immunogenomics/harmony" class="external-link">Harmony</a>, <a href="https://github.com/brianhie/scanorama" class="external-link">Scanorama</a>, <a href="https://github.com/Teichlab/bbknn" class="external-link">BBKNN</a>, <a href="https://github.com/quadbiolab/simspec" class="external-link">CSS</a>, <a href="https://github.com/welch-lab/liger" class="external-link">LIGER</a>, <a href="https://github.com/kharchenkolab/conos" class="external-link">Conos</a>, <a href="https://bioconductor.org/packages/release/bioc/html/sva.html" class="external-link">ComBat</a>.</li>
 <li>Multiple methods for automatic annotation of single-cell data (<a href="https://github.com/Teichlab/celltypist" class="external-link">CellTypist</a>, <a href="https://github.com/dviraran/SingleR" class="external-link">SingleR</a>, <a href="https://github.com/hemberg-lab/scmap" class="external-link">Scmap</a>, KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, <a href="https://github.com/immunogenomics/symphony" class="external-link">SymphonyMap</a>).</li>
 <li>Multiple single-cell downstream analyses:
 <ul>
-<li>
-<strong>Differential expression analysis</strong>: identification of differential features, expressed marker identification.</li>
-<li>
-<strong>Enrichment analysis</strong>: over-representation analysis, <a href="https://www.gsea-msigdb.org/gsea/index.jsp" class="external-link">GSEA</a> analysis, dynamic enrichment analysis.</li>
-<li>
-<strong>Cellular potency</strong>: <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> for predicting cellular differentiation potential.</li>
-<li>
-<strong>RNA velocity</strong>: <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, <a href="https://github.com/theislab/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/broadinstitute/wot" class="external-link">WOT</a>.</li>
-<li>
-<strong>Trajectory inference</strong>: <a href="https://bioconductor.org/packages/release/bioc/html/slingshot.html" class="external-link">Slingshot</a>, <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a>, <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a>, identification of dynamic features.</li>
-<li>
-<strong>Cell-Cell Communication</strong>: <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a> for cell-cell communication.</li>
+<li>Differential expression analysis: identification of differential features, expressed marker identification.</li>
+<li>Enrichment analysis: over-representation analysis, <a href="https://www.gsea-msigdb.org/gsea/index.jsp" class="external-link">GSEA</a> analysis, dynamic enrichment analysis.</li>
+<li>Cellular potency: <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> for predicting cellular differentiation potential.</li>
+<li>RNA velocity: <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, <a href="https://github.com/theislab/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/broadinstitute/wot" class="external-link">WOT</a>.</li>
+<li>Trajectory inference: <a href="https://bioconductor.org/packages/release/bioc/html/slingshot.html" class="external-link">Slingshot</a>, <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a>, <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a>, identification of dynamic features.</li>
+<li>Cell-Cell Communication: <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a> for cell-cell communication.</li>
 </ul>
 </li>
 <li>High-quality data visualization methods.</li>
 <li>Fast deployment of single-cell data into SCExplorer, a <a href="https://shiny.rstudio.com/" class="external-link">shiny</a> app that provides an interactive visualization interface.</li>
 </ul>
-<p>The functions in <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> are all developed around the <a href="https://github.com/satijalab/seurat-object" class="external-link">SeuratObject</a> and are compatible with other <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a> functions.</p>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="table-of-contents">Table of Contents<a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
 </h2>
 <ul>
 <li>
 <a href="#scop-single-cell-omics-analysis-pipeline">scop: Single-Cell Omics analysis Pipeline</a>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#table-of-contents">Table of Contents</a></li>
 <li><a href="#credits">Credits</a></li>
 <li>
 <a href="#installation">Installation</a>
 <ul>
-<li><a href="#r-version-requirement">R version requirement</a></li>
-<li><a href="#prepare-python-environment">Prepare python environment</a></li>
+<li><a href="#r-requirement"><em>R</em> requirement</a></li>
+<li><a href="#python-environment"><em>Python</em> environment</a></li>
+</ul>
+</li>
+<li>
+<a href="#pipeline">Pipeline</a>
+<ul>
 <li><a href="#data-exploration">Data exploration</a></li>
-<li><a href="#cellqc">CellQC</a></li>
-<li><a href="#standard-pipeline">Standard pipeline</a></li>
+<li><a href="#quality-control">Quality control</a></li>
 <li><a href="#integration-pipeline">Integration pipeline</a></li>
+<li>
+<a href="#cell-annotation">Cell annotation</a>
+<ul>
 <li><a href="#cell-projection-between-single-cell-datasets">Cell projection between single-cell datasets</a></li>
 <li><a href="#cell-annotation-using-bulk-rna-seq-datasets">Cell annotation using bulk RNA-seq datasets</a></li>
 <li><a href="#cell-annotation-using-single-cell-datasets">Cell annotation using single-cell datasets</a></li>
+</ul>
+</li>
 <li>
 <a href="#cellular-potency">Cellular potency</a>
 <ul>
@@ -117,23 +119,23 @@
 </ul>
 </li>
 <li>
-<a href="#velocity-analysis">Velocity analysis</a>
-<ul>
-<li><a href="#scvelo">SCVELO</a></li>
-</ul>
-</li>
-<li>
 <a href="#trajectory-inference">Trajectory inference</a>
 <ul>
-<li><a href="#paga-analysis">PAGA analysis</a></li>
+<li><a href="#rna-velocity-analysis">RNA Velocity analysis</a></li>
+<li><a href="#paga">PAGA</a></li>
 <li><a href="#slingshot">Slingshot</a></li>
 <li><a href="#monocle3">Monocle3</a></li>
 </ul>
 </li>
 <li><a href="#dynamic-features">Dynamic features</a></li>
 <li><a href="#differential-expression-analysis">Differential expression analysis</a></li>
-<li><a href="#enrichment-analysisover-representation">Enrichment analysis(over-representation)</a></li>
-<li><a href="#enrichment-analysisgsea">Enrichment analysis(GSEA)</a></li>
+<li>
+<a href="#enrichment-analysis">Enrichment analysis</a>
+<ul>
+<li><a href="#over-representation">Over-representation</a></li>
+<li><a href="#gsea">GSEA</a></li>
+</ul>
+</li>
 <li><a href="#interactive-data-visualization-with-scexplorer">Interactive data visualization with SCExplorer</a></li>
 <li><a href="#other-visualization-examples">Other visualization examples</a></li>
 </ul>
@@ -145,13 +147,21 @@
 <div class="section level2">
 <h2 id="credits">Credits<a class="anchor" aria-label="anchor" href="#credits"></a>
 </h2>
-<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package is developed based on the <a href="https://github.com/zhanghao-njmu/SCP" class="external-link">SCP</a> package, making it compatible with <a href="https://github.com/mojaveazure/seurat" class="external-link">Seurat</a> V5 and adding support for single-cell omics data.</p>
+<p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package is developed based on the <a href="https://github.com/zhanghao-njmu/SCP" class="external-link">SCP</a> package, with the following major improvements:</p>
+<ol style="list-style-type: decimal">
+<li>Compatibility: full support for <a href="https://github.com/satijalab/seurat" class="external-link">Seurat v5</a>.</li>
+<li>Stability: a large number of known issues have been fixed, and all functions have passed <code>devtools::check()</code>.</li>
+<li>Usability: the <em>Python</em> environment setup workflow has been improved, allowing a new complete environment to be deployed within minutes; standardized console messages via <code><a href="https://mengxu98.github.io/thisutils/reference/log_message.html" class="external-link">thisutils::log_message</a></code> for consistent, readable function outputs.</li>
+<li>Performance: a new parallel framework has been developed based on <code><a href="https://mengxu98.github.io/thisutils/reference/parallelize_fun.html" class="external-link">thisutils::parallelize_fun</a></code>, providing a consistent experience across <em>Linux</em>, <em>macOS</em>, and <em>Windows</em>.</li>
+<li>Functionality: more analysis methods have been added, including <a href="https://github.com/scverse/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/Teichlab/celltypist" class="external-link">CellTypist</a>, <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a>, <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a>, <a href="https://github.com/rcastelo/GSVA" class="external-link">GSVA</a>, <a href="https://github.com/wu-yc/scMetabolism" class="external-link">scMetabolism</a> and <a href="https://github.com/rpolicastro/scProportionTest" class="external-link">scProportionTest</a>.</li>
+</ol>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="section level3">
-<h3 id="r-version-requirement">R version requirement<a class="anchor" aria-label="anchor" href="#r-version-requirement"></a>
+<h3 id="r-requirement">
+<em>R</em> requirement<a class="anchor" aria-label="anchor" href="#r-requirement"></a>
 </h3>
 <ul>
 <li>R &gt;= 4.1.0</li>
@@ -164,9 +174,10 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"mengxu98/scop"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="prepare-python-environment">Prepare python environment<a class="anchor" aria-label="anchor" href="#prepare-python-environment"></a>
+<h3 id="python-environment">
+<em>Python</em> environment<a class="anchor" aria-label="anchor" href="#python-environment"></a>
 </h3>
-<p>To run functions such as <code><a href="reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="reference/RunSCVELO.html">RunSCVELO()</a></code>, <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> requires <a href="https://docs.conda.io/en/latest/miniconda.html" class="external-link">conda</a> to create a separate python environment. The default environment name is <code>"scop_env"</code>. You can specify the environment name for scop by setting <code>options(scop_envname = "new_name")</code>.</p>
+<p>To run functions such as <code><a href="reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="reference/RunSCVELO.html">RunSCVELO()</a></code>, <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> requires <a href="https://docs.conda.io/en/latest/miniconda.html" class="external-link">conda</a> to create a separate environment. The default environment name is <code>"scop_env"</code>. You can specify the environment name for scop by setting <code>options(scop_envname = "new_name")</code>.</p>
 <p>Now, you can run <code><a href="reference/PrepareEnv.html">PrepareEnv()</a></code> to create the python environment for <a href="https://github.com/mengxu98/scop" class="external-link">scop</a>. If the conda binary is not found, it will automatically download and install miniconda.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">scop</span><span class="fu">::</span><span class="fu"><a href="reference/PrepareEnv.html">PrepareEnv</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -180,29 +191,39 @@
 <span>  miniconda_repo <span class="op">=</span> <span class="st">"https://mirrors.bfsu.edu.cn/anaconda/miniconda"</span>,</span>
 <span>  pip_options <span class="op">=</span> <span class="st">"-i https://pypi.tuna.tsinghua.edu.cn/simple"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Available miniconda repositories:</p>
 <ul>
-<li><p><a href="https://repo.anaconda.com/miniconda" class="external-link uri">https://repo.anaconda.com/miniconda</a> (default)</p></li>
-<li><p><a href="http://mirrors.aliyun.com/anaconda/miniconda" class="external-link uri">http://mirrors.aliyun.com/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirrors.bfsu.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.bfsu.edu.cn/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirrors.pku.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.pku.edu.cn/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirror.nju.edu.cn/anaconda/miniconda" class="external-link uri">https://mirror.nju.edu.cn/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirrors.sustech.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.sustech.edu.cn/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirrors.xjtu.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.xjtu.edu.cn/anaconda/miniconda</a></p></li>
-<li><p><a href="https://mirrors.hit.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.hit.edu.cn/anaconda/miniconda</a></p></li>
+<li>Available miniconda repositories:
+<ul>
+<li>
+<a href="https://repo.anaconda.com/miniconda" class="external-link uri">https://repo.anaconda.com/miniconda</a> (default)</li>
+<li><a href="http://mirrors.aliyun.com/anaconda/miniconda" class="external-link uri">http://mirrors.aliyun.com/anaconda/miniconda</a></li>
+<li><a href="https://mirrors.bfsu.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.bfsu.edu.cn/anaconda/miniconda</a></li>
+<li><a href="https://mirrors.pku.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.pku.edu.cn/anaconda/miniconda</a></li>
+<li><a href="https://mirror.nju.edu.cn/anaconda/miniconda" class="external-link uri">https://mirror.nju.edu.cn/anaconda/miniconda</a></li>
+<li><a href="https://mirrors.sustech.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.sustech.edu.cn/anaconda/miniconda</a></li>
+<li><a href="https://mirrors.xjtu.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.xjtu.edu.cn/anaconda/miniconda</a></li>
+<li><a href="https://mirrors.hit.edu.cn/anaconda/miniconda" class="external-link uri">https://mirrors.hit.edu.cn/anaconda/miniconda</a></li>
 </ul>
-<p>Available PyPI mirrors:</p>
+</li>
+<li>Available PyPI mirrors:
 <ul>
-<li><p><a href="https://pypi.python.org/simple" class="external-link uri">https://pypi.python.org/simple</a> (default)</p></li>
-<li><p><a href="https://mirrors.aliyun.com/pypi/simple" class="external-link uri">https://mirrors.aliyun.com/pypi/simple</a></p></li>
-<li><p><a href="https://pypi.tuna.tsinghua.edu.cn/simple" class="external-link uri">https://pypi.tuna.tsinghua.edu.cn/simple</a></p></li>
-<li><p><a href="https://mirrors.pku.edu.cn/pypi/simple" class="external-link uri">https://mirrors.pku.edu.cn/pypi/simple</a></p></li>
-<li><p><a href="https://mirror.nju.edu.cn/pypi/web/simple" class="external-link uri">https://mirror.nju.edu.cn/pypi/web/simple</a></p></li>
-<li><p><a href="https://mirrors.sustech.edu.cn/pypi/simple" class="external-link uri">https://mirrors.sustech.edu.cn/pypi/simple</a></p></li>
-<li><p><a href="https://mirrors.xjtu.edu.cn/pypi/simple" class="external-link uri">https://mirrors.xjtu.edu.cn/pypi/simple</a></p></li>
-<li><p><a href="https://mirrors.hit.edu.cn/pypi/web/simple" class="external-link uri">https://mirrors.hit.edu.cn/pypi/web/simple</a></p></li>
+<li>
+<a href="https://pypi.python.org/simple" class="external-link uri">https://pypi.python.org/simple</a> (default)</li>
+<li><a href="https://mirrors.aliyun.com/pypi/simple" class="external-link uri">https://mirrors.aliyun.com/pypi/simple</a></li>
+<li><a href="https://pypi.tuna.tsinghua.edu.cn/simple" class="external-link uri">https://pypi.tuna.tsinghua.edu.cn/simple</a></li>
+<li><a href="https://mirrors.pku.edu.cn/pypi/simple" class="external-link uri">https://mirrors.pku.edu.cn/pypi/simple</a></li>
+<li><a href="https://mirror.nju.edu.cn/pypi/web/simple" class="external-link uri">https://mirror.nju.edu.cn/pypi/web/simple</a></li>
+<li><a href="https://mirrors.sustech.edu.cn/pypi/simple" class="external-link uri">https://mirrors.sustech.edu.cn/pypi/simple</a></li>
+<li><a href="https://mirrors.xjtu.edu.cn/pypi/simple" class="external-link uri">https://mirrors.xjtu.edu.cn/pypi/simple</a></li>
+<li><a href="https://mirrors.hit.edu.cn/pypi/web/simple" class="external-link uri">https://mirrors.hit.edu.cn/pypi/web/simple</a></li>
+</ul>
+</li>
 </ul>
 </div>
+</div>
+<div class="section level2">
+<h2 id="pipeline">Pipeline<a class="anchor" aria-label="anchor" href="#pipeline"></a>
+</h2>
 <div class="section level3">
 <h3 id="data-exploration">Data exploration<a class="anchor" aria-label="anchor" href="#data-exploration"></a>
 </h3>
@@ -216,10 +237,6 @@
 <span><span class="co">#&gt; Active assay: RNA (15998 features, 0 variable features)</span></span>
 <span><span class="co">#&gt;  1 layer present: counts</span></span>
 <span><span class="co">#&gt;  2 other assays present: spliced, unspliced</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="standard-pipeline">Standard pipeline<a class="anchor" aria-label="anchor" href="#standard-pipeline"></a>
-</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
@@ -298,7 +315,7 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="cellqc">CellQC<a class="anchor" aria-label="anchor" href="#cellqc"></a>
+<h3 id="quality-control">Quality control<a class="anchor" aria-label="anchor" href="#quality-control"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunCellQC.html">RunCellQC</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
@@ -319,7 +336,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"db_qc"</span>, <span class="st">"outlier_qc"</span>,</span>
+<span>    <span class="st">"db_qc"</span>, <span class="st">"decontX_qc"</span>, <span class="st">"outlier_qc"</span>,</span>
 <span>    <span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>,</span>
 <span>    <span class="st">"mito_qc"</span>, <span class="st">"ribo_qc"</span>,</span>
 <span>    <span class="st">"ribo_mito_ratio_qc"</span>, <span class="st">"species_qc"</span></span>
@@ -349,14 +366,17 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="cell-projection-between-single-cell-datasets">Cell projection between single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-projection-between-single-cell-datasets"></a>
+<h3 id="cell-annotation">Cell annotation<a class="anchor" aria-label="anchor" href="#cell-annotation"></a>
 </h3>
+<div class="section level4">
+<h4 id="cell-projection-between-single-cell-datasets">Cell projection between single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-projection-between-single-cell-datasets"></a>
+</h4>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
 <span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  force_tolower <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">genenames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
 <span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RenameFeatures.html">RenameFeatures</a></span><span class="op">(</span></span>
@@ -381,11 +401,11 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level3">
-<h3 id="cell-annotation-using-bulk-rna-seq-datasets">Cell annotation using bulk RNA-seq datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-bulk-rna-seq-datasets"></a>
-</h3>
+<div class="section level4">
+<h4 id="cell-annotation-using-bulk-rna-seq-datasets">Cell annotation using bulk RNA-seq datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-bulk-rna-seq-datasets"></a>
+</h4>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ref_scMCA"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ref_scMCA</span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
 <span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
 <span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span>,</span>
@@ -401,9 +421,9 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level3">
-<h3 id="cell-annotation-using-single-cell-datasets">Cell annotation using single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-single-cell-datasets"></a>
-</h3>
+<div class="section level4">
+<h4 id="cell-annotation-using-single-cell-datasets">Cell annotation using single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-single-cell-datasets"></a>
+</h4>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
 <span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
@@ -436,6 +456,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
+</div>
 <div class="section level3">
 <h3 id="cellular-potency">Cellular potency<a class="anchor" aria-label="anchor" href="#cellular-potency"></a>
 </h3>
@@ -457,12 +478,12 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="velocity-analysis">Velocity analysis<a class="anchor" aria-label="anchor" href="#velocity-analysis"></a>
+<h3 id="trajectory-inference">Trajectory inference<a class="anchor" aria-label="anchor" href="#trajectory-inference"></a>
 </h3>
-<p>To estimate RNA velocity, both “spliced” and “unspliced” assays in Seurat object. You can generate these matrices using <a href="http://velocyto.org/velocyto.py/index.html" class="external-link">velocyto</a>, <a href="https://bustools.github.io/BUS_notebooks_R/velocity.html" class="external-link">bustools</a>, or <a href="https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/" class="external-link">alevin</a>.</p>
 <div class="section level4">
-<h4 id="scvelo">SCVELO<a class="anchor" aria-label="anchor" href="#scvelo"></a>
+<h4 id="rna-velocity-analysis">RNA Velocity analysis<a class="anchor" aria-label="anchor" href="#rna-velocity-analysis"></a>
 </h4>
+<p>To estimate RNA velocity, both “spliced” and “unspliced” assays are required in the Seurat object. You can generate these matrices using <a href="http://velocyto.org/velocyto.py/index.html" class="external-link">velocyto</a>, <a href="https://bustools.github.io/BUS_notebooks_R/velocity.html" class="external-link">bustools</a>, or <a href="https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/" class="external-link">alevin</a>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunSCVELO.html">RunSCVELO</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -488,12 +509,8 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
-</div>
-<div class="section level3">
-<h3 id="trajectory-inference">Trajectory inference<a class="anchor" aria-label="anchor" href="#trajectory-inference"></a>
-</h3>
 <div class="section level4">
-<h4 id="paga-analysis">PAGA analysis<a class="anchor" aria-label="anchor" href="#paga-analysis"></a>
+<h4 id="paga">PAGA<a class="anchor" aria-label="anchor" href="#paga"></a>
 </h4>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span>
@@ -726,8 +743,11 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="enrichment-analysis-over-representation">Enrichment analysis (over-representation)<a class="anchor" aria-label="anchor" href="#enrichment-analysis-over-representation"></a>
+<h3 id="enrichment-analysis">Enrichment analysis<a class="anchor" aria-label="anchor" href="#enrichment-analysis"></a>
 </h3>
+<div class="section level4">
+<h4 id="over-representation">Over-representation<a class="anchor" aria-label="anchor" href="#over-representation"></a>
+</h4>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -795,9 +815,9 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level3">
-<h3 id="enrichment-analysis-gsea">Enrichment analysis (GSEA)<a class="anchor" aria-label="anchor" href="#enrichment-analysis-gsea"></a>
-</h3>
+<div class="section level4">
+<h4 id="gsea">GSEA<a class="anchor" aria-label="anchor" href="#gsea"></a>
+</h4>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunGSEA.html">RunGSEA</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -824,6 +844,7 @@
 <span>  topTerm <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"></p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="interactive-data-visualization-with-scexplorer">Interactive data visualization with SCExplorer<a class="anchor" aria-label="anchor" href="#interactive-data-visualization-with-scexplorer"></a>

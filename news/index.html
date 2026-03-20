@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,36 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.6" id="scop-086">scop 0.8.6<a class="anchor" aria-label="anchor" href="#scop-086"></a></h2>
+<ul><li>
+<strong>feat</strong>:
+<ul><li>Added <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code> for gene set variation analysis and <code><a href="../reference/GSVAPlot.html">GSVAPlot()</a></code> for visualization of <a href="https://github.com/rcastelo/GSVA" class="external-link">GSVA</a> results. Related issue <a href="https://github.com/mengxu98/scop/issues/146" class="external-link">#146</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
+<li>
+<code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>
+<ul><li>Added <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code> for single-cell metabolism pathway scoring with support for <code>AUCell</code>, <code>GSVA</code>, <code>ssGSEA</code>, and optional <code>VISION</code>, and <code><a href="../reference/MetabolismPlot.html">MetabolismPlot()</a></code> for visualization</li>
+<li>
+<code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code> now uses <a href="https://github.com/wu-yc/scMetabolism" class="external-link">scMetabolism</a> KEGG / Reactome metabolism pathway definitions to identify metabolism-related terms, then rebuilds pathway gene sets from updated <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code> annotations, enabling cached database updates and cross-species metabolism scoring. Related issue <a href="https://github.com/mengxu98/scop/issues/146" class="external-link">#146</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
+</ul></li>
+<li>Added <code><a href="../reference/RunDecontX.html">RunDecontX()</a></code> and integrated optional <code>decontX</code> ambient RNA decontamination into <code><a href="../reference/RunCellQC.html">RunCellQC()</a></code>, including contamination metadata, optional decontaminated assay output, and threshold-based QC filtering. Related issue <a href="https://github.com/mengxu98/scop/issues/147" class="external-link">#147</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
+</ul></li>
+<li>
+<strong>fix</strong>:
+<ul><li>
+<code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code>: Fixed duplicated X/Y axis titles and main title when <code>stack = TRUE</code> with <code>theme_args</code> or <code>title</code>. Stack assembly now strips axis and plot titles from non-edge panels and draws a single shared ylab/title via gtable; theme styling from <code>theme_args</code> (e.g. <code>axis.title.y</code>, <code>title</code>/<code>plot.title</code>) is applied to these shared grobs. Related issue <a href="https://github.com/mengxu98/scop/issues/145" class="external-link">#145</a> (<a href="https://github.com/PanSX-Dr" class="external-link">@PanSX-Dr</a>).</li>
+</ul></li>
+<li>
+<strong>docs</strong>:
+<ul><li>Updated the README badge/logo.</li>
+</ul></li>
+<li>
+<strong>data</strong>:
+<ul><li>Removed the example datasets <code>ifnb_sub</code>, <code>ref_scHCL</code>, and <code>ref_scZCL</code>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.5" id="scop-085">scop 0.8.5<a class="anchor" aria-label="anchor" href="#scop-085"></a></h2>
 <ul><li>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Statistical plot of features</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/FeatureStatPlot.R" class="external-link"><code>R/FeatureStatPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/FeatureStatPlot.R" class="external-link"><code>R/FeatureStatPlot.R</code></a></small>
       <div class="d-none name"><code>FeatureStatPlot.Rd</code></div>
     </div>
 
@@ -538,22 +538,22 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:37] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:38] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:07:38] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:40] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:40] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:40] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:41] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:41] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:42] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:07:46] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-11 17:07:50] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:37] Start standard scop workflow...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:37] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:37:38] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:39] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:40] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:40] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:40] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:40] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:42] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:37:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:37:48] Run scop standard workflow completed</span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span>, <span class="st">"Fev"</span><span class="op">)</span>,</span></span>
@@ -701,8 +701,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:07:59] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:07:59] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:37:58] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:37:58] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -717,8 +717,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  add_box <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  add_trend <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:00] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:01] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:37:59] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:37:59] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -732,10 +732,10 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:12] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:12] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:12] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:12] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:38:07] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:08] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:38:08] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:08] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -803,10 +803,10 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  y.max <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:19] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:19] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-11 17:08:19] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:19] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:38:14] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:14] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:38:15] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:15] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -825,11 +825,16 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>, <span class="co"># Ductal</span></span></span>
-<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>, <span class="co"># EPs</span></span></span>
-<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>, <span class="co"># Pre-endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>, <span class="co"># Endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span> <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
+<span class="r-in"><span>    <span class="co"># Ductal</span></span></span>
+<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># EPs</span></span></span>
+<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Pre-endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
+<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  legend.position <span class="op">=</span> <span class="st">"top"</span>,</span></span>
 <span class="r-in"><span>  legend.direction <span class="op">=</span> <span class="st">"horizontal"</span>,</span></span>
@@ -842,11 +847,16 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>, <span class="co"># Ductal</span></span></span>
-<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>, <span class="co"># EPs</span></span></span>
-<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>, <span class="co"># Pre-endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>, <span class="co"># Endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span> <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
+<span class="r-in"><span>    <span class="co"># Ductal</span></span></span>
+<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># EPs</span></span></span>
+<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Pre-endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
+<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  fill.by <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"box"</span>,</span></span>
@@ -856,8 +866,6 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">8</span>, height <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-22.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># As the plot is created by combining,</span></span></span>
-<span class="r-in"><span><span class="co"># we can adjust the overall height and width directly.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -879,7 +887,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:31] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:26] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -901,7 +909,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  sig_label <span class="op">=</span> <span class="st">"p.format"</span>,</span></span>
 <span class="r-in"><span>  sig_labelsize <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:32] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:28] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
@@ -919,24 +927,33 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span>, <span class="st">"Ins1"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
-<span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Ins1"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rbp4"</span>, <span class="st">"Ins1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:35] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:31] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>, <span class="co"># Ductal</span></span></span>
-<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>, <span class="co"># EPs</span></span></span>
-<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>, <span class="co"># Pre-endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>, <span class="co"># Endocrine</span></span></span>
-<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span> <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>, group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Ductal</span></span></span>
+<span class="r-in"><span>    <span class="st">"Sox9"</span>, <span class="st">"Anxa2"</span>, <span class="st">"Bicc1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># EPs</span></span></span>
+<span class="r-in"><span>    <span class="st">"Neurog3"</span>, <span class="st">"Hes6"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Pre-endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Fev"</span>, <span class="st">"Neurod1"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Endocrine</span></span></span>
+<span class="r-in"><span>    <span class="st">"Rbp4"</span>, <span class="st">"Pyy"</span>,</span></span>
+<span class="r-in"><span>    <span class="co"># Beta, Alpha, Delta, Epsilon</span></span></span>
+<span class="r-in"><span>    <span class="st">"Ins1"</span>, <span class="st">"Gcg"</span>, <span class="st">"Sst"</span>, <span class="st">"Ghrl"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-11 17:08:38] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:38:34] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-plt img"><img src="FeatureStatPlot-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>

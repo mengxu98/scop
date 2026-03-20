@@ -270,35 +270,35 @@ RunDEtest(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-11 17:31:53] Start standard scop workflow...
-#> ℹ [2026-03-11 17:31:53] Checking a list of <Seurat>...
-#> ! [2026-03-11 17:31:53] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:31:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:31:55] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-11 17:31:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-11 17:31:56] Number of available HVF: 2000
-#> ℹ [2026-03-11 17:31:56] Finished check
-#> ℹ [2026-03-11 17:31:56] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-11 17:31:57] Perform pca linear dimension reduction
-#> ℹ [2026-03-11 17:31:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-11 17:31:58] Reorder clusters...
-#> ℹ [2026-03-11 17:31:58] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-11 17:31:58] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-11 17:32:02] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-11 17:32:07] Run scop standard workflow completed
+#> ℹ [2026-03-20 09:21:06] Start standard scop workflow...
+#> ℹ [2026-03-20 09:21:07] Checking a list of <Seurat>...
+#> ! [2026-03-20 09:21:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:21:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:21:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-03-20 09:21:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-20 09:21:09] Number of available HVF: 2000
+#> ℹ [2026-03-20 09:21:10] Finished check
+#> ℹ [2026-03-20 09:21:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-20 09:21:10] Perform pca linear dimension reduction
+#> ℹ [2026-03-20 09:21:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-03-20 09:21:11] Reorder clusters...
+#> ℹ [2026-03-20 09:21:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-03-20 09:21:11] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-03-20 09:21:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-03-20 09:21:20] Run scop standard workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "SubCellType"
 )
-#> ℹ [2026-03-11 17:32:07] Data type is log-normalized
-#> ℹ [2026-03-11 17:32:07] Start differential expression test
-#> ℹ [2026-03-11 17:32:07] Find all markers(wilcox) among [1] 8 groups...
-#> ℹ [2026-03-11 17:32:07] Using 1 core
-#> ⠙ [2026-03-11 17:32:07] Running for Ductal [1/8] ■■■■■                         …
-#> ✔ [2026-03-11 17:32:07] Completed 8 tasks in 1.2s
+#> ℹ [2026-03-20 09:21:20] Data type is log-normalized
+#> ℹ [2026-03-20 09:21:20] Start differential expression test
+#> ℹ [2026-03-20 09:21:20] Find all markers(wilcox) among [1] 8 groups...
+#> ℹ [2026-03-20 09:21:20] Using 1 core
+#> ⠙ [2026-03-20 09:21:20] Running for Ductal [1/8] ■■■■■                         …
+#> ✔ [2026-03-20 09:21:20] Completed 8 tasks in 1.1s
 #> 
-#> ℹ [2026-03-11 17:32:07] Building results
-#> ✔ [2026-03-11 17:32:08] Differential expression test completed
+#> ℹ [2026-03-20 09:21:20] Building results
+#> ✔ [2026-03-20 09:21:22] Differential expression test completed
 AllMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -309,9 +309,9 @@ ht1 <- GroupHeatmap(
   feature_split = AllMarkers$group1,
   group.by = "SubCellType"
 )
-#> ℹ [2026-03-11 17:32:11] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:32:11] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:32:11] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:21:25] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:21:25] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:21:25] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht1$plot
 
@@ -328,9 +328,9 @@ ht2 <- GroupHeatmap(
   group.by = "SubCellType",
   show_row_names = TRUE
 )
-#> ℹ [2026-03-11 17:32:14] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:32:14] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:32:14] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:21:27] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:21:27] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:21:27] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht2$plot
 
@@ -341,15 +341,15 @@ pancreas_sub <- RunDEtest(
   markers_type = "paired",
   cores = 2
 )
-#> ℹ [2026-03-11 17:32:15] Data type is log-normalized
-#> ℹ [2026-03-11 17:32:15] Start differential expression test
-#> ℹ [2026-03-11 17:32:15] Find paired markers(wilcox) among [1] 8 groups...
-#> ℹ [2026-03-11 17:32:15] Using 2 cores
-#> ⠙ [2026-03-11 17:32:15] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-03-11 17:32:15] Completed 56 tasks in 5s
+#> ℹ [2026-03-20 09:21:28] Data type is log-normalized
+#> ℹ [2026-03-20 09:21:28] Start differential expression test
+#> ℹ [2026-03-20 09:21:28] Find paired markers(wilcox) among [1] 8 groups...
+#> ℹ [2026-03-20 09:21:28] Using 2 cores
+#> ⠙ [2026-03-20 09:21:28] Running for 1... [28/56] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-03-20 09:21:28] Completed 56 tasks in 6.1s
 #> 
-#> ℹ [2026-03-11 17:32:15] Building results
-#> ✔ [2026-03-11 17:32:20] Differential expression test completed
+#> ℹ [2026-03-20 09:21:28] Building results
+#> ✔ [2026-03-20 09:21:34] Differential expression test completed
 PairedMarkers <- dplyr::filter(
   pancreas_sub@tools$DEtest_SubCellType$PairedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -360,9 +360,9 @@ ht3 <- GroupHeatmap(
   feature_split = PairedMarkers$group1,
   group.by = "SubCellType"
 )
-#> ℹ [2026-03-11 17:33:05] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:33:05] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:33:05] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:22:22] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:22:22] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:22:22] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht3$plot
 
@@ -373,35 +373,35 @@ panc8_sub <- integration_scop(
   batch = "tech",
   integration_method = "Uncorrected"
 )
-#> ◌ [2026-03-11 17:33:09] Run Uncorrected integration...
-#> ℹ [2026-03-11 17:33:09] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-03-11 17:33:09] Checking a list of <Seurat>...
-#> ! [2026-03-11 17:33:09] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:33:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:11] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-03-11 17:33:12] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:33:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:13] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-03-11 17:33:14] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:33:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:16] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-03-11 17:33:16] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:33:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:18] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-03-11 17:33:18] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-11 17:33:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:20] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-03-11 17:33:20] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-11 17:33:21] Number of available HVF: 2000
-#> ℹ [2026-03-11 17:33:21] Finished check
-#> ℹ [2026-03-11 17:33:23] Perform Uncorrected integration
-#> ℹ [2026-03-11 17:33:25] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-11 17:33:25] Perform linear dimension reduction("pca")
-#> ℹ [2026-03-11 17:33:28] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-03-11 17:33:28] Reorder clusters...
-#> ℹ [2026-03-11 17:33:28] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
-#> ℹ [2026-03-11 17:33:33] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
-#> ✔ [2026-03-11 17:33:40] Run Uncorrected integration done
+#> ◌ [2026-03-20 09:22:25] Run Uncorrected integration...
+#> ℹ [2026-03-20 09:22:25] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-03-20 09:22:26] Checking a list of <Seurat>...
+#> ! [2026-03-20 09:22:26] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:22:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:28] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-03-20 09:22:28] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:22:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:30] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-03-20 09:22:30] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:22:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:32] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-03-20 09:22:32] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:22:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:34] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-03-20 09:22:34] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-03-20 09:22:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:36] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-03-20 09:22:37] Use the separate HVF from `srt_list`
+#> ℹ [2026-03-20 09:22:37] Number of available HVF: 2000
+#> ℹ [2026-03-20 09:22:37] Finished check
+#> ℹ [2026-03-20 09:22:40] Perform Uncorrected integration
+#> ℹ [2026-03-20 09:22:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-03-20 09:22:41] Perform linear dimension reduction("pca")
+#> ℹ [2026-03-20 09:22:43] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-03-20 09:22:43] Reorder clusters...
+#> ℹ [2026-03-20 09:22:45] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
+#> ℹ [2026-03-20 09:22:50] Perform umap nonlinear dimension reduction using Uncorrectedpca (1:10)
+#> ✔ [2026-03-20 09:22:57] Run Uncorrected integration done
 CellDimPlot(
   panc8_sub,
   group.by = c("celltype", "tech")
@@ -415,15 +415,15 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ℹ [2026-03-11 17:33:41] Data type is log-normalized
-#> ℹ [2026-03-11 17:33:41] Start differential expression test
-#> ℹ [2026-03-11 17:33:41] Find conserved markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-03-11 17:33:41] Using 2 cores
-#> ⠙ [2026-03-11 17:33:41] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-03-11 17:33:41] Completed 13 tasks in 6.5s
+#> ℹ [2026-03-20 09:22:58] Data type is log-normalized
+#> ℹ [2026-03-20 09:22:58] Start differential expression test
+#> ℹ [2026-03-20 09:22:58] Find conserved markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-03-20 09:22:58] Using 2 cores
+#> ⠙ [2026-03-20 09:22:58] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-03-20 09:22:58] Completed 13 tasks in 8.1s
 #> 
-#> ℹ [2026-03-11 17:33:41] Building results
-#> ✔ [2026-03-11 17:33:48] Differential expression test completed
+#> ℹ [2026-03-20 09:22:58] Building results
+#> ✔ [2026-03-20 09:23:06] Differential expression test completed
 ConservedMarkers1 <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -447,9 +447,9 @@ ht4 <- GroupHeatmap(
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-03-11 17:33:59] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:33:59] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:34:00] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:23:18] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:23:18] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:23:18] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht4$plot
 
@@ -461,15 +461,15 @@ panc8_sub <- RunDEtest(
   markers_type = "conserved",
   cores = 2
 )
-#> ℹ [2026-03-11 17:34:10] Data type is log-normalized
-#> ℹ [2026-03-11 17:34:10] Start differential expression test
-#> ℹ [2026-03-11 17:34:10] Find conserved markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-11 17:34:10] Using 2 cores
-#> ⠙ [2026-03-11 17:34:10] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
-#> ✔ [2026-03-11 17:34:10] Completed 5 tasks in 7.8s
+#> ℹ [2026-03-20 09:23:27] Data type is log-normalized
+#> ℹ [2026-03-20 09:23:27] Start differential expression test
+#> ℹ [2026-03-20 09:23:27] Find conserved markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-03-20 09:23:27] Using 2 cores
+#> ⠙ [2026-03-20 09:23:27] Running for celseq... [3/5] ■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-03-20 09:23:27] Completed 5 tasks in 6.6s
 #> 
-#> ℹ [2026-03-11 17:34:10] Building results
-#> ✔ [2026-03-11 17:34:18] Differential expression test completed
+#> ℹ [2026-03-20 09:23:27] Building results
+#> ✔ [2026-03-20 09:23:34] Differential expression test completed
 ConservedMarkers2 <- dplyr::filter(
   panc8_sub@tools$DEtest_tech$ConservedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
@@ -482,9 +482,9 @@ ht4 <- GroupHeatmap(
   group.by = "tech",
   split.by = "celltype"
 )
-#> ℹ [2026-03-11 17:34:21] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:34:21] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:34:21] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:23:37] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:23:37] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:23:37] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht4$plot
 
@@ -496,15 +496,15 @@ panc8_sub <- RunDEtest(
   markers_type = "disturbed",
   cores = 2
 )
-#> ℹ [2026-03-11 17:34:26] Data type is log-normalized
-#> ℹ [2026-03-11 17:34:26] Start differential expression test
-#> ℹ [2026-03-11 17:34:26] Find disturbed markers(wilcox) among [1] 13 groups...
-#> ℹ [2026-03-11 17:34:26] Using 2 cores
-#> ⠙ [2026-03-11 17:34:26] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
-#> ✔ [2026-03-11 17:34:26] Completed 13 tasks in 17.3s
+#> ℹ [2026-03-20 09:23:43] Data type is log-normalized
+#> ℹ [2026-03-20 09:23:43] Start differential expression test
+#> ℹ [2026-03-20 09:23:43] Find disturbed markers(wilcox) among [1] 13 groups...
+#> ℹ [2026-03-20 09:23:43] Using 2 cores
+#> ⠙ [2026-03-20 09:23:43] Running for delta... [7/13] ■■■■■■■■■■■■■■■■■          …
+#> ✔ [2026-03-20 09:23:43] Completed 13 tasks in 16.5s
 #> 
-#> ℹ [2026-03-11 17:34:26] Building results
-#> ✔ [2026-03-11 17:34:44] Differential expression test completed
+#> ℹ [2026-03-20 09:23:43] Building results
+#> ✔ [2026-03-20 09:24:00] Differential expression test completed
 DisturbedMarkers <- dplyr::filter(
   panc8_sub@tools$DEtest_celltype$DisturbedMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
@@ -522,9 +522,9 @@ ht5 <- GroupHeatmap(
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-03-11 17:34:55] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:34:55] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:34:55] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:24:11] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:24:11] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:24:11] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht5$plot
 
@@ -541,9 +541,9 @@ ht6 <- GroupHeatmap(
   group.by = "celltype",
   split.by = "tech"
 )
-#> ℹ [2026-03-11 17:35:13] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:35:13] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:35:13] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-03-20 09:24:29] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:24:29] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:24:29] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht6$plot
 
@@ -558,10 +558,10 @@ ht7 <- GroupHeatmap(
   grouping.var = "tech",
   numerator = "smartseq2"
 )
-#> ! [2026-03-11 17:35:24] When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'
-#> ℹ [2026-03-11 17:35:27] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-11 17:35:27] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-11 17:35:27] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ! [2026-03-20 09:24:40] When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'
+#> ℹ [2026-03-20 09:24:44] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-03-20 09:24:44] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-03-20 09:24:44] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 
 ht7$plot
 ```
