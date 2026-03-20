@@ -8,16 +8,8 @@
 #' @md
 #' @inheritParams CellCorHeatmap
 #' @inheritParams RunKNNPredict
-#' @param srt_query A Seurat object storing the query cells.
-#' @param srt_ref A Seurat object storing the reference cells.
-#' @param query_assay A character string specifying the assay name for the query cells.
-#' If not provided, the default assay for the query object will be used.
-#' @param ref_assay A character string specifying the assay name for the reference cells.
-#' If not provided, the default assay for the reference object will be used.
 #' @param ref_umap A character string specifying the name of the UMAP reduction in the reference object.
 #' If not provided, the first UMAP reduction found in the reference object will be used.
-#' @param ref_group A character string specifying a metadata column name in the reference object to use for grouping.
-#' @param nfeatures A integer specifying the number of highly variable features to be calculated if `features` is not provided.
 #' @param query_reduction A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.
 #' @param ref_reduction A character string specifying the name of a dimensionality reduction in the reference object to use for calculating the distance metric.
 #' @param query_dims A numeric vector specifying the dimension indices from the query reduction to be used for calculating the distance metric.

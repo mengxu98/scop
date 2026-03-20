@@ -1405,7 +1405,7 @@ PrepareDB <- function(
             {
               temp <- tempfile()
               url <- paste0(
-                "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/TF_list_final/",
+                "https://raw.githubusercontent.com/mengxu98/datasets/main/AnimalTFDB4/TF_list_final/",
                 sps,
                 "_TF"
               )
@@ -1422,7 +1422,7 @@ PrepareDB <- function(
                 quote = ""
               )
               url <- paste0(
-                "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/Cof_list_final/",
+                "https://raw.githubusercontent.com/mengxu98/datasets/main/AnimalTFDB4/Cof_list_final/",
                 sps,
                 "_Cof"
               )
@@ -1449,7 +1449,7 @@ PrepareDB <- function(
                   )
                   db_species["TF"] <- "Homo_sapiens"
                   url <- paste0(
-                    "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/TF_list_final/Homo_sapiens_TF"
+                    "https://raw.githubusercontent.com/mengxu98/datasets/main/AnimalTFDB4/TF_list_final/Homo_sapiens_TF"
                   )
                   download(url = url, destfile = temp)
                   tf <- utils::read.table(
@@ -1461,7 +1461,7 @@ PrepareDB <- function(
                     quote = ""
                   )
                   url <- paste0(
-                    "https://raw.githubusercontent.com/mengxu98/AnimalTFDB4/main/Cof_list_final/Homo_sapiens_Cof"
+                    "https://raw.githubusercontent.com/mengxu98/datasets/main/AnimalTFDB4/Cof_list_final/Homo_sapiens_Cof"
                   )
                   download(url = url, destfile = temp)
                   tfco <- utils::read.table(
@@ -1611,7 +1611,7 @@ PrepareDB <- function(
           check_r("openxlsx", verbose = FALSE)
           log_message("Preparing database: CSPA")
           temp <- tempfile(fileext = ".xlsx")
-          url <- "https://raw.githubusercontent.com/mengxu98/CSPA/main/S1_File.xlsx"
+          url <- "https://raw.githubusercontent.com/mengxu98/datasets/main/CSPA/S1_File.xlsx"
           download(
             url = url,
             destfile = temp

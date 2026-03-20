@@ -37,8 +37,8 @@ RunKNNPredict(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{bulk_ref}{A cell atlas matrix, where cell types are represented by columns and genes are represented by rows,
-for example, scop::ref_scHCL. Either \code{srt_ref} or \code{bulk_ref} must be provided.}
+\item{bulk_ref}{A cell atlas matrix, where cell types are represented by columns and genes are represented by rows.
+Either \code{srt_ref} or \code{bulk_ref} must be provided.}
 
 \item{query_group}{A character vector specifying the column name in the \code{srt_query} metadata that represents the cell grouping.}
 

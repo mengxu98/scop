@@ -1126,7 +1126,6 @@ GroupHeatmap <- function(
     }
   }
 
-  # data used to do clustering
   mat_split <- do.call(cbind, mat_list[feature_split_by])
 
   if (is.null(limits)) {
@@ -2256,6 +2255,10 @@ GroupHeatmap <- function(
     }
   } else {
     fix <- FALSE
+  }
+
+  if (length(lgd) > 0) {
+    lgd <- lgd[!vapply(lgd, is.null, logical(1))]
   }
 
   rendersize <- heatmap_rendersize(
