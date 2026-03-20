@@ -1126,7 +1126,6 @@ GroupHeatmap <- function(
     }
   }
 
-  # data used to do clustering
   mat_split <- do.call(cbind, mat_list[feature_split_by])
 
   if (is.null(limits)) {
