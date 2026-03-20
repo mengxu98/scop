@@ -20,9 +20,11 @@ ProjectionPlot(
 )
 }
 \arguments{
-\item{srt_query}{A Seurat object storing the query cells.}
+\item{srt_query}{An object of class Seurat to be annotated with cell types.}
 
-\item{srt_ref}{A Seurat object storing the reference cells.}
+\item{srt_ref}{A Seurat object or count matrix representing the reference object.
+If provided, the similarities will be calculated between cells from the query and reference objects.
+If not provided, the similarities will be calculated within the query object.}
 
 \item{query_group}{The grouping variable for the query group cells.}
 

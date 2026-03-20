@@ -8,12 +8,22 @@ RunCellQC(
   srt,
   assay = "RNA",
   split.by = NULL,
+  group.by = NULL,
   return_filtered = FALSE,
-  qc_metrics = c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio",
-    "species"),
+  qc_metrics = c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo",
+    "ribo_mito_ratio", "species"),
   db_method = "scDblFinder",
   db_rate = NULL,
   db_coefficient = 0.01,
+  decontX_threshold = NULL,
+  decontX_batch = NULL,
+  decontX_background = NULL,
+  decontX_background_assay = NULL,
+  decontX_bg_batch = NULL,
+  decontX_assay_name = "decontXcounts",
+  decontX_store_assay = FALSE,
+  decontX_round_counts = TRUE,
+  decontX_args = list(),
   outlier_threshold = c("log10_nCount:lower:2.5", "log10_nCount:higher:5",
     "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5"),
   outlier_n = 1,
@@ -42,11 +52,17 @@ Default is \code{"RNA"}.}
 \item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
 
+\item{group.by}{Group labels passed to \code{\link[=RunDecontX]{RunDecontX()}} when \code{"decontX"}
+is included in \code{qc_metrics}. Can be \code{NULL}, a meta.data column name, or a vector
+aligned to cells. Default is \code{NULL}.}
+
 \item{return_filtered}{Logical indicating whether to return a cell-filtered Seurat object.
 Default is \code{FALSE}.}
 
 \item{qc_metrics}{A character vector specifying the quality control metrics to be applied.
-Default is \code{c("doublets", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.}
+Available metrics are \code{"doublets"}, \code{"decontX"}, \code{"outlier"}, \code{"umi"}, \code{"gene"},
+\code{"mito"}, \code{"ribo"}, \code{"ribo_mito_ratio"}, and \code{"species"}.
+Default is \code{c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")}.}
 
 \item{db_method}{Method used for doublet-calling.
 Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
@@ -57,6 +73,39 @@ Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
 
 \item{db_coefficient}{The coefficient used to calculate the doublet rate.
 Default is \code{0.01}. Doublet rate is calculated as \code{ncol(srt) / 1000 * db_coefficient}.}
+
+\item{decontX_threshold}{Optional contamination threshold used to filter cells
+after running \code{\link[=RunDecontX]{RunDecontX()}}. Cells with \code{decontX_contamination} greater than
+this value are marked as failed in \code{decontX_qc}. Default is \code{NULL}, which
+computes decontX results without filtering cells by contamination.}
+
+\item{decontX_batch}{Batch labels passed to \code{\link[=RunDecontX]{RunDecontX()}} when \code{"decontX"}
+is included in \code{qc_metrics}. Default is \code{NULL}.}
+
+\item{decontX_background}{Optional background / empty-droplet input passed to
+\code{\link[=RunDecontX]{RunDecontX()}} when \code{"decontX"} is included in \code{qc_metrics}.
+Default is \code{NULL}.}
+
+\item{decontX_background_assay}{Assay name used when \code{decontX_background} is a
+\code{Seurat} object or \code{SingleCellExperiment}. Default is \code{NULL}.}
+
+\item{decontX_bg_batch}{Batch labels for \code{decontX_background} passed to
+\code{\link[=RunDecontX]{RunDecontX()}}. Default is \code{NULL}.}
+
+\item{decontX_assay_name}{Name of the assay used to store decontaminated counts
+from \code{\link[=RunDecontX]{RunDecontX()}}. Default is \code{"decontXcounts"}.}
+
+\item{decontX_store_assay}{Whether to store decontaminated counts as a new assay
+when running \code{\link[=RunDecontX]{RunDecontX()}}. Default is \code{FALSE}.}
+
+\item{decontX_round_counts}{Whether to round decontaminated counts before creating
+the assay in \code{\link[=RunDecontX]{RunDecontX()}}. Default is \code{TRUE}.}
+
+\item{decontX_args}{A named list of additional advanced arguments passed to
+\code{\link[=RunDecontX]{RunDecontX()}} when \code{"decontX"} is included in \code{qc_metrics}.
+Explicit \verb{decontX_*} parameters are preferred for common options and take
+precedence when both are supplied.
+Default is \code{list()}.}
 
 \item{outlier_threshold}{A character vector specifying the outlier threshold.
 Default is \code{c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")}.}
@@ -113,37 +162,17 @@ Run cell-level quality control for single cell RNA-seq data.
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunCellQC(pancreas_sub)
+
 CellStatPlot(
   pancreas_sub,
   stat.by = c(
-    "db_qc", "outlier_qc",
+    "db_qc", "decontX_qc", "outlier_qc",
     "umi_qc", "gene_qc",
     "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
+    "ribo_mito_ratio_qc",
+    "species_qc"
   ),
   plot_type = "upset",
   stat_level = "Fail"
 )
-table(pancreas_sub$CellQC)
-
-data(ifnb_sub)
-ifnb_sub <- RunCellQC(
-  srt = ifnb_sub,
-  split.by = "stim",
-  UMI_threshold = 1000,
-  gene_threshold = 550
-)
-CellStatPlot(
-  srt = ifnb_sub,
-  stat.by = c(
-    "db_qc", "outlier_qc",
-    "umi_qc", "gene_qc",
-    "mito_qc", "ribo_qc",
-    "ribo_mito_ratio_qc", "species_qc"
-  ),
-  plot_type = "upset",
-  stat_level = "Fail"
-)
-
-table(ifnb_sub$CellQC)
 }

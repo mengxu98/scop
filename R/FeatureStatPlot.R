@@ -286,11 +286,16 @@
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
 #'   ),
 #'   legend.position = "top",
 #'   legend.direction = "horizontal",
@@ -302,11 +307,16 @@
 #' FeatureStatPlot(
 #'   pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
 #'   ),
 #'   fill.by = "feature",
 #'   plot_type = "box",
@@ -315,8 +325,6 @@
 #' ) |> thisplot::panel_fix_overall(
 #'   width = 8, height = 5
 #' )
-#' # As the plot is created by combining,
-#' # we can adjust the overall height and width directly.
 #'
 #' FeatureStatPlot(
 #'   pancreas_sub,
@@ -347,18 +355,27 @@
 #'   stat.by = c("Neurog3", "Rbp4", "Ins1"),
 #'   group.by = "CellType",
 #'   plot.by = "feature",
-#'   comparisons = list(c("Neurog3", "Rbp4"), c("Rbp4", "Ins1")),
+#'   comparisons = list(
+#'     c("Neurog3", "Rbp4"),
+#'     c("Rbp4", "Ins1")
+#'   ),
 #'   stack = TRUE
 #' )
 #'
 #' FeatureStatPlot(pancreas_sub,
 #'   stat.by = c(
-#'     "Sox9", "Anxa2", "Bicc1", # Ductal
-#'     "Neurog3", "Hes6", # EPs
-#'     "Fev", "Neurod1", # Pre-endocrine
-#'     "Rbp4", "Pyy", # Endocrine
-#'     "Ins1", "Gcg", "Sst", "Ghrl" # Beta, Alpha, Delta, Epsilon
-#'   ), group.by = "SubCellType",
+#'     # Ductal
+#'     "Sox9", "Anxa2", "Bicc1",
+#'     # EPs
+#'     "Neurog3", "Hes6",
+#'     # Pre-endocrine
+#'     "Fev", "Neurod1",
+#'     # Endocrine
+#'     "Rbp4", "Pyy",
+#'     # Beta, Alpha, Delta, Epsilon
+#'     "Ins1", "Gcg", "Sst", "Ghrl"
+#'   ),
+#'   group.by = "SubCellType",
 #'   plot.by = "feature",
 #'   stack = TRUE
 #' )
@@ -685,15 +702,56 @@ FeatureStatPlot <- function(
 
   plist_stack <- list()
   if (isTRUE(stack) && length(stat.by) > 1 && isFALSE(individual)) {
+    theme_stack <- tryCatch(
+      do.call(theme_use, theme_args),
+      error = function(e) NULL
+    )
+    `%||%` <- function(x, y) if (is.null(x)) y else x
+    element_text_to_gpar <- function(el) {
+      if (is.null(el) || !inherits(el, "element_text")) {
+        return(NULL)
+      }
+      col_use <- el$colour %||% el$color
+      grid::gpar(
+        fontsize = el$size,
+        col = col_use,
+        fontfamily = el$family,
+        fontface = el$face
+      )
+    }
+    axis_title_y_gp <- element_text_to_gpar(
+      if (!is.null(theme_stack)) ggplot2::calc_element("axis.title.y", theme_stack) else NULL
+    )
+    axis_title_x_gp <- element_text_to_gpar(
+      if (!is.null(theme_stack)) ggplot2::calc_element("axis.title.x", theme_stack) else NULL
+    )
+    plot_title_el <- NULL
+    if (!is.null(theme_args[["plot.title"]]) && inherits(theme_args[["plot.title"]], "element_text")) {
+      plot_title_el <- theme_args[["plot.title"]]
+    } else if (!is.null(theme_args[["title"]]) && inherits(theme_args[["title"]], "element_text")) {
+      plot_title_el <- theme_args[["title"]]
+    } else if (!is.null(theme_stack)) {
+      plot_title_el <- ggplot2::calc_element("plot.title", theme_stack)
+    }
+    plot_title_gp <- element_text_to_gpar(plot_title_el)
+
     for (g in group.by) {
-      plist_g <- plist[
-        sapply(strsplit(names(plist), ":"), function(x) x[2]) == g
-      ]
+      if (is.null(names(plist))) {
+        plist_g <- plist
+      } else {
+        plist_g <- plist[
+          sapply(strsplit(names(plist), ":"), function(x) x[2]) == g
+        ]
+        if (length(plist_g) == 0) {
+          plist_g <- plist
+        }
+      }
       legend <- get_legend(plist_g[[1]])
       if (isTRUE(flip)) {
         lab <- grid::textGrob(
           label = ifelse(is.null(ylab), "Expression level", ylab),
-          hjust = 0.5
+          hjust = 0.5,
+          gp = axis_title_x_gp
         )
         plist_g <- lapply(
           seq_along(plist_g),
@@ -707,7 +765,8 @@ FeatureStatPlot <- function(
                     panel.grid = element_blank(),
                     plot.title = element_blank(),
                     plot.subtitle = element_blank(),
-                    axis.title = element_blank(),
+                    axis.title.x = element_blank(),
+                    axis.title.y = element_blank(),
                     axis.text.y = element_blank(),
                     axis.text.x = element_text(vjust = c(1, 0)),
                     axis.ticks.length.y = grid::unit(0, "pt"),
@@ -721,12 +780,14 @@ FeatureStatPlot <- function(
                     legend.position = "none",
                     panel.grid = element_blank(),
                     axis.title.x = element_blank(),
+                    axis.title.y = element_blank(),
                     axis.text.x = element_text(vjust = c(1, 0)),
                     axis.ticks.length.y = grid::unit(0, "pt"),
                     plot.margin = grid::unit(c(0, -0.5, 0, 0), "mm")
                   )
               )
             }
+            p <- p + theme(plot.title = element_blank(), plot.subtitle = element_blank())
             return(as_grob(p))
           }
         )
@@ -737,7 +798,8 @@ FeatureStatPlot <- function(
         lab <- grid::textGrob(
           label = ifelse(is.null(ylab), "Expression level", ylab),
           rot = 90,
-          hjust = 0.5
+          hjust = 0.5,
+          gp = axis_title_y_gp
         )
         plist_g <- lapply(
           seq_along(plist_g),
@@ -749,20 +811,14 @@ FeatureStatPlot <- function(
                   theme(
                     legend.position = "none",
                     panel.grid = element_blank(),
-                    axis.title = element_blank(),
+                    axis.title.x = element_blank(),
+                    axis.title.y = element_blank(),
                     axis.text.x = element_blank(),
                     axis.text.y = element_text(vjust = c(0, 1)),
                     axis.ticks.length.x = grid::unit(0, "pt"),
                     plot.margin = grid::unit(c(-0.5, 0, 0, 0), "mm")
                   )
               )
-              if (i == 1) {
-                p <- p +
-                  theme(
-                    plot.title = element_blank(),
-                    plot.subtitle = element_blank()
-                  )
-              }
             } else {
               suppressWarnings(
                 p <- p +
@@ -776,12 +832,25 @@ FeatureStatPlot <- function(
                   )
               )
             }
+            p <- p + theme(
+              plot.title = element_blank(), plot.subtitle = element_blank()
+            )
             return(as_grob(p))
           }
         )
         gtable <- do.call(rbind, plist_g)
         gtable <- add_grob(gtable, lab, "left", clip = "off")
         gtable <- add_grob(gtable, legend, legend.position)
+      }
+      if (!is.null(title)) {
+        title_grob <- grid::textGrob(
+          title,
+          x = 0,
+          hjust = 0,
+          gp = plot_title_gp
+        )
+        title_height <- grid::grobHeight(title_grob) + grid::unit(0.5, "lines")
+        gtable <- add_grob(gtable, title_grob, "top", title_height, clip = "off")
       }
       gtable <- gtable::gtable_add_padding(
         gtable,
