@@ -9,30 +9,28 @@
 #' @inheritParams RunKNNMap
 #' @inheritParams RunKNNPredict
 #' @inheritParams GroupHeatmap
-#' @param srt_query A Seurat object or count matrix representing the query dataset.
-#' This dataset will be used to calculate the similarities between cells.
-#' @param srt_ref A Seurat object or count matrix representing the reference dataset.
-#' If provided, the similarities will be calculated between cells from the query and reference datasets.
-#' If not provided, the similarities will be calculated within the query dataset.
+#' @param srt_ref A Seurat object or count matrix representing the reference object.
+#' If provided, the similarities will be calculated between cells from the query and reference objects.
+#' If not provided, the similarities will be calculated within the query object.
 #' @param bulk_ref A count matrix representing bulk data.
-#' If provided, the similarities will be calculated between cells from the query dataset and bulk data.
-#' @param query_group The grouping variable in the query dataset.
+#' If provided, the similarities will be calculated between cells from the query object and bulk data.
+#' @param query_group The grouping variable in the query object.
 #' This variable will be used to group cells in the heatmap rows.
 #' If not provided, all cells will be treated as one group.
-#' @param ref_group The grouping variable in the reference dataset.
+#' @param ref_group The grouping variable in the reference object.
 #' This variable will be used to group cells in the heatmap columns.
 #' If not provided, all cells will be treated as one group.
-#' @param query_assay The assay to use for the query dataset.
-#' If not provided, the default assay of the query dataset will be used.
-#' @param ref_assay The assay to use for the reference dataset.
-#' If not provided, the default assay of the reference dataset will be used.
-#' @param query_reduction The dimensionality reduction method to use for the query dataset.
-#' If not provided, no dimensionality reduction will be applied to the query dataset.
-#' @param ref_reduction The dimensionality reduction method to use for the reference dataset.
-#' If not provided, no dimensionality reduction will be applied to the reference dataset.
-#' @param query_dims The dimensions to use for the query dataset.
+#' @param query_assay The assay to use for the query object.
+#' If not provided, the default assay of the query object will be used.
+#' @param ref_assay The assay to use for the reference object.
+#' If not provided, the default assay of the reference object will be used.
+#' @param query_reduction The dimensionality reduction method to use for the query object.
+#' If not provided, no dimensionality reduction will be applied to the query object.
+#' @param ref_reduction The dimensionality reduction method to use for the reference object.
+#' If not provided, no dimensionality reduction will be applied to the reference object.
+#' @param query_dims The dimensions to use for the query object.
 #' If not provided, the first 30 dimensions will be used.
-#' @param ref_dims The dimensions to use for the reference dataset.
+#' @param ref_dims The dimensions to use for the reference object.
 #' If not provided, the first 30 dimensions will be used.
 #' @param query_collapsing Whether to collapse cells within each query group before calculating similarities.
 #' If set to TRUE, the similarities will be calculated between query groups rather than individual cells.
@@ -53,7 +51,7 @@
 #' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features.
 #' Features with a frequency below this threshold will be excluded from the heatmap.
 #' Default is `0`.
-#' @param prefix The prefix to use for the KNNPredict tool layer in the query dataset.
+#' @param prefix The prefix to use for the KNNPredict tool layer in the query object.
 #' This can be used to avoid conflicts with other tools in the Seurat object.
 #' Default is `"KNNPredict"`.
 #' @param exp_legend_title The title for the color legend in the heatmap.
