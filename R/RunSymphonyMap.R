@@ -251,7 +251,7 @@ mapQuery <- function(
   idx_shared_genes <- which(ref_obj$vargenes$symbol %in% rownames(exp_query))
   shared_genes <- ref_obj$vargenes$symbol[idx_shared_genes]
   log_message(
-    "Found {.val {length(shared_genes)}} reference variable genes in query dataset",
+    "Found {.val {length(shared_genes)}} reference variable genes in query object",
     verbose = verbose
   )
   exp_query_scaled <- symphony::scaleDataWithStats(

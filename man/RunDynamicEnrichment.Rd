@@ -113,7 +113,7 @@ pancreas_sub <- RunSlingshot(
 )
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
-  lineages = "Lineage1",,
+  lineages = "Lineage1",
   fit_method = "pretsa",
   n_candidates = 200
 )

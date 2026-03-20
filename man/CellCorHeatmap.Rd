@@ -85,40 +85,39 @@ CellCorHeatmap(
 )
 }
 \arguments{
-\item{srt_query}{A Seurat object or count matrix representing the query dataset.
-This dataset will be used to calculate the similarities between cells.}
+\item{srt_query}{An object of class Seurat to be annotated with cell types.}
 
-\item{srt_ref}{A Seurat object or count matrix representing the reference dataset.
-If provided, the similarities will be calculated between cells from the query and reference datasets.
-If not provided, the similarities will be calculated within the query dataset.}
+\item{srt_ref}{A Seurat object or count matrix representing the reference object.
+If provided, the similarities will be calculated between cells from the query and reference objects.
+If not provided, the similarities will be calculated within the query object.}
 
 \item{bulk_ref}{A count matrix representing bulk data.
-If provided, the similarities will be calculated between cells from the query dataset and bulk data.}
+If provided, the similarities will be calculated between cells from the query object and bulk data.}
 
-\item{query_group}{The grouping variable in the query dataset.
+\item{query_group}{The grouping variable in the query object.
 This variable will be used to group cells in the heatmap rows.
 If not provided, all cells will be treated as one group.}
 
-\item{ref_group}{The grouping variable in the reference dataset.
+\item{ref_group}{The grouping variable in the reference object.
 This variable will be used to group cells in the heatmap columns.
 If not provided, all cells will be treated as one group.}
 
-\item{query_assay}{The assay to use for the query dataset.
-If not provided, the default assay of the query dataset will be used.}
+\item{query_assay}{The assay to use for the query object.
+If not provided, the default assay of the query object will be used.}
 
-\item{ref_assay}{The assay to use for the reference dataset.
-If not provided, the default assay of the reference dataset will be used.}
+\item{ref_assay}{The assay to use for the reference object.
+If not provided, the default assay of the reference object will be used.}
 
-\item{query_reduction}{The dimensionality reduction method to use for the query dataset.
-If not provided, no dimensionality reduction will be applied to the query dataset.}
+\item{query_reduction}{The dimensionality reduction method to use for the query object.
+If not provided, no dimensionality reduction will be applied to the query object.}
 
-\item{ref_reduction}{The dimensionality reduction method to use for the reference dataset.
-If not provided, no dimensionality reduction will be applied to the reference dataset.}
+\item{ref_reduction}{The dimensionality reduction method to use for the reference object.
+If not provided, no dimensionality reduction will be applied to the reference object.}
 
-\item{query_dims}{The dimensions to use for the query dataset.
+\item{query_dims}{The dimensions to use for the query object.
 If not provided, the first 30 dimensions will be used.}
 
-\item{ref_dims}{The dimensions to use for the reference dataset.
+\item{ref_dims}{The dimensions to use for the reference object.
 If not provided, the first 30 dimensions will be used.}
 
 \item{query_collapsing}{Whether to collapse cells within each query group before calculating similarities.
@@ -160,7 +159,7 @@ Default is \code{30}.}
 Features with a frequency below this threshold will be excluded from the heatmap.
 Default is \code{0}.}
 
-\item{prefix}{The prefix to use for the KNNPredict tool layer in the query dataset.
+\item{prefix}{The prefix to use for the KNNPredict tool layer in the query object.
 This can be used to avoid conflicts with other tools in the Seurat object.
 Default is \code{"KNNPredict"}.}
 

@@ -6,8 +6,8 @@
 #' @md
 #' @param srt_query An object of class Seurat to be annotated with cell types.
 #' @param srt_ref An object of class Seurat storing the reference cells.
-#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows,
-#' for example, scop::ref_scHCL. Either `srt_ref` or `bulk_ref` must be provided.
+#' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows.
+#' Either `srt_ref` or `bulk_ref` must be provided.
 #' @param query_group A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.
 #' @param ref_group A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.
 #' @param query_assay A character vector specifying the assay to be used for the query data.

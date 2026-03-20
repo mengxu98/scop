@@ -1,5 +1,24 @@
 # scop
 
+# scop 0.8.6
+
+* **feat**:
+  * Added `RunGSVA()` for gene set variation analysis and `GSVAPlot()` for visualization of [GSVA](https://github.com/rcastelo/GSVA) results. Related issue #146 (@mengxu98).
+  * `RunMetabolism()`
+    * Added `RunMetabolism()` for single-cell metabolism pathway scoring with support for `AUCell`, `GSVA`, `ssGSEA`, and optional `VISION`, and `MetabolismPlot()` for visualization
+    * `RunMetabolism()` now uses [scMetabolism](https://github.com/wu-yc/scMetabolism) KEGG / Reactome metabolism pathway definitions to identify metabolism-related terms, then rebuilds pathway gene sets from updated `PrepareDB()` annotations, enabling cached database updates and cross-species metabolism scoring.
+    Related issue #146 (@mengxu98).
+  * Added `RunDecontX()` and integrated optional `decontX` ambient RNA decontamination into `RunCellQC()`, including contamination metadata, optional decontaminated assay output, and threshold-based QC filtering. Related issue #147 (@mengxu98).
+
+* **fix**:
+  * `FeatureStatPlot()`: Fixed duplicated X/Y axis titles and main title when `stack = TRUE` with `theme_args` or `title`. Stack assembly now strips axis and plot titles from non-edge panels and draws a single shared ylab/title via gtable; theme styling from `theme_args` (e.g. `axis.title.y`, `title`/`plot.title`) is applied to these shared grobs. Related issue #145 (@PanSX-Dr).
+
+* **docs**:
+  * Updated the README badge/logo.
+
+* **data**:
+  * Removed the example datasets `ifnb_sub`, `ref_scHCL`, and `ref_scZCL`.
+
 # scop 0.8.5
 
 * **feat**:

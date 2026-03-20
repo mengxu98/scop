@@ -21,15 +21,17 @@ RunSymphonyMap(
 )
 }
 \arguments{
-\item{srt_query}{A Seurat object storing the query cells.}
+\item{srt_query}{An object of class Seurat to be annotated with cell types.}
 
-\item{srt_ref}{A Seurat object storing the reference cells.}
+\item{srt_ref}{A Seurat object or count matrix representing the reference object.
+If provided, the similarities will be calculated between cells from the query and reference objects.
+If not provided, the similarities will be calculated within the query object.}
 
-\item{query_assay}{A character string specifying the assay name for the query cells.
-If not provided, the default assay for the query object will be used.}
+\item{query_assay}{The assay to use for the query object.
+If not provided, the default assay of the query object will be used.}
 
-\item{ref_assay}{A character string specifying the assay name for the reference cells.
-If not provided, the default assay for the reference object will be used.}
+\item{ref_assay}{The assay to use for the reference object.
+If not provided, the default assay of the reference object will be used.}
 
 \item{ref_pca}{The PCA reduction in the reference object to use for calculating the distance metric.}
 
@@ -38,7 +40,9 @@ If not provided, the default assay for the reference object will be used.}
 \item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object.
 If not provided, the first UMAP reduction found in the reference object will be used.}
 
-\item{ref_group}{A character string specifying a metadata column name in the reference object to use for grouping.}
+\item{ref_group}{The grouping variable in the reference object.
+This variable will be used to group cells in the heatmap columns.
+If not provided, all cells will be treated as one group.}
 
 \item{projection_method}{A character string specifying the projection method to use.
 Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
