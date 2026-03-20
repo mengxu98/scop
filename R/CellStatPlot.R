@@ -332,6 +332,9 @@ CellStatPlot <- function(
     theme_use <- "theme_this"
   }
 
+  if (plot_type == "upset") {
+    check_r("ggupset", verbose = FALSE)
+  }
   plot <- StatPlot(
     meta_data,
     stat.by = stat.by,
