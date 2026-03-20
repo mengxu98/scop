@@ -3731,11 +3731,12 @@ Conos_integrate <- function(
     verbose = verbose
   )
   srt_list_con <- NULL
+  conos_fun <- get_namespace_fun("conos", "Conos")$new
   invisible(
     utils::capture.output(
       srt_list_con <- suppressWarnings(
         suppressMessages(
-          conos::Conos$new(
+          conos_fun(
             srt_list,
             n.cores = cores,
             verbose = FALSE
