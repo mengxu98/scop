@@ -86,6 +86,7 @@ reference:
   - db_scds
   - db_Scrublet
   - RunCellQC
+  - RunDecontX
   - RunDoubletCalling
 
 - subtitle: "Dimensionality Reduction and Clustering"
@@ -104,23 +105,23 @@ reference:
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
+  - BBKNN_integrate
+  - CSS_integrate
+  - ComBat_integrate
+  - Conos_integrate
+  - fastMNN_integrate
+  - Harmony_integrate
+  - LIGER_integrate
+  - MNN_integrate
   - RunCSSMap
   - RunHarmony2
   - RunPCAMap
   - RunSeuratMap
   - RunSymphonyMap
-  - BBKNN_integrate
-  - CSS_integrate
-  - ComBat_integrate
-  - Conos_integrate
-  - Harmony_integrate
-  - LIGER_integrate
-  - MNN_integrate
   - Scanorama_integrate
   - Seurat_integrate
   - scVI_integrate
   - Uncorrected_integrate
-  - fastMNN_integrate
 
 - subtitle: "Cell Type Annotation"
 - contents:
@@ -131,14 +132,19 @@ reference:
   - RunSingleR
   - RunScmap
 
-- subtitle: "Differential Analysis and Enrichment"
+- subtitle: "Differential Analysis"
 - contents:
   - FindExpressedMarkers
   - RunDEtest
-  - RunGSEA
-  - RunEnrichment
-  - RunDynamicEnrichment
   - RunProportionTest
+
+- subtitle: "Enrichment Analysis"
+- contents:
+  - RunDynamicEnrichment
+  - RunEnrichment
+  - RunGSEA
+  - RunGSVA
+  - RunMetabolism
 
 - subtitle: "Dynamic Trajectory Analysis"
 - contents:
@@ -180,7 +186,9 @@ reference:
   - GraphPlot
   - GroupHeatmap
   - GSEAPlot
+  - GSVAPlot
   - LineagePlot
+  - MetabolismPlot
   - PAGAPlot
   - ProjectionPlot
   - ProportionTestPlot
@@ -208,10 +216,7 @@ reference:
 
 - subtitle: "Data"
 - contents:
-  - ifnb_sub
   - panc8_sub
   - pancreas_sub
-  - ref_scHCL
   - ref_scMCA
-  - ref_scZCL
   - words_excluded
