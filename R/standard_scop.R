@@ -39,7 +39,8 @@
 #' The number of dimensions to keep after linear dimensionality reduction.
 #' Default is `50`.
 #' @param linear_reduction_dims_use The dimensions to use for downstream analysis.
-#' If `NULL`, all dimensions will be used.
+#' If `NULL`, estimated dimensions stored in the linear reduction will be used when available;
+#' otherwise, the first up to `30` dimensions will be used as a fallback.
 #' @param linear_reduction_params A list of parameters to pass to the linear dimensionality reduction method.
 #' @param force_linear_reduction Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.
 #' @param nonlinear_reduction The nonlinear dimensionality reduction method to use.
@@ -97,7 +98,8 @@
 #'       reduction = paste0(
 #'         "Standard", lr, "UMAP2D"
 #'       ),
-#'       xlab = "", ylab = "", title = lr,
+#'       xlab = "", ylab = "",
+#'       title = paste0(lr, "_umap"),
 #'       legend.position = "none",
 #'       theme_use = "theme_blank"
 #'     )
@@ -121,7 +123,8 @@
 #'       reduction = paste0(
 #'         "Standardpca", nr, "2D"
 #'       ),
-#'       xlab = "", ylab = "", title = nr,
+#'       xlab = "", ylab = "",
+#'       title = paste0("pca_", nr),
 #'       legend.position = "none",
 #'       theme_use = "theme_blank"
 #'     )
@@ -129,35 +132,37 @@
 #' )
 #' patchwork::wrap_plots(plist2)
 standard_scop <- function(
-    srt,
-    prefix = "Standard",
-    assay = NULL,
-    do_normalization = NULL,
-    normalization_method = "LogNormalize",
-    do_HVF_finding = TRUE,
-    HVF_method = "vst",
-    nHVF = 2000,
-    HVF = NULL,
-    do_scaling = TRUE,
-    vars_to_regress = NULL,
-    regression_model = "linear",
-    linear_reduction = "pca",
-    linear_reduction_dims = 50,
-    linear_reduction_dims_use = NULL,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = "umap",
-    nonlinear_reduction_dims = c(2, 3),
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    neighbor_metric = "euclidean",
-    neighbor_k = 20L,
-    cluster_algorithm = "louvain",
-    cluster_resolution = 0.6,
-    verbose = TRUE,
-    seed = 11) {
+  srt,
+  prefix = "Standard",
+  assay = NULL,
+  do_normalization = NULL,
+  normalization_method = "LogNormalize",
+  do_HVF_finding = TRUE,
+  HVF_method = "vst",
+  nHVF = 2000,
+  HVF = NULL,
+  do_scaling = TRUE,
+  vars_to_regress = NULL,
+  regression_model = "linear",
+  linear_reduction = "pca",
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = NULL,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = "umap",
+  nonlinear_reduction_dims = c(2, 3),
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  neighbor_metric = "euclidean",
+  neighbor_k = 20L,
+  cluster_algorithm = "louvain",
+  cluster_resolution = 0.6,
+  verbose = TRUE,
+  seed = 11
+) {
   log_message(
-    "Start standard scop workflow...",
+    "Start standard processing workflow...",
+    text_color = "blue",
     verbose = verbose
   )
 
@@ -170,22 +175,39 @@ standard_scop <- function(
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   linear_reductions <- c(
-    "pca", "svd", "ica",
-    "nmf", "mds", "glmpca"
+    "pca",
+    "svd",
+    "ica",
+    "nmf",
+    "mds",
+    "glmpca"
   )
-  if (any(!linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt)))) {
+  if (
+    any(
+      !linear_reduction %in% c(linear_reductions, SeuratObject::Reductions(srt))
+    )
+  ) {
     log_message(
       "{.arg linear_reduction} must be one of: {.val {linear_reductions}}",
       message_type = "error"
     )
   }
-  if (!is.null(linear_reduction_dims_use) && max(linear_reduction_dims_use) > linear_reduction_dims) {
+  if (
+    !is.null(linear_reduction_dims_use) &&
+      max(linear_reduction_dims_use) > linear_reduction_dims
+  ) {
     linear_reduction_dims <- max(linear_reduction_dims_use)
   }
   nonlinear_reductions <- c(
-    "umap", "umap-naive", "tsne",
-    "dm", "phate", "pacmap",
-    "trimap", "largevis", "fr"
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
   )
   if (any(!nonlinear_reduction %in% nonlinear_reductions)) {
     log_message(
@@ -249,7 +271,9 @@ standard_scop <- function(
     assay = assay
   ) |>
     rownames()
-  if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
+  if (
+    isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
+  ) {
     if (normalization_method != "SCT") {
       log_message(
         "Perform {.fn Seurat::ScaleData}",
@@ -287,17 +311,14 @@ standard_scop <- function(
     )
 
     if (is.null(linear_reduction_dims_use)) {
-      linear_reduction_dims_use_current <- 1:ncol(
-        srt@reductions[[paste0(
-          prefix,
-          lr
-        )]]@cell.embeddings
+      linear_reduction_dims_use_current <- RunDimsEstimate(
+        srt = srt,
+        reduction = paste0(prefix, lr),
+        reduction_method = lr,
+        skip_first = normalization_method == "TFIDF",
+        use_stored = TRUE,
+        verbose = verbose
       )
-      if (normalization_method == "TFIDF") {
-        linear_reduction_dims_use_current <- 2:max(
-          linear_reduction_dims_use_current
-        )
-      }
     } else {
       linear_reduction_dims_use_current <- linear_reduction_dims_use
     }
@@ -393,7 +414,13 @@ standard_scop <- function(
   }
   for (nr in nonlinear_reduction) {
     for (n in nonlinear_reduction_dims) {
-      reductions_name <- paste0(prefix, linear_reduction[1], toupper(nr), n, "D")
+      reductions_name <- paste0(
+        prefix,
+        linear_reduction[1],
+        toupper(nr),
+        n,
+        "D"
+      )
       if (reductions_name %in% names(srt@reductions)) {
         reduc <- srt@reductions[[reductions_name]]
         srt@reductions[[paste0(prefix, toupper(nr), n, "D")]] <- reduc
@@ -406,8 +433,9 @@ standard_scop <- function(
   SeuratObject::VariableFeatures(srt) <- srt@misc[["Standard_HVF"]] <- HVF
 
   log_message(
-    "Run scop standard workflow completed",
+    "Standard processing workflow completed",
     message_type = "success",
+    text_color = "green",
     verbose = verbose
   )
 
