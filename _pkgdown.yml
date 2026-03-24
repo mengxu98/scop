@@ -53,9 +53,14 @@ reference:
   - integration_scop
   - standard_scop
 
-- subtitle: "Data Processing"
+- subtitle: "Data Conversion"
 - contents:
   - adata_to_srt
+  - h5ad_to_srt
+  - srt_to_adata
+
+- subtitle: "Data Processing"
+- contents:
   - CellScoring
   - CheckDataType
   - CheckDataList
@@ -68,7 +73,6 @@ reference:
   - RecoverCounts
   - RenameClusters
   - srt_append
-  - srt_to_adata
   - srt_reorder
 
 - subtitle: "Feature Processing"
