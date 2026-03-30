@@ -40,7 +40,7 @@
 #' Default is `50`.
 #' @param linear_reduction_dims_use The dimensions to use for downstream analysis.
 #' If `NULL`, estimated dimensions stored in the linear reduction will be used when available;
-#' otherwise, the first up to `30` dimensions will be used as a fallback.
+#' otherwise, the first up to `50` dimensions will be used as a fallback.
 #' @param linear_reduction_params A list of parameters to pass to the linear dimensionality reduction method.
 #' @param force_linear_reduction Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.
 #' @param nonlinear_reduction The nonlinear dimensionality reduction method to use.
@@ -297,7 +297,7 @@ standard_scop <- function(
       "Perform {.pkg {lr}} linear dimension reduction",
       verbose = verbose
     )
-    srt <- RunDimReduction(
+    srt <- RunDimsReduction(
       srt,
       prefix = prefix,
       features = HVF,
@@ -376,7 +376,7 @@ standard_scop <- function(
             verbose = verbose
           )
           for (n in nonlinear_reduction_dims) {
-            srt <- RunDimReduction(
+            srt <- RunDimsReduction(
               srt,
               prefix = paste0(prefix, lr),
               reduction_use = paste0(prefix, lr),
