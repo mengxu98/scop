@@ -11,8 +11,8 @@ integration_scop(
   srt_list = NULL,
   assay = NULL,
   integration_method = c("Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5", "MNN",
-    "fastMNN", "fastMNN5", "Harmony", "Harmony5", "Scanorama", "BBKNN", "CSS", "LIGER",
-    "Conos", "ComBat"),
+    "fastMNN", "fastMNN5", "Harmony", "Harmony5", "Scanorama", "BBKNN", "CSS",
+    "Coralysis", "LIGER", "Conos", "ComBat"),
   do_normalization = NULL,
   normalization_method = "LogNormalize",
   do_HVF_finding = TRUE,
@@ -59,7 +59,7 @@ If \code{NULL}, the default assay of the Seurat object will be used.}
 \item{integration_method}{A character vector specifying the integration method to use.
 Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"CCA"}, \code{"RPCA"}, \code{"scVI"},
 \code{"scVI5"}, \code{"MNN"}, \code{"fastMNN"}, \code{"fastMNN5"}, \code{"Harmony"}, \code{"Harmony5"},
-\code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
+\code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"Coralysis"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
 Default is \code{"Uncorrected"}.}
 
 \item{do_normalization}{Whether data normalization should be performed.
@@ -177,7 +177,7 @@ CellDimPlot(
 integration_methods <- c(
   "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-  "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
+  "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
 )
 p_list <- list()
 for (method in integration_methods) {
@@ -231,6 +231,7 @@ for (nr in nonlinear_reductions) {
 \link{Scanorama_integrate},
 \link{BBKNN_integrate},
 \link{CSS_integrate},
+\link{Coralysis_integrate},
 \link{LIGER_integrate},
 \link{Conos_integrate},
 \link{ComBat_integrate}
