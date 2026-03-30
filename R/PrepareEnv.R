@@ -624,6 +624,65 @@ ensure_conda <- function(conda, error_if_missing = TRUE) {
   return(TRUE)
 }
 
+get_conda_version <- function(conda) {
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(NULL)
+  }
+
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  version_output <- tryCatch(
+    {
+      system2t(conda, "--version", stdout = TRUE, stderr = TRUE)
+    },
+    error = function(e) NULL
+  )
+
+  if (is.null(version_output) || length(version_output) == 0) {
+    return(NULL)
+  }
+
+  version_line <- paste(version_output, collapse = " ")
+  version_match <- regexec(
+    "\\bconda\\s+([0-9]+(?:\\.[0-9]+){1,})\\b",
+    version_line,
+    perl = TRUE
+  )
+  match_parts <- regmatches(version_line, version_match)[[1]]
+  if (length(match_parts) < 2) {
+    return(NULL)
+  }
+
+  tryCatch(
+    {
+      utils::packageVersion(match_parts[2])
+    },
+    error = function(e) NULL
+  )
+}
+
+conda_supports_tos <- function(conda) {
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(FALSE)
+  }
+
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  status <- tryCatch(
+    {
+      system2t(
+        conda,
+        c("tos", "--help"),
+        stdout = FALSE,
+        stderr = FALSE
+      )
+    },
+    error = function(e) NULL
+  )
+
+  identical(status, 0L)
+}
+
 install_uv <- function(
   python = NULL,
   envname = NULL,
@@ -681,7 +740,6 @@ install_uv <- function(
     }
   }
   if (length(pip_options) > 0) {
-    # Split pip_options if it's a single string
     if (length(pip_options) == 1 && grepl(" ", pip_options)) {
       pip_options <- strsplit(pip_options, "\\s+")[[1]]
     }
@@ -907,7 +965,6 @@ conda_install <- function(
       args <- c("pip", "install", "--python", python)
 
       if (length(pip_options) > 0) {
-        # Split pip_options if it's a single string
         if (length(pip_options) == 1 && grepl(" ", pip_options)) {
           pip_options <- strsplit(pip_options, "\\s+")[[1]]
         }
@@ -1278,31 +1335,20 @@ accept_conda_tos <- function(conda = "auto") {
   }
 
   system2t <- get_namespace_fun("reticulate", "system2t")
+  conda_version <- get_conda_version(conda)
+  supports_tos <- conda_supports_tos(conda)
 
-  version_cmd <- c("--version")
-  version_output <- tryCatch(
-    {
-      system2t(conda, shQuote(version_cmd), stdout = TRUE, stderr = TRUE)
-    },
-    error = function(e) NULL
-  )
-
-  if (!is.null(version_output)) {
-    conda_version <- tryCatch(
-      {
-        version_str <- gsub(
-          ".*conda ([0-9]+)\\.[0-9]+.*",
-          "\\1",
-          version_output
-        )
-        as.numeric(version_str)
-      },
-      error = function(e) NULL
-    )
-
-    if (!is.null(conda_version) && conda_version >= 23) {
-      return(invisible(TRUE))
+  if (!supports_tos) {
+    version_text <- if (is.null(conda_version)) {
+      "unknown"
+    } else {
+      as.character(conda_version)
     }
+    log_message(
+      "Skipping conda ToS acceptance because {.pkg conda} does not support the {.val tos} command (version: {.val {version_text}}).",
+      message_type = "warning"
+    )
+    return(invisible(FALSE))
   }
 
   channels <- c(
@@ -1319,15 +1365,25 @@ accept_conda_tos <- function(conda = "auto") {
     tryCatch(
       {
         args <- c("tos", "accept", "--override-channels", "--channel", channel)
-        status <- system2t(conda, shQuote(args), stdout = FALSE, stderr = FALSE)
+        status <- system2t(conda, args, stdout = FALSE, stderr = FALSE)
         if (status == 0L) {
           log_message(
             "Accepted ToS for channel: {.val {channel}}",
             message_type = "success"
           )
+        } else {
+          log_message(
+            "Failed to accept ToS for channel: {.val {channel}} [error code {.val {status}}]",
+            message_type = "warning"
+          )
         }
       },
-      error = function(e) {}
+      error = function(e) {
+        log_message(
+          "Failed to accept ToS for channel: {.val {channel}} ({.val {e$message}})",
+          message_type = "warning"
+        )
+      }
     )
   }
 
