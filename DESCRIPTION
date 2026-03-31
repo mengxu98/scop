@@ -1,8 +1,8 @@
 Package: scop
 Type: Package
 Title: Single Cell Omics analysis Pipeline
-Version: 0.8.6
-Date: 2026-03-20
+Version: 0.8.7
+Date: 2026-03-31
 Authors@R:
     c(
     person(given = "Xu", family = "Meng", email = "mengxu98@qq.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8300-1054")),
@@ -24,6 +24,7 @@ Imports:
     ggrepel,
     ggforce,
     gtable,
+    httr,
     igraph,
     reticulate,
     rlang,
@@ -43,10 +44,12 @@ Suggests:
     batchelor,
     biomaRt,
     CellChat,
+    Coralysis,
     circlize,
     clusterProfiler,
     e1071,
     ggpubr,
+    ggalluvial,
     ggridges,
     ggwordcloud,
     geomtextpath,
@@ -59,7 +62,6 @@ Suggests:
     harmony,
     HDF5Array,
     htmlwidgets,
-    httr,
     intrinsicDimension,
     limma,
     MatrixGenerics,
@@ -86,6 +88,8 @@ Suggests:
     scds,
     scDblFinder,
     decontX,
+    multinichenetr,
+    nichenetr,
     scmap,
     stringr,
     sva,
@@ -97,7 +101,9 @@ Suggests:
     umap,
     UCell
 Remotes:
-    jinworks/CellChat
+    jinworks/CellChat,
+    saeyslab/multinichenetr,
+    saeyslab/nichenetr
 RoxygenNote: 7.3.3
 Config/Needs/website: mengxu98/thistemplate
 Config/testthat/edition: 3
