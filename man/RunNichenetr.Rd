@@ -85,6 +85,5 @@ A Seurat object with standardized NicheNet results stored in
 \code{srt@tools[["Nichenetr"]]}.
 }
 \description{
-Wrapper around the main NicheNet Seurat workflows. Results are standardized and
-stored in \code{srt@tools[["Nichenetr"]]}.
+Run NicheNet analysis
 }
