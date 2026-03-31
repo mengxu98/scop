@@ -53,36 +53,6 @@ reference:
   - integration_scop
   - standard_scop
 
-- subtitle: "Data Conversion"
-- contents:
-  - adata_to_srt
-  - h5ad_to_srt
-  - srt_to_adata
-
-- subtitle: "Data Processing"
-- contents:
-  - CellScoring
-  - CheckDataType
-  - CheckDataList
-  - CheckDataMerge
-  - CycGenePrefetch
-  - DefaultReduction
-  - FetchDataZero
-  - GeneConvert
-  - GetAssayData5
-  - RecoverCounts
-  - RenameClusters
-  - srt_append
-  - srt_reorder
-
-- subtitle: "Feature Processing"
-- contents:
-  - AddFeaturesData
-  - AnnotateFeatures
-  - GetFeaturesData
-  - GetSimilarFeatures
-  - RenameFeatures
-
 - subtitle: "Quality Control"
 - contents:
   - db_DoubletDetection
@@ -93,9 +63,36 @@ reference:
   - RunDecontX
   - RunDoubletCalling
 
+- subtitle: "Data Integration and Batch Effect Removal"
+- contents:
+  - BBKNN_integrate
+  - CCA_integrate
+  - Coralysis_integrate
+  - CSS_integrate
+  - ComBat_integrate
+  - Conos_integrate
+  - fastMNN_integrate
+  - fastMNN5_integrate
+  - Harmony_integrate
+  - Harmony5_integrate
+  - LIGER_integrate
+  - MNN_integrate
+  - RPCA_integrate
+  - RunCSSMap
+  - RunHarmony2
+  - RunPCAMap
+  - RunSeuratMap
+  - RunSymphonyMap
+  - Scanorama_integrate
+  - Seurat_integrate
+  - scVI_integrate
+  - scVI5_integrate
+  - Uncorrected_integrate
+
 - subtitle: "Dimensionality Reduction and Clustering"
 - contents:
-  - RunDimReduction
+  - RunDimsEstimate
+  - RunDimsReduction
   - RunDM
   - RunFR
   - RunGLMPCA
@@ -107,34 +104,14 @@ reference:
   - RunPHATE
   - RunLargeVis
 
-- subtitle: "Data Integration and Batch Effect Removal"
-- contents:
-  - BBKNN_integrate
-  - CSS_integrate
-  - ComBat_integrate
-  - Conos_integrate
-  - fastMNN_integrate
-  - Harmony_integrate
-  - LIGER_integrate
-  - MNN_integrate
-  - RunCSSMap
-  - RunHarmony2
-  - RunPCAMap
-  - RunSeuratMap
-  - RunSymphonyMap
-  - Scanorama_integrate
-  - Seurat_integrate
-  - scVI_integrate
-  - Uncorrected_integrate
-
 - subtitle: "Cell Type Annotation"
 - contents:
   - CellTypistModels
   - RunCellTypist
   - RunKNNMap
   - RunKNNPredict
-  - RunSingleR
   - RunScmap
+  - RunSingleR
 
 - subtitle: "Differential Analysis"
 - contents:
@@ -144,6 +121,7 @@ reference:
 
 - subtitle: "Enrichment Analysis"
 - contents:
+  - CellScoring
   - RunDynamicEnrichment
   - RunEnrichment
   - RunGSEA
@@ -166,10 +144,44 @@ reference:
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCellChat
+  - RunCellphoneDB
+  - RunNichenetr
+  - RunMultiNichenetr
+
+- subtitle: "Data Conversion"
+- contents:
+  - adata_to_srt
+  - h5ad_to_srt
+  - srt_to_adata
+
+- subtitle: "Data Processing"
+- contents:
+  - CheckDataType
+  - CheckDataList
+  - CheckDataMerge
+  - CycGenePrefetch
+  - DefaultReduction
+  - FetchDataZero
+  - GeneConvert
+  - GetAssayData5
+  - RecoverCounts
+  - RenameClusters
+  - srt_append
+  - srt_reorder
+
+- subtitle: "Feature Processing"
+- contents:
+  - AddFeaturesData
+  - AnnotateFeatures
+  - GetFeaturesData
+  - GetSimilarFeatures
+  - RenameFeatures
 
 - subtitle: "Visualization Functions"
 - contents:
-  - CellChatPlot
+  - CCCHeatmap
+  - CCCNetworkPlot
+  - CCCStatPlot
   - CellDimPlot
   - CellDimPlot3D
   - CellDensityPlot
@@ -179,6 +191,7 @@ reference:
   - DEtestPlot
   - DEtestManhattanPlot
   - DEtestRingPlot
+  - DimsEstimatePlot
   - DynamicPlot
   - DynamicHeatmap
   - EnrichmentPlot
