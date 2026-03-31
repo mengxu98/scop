@@ -20,26 +20,27 @@
 #' [DefaultReduction]
 #'
 #' @export
-RunDimReduction <- function(
-    srt,
-    prefix = "",
-    features = NULL,
-    assay = NULL,
-    layer = "data",
-    linear_reduction = NULL,
-    linear_reduction_dims = 50,
-    linear_reduction_params = list(),
-    force_linear_reduction = FALSE,
-    nonlinear_reduction = NULL,
-    nonlinear_reduction_dims = 2,
-    reduction_use = NULL,
-    reduction_dims = NULL,
-    graph_use = NULL,
-    neighbor_use = NULL,
-    nonlinear_reduction_params = list(),
-    force_nonlinear_reduction = TRUE,
-    verbose = TRUE,
-    seed = 11) {
+RunDimsReduction <- function(
+  srt,
+  prefix = "",
+  features = NULL,
+  assay = NULL,
+  layer = "data",
+  linear_reduction = NULL,
+  linear_reduction_dims = 50,
+  linear_reduction_params = list(),
+  force_linear_reduction = FALSE,
+  nonlinear_reduction = NULL,
+  nonlinear_reduction_dims = 2,
+  reduction_use = NULL,
+  reduction_dims = NULL,
+  graph_use = NULL,
+  neighbor_use = NULL,
+  nonlinear_reduction_params = list(),
+  force_nonlinear_reduction = TRUE,
+  verbose = TRUE,
+  seed = 11
+) {
   set.seed(seed)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (inherits(srt[[assay]], "ChromatinAssay")) {
@@ -62,11 +63,19 @@ RunDimReduction <- function(
   )
 
   linear_reductions <- c(
-    "pca", "svd", "ica", "nmf", "mds", "glmpca"
+    "pca",
+    "svd",
+    "ica",
+    "nmf",
+    "mds",
+    "glmpca"
   )
   reduction_exist <- SeuratObject::Reductions(srt)
   if (!is.null(linear_reduction)) {
-    if (any(!linear_reduction %in% c(linear_reductions, reduction_exist)) || length(linear_reduction) > 1) {
+    if (
+      any(!linear_reduction %in% c(linear_reductions, reduction_exist)) ||
+        length(linear_reduction) > 1
+    ) {
       log_message(
         "{.arg linear_reduction} must be one of {.val {linear_reductions}}",
         message_type = "error"
@@ -74,17 +83,33 @@ RunDimReduction <- function(
     }
   }
   nonlinear_reductions <- c(
-    "umap", "umap-naive", "tsne", "dm", "phate", "pacmap", "trimap", "largevis", "fr"
+    "umap",
+    "umap-naive",
+    "tsne",
+    "dm",
+    "phate",
+    "pacmap",
+    "trimap",
+    "largevis",
+    "fr"
   )
   if (!is.null(nonlinear_reduction)) {
-    if (any(!nonlinear_reduction %in% c(nonlinear_reductions, reduction_exist)) || length(nonlinear_reduction) > 1) {
+    if (
+      any(!nonlinear_reduction %in% c(nonlinear_reductions, reduction_exist)) ||
+        length(nonlinear_reduction) > 1
+    ) {
       log_message(
         "{.arg nonlinear_reduction} must be one of {.val {nonlinear_reductions}}",
         message_type = "error"
       )
     }
 
-    if (is.null(features) && is.null(reduction_use) && is.null(neighbor_use) && is.null(graph_use)) {
+    if (
+      is.null(features) &&
+        is.null(reduction_use) &&
+        is.null(neighbor_use) &&
+        is.null(graph_use)
+    ) {
       inputs <- c("features", "reduction_use", "neighbor_use", "graph_use")
       log_message(
         "One of {.arg {inputs}} must be provided when performing nonlinear dimension reduction",
@@ -166,6 +191,15 @@ RunDimReduction <- function(
           reduc <- srt[[linear_reduction]]
           SeuratObject::Key(reduc) <- paste0(prefix, linear_reduction, "_")
           srt[[paste0(prefix, linear_reduction)]] <- reduc
+          srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
+            "dims_estimate"
+          ]] <- RunDimsEstimate(
+            srt = srt,
+            reduction = paste0(prefix, linear_reduction),
+            reduction_method = linear_reduction,
+            use_stored = TRUE,
+            verbose = FALSE
+          )
           srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
           return(srt)
         } else {
@@ -184,7 +218,8 @@ RunDimReduction <- function(
       }
       features <- SeuratObject::VariableFeatures(srt, assay = assay)
     }
-    fun_use <- switch(linear_reduction,
+    fun_use <- switch(
+      linear_reduction,
       "pca" = "RunPCA",
       "svd" = "RunSVD",
       "ica" = "RunICA",
@@ -192,7 +227,8 @@ RunDimReduction <- function(
       "mds" = "RunMDS",
       "glmpca" = "RunGLMPCA"
     )
-    key_use <- switch(linear_reduction,
+    key_use <- switch(
+      linear_reduction,
       "pca" = "PC_",
       "svd" = "LSI_",
       "ica" = "IC_",
@@ -200,7 +236,8 @@ RunDimReduction <- function(
       "mds" = "MDS_",
       "glmpca" = "GLMPC_"
     )
-    components_nm <- switch(linear_reduction,
+    components_nm <- switch(
+      linear_reduction,
       "pca" = "npcs",
       "svd" = "n",
       "ica" = "nics",
@@ -258,49 +295,20 @@ RunDimReduction <- function(
         x = pca_out@cell.embeddings
       )
       class(model) <- "prcomp"
-      srt@reductions[[paste0(prefix, linear_reduction)]]@misc[["model"]] <- model
+      srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
+        "model"
+      ]] <- model
     }
-    if (linear_reduction %in% c("glmpca", "nmf")) {
-      dims_estimate <- 1:linear_reduction_dims
-    } else {
-      dim_est <- tryCatch(
-        expr = {
-          min(
-            intrinsicDimension::maxLikGlobalDimEst(
-              data = Embeddings(
-                srt,
-                reduction = paste0(prefix, linear_reduction)
-              ),
-              k = 20
-            )[["dim.est"]],
-            ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction)))
-          )
-        },
-        error = function(e) {
-          log_message(
-            "Can not estimate intrinsic dimensions with {.pkg maxLikGlobalDimEst}",
-            message_type = "warning",
-            verbose = verbose
-          )
-          NA
-        }
-      )
-      if (!is.na(dim_est)) {
-        dims_estimate <- seq_len(max(
-          min(
-            ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction))),
-            10
-          ),
-          ceiling(dim_est)
-        ))
-      } else {
-        dims_estimate <- seq_len(min(
-          ncol(Embeddings(srt, reduction = paste0(prefix, linear_reduction))),
-          30
-        ))
-      }
-    }
-    srt@reductions[[paste0(prefix, linear_reduction)]]@misc[["dims_estimate"]] <- dims_estimate
+    dims_estimate <- RunDimsEstimate(
+      srt = srt,
+      reduction = paste0(prefix, linear_reduction),
+      reduction_method = linear_reduction,
+      use_stored = FALSE,
+      verbose = FALSE
+    )
+    srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
+      "dims_estimate"
+    ]] <- dims_estimate
     srt@misc[["Default_reduction"]] <- paste0(prefix, linear_reduction)
   } else if (!is.null(nonlinear_reduction)) {
     if (isFALSE(force_nonlinear_reduction)) {
