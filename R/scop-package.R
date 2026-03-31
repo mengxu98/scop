@@ -81,14 +81,6 @@ print.scop_logo <- function(x, ...) {
 .onAttach <- function(libname, pkgname) {
   options(scop_env_cache = NULL)
 
-  if (requireNamespace("future", quietly = TRUE)) {
-    thisutils::get_namespace_fun(
-      "future",
-      "plan"
-    )("sequential")
-    options(future.globals.maxSize = Inf)
-  }
-
   verbose <- thisutils::get_verbose()
   if (isTRUE(verbose)) {
     scop_env_init <- getOption("scop_env_init", default = FALSE)
