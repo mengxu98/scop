@@ -32,6 +32,14 @@ utils::globalVariables(
     "status", "step", "to_dim1", "to_dim2",
     "value", "values", "variable", "weight",
     "x", "x_angle", "x_num", "X", "xend", "x_plot",
-    "y", "y_radius", "Y", "yend", "y_plot"
+    "y", "y_radius", "Y", "yend", "y_plot",
+    "cell", "contribution", "dataset", "edge_colour", "edge_id", "incoming", "incoming_diff",
+    "interaction_label", "interaction_name", "interaction_plot", "label_plot", "ligand",
+    "magnitude", "object_names", "outgoing", "outgoing_diff", "pair", "pathway", "prob",
+    "receiver", "reg", "sender", "sender_display", "size_scaled", "specificity", "target",
+    "total_links", "value_1", "value_2", "x_from", "x_from_lr", "x_from_rr", "x_from_sl",
+    "x_label", "x_loop_from", "x_loop_to", "x_to", "x_to_lr", "x_to_rr", "x_to_sl", "y_from",
+    "y_from_lr", "y_from_rr", "y_from_sl", "y_label", "y_loop_from", "y_loop_to", "y_to",
+    "y_to_lr", "y_to_rr", "y_to_sl"
   )
 )
