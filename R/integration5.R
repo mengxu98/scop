@@ -926,7 +926,7 @@ run_integration5 <- function(
           per_batch_hvf <- lapply(sct_models, function(model) {
             fa <- Seurat::SCTResults(model, slot = "feature.attributes")
             nf <- min(nHVF, nrow(fa))
-            rownames(fa)[head(
+            rownames(fa)[utils::head(
               order(fa$residual_variance, decreasing = TRUE),
               nf
             )]
