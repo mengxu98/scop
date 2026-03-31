@@ -82,7 +82,8 @@ Default is \code{"pca"}.}
 Default is \code{50}.}
 
 \item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If \code{NULL}, all dimensions will be used.}
+If \code{NULL}, estimated dimensions stored in the linear reduction will be used when available;
+otherwise, the first up to \code{50} dimensions will be used as a fallback.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
@@ -156,7 +157,8 @@ plist1 <- lapply(
       reduction = paste0(
         "Standard", lr, "UMAP2D"
       ),
-      xlab = "", ylab = "", title = lr,
+      xlab = "", ylab = "",
+      title = paste0(lr, "_umap"),
       legend.position = "none",
       theme_use = "theme_blank"
     )
@@ -180,7 +182,8 @@ plist2 <- lapply(
       reduction = paste0(
         "Standardpca", nr, "2D"
       ),
-      xlab = "", ylab = "", title = nr,
+      xlab = "", ylab = "",
+      title = paste0("pca_", nr),
       legend.position = "none",
       theme_use = "theme_blank"
     )

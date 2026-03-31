@@ -331,6 +331,7 @@ CellStatPlot <- function(
   if (theme_use == "theme_scop") {
     theme_use <- "theme_this"
   }
+  check_r("geomtextpath", verbose = FALSE)
 
   if (plot_type == "upset") {
     check_r("ggupset", verbose = FALSE)

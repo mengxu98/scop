@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.R
 \name{integration_scop}
 \alias{integration_scop}
-\title{The integration_scop function}
+\title{The integration workflow}
 \usage{
 integration_scop(
   srt_merge = NULL,
@@ -10,8 +10,9 @@ integration_scop(
   append = TRUE,
   srt_list = NULL,
   assay = NULL,
-  integration_method = c("Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
-    "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"),
+  integration_method = c("Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5", "MNN",
+    "fastMNN", "fastMNN5", "Harmony", "Harmony5", "Scanorama", "BBKNN", "CSS",
+    "Coralysis", "LIGER", "Conos", "ComBat"),
   do_normalization = NULL,
   normalization_method = "LogNormalize",
   do_HVF_finding = TRUE,
@@ -56,8 +57,9 @@ Default is \code{TRUE}.}
 If \code{NULL}, the default assay of the Seurat object will be used.}
 
 \item{integration_method}{A character vector specifying the integration method to use.
-Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"scVI"}, \code{"MNN"}, \code{"fastMNN"},
-\code{"Harmony"}, \code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
+Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"CCA"}, \code{"RPCA"}, \code{"scVI"},
+\code{"scVI5"}, \code{"MNN"}, \code{"fastMNN"}, \code{"fastMNN5"}, \code{"Harmony"}, \code{"Harmony5"},
+\code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"Coralysis"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
 Default is \code{"Uncorrected"}.}
 
 \item{do_normalization}{Whether data normalization should be performed.
@@ -110,7 +112,8 @@ Default is \code{"pca"}.}
 Default is \code{50}.}
 
 \item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If \code{NULL}, all dimensions will be used.}
+If \code{NULL}, estimated dimensions stored in the linear reduction will be used when available;
+otherwise, the first up to \code{50} dimensions will be used as a fallback.}
 
 \item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
 
@@ -164,56 +167,19 @@ data(panc8_sub)
 panc8_sub <- integration_scop(
   panc8_sub,
   batch = "tech",
-  integration_method = "Uncorrected"
+  integration_method = "LIGER"
 )
 CellDimPlot(
   panc8_sub,
   group.by = c("tech", "celltype")
 )
-
-panc8_sub <- integration_scop(
-  panc8_sub,
-  batch = "tech",
-  integration_method = "Uncorrected",
-  HVF_min_intersection = 5
-)
-CellDimPlot(
-  panc8_sub,
-  group.by = c("tech", "celltype")
-)
-
-panc8_sub <- integration_scop(
-  panc8_sub,
-  batch = "tech",
-  integration_method = "Uncorrected",
-  HVF_min_intersection = 5,
-  scale_within_batch = TRUE
-)
-CellDimPlot(
-  panc8_sub,
-  group.by = c("tech", "celltype")
-)
-
-\dontrun{
-panc8_sub <- integration_scop(
-  panc8_sub,
-  batch = "tech",
-  integration_method = "Seurat"
-)
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
-
-panc8_sub <- integration_scop(
-  panc8_sub,
-  batch = "tech",
-  integration_method = "Seurat",
-  FindIntegrationAnchors_params = list(reduction = "rpca")
-)
-CellDimPlot(panc8_sub, group.by = c("tech", "celltype"))
 
 integration_methods <- c(
-  "Uncorrected", "Seurat", "scVI", "MNN", "fastMNN", "Harmony",
-  "Scanorama", "BBKNN", "CSS", "LIGER", "Conos", "ComBat"
+  "Uncorrected", "Seurat", "CCA", "RPCA", "scVI", "scVI5",
+  "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
+  "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
 )
+p_list <- list()
 for (method in integration_methods) {
   panc8_sub <- integration_scop(
     panc8_sub,
@@ -222,13 +188,14 @@ for (method in integration_methods) {
     linear_reduction_dims_use = 1:50,
     nonlinear_reduction = "umap"
   )
-  print(
-    CellDimPlot(panc8_sub,
-      group.by = c("tech", "celltype"),
-      reduction = paste0(method, "UMAP2D"),
-      xlab = "", ylab = "", title = method,
-      legend.position = "none", theme_use = "theme_blank"
-    )
+  p_list[[method]] <- CellDimPlot(
+    panc8_sub,
+    group.by = c("tech", "celltype"),
+    reduction = paste0(method, "UMAP2D"),
+    xlab = "", ylab = "",
+    title = method,
+    legend.position = "none",
+    theme_use = "theme_blank"
   )
 }
 
@@ -255,7 +222,6 @@ for (nr in nonlinear_reductions) {
   )
 }
 }
-}
 \seealso{
 \link{Seurat_integrate},
 \link{scVI_integrate},
@@ -265,8 +231,8 @@ for (nr in nonlinear_reductions) {
 \link{Scanorama_integrate},
 \link{BBKNN_integrate},
 \link{CSS_integrate},
+\link{Coralysis_integrate},
 \link{LIGER_integrate},
 \link{Conos_integrate},
-\link{ComBat_integrate},
-\link{standard_scop}
+\link{ComBat_integrate}
 }

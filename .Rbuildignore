@@ -7,6 +7,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.claude$
 ^codecov\.yml$
 ^README\.Rmd$
 ^LICENSE\.md$

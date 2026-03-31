@@ -3897,3 +3897,263 @@ def CellTypist(
             verbose=verbose,
         )
         raise
+
+
+def _cpdb_write_optional_table(obj, path, sep="\t"):
+    import pandas as pd
+
+    if obj is None:
+        return None
+    if isinstance(obj, str):
+        return os.path.expanduser(obj)
+    if isinstance(obj, pd.DataFrame):
+        obj.to_csv(path, sep=sep, index=False)
+        return path
+    try:
+        df = pd.DataFrame(obj)
+        df.to_csv(path, sep=sep, index=False)
+        return path
+    except Exception:
+        raise ValueError("Unsupported optional CellphoneDB table input")
+
+
+def _cpdb_guess_db_path():
+    candidates = [
+        "./cellphonedb.zip",
+        "~/cellphonedb.zip",
+        "~/.cache/cellphonedb/cellphonedb.zip",
+        "~/.local/share/cellphonedb/cellphonedb.zip",
+    ]
+    for path in candidates:
+        path_expanded = os.path.expanduser(path)
+        if os.path.exists(path_expanded):
+            return path_expanded
+    return None
+
+
+def _cpdb_download_database(download_path):
+    import urllib.request
+
+    download_urls = [
+        "https://github.com/ventolab/cellphonedb-data/raw/refs/heads/master/cellphonedb.zip",
+        "https://raw.githubusercontent.com/ventolab/cellphonedb-data/master/cellphonedb.zip",
+    ]
+    os.makedirs(os.path.dirname(download_path), exist_ok=True)
+    last_error = None
+    for url in download_urls:
+        try:
+            urllib.request.urlretrieve(url, download_path)
+            if os.path.exists(download_path) and os.path.getsize(download_path) > 0:
+                return download_path
+        except Exception as e:
+            last_error = e
+            continue
+    raise RuntimeError(f"Failed to download CellPhoneDB database: {last_error}")
+
+
+def _cpdb_call(method_fun, **kwargs):
+    import inspect
+
+    sig = inspect.signature(method_fun)
+    allowed = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    return method_fun(**allowed)
+
+
+def _cpdb_empty_results(method="statistical_analysis", score_interactions=True):
+    import pandas as pd
+
+    out = {
+        "means": pd.DataFrame(),
+    }
+    if method == "statistical_analysis":
+        out["pvalues"] = pd.DataFrame()
+        out["significant_means"] = pd.DataFrame()
+    if score_interactions:
+        out["interaction_scores"] = pd.DataFrame()
+    return out
+
+
+def CellphoneDB(
+    adata,
+    celltype_key,
+    method="statistical_analysis",
+    cpdb_file_path=None,
+    counts_data="hgnc_symbol",
+    microenvs=None,
+    active_tfs=None,
+    degs=None,
+    score_interactions=True,
+    iterations=1000,
+    threshold=0.1,
+    pvalue=0.05,
+    threads=4,
+    separator="|",
+    debug=False,
+    debug_seed=42,
+    result_precision=3,
+    subsampling=False,
+    subsampling_log=False,
+    subsampling_num_pc=100,
+    subsampling_num_cells=1000,
+    output_path=None,
+    output_suffix=None,
+    keep_output=False,
+    verbose=True,
+):
+    import os
+    import shutil
+    import tempfile
+
+    import pandas as pd
+
+    try:
+        if adata is None:
+            raise ValueError("{.arg adata} must be provided")
+        if celltype_key not in adata.obs.columns:
+            raise ValueError(f"celltype_key '{celltype_key}' not found in adata.obs")
+
+        try:
+            from cellphonedb.src.core.methods import (
+                cpdb_analysis_method,
+                cpdb_degs_analysis_method,
+                cpdb_statistical_analysis_method,
+            )
+        except ImportError as e:
+            log_message(
+                "{.pkg cellphonedb} import failed: {.val {%s}}" % e,
+                message_type="error",
+                verbose=verbose,
+            )
+            raise
+
+        if cpdb_file_path is None:
+            cpdb_file_path = _cpdb_guess_db_path()
+            if cpdb_file_path is None:
+                cache_dir = os.path.expanduser("~/.cache/cellphonedb")
+                cpdb_file_path = _cpdb_download_database(
+                    os.path.join(cache_dir, "cellphonedb.zip")
+                )
+        if cpdb_file_path is None or not os.path.exists(
+            os.path.expanduser(cpdb_file_path)
+        ):
+            raise FileNotFoundError(
+                "CellPhoneDB database not found. Provide cpdb_file_path or ensure network access for automatic download."
+            )
+
+        cpdb_file_path = os.path.expanduser(cpdb_file_path)
+
+        temp_dir = tempfile.mkdtemp(prefix="scop_cpdb_")
+        temp_output = output_path is None
+        if output_path is None:
+            output_path = tempfile.mkdtemp(prefix="scop_cpdb_output_")
+        else:
+            output_path = os.path.expanduser(output_path)
+            os.makedirs(output_path, exist_ok=True)
+
+        counts_file_path = os.path.join(temp_dir, "counts.h5ad")
+        meta_file_path = os.path.join(temp_dir, "meta.tsv")
+        microenvs_file_path = os.path.join(temp_dir, "microenvs.tsv")
+        active_tfs_file_path = os.path.join(temp_dir, "active_tfs.tsv")
+        degs_file_path = os.path.join(temp_dir, "degs.tsv")
+
+        adata.write_h5ad(counts_file_path)
+        meta_df = pd.DataFrame(
+            {
+                "Cell": adata.obs_names.astype(str),
+                "cell_type": adata.obs[celltype_key].astype(str).values,
+            }
+        )
+        meta_df.set_index("Cell").to_csv(meta_file_path, sep="\t")
+
+        microenvs_file_path = _cpdb_write_optional_table(
+            microenvs, microenvs_file_path, sep="\t"
+        )
+        active_tfs_file_path = _cpdb_write_optional_table(
+            active_tfs, active_tfs_file_path, sep="\t"
+        )
+        degs_file_path = _cpdb_write_optional_table(degs, degs_file_path, sep="\t")
+
+        common_args = dict(
+            cpdb_file_path=cpdb_file_path,
+            meta_file_path=meta_file_path,
+            counts_file_path=counts_file_path,
+            counts_data=counts_data,
+            microenvs_file_path=microenvs_file_path,
+            active_tfs_file_path=active_tfs_file_path,
+            separator=separator,
+            threshold=threshold,
+            result_precision=result_precision,
+            debug=debug,
+            output_path=output_path,
+            output_suffix=output_suffix,
+        )
+
+        try:
+            if method == "statistical_analysis":
+                result = _cpdb_call(
+                    cpdb_statistical_analysis_method.call,
+                    score_interactions=score_interactions,
+                    iterations=iterations,
+                    threads=threads,
+                    debug_seed=debug_seed,
+                    pvalue=pvalue,
+                    subsampling=subsampling,
+                    subsampling_log=subsampling_log,
+                    subsampling_num_pc=subsampling_num_pc,
+                    subsampling_num_cells=subsampling_num_cells,
+                    **common_args,
+                )
+            elif method == "analysis":
+                result = _cpdb_call(
+                    cpdb_analysis_method.call,
+                    threads=threads,
+                    score_interactions=score_interactions,
+                    **common_args,
+                )
+            elif method == "degs_analysis":
+                if degs_file_path is None:
+                    raise ValueError(
+                        "{.arg degs} is required for {.val method = 'degs_analysis'}"
+                    )
+                result = _cpdb_call(
+                    cpdb_degs_analysis_method.call,
+                    degs_file_path=degs_file_path,
+                    threads=threads,
+                    score_interactions=score_interactions,
+                    **common_args,
+                )
+            else:
+                raise ValueError(f"Unsupported CellPhoneDB method: {method}")
+        except Exception as e:
+            err_msg = str(e)
+            if "significant_means" in err_msg:
+                log_message(
+                    "CellPhoneDB found no interactions for this input. Returning empty result tables.",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                result = _cpdb_empty_results(
+                    method=method,
+                    score_interactions=score_interactions,
+                )
+            else:
+                raise
+
+        out = {
+            "results": result,
+            "output_path": output_path,
+            "cpdb_file_path": cpdb_file_path,
+        }
+
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        if temp_output and not keep_output:
+            shutil.rmtree(output_path, ignore_errors=True)
+            out["output_path"] = None
+        return out
+    except Exception as e:
+        log_message(
+            "CellPhoneDB analysis failed: {.val {%s}}" % e,
+            message_type="error",
+            verbose=verbose,
+        )
+        raise

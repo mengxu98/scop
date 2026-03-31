@@ -1,5 +1,24 @@
 # scop
 
+# scop 0.8.7
+
+* **feat**:
+  * Added `RunDimsEstimate()` and `DimsEstimatePlot()` for intrinsic dimensionality estimation from reductions, integrated into `RunDimsReduction()` and `standard_scop()` to automatically select useful dimensions when `linear_reduction_dims_use = NULL`.
+  * Renamed `RunDimReduction()` to `RunDimsReduction()` and updated downstream callers/documentation accordingly.
+  * `standard_scop()`: When `linear_reduction_dims_use = NULL`, now uses estimated dimensions stored in the reduction (via `RunDimsEstimate()`) when available, with fallback to the first 50 dimensions.
+  * Added Seurat v5 integration methods: `CCA_integrate()`, `RPCA_integrate()`, `fastMNN5_integrate()`, `Harmony5_integrate()`, and `scVI5_integrate()` via `Seurat::IntegrateLayers()`, and exposed them through `integration_scop()`.
+  * Added `Coralysis_integrate()` and exposed Coralysis through `integration_scop()`, following the official Seurat v5 compatible workflow via `SingleCellExperiment`.
+  * Added `h5ad_to_srt()` for reading `.h5ad` files directly into `Seurat` objects via `scanpy.read_h5ad()`, with automatic CSR/float64 coercion to avoid reticulate conversion issues. Layers that fail conversion are gracefully skipped and reported.
+  * `adata_to_srt()`: Improved robustness of layer conversion — each layer is now wrapped in `tryCatch()` so that individual failures no longer abort the entire conversion; skipped layers are reported as warnings.
+  * `RunCellChat()`: Enhanced to support condition-specific analyses and pairwise merged comparisons via `group_column` and `group_cmp` parameters.
+  * Added `RunCellphoneDB()` for running CellphoneDB cell-cell communication analysis on a `Seurat` object through the official Python package, with support for species conversion and results stored in `srt@tools[["CellphoneDB"]]`.
+  * Added `RunNichenetr()` and `RunMultiNichenetr()` for running NicheNet and MultiNicheNet analysis on `Seurat` objects with standardized result storage.
+  * Added unified cell-cell communication plotting functions `CCCStatPlot()`, `CCCHeatmap()`, and `CCCNetworkPlot()` for CellChat, CellphoneDB, NicheNet, and MultiNicheNet results.
+  * Remove `CellChatPlot()`.
+
+* **fix**:
+  * `RunUMAP2()`: Fixed reduction lookup to check existing reduction names before falling back to `DefaultReduction()`, avoiding errors when the exact reduction name is already present.
+
 # scop 0.8.6
 
 * **feat**:

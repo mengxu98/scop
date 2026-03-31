@@ -299,22 +299,38 @@ adata_to_srt <- function(
   } else {
     keys <- names(adata$layers)
   }
+  skipped_layers <- list()
   if (length(keys) > 0) {
     for (k in keys) {
-      layer <- py_to_r2(get_adata_element(adata$layers, k))
-      if (!inherits(layer, c("Matrix", "matrix"))) {
-        log_message(
-          "The object in {.val {k}} layers is not a matrix: {.val {class(get_adata_element(adata$layers, k))}}",
-          message_type = "error"
-        )
+      k_clean <- py_to_r2(k)
+      err <- tryCatch(
+        {
+          raw <- get_adata_element(adata$layers, k, missing = "null")
+          if (is.null(raw)) {
+            stop("cannot access layer", call. = FALSE)
+          }
+          layer <- py_to_r2(raw)
+          if (!inherits(layer, c("Matrix", "matrix"))) {
+            stop(
+              "not a matrix: ",
+              paste(class(layer), collapse = ", "),
+              call. = FALSE
+            )
+          }
+          layer <- Matrix::t(layer)
+          if (!inherits(layer, "dgCMatrix")) {
+            layer <- SeuratObject::as.sparse(layer)
+          }
+          rownames(layer) <- get_adata_names(adata, "var")
+          colnames(layer) <- get_adata_names(adata, "obs")
+          srt[[k_clean]] <- Seurat::CreateAssayObject(counts = layer)
+          NULL
+        },
+        error = function(e) e
+      )
+      if (inherits(err, "error")) {
+        skipped_layers[[k_clean]] <- conditionMessage(err)
       }
-      layer <- Matrix::t(layer)
-      if (!inherits(layer, "dgCMatrix")) {
-        layer <- SeuratObject::as.sparse(layer)
-      }
-      rownames(layer) <- get_adata_names(adata, "var")
-      colnames(layer) <- get_adata_names(adata, "obs")
-      srt[[py_to_r2(k)]] <- Seurat::CreateAssayObject(counts = layer)
     }
   }
 
@@ -496,7 +512,87 @@ adata_to_srt <- function(
     message_type = "success",
     verbose = verbose
   )
+  if (length(skipped_layers) > 0) {
+    log_message(
+      "Some layers were skipped: {.val {names(skipped_layers)}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
   return(srt)
+}
+
+#' @title Read an `.h5ad` file and convert to a `Seurat`
+#'
+#' @md
+#' @inheritParams adata_to_srt
+#' @param path Path to an `.h5ad` file (passed to `scanpy.read_h5ad()`).
+#' @param prepare_for_reticulate If `TRUE` (default), coerces `X` and each layer
+#'   matrix to CSR `float64` in Python (avoids invalid `dgRMatrix` conversion
+#'   via reticulate). Layers that still fail in [adata_to_srt()] are skipped and
+#'   reported. Set to `FALSE` for a plain `read_h5ad` then convert.
+#'
+#' @return A `Seurat` object.
+#'
+#' @export
+#'
+#' @seealso [adata_to_srt], [srt_to_adata]
+#'
+#' @examples
+#' \dontrun{
+#' srt <- h5ad_to_srt("path/to/data.h5ad")
+#' srt
+#' }
+h5ad_to_srt <- function(
+    path,
+    verbose = TRUE,
+    prepare_for_reticulate = TRUE) {
+  PrepareEnv()
+  if (isTRUE(prepare_for_reticulate)) {
+    check_python(c("scanpy", "numpy", "scipy"))
+  } else {
+    check_python(c("scanpy", "numpy"))
+  }
+
+  path <- normalizePath(path.expand(path), mustWork = TRUE, winslash = "/")
+  if (!length(path) || !nzchar(path[1L])) {
+    log_message(
+      "{.arg path} must be a non-empty path",
+      message_type = "error"
+    )
+  }
+
+  if (isTRUE(prepare_for_reticulate)) {
+    path_py <- gsub("\"", "\\\\\"", path, fixed = TRUE)
+    reticulate::py_run_string(paste0(
+      "
+import numpy as np
+import scanpy as sc
+import __main__
+adata = sc.read_h5ad(r\"",
+      path_py,
+      "\")
+
+def as_csr_f64(x):
+    import scipy.sparse as sp
+    if sp.issparse(x):
+        return x.tocsr().astype(np.float64)
+    return np.asarray(x, dtype=np.float64)
+
+adata.X = as_csr_f64(adata.X)
+for k in list(adata.layers.keys()):
+    adata.layers[k] = as_csr_f64(adata.layers[k])
+__main__.adata = adata
+"
+    ))
+    main <- reticulate::import("__main__", convert = FALSE)
+    adata <- main$adata
+  } else {
+    sc <- reticulate::import("scanpy")
+    adata <- sc$read_h5ad(path)
+  }
+
+  adata_to_srt(adata, verbose = verbose)
 }
 
 py_to_r2 <- function(x) {
@@ -507,7 +603,11 @@ py_to_r2 <- function(x) {
   }
 }
 
-get_adata_element <- function(container, key) {
+get_adata_element <- function(
+    container,
+    key,
+    missing = c("error", "null")) {
+  missing <- match.arg(missing)
   if (is.function(container$get)) {
     result <- tryCatch(
       {
@@ -524,6 +624,9 @@ get_adata_element <- function(container, key) {
       return(container[[key]])
     },
     error = function(e) {
+      if (missing == "null") {
+        return(NULL)
+      }
       log_message(
         "Cannot access element: {.val {key}}",
         message_type = "error"
