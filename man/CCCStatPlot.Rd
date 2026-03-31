@@ -161,8 +161,7 @@ interactions).}
 A ggplot or recorded base plot object.
 }
 \description{
-Plot cell-cell communication statistics using bar, sankey, box,
-violin, gene expression, and role-scatter visualizations.
+CCC statistical distribution and summary plots
 }
 \examples{
 data(pancreas_sub)
