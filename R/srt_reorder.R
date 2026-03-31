@@ -39,13 +39,28 @@ srt_reorder <- function(
     )
     features <- SeuratObject::VariableFeatures(srt, assay = assay)
   }
-  features <- intersect(x = features, y = rownames(x = srt))
-  if (is.null(reorder_by)) {
-    srt$ident <- SeuratObject::Idents(srt)
-  } else {
-    srt$ident <- srt[[reorder_by, drop = TRUE]]
+  data_use <- GetAssayData5(
+    object = srt,
+    layer = layer,
+    assay = assay
+  )
+  features <- intersect(x = features, y = rownames(x = data_use))
+  if (length(features) == 0) {
+    log_message(
+      "No available features for reordering",
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(srt)
   }
-  if (length(unique(srt[[reorder_by, drop = TRUE]])) == 1) {
+
+  ident_use <- if (is.null(reorder_by)) {
+    SeuratObject::Idents(srt)
+  } else {
+    srt[[reorder_by, drop = TRUE]]
+  }
+  srt$ident <- ident_use
+  if (length(unique(ident_use)) == 1) {
     log_message(
       "Only one cluster found",
       message_type = "warning",
@@ -81,16 +96,33 @@ srt_reorder <- function(
     )
   }
 
-  data_avg <- Seurat::AggregateExpression(
-    object = srt,
-    features = features,
-    assays = assay,
-    group.by = "ident",
-    verbose = FALSE
-  )[[1]][features, , drop = FALSE]
+  data_use <- data_use[features, , drop = FALSE]
+  if (!inherits(data_use, "Matrix")) {
+    data_use <- SeuratObject::as.sparse(data_use)
+  }
 
-  if (isTRUE(log)) {
+  ident_use <- factor(as.character(ident_use))
+  data_avg <- vapply(
+    X = levels(ident_use),
+    FUN = function(group_name) {
+      group_cells <- which(ident_use == group_name)
+      Matrix::rowMeans(data_use[, group_cells, drop = FALSE])
+    },
+    FUN.VALUE = numeric(length(features))
+  )
+  rownames(data_avg) <- features
+  colnames(data_avg) <- levels(ident_use)
+
+  if (isTRUE(log) && identical(layer, "counts")) {
     data_avg <- log1p(data_avg)
+  } else if (isTRUE(log) && !identical(layer, "counts")) {
+    log_message(
+      paste(
+        "Skip {.fn log1p} because {.arg layer = {layer}} is not",
+        "{.val counts}"
+      ),
+      verbose = verbose
+    )
   }
   mat <- Matrix::t(data_avg[features, , drop = FALSE])
   if (!inherits(mat, "dgCMatrix")) {

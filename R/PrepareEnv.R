@@ -21,29 +21,29 @@
 #'
 #' @export
 PrepareEnv <- function(
-    envname = NULL,
-    conda = "auto",
-    miniconda_repo = "https://repo.anaconda.com/miniconda",
-    version = if (is_windows()) "3.11-1" else "3.10-1",
-    force = FALSE,
-    pip_options = character(),
-    ...) {
+  envname = NULL,
+  conda = "auto",
+  miniconda_repo = "https://repo.anaconda.com/miniconda",
+  version = if (is_windows()) "3.11-1" else "3.10-1",
+  force = FALSE,
+  pip_options = character(),
+  ...
+) {
+  log_message(
+    "Preparing python environment...",
+    text_color = "blue",
+    message_type = "running"
+  )
+
   env_cache <- getOption("scop_env_cache", default = NULL)
   if (isTRUE(env_cache) && isFALSE(force)) {
     log_message(
-      "{cli::col_green('Python environment already prepared')}\n",
+      "{cli::col_green('Python environment completed')}\n",
       "{cli::col_grey('Until next loading, the environment will be cached')}",
       message_type = "success"
     )
     return(invisible(NULL))
   }
-
-  log_message(
-    "Preparing python environment...",
-    text_color = "orange",
-    message_type = "running",
-    timestamp_style = FALSE
-  )
 
   if (!is.null(envname)) {
     options(scop_envname = envname)
@@ -235,7 +235,8 @@ set_python_env <- function(conda, envname, verbose = TRUE) {
 
   tryCatch(
     {
-      reticulate::py_run_string("
+      reticulate::py_run_string(
+        "
 import os
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
@@ -258,16 +259,17 @@ except ImportError:
     pass
 except Exception:
     pass
-")
+"
+      )
     },
-    error = function(e) {
-    }
+    error = function(e) {}
   )
 }
 
 install_miniconda2 <- function(
-    miniconda_repo,
-    timeout = 600) {
+  miniconda_repo,
+  timeout = 600
+) {
   log_message("Installing miniconda...")
   options(timeout = timeout)
 
@@ -280,7 +282,8 @@ install_miniconda2 <- function(
   } else {
     version <- "3"
     arch <- get_namespace_fun(
-      "reticulate", "miniconda_installer_arch"
+      "reticulate",
+      "miniconda_installer_arch"
     )(info)
 
     name <- if (is_windows()) {
@@ -324,7 +327,8 @@ install_miniconda2 <- function(
   )
 
   conda <- get_namespace_fun(
-    "reticulate", "miniconda_conda"
+    "reticulate",
+    "miniconda_conda"
   )(miniconda_path)
   log_message("Miniconda installed at: {.file {miniconda_path}}")
 
@@ -344,16 +348,21 @@ env_info <- function(conda, envname) {
       "Conda config:"
     ),
     cli::col_grey(
-      " Conda:         ", conda
+      " Conda:         ",
+      conda
     ),
     cli::col_grey(
-      " Environment:   ", envs_dir, "/", get_envname(envname)
+      " Environment:   ",
+      envs_dir,
+      "/",
+      get_envname(envname)
     ),
     cli::col_blue(
       "Python config:"
     ),
     cli::col_grey(
-      " ", py_info
+      " ",
+      py_info
     )
   )
   invisible(lapply(py_info_mesg, packageStartupMessage))
@@ -421,6 +430,7 @@ env_requirements <- function(version = "3.10-1") {
     "scanorama" = "pip",
     "cellrank" = "pip",
     "celltypist" = "pip",
+    "cellphonedb" = "pip",
     if (is_apple_silicon()) {
       c("llvm-openmp" = "conda")
     } else {
@@ -456,6 +466,7 @@ env_requirements <- function(version = "3.10-1") {
     "scvi-tools" = "scvi-tools==1.2.1",
     "cellrank" = "cellrank==2.0.7",
     "celltypist" = "celltypist",
+    "cellphonedb" = "cellphonedb==5.0.1",
     if (is_apple_silicon()) {
       c("llvm-openmp" = "llvm-openmp>=17")
     } else {
@@ -482,9 +493,10 @@ env_requirements <- function(version = "3.10-1") {
 }
 
 env_exist <- function(
-    conda = "auto",
-    envname = NULL,
-    envs_dir = NULL) {
+  conda = "auto",
+  envname = NULL,
+  envs_dir = NULL
+) {
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
 
@@ -544,7 +556,8 @@ get_envname <- function(envname = NULL) {
 
 get_conda_envs_dir <- function(conda = "auto") {
   conda_info <- get_namespace_fun(
-    "reticulate", "conda_info"
+    "reticulate",
+    "conda_info"
   )(conda = conda)
   envs_dir <- conda_info[["envs directories"]][1]
   if (is.null(envs_dir) || length(envs_dir) == 0) {
@@ -570,16 +583,19 @@ find_conda <- function() {
       miniconda_path <- reticulate::miniconda_path()
     }
     conda_exist <- get_namespace_fun(
-      "reticulate", "miniconda_exists"
+      "reticulate",
+      "miniconda_exists"
     )(
       miniconda_path
     ) &&
       get_namespace_fun(
-        "reticulate", "miniconda_test"
+        "reticulate",
+        "miniconda_test"
       )(miniconda_path)
     if (isTRUE(conda_exist)) {
       conda <- get_namespace_fun(
-        "reticulate", "miniconda_conda"
+        "reticulate",
+        "miniconda_conda"
       )(miniconda_path)
     } else {
       conda <- NULL
@@ -608,11 +624,71 @@ ensure_conda <- function(conda, error_if_missing = TRUE) {
   return(TRUE)
 }
 
+get_conda_version <- function(conda) {
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(NULL)
+  }
+
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  version_output <- tryCatch(
+    {
+      system2t(conda, "--version", stdout = TRUE, stderr = TRUE)
+    },
+    error = function(e) NULL
+  )
+
+  if (is.null(version_output) || length(version_output) == 0) {
+    return(NULL)
+  }
+
+  version_line <- paste(version_output, collapse = " ")
+  version_match <- regexec(
+    "\\bconda\\s+([0-9]+(?:\\.[0-9]+){1,})\\b",
+    version_line,
+    perl = TRUE
+  )
+  match_parts <- regmatches(version_line, version_match)[[1]]
+  if (length(match_parts) < 2) {
+    return(NULL)
+  }
+
+  tryCatch(
+    {
+      utils::packageVersion(match_parts[2])
+    },
+    error = function(e) NULL
+  )
+}
+
+conda_supports_tos <- function(conda) {
+  conda <- resolve_conda(conda)
+  if (!ensure_conda(conda, error_if_missing = FALSE)) {
+    return(FALSE)
+  }
+
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  status <- tryCatch(
+    {
+      system2t(
+        conda,
+        c("tos", "--help"),
+        stdout = FALSE,
+        stderr = FALSE
+      )
+    },
+    error = function(e) NULL
+  )
+
+  identical(status, 0L)
+}
+
 install_uv <- function(
-    python = NULL,
-    envname = NULL,
-    conda = "auto",
-    pip_options = character()) {
+  python = NULL,
+  envname = NULL,
+  conda = "auto",
+  pip_options = character()
+) {
   log_message("Attempting to install uv...")
 
   if (is.null(python)) {
@@ -664,7 +740,6 @@ install_uv <- function(
     }
   }
   if (length(pip_options) > 0) {
-    # Split pip_options if it's a single string
     if (length(pip_options) == 1 && grepl(" ", pip_options)) {
       pip_options <- strsplit(pip_options, "\\s+")[[1]]
     }
@@ -715,11 +790,12 @@ install_uv <- function(
 }
 
 find_uv <- function(
-    python = NULL,
-    envname = NULL,
-    conda = "auto",
-    auto_install = TRUE,
-    pip_options = character()) {
+  python = NULL,
+  envname = NULL,
+  conda = "auto",
+  auto_install = TRUE,
+  pip_options = character()
+) {
   uv <- Sys.which("uv")
   if (uv != "" && file.exists(uv)) {
     return(uv)
@@ -755,7 +831,12 @@ find_uv <- function(
   }
 
   if (isTRUE(auto_install)) {
-    uv <- install_uv(python = python, envname = envname, conda = conda, pip_options = pip_options)
+    uv <- install_uv(
+      python = python,
+      envname = envname,
+      conda = conda,
+      pip_options = pip_options
+    )
     if (!is.null(uv)) {
       return(uv)
     }
@@ -765,25 +846,29 @@ find_uv <- function(
 }
 
 conda_install <- function(
-    envname = NULL,
-    packages,
-    forge = TRUE,
-    channel = character(),
-    pip = FALSE,
-    pip_options = character(),
-    pip_ignore_installed = FALSE,
-    conda = "auto",
-    python_version = NULL,
-    ...) {
+  envname = NULL,
+  packages,
+  forge = TRUE,
+  channel = character(),
+  pip = FALSE,
+  pip_options = character(),
+  pip_ignore_installed = FALSE,
+  conda = "auto",
+  python_version = NULL,
+  ...
+) {
   envname <- get_envname(envname)
   get_namespace_fun(
-    "reticulate", "check_forbidden_install"
+    "reticulate",
+    "check_forbidden_install"
   )("Python packages")
   conda_args <- get_namespace_fun(
-    "reticulate", "conda_args"
+    "reticulate",
+    "conda_args"
   )
   system2t <- get_namespace_fun(
-    "reticulate", "system2t"
+    "reticulate",
+    "system2t"
   )
 
   if (missing(packages)) {
@@ -808,7 +893,8 @@ conda_install <- function(
 
   conda <- reticulate::conda_binary(conda)
   envname <- get_namespace_fun(
-    "reticulate", "condaenv_resolve"
+    "reticulate",
+    "condaenv_resolve"
   )(envname)
 
   log_message(
@@ -879,7 +965,6 @@ conda_install <- function(
       args <- c("pip", "install", "--python", python)
 
       if (length(pip_options) > 0) {
-        # Split pip_options if it's a single string
         if (length(pip_options) == 1 && grepl(" ", pip_options)) {
           pip_options <- strsplit(pip_options, "\\s+")[[1]]
         }
@@ -978,12 +1063,14 @@ conda_install <- function(
 }
 
 conda_python <- function(
-    envname = NULL,
-    conda = "auto",
-    all = FALSE) {
+  envname = NULL,
+  conda = "auto",
+  all = FALSE
+) {
   envname <- get_envname(envname)
   envname <- get_namespace_fun(
-    "reticulate", "python_environment_resolve"
+    "reticulate",
+    "python_environment_resolve"
   )(envname)
   if (grepl("[/\\\\]", envname)) {
     suffix <- if (is_windows()) "python.exe" else "bin/python"
@@ -1006,7 +1093,8 @@ conda_python <- function(
       ),
       x = normalizePath(conda_envs$python, mustWork = FALSE),
       fixed = TRUE
-    ), ,
+    ),
+    ,
     drop = FALSE
   ]
   env <- conda_envs[conda_envs$name == envname, , drop = FALSE]
@@ -1051,9 +1139,10 @@ conda_python <- function(
 #' RemoveEnv("my_old_env", force = TRUE)
 #' }
 RemoveEnv <- function(
-    envname = NULL,
-    conda = "auto",
-    force = FALSE) {
+  envname = NULL,
+  conda = "auto",
+  force = FALSE
+) {
   envname <- get_envname(envname)
 
   log_message(
@@ -1088,7 +1177,9 @@ RemoveEnv <- function(
     if (interactive()) {
       response <- readline(
         paste0(
-          "Are you sure you want to remove environment: ", envname, "? (y/N): "
+          "Are you sure you want to remove environment: ",
+          envname,
+          "? (y/N): "
         )
       )
       if (!tolower(response) %in% c("y", "yes")) {
@@ -1211,10 +1302,14 @@ ListEnv <- function(conda = "auto") {
       if (!env_dir %in% existing_names) {
         env_path <- file.path(envs_dir, env_dir)
         python_path <- file.path(
-          env_path, if (is_windows()) "python.exe" else "bin/python"
+          env_path,
+          if (is_windows()) "python.exe" else "bin/python"
         )
 
-        if (dir.exists(file.path(env_path, "conda-meta")) && file.exists(python_path)) {
+        if (
+          dir.exists(file.path(env_path, "conda-meta")) &&
+            file.exists(python_path)
+        ) {
           new_row <- data.frame(
             name = env_dir,
             python = normalizePath(python_path, mustWork = FALSE),
@@ -1240,27 +1335,20 @@ accept_conda_tos <- function(conda = "auto") {
   }
 
   system2t <- get_namespace_fun("reticulate", "system2t")
+  conda_version <- get_conda_version(conda)
+  supports_tos <- conda_supports_tos(conda)
 
-  version_cmd <- c("--version")
-  version_output <- tryCatch(
-    {
-      system2t(conda, shQuote(version_cmd), stdout = TRUE, stderr = TRUE)
-    },
-    error = function(e) NULL
-  )
-
-  if (!is.null(version_output)) {
-    conda_version <- tryCatch(
-      {
-        version_str <- gsub(".*conda ([0-9]+)\\.[0-9]+.*", "\\1", version_output)
-        as.numeric(version_str)
-      },
-      error = function(e) NULL
-    )
-
-    if (!is.null(conda_version) && conda_version >= 23) {
-      return(invisible(TRUE))
+  if (!supports_tos) {
+    version_text <- if (is.null(conda_version)) {
+      "unknown"
+    } else {
+      as.character(conda_version)
     }
+    log_message(
+      "Skipping conda ToS acceptance because {.pkg conda} does not support the {.val tos} command (version: {.val {version_text}}).",
+      message_type = "warning"
+    )
+    return(invisible(FALSE))
   }
 
   channels <- c(
@@ -1277,15 +1365,24 @@ accept_conda_tos <- function(conda = "auto") {
     tryCatch(
       {
         args <- c("tos", "accept", "--override-channels", "--channel", channel)
-        status <- system2t(conda, shQuote(args), stdout = FALSE, stderr = FALSE)
+        status <- system2t(conda, args, stdout = FALSE, stderr = FALSE)
         if (status == 0L) {
           log_message(
             "Accepted ToS for channel: {.val {channel}}",
             message_type = "success"
           )
+        } else {
+          log_message(
+            "Failed to accept ToS for channel: {.val {channel}} [error code {.val {status}}]",
+            message_type = "warning"
+          )
         }
       },
       error = function(e) {
+        log_message(
+          "Failed to accept ToS for channel: {.val {channel}} ({.val {e$message}})",
+          message_type = "warning"
+        )
       }
     )
   }
