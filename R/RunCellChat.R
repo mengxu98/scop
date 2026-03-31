@@ -524,10 +524,9 @@ DoCellChat <- function(
   object <- CellChat::createCellChat(
     object = expr_mat,
     meta = metadata,
-    group.by = "label"
+    group.by = "label",
     object = expr_mat,
-    meta = metadata,
-    group.by = "label"
+    meta = metadata
   )
 
 
