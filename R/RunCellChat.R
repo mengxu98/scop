@@ -32,9 +32,24 @@
 #'   species = "Mus_musculus"
 #' )
 #'
-#' CCCNetworkPlot(pancreas_sub, method = "CellChat", plot_type = "aggregate")
-#' CCCHeatmap(pancreas_sub, method = "CellChat", plot_type = "heatmap")
-#' CCCStatPlot(pancreas_sub, method = "CellChat", plot_type = "scatter")
+#' CCCNetworkPlot(
+#'   pancreas_sub,
+#'   method = "CellChat",
+#'   plot_type = "bipartite"
+#' )
+#'
+#' CCCHeatmap(
+#'   pancreas_sub,
+#'   method = "CellChat",
+#'   plot_type = "heatmap"
+#' )
+#'
+#' CCCStatPlot(
+#'   pancreas_sub,
+#'   method = "CellChat",
+#'   plot_type = "violin",
+#'   top_n = 50
+#' )
 RunCellChat <- function(
   srt,
   group.by,
@@ -188,7 +203,6 @@ validate_cc_input <- function(
   ) {
     log_message(
       "{.arg group.by} must be a valid metadata column in {.cls Seurat}",
-      "{.arg group.by} must be a valid metadata column in {.cls Seurat}",
       message_type = "error"
     )
   }
@@ -206,16 +220,7 @@ validate_cc_input <- function(
     )
   }
   if (!is.character(layer) || length(layer) != 1L || is.na(layer)) {
-  assay <- assay %||% DefaultAssay(srt)
-  if (!assay %in% names(srt@assays)) {
     log_message(
-      "{.val {assay}} does not exist in {.cls Seurat}",
-      message_type = "error"
-    )
-  }
-  if (!is.character(layer) || length(layer) != 1L || is.na(layer)) {
-    log_message(
-      "{.arg layer} must be a single non-missing character string",
       "{.arg layer} must be a single non-missing character string",
       message_type = "error"
     )
@@ -223,12 +228,9 @@ validate_cc_input <- function(
 
   if (!is.null(annotation_selected)) {
     available_annotations <- unique(as.character(srt@meta.data[[group.by]]))
-    available_annotations <- unique(as.character(srt@meta.data[[group.by]]))
     missing_annotations <- setdiff(annotation_selected, available_annotations)
     if (length(missing_annotations) > 0L) {
-    if (length(missing_annotations) > 0L) {
       log_message(
-        "Missing annotations in {.val {group.by}}: {.val {missing_annotations}}",
         "Missing annotations in {.val {group.by}}: {.val {missing_annotations}}",
         message_type = "error"
       )
@@ -299,7 +301,6 @@ expand_pairwise_spec <- function(
     if (length(missing_groups) > 0L) {
       log_message(
         "Missing groups in {.arg {label}}: {.val {missing_groups}}",
-        "Missing groups in {.arg {label}}: {.val {missing_groups}}",
         message_type = "error"
       )
     }
@@ -361,9 +362,7 @@ run_one_cc <- function(
 
   if (!is.null(split.by)) {
     seu$samples <- as.factor(seu@meta.data[[split.by]])
-    seu$samples <- as.factor(seu@meta.data[[split.by]])
   } else {
-    seu$samples <- as.factor("All")
     seu$samples <- as.factor("All")
   }
 
@@ -425,20 +424,8 @@ build_comparison_results <- function(
       log_message(
         "Comparison {.val {nm_i}} skipped because it does not contain exactly two datasets/groups",
         message_type = "warning",
-        "Comparison {.val {nm_i}} skipped because it does not contain exactly two datasets/groups",
-        message_type = "warning",
         verbose = verbose
       )
-      next
-    }
-    if (!all(pair_i %in% names(result_list))) {
-      log_message(
-        "Comparison {.val {nm_i}} skipped because one or more groups were not successfully analyzed",
-        message_type = "warning",
-        verbose = verbose
-      )
-      next
-    }
       next
     }
     if (!all(pair_i %in% names(result_list))) {
@@ -450,10 +437,6 @@ build_comparison_results <- function(
       next
     }
 
-    log_message(
-      "Merging CellChat objects for comparison {.val {nm_i}}",
-      verbose = verbose
-    )
     log_message(
       "Merging CellChat objects for comparison {.val {nm_i}}",
       verbose = verbose
@@ -509,26 +492,11 @@ DoCellChat <- function(
     )
   }
 
-
-  expr_mat <- tryCatch(
-    GetAssayData5(object = object, layer = layer, assay = assay),
-    error = function(e) NULL
-  )
-  if (is.null(expr_mat)) {
-    log_message(
-      "Failed to extract expression data from assay {.val {assay}} and layer {.val {layer}}. Please ensure the layer exists and is normalized for CellChat",
-      message_type = "error"
-    )
-  }
-
   object <- CellChat::createCellChat(
     object = expr_mat,
     meta = metadata,
-    group.by = "label",
-    object = expr_mat,
-    meta = metadata
+    group.by = "label"
   )
-
 
   object@DB <- switch(
     species,
@@ -540,7 +508,6 @@ DoCellChat <- function(
       message_type = "error"
     )
   )
-
 
   object <- CellChat::subsetData(object)
   object <- CellChat::identifyOverExpressedGenes(
@@ -558,7 +525,6 @@ DoCellChat <- function(
   object <- CellChat::aggregateNet(object, thresh = thresh)
   object <- CellChat::netAnalysis_computeCentrality(object, thresh = thresh)
 
-  object
   object
 }
 
@@ -580,13 +546,11 @@ DoCellChat <- function(
     labels <- factor(labels)
   }
 
-
   level_use0 <- levels(labels)
   level_use <- levels(labels)[levels(labels) %in% unique(labels)]
   level_use <- level_use[level_use %in% idents.use]
   level_use_index <- which(as.character(labels) %in% level_use)
   cells_use <- names(labels)[level_use_index]
-
 
   log_message(
     "The subset of cell groups used for CellChat analysis are {.val {level_use}}",
@@ -604,14 +568,12 @@ DoCellChat <- function(
     idents <- object@idents[1:(length(object@idents) - 1)]
     group_existing_index <- which(level_use0 %in% level_use)
 
-
     net_subset <- vector("list", length = length(object@net))
     netP_subset <- vector("list", length = length(object@netP))
     idents_subset <- vector("list", length = length(idents))
     names(net_subset) <- names(object@net)
     names(netP_subset) <- names(object@netP)
     names(idents_subset) <- names(object@idents[1:(length(object@idents) - 1)])
-
 
     images_subset <- vector("list", length = length(idents))
     names(images_subset) <- names(object@idents[1:(length(object@idents) - 1)])
@@ -625,7 +587,6 @@ DoCellChat <- function(
       for (images_j in names(images)) {
         values <- images[[images_j]]
         if (images_j %in% c("coordinates")) {
-          images[[images_j]] <- values[level_use_index, , drop = FALSE]
           images[[images_j]] <- values[level_use_index, , drop = FALSE]
         }
         if (images_j %in% c("distance")) {
@@ -669,14 +630,12 @@ DoCellChat <- function(
       )
       netP_subset[[i]] <- netP
 
-
       idents_subset[[i]] <- idents[[i]][names(idents[[i]]) %in% cells_use]
       idents_subset[[i]] <- factor(
         idents_subset[[i]],
         levels = levels(idents[[i]])[levels(idents[[i]]) %in% level_use]
       )
     }
-
 
     idents_subset$joint <- factor(
       object@idents$joint[level_use_index],
@@ -689,7 +648,6 @@ DoCellChat <- function(
     for (images_j in names(images)) {
       values <- images[[images_j]]
       if (images_j %in% c("coordinates")) {
-        images[[images_j]] <- values[level_use_index, , drop = FALSE]
         images[[images_j]] <- values[level_use_index, , drop = FALSE]
       }
       if (images_j %in% c("distance")) {
@@ -729,15 +687,12 @@ DoCellChat <- function(
       thresh = thresh
     )
     netP$centr <- CellChat::netAnalysis_computeCentrality(net = net_subset$prob)
-    netP$centr <- CellChat::netAnalysis_computeCentrality(net = net_subset$prob)
     netP_subset <- netP
-
 
     idents_subset <- object@idents[level_use_index]
     idents_subset <- factor(idents_subset, levels = level_use)
   }
 
-  methods::new(
   methods::new(
     Class = "CellChat",
     data = data_subset,
