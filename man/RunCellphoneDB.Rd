@@ -116,6 +116,5 @@ Default is \code{TRUE}.}
 A Seurat object with results stored in \code{srt@tools[["CellphoneDB"]]}.
 }
 \description{
-Run CellphoneDB on a Seurat object through the official Python package and
-store the results in \code{srt@tools[["CellphoneDB"]]}.
+Run CellphoneDB analysis
 }
