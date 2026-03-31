@@ -349,7 +349,7 @@ DimsEstimatePlot <- function(
       )
   }
 
-  p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = PC, y = stdev)) +
+  p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$stdev)) +
     ggplot2::geom_line(color = main_colors[1], linewidth = 0.9) +
     ggplot2::geom_point(color = main_colors[2], size = 1.6) +
     ggplot2::geom_vline(
@@ -389,7 +389,7 @@ DimsEstimatePlot <- function(
       )
   )
 
-  p2 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = PC, y = cumulative_var)) +
+  p2 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$cumulative_var)) +
     ggplot2::geom_line(color = main_colors[3], linewidth = 0.9) +
     ggplot2::geom_point(color = main_colors[4], size = 1.4) +
     ggplot2::geom_vline(
@@ -418,7 +418,7 @@ DimsEstimatePlot <- function(
   )
 
   p3 <- apply_theme(
-    ggplot2::ggplot(plot_data, ggplot2::aes(x = PC, y = marginal_gain)) +
+    ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$PC, y = .data$marginal_gain)) +
       ggplot2::geom_col(fill = main_colors[5], alpha = 0.85, width = 0.85) +
       ggplot2::geom_hline(
         yintercept = 0.5,
@@ -445,7 +445,7 @@ DimsEstimatePlot <- function(
         ,
         drop = FALSE
       ],
-      ggplot2::aes(x = PC, y = abs(curvature))
+      ggplot2::aes(x = .data$PC, y = abs(.data$curvature))
     ) +
       ggplot2::geom_line(color = main_colors[6], linewidth = 0.9) +
       ggplot2::geom_point(color = main_colors[7], size = 1.4) +
