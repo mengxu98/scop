@@ -143,10 +143,13 @@ RunUMAP2.Seurat <- function(
       )
     }
   } else if (!is.null(dims)) {
-    reduction <- DefaultReduction(
-      object,
-      pattern = reduction
-    )
+    reduc_nm <- names(x = object@reductions)
+    if (!length(reduc_nm) || !reduction %in% reduc_nm) {
+      reduction <- DefaultReduction(
+        object,
+        pattern = reduction
+      )
+    }
     data.use <- as_matrix(Embeddings(object[[reduction]])[, dims])
     assay <- DefaultAssay(object = object[[reduction]])
     if (length(dims) < n.components) {
