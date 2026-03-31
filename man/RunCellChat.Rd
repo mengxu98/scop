@@ -62,9 +62,24 @@ pancreas_sub <- RunCellChat(
   species = "Mus_musculus"
 )
 
-CCCNetworkPlot(pancreas_sub, method = "CellChat", plot_type = "aggregate")
-CCCHeatmap(pancreas_sub, method = "CellChat", plot_type = "heatmap")
-CCCStatPlot(pancreas_sub, method = "CellChat", plot_type = "scatter")
+CCCNetworkPlot(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "bipartite"
+)
+
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "heatmap"
+)
+
+CCCStatPlot(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "violin",
+  top_n = 50
+)
 }
 \references{
 \href{https://github.com/jinworks/CellChat}{CellChat}
