@@ -81,6 +81,5 @@ A Seurat object with standardized MultiNicheNet results stored in
 \code{srt@tools[["MultiNichenetr"]]}.
 }
 \description{
-Wrapper around the main MultiNicheNet workflows. Results are standardized and
-stored in \code{srt@tools[["MultiNichenetr"]]}.
+Run MultiNicheNet analysis
 }

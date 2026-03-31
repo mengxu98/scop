@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellChat.R
 \name{RunCellChat}
 \alias{RunCellChat}
-\title{Run CellChat}
+\title{Run CellChat analysis}
 \usage{
 RunCellChat(
   srt,
@@ -51,8 +51,7 @@ Default is \code{TRUE}.}
 A \code{Seurat} object with \code{CellChat} results stored in \code{srt@tools[["CellChat"]]}.
 }
 \description{
-RunCellChat runs \code{CellChat} on a Seurat object and stores the results in \code{srt@tools[["CellChat"]]}.
-It supports either a single global analysis or condition-specific analyses followed by pairwise merged comparisons.
+Run CellChat analysis
 }
 \examples{
 data(pancreas_sub)
