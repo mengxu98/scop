@@ -844,6 +844,7 @@ standardize_long_df <- function(df) {
     interaction_name = c("interaction_name", "interacting_pair"),
     ligand = c("ligand", "gene_a", "from"),
     receptor = c("receptor", "gene_b", "to"),
+    pathway_name = c("pathway_name", "classification", "signaling"),
     score = c("score", "prob", "means", "prioritization_score"),
     pvalue = c("pvalue", "pval")
   )
@@ -859,11 +860,29 @@ standardize_long_df <- function(df) {
     "receiver",
     "interaction_name",
     "ligand",
-    "receptor"
+    "receptor",
+    "pathway_name"
   )) {
     if (!nm %in% colnames(out)) {
       out[[nm]] <- NA_character_
     }
+  }
+  interaction_label_col <- ccc_pick_col(
+    out,
+    c("interaction_label", "interaction_name_2", "interaction_name", "interacting_pair")
+  )
+  if (!is.null(interaction_label_col) && !"interaction_label" %in% colnames(out)) {
+    out[["interaction_label"]] <- out[[interaction_label_col]]
+  }
+  if (!"interaction_label" %in% colnames(out)) {
+    out[["interaction_label"]] <- out[["interaction_name"]]
+  }
+  pair_lr_col <- ccc_pick_col(
+    out,
+    c("pair_lr", "pairLR", "interacting_pair", "interaction_name")
+  )
+  if (!is.null(pair_lr_col) && !"pair_lr" %in% colnames(out)) {
+    out[["pair_lr"]] <- out[[pair_lr_col]]
   }
   if (!"score" %in% colnames(out)) {
     out$score <- NA_real_
@@ -900,11 +919,29 @@ filter_long_df <- function(
     df <- df[df$receptor %in% receptor.use, , drop = FALSE]
   }
   if (!is.null(interaction.use)) {
-    df <- df[df$interaction_name %in% interaction.use, , drop = FALSE]
+    interaction_cols <- intersect(
+      c("interaction_name", "interaction_label"),
+      colnames(df)
+    )
+    keep <- Reduce(
+      `|`,
+      lapply(interaction_cols, function(nm) df[[nm]] %in% interaction.use),
+      init = rep(FALSE, nrow(df))
+    )
+    df <- df[keep, , drop = FALSE]
   }
   if (!is.null(pairLR.use)) {
     pairLR.use <- as.character(pairLR.use)
-    df <- df[df$interaction_name %in% pairLR.use, , drop = FALSE]
+    pair_cols <- intersect(
+      c("pair_lr", "pairLR", "interacting_pair", "interaction_name"),
+      colnames(df)
+    )
+    keep <- Reduce(
+      `|`,
+      lapply(pair_cols, function(nm) as.character(df[[nm]]) %in% pairLR.use),
+      init = rep(FALSE, nrow(df))
+    )
+    df <- df[keep, , drop = FALSE]
   }
   if (!is.null(signaling) && "pathway_name" %in% colnames(df)) {
     df <- df[df$pathway_name %in% signaling, , drop = FALSE]
@@ -923,7 +960,10 @@ prepare_plot_df <- function(df) {
   out$ligand <- as.character(out$ligand)
   out$receptor <- as.character(out$receptor)
   out$pair <- paste(out$sender, out$receiver, sep = " -> ")
-  out$interaction_label <- out$interaction_name
+  if (!"interaction_label" %in% colnames(out)) {
+    out$interaction_label <- out$interaction_name
+  }
+  out$interaction_label <- as.character(out$interaction_label)
   miss_label <- is.na(out$interaction_label) | !nzchar(out$interaction_label)
   out$interaction_label[miss_label] <- paste(
     out$ligand[miss_label],
@@ -1580,7 +1620,7 @@ ccc_diff_network_plot <- function(
   label_dist <- vertex_size / max(vertex_size) + 2
 
   old_par <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(old_par), add = TRUE)
+  on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
   graphics::par(mar = c(0.5, 0.5, if (is.null(title) && is.null(subtitle)) 1.8 else 3, 0.5))
   plot(
     g,
@@ -1853,7 +1893,7 @@ ccc_circle_plot <- function(
   label_dist <- vertex_size / max(vertex_size) + 2
 
   old_par <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(old_par), add = TRUE)
+  on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
   graphics::par(mar = c(0.5, 0.5, if (is.null(title)) 0.5 else 2, 0.5))
   plot(
     g,
@@ -2815,49 +2855,245 @@ ccc_chord_plot <- function(
   link_palette = "RdBu",
   link_palcolor = NULL,
   title = NULL,
-  subtitle = NULL
+  subtitle = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  font.size = 10,
+  reduce = TRUE,
+  max.groups = 8,
+  small.gap = 1,
+  big.gap = 8,
+  lab.cex = 0.6
 ) {
   check_r("circlize", verbose = FALSE)
-  plot_df <- ccc_network_df(
-    pair_df = pair_df,
-    interaction_df = interaction_df,
-    display_by = display_by,
-    top_n = top_n,
-    value_col = edge_value,
-    edge_threshold = edge_threshold
-  )
-  if (is.null(plot_df) || nrow(plot_df) == 0L) {
+  display_by <- match.arg(display_by, c("aggregation", "interaction"))
+  cell_lab_cex <- max(lab.cex, 0.72)
+  pair_alpha <- min(link_alpha, 0.5)
+
+  pair_plot <- if (identical(display_by, "interaction")) {
+    interaction_plot <- top_interactions(
+      interaction_df %||% data.frame(),
+      top_n = top_n,
+      value_col = "score"
+    )
+    if (is.null(interaction_plot) || nrow(interaction_plot) == 0L) {
+      log_message(
+        "No interaction-level CCC records are available for chord plotting",
+        message_type = "error"
+      )
+    }
+    if (!"pair" %in% colnames(interaction_plot)) {
+      interaction_plot$pair <- paste(
+        interaction_plot$sender,
+        interaction_plot$receiver,
+        sep = " -> "
+      )
+    }
+    stats::aggregate(
+      score ~ sender + receiver + pair,
+      data = interaction_plot,
+      FUN = sum,
+      na.rm = TRUE
+    )
+  } else {
+    top_pairs(
+      pair_df,
+      top_n = top_n,
+      value_col = edge_value
+    )
+  }
+
+  if (is.null(pair_plot) || nrow(pair_plot) == 0L) {
     log_message(
       "No CCC records are available for chord plotting",
       message_type = "error"
     )
   }
-  nodes <- unique(c(
-    as.character(plot_df$sender),
-    as.character(plot_df$receiver)
+  if (!"pair" %in% colnames(pair_plot)) {
+    pair_plot$pair <- paste(pair_plot$sender, pair_plot$receiver, sep = " -> ")
+  }
+  pair_value_col <- if (identical(display_by, "interaction")) {
+    "score"
+  } else if (edge_value %in% colnames(pair_plot)) {
+    edge_value
+  } else {
+    c("sum", "score", "count")[c("sum", "score", "count") %in% colnames(pair_plot)][1]
+  }
+  if (is.na(pair_value_col) || !nzchar(pair_value_col)) {
+    log_message(
+      "No CCC records are available for chord plotting",
+      message_type = "error"
+    )
+  }
+
+  pair_plot[[pair_value_col]] <- suppressWarnings(as.numeric(pair_plot[[pair_value_col]]))
+  pair_plot <- pair_plot[
+    is.finite(pair_plot[[pair_value_col]]) &
+      pair_plot[[pair_value_col]] > 0 &
+      pair_plot[[pair_value_col]] >= edge_threshold,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(pair_plot) == 0L) {
+    log_message(
+      "No CCC records remain for chord plotting after filtering",
+      message_type = "error"
+    )
+  }
+
+  strength_df <- rbind(
+    data.frame(
+      cell = pair_plot$sender,
+      strength = pair_plot[[pair_value_col]],
+      stringsAsFactors = FALSE
+    ),
+    data.frame(
+      cell = pair_plot$receiver,
+      strength = pair_plot[[pair_value_col]],
+      stringsAsFactors = FALSE
+    )
+  )
+  strength_df <- stats::aggregate(
+    strength ~ cell,
+    data = strength_df,
+    FUN = sum,
+    na.rm = TRUE
+  )
+  strength_df <- strength_df[
+    order(strength_df$strength, decreasing = TRUE, na.last = TRUE),
+    ,
+    drop = FALSE
+  ]
+  if (
+    isTRUE(reduce) &&
+      is.numeric(max.groups) &&
+      length(max.groups) == 1L &&
+      is.finite(max.groups) &&
+      nrow(strength_df) > max.groups
+  ) {
+    keep_cells <- utils::head(strength_df$cell, max.groups)
+    pair_plot <- pair_plot[
+      pair_plot$sender %in% keep_cells &
+        pair_plot$receiver %in% keep_cells,
+      ,
+      drop = FALSE
+    ]
+    if (nrow(pair_plot) == 0L) {
+      log_message(
+        "No CCC records remain for chord plotting after cell-group reduction",
+        message_type = "error"
+      )
+    }
+    strength_df <- strength_df[strength_df$cell %in% keep_cells, , drop = FALSE]
+  }
+
+  cell_order <- unique(c(
+    strength_df$cell,
+    as.character(pair_plot$sender),
+    as.character(pair_plot$receiver)
   ))
-  cols <- palette_colors(
-    nodes,
+  cell_order <- cell_order[!is.na(cell_order) & nzchar(cell_order)]
+  if (length(cell_order) == 0L) {
+    log_message(
+      "No cell groups are available for chord plotting",
+      message_type = "error"
+    )
+  }
+
+  cell_cols <- palette_colors(
+    cell_order,
     palette = cell_palette,
     palcolor = cell_palcolor
   )
-  link_cols <- palette_colors(
-    unique(plot_df$sender),
-    palette = link_palette,
-    palcolor = link_palcolor,
-    NA_keep = TRUE
+  names(cell_cols) <- cell_order
+
+  chord_df <- pair_plot[, c("sender", "receiver", pair_value_col), drop = FALSE]
+  colnames(chord_df) <- c("source", "target", "prob")
+  edge_col <- unname(cell_cols[as.character(chord_df$source)])
+  edge_col[is.na(edge_col)] <- "#7CAAB0"
+  grid.col <- cell_cols[cell_order]
+  names(grid.col) <- cell_order
+
+  preallocate_height <- tryCatch(
+    max(
+      graphics::strwidth(
+        cell_order,
+        cex = max(cell_lab_cex, 0.5)
+      ),
+      na.rm = TRUE
+    ),
+    error = function(e) {
+      # Example devices may not have initialized a base plot yet.
+      0.045
+    }
   )
+  if (!is.finite(preallocate_height) || preallocate_height <= 0) {
+    preallocate_height <- 0.045
+  }
+  preallocate_height <- min(max(preallocate_height, 0.045), 0.085)
+
+  old_par <- graphics::par(no.readonly = TRUE)
   circlize::circos.clear()
   on.exit(try(circlize::circos.clear(), silent = TRUE), add = TRUE)
-  circlize::chordDiagram(
-    x = plot_df[, c("sender", "receiver", "weight")],
-    grid.col = cols,
-    col = scales::alpha(unname(link_cols[plot_df$sender]), alpha = link_alpha),
-    transparency = 1 - link_alpha,
-    annotationTrack = c("grid", "name")
+  on.exit(try(graphics::par(old_par), silent = TRUE), add = TRUE)
+
+  graphics::par(mar = c(1, 1, if (!is.null(title) || !is.null(subtitle)) 3 else 1, 1))
+  circlize::circos.par(
+    start.degree = 90,
+    cell.padding = c(0, 0, 0, 0),
+    track.margin = c(0.01, 0.01),
+    points.overflow.warning = FALSE
   )
+  circlize::chordDiagram(
+    x = chord_df,
+    order = cell_order,
+    grid.col = grid.col,
+    col = grDevices::adjustcolor(edge_col, alpha.f = pair_alpha),
+    transparency = max(0, min(1, 1 - pair_alpha)),
+    annotationTrack = "grid",
+    annotationTrackHeight = c(0.03),
+    preAllocateTracks = list(track.height = preallocate_height),
+    small.gap = small.gap,
+    big.gap = big.gap,
+    link.sort = TRUE,
+    link.decreasing = FALSE,
+    link.largest.ontop = TRUE,
+    directional = 1,
+    direction.type = c("diffHeight", "arrows"),
+    link.arr.type = "big.arrow",
+    link.border = NA,
+    reduce = 1e-5
+  )
+  circlize::circos.track(
+    track.index = 1,
+    panel.fun = function(x, y) {
+      xlim_i <- circlize::get.cell.meta.data("xlim")
+      ylim_i <- circlize::get.cell.meta.data("ylim")
+      sector_i <- circlize::get.cell.meta.data("sector.index")
+      circlize::circos.text(
+        mean(xlim_i),
+        ylim_i[1],
+        sector_i,
+        facing = "clockwise",
+        niceFacing = TRUE,
+        adj = c(0, 0.5),
+        cex = cell_lab_cex,
+        col = cell_cols[sector_i]
+      )
+    },
+    bg.border = NA
+  )
+
   if (!is.null(title) || !is.null(subtitle)) {
-    graphics::title(main = title, sub = subtitle)
+    graphics::title(
+      main = title,
+      sub = subtitle,
+      cex.main = font.size / 10 * 1.15,
+      cex.sub = font.size / 10
+    )
   }
   grDevices::recordPlot()
 }
@@ -3076,6 +3312,7 @@ ccc_dim_network_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
+  font.size = 10,
   theme_use = "theme_scop",
   theme_args = list(),
   ...

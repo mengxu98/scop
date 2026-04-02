@@ -335,6 +335,7 @@ ht1 <- GSVAPlot(
   width = 1,
   height = 2
 )
+ht1$plot
 
 ht2 <- GSVAPlot(
   pancreas_sub,
@@ -346,6 +347,7 @@ ht2 <- GSVAPlot(
   width = 1,
   height = 2
 )
+ht2$plot
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -398,6 +400,7 @@ GSVAPlot(
   word_type = "feature"
 )
 
+\dontrun{
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   assay_name = "GSVA",
@@ -428,6 +431,7 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
+}
 }
 \seealso{
 \link{RunGSVA}, \link{EnrichmentPlot}
