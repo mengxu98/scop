@@ -147,96 +147,26 @@ if (thisutils::check_ci_env()) {
   )
   plots$Boxplot
 }
-#> ℹ [2026-03-20 08:15:23] Start standard scop workflow...
-#> ℹ [2026-03-20 08:15:23] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:15:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:15:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:15:25] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:15:26] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:15:26] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:15:26] Finished check
-#> ℹ [2026-03-20 08:15:27] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:15:27] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:15:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:15:28] Reorder clusters...
-#> ℹ [2026-03-20 08:15:28] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:15:28] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:15:31] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:15:34] Run scop standard workflow completed
-#> ◌ [2026-03-20 08:15:34] Running CytoTRACE2
-#> ℹ [2026-03-20 08:15:34] Package CytoTRACE2 is not installed. Installing from GitHub...
-#>  
-#> → Will install 6 packages.
-#> → All 6 packages (0 B) are cached.
-#> + CytoTRACE2     1.1.0    [bld][cmp] (GitHub: 4a398a4)
-#> + HiClimR        2.2.1     + ✔ libnetcdf-dev
-#> + RcppParallel   5.1.11-2  + ✔ make
-#> + Rfast          2.1.5.2  
-#> + ncdf4          1.24      + ✔ libnetcdf-dev
-#> + zigg           0.0.2    
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 6 pkgs are cached
-#> ✔ Got zigg 0.0.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (25.57 kB)
-#> ✔ Got ncdf4 1.24 (x86_64-pc-linux-gnu-ubuntu-24.04) (281.21 kB)
-#> ✔ Got HiClimR 2.2.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (575.27 kB)
-#> ✔ Got Rfast 2.1.5.2 (x86_64-pc-linux-gnu-ubuntu-24.04) (2.99 MB)
-#> ✔ Got CytoTRACE2 1.1.0 (source) (182.95 MB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install libnetcdf-dev make libcurl4-openssl-dev libssl-dev zlib1g-dev libglpk-dev libxml2-dev pandoc libpng-dev python3 libicu-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> libnetcdf-dev is already the newest version (1:4.9.2-5ubuntu4).
-#> libnetcdf-dev set to manually installed.
-#> make is already the newest version (4.3-4.1build2).
-#> libcurl4-openssl-dev is already the newest version (8.5.0-2ubuntu10.8).
-#> libssl-dev is already the newest version (3.0.13-0ubuntu3.7).
-#> zlib1g-dev is already the newest version (1:1.3.dfsg-3.1ubuntu2.1).
-#> libglpk-dev is already the newest version (5.0-1build2).
-#> libxml2-dev is already the newest version (2.9.14+dfsg-1.3ubuntu3.7).
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> python3 is already the newest version (3.12.3-0ubuntu2.1).
-#> libicu-dev is already the newest version (74.2-1ubuntu3.1).
-#> 0 upgraded, 0 newly installed, 0 to remove and 84 not upgraded.
-#> ✔ Installed HiClimR 2.2.1  (116ms)
-#> ✔ Installed ncdf4 1.24  (132ms)
-#> ✔ Installed RcppParallel 5.1.11-2  (174ms)
-#> ✔ Installed Rfast 2.1.5.2  (195ms)
-#> ✔ Installed zigg 0.0.2  (83ms)
-#> ℹ Packaging CytoTRACE2 1.1.0
-#> ✔ Packaged CytoTRACE2 1.1.0 (4.9s)
-#> ℹ Building CytoTRACE2 1.1.0
-#> ✔ Built CytoTRACE2 1.1.0 (9.5s)
-#> ✔ Installed CytoTRACE2 1.1.0 (github::digitalcytometry/cytotrace2@4a398a4) (1.1s)
-#> ✔ 1 pkg + 143 deps: kept 138, added 6, dld 5 (NA B) [45.9s]
-#> Warning: replacing previous import ‘data.table::first’ by ‘dplyr::first’ when loading ‘CytoTRACE2’
-#> Warning: replacing previous import ‘data.table::between’ by ‘dplyr::between’ when loading ‘CytoTRACE2’
-#> Warning: replacing previous import ‘data.table::last’ by ‘dplyr::last’ when loading ‘CytoTRACE2’
-#> cytotrace2: Started loading data
-#> Dataset contains 15998 genes and 1000 cells.
-#> The number of cells in your dataset is less than 1000. Fast mode has been disabled.
-#> The passed subsample size is greater than the number of cells in dataset.
-#> Now setting subsample size to 1000
-#> cytotrace2: Running on 1 subsample(s) approximately of length 1000
-#> cytotrace2: Started running on subsample(s). This will take a few minutes.
-#> cytotrace2: Started preprocessing.
-#> 12486 input genes mapped to model genes.
-#> cytotrace2: Started prediction.
-#> This section will run using  1 / 4 core(s).
-#> cytotrace2: Started postprocessing.
-#> cytotrace2: Running with slow mode (subsamples are processed sequentially)
-#> Number of cores for KNN: 1
-#> cytotrace2: Finished
-#> ✔ [2026-03-20 08:17:29] CytoTRACE2 computed successfully
+#> ℹ [2026-04-02 15:29:35] Start standard processing workflow...
+#> ℹ [2026-04-02 15:29:36] Checking a list of <Seurat>...
+#> ! [2026-04-02 15:29:36] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 15:29:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:29:37] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:29:38] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 15:29:38] Number of available HVF: 2000
+#> ℹ [2026-04-02 15:29:38] Finished check
+#> ℹ [2026-04-02 15:29:38] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 15:29:39] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 15:29:42] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 15:29:43] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:29:43. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-10); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-10 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 ```

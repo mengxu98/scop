@@ -7,8 +7,11 @@
 <url><loc>https://mengxu98.github.io/scop/reference/AddFeaturesData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/AnnotateFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/BBKNN_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CCA_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CCCHeatmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CCCNetworkPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/CCCStatPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CSS_integrate.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/CellChatPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellCorHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellDensityPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CellDimPlot.html</loc></url>
@@ -21,6 +24,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/CheckDataType.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ComBat_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Conos_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/Coralysis_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CreateDataFile.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CreateMetaFile.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/CycGenePrefetch.html</loc></url>
@@ -29,6 +33,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/DEtestPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DEtestRingPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DefaultReduction.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/DimsEstimatePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicHeatmap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/DynamicPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/EnrichmentPlot.html</loc></url>
@@ -48,6 +53,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/GetSimilarFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GraphPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/GroupHeatmap.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/Harmony5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/Harmony_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/LIGER_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/LineagePlot.html</loc></url>
@@ -61,6 +67,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/PrepareSCExplorer.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ProportionTestPlot.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RPCA_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RecoverCounts.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameClusters.html</loc></url>
@@ -70,11 +77,13 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellQC.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellRank.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCellTypist.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunCellphoneDB.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunCytoTRACE.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDEtest.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDM.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDecontX.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/RunDimReduction.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunDimsEstimate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunDimsReduction.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDoubletCalling.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicEnrichment.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunDynamicFeatures.html</loc></url>
@@ -91,7 +100,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunMetabolism.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle2.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunMonocle3.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunMultiNichenetr.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunNMF.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/RunNichenetr.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPAGA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPCAMap.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunPHATE.html</loc></url>
@@ -123,7 +134,9 @@
 <url><loc>https://mengxu98.github.io/scop/reference/db_scds.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_info.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/env_requirements.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/fastMNN5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/fastMNN_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/h5ad_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/index.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/integration_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/panc8_sub.html</loc></url>
@@ -132,6 +145,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ref_scMCA.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/remove_python.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/scVI5_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scVI_integrate.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop-package.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/scop_logo.html</loc></url>

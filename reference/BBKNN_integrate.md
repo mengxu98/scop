@@ -141,8 +141,9 @@ BBKNN_integrate(
 
 - linear_reduction_dims_use:
 
-  The dimensions to use for downstream analysis. If `NULL`, all
-  dimensions will be used.
+  The dimensions to use for downstream analysis. If `NULL`, estimated
+  dimensions stored in the linear reduction will be used when available;
+  otherwise, the first up to `50` dimensions will be used as a fallback.
 
 - linear_reduction_params:
 

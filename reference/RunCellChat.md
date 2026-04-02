@@ -1,9 +1,6 @@
-# Run CellChat
+# Run CellChat analysis
 
-RunCellChat performs CellChat analysis on a Seurat object to investigate
-cell-to-cell communication. The results are stored in the Seurat object
-and can be visualized using
-[CellChatPlot](https://mengxu98.github.io/scop/reference/CellChatPlot.md).
+Run CellChat analysis
 
 ## Usage
 
@@ -18,6 +15,8 @@ RunCellChat(
   group_cmp = NULL,
   thresh = 0.05,
   min.cells = 10,
+  assay = NULL,
+  layer = "data",
   verbose = TRUE
 )
 ```
@@ -34,7 +33,8 @@ RunCellChat(
 
 - species:
 
-  The species of the data, either 'human', 'mouse' or 'zebrafish'.
+  The species of the data, either `"Homo_sapiens"`, `"Mus_musculus"`, or
+  `"zebrafish"`.
 
 - split.by:
 
@@ -43,84 +43,111 @@ RunCellChat(
 
 - annotation_selected:
 
-  A vector of cell annotations of interest for running the CellChat
+  A vector of cell annotations of interest for running the `CellChat`
   analysis. If not provided, all cell types will be considered.
 
 - group_column:
 
-  Name of the metadata column in the Seurat object that defines
+  Name of the metadata column in the `Seurat` object that defines
   conditions or groups.
 
 - group_cmp:
 
-  A list of pairwise condition comparisons for differential CellChat
+  A list of pairwise condition comparisons for differential `CellChat`
   analysis.
 
 - thresh:
 
-  The threshold for computing centrality scores.
+  The threshold for computing centrality scores. Default is `0.05`.
 
 - min.cells:
 
   the minmum number of expressed cells required for the genes that are
-  considered for cell-cell communication analysis.
+  considered for cell-cell communication analysis. Default is `10`.
+
+- assay:
+
+  Which assay to use. If `NULL`, the default assay of the `Seurat`
+  object will be used.
+
+- layer:
+
+  The layer to use for the expression data. Default is `"data"`.
 
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
 
+## Value
+
+A `Seurat` object with `CellChat` results stored in
+`srt@tools[["CellChat"]]`.
+
 ## References
 
-[CellChat](https://github.com/jinworks/CellChat),
-[scDown::run_cellchatV2](https://htmlpreview.github.io/?https://raw.githubusercontent.com/BCH-RC/scDown/main/vignettes/scDown_CellChatV2.html)
+[CellChat](https://github.com/jinworks/CellChat)
 
 ## See also
 
-[CellChatPlot](https://mengxu98.github.io/scop/reference/CellChatPlot.md)
+[CCCHeatmap](https://mengxu98.github.io/scop/reference/CCCHeatmap.md),
+[CCCStatPlot](https://mengxu98.github.io/scop/reference/CCCStatPlot.md),
+[CCCNetworkPlot](https://mengxu98.github.io/scop/reference/CCCNetworkPlot.md)
 
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:11:15] Start standard scop workflow...
-#> ℹ [2026-03-20 09:11:16] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:11:16] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:11:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:11:18] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:11:18] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:11:18] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:11:19] Finished check
-#> ℹ [2026-03-20 09:11:19] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:11:19] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:11:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:11:20] Reorder clusters...
-#> ℹ [2026-03-20 09:11:20] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:11:20] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:11:24] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:11:28] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:32:41] Start standard processing workflow...
+#> ℹ [2026-04-02 16:32:42] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:32:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:32:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:32:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:32:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:32:44] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:32:44] Finished check
+#> ℹ [2026-04-02 16:32:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:32:45] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:32:48] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:32:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:32:49] Reorder clusters...
+#> ℹ [2026-04-02 16:32:49] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:32:49] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:32:49] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:32:49] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:32:49] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:32:52] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:32:54] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-20 09:11:28] Start CellChat analysis
-#> Registered S3 method overwritten by 'ggnetwork':
-#>   method         from  
-#>   fortify.igraph ggtree
-#> [1] "Create a CellChat object from a data matrix"
-#> Set cell identities for the new CellChat object 
-#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
-#> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
-#> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-03-20 09:12:13.25771]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-03-20 09:12:35.866334]"
-#> ✔ [2026-03-20 09:12:36] CellChat analysis completed
+#> ℹ [2026-04-02 16:32:54] Start CellChat analysis
+#> Error in loadNamespace(x): there is no package called ‘CellChat’
 
-CellChatPlot(pancreas_sub)
-#> ℹ [2026-03-20 09:12:36] Creating "aggregate" plot for condition "ALL"
+CCCNetworkPlot(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "bipartite"
+)
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
-#> Signaling role analysis on the aggregated cell-cell communication network from all signaling pathways
+CCCHeatmap(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "heatmap"
+)
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 
-#> ✔ [2026-03-20 09:12:36] Plot creation completed
+CCCStatPlot(
+  pancreas_sub,
+  method = "CellChat",
+  plot_type = "violin",
+  top_n = 50
+)
+#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
+#> `condition`
 ```

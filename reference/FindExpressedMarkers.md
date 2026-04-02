@@ -238,22 +238,28 @@ FindExpressedMarkers(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:38:46] Start standard scop workflow...
-#> ℹ [2026-03-20 08:38:47] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:38:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:38:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:38:49] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:38:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:38:50] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:38:50] Finished check
-#> ℹ [2026-03-20 08:38:50] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:38:50] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:38:51] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:38:51] Reorder clusters...
-#> ℹ [2026-03-20 08:38:51] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:38:51] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:38:55] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:38:58] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:14:33] Start standard processing workflow...
+#> ℹ [2026-04-02 16:14:33] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:14:33] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:14:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:35] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:14:35] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:14:36] Finished check
+#> ℹ [2026-04-02 16:14:36] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:14:36] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:14:40] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:14:40] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:14:40. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-22); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-22 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 markers <- FindExpressedMarkers(
   pancreas_sub,
   cells.1 = SeuratObject::WhichCells(
@@ -261,21 +267,10 @@ markers <- FindExpressedMarkers(
     expression = Phase == "G2M"
   )
 )
-#> ℹ [2026-03-20 08:38:59] Using 1 core
-#> ⠙ [2026-03-20 08:38:59] Running for 1 [1/6145] ■                               …
-#> ⠹ [2026-03-20 08:38:59] Running for 359 [359/6145] ■■■                         …
-#> ⠸ [2026-03-20 08:38:59] Running for 6023 [6023/6145] ■■■■■■■■■■■■■■■■■■■■■■■■■■…
-#> ✔ [2026-03-20 08:38:59] Completed 6145 tasks in 3.3s
-#> 
-#> ℹ [2026-03-20 08:38:59] Building results
+#> Warning: Layer ‘data’ is empty
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSums': no 'dimnames' attribute for array
 head(markers)
-#>               p_val avg_log2FC pct.1 pct.2    p_val_adj
-#> Hmgb2  1.964385e-37  2.1638592 1.000 0.526 3.142624e-33
-#> Tuba1b 3.652521e-33  1.8756996 0.986 0.801 5.843303e-29
-#> Ran    2.573020e-31  1.2068807 1.000 0.946 4.116317e-27
-#> H2afx  9.845758e-31  1.4231361 0.971 0.519 1.575124e-26
-#> Ptma   3.541885e-30  0.9021115 1.000 0.999 5.666307e-26
-#> Tubb5  1.550857e-29  1.4861586 1.000 0.940 2.481062e-25
+#> Error: object 'markers' not found
 
 FeatureStatPlot(
   pancreas_sub,
@@ -283,6 +278,6 @@ FeatureStatPlot(
   group.by = "Phase",
   add_point = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> Error: object 'markers' not found
 ```

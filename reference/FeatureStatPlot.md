@@ -462,29 +462,35 @@ FeatureStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:37:37] Start standard scop workflow...
-#> ℹ [2026-03-20 08:37:37] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:37:38] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:37:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:37:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:37:40] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:37:40] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:37:40] Finished check
-#> ℹ [2026-03-20 08:37:40] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:37:41] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:37:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:37:42] Reorder clusters...
-#> ℹ [2026-03-20 08:37:42] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:37:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:37:45] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:37:48] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:13:58] Start standard processing workflow...
+#> ℹ [2026-04-02 16:13:59] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:13:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:13:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:00] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:01] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:14:01] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:14:01] Finished check
+#> ℹ [2026-04-02 16:14:01] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:14:02] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:14:06] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:14:06] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:14:06. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-21); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-21 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("G2M_score", "Fev"),
   group.by = "SubCellType"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:06] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -494,8 +500,8 @@ FeatureStatPlot(
   stat.by = c("G2M_score", "Fev"),
   group.by = "SubCellType"
 ) |> thisplot::panel_fix(height = 1, width = 2)
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:07] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -506,8 +512,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "box"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:07] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -518,17 +524,11 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "bar"
 )
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:08] "Fev" are not found
 #> Warning: Computation failed in `stat_summary()`.
 #> Caused by error in `fun.data()`:
 #> ! The package "Hmisc" is required.
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
-#> Warning: Computation failed in `stat_summary()`.
-#> Caused by error in `fun.data()`:
-#> ! The package "Hmisc" is required.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
 #> Warning: Computation failed in `stat_summary()`.
 #> Caused by error in `fun.data()`:
 #> ! The package "Hmisc" is required.
@@ -542,8 +542,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "dot"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:08] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -553,8 +553,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   plot_type = "col"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:09] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -565,8 +565,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_box = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:09] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -577,8 +577,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_point = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:09] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -588,8 +588,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_trend = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:10] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -600,8 +600,8 @@ FeatureStatPlot(
   group.by = "SubCellType",
   add_stat = "mean"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:10] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -613,8 +613,8 @@ FeatureStatPlot(
   add_line = 0.2,
   line_type = 2
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:11] "Fev" are not found
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -625,10 +625,9 @@ FeatureStatPlot(
   group.by = "SubCellType",
   split.by = "Phase"
 )
-#> ! [2026-03-20 08:37:58] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-03-20 08:37:58] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:11] "Fev" are not found
+#> ! [2026-04-02 16:14:11] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -641,10 +640,9 @@ FeatureStatPlot(
   add_box = TRUE,
   add_trend = TRUE
 )
-#> ! [2026-03-20 08:37:59] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ! [2026-03-20 08:37:59] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:11] "Fev" are not found
+#> ! [2026-04-02 16:14:11] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.
 
@@ -656,15 +654,11 @@ FeatureStatPlot(
   split.by = "Phase",
   comparisons = TRUE
 )
-#> ! [2026-03-20 08:38:07] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-03-20 08:38:08] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-03-20 08:38:08] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-03-20 08:38:08] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:16] "Fev" are not found
+#> ! [2026-04-02 16:14:16] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
+#> ℹ [2026-04-02 16:14:16] Detected more than 2 groups. Use "kruskal.test" for comparison
+#> Error in loadNamespace(x): there is no package called ‘ggpubr’
 
 FeatureStatPlot(
   pancreas_sub,
@@ -674,7 +668,9 @@ FeatureStatPlot(
   palette = "Blues",
   same.y.lims = TRUE
 )
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:16] "Rbp4" and "Pyy" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -682,11 +678,9 @@ FeatureStatPlot(
   group.by = "SubCellType",
   multiplegroup_comparisons = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:19] "Rbp4" and "Pyy" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -694,11 +688,9 @@ FeatureStatPlot(
   group.by = "SubCellType",
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta"))
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:22] "Rbp4" and "Pyy" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -707,11 +699,9 @@ FeatureStatPlot(
   comparisons = list(c("Alpha", "Beta"), c("Alpha", "Delta")),
   sig_label = "p.format"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:25] "Rbp4" and "Pyy" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -727,15 +717,9 @@ FeatureStatPlot(
   comparisons = TRUE,
   y.max = 5
 )
-#> ! [2026-03-20 08:38:14] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-03-20 08:38:14] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> ! [2026-03-20 08:38:15] Removed 10 groups with < 2 observations for violin plot: "sp-S-gp-Beta", "sp-G2M-gp-Beta", "sp-S-gp-Pre-endocrine", "sp-G2M-gp-Pre-endocrine", "sp-S-gp-Alpha", "sp-G2M-gp-Alpha", "sp-S-gp-Epsilon", "sp-G2M-gp-Epsilon", "sp-S-gp-Delta", and "sp-G2M-gp-Delta"
-#> ℹ [2026-03-20 08:38:15] Detected more than 2 groups. Use "kruskal.test" for comparison
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:28] "Fev" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -744,7 +728,9 @@ FeatureStatPlot(
   bg.by = "CellType",
   add_box = TRUE, stack = TRUE
 )
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:28] "Rbp4" and "Pyy" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -766,7 +752,9 @@ FeatureStatPlot(
   bg.by = "CellType",
   stack = TRUE
 )
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:29] "Sox9", "Anxa2", "Bicc1", "Neurog3", "Hes6", "Fev", "Neurod1", "Rbp4", "Pyy", "Ins1", "Gcg", "Sst", and "Ghrl" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -789,7 +777,9 @@ FeatureStatPlot(
 ) |> thisplot::panel_fix_overall(
   width = 8, height = 5
 )
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:29] "Sox9", "Anxa2", "Bicc1", "Neurog3", "Hes6", "Fev", "Neurod1", "Rbp4", "Pyy", "Ins1", "Gcg", "Sst", and "Ghrl" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -797,13 +787,9 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "group"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ! [2026-04-02 16:14:29] "Neurog3", "Rbp4", and "Ins1" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 
 FeatureStatPlot(
   pancreas_sub,
@@ -811,18 +797,10 @@ FeatureStatPlot(
   group.by = "CellType",
   plot.by = "feature"
 )
-#> ℹ [2026-03-20 08:38:26] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ℹ [2026-04-02 16:14:29] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> Warning: No layers found matching search pattern provided
+#> Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...): layer "data" is not found in the object
 
 FeatureStatPlot(
   pancreas_sub,
@@ -833,18 +811,10 @@ FeatureStatPlot(
   sig_label = "p.format",
   sig_labelsize = 4
 )
-#> ℹ [2026-03-20 08:38:28] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Warning: Layer ‘data’ is empty
+#> ℹ [2026-04-02 16:14:29] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> Warning: No layers found matching search pattern provided
+#> Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...): layer "data" is not found in the object
 
 FeatureStatPlot(
   pancreas_sub,
@@ -857,8 +827,10 @@ FeatureStatPlot(
   ),
   stack = TRUE
 )
-#> ℹ [2026-03-20 08:38:31] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-
+#> Warning: Layer ‘data’ is empty
+#> ℹ [2026-04-02 16:14:29] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> Warning: No layers found matching search pattern provided
+#> Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...): layer "data" is not found in the object
 
 FeatureStatPlot(pancreas_sub,
   stat.by = c(
@@ -877,21 +849,24 @@ FeatureStatPlot(pancreas_sub,
   plot.by = "feature",
   stack = TRUE
 )
-#> ℹ [2026-03-20 08:38:34] Setting `group.by` to "Features" as `plot.by` is set to "feature"
-
+#> Warning: Layer ‘data’ is empty
+#> ℹ [2026-04-02 16:14:29] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> Warning: No layers found matching search pattern provided
+#> Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...): layer "data" is not found in the object
 
 data <- GetAssayData5(
   pancreas_sub,
   assay = "RNA",
   layer = "data"
 )
+#> Warning: Layer ‘data’ is empty
 pancreas_sub <- SeuratObject::SetAssayData(
   object = pancreas_sub,
   layer = "scale.data",
   assay = "RNA",
   new.data = data / Matrix::rowMeans(data)
 )
-#> Warning: Different features in new layer data than already exists for scale.data
+#> Error: No feature overlap between existing object and new layer data
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("Neurog3", "Rbp4"),
@@ -901,8 +876,7 @@ FeatureStatPlot(
   same.y.lims = TRUE,
   y.max = 4
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Warning: Layer ‘scale.data’ is empty
+#> ! [2026-04-02 16:14:29] "Neurog3" and "Rbp4" are not found
+#> Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed): `stat.by` must be type of numeric variable
 ```

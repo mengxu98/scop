@@ -59,15 +59,11 @@ RunSingleR(
 
 - genes:
 
-  `"genes"` parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  `"genes"` parameter in SingleR::SingleR function.
 
 - de.method:
 
-  `"de.method"` parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  `"de.method"` parameter in SingleR::SingleR function.
 
 - sd.thresh:
 
@@ -84,32 +80,23 @@ RunSingleR(
 - aggr.ref, aggr.args:
 
   Arguments controlling the aggregation of the references prior to
-  annotation, see
-  [`trainSingleR`](https://rdrr.io/pkg/SingleR/man/trainSingleR.html).
+  annotation, see `trainSingleR`.
 
 - quantile:
 
-  "quantile" parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  "quantile" parameter in SingleR::SingleR function.
 
 - fine.tune:
 
-  `"fine.tune"` parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  `"fine.tune"` parameter in SingleR::SingleR function.
 
 - tune.thresh:
 
-  `"tune.thresh"` parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  `"tune.thresh"` parameter in SingleR::SingleR function.
 
 - prune:
 
-  `"prune"` parameter in
-  [SingleR::SingleR](https://rdrr.io/pkg/SingleR/man/SingleR.html)
-  function.
+  `"prune"` parameter in SingleR::SingleR function.
 
 - cores:
 
@@ -142,69 +129,73 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-03-20 09:41:33] Rename features for the assay: RNA
+#> ℹ [2026-04-02 16:51:10] Rename features for the assay: RNA
 panc8_sub <- CheckDataMerge(
   panc8_sub,
   batch = "tech"
 )[["srt_merge"]]
-#> ℹ [2026-03-20 09:41:34] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-03-20 09:41:34] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:41:34] Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:36] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-03-20 09:41:36] Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:38] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-03-20 09:41:39] Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:40] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-03-20 09:41:41] Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:42] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-03-20 09:41:43] Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:45] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-03-20 09:41:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:41:45] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:41:46] Finished check
+#> ℹ [2026-04-02 16:51:10] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-04-02 16:51:11] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:51:11] Data 1/5 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:12] Perform `Seurat::FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-04-02 16:51:12] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:14] Perform `Seurat::FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-04-02 16:51:14] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:15] Perform `Seurat::FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-04-02 16:51:15] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:17] Perform `Seurat::FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-04-02 16:51:17] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:18] Perform `Seurat::FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-04-02 16:51:19] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:51:19] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:51:20] Finished check
 
 # Annotation
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:41:48] Start standard scop workflow...
-#> ℹ [2026-03-20 09:41:49] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:41:49] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:41:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:41:51] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:41:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:41:52] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:41:52] Finished check
-#> ℹ [2026-03-20 09:41:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:41:53] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:41:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:41:54] Reorder clusters...
-#> ℹ [2026-03-20 09:41:54] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:41:54] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:41:58] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:42:03] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:51:22] Start standard processing workflow...
+#> ℹ [2026-04-02 16:51:22] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:51:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:51:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:51:24] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:51:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:51:25] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:51:25] Finished check
+#> ℹ [2026-04-02 16:51:25] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:51:26] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:51:29] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:51:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:51:30] Reorder clusters...
+#> ℹ [2026-04-02 16:51:30] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:51:30] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:51:30] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:51:30] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:51:30] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:51:33] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:51:36] Standard processing workflow completed
 pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
   srt_ref = panc8_sub,
   query_group = "Standardpca_SNN_res.0.6",
   ref_group = "celltype"
 )
-#> ℹ [2026-03-20 09:42:03] Start SingleR annotation
-#> ℹ [2026-03-20 09:48:38] Data type is log-normalized
-#> ℹ [2026-03-20 09:48:38] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-03-20 09:48:39] Data type is log-normalized
-#> ℹ [2026-03-20 09:48:39] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-03-20 09:48:43] Perform "SingleRCluster"
-#> ✔ [2026-03-20 09:48:44] SingleR annotation completed
+#> ℹ [2026-04-02 16:51:36] Start SingleR annotation
+#> ℹ [2026-04-02 16:51:45] Data type is log-normalized
+#> ℹ [2026-04-02 16:51:45] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-04-02 16:51:47] Data type is log-normalized
+#> ℹ [2026-04-02 16:51:47] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-04-02 16:51:50] Perform "SingleRCluster"
+#> Error in loadNamespace(x): there is no package called ‘SingleR’
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
 )
-
+#> Error in CellDimPlot(pancreas_sub, group.by = c("singler_annotation",     "CellType")): "singler_annotation" is not in the meta.data of srt object
 
 pancreas_sub <- RunSingleR(
   srt_query = pancreas_sub,
@@ -212,15 +203,16 @@ pancreas_sub <- RunSingleR(
   query_group = NULL,
   ref_group = "celltype"
 )
-#> ℹ [2026-03-20 09:48:45] Start SingleR annotation
-#> ℹ [2026-03-20 09:48:45] Data type is log-normalized
-#> ℹ [2026-03-20 09:48:45] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-03-20 09:48:48] Data type is log-normalized
-#> ℹ [2026-03-20 09:48:48] Detected `srt_ref` data type: "log_normalized_counts"
-#> ℹ [2026-03-20 09:48:53] Perform "SingleRCell"
-#> ✔ [2026-03-20 09:48:57] SingleR annotation completed
+#> ℹ [2026-04-02 16:51:52] Start SingleR annotation
+#> ℹ [2026-04-02 16:52:01] Data type is log-normalized
+#> ℹ [2026-04-02 16:52:01] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-04-02 16:52:04] Data type is log-normalized
+#> ℹ [2026-04-02 16:52:04] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-04-02 16:52:08] Perform "SingleRCell"
+#> Error in loadNamespace(x): there is no package called ‘SingleR’
 CellDimPlot(
   pancreas_sub,
   group.by = c("singler_annotation", "CellType")
 )
+#> Error in CellDimPlot(pancreas_sub, group.by = c("singler_annotation",     "CellType")): "singler_annotation" is not in the meta.data of srt object
 ```

@@ -206,50 +206,39 @@ slot.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:33:11] Start standard scop workflow...
-#> ℹ [2026-03-20 09:33:11] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:33:11] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:33:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:33:13] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:33:14] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:33:14] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:33:14] Finished check
-#> ℹ [2026-03-20 09:33:15] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:33:15] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:33:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:33:16] Reorder clusters...
-#> ℹ [2026-03-20 09:33:16] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:33:16] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:33:21] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:33:25] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:41:18] Start standard processing workflow...
+#> ℹ [2026-04-02 16:41:19] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:41:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:41:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:41:21] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:41:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:41:21] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:41:21] Finished check
+#> ℹ [2026-04-02 16:41:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:41:22] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:41:25] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:41:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:41:26] Reorder clusters...
+#> ℹ [2026-04-02 16:41:26] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:41:26] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:41:26] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:41:26] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:41:26] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:41:29] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:41:32] Standard processing workflow completed
 
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-20 09:33:25] Start GSVA analysis
-#> ℹ [2026-03-20 09:33:25] Averaging expression by "CellType" ...
-#> ℹ [2026-03-20 09:33:25] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-03-20 09:33:25] Species: "Mus_musculus"
-#> ℹ [2026-03-20 09:33:25] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-20 08:29:24
-#> ℹ [2026-03-20 09:33:27] Processing database: "GO_BP" ...
-#> ℹ [2026-03-20 09:33:28] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-03-20 09:33:31] Running GSVA for 5668 gene sets ...
-#> ℹ GSVA version 2.4.8
-#> ℹ Searching for rows with constant values
-#> ! 2 rows with constant values throughout the columns
-#> ! Rows with constant values are discarded
-#> ℹ Calculating GSVA ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Row-wise ECDF estimation with Gaussian kernels
-#> ℹ Calculating row ECDFs
-#> ℹ Calculating column ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Calculating GSVA scores
-#> ✔ Calculations finished
-#> ℹ [2026-03-20 09:34:58] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-03-20 09:34:58] GSVA analysis done
+#> ℹ [2026-04-02 16:41:32] Start GSVA analysis
+#> ℹ [2026-04-02 16:41:32] Averaging expression by "CellType" ...
+#> ℹ [2026-04-02 16:41:32] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-04-02 16:41:32] Species: "Mus_musculus"
+#> ✔ [2026-04-02 16:41:36] org.Mm.eg.db installed successfully
+#> ℹ [2026-04-02 16:42:06] Preparing database: GO_BP
+#> Error in loadNamespace(x): there is no package called ‘GOSemSim’
 ht <- GSVAPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -258,4 +247,5 @@ ht <- GSVAPlot(
   width = 1,
   height = 2
 )
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     topTerm = 10, width = 1, height = 2): GSVA results not found. Please run RunGSVA first
 ```

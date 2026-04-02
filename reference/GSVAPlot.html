@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Plots for GSVA (Gene Set Variation Analysis)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/GSVAPlot.R" class="external-link"><code>R/GSVAPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/GSVAPlot.R" class="external-link"><code>R/GSVAPlot.R</code></a></small>
       <div class="d-none name"><code>GSVAPlot.Rd</code></div>
     </div>
 
@@ -513,22 +513,28 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:04] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:04] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:39:04] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:06] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:07] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:07] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:07] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:07] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:07] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:08] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:39:15] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:41] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:42] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:42] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:43] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:44] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:44] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:44] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:44] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:44] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:48] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Caught FutureLaunchError. Canceling all iterations ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:49] &lt;FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:14:49. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future &lt;unnamed&gt;; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-23); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;]&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Future: 4a75d434f7a9a2903adedbeee3372830-23 (‘future_lapply-1’)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       DEBUG: BEGIN TROUBLESHOOTING HELP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       SequentialFuture:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Label: ‘future_lapply-1’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Expression:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim):</span> Expecting '}'</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSVA.html">RunGSVA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
@@ -537,28 +543,13 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"gsva"</span>,</span></span>
 <span class="r-in"><span>  kcdf <span class="op">=</span> <span class="st">"Gaussian"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:39:15] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:31] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:31] Aggregated expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:31] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:31] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.22.0 nterm:15169</span> created: <span style="color: #0000BB;">2026-03-20 08:29:24</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:32] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:33] Initial overlap: <span style="color: #0000BB;">11182</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16088</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:41:36] Running GSVA for <span style="color: #0000BB;">5668</span> gene sets ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA version 2.4.8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Searching for rows with constant values</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> 2 rows with constant values throughout the columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Rows with constant values are discarded</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating GSVA ranks</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA dense (classical) algorithm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Row-wise ECDF estimation with Gaussian kernels</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating row ECDFs</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating column ranks</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA dense (classical) algorithm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating GSVA scores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Calculations finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:43:04] <span style="color: #0000BB;">GSVA</span> results stored in `tools` slot: <span style="color: #0000BB;">"GSVA_CellType_gsva"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:43:04] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:49] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:23:18] Averaging expression by <span style="color: #0000BB;">"CellType"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:23:18] Aggregated expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">5</span> groups</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:23:18] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-02 16:27:54] <span style="color: #0000BB;">org.Mm.eg.db</span> installed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:28:25] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘GOSemSim’</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -568,8 +559,9 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="GSVAPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(pancreas_sub, plot_type = "heatmap", group.by = "CellType",     topTerm = 10, width = 1, height = 2):</span> GSVA results not found. Please run RunGSVA first</span>
+<span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht2</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -581,8 +573,9 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class matrix. Coercing to dgCMatrix.</span>
-<span class="r-plt img"><img src="GSVAPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2):</span> GSVA results not found. Please run RunGSVA first</span>
+<span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ht2' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -591,7 +584,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"comparison"</span>,</span></span>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-3.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 1):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -601,7 +594,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  topTerm <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-4.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -610,47 +603,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"network"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Found more than one class "dist" in cache; using the first, from namespace 'spam'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Found more than one class "dist" in cache; using the first, from namespace 'spam'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Also defined by ‘BiocGenerics’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-03-20 08:43:11] Installing: <span style="color: #0000BB;">shadowtext</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Will <span style="font-style: italic;">install</span> 2 packages.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → All 2 packages (0 B) are cached.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">prettydoc</span>    0.4.1 <span style="color: #555555;"> + </span><span style="color: #00BB00;">✔</span><span style="color: #00BBBB;"> pandoc</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">+ </span><span style="color: #0000BB;">shadowtext</span>   0.1.6 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> All system requirements are already installed.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No downloads are needed, 2 pkgs are cached</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">shadowtext</span> 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (237.73 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Got <span style="color: #0000BB;">prettydoc</span> 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.43 kB)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Installing system requirements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y update`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Executing `sudo sh -c apt-get -y install pandoc make libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading package lists...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Building dependency tree...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading state information...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> pandoc is already the newest version (3.1.3+ds-2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> make is already the newest version (4.3-4.1build2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libcairo2-dev is already the newest version (1.18.0-3build1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 0 upgraded, 0 newly installed, 0 to remove and 83 not upgraded.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">prettydoc</span> 0.4.1  <span style="color: #9E9E9E;">(1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">shadowtext</span> 0.1.6  <span style="color: #9E9E9E;">(1s)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> 1 pkg + 56 deps: kept 55, added 2, dld 2 (1.23 MB) <span style="color: #B2B2B2;">[5.3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:43:17] <span style="color: #0000BB;">shadowtext</span> installed successfully</span>
-<span class="r-plt img"><img src="GSVAPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network"):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
@@ -659,7 +612,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"enrichmap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -669,12 +622,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  topWord <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some words could not fit on page. They have been removed.</span>
-<span class="r-plt img"><img src="GSVAPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(pancreas_sub, group.by = "CellType", db = "GO_BP", nrow = 2,     plot_type = "wordcloud", topWord = 50):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -684,152 +632,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"wordcloud"</span>,</span></span>
 <span class="r-in"><span>  word_type <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in GSVAPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "wordcloud", word_type = "feature"):</span> GSVA results not found. Please run RunGSVA first</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunGSVA.html">RunGSVA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay_name <span class="op">=</span> <span class="st">"GSVA"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:18] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:18] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:18] Expression matrix: <span style="color: #0000BB;">15998</span> genes x <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:18] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:18] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.22.0 nterm:15169</span> created: <span style="color: #0000BB;">2026-03-20 08:29:24</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:19] Processing database: <span style="color: #0000BB;">"GO_BP"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:20] Initial overlap: <span style="color: #0000BB;">11182</span> genes out of <span style="color: #0000BB;">15998</span> expression genes and <span style="color: #0000BB;">16088</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:44:23] Running GSVA for <span style="color: #0000BB;">5668</span> gene sets ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA version 2.4.8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Searching for rows with constant values</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating GSVA ranks</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA dense (classical) algorithm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Row-wise ECDF estimation with Gaussian kernels</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating row ECDFs</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■                              </span>   3% |  ETA: 37s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■                              </span>   4% |  ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■                              </span>   4% |  ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■                             </span>   5% |  ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■                             </span>   6% |  ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■                             </span>   7% |  ETA:  1m</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■                             </span>   8% |  ETA: 48s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■                            </span>   9% |  ETA: 46s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■                            </span>  10% |  ETA: 45s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■                            </span>  11% |  ETA: 44s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■                            </span>  12% |  ETA: 43s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■                           </span>  13% |  ETA: 42s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■                           </span>  13% |  ETA: 41s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■                           </span>  14% |  ETA: 40s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■                          </span>  15% |  ETA: 39s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■                          </span>  16% |  ETA: 38s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■                          </span>  17% |  ETA: 37s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■                          </span>  18% |  ETA: 37s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■                         </span>  19% |  ETA: 36s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■                         </span>  20% |  ETA: 36s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■                         </span>  21% |  ETA: 35s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■                         </span>  21% |  ETA: 34s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■                        </span>  22% |  ETA: 34s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■                        </span>  23% |  ETA: 33s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■                        </span>  24% |  ETA: 33s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■                       </span>  25% |  ETA: 32s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■                       </span>  26% |  ETA: 32s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■                       </span>  27% |  ETA: 31s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■                       </span>  28% |  ETA: 31s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■                      </span>  29% |  ETA: 30s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■                      </span>  30% |  ETA: 30s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■                      </span>  30% |  ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■                      </span>  31% |  ETA: 29s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  32% |  ETA: 28s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  33% |  ETA: 28s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  34% |  ETA: 28s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  35% |  ETA: 27s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■                    </span>  36% |  ETA: 27s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■                    </span>  37% |  ETA: 26s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■                    </span>  38% |  ETA: 26s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  38% |  ETA: 26s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  39% |  ETA: 25s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  40% |  ETA: 25s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■                   </span>  41% |  ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  42% |  ETA: 24s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  43% |  ETA: 23s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  44% |  ETA: 23s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  45% |  ETA: 23s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  46% |  ETA: 22s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  47% |  ETA: 22s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  47% |  ETA: 22s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  48% |  ETA: 21s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  49% |  ETA: 21s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% |  ETA: 20s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  51% |  ETA: 20s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  52% |  ETA: 20s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  53% |  ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  54% |  ETA: 19s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■               </span>  55% |  ETA: 18s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  55% |  ETA: 18s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  56% |  ETA: 18s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  57% |  ETA: 17s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■              </span>  58% |  ETA: 17s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■             </span>  59% |  ETA: 17s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■             </span>  60% |  ETA: 16s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■             </span>  61% |  ETA: 16s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  62% |  ETA: 15s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  63% |  ETA: 15s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  63% |  ETA: 15s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■            </span>  64% |  ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  65% |  ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  66% |  ETA: 14s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% |  ETA: 13s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  68% |  ETA: 13s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■          </span>  69% |  ETA: 12s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■          </span>  70% |  ETA: 12s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■          </span>  71% |  ETA: 12s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■          </span>  72% |  ETA: 11s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  72% |  ETA: 11s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  73% |  ETA: 11s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  74% |  ETA: 10s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  75% |  ETA: 10s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  76% |  ETA: 10s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  77% |  ETA:  9s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■        </span>  78% |  ETA:  9s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  79% |  ETA:  8s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  80% |  ETA:  8s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  80% |  ETA:  8s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■       </span>  81% |  ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  82% |  ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  83% |  ETA:  7s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  84% |  ETA:  6s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  85% |  ETA:  6s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  86% |  ETA:  6s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  87% |  ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  88% |  ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  89% |  ETA:  5s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  89% |  ETA:  4s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  90% |  ETA:  4s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  91% |  ETA:  3s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  92% |  ETA:  3s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  93% |  ETA:  3s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  94% |  ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   </span>  95% |  ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  </span>  96% |  ETA:  2s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  </span>  97% |  ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  </span>  97% |  ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span>  98% |  ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating ECDFs <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span>  99% |  ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating column ranks</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GSVA dense (classical) algorithm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Calculating GSVA scores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■                               </span>   1% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■                              </span>   2% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■                              </span>   3% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■                              </span>   4% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■                              </span>   4% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■■                             </span>   5% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■■                             </span>   6% |  ETA:  2h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■■                             </span>   7% |  ETA:  1h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating GSVA scores <span style="color: #00BB00;">■■■                             </span>   8% |  ETA:  1h</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Calculations finished</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:55:18] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span> and tools slot <span style="color: #0000BB;">"GSVA_cell_gsva"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:55:18] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -837,7 +648,6 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="st">"GSVA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"umap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -845,11 +655,6 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"GSVA"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="GSVAPlot-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -860,7 +665,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="GSVAPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

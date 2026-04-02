@@ -240,44 +240,32 @@ Returns Seurat object with the QC results stored in the meta.data layer.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:12:37] Start standard scop workflow...
-#> ℹ [2026-03-20 09:12:37] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:12:37] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:12:37] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:12:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:12:40] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:12:40] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:12:40] Finished check
-#> ℹ [2026-03-20 09:12:41] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:12:41] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:12:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:12:42] Reorder clusters...
-#> ℹ [2026-03-20 09:12:42] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:12:42] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:12:46] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:12:50] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:33:04] Start standard processing workflow...
+#> ℹ [2026-04-02 16:33:04] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:33:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:33:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:33:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:33:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:33:07] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:33:07] Finished check
+#> ℹ [2026-04-02 16:33:07] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:33:07] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:33:12] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:33:12] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:33:12] Reorder clusters...
+#> ℹ [2026-04-02 16:33:12] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:33:12] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:33:12] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:33:12] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:33:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:33:15] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:33:17] Standard processing workflow completed
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ℹ [2026-03-20 09:12:50] Data type is raw counts
-#> ℹ [2026-03-20 09:12:51] Data type is raw counts
-#> ℹ [2026-03-20 09:12:51] Data type is raw counts
-#> ℹ [2026-03-20 09:16:55] Data type is raw counts
-#> ℹ [2026-03-20 09:19:36] Running decontX
-#> ℹ [2026-03-20 09:19:48] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-03-20 09:19:48] decontX assay stored as decontXcounts
-#> ✔ [2026-03-20 09:19:48] decontX decontamination completed
-#> ℹ [2026-03-20 09:19:48] decontX contamination estimates stored; no cells filtered because `decontX_threshold` is "NULL".
-#> ✔ [2026-03-20 09:19:49] ● Total cells: 1000
-#> ✔                       ◉ 957 cells remained
-#> ✔                       ◯ 43 cells filtered out:
-#> ✔                       ◯   20 potential doublets
-#> ✔                       ◯   0 high-contamination cells
-#> ✔                       ◯   23 outlier cells
-#> ✔                       ◯   0 low-UMI cells
-#> ✔                       ◯   0 low-gene cells
-#> ✔                       ◯   0 high-mito cells
-#> ✔                       ◯   0 high-ribo cells
-#> ✔                       ◯   0 ribo_mito_ratio outlier cells
-#> ✔                       ◯   0 species-contaminated cells
+#> ℹ [2026-04-02 16:33:18] Data type is raw counts
+#> ℹ [2026-04-02 16:33:18] Data type is raw counts
+#> ℹ [2026-04-02 16:33:19] Data type is raw counts
+#> Error in tryCatchOne(expr, names, parentenv, handlers[[1L]]): <packageNotFoundError in loadNamespace(x): there is no package called
+#> ‘scDblFinder’>
 
 CellStatPlot(
   pancreas_sub,
@@ -291,9 +279,5 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-03-20 09:19:49] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
+#> Error in StatPlot(meta_data, stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, flip = flip, NA_color = NA_color, NA_stat = NA_stat,     keep_empty = keep_empty, individual = individual, stat_level = stat_level,     plot_type = plot_type, stat_type = stat_type, position = position,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, label = label,     label.size = label.size, label.fg = label.fg, label.bg = label.bg,     label.bg.r = label.bg.r, aspect.ratio = aspect.ratio, title = title,     subtitle = subtitle, xlab = xlab, ylab = ylab, legend.position = legend.position,     legend.direction = legend.direction, theme_use = theme_use,     theme_args = theme_args, combine = combine, nrow = nrow,     ncol = ncol, byrow = byrow, force = force, seed = seed): "db_qc" is not in the `meta.data`
 ```

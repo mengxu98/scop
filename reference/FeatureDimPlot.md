@@ -469,27 +469,33 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:33:18] Start standard scop workflow...
-#> ℹ [2026-03-20 08:33:19] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:33:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:33:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:33:21] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:33:21] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:33:22] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:33:22] Finished check
-#> ℹ [2026-03-20 08:33:22] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:33:22] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:33:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:33:23] Reorder clusters...
-#> ℹ [2026-03-20 08:33:23] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:33:23] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:33:27] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:33:30] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:13:15] Start standard processing workflow...
+#> ℹ [2026-04-02 16:13:15] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:13:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:13:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:17] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:13:17] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:13:18] Finished check
+#> ℹ [2026-04-02 16:13:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:13:18] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:13:22] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:13:22] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:13:22. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-18); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-18 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -497,7 +503,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   bg_cutoff = -Inf
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -505,7 +511,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   theme_use = "theme_blank"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -514,7 +520,7 @@ FeatureDimPlot(
   theme_use = ggplot2::theme_classic,
   theme_args = list(base_size = 16)
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -525,7 +531,7 @@ FeatureDimPlot(
   raster = TRUE,
   dpi = 30
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Label and highlight cell points
 FeatureDimPlot(
@@ -537,7 +543,7 @@ FeatureDimPlot(
     pancreas_sub
   )[pancreas_sub$SubCellType == "Delta"]
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -547,7 +553,7 @@ FeatureDimPlot(
   cells.highlight = TRUE,
   theme_use = "theme_blank"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Add a density layer
 FeatureDimPlot(
@@ -557,7 +563,7 @@ FeatureDimPlot(
   label = TRUE,
   add_density = TRUE
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -567,9 +573,7 @@ FeatureDimPlot(
   add_density = TRUE,
   density_filled = TRUE
 )
-#> Warning: Removed 396 rows containing missing values or values outside the scale range
-#> (`geom_raster()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Chane the plot type from point to the hexagonal bin
 FeatureDimPlot(
@@ -578,11 +582,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   hex = TRUE
 )
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 1 row containing missing values or values outside the scale range
-#> (`geom_hex()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -591,11 +591,7 @@ FeatureDimPlot(
   hex = TRUE,
   hex.bins = 20
 )
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
-#> (`geom_hex()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Show lineages on the plot based on the pseudotime
 pancreas_sub <- RunSlingshot(
@@ -603,11 +599,7 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -615,13 +607,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   lineages = "Lineage2"
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"): Lineage "Lineage2" is not in <Seurat>
 
 FeatureDimPlot(
   pancreas_sub,
@@ -630,15 +616,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_whiskers = TRUE
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_segment()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE): Lineage "Lineage2" is not in <Seurat>
 
 FeatureDimPlot(
   pancreas_sub,
@@ -647,9 +625,7 @@ FeatureDimPlot(
   lineages = "Lineage2",
   lineages_span = 0.1
 )
-#> Warning: `guide_colourbar()` cannot be used for colour_ggnewscale_1.
-#> ℹ Use one of colour, color, or fill instead.
-
+#> Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1): Lineage "Lineage2" is not in <Seurat>
 
 # Input a named feature list
 markers <- list(
@@ -672,7 +648,7 @@ FeatureDimPlot(
     strip.text = ggplot2::element_text(size = 8)
   )
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Plot multiple features with different scales
 endocrine_markers <- c(
@@ -686,7 +662,7 @@ FeatureDimPlot(
   endocrine_markers,
   reduction = "UMAP"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -695,7 +671,7 @@ FeatureDimPlot(
   lower_quantile = 0,
   upper_quantile = 0.8
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -704,7 +680,7 @@ FeatureDimPlot(
   lower_cutoff = 1,
   upper_cutoff = 4
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -712,7 +688,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   keep_scale = "all"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -721,7 +697,7 @@ FeatureDimPlot(
   reduction = "UMAP",
   keep_scale = "feature"
 )
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 
 # Plot multiple features on one picture
 FeatureDimPlot(
@@ -733,9 +709,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Error in DefaultReduction(srt): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -748,9 +722,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Error in DefaultReduction(srt): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -763,9 +735,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Error in DefaultReduction(srt): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -778,9 +748,7 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Error in DefaultReduction(srt): Unable to find any reductions
 
 FeatureDimPlot(
   pancreas_sub,
@@ -793,6 +761,5 @@ FeatureDimPlot(
   label = TRUE,
   label_insitu = TRUE
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Error in DefaultReduction(srt): Unable to find any reductions
 ```
