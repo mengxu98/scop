@@ -97,6 +97,16 @@ RunMetabolism <- function(
   db_prepare <- unname(c("KEGG" = "KEGG", "REACTOME" = "Reactome")[db])
   db_labels <- stats::setNames(db, db_prepare)
 
+  if (!identical(tolower(IDtype), "symbol")) {
+    log_message(
+      paste0(
+        "{.fn RunMetabolism} now uses raw {.pkg scMetabolism} gene sets ",
+        "directly, so {.arg IDtype} must currently be {.val symbol}"
+      ),
+      message_type = "error"
+    )
+  }
+
   if (isTRUE(new_assay) && is.null(assay_name) && is.null(group.by)) {
     log_message(
       "{.arg assay_name} must be specified when {.arg new_assay = TRUE} and {.arg group.by = NULL}",
@@ -136,106 +146,48 @@ RunMetabolism <- function(
     expr_counts <- as_matrix(expr_counts)
   }
 
-  db_list <- PrepareDB(
-    species = species,
-    db = db_prepare,
-    db_update = db_update,
-    db_version = db_version,
-    db_IDtypes = IDtype,
-    convert_species = convert_species,
-    Ensembl_version = Ensembl_version,
-    mirror = mirror
+  log_message(
+    paste0(
+      "Using raw {.pkg scMetabolism} gene sets directly; ",
+      "{.fn PrepareDB} / BioMart-based ID rebuilding is skipped"
+    ),
+    verbose = verbose
   )
 
-  check_r("R.cache", verbose = FALSE)
   gmt_urls <- c(
     KEGG = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/KEGG_metabolism_nc.gmt",
     Reactome = "https://raw.githubusercontent.com/mengxu98/datasets/main/scMetabolism/REACTOME_metabolism.gmt"
   )
-  metabolism_term_defs <- R.cache::loadCache(key = list("metabolism_term_defs", gmt_urls))
-  if (is.null(metabolism_term_defs)) {
-    metabolism_term_defs <- list()
-    for (term_db in names(gmt_urls)) {
-      tmp <- tempfile(fileext = ".gmt")
-      on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
-      thisutils::download(url = gmt_urls[[term_db]], destfile = tmp, quiet = !verbose)
-      lines <- readLines(tmp, warn = FALSE)
-      unlink(tmp)
-      split_lines <- strsplit(lines, "\t", fixed = TRUE)
-      Name <- vapply(split_lines, function(x) x[1], FUN.VALUE = character(1))
-      Ref <- vapply(split_lines, function(x) if (length(x) >= 2) x[2] else NA_character_, FUN.VALUE = character(1))
-      metabolism_term_defs[[term_db]] <- data.frame(Name = Name, Ref = Ref, stringsAsFactors = FALSE)
-    }
-    R.cache::saveCache(metabolism_term_defs, key = list("metabolism_term_defs", gmt_urls))
-  }
 
   gene_sets_all <- list()
   term_names_all <- list()
+  expr_gene_lookup <- stats::setNames(
+    rownames(expr_counts),
+    toupper(rownames(expr_counts))
+  )
 
   for (term_db in db_prepare) {
     term_db_label <- db_labels[[term_db]]
-    TERM2GENE_raw <- db_list[[species]][[term_db]][["TERM2GENE"]]
-    TERM2NAME_raw <- db_list[[species]][[term_db]][["TERM2NAME"]]
-
-    if (is.null(TERM2GENE_raw) || is.null(TERM2NAME_raw)) {
+    metabolism_db <- load_scmetabolism_gmt(
+      url = gmt_urls[[term_db]],
+      db_name = term_db,
+      verbose = verbose
+    )
+    if (is.null(metabolism_db)) {
       log_message(
-        "Database {.val {term_db_label}} does not contain valid {.field TERM2GENE} / {.field TERM2NAME}, skip this database for metabolism scoring.",
+        "Failed to load raw {.pkg scMetabolism} genesets for {.val {term_db_label}}, skip this database.",
         message_type = "warning",
         verbose = verbose
       )
       next
     }
 
-    TERM2GENE_tmp <- as.data.frame(TERM2GENE_raw)[, c("Term", IDtype), drop = FALSE]
-    TERM2NAME_tmp <- as.data.frame(TERM2NAME_raw)
-
-    dup <- duplicated(TERM2GENE_tmp)
-    na <- Matrix::rowSums(is.na(as.matrix(TERM2GENE_tmp))) > 0
-    TERM2GENE_tmp <- TERM2GENE_tmp[!(dup | na), , drop = FALSE]
-    TERM2NAME_tmp <- TERM2NAME_tmp[
-      TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
-      drop = FALSE
-    ]
-
-    rownames(TERM2NAME_tmp) <- TERM2NAME_tmp[["Term"]]
-
-    term_ids <- unique(TERM2GENE_tmp[["Term"]])
-    if (term_db %in% names(metabolism_term_defs)) {
-      metabolism_df <- metabolism_term_defs[[term_db]]
-      term_name_norm <- thisutils::capitalize(trimws(as.character(TERM2NAME_tmp[["Name"]])), force_tolower = TRUE)
-      metabolism_name_norm <- thisutils::capitalize(trimws(as.character(metabolism_df[["Name"]])), force_tolower = TRUE)
-      matched_terms <- TERM2NAME_tmp[["Term"]][term_name_norm %in% metabolism_name_norm]
-
-      if (identical(term_db, "KEGG")) {
-        kegg_term_suffix <- gsub("^[[:alpha:]]+", "", TERM2NAME_tmp[["Term"]])
-        matched_terms <- unique(c(
-          matched_terms,
-          TERM2NAME_tmp[["Term"]][kegg_term_suffix %in% metabolism_df[["Ref"]]]
-        ))
+    gene_sets_db <- lapply(
+      metabolism_db[["gene_sets"]],
+      function(gs) {
+        mapped <- unname(expr_gene_lookup[toupper(gs)])
+        unique(stats::na.omit(mapped[nzchar(mapped)]))
       }
-
-      term_ids <- intersect(term_ids, unique(stats::na.omit(matched_terms)))
-      if (length(term_ids) == 0) {
-        log_message(
-          "No metabolism terms found in {.val {term_db_label}} after filtering by metabolism pathway definitions",
-          message_type = "warning",
-          verbose = verbose
-        )
-        next
-      }
-      TERM2GENE_tmp <- TERM2GENE_tmp[
-        TERM2GENE_tmp[["Term"]] %in% term_ids, ,
-        drop = FALSE
-      ]
-      TERM2NAME_tmp <- TERM2NAME_tmp[
-        TERM2NAME_tmp[["Term"]] %in% term_ids, ,
-        drop = FALSE
-      ]
-    }
-
-    gene_sets_db <- split(
-      TERM2GENE_tmp[[IDtype]],
-      TERM2GENE_tmp[["Term"]]
     )
     gs_size <- lengths(gene_sets_db)
     gene_sets_db <- gene_sets_db[
@@ -251,41 +203,18 @@ RunMetabolism <- function(
     }
 
     term_ids_db <- names(gene_sets_db)
-    term_names_db <- TERM2NAME_tmp[term_ids_db, "Name"]
+    term_names_db <- metabolism_db[["term_info"]][term_ids_db, "Name"]
     term_names_db[is.na(term_names_db)] <- term_ids_db[is.na(term_names_db)]
-    term_names_db <- gsub(
-      pattern = "^(KEGG|REACTOME|Reactome)\\.",
-      replacement = "",
-      x = term_names_db
-    )
-
-    genes_in_sets <- unique(unlist(gene_sets_db))
-    overlap <- intersect(rownames(expr_counts), genes_in_sets)
-    if (length(overlap) == 0) {
-      log_message(
-        "No overlapping genes found between {.val {term_db_label}} metabolism sets and assay {.val {assay}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-      next
-    }
-    gene_sets_db <- lapply(
-      gene_sets_db,
-      function(gs) intersect(gs, overlap)
-    )
-    keep <- lengths(gene_sets_db) >= minGSSize
-    gene_sets_db <- gene_sets_db[keep]
-    term_names_db <- term_names_db[keep]
 
     if (length(gene_sets_db) == 0) {
       next
     }
 
-    gene_sets_all[[term_db]] <- stats::setNames(
-      gene_sets_db,
-      term_names_db
+    gene_sets_all[[term_db]] <- gene_sets_db
+    term_names_all[[term_db]] <- stats::setNames(
+      term_names_db,
+      term_ids_db
     )
-    term_names_all[[term_db]] <- term_names_db
   }
 
   if (length(gene_sets_all) == 0) {
@@ -296,13 +225,7 @@ RunMetabolism <- function(
   }
 
   gene_sets <- do.call(c, gene_sets_all)
-  names(gene_sets) <- gsub(
-    pattern = "^(KEGG|REACTOME|Reactome)\\.",
-    replacement = "",
-    x = names(gene_sets)
-  )
-  names(gene_sets) <- make.unique(names(gene_sets))
-  term_names_final <- unlist(term_names_all, use.names = FALSE)
+  term_names_final <- unlist(term_names_all, use.names = TRUE)
 
   log_message(
     "Total metabolism gene sets to score: {.val {length(gene_sets)}}",
@@ -397,11 +320,13 @@ RunMetabolism <- function(
 
   scores_for_plot <- Matrix::t(as_matrix(scores_mat))
   term_ids <- rownames(scores_for_plot)
+  term_labels <- term_names_final[term_ids]
+  term_labels[is.na(term_labels) | !nzchar(trimws(term_labels))] <- term_ids[is.na(term_labels) | !nzchar(trimws(term_labels))]
   term_names <- thisutils::capitalize(
-    trimws(as.character(term_ids)),
+    trimws(as.character(term_labels)),
     force_tolower = TRUE
   )
-  rownames(scores_for_plot) <- term_names
+  rownames(scores_for_plot) <- make.unique(term_names)
 
   if (single_cell_mode) {
     if (isTRUE(new_assay)) {
@@ -483,4 +408,54 @@ RunMetabolism <- function(
   }
 
   return(srt)
+}
+
+load_scmetabolism_gmt <- function(url, db_name, verbose = TRUE) {
+  check_r("R.cache", verbose = FALSE)
+  cache_key <- list("scmetabolism_raw_gmt", db_name, url)
+  cached <- R.cache::loadCache(key = cache_key)
+  if (!is.null(cached)) {
+    return(cached)
+  }
+
+  tmp <- tempfile(fileext = ".gmt")
+  on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
+  thisutils::download(url = url, destfile = tmp, quiet = !verbose)
+  lines <- readLines(tmp, warn = FALSE)
+  split_lines <- strsplit(lines, "\t", fixed = TRUE)
+
+  term_name_raw <- vapply(
+    split_lines,
+    function(x) trimws(x[1]),
+    FUN.VALUE = character(1)
+  )
+  term_ref <- vapply(
+    split_lines,
+    function(x) {
+      if (length(x) >= 2) trimws(x[2]) else NA_character_
+    },
+    FUN.VALUE = character(1)
+  )
+  term_ids <- paste0(db_name, ".", make.unique(term_name_raw))
+  gene_sets <- stats::setNames(
+    lapply(split_lines, function(x) {
+      genes <- trimws(x[-c(1, 2)])
+      genes <- genes[nzchar(genes)]
+      unique(stats::na.omit(genes))
+    }),
+    term_ids
+  )
+
+  out <- list(
+    gene_sets = gene_sets,
+    term_info = data.frame(
+      Term = term_ids,
+      Name = term_name_raw,
+      Ref = term_ref,
+      stringsAsFactors = FALSE,
+      row.names = term_ids
+    )
+  )
+  R.cache::saveCache(out, key = cache_key)
+  out
 }
