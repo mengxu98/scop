@@ -128,9 +128,15 @@ Default \code{TRUE} for aggregation mode, \code{FALSE} for interaction mode.}
 \item{cluster_rows, cluster_columns}{Whether to cluster heatmap rows/columns.
 Defaults are both \code{FALSE}.}
 
+\item{color.by}{For interaction heatmaps, value used for tile coloring.
+Usually \code{"score"} or \code{"pvalue"}.}
+
 \item{x_text_angle}{Rotation angle for x-axis labels.}
 
 \item{facet_by}{Faceting variable for interaction-level plots.}
+
+\item{show_row_names, show_column_names}{Whether to draw row/column names for
+the heatmap body.}
 
 \item{edge_value}{Aggregation statistic for network edges.}
 
