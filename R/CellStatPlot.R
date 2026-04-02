@@ -331,9 +331,12 @@ CellStatPlot <- function(
   if (theme_use == "theme_scop") {
     theme_use <- "theme_this"
   }
+  plot_type <- match.arg(plot_type)
+  stat_type <- match.arg(stat_type)
+  position <- match.arg(position)
   check_r("geomtextpath", verbose = FALSE)
 
-  if (plot_type == "upset") {
+  if (identical(plot_type, "upset")) {
     check_r("ggupset", verbose = FALSE)
   }
   plot <- StatPlot(
