@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams CCCStatPlot
-#' @param plot_type Plot type. One of `"circle"`, `"pathway"`,
+#' @param plot_type Plot type. One of `"circle"`, `"chord"`, `"pathway"`,
 #'   `"individual_lr"`, `"arrow"`, `"sigmoid"`, `"bipartite"`,
 #'   `"embedding_network"`, or `"diff_network"`.
 #' @param ligand For `plot_type = "bipartite"`: the ligand name to focus on.
@@ -19,8 +19,35 @@
 #' @param expr.by For `plot_type = "bipartite"`: optional metadata or score
 #'   column used to scale edge line width. If `NULL`, all edges have equal
 #'   width.
+#' @param group.by For `plot_type = "embedding_network"`: metadata column used
+#'   to define cell groups. If `NULL`, the grouping stored in the CCC result is
+#'   used when available.
+#' @param reduction For `plot_type = "embedding_network"`: dimensional reduction
+#'   to use. If `NULL`, the default reduction is used.
+#' @param dims For `plot_type = "embedding_network"`: dimensions to plot.
+#' @param layout Layout used for graph-based network views. `"chord"` can also
+#'   be requested via `plot_type = "circle"` for backward compatibility.
+#' @param link_curvature Curvature used for circle-like differential links and
+#'   flow edges.
+#' @param edge_size Range used for scaling edge widths.
+#' @param edge_color Optional edge color override. For differential networks,
+#'   this may also be a length-2 vector for negative/positive changes.
+#' @param edge_alpha Alpha used for embedding-network edges.
+#' @param edge_line Edge geometry for `plot_type = "arrow"`, `"sigmoid"`, and
+#'   `"embedding_network"`.
+#' @param edge_curvature Curvature used for curved flow/embedding edges.
+#' @param directed Whether to draw arrows for directed networks.
+#' @param arrow_type Arrow head type passed to `grid::arrow()`.
+#' @param arrow_angle Arrow head angle passed to `grid::arrow()`.
+#' @param arrow_length Arrow length passed to `grid::arrow()`.
+#' @param node_size Base node size.
+#' @param node_alpha Node alpha.
+#' @param legend.title Legend title.
+#' @param ... Additional plot-specific options. For chord plots, `reduce`,
+#'   `max.groups`, `small.gap`, `big.gap`, and `lab.cex` can be used to adjust
+#'   the CellChat-like chord layout.
 #'
-#' @return A ggplot or patchwork object.
+#' @return A ggplot, patchwork, or recorded plot object.
 #' @export
 #'
 #' @examples
@@ -62,6 +89,15 @@
 #'   display_by = "aggregation",
 #'   value = "weight",
 #'   top_n = 20
+#' )
+#'
+#' CCCNetworkPlot(
+#'   pancreas_sub,
+#'   method = "CellChat",
+#'   condition = "ConditionA",
+#'   plot_type = "chord",
+#'   display_by = "aggregation",
+#'   top_n = 12
 #' )
 #'
 #' CCCNetworkPlot(
@@ -147,6 +183,7 @@ CCCNetworkPlot <- function(
   comparison = c(1, 2),
   plot_type = c(
     "circle",
+    "chord",
     "pathway",
     "individual_lr",
     "arrow",
@@ -233,6 +270,9 @@ CCCNetworkPlot <- function(
   layout <- match.arg(layout)
   edge_value <- match.arg(edge_value)
   edge_line <- match.arg(edge_line)
+  if (identical(plot_type, "circle") && identical(layout, "chord")) {
+    plot_type <- "chord"
+  }
   dots <- list(...)
   label.enable <- isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
@@ -257,118 +297,236 @@ CCCNetworkPlot <- function(
   method <- detect_method(srt = srt, method = method)
 
   if (plot_type %in% c("pathway", "individual_lr")) {
-    if (!identical(method, "CellChat")) {
-      log_message(
-        paste0(
-          "{.arg plot_type} = {.val {plot_type}} is currently only supported ",
-          "for {.pkg CellChat} results"
-        ),
-        message_type = "error"
-      )
-    }
-    if (!identical(layout, "circle")) {
-      log_message(
-        "{.arg layout} is ignored for {.val plot_type = {plot_type}}; scop-native CellChat pathway/LR networks use the circle layout",
-        message_type = "warning"
-      )
-    }
-    obj_info <- get_dataset_object(
-      srt = srt,
-      condition = condition,
-      dataset = dataset
-    )
-    cellchat_object <- obj_info$object
-    plot_cellchat_circle <- function(
-      sig,
-      pairLR = NULL,
-      plot_title = NULL,
-      plot_subtitle = NULL
-    ) {
-      ccc_cellchat_circle_network_plot(
+    if (identical(method, "CellChat")) {
+      if (!identical(layout, "circle")) {
+        log_message(
+          "{.arg layout} is ignored for {.val plot_type = {plot_type}}; scop-native CellChat pathway/LR networks use the circle layout",
+          message_type = "warning"
+        )
+      }
+      obj_info <- get_dataset_object(
         srt = srt,
         condition = condition,
-        dataset = dataset,
-        signaling = sig,
-        pairLR.use = pairLR,
-        sender.use = sender.use,
-        receiver.use = receiver.use,
-        slot.name = slot.name,
-        thresh = thresh,
-        display_by = display_by,
-        value = value,
-        top_n = top_n,
-        edge_threshold = edge_threshold,
-        edge_size = edge_size,
-        node_size = node_size,
-        node_alpha = node_alpha,
-        link_alpha = link_alpha,
-        cell_palette = palette_cfg$cell_palette,
-        cell_palcolor = palette_cfg$cell_palcolor,
-        link_palette = palette_cfg$link_palette,
-        link_palcolor = palette_cfg$link_palcolor,
-        title = plot_title,
-        subtitle = plot_subtitle,
-        legend.position = legend.position,
-        legend.direction = legend.direction,
-        legend.title = legend.title,
-        font.size = font.size,
-        theme_use = theme_use,
-        theme_args = theme_args
+        dataset = dataset
       )
-    }
+      cellchat_object <- obj_info$object
+      plot_cellchat_circle <- function(
+        sig,
+        pairLR = NULL,
+        plot_title = NULL,
+        plot_subtitle = NULL
+      ) {
+        ccc_cellchat_circle_network_plot(
+          srt = srt,
+          condition = condition,
+          dataset = dataset,
+          signaling = sig,
+          pairLR.use = pairLR,
+          sender.use = sender.use,
+          receiver.use = receiver.use,
+          slot.name = slot.name,
+          thresh = thresh,
+          display_by = display_by,
+          value = value,
+          top_n = top_n,
+          edge_threshold = edge_threshold,
+          edge_size = edge_size,
+          node_size = node_size,
+          node_alpha = node_alpha,
+          link_alpha = link_alpha,
+          cell_palette = palette_cfg$cell_palette,
+          cell_palcolor = palette_cfg$cell_palcolor,
+          link_palette = palette_cfg$link_palette,
+          link_palcolor = palette_cfg$link_palcolor,
+          title = plot_title,
+          subtitle = plot_subtitle,
+          legend.position = legend.position,
+          legend.direction = legend.direction,
+          legend.title = legend.title,
+          font.size = font.size,
+          theme_use = theme_use,
+          theme_args = theme_args
+        )
+      }
 
-    if (identical(plot_type, "pathway")) {
-      pathways_to_show <- signaling %||%
-        cellchat_object@netP$pathways[seq_len(min(
-          top_n,
-          length(cellchat_object@netP$pathways)
-        ))]
-      pathways_to_show <- pathways_to_show[!is.na(pathways_to_show)]
-      if (length(pathways_to_show) == 0L) {
+      if (identical(plot_type, "pathway")) {
+        pathways_to_show <- signaling %||%
+          cellchat_object@netP$pathways[seq_len(min(
+            top_n,
+            length(cellchat_object@netP$pathways)
+          ))]
+        pathways_to_show <- pathways_to_show[!is.na(pathways_to_show)]
+        if (length(pathways_to_show) == 0L) {
+          log_message(
+            "No signaling pathways available for plotting",
+            message_type = "error"
+          )
+        }
+        plots <- lapply(pathways_to_show, function(sig) {
+          plot_cellchat_circle(
+            sig = sig,
+            plot_title = if (length(pathways_to_show) == 1L) {
+              title %||% sig
+            } else {
+              sig
+            },
+            plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
+          )
+        })
+        return(simplify_cc_plot_list(plots))
+      }
+
+      if (is.null(signaling)) {
         log_message(
-          "No signaling pathways available for plotting",
+          "{.arg signaling} must be provided for {.val plot_type = 'individual_lr'}",
           message_type = "error"
         )
       }
-      plots <- lapply(pathways_to_show, function(sig) {
+      if (is.null(pairLR.use)) {
+        log_message(
+          "{.arg pairLR.use} must be provided for {.val plot_type = 'individual_lr'}",
+          message_type = "error"
+        )
+      }
+      plots <- lapply(signaling, function(sig) {
         plot_cellchat_circle(
           sig = sig,
-          plot_title = if (length(pathways_to_show) == 1L) {
-            title %||% sig
-          } else {
-            sig
-          },
-          plot_subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL
+          pairLR = pairLR.use,
+          plot_title = title %||%
+            paste(
+              sig,
+              paste(as.character(pairLR.use), collapse = ", "),
+              sep = ": "
+            ),
+          plot_subtitle = subtitle
         )
       })
       return(simplify_cc_plot_list(plots))
     }
 
-    if (is.null(signaling)) {
+    if (!identical(layout, "circle")) {
       log_message(
-        "{.arg signaling} must be provided for {.val plot_type = 'individual_lr'}",
+        "{.arg layout} is ignored for {.val plot_type = {plot_type}} when using pathway-aware generic CCC results; the circle layout is used",
+        message_type = "warning"
+      )
+    }
+
+    bundle <- get_bundle(srt, method = method)
+    long_df <- standardize_long_df(bundle$long_table %||% data.frame())
+    available_pathways <- unique(as.character(long_df$pathway_name))
+    available_pathways <- available_pathways[
+      !is.na(available_pathways) & nzchar(available_pathways)
+    ]
+    if (length(available_pathways) == 0L) {
+      log_message(
+        paste0(
+          "{.arg plot_type} = {.val {plot_type}} requires pathway annotations ",
+          "(for example {.code pathway_name} / {.code classification}) in the ",
+          "stored CCC result table"
+        ),
         message_type = "error"
       )
     }
-    if (is.null(pairLR.use)) {
-      log_message(
-        "{.arg pairLR.use} must be provided for {.val plot_type = 'individual_lr'}",
-        message_type = "error"
-      )
+
+    if (identical(plot_type, "individual_lr")) {
+      if (is.null(signaling)) {
+        log_message(
+          "{.arg signaling} must be provided for {.val plot_type = 'individual_lr'}",
+          message_type = "error"
+        )
+      }
+      if (is.null(pairLR.use)) {
+        log_message(
+          "{.arg pairLR.use} must be provided for {.val plot_type = 'individual_lr'}",
+          message_type = "error"
+        )
+      }
+      pathways_to_show <- unique(as.character(signaling))
+    } else {
+      pathways_to_show <- unique(as.character(signaling %||% available_pathways))
+      if (
+        is.numeric(top_n) &&
+          length(top_n) == 1L &&
+          top_n > 0L &&
+          length(pathways_to_show) > top_n
+      ) {
+        pathways_to_show <- utils::head(pathways_to_show, top_n)
+      }
     }
-    plots <- lapply(signaling, function(sig) {
-      plot_cellchat_circle(
-        sig = sig,
-        pairLR = pairLR.use,
-        plot_title = title %||%
-          paste(
-            sig,
-            paste(as.character(pairLR.use), collapse = ", "),
-            sep = ": "
+
+    plot_generic_circle <- function(sig) {
+      df_sig <- filter_long_df(
+        df = long_df,
+        sender.use = sender.use,
+        receiver.use = receiver.use,
+        ligand.use = ligand.use,
+        receptor.use = receptor.use,
+        interaction.use = interaction.use,
+        signaling = sig,
+        pairLR.use = if (identical(plot_type, "individual_lr")) pairLR.use else NULL
+      )
+      if (nrow(df_sig) == 0L) {
+        return(NULL)
+      }
+      df_sig <- ccc_assign_plot_score(df = df_sig, value = value)
+      df_sig <- prepare_plot_df(df_sig)
+      pair_df_sig <- pair_plot_df(df_sig)
+      interaction_df_sig <- interaction_plot_df(df_sig)
+      do.call(
+        ccc_circle_plot,
+        c(
+          list(
+            pair_df = pair_df_sig,
+            interaction_df = interaction_df_sig,
+            display_by = display_by,
+            top_n = top_n,
+            value = value,
+            edge_threshold = edge_threshold,
+            edge_size = edge_size,
+            node_size = node_size,
+            node_alpha = node_alpha,
+            link_alpha = link_alpha
           ),
-        plot_subtitle = subtitle
+          list(
+            title = if (identical(plot_type, "individual_lr")) {
+              title %||% paste(
+                sig,
+                paste(as.character(pairLR.use), collapse = ", "),
+                sep = ": "
+              )
+            } else if (length(pathways_to_show) == 1L) {
+              title %||% sig
+            } else {
+              sig
+            },
+            subtitle = if (length(pathways_to_show) == 1L) subtitle else NULL,
+            cell_palette = palette_cfg$cell_palette,
+            cell_palcolor = palette_cfg$cell_palcolor,
+            link_palette = palette_cfg$link_palette,
+            link_palcolor = palette_cfg$link_palcolor,
+            legend.position = legend.position,
+            legend.direction = legend.direction,
+            legend.title = legend.title,
+            font.size = font.size,
+            theme_use = theme_use,
+            theme_args = theme_args,
+            label = label.enable,
+            label.size = label.size,
+            label.fg = label.fg,
+            label.bg = label.bg,
+            label.bg.r = label.bg.r
+          )
+        )
       )
-    })
+    }
+
+    plots <- Filter(Negate(is.null), lapply(pathways_to_show, plot_generic_circle))
+    if (length(plots) == 0L) {
+      log_message(
+        "No pathway-specific communication records remain after filtering",
+        message_type = "error"
+      )
+    }
     return(simplify_cc_plot_list(plots))
   }
 
@@ -485,6 +643,32 @@ CCCNetworkPlot <- function(
         ),
         network_plot_args,
         label_plot_args
+      )
+    ))
+  }
+
+  if (identical(plot_type, "chord")) {
+    dots_chord <- dots
+    dots_chord[c("reduce", "max.groups", "small.gap", "big.gap", "lab.cex")] <- NULL
+    return(do.call(
+      ccc_chord_plot,
+      c(
+        list(
+          pair_df = pair_df,
+          interaction_df = interaction_df,
+          display_by = display_by,
+          top_n = top_n,
+          edge_value = edge_value,
+          edge_threshold = edge_threshold,
+          link_alpha = link_alpha,
+          reduce = reduce,
+          max.groups = max.groups,
+          small.gap = small.gap,
+          big.gap = big.gap,
+          lab.cex = lab.cex
+        ),
+        network_plot_args,
+        dots_chord
       )
     ))
   }
