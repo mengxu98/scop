@@ -52,6 +52,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht1$plot
 #'
 #' ht2 <- GSVAPlot(
 #'   pancreas_sub,
@@ -63,6 +64,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' ht2$plot
 #'
 #' GSVAPlot(
 #'   srt = pancreas_sub,
@@ -115,6 +117,7 @@
 #'   word_type = "feature"
 #' )
 #'
+#' \dontrun{
 #' pancreas_sub <- RunGSVA(
 #'   pancreas_sub,
 #'   assay_name = "GSVA",
@@ -145,6 +148,7 @@
 #'   width = 1,
 #'   height = 2
 #' )
+#' }
 GSVAPlot <- function(
   srt = NULL,
   res = NULL,
