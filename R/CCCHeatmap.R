@@ -24,6 +24,10 @@
 #' Default `TRUE` for aggregation mode, `FALSE` for interaction mode.
 #' @param cluster_rows,cluster_columns Whether to cluster heatmap rows/columns.
 #'   Defaults are both `FALSE`.
+#' @param color.by For interaction heatmaps, value used for tile coloring.
+#'   Usually `"score"` or `"pvalue"`.
+#' @param show_row_names,show_column_names Whether to draw row/column names for
+#'   the heatmap body.
 #' @param border Logical. Whether to draw borders for the heatmap body and all
 #'   annotation tracks. Default `TRUE`.
 #' @param value_palette Palette used for heatmap value fills.

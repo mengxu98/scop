@@ -10,8 +10,8 @@ CCCNetworkPlot(
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c("circle", "pathway", "individual_lr", "arrow", "sigmoid", "bipartite",
-    "embedding_network", "diff_network"),
+  plot_type = c("circle", "chord", "pathway", "individual_lr", "arrow", "sigmoid",
+    "bipartite", "embedding_network", "diff_network"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -80,7 +80,7 @@ CCCNetworkPlot(
 
 \item{comparison}{Comparison indices or names.}
 
-\item{plot_type}{Plot type. One of \code{"circle"}, \code{"pathway"},
+\item{plot_type}{Plot type. One of \code{"circle"}, \code{"chord"}, \code{"pathway"},
 \code{"individual_lr"}, \code{"arrow"}, \code{"sigmoid"}, \code{"bipartite"},
 \code{"embedding_network"}, or \code{"diff_network"}.}
 
@@ -95,6 +95,15 @@ CCCNetworkPlot(
 \item{receptor.use}{Receptors to keep.}
 
 \item{interaction.use}{Interaction names to keep.}
+
+\item{group.by}{For \code{plot_type = "embedding_network"}: metadata column used
+to define cell groups. If \code{NULL}, the grouping stored in the CCC result is
+used when available.}
+
+\item{reduction}{For \code{plot_type = "embedding_network"}: dimensional reduction
+to use. If \code{NULL}, the default reduction is used.}
+
+\item{dims}{For \code{plot_type = "embedding_network"}: dimensions to plot.}
 
 \item{signaling}{Signaling pathway to focus on.}
 
@@ -130,11 +139,41 @@ regulation palette.}
 column used to scale edge line width. If \code{NULL}, all edges have equal
 width.}
 
+\item{layout}{Layout used for graph-based network views. \code{"chord"} can also
+be requested via \code{plot_type = "circle"} for backward compatibility.}
+
+\item{link_curvature}{Curvature used for circle-like differential links and
+flow edges.}
+
 \item{link_alpha}{Alpha used for network edges.}
 
 \item{edge_value}{Aggregation statistic for network edges.}
 
 \item{edge_threshold}{Minimum edge value to keep.}
+
+\item{edge_size}{Range used for scaling edge widths.}
+
+\item{edge_color}{Optional edge color override. For differential networks,
+this may also be a length-2 vector for negative/positive changes.}
+
+\item{edge_alpha}{Alpha used for embedding-network edges.}
+
+\item{edge_line}{Edge geometry for \code{plot_type = "arrow"}, \code{"sigmoid"}, and
+\code{"embedding_network"}.}
+
+\item{edge_curvature}{Curvature used for curved flow/embedding edges.}
+
+\item{directed}{Whether to draw arrows for directed networks.}
+
+\item{arrow_type}{Arrow head type passed to \code{grid::arrow()}.}
+
+\item{arrow_angle}{Arrow head angle passed to \code{grid::arrow()}.}
+
+\item{arrow_length}{Arrow length passed to \code{grid::arrow()}.}
+
+\item{node_size}{Base node size.}
+
+\item{node_alpha}{Node alpha.}
 
 \item{palette}{Main palette name.}
 
@@ -156,6 +195,8 @@ width.}
 
 \item{legend.direction}{Legend direction.}
 
+\item{legend.title}{Legend title.}
+
 \item{font.size}{Base font size.}
 
 \item{theme_use}{Theme function used for styling.}
@@ -164,10 +205,12 @@ width.}
 
 \item{verbose}{Whether to print messages.}
 
-\item{...}{Additional plot-specific options.}
+\item{...}{Additional plot-specific options. For chord plots, \code{reduce},
+\code{max.groups}, \code{small.gap}, \code{big.gap}, and \code{lab.cex} can be used to adjust
+the CellChat-like chord layout.}
 }
 \value{
-A ggplot or patchwork object.
+A ggplot, patchwork, or recorded plot object.
 }
 \description{
 CCC network and flow plots
@@ -211,6 +254,15 @@ CCCNetworkPlot(
   display_by = "aggregation",
   value = "weight",
   top_n = 20
+)
+
+CCCNetworkPlot(
+  pancreas_sub,
+  method = "CellChat",
+  condition = "ConditionA",
+  plot_type = "chord",
+  display_by = "aggregation",
+  top_n = 12
 )
 
 CCCNetworkPlot(
