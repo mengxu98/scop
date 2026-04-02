@@ -26,5 +26,4 @@ db_scDblFinder(srt, assay = "RNA", db_rate = ncol(srt)/1000 * 0.01, ...)
 
 - ...:
 
-  Additional arguments to be passed to
-  [`scDblFinder::scDblFinder()`](https://plger.github.io/scDblFinder/reference/scDblFinder.html).
+  Additional arguments to be passed to `scDblFinder::scDblFinder()`.

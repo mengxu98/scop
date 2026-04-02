@@ -264,28 +264,35 @@ FeatureCorPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:32:49] Start standard scop workflow...
-#> ℹ [2026-03-20 08:32:50] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:32:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:32:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:32:51] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:32:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:32:52] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:32:52] Finished check
-#> ℹ [2026-03-20 08:32:52] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:32:53] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:32:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:32:54] Reorder clusters...
-#> ℹ [2026-03-20 08:32:54] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:32:54] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:32:57] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:33:01] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:13:06] Start standard processing workflow...
+#> ℹ [2026-04-02 16:13:07] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:13:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:13:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:13:09] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:13:09] Finished check
+#> ℹ [2026-04-02 16:13:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:13:10] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:13:14] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:13:14] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:13:14. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-17); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-17 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 FeatureCorPlot(
   pancreas_sub,
   features = rownames(pancreas_sub)[1:5],
   group.by = "SubCellType"
 )
-
+#> Warning: Layer ‘data’ is empty
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': subscript out of bounds
 
 FeatureCorPlot(
   pancreas_sub,
@@ -301,11 +308,7 @@ FeatureCorPlot(
   cor_palette = "Greys",
   cor_range = c(0, 1)
 )
-#> Warning: essentially perfect fit: summary may be unreliable
-#> Warning: essentially perfect fit: summary may be unreliable
-#> Warning: essentially perfect fit: summary may be unreliable
-#> Warning: essentially perfect fit: summary may be unreliable
-
+#> Error in loadNamespace(x): there is no package called ‘proxyC’
 
 FeatureCorPlot(
   pancreas_sub,
@@ -313,4 +316,5 @@ FeatureCorPlot(
   group.by = "SubCellType",
   add_equation = TRUE
 )
+#> Error in loadNamespace(x): there is no package called ‘proxyC’
 ```

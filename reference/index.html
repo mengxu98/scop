@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,7 +132,7 @@
           <code><a href="integration_scop.html">integration_scop()</a></code>
 
         </dt>
-        <dd>The integration_scop function</dd>
+        <dd>The integration workflow</dd>
 
         <dt>
 
@@ -140,164 +140,6 @@
 
         </dt>
         <dd>Standard workflow for scop</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="adata_to_srt.html">adata_to_srt()</a></code>
-
-        </dt>
-        <dd>Convert an anndata object to a seurat object</dd>
-
-        <dt>
-
-          <code><a href="CellScoring.html">CellScoring()</a></code>
-
-        </dt>
-        <dd>Cell scoring</dd>
-
-        <dt>
-
-          <code><a href="CheckDataType.html">CheckDataType()</a></code>
-
-        </dt>
-        <dd>Check and report the type of data in <code>Seurat</code> object</dd>
-
-        <dt>
-
-          <code><a href="CheckDataList.html">CheckDataList()</a></code>
-
-        </dt>
-        <dd>Check and preprocess a list of <code>Seurat</code> objects</dd>
-
-        <dt>
-
-          <code><a href="CheckDataMerge.html">CheckDataMerge()</a></code>
-
-        </dt>
-        <dd>Check and preprocess a merged seurat object</dd>
-
-        <dt>
-
-          <code><a href="CycGenePrefetch.html">CycGenePrefetch()</a></code>
-
-        </dt>
-        <dd>Prefetch cell cycle genes</dd>
-
-        <dt>
-
-          <code><a href="DefaultReduction.html">DefaultReduction()</a></code>
-
-        </dt>
-        <dd>Find the default reduction name in a Seurat object</dd>
-
-        <dt>
-
-          <code><a href="FetchDataZero.html">FetchDataZero()</a></code>
-
-        </dt>
-        <dd>FetchData but with zeroes for unavailable genes</dd>
-
-        <dt>
-
-          <code><a href="GeneConvert.html">GeneConvert()</a></code>
-
-        </dt>
-        <dd>Gene ID conversion function using biomart</dd>
-
-        <dt>
-
-          <code><a href="GetAssayData5.html">GetAssayData5()</a></code>
-
-        </dt>
-        <dd>Get expression data from <code>Assay5</code> or Seurat object</dd>
-
-        <dt>
-
-          <code><a href="RecoverCounts.html">RecoverCounts()</a></code>
-
-        </dt>
-        <dd>Attempt to recover raw counts from the normalized matrix</dd>
-
-        <dt>
-
-          <code><a href="RenameClusters.html">RenameClusters()</a></code>
-
-        </dt>
-        <dd>Rename clusters for the Seurat object</dd>
-
-        <dt>
-
-          <code><a href="srt_append.html">srt_append()</a></code>
-
-        </dt>
-        <dd>Append a Seurat object to another</dd>
-
-        <dt>
-
-          <code><a href="srt_to_adata.html">srt_to_adata()</a></code>
-
-        </dt>
-        <dd>Convert a Seurat object to an AnnData object</dd>
-
-        <dt>
-
-          <code><a href="srt_reorder.html">srt_reorder()</a></code>
-
-        </dt>
-        <dd>Reorder idents by the gene expression</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="feature-processing">Feature Processing<a class="anchor" aria-label="anchor" href="#feature-processing"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="AddFeaturesData.html">AddFeaturesData()</a></code>
-
-        </dt>
-        <dd>Add features data</dd>
-
-        <dt>
-
-          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
-
-        </dt>
-        <dd>Annotate Features</dd>
-
-        <dt>
-
-          <code><a href="GetFeaturesData.html">GetFeaturesData()</a></code>
-
-        </dt>
-        <dd>Get features data</dd>
-
-        <dt>
-
-          <code><a href="GetSimilarFeatures.html">GetSimilarFeatures()</a></code>
-
-        </dt>
-        <dd>Find features with expression patterns similar to provided features</dd>
-
-        <dt>
-
-          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
-
-        </dt>
-        <dd>Rename features for the Seurat object</dd>
       </dl></div><div class="section level2">
 
       <h3 id="quality-control">Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"></a></h3>
@@ -358,6 +200,176 @@
         <dd>Run doublet-calling for single cell RNA-seq data.</dd>
       </dl></div><div class="section level2">
 
+      <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="BBKNN_integrate.html">BBKNN_integrate()</a></code>
+
+        </dt>
+        <dd>The BBKNN integration function</dd>
+
+        <dt>
+
+          <code><a href="CCA_integrate.html">CCA_integrate()</a></code>
+
+        </dt>
+        <dd>Seurat v5 CCA integration</dd>
+
+        <dt>
+
+          <code><a href="Coralysis_integrate.html">Coralysis_integrate()</a></code>
+
+        </dt>
+        <dd>The Coralysis integration function</dd>
+
+        <dt>
+
+          <code><a href="CSS_integrate.html">CSS_integrate()</a></code>
+
+        </dt>
+        <dd>The CSS integration function</dd>
+
+        <dt>
+
+          <code><a href="ComBat_integrate.html">ComBat_integrate()</a></code>
+
+        </dt>
+        <dd>The ComBat integration function</dd>
+
+        <dt>
+
+          <code><a href="Conos_integrate.html">Conos_integrate()</a></code>
+
+        </dt>
+        <dd>The Conos integration function</dd>
+
+        <dt>
+
+          <code><a href="fastMNN_integrate.html">fastMNN_integrate()</a></code>
+
+        </dt>
+        <dd>The fastMNN integration function</dd>
+
+        <dt>
+
+          <code><a href="fastMNN5_integrate.html">fastMNN5_integrate()</a></code>
+
+        </dt>
+        <dd>Seurat v5 fastMNN integration</dd>
+
+        <dt>
+
+          <code><a href="Harmony_integrate.html">Harmony_integrate()</a></code>
+
+        </dt>
+        <dd>The Harmony integration function</dd>
+
+        <dt>
+
+          <code><a href="Harmony5_integrate.html">Harmony5_integrate()</a></code>
+
+        </dt>
+        <dd>Seurat v5 Harmony integration</dd>
+
+        <dt>
+
+          <code><a href="LIGER_integrate.html">LIGER_integrate()</a></code>
+
+        </dt>
+        <dd>The LIGER integration function</dd>
+
+        <dt>
+
+          <code><a href="MNN_integrate.html">MNN_integrate()</a></code>
+
+        </dt>
+        <dd>The MNN integration function</dd>
+
+        <dt>
+
+          <code><a href="RPCA_integrate.html">RPCA_integrate()</a></code>
+
+        </dt>
+        <dd>Seurat v5 RPCA integration</dd>
+
+        <dt>
+
+          <code><a href="RunCSSMap.html">RunCSSMap()</a></code>
+
+        </dt>
+        <dd>Single-cell reference mapping with CSS method</dd>
+
+        <dt>
+
+          <code><a href="RunHarmony2.html">RunHarmony2()</a></code>
+
+        </dt>
+        <dd>Run Harmony algorithm</dd>
+
+        <dt>
+
+          <code><a href="RunPCAMap.html">RunPCAMap()</a></code>
+
+        </dt>
+        <dd>Single-cell reference mapping with PCA method</dd>
+
+        <dt>
+
+          <code><a href="RunSeuratMap.html">RunSeuratMap()</a></code>
+
+        </dt>
+        <dd>Single-cell reference mapping with Seurat method</dd>
+
+        <dt>
+
+          <code><a href="RunSymphonyMap.html">RunSymphonyMap()</a></code>
+
+        </dt>
+        <dd>Single-cell reference mapping with Symphony method</dd>
+
+        <dt>
+
+          <code><a href="Scanorama_integrate.html">Scanorama_integrate()</a></code>
+
+        </dt>
+        <dd>The Scanorama integration function</dd>
+
+        <dt>
+
+          <code><a href="Seurat_integrate.html">Seurat_integrate()</a></code>
+
+        </dt>
+        <dd>The Seurat integration function</dd>
+
+        <dt>
+
+          <code><a href="scVI_integrate.html">scVI_integrate()</a></code>
+
+        </dt>
+        <dd>The scVI integration function</dd>
+
+        <dt>
+
+          <code><a href="scVI5_integrate.html">scVI5_integrate()</a></code>
+
+        </dt>
+        <dd>Seurat v5 scVI integration</dd>
+
+        <dt>
+
+          <code><a href="Uncorrected_integrate.html">Uncorrected_integrate()</a></code>
+
+        </dt>
+        <dd>The Uncorrected integration function</dd>
+      </dl></div><div class="section level2">
+
       <h3 id="dimensionality-reduction-and-clustering">Dimensionality Reduction and Clustering<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-and-clustering"></a></h3>
 
 
@@ -368,7 +380,14 @@
 
       <dl><dt>
 
-          <code><a href="RunDimReduction.html">RunDimReduction()</a></code>
+          <code><a href="RunDimsEstimate.html">RunDimsEstimate()</a></code>
+
+        </dt>
+        <dd>Estimate useful dimensions from a reduction</dd>
+
+        <dt>
+
+          <code><a href="RunDimsReduction.html">RunDimsReduction()</a></code>
 
         </dt>
         <dd>Run dimension reduction</dd>
@@ -444,134 +463,6 @@
         <dd>Run LargeVis (Dimensionality Reduction with a LargeVis-like method)</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="data-integration-and-batch-effect-removal">Data Integration and Batch Effect Removal<a class="anchor" aria-label="anchor" href="#data-integration-and-batch-effect-removal"></a></h3>
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="BBKNN_integrate.html">BBKNN_integrate()</a></code>
-
-        </dt>
-        <dd>The BBKNN integration function</dd>
-
-        <dt>
-
-          <code><a href="CSS_integrate.html">CSS_integrate()</a></code>
-
-        </dt>
-        <dd>The CSS integration function</dd>
-
-        <dt>
-
-          <code><a href="ComBat_integrate.html">ComBat_integrate()</a></code>
-
-        </dt>
-        <dd>The ComBat integration function</dd>
-
-        <dt>
-
-          <code><a href="Conos_integrate.html">Conos_integrate()</a></code>
-
-        </dt>
-        <dd>The Conos integration function</dd>
-
-        <dt>
-
-          <code><a href="fastMNN_integrate.html">fastMNN_integrate()</a></code>
-
-        </dt>
-        <dd>The fastMNN integration function</dd>
-
-        <dt>
-
-          <code><a href="Harmony_integrate.html">Harmony_integrate()</a></code>
-
-        </dt>
-        <dd>The Harmony integration function</dd>
-
-        <dt>
-
-          <code><a href="LIGER_integrate.html">LIGER_integrate()</a></code>
-
-        </dt>
-        <dd>The LIGER integration function</dd>
-
-        <dt>
-
-          <code><a href="MNN_integrate.html">MNN_integrate()</a></code>
-
-        </dt>
-        <dd>The MNN integration function</dd>
-
-        <dt>
-
-          <code><a href="RunCSSMap.html">RunCSSMap()</a></code>
-
-        </dt>
-        <dd>Single-cell reference mapping with CSS method</dd>
-
-        <dt>
-
-          <code><a href="RunHarmony2.html">RunHarmony2()</a></code>
-
-        </dt>
-        <dd>Run Harmony algorithm</dd>
-
-        <dt>
-
-          <code><a href="RunPCAMap.html">RunPCAMap()</a></code>
-
-        </dt>
-        <dd>Single-cell reference mapping with PCA method</dd>
-
-        <dt>
-
-          <code><a href="RunSeuratMap.html">RunSeuratMap()</a></code>
-
-        </dt>
-        <dd>Single-cell reference mapping with Seurat method</dd>
-
-        <dt>
-
-          <code><a href="RunSymphonyMap.html">RunSymphonyMap()</a></code>
-
-        </dt>
-        <dd>Single-cell reference mapping with Symphony method</dd>
-
-        <dt>
-
-          <code><a href="Scanorama_integrate.html">Scanorama_integrate()</a></code>
-
-        </dt>
-        <dd>The Scanorama integration function</dd>
-
-        <dt>
-
-          <code><a href="Seurat_integrate.html">Seurat_integrate()</a></code>
-
-        </dt>
-        <dd>The Seurat integration function</dd>
-
-        <dt>
-
-          <code><a href="scVI_integrate.html">scVI_integrate()</a></code>
-
-        </dt>
-        <dd>The scVI integration function</dd>
-
-        <dt>
-
-          <code><a href="Uncorrected_integrate.html">Uncorrected_integrate()</a></code>
-
-        </dt>
-        <dd>The Uncorrected integration function</dd>
-      </dl></div><div class="section level2">
-
       <h3 id="cell-type-annotation">Cell Type Annotation<a class="anchor" aria-label="anchor" href="#cell-type-annotation"></a></h3>
 
 
@@ -610,17 +501,17 @@
 
         <dt>
 
-          <code><a href="RunSingleR.html">RunSingleR()</a></code>
-
-        </dt>
-        <dd>Annotate single cells using SingleR</dd>
-
-        <dt>
-
           <code><a href="RunScmap.html">RunScmap()</a></code>
 
         </dt>
         <dd>Annotate single cells using scmap.</dd>
+
+        <dt>
+
+          <code><a href="RunSingleR.html">RunSingleR()</a></code>
+
+        </dt>
+        <dd>Annotate single cells using SingleR</dd>
       </dl></div><div class="section level2">
 
       <h3 id="differential-analysis">Differential Analysis<a class="anchor" aria-label="anchor" href="#differential-analysis"></a></h3>
@@ -662,6 +553,13 @@
 
 
       <dl><dt>
+
+          <code><a href="CellScoring.html">CellScoring()</a></code>
+
+        </dt>
+        <dd>Cell scoring</dd>
+
+        <dt>
 
           <code><a href="RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>
 
@@ -789,7 +687,195 @@
           <code><a href="RunCellChat.html">RunCellChat()</a></code>
 
         </dt>
-        <dd>Run CellChat</dd>
+        <dd>Run CellChat analysis</dd>
+
+        <dt>
+
+          <code><a href="RunCellphoneDB.html">RunCellphoneDB()</a></code>
+
+        </dt>
+        <dd>Run CellphoneDB analysis</dd>
+
+        <dt>
+
+          <code><a href="RunNichenetr.html">RunNichenetr()</a></code>
+
+        </dt>
+        <dd>Run NicheNet analysis</dd>
+
+        <dt>
+
+          <code><a href="RunMultiNichenetr.html">RunMultiNichenetr()</a></code>
+
+        </dt>
+        <dd>Run MultiNicheNet analysis</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="data-conversion">Data Conversion<a class="anchor" aria-label="anchor" href="#data-conversion"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="adata_to_srt.html">adata_to_srt()</a></code>
+
+        </dt>
+        <dd>Convert an anndata object to a seurat object</dd>
+
+        <dt>
+
+          <code><a href="h5ad_to_srt.html">h5ad_to_srt()</a></code>
+
+        </dt>
+        <dd>Read an <code>.h5ad</code> file and convert to a <code>Seurat</code></dd>
+
+        <dt>
+
+          <code><a href="srt_to_adata.html">srt_to_adata()</a></code>
+
+        </dt>
+        <dd>Convert a Seurat object to an AnnData object</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="CheckDataType.html">CheckDataType()</a></code>
+
+        </dt>
+        <dd>Check and report the type of data in <code>Seurat</code> object</dd>
+
+        <dt>
+
+          <code><a href="CheckDataList.html">CheckDataList()</a></code>
+
+        </dt>
+        <dd>Check and preprocess a list of <code>Seurat</code> objects</dd>
+
+        <dt>
+
+          <code><a href="CheckDataMerge.html">CheckDataMerge()</a></code>
+
+        </dt>
+        <dd>Check and preprocess a merged seurat object</dd>
+
+        <dt>
+
+          <code><a href="CycGenePrefetch.html">CycGenePrefetch()</a></code>
+
+        </dt>
+        <dd>Prefetch cell cycle genes</dd>
+
+        <dt>
+
+          <code><a href="DefaultReduction.html">DefaultReduction()</a></code>
+
+        </dt>
+        <dd>Find the default reduction name in a Seurat object</dd>
+
+        <dt>
+
+          <code><a href="FetchDataZero.html">FetchDataZero()</a></code>
+
+        </dt>
+        <dd>FetchData but with zeroes for unavailable genes</dd>
+
+        <dt>
+
+          <code><a href="GeneConvert.html">GeneConvert()</a></code>
+
+        </dt>
+        <dd>Gene ID conversion function using biomart</dd>
+
+        <dt>
+
+          <code><a href="GetAssayData5.html">GetAssayData5()</a></code>
+
+        </dt>
+        <dd>Get expression data from <code>Assay5</code> or Seurat object</dd>
+
+        <dt>
+
+          <code><a href="RecoverCounts.html">RecoverCounts()</a></code>
+
+        </dt>
+        <dd>Attempt to recover raw counts from the normalized matrix</dd>
+
+        <dt>
+
+          <code><a href="RenameClusters.html">RenameClusters()</a></code>
+
+        </dt>
+        <dd>Rename clusters for the Seurat object</dd>
+
+        <dt>
+
+          <code><a href="srt_append.html">srt_append()</a></code>
+
+        </dt>
+        <dd>Append a Seurat object to another</dd>
+
+        <dt>
+
+          <code><a href="srt_reorder.html">srt_reorder()</a></code>
+
+        </dt>
+        <dd>Reorder idents by the gene expression</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="feature-processing">Feature Processing<a class="anchor" aria-label="anchor" href="#feature-processing"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="AddFeaturesData.html">AddFeaturesData()</a></code>
+
+        </dt>
+        <dd>Add features data</dd>
+
+        <dt>
+
+          <code><a href="AnnotateFeatures.html">AnnotateFeatures()</a></code>
+
+        </dt>
+        <dd>Annotate Features</dd>
+
+        <dt>
+
+          <code><a href="GetFeaturesData.html">GetFeaturesData()</a></code>
+
+        </dt>
+        <dd>Get features data</dd>
+
+        <dt>
+
+          <code><a href="GetSimilarFeatures.html">GetSimilarFeatures()</a></code>
+
+        </dt>
+        <dd>Find features with expression patterns similar to provided features</dd>
+
+        <dt>
+
+          <code><a href="RenameFeatures.html">RenameFeatures()</a></code>
+
+        </dt>
+        <dd>Rename features for the Seurat object</dd>
       </dl></div><div class="section level2">
 
       <h3 id="visualization-functions">Visualization Functions<a class="anchor" aria-label="anchor" href="#visualization-functions"></a></h3>
@@ -802,10 +888,24 @@
 
       <dl><dt>
 
-          <code><a href="CellChatPlot.html">CellChatPlot()</a></code>
+          <code><a href="CCCHeatmap.html">CCCHeatmap()</a></code>
 
         </dt>
-        <dd>Plot CellChat analysis results</dd>
+        <dd>CCC heatmap and dot matrix plot</dd>
+
+        <dt>
+
+          <code><a href="CCCNetworkPlot.html">CCCNetworkPlot()</a></code>
+
+        </dt>
+        <dd>CCC network and flow plots</dd>
+
+        <dt>
+
+          <code><a href="CCCStatPlot.html">CCCStatPlot()</a></code>
+
+        </dt>
+        <dd>CCC statistical distribution and summary plots</dd>
 
         <dt>
 
@@ -869,6 +969,13 @@
 
         </dt>
         <dd>DEtest Ring Plot</dd>
+
+        <dt>
+
+          <code><a href="DimsEstimatePlot.html">DimsEstimatePlot()</a></code>
+
+        </dt>
+        <dd>Dimension estimate diagnostic plot</dd>
 
         <dt>
 

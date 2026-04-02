@@ -50,22 +50,26 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:06:19] Start standard scop workflow...
-#> ℹ [2026-03-20 09:06:19] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:06:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:06:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:06:21] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:06:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:06:22] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:06:22] Finished check
-#> ℹ [2026-03-20 09:06:22] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:06:23] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:06:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:06:24] Reorder clusters...
-#> ℹ [2026-03-20 09:06:24] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:06:24] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:06:28] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:06:31] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:29:38] Start standard processing workflow...
+#> ℹ [2026-04-02 16:29:38] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:29:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:29:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:29:40] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:29:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:29:40] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:29:41] Finished check
+#> ℹ [2026-04-02 16:29:41] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:29:41] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:29:45] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:29:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:29:46] Reorder clusters...
+#> ℹ [2026-04-02 16:29:46] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:29:46] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:29:46] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:29:46] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:29:46] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:29:49] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:29:51] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -73,45 +77,15 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-03-20 09:06:31] Start metabolism pathway scoring
-#> ℹ [2026-03-20 09:06:32] Data type is raw counts
-#> ℹ [2026-03-20 09:06:32] Averaging expression by "CellType" ...
-#> ℹ [2026-03-20 09:06:32] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-03-20 09:06:32] Species: "Mus_musculus"
-#> ℹ [2026-03-20 09:06:32] Preparing KEGG database
-#> ℹ [2026-03-20 09:06:46] Preparing Reactome database
-#> ℹ [2026-03-20 09:06:51] Convert ID types for the KEGG database
-#> ℹ [2026-03-20 09:06:51] Connect to the Ensembl archives...
-#> ℹ [2026-03-20 09:06:51] Using the 115 version of ensembl database...
-#> ℹ [2026-03-20 09:06:51] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-03-20 09:06:54] Searching the dataset mmusculus ...
-#> ℹ [2026-03-20 09:06:54] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-03-20 09:06:57] Converting the geneIDs...
-#> ! [2026-03-20 09:07:00] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-03-20 09:07:00] Get errors when retrieving information from the BioMart database
-#> ! [2026-03-20 09:07:01] Retrying...
-#> ℹ [2026-03-20 09:07:03] 10581 genes mapped with "entrez_id"
-#> ℹ [2026-03-20 09:07:03] ==============================
-#> ℹ                       10581 genes mapped
-#> ℹ                       573 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-03-20 09:07:07] Convert ID types for the Reactome database
-#> ℹ [2026-03-20 09:07:07] Connect to the Ensembl archives...
-#> ℹ [2026-03-20 09:07:07] Using the 115 version of ensembl database...
-#> ℹ [2026-03-20 09:07:07] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-03-20 09:07:08] Searching the dataset mmusculus ...
-#> ℹ [2026-03-20 09:07:08] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-03-20 09:07:11] Converting the geneIDs...
-#> ℹ [2026-03-20 09:07:54] 8776 genes mapped with "entrez_id"
-#> ℹ [2026-03-20 09:07:54] ==============================
-#> ℹ                       8776 genes mapped
-#> ℹ                       4 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-03-20 09:07:57] Total metabolism gene sets to score: 109
-#> ✔ [2026-03-20 09:08:23] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-04-02 16:29:51] Start metabolism pathway scoring
+#> ℹ [2026-04-02 16:29:51] Data type is raw counts
+#> ℹ [2026-04-02 16:29:51] Averaging expression by "CellType" ...
+#> ℹ [2026-04-02 16:29:51] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-04-02 16:29:51] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-04-02 16:29:52] Total metabolism gene sets to score: 127
+#> Error in loadNamespace(x): there is no package called ‘AUCell’
 
-ht <- MetabolismPlot(
+ht1 <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "heatmap",
@@ -119,8 +93,9 @@ ht <- MetabolismPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     topTerm = 10, width = 1, height = 2): Metabolism results not found. Please run RunMetabolism first
+ht1$plot
+#> Error: object 'ht1' not found
 
 ht2 <- MetabolismPlot(
   pancreas_sub,
@@ -132,8 +107,9 @@ ht2 <- MetabolismPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2): Metabolism results not found. Please run RunMetabolism first
+ht2$plot
+#> Error: object 'ht2' not found
 
 MetabolismPlot(
   pancreas_sub,
@@ -142,7 +118,7 @@ MetabolismPlot(
   plot_type = "comparison",
   topTerm = 5
 )
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 5): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -152,7 +128,7 @@ MetabolismPlot(
   plot_type = "bar",
   topTerm = 5
 )
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -162,8 +138,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-03-20 09:08:27] shadowtext installed successfully
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network", topTerm = 3): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -172,7 +147,7 @@ MetabolismPlot(
   db = "GO_BP",
   plot_type = "enrichmap"
 )
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"): Metabolism results not found. Please run RunMetabolism first
 
 MetabolismPlot(
   pancreas_sub,
@@ -181,7 +156,7 @@ MetabolismPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
-
+#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     plot_type = "wordcloud", word_type = "feature"): Metabolism results not found. Please run RunMetabolism first
 
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
@@ -189,14 +164,11 @@ pancreas_sub <- RunMetabolism(
   db = c("KEGG", "REACTOME"),
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-20 09:08:31] Start metabolism pathway scoring
-#> ℹ [2026-03-20 09:08:32] Data type is raw counts
-#> ℹ [2026-03-20 09:08:32] Species: "Mus_musculus"
-#> ℹ [2026-03-20 09:08:32] Loading cached: KEGG version: Release 117.0+/03-20, Mar 26 nterm:366 created: 2026-03-20 09:07:07
-#> ℹ [2026-03-20 09:08:33] Loading cached: Reactome version: 1.95.0 nterm:1815 created: 2026-03-20 09:07:57
-#> ℹ [2026-03-20 09:08:33] Total metabolism gene sets to score: 109
-#> ✔ [2026-03-20 09:08:38] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-03-20 09:08:38] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-04-02 16:29:58] Start metabolism pathway scoring
+#> ℹ [2026-04-02 16:29:58] Data type is raw counts
+#> ℹ [2026-04-02 16:29:58] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-04-02 16:29:58] Total metabolism gene sets to score: 127
+#> Error in loadNamespace(x): there is no package called ‘AUCell’
 
 FeatureDimPlot(
   pancreas_sub,
@@ -204,7 +176,8 @@ FeatureDimPlot(
   features = rownames(pancreas_sub[["METABOLISM"]])[1:2],
   reduction = "umap"
 )
-
+#> Error in (function (cond) .Internal(C_tryCatchHelper(addr, 1L, cond)))(structure(list(message = "‘METABOLISM’ not found in this Seurat object\n ",     trace = structure(list(call = list(base::tryCatch(base::withCallingHandlers({        NULL        base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",             compress = FALSE)        base::flush(base::stdout())        base::flush(base::stderr())        NULL        base::invisible()    }, error = function(e) {        {            callr_data <- base::as.environment("tools:callr")$`__callr_data__`            err <- callr_data$err            if (FALSE) {                base::assign(".Traceback", base::.traceback(4),                   envir = callr_data)                utils::dump.frames("__callr_dump__")                base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                   envir = callr_data)                base::rm("__callr_dump__", envir = .GlobalEnv)            }            e <- err$process_call(e)            e2 <- err$new_error("error in callr subprocess")            class <- base::class            class(e2) <- base::c("callr_remote_error", class(e2))            e2 <- err$add_trace_back(e2)            cut <- base::which(e2$trace$scope == "global")[1]            if (!base::is.na(cut)) {                e2$trace <- e2$trace[-(1:cut), ]            }            base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 ".error"))        }    }, interrupt = function(e) {        {            callr_data <- base::as.environment("tools:callr")$`__callr_data__`            err <- callr_data$err            if (FALSE) {                base::assign(".Traceback", base::.traceback(4),                   envir = callr_data)                utils::dump.frames("__callr_dump__")                base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                   envir = callr_data)                base::rm("__callr_dump__", envir = .GlobalEnv)            }            e <- err$process_call(e)            e2 <- err$new_error("error in callr subprocess")            class <- base::class            class(e2) <- base::c("callr_remote_error", class(e2))            e2 <- err$add_trace_back(e2)            cut <- base::which(e2$trace$scope == "global")[1]            if (!base::is.na(cut)) {                e2$trace <- e2$trace[-(1:cut), ]            }            base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 ".error"))        }    }, callr_message = function(e) {        base::try(base::signalCondition(e))    }), error = function(e) {        NULL        if (FALSE) {            base::try(base::stop(e))        }        else {            base::invisible()        }    }, interrupt = function(e) {        NULL        if (FALSE) {            e        }        else {            base::invisible()        }    }), tryCatchList(expr, classes, parentenv, handlers), tryCatchOne(tryCatchList(expr,         names[-nh], parentenv, handlers[-nh]), names[nh], parentenv,         handlers[[nh]]), doTryCatch(return(expr), name, parentenv,         handler), tryCatchList(expr, names[-nh], parentenv, handlers[-nh]),         tryCatchOne(expr, names, parentenv, handlers[[1L]]),         doTryCatch(return(expr), name, parentenv, handler), base::withCallingHandlers({            NULL            base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),                 base::list(envir = .GlobalEnv, quote = TRUE)),                 envir = .GlobalEnv, quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 compress = FALSE)            base::flush(base::stdout())            base::flush(base::stderr())            NULL            base::invisible()        }, error = function(e) {            {                callr_data <- base::as.environment("tools:callr")$`__callr_data__`                err <- callr_data$err                if (FALSE) {                  base::assign(".Traceback", base::.traceback(4),                     envir = callr_data)                  utils::dump.frames("__callr_dump__")                  base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                     envir = callr_data)                  base::rm("__callr_dump__", envir = .GlobalEnv)                }                e <- err$process_call(e)                e2 <- err$new_error("error in callr subprocess")                class <- base::class                class(e2) <- base::c("callr_remote_error", class(e2))                e2 <- err$add_trace_back(e2)                cut <- base::which(e2$trace$scope == "global")[1]                if (!base::is.na(cut)) {                  e2$trace <- e2$trace[-(1:cut), ]                }                base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                   ".error"))            }        }, interrupt = function(e) {            {                callr_data <- base::as.environment("tools:callr")$`__callr_data__`                err <- callr_data$err                if (FALSE) {                  base::assign(".Traceback", base::.traceback(4),                     envir = callr_data)                  utils::dump.frames("__callr_dump__")                  base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                     envir = callr_data)                  base::rm("__callr_dump__", envir = .GlobalEnv)                }                e <- err$process_call(e)                e2 <- err$new_error("error in callr subprocess")                class <- base::class                class(e2) <- base::c("callr_remote_error", class(e2))                e2 <- err$add_trace_back(e2)                cut <- base::which(e2$trace$scope == "global")[1]                if (!base::is.na(cut)) {                  e2$trace <- e2$trace[-(1:cut), ]                }                base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                   ".error"))            }        }, callr_message = function(e) {            base::try(base::signalCondition(e))        }), base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",             compress = FALSE), base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), `<fn>`(base::quote(`<fn>`), base::quote(`<named list>`),             envir = base::quote(`<env>`), quote = base::quote(TRUE)),         `<fn>`(pkg = base::quote(`<pkgdown>`), examples = base::quote(TRUE),             run_dont_run = base::quote(FALSE), seed = base::quote(1014L),             lazy = base::quote(FALSE), override = base::quote(`<list>`),             install = base::quote(FALSE), preview = base::quote(FALSE),             new_process = base::quote(FALSE), devel = base::quote(FALSE),             quiet = base::quote(TRUE), cli_colors = base::quote(1L),             hyperlinks = base::quote(FALSE)), pkgdown::build_site(...),         build_site_local(pkg = pkg, examples = examples, run_dont_run = run_dont_run,             seed = seed, lazy = lazy, override = override, preview = preview,             devel = devel, quiet = quiet), build_reference(pkg,             lazy = lazy, examples = examples, run_dont_run = run_dont_run,             seed = seed, override = override, preview = FALSE,             devel = devel), unwrap_purrr_error(purrr::map(topics,             build_reference_topic, pkg = pkg, lazy = lazy, examples_env = examples_env,             run_dont_run = run_dont_run)), withCallingHandlers(code,             purrr_error_indexed = function(err) {                cnd_signal(err$parent)            }), purrr::map(topics, build_reference_topic, pkg = pkg,             lazy = lazy, examples_env = examples_env, run_dont_run = run_dont_run),         map_("list", .x, .f, ..., .progress = .progress), with_indexed_errors(i = i,             names = names, error_call = .purrr_error_call, call_with_cleanup(map_impl,                 environment(), .type, .progress, n, names, i)),         withCallingHandlers(expr, error = function(cnd) {            if (i == 0L) {            }            else {                message <- c(i = "In index: {i}.")                if (!is.null(names) && !is.na(names[[i]]) &&                   names[[i]] != "") {                  name <- names[[i]]                  message <- c(message, i = "With name: {name}.")                }                else {                  name <- NULL                }                cli::cli_abort(message, location = i, name = name,                   parent = cnd, call = error_call, class = "purrr_error_indexed")            }        }), call_with_cleanup(map_impl, environment(), .type,             .progress, n, names, i), .f(.x[[i]], ...), withCallingHandlers(data_reference_topic(topic,             pkg, examples_env = examples_env, run_dont_run = run_dont_run),             error = function(err) {                cli::cli_abort("Failed to parse Rd in {.file {topic$file_in}}",                   parent = err, call = quote(build_reference()))            }), data_reference_topic(topic, pkg, examples_env = examples_env,             run_dont_run = run_dont_run), run_examples(tags$tag_examples[[1]],             env = if (is.null(examples_env)) NULL else new.env(parent = examples_env),             topic = tools::file_path_sans_ext(topic$file_in),             run_dont_run = run_dont_run), highlight_examples(code,             topic, env = env), downlit::evaluate_and_highlight(code,             fig_save = fig_save_topic, env = eval_env, output_handler = handler),         evaluate::evaluate(code, child_env(env), new_device = TRUE,             output_handler = output_handler), withRestarts(with_handlers({            for (expr in tle$exprs) {                ev <- withVisible(eval(expr, envir))                watcher$capture_plot_and_output()                watcher$print_value(ev$value, ev$visible, envir)            }            TRUE        }, handlers), eval_continue = function() TRUE, eval_stop = function() FALSE),         withRestartList(expr, restarts), withOneRestart(withRestartList(expr,             restarts[-nr]), restarts[[nr]]), doWithOneRestart(return(expr),             restart), withRestartList(expr, restarts[-nr]), withOneRestart(expr,             restarts[[1L]]), doWithOneRestart(return(expr), restart),         with_handlers({            for (expr in tle$exprs) {                ev <- withVisible(eval(expr, envir))                watcher$capture_plot_and_output()                watcher$print_value(ev$value, ev$visible, envir)            }            TRUE        }, handlers), eval(call), eval(call), withCallingHandlers(code,             message = `<fn>`, warning = `<fn>`, error = `<fn>`),         withVisible(eval(expr, envir)), eval(expr, envir), eval(expr,             envir), FeatureDimPlot(pancreas_sub, assay = "METABOLISM",             features = rownames(pancreas_sub[["METABOLISM"]])[1:2],             reduction = "umap"), rownames(pancreas_sub[["METABOLISM"]]),         pancreas_sub[["METABOLISM"]], `[[.Seurat`(pancreas_sub,             "METABOLISM"), tryCatch(expr = arg_match(arg = i,             values = meta.cols, multiple = TRUE), error = function(e) {            abort(message = paste(paste(sQuote(x = setdiff(x = i,                 y = meta.cols)), collapse = ", "), "not found in this Seurat object\n",                 e$body), call = rlang::caller_env(n = 4L))        }), tryCatchList(expr, classes, parentenv, handlers),         tryCatchOne(expr, names, parentenv, handlers[[1L]]),         value[[3L]](cond), abort(message = paste(paste(sQuote(x = setdiff(x = i,             y = meta.cols)), collapse = ", "), "not found in this Seurat object\n",             e$body), call = rlang::caller_env(n = 4L))), parent = c(0L,     1L, 2L, 3L, 2L, 5L, 6L, 0L, 0L, 0L, 0L, 0L, 12L, 13L, 14L,     15L, 16L, 15L, 18L, 19L, 20L, 19L, 19L, 23L, 23L, 25L, 26L,     27L, 28L, 29L, 30L, 31L, 32L, 31L, 34L, 35L, 29L, 37L, 38L,     37L, 29L, 29L, 42L, 43L, 43L, 43L, 43L, 47L, 48L, 49L, 50L,     51L), visible = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     FALSE, FALSE, FALSE, FALSE, FALSE), namespace = c("base",     "base", "base", "base", "base", "base", "base", "base", "base",     "base", "base", NA, "pkgdown", "pkgdown", "pkgdown", "pkgdown",     "base", "purrr", "purrr", "purrr", "base", "purrr", "pkgdown",     "base", "pkgdown", "pkgdown", "pkgdown", "downlit", "evaluate",     "base", "base", "base", "base", "base", "base", "base", "evaluate",     "base", "base", "base", "base", "base", "base", "scop", "BiocGenerics",     NA, "SeuratObject", "base", "base", "base", NA, "rlang"),         scope = c("::", "local", "local", "local", "local", "local",         "local", "::", "::", "::", "local", "global", "::", ":::",         "::", ":::", "::", "::", ":::", ":::", "::", ":::", "local",         "::", ":::", ":::", ":::", "::", "::", "::", "local",         "local", "local", "local", "local", "local", ":::", "::",         "::", "::", "::", "::", "::", "::", "::", NA, ":::",         "::", "local", "local", NA, "::"), error_frame = c(FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE,         FALSE, FALSE, FALSE)), row.names = c(NA, -52L), version = 2L, class = c("rlang_trace",     "rlib_trace", "tbl", "data.frame")), parent = NULL, rlang = list(        inherit = TRUE), call = pancreas_sub[["METABOLISM"]]), class = c("rlang_error", "error", "condition"))): error in evaluating the argument 'x' in selecting a method for function 'rownames': ‘METABOLISM’ not found in this Seurat object
+#>  
 
 FeatureStatPlot(
   pancreas_sub,
@@ -212,11 +185,7 @@ FeatureStatPlot(
   group.by = "CellType",
   assay = "METABOLISM"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
+#> Error in GetAssay.Seurat(object = object, assay = assay, ...): METABOLISM is not an assay present in the given object. Available assays are: RNA, spliced, unspliced
 
 ht <- GroupHeatmap(
   pancreas_sub,
@@ -227,5 +196,6 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-03-20 09:08:39] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> Error in (function (cond) .Internal(C_tryCatchHelper(addr, 1L, cond)))(structure(list(message = "‘METABOLISM’ not found in this Seurat object\n ",     trace = structure(list(call = list(base::tryCatch(base::withCallingHandlers({        NULL        base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",             compress = FALSE)        base::flush(base::stdout())        base::flush(base::stderr())        NULL        base::invisible()    }, error = function(e) {        {            callr_data <- base::as.environment("tools:callr")$`__callr_data__`            err <- callr_data$err            if (FALSE) {                base::assign(".Traceback", base::.traceback(4),                   envir = callr_data)                utils::dump.frames("__callr_dump__")                base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                   envir = callr_data)                base::rm("__callr_dump__", envir = .GlobalEnv)            }            e <- err$process_call(e)            e2 <- err$new_error("error in callr subprocess")            class <- base::class            class(e2) <- base::c("callr_remote_error", class(e2))            e2 <- err$add_trace_back(e2)            cut <- base::which(e2$trace$scope == "global")[1]            if (!base::is.na(cut)) {                e2$trace <- e2$trace[-(1:cut), ]            }            base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 ".error"))        }    }, interrupt = function(e) {        {            callr_data <- base::as.environment("tools:callr")$`__callr_data__`            err <- callr_data$err            if (FALSE) {                base::assign(".Traceback", base::.traceback(4),                   envir = callr_data)                utils::dump.frames("__callr_dump__")                base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                   envir = callr_data)                base::rm("__callr_dump__", envir = .GlobalEnv)            }            e <- err$process_call(e)            e2 <- err$new_error("error in callr subprocess")            class <- base::class            class(e2) <- base::c("callr_remote_error", class(e2))            e2 <- err$add_trace_back(e2)            cut <- base::which(e2$trace$scope == "global")[1]            if (!base::is.na(cut)) {                e2$trace <- e2$trace[-(1:cut), ]            }            base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 ".error"))        }    }, callr_message = function(e) {        base::try(base::signalCondition(e))    }), error = function(e) {        NULL        if (FALSE) {            base::try(base::stop(e))        }        else {            base::invisible()        }    }, interrupt = function(e) {        NULL        if (FALSE) {            e        }        else {            base::invisible()        }    }), tryCatchList(expr, classes, parentenv, handlers), tryCatchOne(tryCatchList(expr,         names[-nh], parentenv, handlers[-nh]), names[nh], parentenv,         handlers[[nh]]), doTryCatch(return(expr), name, parentenv,         handler), tryCatchList(expr, names[-nh], parentenv, handlers[-nh]),         tryCatchOne(expr, names, parentenv, handlers[[1L]]),         doTryCatch(return(expr), name, parentenv, handler), base::withCallingHandlers({            NULL            base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),                 base::list(envir = .GlobalEnv, quote = TRUE)),                 envir = .GlobalEnv, quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                 compress = FALSE)            base::flush(base::stdout())            base::flush(base::stderr())            NULL            base::invisible()        }, error = function(e) {            {                callr_data <- base::as.environment("tools:callr")$`__callr_data__`                err <- callr_data$err                if (FALSE) {                  base::assign(".Traceback", base::.traceback(4),                     envir = callr_data)                  utils::dump.frames("__callr_dump__")                  base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                     envir = callr_data)                  base::rm("__callr_dump__", envir = .GlobalEnv)                }                e <- err$process_call(e)                e2 <- err$new_error("error in callr subprocess")                class <- base::class                class(e2) <- base::c("callr_remote_error", class(e2))                e2 <- err$add_trace_back(e2)                cut <- base::which(e2$trace$scope == "global")[1]                if (!base::is.na(cut)) {                  e2$trace <- e2$trace[-(1:cut), ]                }                base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                   ".error"))            }        }, interrupt = function(e) {            {                callr_data <- base::as.environment("tools:callr")$`__callr_data__`                err <- callr_data$err                if (FALSE) {                  base::assign(".Traceback", base::.traceback(4),                     envir = callr_data)                  utils::dump.frames("__callr_dump__")                  base::assign(".Last.dump", .GlobalEnv$`__callr_dump__`,                     envir = callr_data)                  base::rm("__callr_dump__", envir = .GlobalEnv)                }                e <- err$process_call(e)                e2 <- err$new_error("error in callr subprocess")                class <- base::class                class(e2) <- base::c("callr_remote_error", class(e2))                e2 <- err$add_trace_back(e2)                cut <- base::which(e2$trace$scope == "global")[1]                if (!base::is.na(cut)) {                  e2$trace <- e2$trace[-(1:cut), ]                }                base::saveRDS(base::list("error", e2, e), file = base::paste0("/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",                   ".error"))            }        }, callr_message = function(e) {            base::try(base::signalCondition(e))        }), base::saveRDS(base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), file = "/tmp/RtmpRpK4RB/callr-res-14d0d390a5870",             compress = FALSE), base::do.call(base::do.call, base::c(base::readRDS("/tmp/RtmpRpK4RB/callr-fun-14d0d1cc384e3"),             base::list(envir = .GlobalEnv, quote = TRUE)), envir = .GlobalEnv,             quote = TRUE), `<fn>`(base::quote(`<fn>`), base::quote(`<named list>`),             envir = base::quote(`<env>`), quote = base::quote(TRUE)),         `<fn>`(pkg = base::quote(`<pkgdown>`), examples = base::quote(TRUE),             run_dont_run = base::quote(FALSE), seed = base::quote(1014L),             lazy = base::quote(FALSE), override = base::quote(`<list>`),             install = base::quote(FALSE), preview = base::quote(FALSE),             new_process = base::quote(FALSE), devel = base::quote(FALSE),             quiet = base::quote(TRUE), cli_colors = base::quote(1L),             hyperlinks = base::quote(FALSE)), pkgdown::build_site(...),         build_site_local(pkg = pkg, examples = examples, run_dont_run = run_dont_run,             seed = seed, lazy = lazy, override = override, preview = preview,             devel = devel, quiet = quiet), build_reference(pkg,             lazy = lazy, examples = examples, run_dont_run = run_dont_run,             seed = seed, override = override, preview = FALSE,             devel = devel), unwrap_purrr_error(purrr::map(topics,             build_reference_topic, pkg = pkg, lazy = lazy, examples_env = examples_env,             run_dont_run = run_dont_run)), withCallingHandlers(code,             purrr_error_indexed = function(err) {                cnd_signal(err$parent)            }), purrr::map(topics, build_reference_topic, pkg = pkg,             lazy = lazy, examples_env = examples_env, run_dont_run = run_dont_run),         map_("list", .x, .f, ..., .progress = .progress), with_indexed_errors(i = i,             names = names, error_call = .purrr_error_call, call_with_cleanup(map_impl,                 environment(), .type, .progress, n, names, i)),         withCallingHandlers(expr, error = function(cnd) {            if (i == 0L) {            }            else {                message <- c(i = "In index: {i}.")                if (!is.null(names) && !is.na(names[[i]]) &&                   names[[i]] != "") {                  name <- names[[i]]                  message <- c(message, i = "With name: {name}.")                }                else {                  name <- NULL                }                cli::cli_abort(message, location = i, name = name,                   parent = cnd, call = error_call, class = "purrr_error_indexed")            }        }), call_with_cleanup(map_impl, environment(), .type,             .progress, n, names, i), .f(.x[[i]], ...), withCallingHandlers(data_reference_topic(topic,             pkg, examples_env = examples_env, run_dont_run = run_dont_run),             error = function(err) {                cli::cli_abort("Failed to parse Rd in {.file {topic$file_in}}",                   parent = err, call = quote(build_reference()))            }), data_reference_topic(topic, pkg, examples_env = examples_env,             run_dont_run = run_dont_run), run_examples(tags$tag_examples[[1]],             env = if (is.null(examples_env)) NULL else new.env(parent = examples_env),             topic = tools::file_path_sans_ext(topic$file_in),             run_dont_run = run_dont_run), highlight_examples(code,             topic, env = env), downlit::evaluate_and_highlight(code,             fig_save = fig_save_topic, env = eval_env, output_handler = handler),         evaluate::evaluate(code, child_env(env), new_device = TRUE,             output_handler = output_handler), withRestarts(with_handlers({            for (expr in tle$exprs) {                ev <- withVisible(eval(expr, envir))                watcher$capture_plot_and_output()                watcher$print_value(ev$value, ev$visible, envir)            }            TRUE        }, handlers), eval_continue = function() TRUE, eval_stop = function() FALSE),         withRestartList(expr, restarts), withOneRestart(withRestartList(expr,             restarts[-nr]), restarts[[nr]]), doWithOneRestart(return(expr),             restart), withRestartList(expr, restarts[-nr]), withOneRestart(expr,             restarts[[1L]]), doWithOneRestart(return(expr), restart),         with_handlers({            for (expr in tle$exprs) {                ev <- withVisible(eval(expr, envir))                watcher$capture_plot_and_output()                watcher$print_value(ev$value, ev$visible, envir)            }            TRUE        }, handlers), eval(call), eval(call), withCallingHandlers(code,             message = `<fn>`, warning = `<fn>`, error = `<fn>`),         withVisible(eval(expr, envir)), eval(expr, envir), eval(expr,             envir), GroupHeatmap(pancreas_sub, exp_legend_title = "Z-score",             features = rownames(pancreas_sub[["METABOLISM"]])[1:10],             group.by = "CellType", assay = "METABOLISM", width = 1,             height = 2), rownames(pancreas_sub[["METABOLISM"]]),         pancreas_sub[["METABOLISM"]], `[[.Seurat`(pancreas_sub,             "METABOLISM"), tryCatch(expr = arg_match(arg = i,             values = meta.cols, multiple = TRUE), error = function(e) {            abort(message = paste(paste(sQuote(x = setdiff(x = i,                 y = meta.cols)), collapse = ", "), "not found in this Seurat object\n",                 e$body), call = rlang::caller_env(n = 4L))        }), tryCatchList(expr, classes, parentenv, handlers),         tryCatchOne(expr, names, parentenv, handlers[[1L]]),         value[[3L]](cond), abort(message = paste(paste(sQuote(x = setdiff(x = i,             y = meta.cols)), collapse = ", "), "not found in this Seurat object\n",             e$body), call = rlang::caller_env(n = 4L))), parent = c(0L,     1L, 2L, 3L, 2L, 5L, 6L, 0L, 0L, 0L, 0L, 0L, 12L, 13L, 14L,     15L, 16L, 15L, 18L, 19L, 20L, 19L, 19L, 23L, 23L, 25L, 26L,     27L, 28L, 29L, 30L, 31L, 32L, 31L, 34L, 35L, 29L, 37L, 38L,     37L, 29L, 29L, 42L, 43L, 43L, 43L, 43L, 47L, 48L, 49L, 50L,     51L), visible = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,     FALSE, FALSE, FALSE, FALSE, FALSE), namespace = c("base",     "base", "base", "base", "base", "base", "base", "base", "base",     "base", "base", NA, "pkgdown", "pkgdown", "pkgdown", "pkgdown",     "base", "purrr", "purrr", "purrr", "base", "purrr", "pkgdown",     "base", "pkgdown", "pkgdown", "pkgdown", "downlit", "evaluate",     "base", "base", "base", "base", "base", "base", "base", "evaluate",     "base", "base", "base", "base", "base", "base", "scop", "BiocGenerics",     NA, "SeuratObject", "base", "base", "base", NA, "rlang"),         scope = c("::", "local", "local", "local", "local", "local",         "local", "::", "::", "::", "local", "global", "::", ":::",         "::", ":::", "::", "::", ":::", ":::", "::", ":::", "local",         "::", ":::", ":::", ":::", "::", "::", "::", "local",         "local", "local", "local", "local", "local", ":::", "::",         "::", "::", "::", "::", "::", "::", "::", NA, ":::",         "::", "local", "local", NA, "::"), error_frame = c(FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,         FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE,         FALSE, FALSE, FALSE)), row.names = c(NA, -52L), version = 2L, class = c("rlang_trace",     "rlib_trace", "tbl", "data.frame")), parent = NULL, rlang = list(        inherit = TRUE), call = pancreas_sub[["METABOLISM"]]), class = c("rlang_error", "error", "condition"))): error in evaluating the argument 'x' in selecting a method for function 'rownames': ‘METABOLISM’ not found in this Seurat object
+#>  
 ```

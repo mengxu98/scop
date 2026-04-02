@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,35 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mengxu98/scop/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.7" id="scop-087">scop 0.8.7<a class="anchor" aria-label="anchor" href="#scop-087"></a></h2>
+<ul><li>
+<strong>feat</strong>:
+<ul><li>Added <code><a href="../reference/RunDimsEstimate.html">RunDimsEstimate()</a></code> and <code><a href="../reference/DimsEstimatePlot.html">DimsEstimatePlot()</a></code> for intrinsic dimensionality estimation from reductions, integrated into <code><a href="../reference/RunDimsReduction.html">RunDimsReduction()</a></code> and <code><a href="../reference/standard_scop.html">standard_scop()</a></code> to automatically select useful dimensions when <code>linear_reduction_dims_use = NULL</code>.</li>
+<li>Renamed <code>RunDimReduction()</code> to <code><a href="../reference/RunDimsReduction.html">RunDimsReduction()</a></code> and updated downstream callers/documentation accordingly.</li>
+<li>
+<code><a href="../reference/standard_scop.html">standard_scop()</a></code>: When <code>linear_reduction_dims_use = NULL</code>, now uses estimated dimensions stored in the reduction (via <code><a href="../reference/RunDimsEstimate.html">RunDimsEstimate()</a></code>) when available, with fallback to the first 50 dimensions.</li>
+<li>Added Seurat v5 integration methods: <code><a href="../reference/CCA_integrate.html">CCA_integrate()</a></code>, <code><a href="../reference/RPCA_integrate.html">RPCA_integrate()</a></code>, <code><a href="../reference/fastMNN5_integrate.html">fastMNN5_integrate()</a></code>, <code><a href="../reference/Harmony5_integrate.html">Harmony5_integrate()</a></code>, and <code><a href="../reference/scVI5_integrate.html">scVI5_integrate()</a></code> via <code><a href="https://satijalab.org/seurat/reference/IntegrateLayers.html" class="external-link">Seurat::IntegrateLayers()</a></code>, and exposed them through <code><a href="../reference/integration_scop.html">integration_scop()</a></code>.</li>
+<li>Added <code><a href="../reference/Coralysis_integrate.html">Coralysis_integrate()</a></code> and exposed Coralysis through <code><a href="../reference/integration_scop.html">integration_scop()</a></code>, following the official Seurat v5 compatible workflow via <code>SingleCellExperiment</code>.</li>
+<li>Added <code><a href="../reference/h5ad_to_srt.html">h5ad_to_srt()</a></code> for reading <code>.h5ad</code> files directly into <code>Seurat</code> objects via <code>scanpy.read_h5ad()</code>, with automatic CSR/float64 coercion to avoid reticulate conversion issues. Layers that fail conversion are gracefully skipped and reported.</li>
+<li>
+<code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>: Improved robustness of layer conversion — each layer is now wrapped in <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> so that individual failures no longer abort the entire conversion; skipped layers are reported as warnings.</li>
+<li>
+<code><a href="../reference/RunCellChat.html">RunCellChat()</a></code>: Enhanced to support condition-specific analyses and pairwise merged comparisons via <code>group_column</code> and <code>group_cmp</code> parameters.</li>
+<li>Added <code><a href="../reference/RunCellphoneDB.html">RunCellphoneDB()</a></code> for running CellphoneDB cell-cell communication analysis on a <code>Seurat</code> object through the official Python package, with support for species conversion and results stored in <code>srt@tools[["CellphoneDB"]]</code>.</li>
+<li>Added <code><a href="../reference/RunNichenetr.html">RunNichenetr()</a></code> and <code><a href="../reference/RunMultiNichenetr.html">RunMultiNichenetr()</a></code> for running NicheNet and MultiNicheNet analysis on <code>Seurat</code> objects with standardized result storage.</li>
+<li>Added unified cell-cell communication plotting functions <code><a href="../reference/CCCStatPlot.html">CCCStatPlot()</a></code>, <code><a href="../reference/CCCHeatmap.html">CCCHeatmap()</a></code>, and <code><a href="../reference/CCCNetworkPlot.html">CCCNetworkPlot()</a></code> for CellChat, CellphoneDB, NicheNet, and MultiNicheNet results.</li>
+<li>Remove <code>CellChatPlot()</code>.</li>
+</ul></li>
+<li>
+<strong>fix</strong>:
+<ul><li>
+<code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Fixed reduction lookup to check existing reduction names before falling back to <code><a href="../reference/DefaultReduction.html">DefaultReduction()</a></code>, avoiding errors when the exact reduction name is already present.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.6" id="scop-086">scop 0.8.6<a class="anchor" aria-label="anchor" href="#scop-086"></a></h2>
 <ul><li>
@@ -93,7 +119,7 @@
 Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="external-link">#76</a> (<a href="https://github.com/hwa2Hu" class="external-link">@hwa2Hu</a>), <a href="https://github.com/mengxu98/scop/issues/139" class="external-link">#139</a> (<a href="https://github.com/pengding774-dot" class="external-link">@pengding774-dot</a>), <a href="https://github.com/mengxu98/scop/issues/140" class="external-link">#140</a> (<a href="https://github.com/mengxu98" class="external-link">@mengxu98</a>).</li>
 <li>
 <code><a href="../reference/LIGER_integrate.html">LIGER_integrate()</a></code>
-<ul><li>Migrated to the <code>rliger</code> 2.x workflow (<code><a href="https://welch-lab.github.io/liger/reference/runIntegration.html" class="external-link">rliger::runIntegration()</a></code> + <code><a href="https://welch-lab.github.io/liger/reference/quantileNorm.html" class="external-link">rliger::quantileNorm()</a></code> on <code>Seurat</code> object) and now prepares/uses the <code>ligerScaleData</code> layer via <code><a href="https://welch-lab.github.io/liger/reference/scaleNotCenter.html" class="external-link">rliger::scaleNotCenter()</a></code> before integration.</li>
+<ul><li>Migrated to the <code>rliger</code> 2.x workflow (<code>rliger::runIntegration()</code> + <code>rliger::quantileNorm()</code> on <code>Seurat</code> object) and now prepares/uses the <code>ligerScaleData</code> layer via <code>rliger::scaleNotCenter()</code> before integration.</li>
 <li>Updated argument naming/style from <code>LIGER_dims_use</code> to <code>liger_dims_use</code>, and removed legacy quantile-normalization parameter compatibility mapping (<code>ref_dataset</code>), keeping <code>reference</code> as the supported interface.</li>
 </ul></li>
 <li>Optimized the installation of some <em>Python</em> packages on Apple Silicon devices.</li>
@@ -324,7 +350,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <ul><li>
 <strong>feat</strong>:
 <ul><li>
-<code><a href="../reference/CellChatPlot.html">CellChatPlot()</a></code>: Adjusted the size of saved figures for better file size optimization.</li>
+<code>CellChatPlot()</code>: Adjusted the size of saved figures for better file size optimization.</li>
 </ul></li>
 <li>
 <strong>docs</strong>:
@@ -436,7 +462,7 @@ Related issus <a href="https://github.com/mengxu98/scop/issues/76" class="extern
 <ul><li>
 <code><a href="../reference/RunCellChat.html">RunCellChat()</a></code>: New function to perform CellChat analysis for investigating cell-to-cell communication with support for human, mouse, and zebrafish species.</li>
 <li>
-<code><a href="../reference/CellChatPlot.html">CellChatPlot()</a></code>: New function to visualize CellChat analysis results with various plot types and customization options.</li>
+<code>CellChatPlot()</code>: New function to visualize CellChat analysis results with various plot types and customization options.</li>
 <li>Multiple integration functions: Improved error messages and message formatting for better user experience.</li>
 </ul></li>
 <li>

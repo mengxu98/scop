@@ -746,46 +746,44 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:18:53] Start standard scop workflow...
-#> ℹ [2026-03-20 08:18:54] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:18:54] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:18:54] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:18:56] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:18:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:18:56] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:18:56] Finished check
-#> ℹ [2026-03-20 08:18:57] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:18:57] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:18:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:18:58] Reorder clusters...
-#> ℹ [2026-03-20 08:18:58] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:18:58] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:19:01] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:19:04] Run scop standard workflow completed
+#> ℹ [2026-04-02 15:30:43] Start standard processing workflow...
+#> ℹ [2026-04-02 15:30:44] Checking a list of <Seurat>...
+#> ! [2026-04-02 15:30:44] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 15:30:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:30:45] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:30:45] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 15:30:46] Number of available HVF: 2000
+#> ℹ [2026-04-02 15:30:46] Finished check
+#> ℹ [2026-04-02 15:30:46] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 15:30:46] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 15:30:51] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 15:30:51] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:30:51. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-15); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-15 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),,
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-03-20 08:19:06] Start find dynamic features
-#> ℹ [2026-03-20 08:19:06] Data type is raw counts
-#> ℹ [2026-03-20 08:19:08] Number of candidate features (union): 231
-#> ℹ [2026-03-20 08:19:08] Data type is raw counts
-#> ℹ [2026-03-20 08:19:08] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-03-20 08:19:09] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-03-20 08:19:09] Find dynamic features done
+#> ℹ [2026-04-02 15:30:57] Start find dynamic features
+#> ℹ [2026-04-02 15:30:58] Data type is raw counts
+#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -797,14 +795,12 @@ ht1 <- DynamicHeatmap(
   width = 2,
   height = 3
 )
-#> ℹ [2026-03-20 08:19:29] [1] 149 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = "Lineage1",     n_split = 5, split_method = "kmeans-peaktime", cell_annotation = "SubCellType",     width = 2, height = 3): Lineages: Lineage1 is not in the meta data of <Seurat>
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(ht1$plot, raster = TRUE, dpi = 50)
-
+#> Error: object 'ht1' not found
 
 ht2 <- DynamicHeatmap(
   pancreas_sub,
@@ -821,23 +817,9 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-03-20 08:19:32] Start find dynamic features
-#> ℹ [2026-03-20 08:19:34] Data type is raw counts
-#> ℹ [2026-03-20 08:19:34] Number of candidate features (union): 2
-#> ℹ [2026-03-20 08:19:34] Data type is raw counts
-#> ! [2026-03-20 08:19:34] Negative values detected
-#> ! [2026-03-20 08:19:34] Negative values detected
-#> ℹ [2026-03-20 08:19:34] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-03-20 08:19:34] Using 1 core
-#> ⠙ [2026-03-20 08:19:34] Running for S_score [1/2] ■■■■■■■■■■■■■■■■             …
-#> ✔ [2026-03-20 08:19:34] Completed 2 tasks in 82ms
-#> 
-#> ℹ [2026-03-20 08:19:34] Building results
-#> ✔ [2026-03-20 08:19:35] Find dynamic features done
-#> ℹ [2026-03-20 08:19:35] Some features were missing in at least one lineage: 
-#> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = "Lineage1",     features = c("Sox9", "Neurod2", "Isl1", "Rbp4", "Pyy", "S_score",         "G2M_score"), cell_annotation = "SubCellType"): Lineages: Lineage1 is not in the meta data of <Seurat>
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- DynamicHeatmap(
   pancreas_sub,
@@ -851,11 +833,9 @@ ht3 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-03-20 08:19:36] [1] 168 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = c("Lineage1",     "Lineage2"), n_split = 5, nlabel = 10, split_method = "kmeans",     cluster_rows = TRUE, cell_annotation = "SubCellType", width = 1,     height = 2): Lineages: Lineage1 is not in the meta data of <Seurat>
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 ht4 <- DynamicHeatmap(
   pancreas_sub,
@@ -872,37 +852,7 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-03-20 08:19:40] [1] 168 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-#> ℹ [2026-03-20 08:19:41] Start Enrichment analysis
-#> ℹ [2026-03-20 08:24:10] Species: "Mus_musculus"
-#> ✔ [2026-03-20 08:28:05] org.Mm.eg.db installed successfully
-#> ℹ [2026-03-20 08:28:37] Preparing database: GO_BP
-#> ℹ [2026-03-20 08:28:57] Convert ID types for the GO_BP database
-#> ℹ [2026-03-20 08:28:57] Connect to the Ensembl archives...
-#> ℹ [2026-03-20 08:28:57] Using the 115 version of ensembl database...
-#> ℹ [2026-03-20 08:28:57] Downloading the ensembl database from https://sep2025.archive.ensembl.org...
-#> ℹ [2026-03-20 08:28:59] Searching the dataset mmusculus ...
-#> ℹ [2026-03-20 08:28:59] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-03-20 08:29:02] Converting the geneIDs...
-#> ! [2026-03-20 08:29:06] <simpleError in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,     quote = quote, numAttributes = length(attributes)): Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-#> !                       >
-#> ! [2026-03-20 08:29:06] Get errors when retrieving information from the BioMart database
-#> ! [2026-03-20 08:29:07] Retrying...
-#> ℹ [2026-03-20 08:29:11] 23214 genes mapped with "entrez_id"
-#> ℹ [2026-03-20 08:29:11] ==============================
-#> ℹ                       23214 genes mapped
-#> ℹ                       2516 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-03-20 08:29:25] Permform enrichment...
-#> ℹ [2026-03-20 08:29:25] Using 1 core
-#> ⠙ [2026-03-20 08:29:25] Running for 1 [1/3] ■■■■■■■■■■■                       3…
-#> ⠹ [2026-03-20 08:29:25] Running for 2 [2/3] ■■■■■■■■■■■■■■■■■■■■■             6…
-#> ✔ [2026-03-20 08:29:25] Completed 3 tasks in 20.1s
-#> 
-#> ℹ [2026-03-20 08:29:25] Building results
-#> ✔ [2026-03-20 08:29:45] Enrichment analysis done
-
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = c("Lineage1",     "Lineage2"), reverse_ht = "Lineage1", cell_annotation = "SubCellType",     n_split = 3, nlabel = 10, split_method = "mfuzz", species = "Mus_musculus",     db = "GO_BP", anno_terms = TRUE, width = 1, height = 2): Lineages: Lineage1 is not in the meta data of <Seurat>
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
@@ -927,28 +877,17 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
-#> ℹ [2026-03-20 08:29:48] [1] 149 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-#> ℹ [2026-03-20 08:29:49] Start Enrichment analysis
-#> ℹ [2026-03-20 08:29:49] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:29:49] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-20 08:29:24
-#> ℹ [2026-03-20 08:29:50] Permform enrichment...
-#> ℹ [2026-03-20 08:29:50] Using 2 cores
-#> ⠙ [2026-03-20 08:29:50] Running for 1... [1/2] ■■■■■■■■■■■■■■■■                …
-#> ✔ [2026-03-20 08:29:50] Completed 2 tasks in 15.2s
-#> 
-#> ℹ [2026-03-20 08:29:50] Building results
-#> ✔ [2026-03-20 08:30:06] Enrichment analysis done
-
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = "Lineage1",     cell_annotation = "SubCellType", n_split = 2, split_method = "mfuzz",     species = "Mus_musculus", db = "GO_BP", cores = 2, nlabel = 10,     anno_terms = TRUE, anno_keys = TRUE, anno_features = TRUE,     width = 1, height = 2, terms_width = grid::unit(1, "in"),     terms_fontsize = 6, keys_width = grid::unit(0.5, "in"), keys_fontsize = c(3,         6), features_width = grid::unit(0.5, "in"), features_fontsize = c(3,         6)): Lineages: Lineage1 is not in the meta data of <Seurat>
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-03-20 08:31:49] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:31:49] Loading cached: CSPA version: CSPA nterm:1 created: 2026-03-20 08:02:32
-#> ℹ [2026-03-20 08:31:50] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-03-20 08:02:22
+#> ℹ [2026-04-02 16:12:40] Species: "Mus_musculus"
+#> ℹ [2026-04-02 16:12:40] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-02 15:23:58
+#> ℹ [2026-04-02 16:12:42] Preparing database: CSPA
+#> Error in loadNamespace(name): there is no package called ‘openxlsx’
 ht6 <- DynamicHeatmap(
   pancreas_sub,
   exp_legend_title = "Z-score",
@@ -984,35 +923,7 @@ ht6 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-03-20 08:31:51] [1] 168 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-#> ℹ [2026-03-20 08:31:52] Start find dynamic features
-#> ℹ [2026-03-20 08:31:53] Data type is raw counts
-#> ℹ [2026-03-20 08:31:53] Number of candidate features (union): 2
-#> ℹ [2026-03-20 08:31:54] Data type is raw counts
-#> ℹ [2026-03-20 08:31:54] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-03-20 08:31:54] Using 1 core
-#> ⠙ [2026-03-20 08:31:54] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-03-20 08:31:54] Completed 2 tasks in 151ms
-#> 
-#> ℹ [2026-03-20 08:31:54] Building results
-#> ✔ [2026-03-20 08:31:54] Find dynamic features done
-#> ℹ [2026-03-20 08:31:54] Start find dynamic features
-#> ℹ [2026-03-20 08:31:56] Data type is raw counts
-#> ℹ [2026-03-20 08:31:56] Number of candidate features (union): 2
-#> ℹ [2026-03-20 08:31:57] Data type is raw counts
-#> ℹ [2026-03-20 08:31:57] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-03-20 08:31:57] Using 1 core
-#> ⠙ [2026-03-20 08:31:57] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-03-20 08:31:57] Completed 2 tasks in 109ms
-#> 
-#> ℹ [2026-03-20 08:31:57] Building results
-#> ✔ [2026-03-20 08:31:57] Find dynamic features done
-#> Picking joint bandwidth of 22.6
-#> Picking joint bandwidth of 19.6
-#> Picking joint bandwidth of 22.6
-#> Picking joint bandwidth of 19.6
-
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = c("Lineage1",     "Lineage2"), reverse_ht = "Lineage1", use_fitted = TRUE,     n_split = 3, nlabel = 10, split_method = "mfuzz", heatmap_palette = "viridis",     cell_annotation = c("SubCellType", "Phase", "G2M_score"),     cell_annotation_palette = c("Chinese", "simspec", "Purples"),     separate_annotation = list("SubCellType", c("Arxes1", "Ncoa2")),     separate_annotation_palette = c("Chinese", "Set1"), separate_annotation_params = list(height = grid::unit(10,         "mm")), feature_annotation = c("TF", "CSPA"), feature_annotation_palcolor = list(c("gold",         "steelblue"), c("forestgreen")), pseudotime_label = 25,     pseudotime_label_color = "red", width = 1, height = 2): Lineages: Lineage1 is not in the meta data of <Seurat>
 
 ht7 <- DynamicHeatmap(
   pancreas_sub,
@@ -1047,32 +958,5 @@ ht7 <- DynamicHeatmap(
   width = 2,
   height = 1
 )
-#> ℹ [2026-03-20 08:32:01] [1] 168 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Cdkn1a,2810417H13Rik...
-#> ℹ [2026-03-20 08:32:02] Start find dynamic features
-#> ℹ [2026-03-20 08:32:03] Data type is raw counts
-#> ℹ [2026-03-20 08:32:04] Number of candidate features (union): 2
-#> ℹ [2026-03-20 08:32:04] Data type is raw counts
-#> ℹ [2026-03-20 08:32:04] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-03-20 08:32:04] Using 1 core
-#> ⠙ [2026-03-20 08:32:04] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-03-20 08:32:04] Completed 2 tasks in 150ms
-#> 
-#> ℹ [2026-03-20 08:32:04] Building results
-#> ✔ [2026-03-20 08:32:04] Find dynamic features done
-#> ℹ [2026-03-20 08:32:05] Start find dynamic features
-#> ℹ [2026-03-20 08:32:06] Data type is raw counts
-#> ℹ [2026-03-20 08:32:07] Number of candidate features (union): 2
-#> ℹ [2026-03-20 08:32:07] Data type is raw counts
-#> ℹ [2026-03-20 08:32:07] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-03-20 08:32:07] Using 1 core
-#> ⠙ [2026-03-20 08:32:07] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
-#> ✔ [2026-03-20 08:32:07] Completed 2 tasks in 129ms
-#> 
-#> ℹ [2026-03-20 08:32:07] Building results
-#> ✔ [2026-03-20 08:32:07] Find dynamic features done
-#> Picking joint bandwidth of 22.6
-#> Picking joint bandwidth of 19.6
-#> Picking joint bandwidth of 22.6
-#> Picking joint bandwidth of 19.6
+#> Error in DynamicHeatmap(pancreas_sub, exp_legend_title = "Z-score", lineages = c("Lineage1",     "Lineage2"), reverse_ht = "Lineage1", use_fitted = TRUE,     n_split = 3, nlabel = 10, split_method = "mfuzz", heatmap_palette = "viridis",     cell_annotation = c("SubCellType", "Phase", "G2M_score"),     cell_annotation_palette = c("Chinese", "simspec", "Purples"),     separate_annotation = list("SubCellType", c("Arxes1", "Ncoa2")),     separate_annotation_palette = c("Chinese", "Set1"), separate_annotation_params = list(width = grid::unit(10,         "mm")), feature_annotation = c("TF", "CSPA"), feature_annotation_palcolor = list(c("gold",         "steelblue"), c("forestgreen")), pseudotime_label = 25,     pseudotime_label_color = "red", flip = TRUE, column_title_rot = 90,     width = 2, height = 1): Lineages: Lineage1 is not in the meta data of <Seurat>
 ```

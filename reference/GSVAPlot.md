@@ -446,22 +446,28 @@ GSVAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:39:04] Start standard scop workflow...
-#> ℹ [2026-03-20 08:39:04] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:39:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:39:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:39:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:39:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:39:07] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:39:07] Finished check
-#> ℹ [2026-03-20 08:39:07] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:39:07] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:39:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:39:08] Reorder clusters...
-#> ℹ [2026-03-20 08:39:09] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:39:09] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:39:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:39:15] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:14:41] Start standard processing workflow...
+#> ℹ [2026-04-02 16:14:42] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:14:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:14:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:14:44] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:14:44] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:14:44] Finished check
+#> ℹ [2026-04-02 16:14:44] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:14:44] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:14:48] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:14:49] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:14:49. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-23); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-23 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -470,28 +476,13 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
-#> ℹ [2026-03-20 08:39:15] Start GSVA analysis
-#> ℹ [2026-03-20 08:41:31] Averaging expression by "CellType" ...
-#> ℹ [2026-03-20 08:41:31] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-03-20 08:41:31] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:41:31] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-20 08:29:24
-#> ℹ [2026-03-20 08:41:32] Processing database: "GO_BP" ...
-#> ℹ [2026-03-20 08:41:33] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-03-20 08:41:36] Running GSVA for 5668 gene sets ...
-#> ℹ GSVA version 2.4.8
-#> ℹ Searching for rows with constant values
-#> ! 2 rows with constant values throughout the columns
-#> ! Rows with constant values are discarded
-#> ℹ Calculating GSVA ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Row-wise ECDF estimation with Gaussian kernels
-#> ℹ Calculating row ECDFs
-#> ℹ Calculating column ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Calculating GSVA scores
-#> ✔ Calculations finished
-#> ℹ [2026-03-20 08:43:04] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-03-20 08:43:04] GSVA analysis done
+#> ℹ [2026-04-02 16:14:49] Start GSVA analysis
+#> ℹ [2026-04-02 16:23:18] Averaging expression by "CellType" ...
+#> ℹ [2026-04-02 16:23:18] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-04-02 16:23:18] Species: "Mus_musculus"
+#> ✔ [2026-04-02 16:27:54] org.Mm.eg.db installed successfully
+#> ℹ [2026-04-02 16:28:25] Preparing database: GO_BP
+#> Error in loadNamespace(x): there is no package called ‘GOSemSim’
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -501,8 +492,9 @@ ht1 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in GSVAPlot(pancreas_sub, plot_type = "heatmap", group.by = "CellType",     topTerm = 10, width = 1, height = 2): GSVA results not found. Please run RunGSVA first
+ht1$plot
+#> Error: object 'ht1' not found
 
 ht2 <- GSVAPlot(
   pancreas_sub,
@@ -514,8 +506,9 @@ ht2 <- GSVAPlot(
   width = 1,
   height = 2
 )
-#> Warning: Data is of class matrix. Coercing to dgCMatrix.
-
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     n_split = 3, topTerm = 100, use_raster = TRUE, width = 1,     height = 2): GSVA results not found. Please run RunGSVA first
+ht2$plot
+#> Error: object 'ht2' not found
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -524,7 +517,7 @@ GSVAPlot(
   plot_type = "comparison",
   topTerm = 1
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     plot_type = "comparison", topTerm = 1): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -534,7 +527,7 @@ GSVAPlot(
   plot_type = "bar",
   topTerm = 5
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", db = "GO_BP",     group_use = "Ductal", plot_type = "bar", topTerm = 5): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -543,47 +536,7 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "network"
 )
-#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
-#> Also defined by ‘BiocGenerics’
-#> Found more than one class "dist" in cache; using the first, from namespace 'spam'
-#> Also defined by ‘BiocGenerics’
-#> ◌ [2026-03-20 08:43:11] Installing: shadowtext...
-#>  
-#> → Will install 2 packages.
-#> → All 2 packages (0 B) are cached.
-#> + prettydoc    0.4.1  + ✔ pandoc
-#> + shadowtext   0.1.6 
-#> ✔ All system requirements are already installed.
-#>   
-#> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got shadowtext 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (237.73 kB)
-#> ✔ Got prettydoc 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.43 kB)
-#> ℹ Installing system requirements
-#> ℹ Executing `sudo sh -c apt-get -y update`
-#> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-#> Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-#> Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-#> Hit:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
-#> Hit:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
-#> Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
-#> Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
-#> Reading package lists...
-#> ℹ Executing `sudo sh -c apt-get -y install pandoc make libcairo2-dev libfontconfig1-dev libfreetype6-dev libpng-dev`
-#> Reading package lists...
-#> Building dependency tree...
-#> Reading state information...
-#> pandoc is already the newest version (3.1.3+ds-2).
-#> make is already the newest version (4.3-4.1build2).
-#> libcairo2-dev is already the newest version (1.18.0-3build1).
-#> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
-#> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
-#> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> 0 upgraded, 0 newly installed, 0 to remove and 83 not upgraded.
-#> ✔ Installed prettydoc 0.4.1  (1s)
-#> ✔ Installed shadowtext 0.1.6  (1s)
-#> ✔ 1 pkg + 56 deps: kept 55, added 2, dld 2 (1.23 MB) [5.3s]
-#> ✔ [2026-03-20 08:43:17] shadowtext installed successfully
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "network"): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   srt = pancreas_sub,
@@ -592,7 +545,7 @@ GSVAPlot(
   db = "GO_BP",
   plot_type = "enrichmap"
 )
-
+#> Error in GSVAPlot(srt = pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "enrichmap"): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   pancreas_sub,
@@ -602,12 +555,7 @@ GSVAPlot(
   plot_type = "wordcloud",
   topWord = 50
 )
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-#> Warning: Some words could not fit on page. They have been removed.
-
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", db = "GO_BP", nrow = 2,     plot_type = "wordcloud", topWord = 50): GSVA results not found. Please run RunGSVA first
 
 GSVAPlot(
   pancreas_sub,
@@ -617,152 +565,15 @@ GSVAPlot(
   plot_type = "wordcloud",
   word_type = "feature"
 )
+#> Error in GSVAPlot(pancreas_sub, group.by = "CellType", group_use = "Ductal",     db = "GO_BP", plot_type = "wordcloud", word_type = "feature"): GSVA results not found. Please run RunGSVA first
 
-
+if (FALSE) { # \dontrun{
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   assay_name = "GSVA",
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-03-20 08:44:18] Start GSVA analysis
-#> ℹ [2026-03-20 08:44:18] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-03-20 08:44:18] Expression matrix: 15998 genes x 1000 cells
-#> ℹ [2026-03-20 08:44:18] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:44:18] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-20 08:29:24
-#> ℹ [2026-03-20 08:44:19] Processing database: "GO_BP" ...
-#> ℹ [2026-03-20 08:44:20] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-03-20 08:44:23] Running GSVA for 5668 gene sets ...
-#> ℹ GSVA version 2.4.8
-#> ℹ Searching for rows with constant values
-#> ℹ Calculating GSVA ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Row-wise ECDF estimation with Gaussian kernels
-#> ℹ Calculating row ECDFs
-#> Estimating ECDFs ■■                                 3% |  ETA: 37s
-#> Estimating ECDFs ■■                                 4% |  ETA:  1m
-#> Estimating ECDFs ■■                                 4% |  ETA:  1m
-#> Estimating ECDFs ■■■                                5% |  ETA:  1m
-#> Estimating ECDFs ■■■                                6% |  ETA:  1m
-#> Estimating ECDFs ■■■                                7% |  ETA:  1m
-#> Estimating ECDFs ■■■                                8% |  ETA: 48s
-#> Estimating ECDFs ■■■■                               9% |  ETA: 46s
-#> Estimating ECDFs ■■■■                              10% |  ETA: 45s
-#> Estimating ECDFs ■■■■                              11% |  ETA: 44s
-#> Estimating ECDFs ■■■■                              12% |  ETA: 43s
-#> Estimating ECDFs ■■■■■                             13% |  ETA: 42s
-#> Estimating ECDFs ■■■■■                             13% |  ETA: 41s
-#> Estimating ECDFs ■■■■■                             14% |  ETA: 40s
-#> Estimating ECDFs ■■■■■■                            15% |  ETA: 39s
-#> Estimating ECDFs ■■■■■■                            16% |  ETA: 38s
-#> Estimating ECDFs ■■■■■■                            17% |  ETA: 37s
-#> Estimating ECDFs ■■■■■■                            18% |  ETA: 37s
-#> Estimating ECDFs ■■■■■■■                           19% |  ETA: 36s
-#> Estimating ECDFs ■■■■■■■                           20% |  ETA: 36s
-#> Estimating ECDFs ■■■■■■■                           21% |  ETA: 35s
-#> Estimating ECDFs ■■■■■■■                           21% |  ETA: 34s
-#> Estimating ECDFs ■■■■■■■■                          22% |  ETA: 34s
-#> Estimating ECDFs ■■■■■■■■                          23% |  ETA: 33s
-#> Estimating ECDFs ■■■■■■■■                          24% |  ETA: 33s
-#> Estimating ECDFs ■■■■■■■■■                         25% |  ETA: 32s
-#> Estimating ECDFs ■■■■■■■■■                         26% |  ETA: 32s
-#> Estimating ECDFs ■■■■■■■■■                         27% |  ETA: 31s
-#> Estimating ECDFs ■■■■■■■■■                         28% |  ETA: 31s
-#> Estimating ECDFs ■■■■■■■■■■                        29% |  ETA: 30s
-#> Estimating ECDFs ■■■■■■■■■■                        30% |  ETA: 30s
-#> Estimating ECDFs ■■■■■■■■■■                        30% |  ETA: 29s
-#> Estimating ECDFs ■■■■■■■■■■                        31% |  ETA: 29s
-#> Estimating ECDFs ■■■■■■■■■■■                       32% |  ETA: 28s
-#> Estimating ECDFs ■■■■■■■■■■■                       33% |  ETA: 28s
-#> Estimating ECDFs ■■■■■■■■■■■                       34% |  ETA: 28s
-#> Estimating ECDFs ■■■■■■■■■■■                       35% |  ETA: 27s
-#> Estimating ECDFs ■■■■■■■■■■■■                      36% |  ETA: 27s
-#> Estimating ECDFs ■■■■■■■■■■■■                      37% |  ETA: 26s
-#> Estimating ECDFs ■■■■■■■■■■■■                      38% |  ETA: 26s
-#> Estimating ECDFs ■■■■■■■■■■■■■                     38% |  ETA: 26s
-#> Estimating ECDFs ■■■■■■■■■■■■■                     39% |  ETA: 25s
-#> Estimating ECDFs ■■■■■■■■■■■■■                     40% |  ETA: 25s
-#> Estimating ECDFs ■■■■■■■■■■■■■                     41% |  ETA: 24s
-#> Estimating ECDFs ■■■■■■■■■■■■■■                    42% |  ETA: 24s
-#> Estimating ECDFs ■■■■■■■■■■■■■■                    43% |  ETA: 23s
-#> Estimating ECDFs ■■■■■■■■■■■■■■                    44% |  ETA: 23s
-#> Estimating ECDFs ■■■■■■■■■■■■■■                    45% |  ETA: 23s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■                   46% |  ETA: 22s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■                   47% |  ETA: 22s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■                   47% |  ETA: 22s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■                   48% |  ETA: 21s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■                  49% |  ETA: 21s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■                  50% |  ETA: 20s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■                  51% |  ETA: 20s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■                 52% |  ETA: 20s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■                 53% |  ETA: 19s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■                 54% |  ETA: 19s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■                 55% |  ETA: 18s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■                55% |  ETA: 18s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■                56% |  ETA: 18s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■                57% |  ETA: 17s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■                58% |  ETA: 17s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■               59% |  ETA: 17s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■               60% |  ETA: 16s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■               61% |  ETA: 16s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■              62% |  ETA: 15s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■              63% |  ETA: 15s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■              63% |  ETA: 15s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■              64% |  ETA: 14s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■             65% |  ETA: 14s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■             66% |  ETA: 14s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■             67% |  ETA: 13s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■             68% |  ETA: 13s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA: 12s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■            70% |  ETA: 12s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■            71% |  ETA: 12s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■            72% |  ETA: 11s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■           72% |  ETA: 11s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■           73% |  ETA: 11s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■           74% |  ETA: 10s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■          75% |  ETA: 10s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■          76% |  ETA: 10s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■          77% |  ETA:  9s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■          78% |  ETA:  9s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■         79% |  ETA:  8s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■         80% |  ETA:  8s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■         80% |  ETA:  8s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■         81% |  ETA:  7s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■        82% |  ETA:  7s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  7s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■        84% |  ETA:  6s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■        85% |  ETA:  6s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■       86% |  ETA:  6s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87% |  ETA:  5s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■       88% |  ETA:  5s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      89% |  ETA:  5s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      89% |  ETA:  4s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      90% |  ETA:  4s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91% |  ETA:  3s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     92% |  ETA:  3s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93% |  ETA:  3s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     94% |  ETA:  2s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     95% |  ETA:  2s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    96% |  ETA:  2s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97% |  ETA:  1s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97% |  ETA:  1s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   98% |  ETA:  1s
-#> Estimating ECDFs ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% |  ETA:  0s
-#> ℹ Calculating column ranks
-#> ℹ GSVA dense (classical) algorithm
-#> ℹ Calculating GSVA scores
-#> Calculating GSVA scores ■                                  1% |  ETA:  2h
-#> Calculating GSVA scores ■■                                 2% |  ETA:  2h
-#> Calculating GSVA scores ■■                                 3% |  ETA:  2h
-#> Calculating GSVA scores ■■                                 4% |  ETA:  2h
-#> Calculating GSVA scores ■■                                 4% |  ETA:  2h
-#> Calculating GSVA scores ■■■                                5% |  ETA:  2h
-#> Calculating GSVA scores ■■■                                6% |  ETA:  2h
-#> Calculating GSVA scores ■■■                                7% |  ETA:  1h
-#> Calculating GSVA scores ■■■                                8% |  ETA:  1h
-#> ✔ Calculations finished
-#> ℹ [2026-03-20 08:55:18] GSVA results stored in assay "GSVA" and tools slot "GSVA_cell_gsva"
-#> ✔ [2026-03-20 08:55:18] GSVA analysis done
 
 FeatureDimPlot(
   pancreas_sub,
@@ -771,18 +582,12 @@ FeatureDimPlot(
   reduction = "umap"
 )
 
-
 FeatureStatPlot(
   pancreas_sub,
   stat.by = rownames(pancreas_sub[["GSVA"]])[1:2],
   group.by = "CellType",
   assay = "GSVA"
 )
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-
 
 ht <- GroupHeatmap(
   pancreas_sub,
@@ -793,4 +598,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
+} # }
 ```

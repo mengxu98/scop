@@ -187,41 +187,53 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:51:16] Start standard scop workflow...
-#> ℹ [2026-03-20 09:51:16] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:51:16] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:51:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:51:19] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:51:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:51:19] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:51:19] Finished check
-#> ℹ [2026-03-20 09:51:20] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:51:20] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:51:21] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:51:21] Reorder clusters...
-#> ℹ [2026-03-20 09:51:21] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:51:21] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:51:26] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:51:31] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:56:32] Start standard processing workflow...
+#> ℹ [2026-04-02 16:56:33] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:56:33] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:56:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:56:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:56:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:56:35] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:56:35] Finished check
+#> ℹ [2026-04-02 16:56:35] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:56:36] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:56:40] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:56:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:56:40] Reorder clusters...
+#> ℹ [2026-04-02 16:56:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:56:40] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:56:40] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:56:40] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:56:40] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:56:43] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:56:46] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-03-20 09:51:31] Data type is log-normalized
-#> ℹ [2026-03-20 09:51:31] Start differential expression test
-#> ℹ [2026-03-20 09:51:31] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-20 09:51:31] Using 1 core
-#> ⠙ [2026-03-20 09:51:31] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-03-20 09:51:31] Completed 5 tasks in 710ms
+#> ℹ [2026-04-02 16:56:51] Data type is log-normalized
+#> ℹ [2026-04-02 16:56:51] Start differential expression test
+#> ℹ [2026-04-02 16:56:51] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-02 16:56:51] Using 1 core
+#> ⠙ [2026-04-02 16:56:51] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-04-02 16:56:51] Completed 5 tasks in 676ms
 #> 
-#> ℹ [2026-03-20 09:51:31] Building results
-#> ✔ [2026-03-20 09:51:32] Differential expression test completed
+#> ℹ [2026-04-02 16:56:51] Building results
+#> ! [2026-04-02 16:56:51] Found 5 failed results
+#> ℹ [2026-04-02 16:56:52] ✖ Error details:
+#> ℹ                       ✖ "Ductal": The total size of the 3 globals exported for future expression (‘FUN()’) is 556.27 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.94 MiB of class ‘function’), ‘data.use’ (4.32 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
+#> ℹ                       ✖ "Ngn3-high-EP": The total size of the 3 globals exported for future expression (‘FUN()’) is 551.18 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (548.54 MiB of class ‘function’), ‘data.use’ (2.63 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
+#> ℹ                       ✖ "Endocrine": The total size of the 3 globals exported for future expression (‘FUN()’) is 556.21 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.90 MiB of class ‘function’), ‘data.use’ (4.30 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
+#> ℹ                       ✖ "Ngn3-low-EP": The total size of the 3 globals exported for future expression (‘FUN()’) is 553.31 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (549.99 MiB of class ‘function’), ‘data.use’ (3.33 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
+#> ℹ                       ✖ "Pre-endocrine": The total size of the 3 globals exported for future expression (‘FUN()’) is 554.90 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.03 MiB of class ‘function’), ‘data.use’ (3.87 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
   ncol = 2
 )
-
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 
 VolcanoPlot(
   pancreas_sub,
@@ -229,7 +241,8 @@ VolcanoPlot(
   DE_threshold = "abs(diff_pct) > 0.3 & p_val_adj < 0.05",
   ncol = 2
 )
-
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 
 VolcanoPlot(
   pancreas_sub,
@@ -237,4 +250,6 @@ VolcanoPlot(
   x_metric = "avg_log2FC",
   ncol = 2
 )
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 ```

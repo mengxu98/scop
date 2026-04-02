@@ -168,36 +168,42 @@ LineagePlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:06:03] Start standard scop workflow...
-#> ℹ [2026-03-20 09:06:04] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:06:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:06:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:06:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:06:06] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:06:06] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:06:07] Finished check
-#> ℹ [2026-03-20 09:06:07] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:06:07] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:06:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:06:08] Reorder clusters...
-#> ℹ [2026-03-20 09:06:08] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:06:08] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:06:12] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:06:16] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:29:19] Start standard processing workflow...
+#> ℹ [2026-04-02 16:29:19] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:29:20] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:29:20] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:29:21] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:29:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:29:22] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:29:22] Finished check
+#> ℹ [2026-04-02 16:29:22] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:29:22] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:29:26] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:29:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:29:27] Reorder clusters...
+#> ℹ [2026-04-02 16:29:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:29:27] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:29:27] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:29:27] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:29:27] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:29:29] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:29:32] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP",
   show_plot = FALSE
 )
+#> Error in loadNamespace(x): there is no package called ‘slingshot’
 LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2)
 )
-
+#> Error in `[.data.frame`(srt@meta.data, , unique(lineages), drop = FALSE): undefined columns selected
 LineagePlot(
   pancreas_sub,
   lineages = paste0("Lineage", 1:2),
   whiskers = TRUE
 )
+#> Error in `[.data.frame`(srt@meta.data, , unique(lineages), drop = FALSE): undefined columns selected
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Visualize feature values on a 2-dimensional reduction plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/FeatureDimPlot.R" class="external-link"><code>R/FeatureDimPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/FeatureDimPlot.R" class="external-link"><code>R/FeatureDimPlot.R</code></a></small>
       <div class="d-none name"><code>FeatureDimPlot.Rd</code></div>
     </div>
 
@@ -496,27 +496,33 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:18] Start standard scop workflow...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-03-20 08:33:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:21] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:21] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:22] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:22] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:22] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:22] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:23] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:23] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:23] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-03-20 08:33:27] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-03-20 08:33:30] Run scop standard workflow completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:15] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:15] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:13:15] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:17] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:17] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:17] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:18] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:18] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:18] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:22] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Caught FutureLaunchError. Canceling all iterations ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:13:22] &lt;FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:13:22. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future &lt;unnamed&gt;; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-18); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;]&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Future: 4a75d434f7a9a2903adedbeee3372830-18 (‘future_lapply-1’)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       DEBUG: BEGIN TROUBLESHOOTING HELP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       SequentialFuture:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Label: ‘future_lapply-1’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Expression:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim):</span> Expecting '}'</span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"G2M_score"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -524,7 +530,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  bg_cutoff <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -532,7 +538,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-3.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -541,7 +547,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span>,</span></span>
 <span class="r-in"><span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-4.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -552,7 +558,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  raster <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  dpi <span class="op">=</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-5.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Label and highlight cell points</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
@@ -564,7 +570,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>    <span class="va">pancreas_sub</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span><span class="op">[</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">SubCellType</span> <span class="op">==</span> <span class="st">"Delta"</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-6.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -574,7 +580,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  cells.highlight <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-7.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Add a density layer</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
@@ -584,7 +590,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  add_density <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-8.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -594,9 +600,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  add_density <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  density_filled <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 396 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-9.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Chane the plot type from point to the hexagonal bin</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
@@ -605,11 +609,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  hex <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 row containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-10.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -618,11 +618,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  hex <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  hex.bins <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 4 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_hex()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-11.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show lineages on the plot based on the pseudotime</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span></span>
@@ -630,11 +626,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-12.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -642,13 +634,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  lineages <span class="op">=</span> <span class="st">"Lineage2"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`guide_colourbar()` cannot be used for <span style="color: #00BB00;">colour_ggnewscale_1</span>.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use one of <span style="color: #00BB00;">colour</span>, <span style="color: #00BB00;">color</span>, or <span style="color: #00BB00;">fill</span> instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-13.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2"):</span> Lineage <span style="color: #0000BB;">"Lineage2"</span> is not in <span style="color: #0000BB;">&lt;Seurat&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -657,15 +643,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  lineages <span class="op">=</span> <span class="st">"Lineage2"</span>,</span></span>
 <span class="r-in"><span>  lineages_whiskers <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`guide_colourbar()` cannot be used for <span style="color: #00BB00;">colour_ggnewscale_1</span>.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use one of <span style="color: #00BB00;">colour</span>, <span style="color: #00BB00;">color</span>, or <span style="color: #00BB00;">fill</span> instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_segment()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 3 rows containing missing values or values outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_path()`).</span>
-<span class="r-plt img"><img src="FeatureDimPlot-14.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_whiskers = TRUE):</span> Lineage <span style="color: #0000BB;">"Lineage2"</span> is not in <span style="color: #0000BB;">&lt;Seurat&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -674,9 +652,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  lineages <span class="op">=</span> <span class="st">"Lineage2"</span>,</span></span>
 <span class="r-in"><span>  lineages_span <span class="op">=</span> <span class="fl">0.1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`guide_colourbar()` cannot be used for <span style="color: #00BB00;">colour_ggnewscale_1</span>.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use one of <span style="color: #00BB00;">colour</span>, <span style="color: #00BB00;">color</span>, or <span style="color: #00BB00;">fill</span> instead.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-15.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FeatureDimPlot(pancreas_sub, features = "Lineage2", reduction = "UMAP",     lineages = "Lineage2", lineages_span = 0.1):</span> Lineage <span style="color: #0000BB;">"Lineage2"</span> is not in <span style="color: #0000BB;">&lt;Seurat&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Input a named feature list</span></span></span>
 <span class="r-in"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -699,7 +675,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>    strip.text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-16.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot multiple features with different scales</span></span></span>
 <span class="r-in"><span><span class="va">endocrine_markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -713,7 +689,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  <span class="va">endocrine_markers</span>,</span></span>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-17.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -722,7 +698,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  lower_quantile <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>  upper_quantile <span class="op">=</span> <span class="fl">0.8</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-18.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -731,7 +707,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  lower_cutoff <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  upper_cutoff <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-19.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -739,7 +715,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  keep_scale <span class="op">=</span> <span class="st">"all"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-20.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -748,7 +724,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  keep_scale <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="FeatureDimPlot-21.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt, pattern = reduction):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot multiple features on one picture</span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
@@ -760,9 +736,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  label_insitu <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-22.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -775,9 +749,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  label_insitu <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-23.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -790,9 +762,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  label_insitu <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-24.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -805,9 +775,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  label_insitu <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-25.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -820,9 +788,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  label_insitu <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-plt img"><img src="FeatureDimPlot-26.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in DefaultReduction(srt):</span> Unable to find any reductions</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

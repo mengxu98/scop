@@ -623,39 +623,73 @@ FeatureHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:34:05] Start standard scop workflow...
-#> ℹ [2026-03-20 08:34:06] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:34:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:34:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:34:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:34:08] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:34:08] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:34:09] Finished check
-#> ℹ [2026-03-20 08:34:09] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:34:09] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:34:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:34:10] Reorder clusters...
-#> ℹ [2026-03-20 08:34:10] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:34:10] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:34:13] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:34:17] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:13:37] Start standard processing workflow...
+#> ℹ [2026-04-02 16:13:37] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:13:38] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:13:38] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:39] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:13:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:13:39] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:13:40] Finished check
+#> ℹ [2026-04-02 16:13:40] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:13:40] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:13:44] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 16:13:44] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:13:44. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-20); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-20 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-03-20 08:34:17] Data type is log-normalized
-#> ℹ [2026-03-20 08:34:17] Start differential expression test
-#> ℹ [2026-03-20 08:34:17] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-20 08:34:17] Using 1 core
-#> ⠙ [2026-03-20 08:34:17] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-03-20 08:34:17] Completed 5 tasks in 694ms
+#> Warning: Layer ‘data’ is empty
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> ! [2026-04-02 16:13:50] Infinite values detected
+#> ! [2026-04-02 16:13:50] Data in the 'data' layer is unknown. Please check the data type
+#> ℹ [2026-04-02 16:13:50] Start differential expression test
+#> ℹ [2026-04-02 16:13:50] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-02 16:13:50] Using 1 core
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> ⠙ [2026-04-02 16:13:50] Running for Ductal [1/5] ■■■■■■■                       …
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> ✔ [2026-04-02 16:13:50] Completed 5 tasks in 34ms
 #> 
-#> ℹ [2026-03-20 08:34:17] Building results
-#> ✔ [2026-03-20 08:34:18] Differential expression test completed
+#> ℹ [2026-04-02 16:13:50] Building results
+#> ! [2026-04-02 16:13:50] Found 5 failed results
+#> ℹ [2026-04-02 16:13:50] ✖ Error details:
+#> ℹ                       ✖ "Ductal": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Ngn3-high-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Ngn3-low-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Pre-endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 de_filter <- dplyr::filter(
   pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox,
   p_val_adj < 0.05 & avg_log2FC > 1
 )
+#> Error in UseMethod("filter"): no applicable method for 'filter' applied to an object of class "NULL"
 ht1 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -663,13 +697,9 @@ ht1 <- FeatureHeatmap(
   split.by = "Phase",
   cell_split_palette = "Dark2"
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error: object 'de_filter' not found
 ht1$plot
-
+#> Error: object 'ht1' not found
 
 thisplot::panel_fix(
   ht1$plot,
@@ -678,7 +708,7 @@ thisplot::panel_fix(
   raster = TRUE,
   dpi = 50
 )
-
+#> Error: object 'ht1' not found
 
 ht2 <- FeatureHeatmap(
   pancreas_sub,
@@ -692,12 +722,9 @@ ht2 <- FeatureHeatmap(
   ht_params = list(row_gap = grid::unit(0, "mm")),
   use_raster = FALSE
 )
-#> ℹ [2026-03-20 08:34:30] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-20 08:34:30] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-20 08:34:30] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht2$plot
-
+#> Error: object 'ht2' not found
 
 ht3 <- FeatureHeatmap(
   pancreas_sub,
@@ -710,41 +737,16 @@ ht3 <- FeatureHeatmap(
   anno_keys = TRUE,
   anno_features = TRUE
 )
-#> ℹ [2026-03-20 08:34:57] Start Enrichment analysis
-#> ℹ [2026-03-20 08:34:58] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:34:58] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-03-20 08:29:24
-#> ℹ [2026-03-20 08:34:59] Permform enrichment...
-#> ℹ [2026-03-20 08:34:59] Using 1 core
-#> ⠙ [2026-03-20 08:34:59] Running for 1 [1/5] ■■■■■■■                           2…
-#> ⠹ [2026-03-20 08:34:59] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
-#> ⠸ [2026-03-20 08:34:59] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
-#> ⠼ [2026-03-20 08:34:59] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
-#> ✔ [2026-03-20 08:34:59] Completed 5 tasks in 1m 8.7s
-#> 
-#> ℹ [2026-03-20 08:34:59] Building results
-#> ✔ [2026-03-20 08:36:09] Enrichment analysis done
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-03-20 08:36:47] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-20 08:36:47] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-20 08:36:47] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error: object 'de_filter' not found
 ht3$plot
-
+#> Error: object 'ht3' not found
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-#> Warning: Removed 3 rows containing missing values or values outside the scale range
-#> (`geom_path()`).
-
+#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
 ht4 <- FeatureHeatmap(
   pancreas_sub,
   features = de_filter$gene,
@@ -753,22 +755,19 @@ ht4 <- FeatureHeatmap(
   cell_annotation = c("SubCellType", "Lineage1"),
   cell_annotation_palette = c("Chinese", "cividis")
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
+#> Error in FeatureHeatmap(pancreas_sub, features = de_filter$gene, nlabel = 10,     cell_order = names(sort(pancreas_sub$Lineage1)), cell_annotation = c("SubCellType",         "Lineage1"), cell_annotation_palette = c("Chinese", "cividis")): Cell_annotation: Lineage1 is not in <Seurat>.
 ht4$plot
-
+#> Error: object 'ht4' not found
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-03-20 08:37:00] Species: "Mus_musculus"
-#> ℹ [2026-03-20 08:37:00] Loading cached: CSPA version: CSPA nterm:1 created: 2026-03-20 08:02:32
-#> ℹ [2026-03-20 08:37:00] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-03-20 08:02:22
+#> ℹ [2026-04-02 16:13:55] Species: "Mus_musculus"
+#> ℹ [2026-04-02 16:13:55] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-04-02 15:23:58
+#> ℹ [2026-04-02 16:13:57] Preparing database: CSPA
+#> Error in loadNamespace(name): there is no package called ‘openxlsx’
 
 ht5 <- FeatureHeatmap(
   pancreas_sub,
@@ -783,17 +782,10 @@ ht5 <- FeatureHeatmap(
   cell_annotation = c("Phase", "G2M_score"),
   cell_annotation_palette = c("Dark2", "Purples")
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 rows. You can control `use_raster` argument by explicitly setting
-#> TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-03-20 08:37:05] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-20 08:37:05] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-20 08:37:05] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error in FeatureHeatmap(pancreas_sub, features = de_filter$gene, n_split = 4,     group.by = "CellType", heatmap_palette = "viridis", feature_annotation = c("TF",         "CSPA"), feature_annotation_palcolor = list(c("gold",         "steelblue"), c("forestgreen")), cell_annotation = c("Phase",         "G2M_score"), cell_annotation_palette = c("Dark2", "Purples")): Feature_annotation: TF,CSPA is not in the meta data of the RNA assay in
+#> <Seurat>.
 ht5$plot
-
+#> Error: object 'ht5' not found
 
 ht6 <- FeatureHeatmap(
   pancreas_sub,
@@ -810,14 +802,8 @@ ht6 <- FeatureHeatmap(
   flip = TRUE,
   column_title_rot = 45
 )
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 columns You can control `use_raster` argument by explicitly
-#> setting TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-03-20 08:37:16] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-03-20 08:37:16] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-03-20 08:37:16] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
-
+#> Error in FeatureHeatmap(pancreas_sub, features = de_filter$gene, n_split = 4,     group.by = "CellType", heatmap_palette = "viridis", feature_annotation = c("TF",         "CSPA"), feature_annotation_palcolor = list(c("gold",         "steelblue"), c("forestgreen")), cell_annotation = c("Phase",         "G2M_score"), cell_annotation_palette = c("Dark2", "Purples"),     flip = TRUE, column_title_rot = 45): Feature_annotation: TF,CSPA is not in the meta data of the RNA assay in
+#> <Seurat>.
 ht6$plot
+#> Error: object 'ht6' not found
 ```

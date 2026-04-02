@@ -1,5 +1,84 @@
 # Changelog
 
+## scop 0.8.7
+
+- **feat**:
+  - Added
+    [`RunDimsEstimate()`](https://mengxu98.github.io/scop/reference/RunDimsEstimate.md)
+    and
+    [`DimsEstimatePlot()`](https://mengxu98.github.io/scop/reference/DimsEstimatePlot.md)
+    for intrinsic dimensionality estimation from reductions, integrated
+    into
+    [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md)
+    and
+    [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md)
+    to automatically select useful dimensions when
+    `linear_reduction_dims_use = NULL`.
+  - Renamed `RunDimReduction()` to
+    [`RunDimsReduction()`](https://mengxu98.github.io/scop/reference/RunDimsReduction.md)
+    and updated downstream callers/documentation accordingly.
+  - [`standard_scop()`](https://mengxu98.github.io/scop/reference/standard_scop.md):
+    When `linear_reduction_dims_use = NULL`, now uses estimated
+    dimensions stored in the reduction (via
+    [`RunDimsEstimate()`](https://mengxu98.github.io/scop/reference/RunDimsEstimate.md))
+    when available, with fallback to the first 50 dimensions.
+  - Added Seurat v5 integration methods:
+    [`CCA_integrate()`](https://mengxu98.github.io/scop/reference/CCA_integrate.md),
+    [`RPCA_integrate()`](https://mengxu98.github.io/scop/reference/RPCA_integrate.md),
+    [`fastMNN5_integrate()`](https://mengxu98.github.io/scop/reference/fastMNN5_integrate.md),
+    [`Harmony5_integrate()`](https://mengxu98.github.io/scop/reference/Harmony5_integrate.md),
+    and
+    [`scVI5_integrate()`](https://mengxu98.github.io/scop/reference/scVI5_integrate.md)
+    via
+    [`Seurat::IntegrateLayers()`](https://satijalab.org/seurat/reference/IntegrateLayers.html),
+    and exposed them through
+    [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md).
+  - Added
+    [`Coralysis_integrate()`](https://mengxu98.github.io/scop/reference/Coralysis_integrate.md)
+    and exposed Coralysis through
+    [`integration_scop()`](https://mengxu98.github.io/scop/reference/integration_scop.md),
+    following the official Seurat v5 compatible workflow via
+    `SingleCellExperiment`.
+  - Added
+    [`h5ad_to_srt()`](https://mengxu98.github.io/scop/reference/h5ad_to_srt.md)
+    for reading `.h5ad` files directly into `Seurat` objects via
+    `scanpy.read_h5ad()`, with automatic CSR/float64 coercion to avoid
+    reticulate conversion issues. Layers that fail conversion are
+    gracefully skipped and reported.
+  - [`adata_to_srt()`](https://mengxu98.github.io/scop/reference/adata_to_srt.md):
+    Improved robustness of layer conversion — each layer is now wrapped
+    in [`tryCatch()`](https://rdrr.io/r/base/conditions.html) so that
+    individual failures no longer abort the entire conversion; skipped
+    layers are reported as warnings.
+  - [`RunCellChat()`](https://mengxu98.github.io/scop/reference/RunCellChat.md):
+    Enhanced to support condition-specific analyses and pairwise merged
+    comparisons via `group_column` and `group_cmp` parameters.
+  - Added
+    [`RunCellphoneDB()`](https://mengxu98.github.io/scop/reference/RunCellphoneDB.md)
+    for running CellphoneDB cell-cell communication analysis on a
+    `Seurat` object through the official Python package, with support
+    for species conversion and results stored in
+    `srt@tools[["CellphoneDB"]]`.
+  - Added
+    [`RunNichenetr()`](https://mengxu98.github.io/scop/reference/RunNichenetr.md)
+    and
+    [`RunMultiNichenetr()`](https://mengxu98.github.io/scop/reference/RunMultiNichenetr.md)
+    for running NicheNet and MultiNicheNet analysis on `Seurat` objects
+    with standardized result storage.
+  - Added unified cell-cell communication plotting functions
+    [`CCCStatPlot()`](https://mengxu98.github.io/scop/reference/CCCStatPlot.md),
+    [`CCCHeatmap()`](https://mengxu98.github.io/scop/reference/CCCHeatmap.md),
+    and
+    [`CCCNetworkPlot()`](https://mengxu98.github.io/scop/reference/CCCNetworkPlot.md)
+    for CellChat, CellphoneDB, NicheNet, and MultiNicheNet results.
+  - Remove `CellChatPlot()`.
+- **fix**:
+  - [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md):
+    Fixed reduction lookup to check existing reduction names before
+    falling back to
+    [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md),
+    avoiding errors when the exact reduction name is already present.
+
 ## scop 0.8.6
 
 - **feat**:
@@ -117,12 +196,9 @@
     ([@mengxu98](https://github.com/mengxu98)).
   - [`LIGER_integrate()`](https://mengxu98.github.io/scop/reference/LIGER_integrate.md)
     - Migrated to the `rliger` 2.x workflow
-      ([`rliger::runIntegration()`](https://welch-lab.github.io/liger/reference/runIntegration.html) +
-      [`rliger::quantileNorm()`](https://welch-lab.github.io/liger/reference/quantileNorm.html)
-      on `Seurat` object) and now prepares/uses the `ligerScaleData`
-      layer via
-      [`rliger::scaleNotCenter()`](https://welch-lab.github.io/liger/reference/scaleNotCenter.html)
-      before integration.
+      (`rliger::runIntegration()` + `rliger::quantileNorm()` on `Seurat`
+      object) and now prepares/uses the `ligerScaleData` layer via
+      `rliger::scaleNotCenter()` before integration.
     - Updated argument naming/style from `LIGER_dims_use` to
       `liger_dims_use`, and removed legacy quantile-normalization
       parameter compatibility mapping (`ref_dataset`), keeping
@@ -482,9 +558,8 @@
 ## scop 0.6.2
 
 - **feat**:
-  - [`CellChatPlot()`](https://mengxu98.github.io/scop/reference/CellChatPlot.md):
-    Adjusted the size of saved figures for better file size
-    optimization.
+  - `CellChatPlot()`: Adjusted the size of saved figures for better file
+    size optimization.
 - **docs**:
   - Updated README.md to remove references to Monocle2 and Monocle3
     (deprecated functions).
@@ -633,9 +708,8 @@
     New function to perform CellChat analysis for investigating
     cell-to-cell communication with support for human, mouse, and
     zebrafish species.
-  - [`CellChatPlot()`](https://mengxu98.github.io/scop/reference/CellChatPlot.md):
-    New function to visualize CellChat analysis results with various
-    plot types and customization options.
+  - `CellChatPlot()`: New function to visualize CellChat analysis
+    results with various plot types and customization options.
   - Multiple integration functions: Improved error messages and message
     formatting for better user experience.
 - **deps**:

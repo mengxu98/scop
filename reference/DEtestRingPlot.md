@@ -186,38 +186,73 @@ DEtestRingPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 08:18:28] Start standard scop workflow...
-#> ℹ [2026-03-20 08:18:28] Checking a list of <Seurat>...
-#> ! [2026-03-20 08:18:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 08:18:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:18:30] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 08:18:31] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 08:18:31] Number of available HVF: 2000
-#> ℹ [2026-03-20 08:18:31] Finished check
-#> ℹ [2026-03-20 08:18:31] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 08:18:31] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 08:18:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 08:18:32] Reorder clusters...
-#> ℹ [2026-03-20 08:18:32] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 08:18:32] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 08:18:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 08:18:38] Run scop standard workflow completed
+#> ℹ [2026-04-02 15:30:15] Start standard processing workflow...
+#> ℹ [2026-04-02 15:30:16] Checking a list of <Seurat>...
+#> ! [2026-04-02 15:30:16] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 15:30:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:30:17] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 15:30:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 15:30:18] Number of available HVF: 2000
+#> ℹ [2026-04-02 15:30:18] Finished check
+#> ℹ [2026-04-02 15:30:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 15:30:19] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 15:30:24] Use stored estimated dimensions 1:50 for Standardpca
+#> Warning: Caught FutureLaunchError. Canceling all iterations ...
+#> ! [2026-04-02 15:30:24] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:30:24. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-13); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
+#> !                       
+#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
+#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-13 (‘future_lapply-1’)
+#> !                       
+#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
+#> !                       SequentialFuture:
+#> !                       Label: ‘future_lapply-1’
+#> !                       Expression:
+#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-03-20 08:18:39] Data type is log-normalized
-#> ℹ [2026-03-20 08:18:39] Start differential expression test
-#> ℹ [2026-03-20 08:18:39] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-03-20 08:18:39] Using 1 core
-#> ⠙ [2026-03-20 08:18:39] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-03-20 08:18:39] Completed 5 tasks in 874ms
+#> Warning: Layer ‘data’ is empty
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> ! [2026-04-02 15:30:30] Infinite values detected
+#> ! [2026-04-02 15:30:30] Data in the 'data' layer is unknown. Please check the data type
+#> ℹ [2026-04-02 15:30:30] Start differential expression test
+#> ℹ [2026-04-02 15:30:30] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-02 15:30:30] Using 1 core
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> ⠙ [2026-04-02 15:30:30] Running for Ductal [1/5] ■■■■■■■                       …
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> Warning: No layers found matching search pattern provided
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘data’ is empty
+#> ✔ [2026-04-02 15:30:30] Completed 5 tasks in 34ms
 #> 
-#> ℹ [2026-03-20 08:18:39] Building results
-#> ✔ [2026-03-20 08:18:40] Differential expression test completed
+#> ℹ [2026-04-02 15:30:30] Building results
+#> ! [2026-04-02 15:30:30] Found 5 failed results
+#> ℹ [2026-04-02 15:30:30] ✖ Error details:
+#> ℹ                       ✖ "Ductal": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Ngn3-high-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Ngn3-low-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> ℹ                       ✖ "Pre-endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
+#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
 DEtestRingPlot(
   pancreas_sub,
   group.by = "CellType"
 )
+#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
+#> `RunDEtest()` first
 ```

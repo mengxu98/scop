@@ -51,39 +51,48 @@ prediction scores stored in the meta.data.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-03-20 09:25:49] Start standard scop workflow...
-#> ℹ [2026-03-20 09:25:50] Checking a list of <Seurat>...
-#> ! [2026-03-20 09:25:50] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-03-20 09:25:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:25:52] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-03-20 09:25:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-03-20 09:25:52] Number of available HVF: 2000
-#> ℹ [2026-03-20 09:25:53] Finished check
-#> ℹ [2026-03-20 09:25:53] Perform `Seurat::ScaleData()`
-#> ℹ [2026-03-20 09:25:53] Perform pca linear dimension reduction
-#> ℹ [2026-03-20 09:25:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-03-20 09:25:54] Reorder clusters...
-#> ℹ [2026-03-20 09:25:54] Perform umap nonlinear dimension reduction
-#> ℹ [2026-03-20 09:25:54] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-03-20 09:25:59] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-03-20 09:26:04] Run scop standard workflow completed
+#> ℹ [2026-04-02 16:39:06] Start standard processing workflow...
+#> ℹ [2026-04-02 16:39:06] Checking a list of <Seurat>...
+#> ! [2026-04-02 16:39:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-02 16:39:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:39:08] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-02 16:39:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-02 16:39:09] Number of available HVF: 2000
+#> ℹ [2026-04-02 16:39:09] Finished check
+#> ℹ [2026-04-02 16:39:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-02 16:39:09] Perform pca linear dimension reduction
+#> ℹ [2026-04-02 16:39:13] Use stored estimated dimensions 1:50 for Standardpca
+#> ℹ [2026-04-02 16:39:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-02 16:39:13] Reorder clusters...
+#> ℹ [2026-04-02 16:39:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ! [2026-04-02 16:39:14] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
+#> ! [2026-04-02 16:39:14] Error when performing `Seurat::FindClusters()`. Skip it
+#> ℹ [2026-04-02 16:39:14] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-02 16:39:14] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ℹ [2026-04-02 16:39:17] Perform umap nonlinear dimension reduction using Standardpca (1:50)
+#> ✔ [2026-04-02 16:39:20] Standard processing workflow completed
 pancreas_sub <- RunDoubletCalling(
   pancreas_sub,
   db_method = "scDblFinder"
 )
-#> ℹ [2026-03-20 09:26:04] Data type is raw counts
-#> ℹ [2026-03-20 09:26:04] Data type is raw counts
+#> ℹ [2026-04-02 16:39:20] Data type is raw counts
+#> ℹ [2026-04-02 16:39:20] Data type is raw counts
+#> Warning: Layer ‘data’ is empty
+#> Warning: Layer ‘scale.data’ is empty
+#> Error in tryCatchOne(expr, names, parentenv, handlers[[1L]]): <packageNotFoundError in loadNamespace(x): there is no package called
+#> ‘scDblFinder’>
 CellDimPlot(
   pancreas_sub,
   reduction = "umap",
   group.by = "db.scDblFinder_class"
 )
-#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
+#> Error in CellDimPlot(pancreas_sub, reduction = "umap", group.by = "db.scDblFinder_class"): "db.scDblFinder_class" is not in the meta.data of srt object
 
 FeatureDimPlot(
   pancreas_sub,
   reduction = "umap",
   features = "db.scDblFinder_score"
 )
-#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
+#> ! [2026-04-02 16:39:27] "db.scDblFinder_score" are not in the features of <Seurat>
+#> Error in FeatureDimPlot(pancreas_sub, reduction = "umap", features = "db.scDblFinder_score"): There are no valid features present.
 ```

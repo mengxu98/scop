@@ -33,6 +33,7 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
   [Scanorama](https://github.com/brianhie/scanorama),
   [BBKNN](https://github.com/Teichlab/bbknn),
   [CSS](https://github.com/quadbiolab/simspec),
+  [Coralysis](https://github.com/elolab/Coralysis),
   [LIGER](https://github.com/welch-lab/liger),
   [Conos](https://github.com/kharchenkolab/conos),
   [ComBat](https://bioconductor.org/packages/release/bioc/html/sva.html).
@@ -62,8 +63,10 @@ downstream analysis in [Seurat](https://github.com/satijalab/seurat):
     [Monocle3](https://github.com/cole-trapnell-lab/monocle3),
     identification of dynamic features.
   - Cell-Cell Communication:
-    [CellChat](https://github.com/jinworks/CellChat) for cell-cell
-    communication.
+    [CellChat](https://github.com/jinworks/CellChat),
+    [CellphoneDB](https://github.com/ventolab/CellphoneDB),
+    [NicheNet](https://github.com/saeyslab/nichenetr), and
+    [MultiNicheNet](https://github.com/saeyslab/multinichenetr).
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a
   [shiny](https://shiny.rstudio.com/) app that provides an interactive
