@@ -39,7 +39,7 @@ pancreas_sub <- RunMetabolism(
   method = "AUCell"
 )
 
-ht <- MetabolismPlot(
+ht1 <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "heatmap",
@@ -47,6 +47,7 @@ ht <- MetabolismPlot(
   width = 1,
   height = 2
 )
+ht1$plot
 
 ht2 <- MetabolismPlot(
   pancreas_sub,
@@ -58,6 +59,7 @@ ht2 <- MetabolismPlot(
   width = 1,
   height = 2
 )
+ht2$plot
 
 MetabolismPlot(
   pancreas_sub,

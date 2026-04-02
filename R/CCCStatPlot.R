@@ -332,17 +332,39 @@ CCCStatPlot <- function(
   }
 
   if (identical(plot_type, "lr_contribution")) {
-    if (!identical(method, "CellChat")) {
-      log_message(
-        "{.val plot_type = 'lr_contribution'} is currently only supported for {.pkg CellChat} results",
-        message_type = "error"
-      )
-    }
     if (is.null(signaling)) {
       log_message(
         "{.arg signaling} must be provided for {.val plot_type = 'lr_contribution'}",
         message_type = "error"
       )
+    }
+    if (!identical(method, "CellChat")) {
+      return(ccc_generic_lr_contribution_plot(
+        srt = srt,
+        method = method,
+        signaling = signaling,
+        sender.use = sender.use,
+        receiver.use = receiver.use,
+        ligand.use = ligand.use,
+        receptor.use = receptor.use,
+        interaction.use = interaction.use,
+        pairLR.use = pairLR.use,
+        top_n = top_n,
+        value = value,
+        return.data = return.data,
+        title = title,
+        subtitle = subtitle,
+        link_palette = palette_cfg$link_palette,
+        link_palcolor = palette_cfg$link_palcolor,
+        legend.position = legend.position,
+        legend.direction = legend.direction,
+        theme_use = theme_use,
+        theme_args = theme_args,
+        font.size = font.size,
+        combine = combine,
+        nrow = nrow,
+        ncol = ncol
+      ))
     }
     return(ccc_lr_contribution_plot(
       srt = srt,
@@ -865,7 +887,7 @@ ccc_cellchat_ranknet_plot <- function(
       value[idx[!is.na(idx)]] <- cur$value[!is.na(idx)]
     }
     wide[[paste0("value_", i)]] <- value
-    wide[[paste0("dataset_", i)]] <- object_names[i]
+    wide[[paste0("dataset_", i)]] <- cc_cmp$object_names[i]
   }
   wide$diff <- wide$value_2 - wide$value_1
   wide$rank_score <- pmax(wide$value_1, wide$value_2, na.rm = TRUE) +
@@ -1233,6 +1255,182 @@ ccc_standardize_generic_ligand_target <- function(df) {
   }
   df$weight <- suppressWarnings(as.numeric(df$weight))
   df
+}
+
+ccc_generic_lr_contribution_plot <- function(
+  srt,
+  method,
+  signaling,
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  pairLR.use = NULL,
+  top_n = 20,
+  value = "score",
+  return.data = FALSE,
+  title = NULL,
+  subtitle = NULL,
+  link_palette = "Dark2",
+  link_palcolor = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  theme_use = "theme_scop",
+  theme_args = list(),
+  font.size = 10,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL
+) {
+  bundle <- get_bundle(srt, method = method)
+  long_df <- standardize_long_df(bundle$long_table %||% data.frame())
+  available_pathways <- unique(as.character(long_df$pathway_name))
+  available_pathways <- available_pathways[
+    !is.na(available_pathways) & nzchar(available_pathways)
+  ]
+  if (length(available_pathways) == 0L) {
+    log_message(
+      paste0(
+        "{.val plot_type = 'lr_contribution'} requires pathway annotations ",
+        "(for example {.code pathway_name} / {.code classification}) in the ",
+        "stored CCC result table"
+      ),
+      message_type = "error"
+    )
+  }
+
+  long_df <- filter_long_df(
+    df = long_df,
+    sender.use = sender.use,
+    receiver.use = receiver.use,
+    ligand.use = ligand.use,
+    receptor.use = receptor.use,
+    interaction.use = interaction.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
+  if (nrow(long_df) == 0L) {
+    log_message(
+      "No ligand-receptor contribution data available for the selected signaling pathway/pathways",
+      message_type = "error"
+    )
+  }
+
+  score_col <- value
+  if (!score_col %in% colnames(long_df)) {
+    score_col <- c("score", "means", "prob")[
+      c("score", "means", "prob") %in% colnames(long_df)
+    ][1]
+  }
+  if (is.null(score_col) || is.na(score_col)) {
+    log_message(
+      "No communication weight column was found in the selected CCC results",
+      message_type = "error"
+    )
+  }
+
+  long_df <- prepare_plot_df(long_df)
+  long_df$score_use <- suppressWarnings(as.numeric(long_df[[score_col]]))
+  long_df <- long_df[is.finite(long_df$score_use) & long_df$score_use > 0, , drop = FALSE]
+  if (nrow(long_df) == 0L) {
+    log_message(
+      "No positive pathway-specific interaction scores remain after filtering",
+      message_type = "error"
+    )
+  }
+
+  signaling_use <- unique(as.character(signaling))
+  contrib_list <- lapply(signaling_use, function(sig) {
+    df_sig <- long_df[long_df$pathway_name %in% sig, , drop = FALSE]
+    if (nrow(df_sig) == 0L) {
+      return(NULL)
+    }
+    agg <- stats::aggregate(
+      df_sig$score_use,
+      by = list(interaction = as.character(df_sig$interaction_label)),
+      FUN = function(x) sum(as.numeric(x), na.rm = TRUE)
+    )
+    colnames(agg)[colnames(agg) == "x"] <- "value"
+    agg <- agg[is.finite(agg$value) & agg$value > 0, , drop = FALSE]
+    if (nrow(agg) == 0L) {
+      return(NULL)
+    }
+    agg <- agg[order(agg$value, decreasing = TRUE), , drop = FALSE]
+    if (
+      is.numeric(top_n) &&
+        length(top_n) == 1L &&
+        top_n > 0L &&
+        nrow(agg) > top_n
+    ) {
+      agg <- agg[seq_len(top_n), , drop = FALSE]
+    }
+    agg$contribution <- agg$value / sum(agg$value, na.rm = TRUE)
+    agg$signaling <- sig
+    agg
+  })
+  contrib_df <- do.call(rbind, Filter(Negate(is.null), contrib_list))
+  if (is.null(contrib_df) || nrow(contrib_df) == 0L) {
+    log_message(
+      "No ligand-receptor contribution data available for the selected signaling pathway/pathways",
+      message_type = "error"
+    )
+  }
+  rownames(contrib_df) <- NULL
+  if (isTRUE(return.data)) {
+    return(contrib_df)
+  }
+
+  plot_list <- lapply(
+    split(contrib_df, contrib_df$signaling),
+    function(df_sig) {
+      df_sig <- df_sig[
+        order(df_sig$contribution, decreasing = TRUE),
+        ,
+        drop = FALSE
+      ]
+      df_sig$interaction <- factor(
+        df_sig$interaction,
+        levels = rev(unique(df_sig$interaction))
+      )
+      cols <- palette_colors(
+        unique(as.character(df_sig$interaction)),
+        palette = link_palette,
+        palcolor = link_palcolor
+      )
+      p <- ggplot2::ggplot(
+        df_sig,
+        ggplot2::aes(x = interaction, y = contribution, fill = interaction)
+      ) +
+        ggplot2::geom_col(width = 0.75, show.legend = FALSE) +
+        ggplot2::coord_flip() +
+        ggplot2::scale_fill_manual(values = cols, drop = FALSE) +
+        ggplot2::scale_y_continuous(
+          labels = scales::label_percent(accuracy = 1),
+          expand = ggplot2::expansion(mult = c(0, 0.05))
+        ) +
+        ggplot2::labs(x = NULL, y = "Contribution")
+      finalize_cc_plot(
+        p,
+        title = if (length(signaling_use) == 1L) {
+          title %||% df_sig$signaling[1]
+        } else {
+          df_sig$signaling[1]
+        },
+        subtitle = if (length(signaling_use) == 1L) subtitle else NULL,
+        legend.position = legend.position,
+        legend.direction = legend.direction,
+        theme_use = theme_use,
+        theme_args = theme_args,
+        font.size = font.size
+      )
+    }
+  )
+
+  if (!isTRUE(combine) || length(plot_list) <= 1L) {
+    return(simplify_cc_plot_list(plot_list))
+  }
+  patchwork::wrap_plots(plot_list, nrow = nrow, ncol = ncol)
 }
 
 ccc_generic_feature_genes <- function(
