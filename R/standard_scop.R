@@ -358,7 +358,10 @@ standard_scop <- function(
         srt
       },
       error = function(error) {
-        log_message(error, message_type = "warning", verbose = verbose)
+        err_msg <- conditionMessage(error)
+        err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
+        err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+        log_message(err_msg, message_type = "warning", verbose = verbose)
         log_message(
           "Error when performing {.fn Seurat::FindClusters}. Skip it",
           message_type = "warning",
@@ -394,11 +397,10 @@ standard_scop <- function(
         srt
       },
       error = function(error) {
-        log_message(
-          error,
-          message_type = "warning",
-          verbose = verbose
-        )
+        err_msg <- conditionMessage(error)
+        err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
+        err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+        log_message(err_msg, message_type = "warning", verbose = verbose)
         log_message(
           "Error when performing {.pkg {nr}} nonlinear dimension reduction. Skip it",
           message_type = "error"
