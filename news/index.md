@@ -196,9 +196,12 @@
     ([@mengxu98](https://github.com/mengxu98)).
   - [`LIGER_integrate()`](https://mengxu98.github.io/scop/reference/LIGER_integrate.md)
     - Migrated to the `rliger` 2.x workflow
-      (`rliger::runIntegration()` + `rliger::quantileNorm()` on `Seurat`
-      object) and now prepares/uses the `ligerScaleData` layer via
-      `rliger::scaleNotCenter()` before integration.
+      ([`rliger::runIntegration()`](https://welch-lab.github.io/liger/reference/runIntegration.html) +
+      [`rliger::quantileNorm()`](https://welch-lab.github.io/liger/reference/quantileNorm.html)
+      on `Seurat` object) and now prepares/uses the `ligerScaleData`
+      layer via
+      [`rliger::scaleNotCenter()`](https://welch-lab.github.io/liger/reference/scaleNotCenter.html)
+      before integration.
     - Updated argument naming/style from `LIGER_dims_use` to
       `liger_dims_use`, and removed legacy quantile-normalization
       parameter compatibility mapping (`ref_dataset`), keeping

@@ -40,16 +40,33 @@ ListDB(species = "Homo_sapiens")
 ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                               comment  timestamp                       date
-#> 1 AnimalTFDB4 nterm:2|Mus_musculus-TF 1775143439 2026-04-02 15:23:58.699905
-#>            db_version         db_name
-#> 1 AnimalTFDB4 nterm:2 Mus_musculus-TF
+#> 2 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
+#> 3 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
+#>                                 comment  timestamp                       date
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775187252  2026-04-03 03:34:12.02593
+#> 2        CSPA nterm:1|Mus_musculus-CSPA 1775185094 2026-04-03 02:58:14.068139
+#> 3   AnimalTFDB4 nterm:2|Mus_musculus-TF 1775185082  2026-04-03 02:58:01.96021
+#>            db_version            db_name
+#> 1  3.22.0 nterm:15169 Mus_musculus-GO_BP
+#> 2        CSPA nterm:1  Mus_musculus-CSPA
+#> 3 AnimalTFDB4 nterm:2    Mus_musculus-TF
 #>                                                                    file
-#> 1 /home/runner/.cache/R/R.cache/82f852e1d9ed5c0a5ad672b843c18742.Rcache
-#>        Species DB
-#> 1 Mus_musculus TF
+#> 1 /home/runner/.cache/R/R.cache/4363ecdce2b08b4d38a5c290b4f4ae60.Rcache
+#> 2 /home/runner/.cache/R/R.cache/267624ab3d48b245ce01deac5165a7b1.Rcache
+#> 3 /home/runner/.cache/R/R.cache/82f852e1d9ed5c0a5ad672b843c18742.Rcache
+#>        Species    DB
+#> 1 Mus_musculus GO_BP
+#> 2 Mus_musculus  CSPA
+#> 3 Mus_musculus    TF
 ListDB(species = "Mus_musculus", db = "GO_BP")
-#>  [1] identifier version    comment    timestamp  date       db_version
-#>  [7] db_name    file       Species    DB        
-#> <0 rows> (or 0-length row.names)
+#>                                                         identifier version
+#> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
+#>                                 comment  timestamp                      date
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775187252 2026-04-03 03:34:12.02593
+#>           db_version            db_name
+#> 1 3.22.0 nterm:15169 Mus_musculus-GO_BP
+#>                                                                    file
+#> 1 /home/runner/.cache/R/R.cache/4363ecdce2b08b4d38a5c290b4f4ae60.Rcache
+#>        Species    DB
+#> 1 Mus_musculus GO_BP
 ```

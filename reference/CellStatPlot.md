@@ -249,28 +249,24 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 15:27:42] Start standard processing workflow...
-#> ℹ [2026-04-02 15:27:43] Checking a list of <Seurat>...
-#> ! [2026-04-02 15:27:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 15:27:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:27:45] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:27:45] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 15:27:45] Number of available HVF: 2000
-#> ℹ [2026-04-02 15:27:45] Finished check
-#> ℹ [2026-04-02 15:27:46] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 15:27:46] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 15:27:50] Use stored estimated dimensions 1:50 for Standardpca
-#> Warning: Caught FutureLaunchError. Canceling all iterations ...
-#> ! [2026-04-02 15:27:51] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:27:51. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-9); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
-#> !                       
-#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
-#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-9 (‘future_lapply-1’)
-#> !                       
-#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
-#> !                       SequentialFuture:
-#> !                       Label: ‘future_lapply-1’
-#> !                       Expression:
-#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
+#> ℹ [2026-04-03 03:14:52] Start standard processing workflow...
+#> ℹ [2026-04-03 03:14:52] Checking a list of <Seurat>...
+#> ! [2026-04-03 03:14:52] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 03:14:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:14:54] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:14:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 03:14:55] Number of available HVF: 2000
+#> ℹ [2026-04-03 03:14:55] Finished check
+#> ℹ [2026-04-03 03:14:55] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 03:14:55] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 03:14:56] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 03:14:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 03:14:56] Reorder clusters...
+#> ℹ [2026-04-03 03:14:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 03:14:57] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 03:14:57] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 03:15:00] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 03:15:03] Standard processing workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -278,13 +274,12 @@ p1 <- CellStatPlot(
   label = TRUE
 )
 p1
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 thisplot::panel_fix(
   p1, height = 2, width = 3
 )
-#> Error in tryCatchOne(expr, names, parentenv, handlers[[1L]]): <packageNotFoundError in loadNamespace(x): there is no package called
-#> ‘labeling’> Cannot convert the x to a gtable object
+
 
 CellStatPlot(
   pancreas_sub,
@@ -294,7 +289,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -305,42 +300,44 @@ CellStatPlot(
   stat_type = "count",
   position = "dodge"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "bar"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "rose"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "ring"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "pie"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
   plot_type = "dot"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -348,7 +345,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "bar"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -356,7 +353,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "rose"
 )
-#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -364,7 +361,9 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
@@ -372,7 +371,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "area"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -380,7 +379,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "dot"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -388,7 +387,7 @@ CellStatPlot(
   group.by = "CellType",
   plot_type = "trend"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -397,7 +396,7 @@ CellStatPlot(
   plot_type = "bar",
   individual = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -406,7 +405,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "bar"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -415,7 +414,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "rose"
 )
-#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -424,7 +423,9 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "ring"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+
 
 CellStatPlot(
   pancreas_sub,
@@ -433,7 +434,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "area"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -442,7 +443,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "dot"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -451,7 +452,7 @@ CellStatPlot(
   stat_type = "count",
   plot_type = "trend"
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -462,7 +463,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -473,7 +474,7 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘geomtextpath’
+
 
 CellStatPlot(
   pancreas_sub,
@@ -484,22 +485,26 @@ CellStatPlot(
   position = "dodge",
   label = TRUE
 )
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_col()`).
+#> Warning: Removed 1 row containing missing values or values outside the scale range
+#> (`geom_text_repel()`).
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-04-02 15:29:08] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘labeling’
+#> ! [2026-04-03 03:15:16] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+
 
 CellStatPlot(
   pancreas_sub,
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-04-02 15:29:11] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-04-03 03:15:17] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -511,8 +516,8 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-04-02 15:29:15] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
+#> ! [2026-04-03 03:15:17] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
@@ -534,8 +539,8 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-04-02 15:29:18] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘ggVennDiagram’
+#> ! [2026-04-03 03:15:18] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+
 
 CellStatPlot(
   pancreas_sub,
@@ -545,8 +550,12 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-04-02 15:29:24] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
-#> Error in loadNamespace(x): there is no package called ‘ggupset’
+#> ! [2026-04-03 03:15:18] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> ℹ The deprecated feature was likely used in the ggupset package.
+#>   Please report the issue at <https://github.com/const-ae/ggupset/issues>.
+
 
 sum(
   pancreas_sub$Progenitor == "FALSE" &

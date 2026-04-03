@@ -240,34 +240,38 @@ DynamicPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:12:43] Start standard processing workflow...
-#> ℹ [2026-04-02 16:12:44] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:12:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:12:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:12:45] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:12:46] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:12:46] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:12:46] Finished check
-#> ℹ [2026-04-02 16:12:46] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:12:47] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:12:50] Use stored estimated dimensions 1:50 for Standardpca
-#> Warning: Caught FutureLaunchError. Canceling all iterations ...
-#> ! [2026-04-02 16:12:51] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:12:50. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-16); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
-#> !                       
-#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
-#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-16 (‘future_lapply-1’)
-#> !                       
-#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
-#> !                       SequentialFuture:
-#> !                       Label: ‘future_lapply-1’
-#> !                       Expression:
-#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
+#> ℹ [2026-04-03 03:36:30] Start standard processing workflow...
+#> ℹ [2026-04-03 03:36:31] Checking a list of <Seurat>...
+#> ! [2026-04-03 03:36:31] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 03:36:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:36:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:36:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 03:36:34] Number of available HVF: 2000
+#> ℹ [2026-04-03 03:36:34] Finished check
+#> ℹ [2026-04-03 03:36:34] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 03:36:35] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 03:36:35] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 03:36:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 03:36:36] Reorder clusters...
+#> ℹ [2026-04-03 03:36:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 03:36:36] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 03:36:36] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 03:36:40] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 03:36:43] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in DefaultReduction(srt, pattern = reduction): Unable to find any reductions
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 CellDimPlot(
   pancreas_sub,
@@ -276,7 +280,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
+
 
 DynamicPlot(
   pancreas_sub,
@@ -285,9 +289,19 @@ DynamicPlot(
   group.by = "SubCellType",
   compare_features = TRUE
 )
-#> ℹ [2026-04-02 16:12:59] Start find dynamic features
-#> ℹ [2026-04-02 16:13:00] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 03:36:46] Start find dynamic features
+#> ℹ [2026-04-03 03:36:47] Data type is raw counts
+#> ℹ [2026-04-03 03:36:48] Number of candidate features (union): 3
+#> ℹ [2026-04-03 03:36:48] Data type is raw counts
+#> ! [2026-04-03 03:36:48] Negative values detected
+#> ℹ [2026-04-03 03:36:48] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 03:36:48] Using 1 core
+#> ⠙ [2026-04-03 03:36:48] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-04-03 03:36:48] Completed 3 tasks in 120ms
+#> 
+#> ℹ [2026-04-03 03:36:48] Building results
+#> ✔ [2026-04-03 03:36:48] Find dynamic features done
+
 
 DynamicPlot(
   pancreas_sub,
@@ -297,9 +311,39 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-02 16:13:02] Start find dynamic features
-#> ℹ [2026-04-02 16:13:03] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 03:36:49] Start find dynamic features
+#> ℹ [2026-04-03 03:36:50] Data type is raw counts
+#> ℹ [2026-04-03 03:36:51] Number of candidate features (union): 3
+#> ℹ [2026-04-03 03:36:51] Data type is raw counts
+#> ! [2026-04-03 03:36:51] Negative values detected
+#> ℹ [2026-04-03 03:36:51] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 03:36:51] Using 1 core
+#> ⠙ [2026-04-03 03:36:51] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-04-03 03:36:51] Completed 3 tasks in 123ms
+#> 
+#> ℹ [2026-04-03 03:36:51] Building results
+#> ✔ [2026-04-03 03:36:51] Find dynamic features done
+#> ℹ [2026-04-03 03:36:51] Start find dynamic features
+#> ℹ [2026-04-03 03:36:52] Data type is raw counts
+#> ℹ [2026-04-03 03:36:53] Number of candidate features (union): 3
+#> ℹ [2026-04-03 03:36:53] Data type is raw counts
+#> ! [2026-04-03 03:36:53] Negative values detected
+#> ℹ [2026-04-03 03:36:53] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-03 03:36:53] Using 1 core
+#> ⠙ [2026-04-03 03:36:53] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-04-03 03:36:53] Completed 3 tasks in 115ms
+#> 
+#> ℹ [2026-04-03 03:36:53] Building results
+#> ✔ [2026-04-03 03:36:54] Find dynamic features done
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+
 
 DynamicPlot(
   pancreas_sub,
@@ -309,7 +353,42 @@ DynamicPlot(
   compare_lineages = FALSE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-02 16:13:05] Start find dynamic features
-#> ℹ [2026-04-02 16:13:06] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 03:36:55] Start find dynamic features
+#> ℹ [2026-04-03 03:36:56] Data type is raw counts
+#> ℹ [2026-04-03 03:36:57] Number of candidate features (union): 3
+#> ℹ [2026-04-03 03:36:57] Data type is raw counts
+#> ! [2026-04-03 03:36:57] Negative values detected
+#> ℹ [2026-04-03 03:36:57] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 03:36:57] Using 1 core
+#> ⠙ [2026-04-03 03:36:57] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-04-03 03:36:57] Completed 3 tasks in 122ms
+#> 
+#> ℹ [2026-04-03 03:36:57] Building results
+#> ✔ [2026-04-03 03:36:57] Find dynamic features done
+#> ℹ [2026-04-03 03:36:57] Start find dynamic features
+#> ℹ [2026-04-03 03:36:59] Data type is raw counts
+#> ℹ [2026-04-03 03:36:59] Number of candidate features (union): 3
+#> ℹ [2026-04-03 03:37:00] Data type is raw counts
+#> ! [2026-04-03 03:37:00] Negative values detected
+#> ℹ [2026-04-03 03:37:00] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-03 03:37:00] Using 1 core
+#> ⠙ [2026-04-03 03:37:00] Running for Arxes1 [1/3] ■■■■■■■■■■■                   …
+#> ✔ [2026-04-03 03:37:00] Completed 3 tasks in 119ms
+#> 
+#> ℹ [2026-04-03 03:37:00] Building results
+#> ✔ [2026-04-03 03:37:00] Find dynamic features done
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 ```

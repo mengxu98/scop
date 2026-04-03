@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Statistical plot of features</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/FeatureStatPlot.R" class="external-link"><code>R/FeatureStatPlot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/FeatureStatPlot.R" class="external-link"><code>R/FeatureStatPlot.R</code></a></small>
       <div class="d-none name"><code>FeatureStatPlot.Rd</code></div>
     </div>
 
@@ -538,35 +538,31 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:58] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:59] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:13:59] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:13:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:00] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:01] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:01] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:01] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:01] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:02] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:06] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">50</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Caught FutureLaunchError. Canceling all iterations ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:06] &lt;FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T16:14:06. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future &lt;unnamed&gt;; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-21); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be&lt;85355&gt;]&gt;</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Future: 4a75d434f7a9a2903adedbeee3372830-21 (‘future_lapply-1’)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       DEBUG: BEGIN TROUBLESHOOTING HELP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       SequentialFuture:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Label: ‘future_lapply-1’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span>                       Expression:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim):</span> Expecting '}'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:18] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:21] Perform `Seurat::FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:22] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:22] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:22] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:22] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:23] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:23] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">12</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:24] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:24] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:24] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:24] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">12</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:28] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Standardpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">12</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-04-03 03:42:32] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span>, <span class="st">"Fev"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:06] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-1.png" alt="" width="700" height="433"></span>
@@ -576,8 +572,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M_score"</span>, <span class="st">"Fev"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">1</span>, width <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:07] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-2.png" alt="" width="700" height="433"></span>
@@ -588,8 +584,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"box"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:07] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-3.png" alt="" width="700" height="433"></span>
@@ -600,11 +596,17 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:08] <span style="color: #0000BB;">"Fev"</span> are not found</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_summary()`.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `fun.data()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> The package "Hmisc" is required.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_summary()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `fun.data()`:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> The package "Hmisc" is required.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_summary()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `fun.data()`:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> The package "Hmisc" is required.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_summary()`.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by error in `fun.data()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> The package "Hmisc" is required.</span>
@@ -618,8 +620,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dot"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:08] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-5.png" alt="" width="700" height="433"></span>
@@ -629,8 +631,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"col"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:09] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-6.png" alt="" width="700" height="433"></span>
@@ -641,8 +643,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  add_box <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:09] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-7.png" alt="" width="700" height="433"></span>
@@ -653,8 +655,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  add_point <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:09] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-8.png" alt="" width="700" height="433"></span>
@@ -664,8 +666,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  add_trend <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:10] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-9.png" alt="" width="700" height="433"></span>
@@ -676,8 +678,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  add_stat <span class="op">=</span> <span class="st">"mean"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:10] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-10.png" alt="" width="700" height="433"></span>
@@ -689,8 +691,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  add_line <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  line_type <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:11] <span style="color: #0000BB;">"Fev"</span> are not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-11.png" alt="" width="700" height="433"></span>
@@ -701,9 +703,10 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:11] <span style="color: #0000BB;">"Fev"</span> are not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:11] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:42] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:42] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-12.png" alt="" width="700" height="433"></span>
@@ -716,9 +719,10 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  add_box <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  add_trend <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:11] <span style="color: #0000BB;">"Fev"</span> are not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:11] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:43] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:43] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
 <span class="r-plt img"><img src="FeatureStatPlot-13.png" alt="" width="700" height="433"></span>
@@ -730,11 +734,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:16] <span style="color: #0000BB;">"Fev"</span> are not found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:16] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:16] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘ggpubr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:44] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:45] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:45] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:45] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -744,9 +752,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  palette <span class="op">=</span> <span class="st">"Blues"</span>,</span></span>
 <span class="r-in"><span>  same.y.lims <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:16] <span style="color: #0000BB;">"Rbp4"</span> and <span style="color: #0000BB;">"Pyy"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-plt img"><img src="FeatureStatPlot-15.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -754,9 +760,11 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  multiplegroup_comparisons <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:19] <span style="color: #0000BB;">"Rbp4"</span> and <span style="color: #0000BB;">"Pyy"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -764,9 +772,11 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Beta"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Delta"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:22] <span style="color: #0000BB;">"Rbp4"</span> and <span style="color: #0000BB;">"Pyy"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-17.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -775,9 +785,11 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Beta"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Delta"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  sig_label <span class="op">=</span> <span class="st">"p.format"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:25] <span style="color: #0000BB;">"Rbp4"</span> and <span style="color: #0000BB;">"Pyy"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-18.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -793,9 +805,15 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  y.max <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:28] <span style="color: #0000BB;">"Fev"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:51] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:51] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-03 03:42:52] Removed <span style="color: #0000BB;">10</span> groups with &lt; 2 observations for violin plot: <span style="color: #0000BB;">"sp-S-gp-Beta"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Beta"</span>, <span style="color: #0000BB;">"sp-S-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Pre-endocrine"</span>, <span style="color: #0000BB;">"sp-S-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Alpha"</span>, <span style="color: #0000BB;">"sp-S-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-G2M-gp-Epsilon"</span>, <span style="color: #0000BB;">"sp-S-gp-Delta"</span>, and <span style="color: #0000BB;">"sp-G2M-gp-Delta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:42:52] Detected more than 2 groups. Use <span style="color: #0000BB;">"kruskal.test"</span> for comparison</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-19.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -804,9 +822,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  bg.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  add_box <span class="op">=</span> <span class="cn">TRUE</span>, stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:28] <span style="color: #0000BB;">"Rbp4"</span> and <span style="color: #0000BB;">"Pyy"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-plt img"><img src="FeatureStatPlot-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -828,9 +844,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  bg.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:29] <span style="color: #0000BB;">"Sox9"</span>, <span style="color: #0000BB;">"Anxa2"</span>, <span style="color: #0000BB;">"Bicc1"</span>, <span style="color: #0000BB;">"Neurog3"</span>, <span style="color: #0000BB;">"Hes6"</span>, <span style="color: #0000BB;">"Fev"</span>, <span style="color: #0000BB;">"Neurod1"</span>, <span style="color: #0000BB;">"Rbp4"</span>, <span style="color: #0000BB;">"Pyy"</span>, <span style="color: #0000BB;">"Ins1"</span>, <span style="color: #0000BB;">"Gcg"</span>, <span style="color: #0000BB;">"Sst"</span>, and <span style="color: #0000BB;">"Ghrl"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-plt img"><img src="FeatureStatPlot-21.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -853,9 +867,7 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">thisplot</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisplot/reference/panel_fix.html" class="external-link">panel_fix_overall</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">8</span>, height <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:29] <span style="color: #0000BB;">"Sox9"</span>, <span style="color: #0000BB;">"Anxa2"</span>, <span style="color: #0000BB;">"Bicc1"</span>, <span style="color: #0000BB;">"Neurog3"</span>, <span style="color: #0000BB;">"Hes6"</span>, <span style="color: #0000BB;">"Fev"</span>, <span style="color: #0000BB;">"Neurod1"</span>, <span style="color: #0000BB;">"Rbp4"</span>, <span style="color: #0000BB;">"Pyy"</span>, <span style="color: #0000BB;">"Ins1"</span>, <span style="color: #0000BB;">"Gcg"</span>, <span style="color: #0000BB;">"Sst"</span>, and <span style="color: #0000BB;">"Ghrl"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-plt img"><img src="FeatureStatPlot-22.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -863,9 +875,13 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"group"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:29] <span style="color: #0000BB;">"Neurog3"</span>, <span style="color: #0000BB;">"Rbp4"</span>, and <span style="color: #0000BB;">"Ins1"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-23.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -873,10 +889,18 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:29] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...):</span> layer "data" is not found in the object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:43:04] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-24.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -887,10 +911,18 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  sig_label <span class="op">=</span> <span class="st">"p.format"</span>,</span></span>
 <span class="r-in"><span>  sig_labelsize <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:29] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...):</span> layer "data" is not found in the object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:43:06] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-25.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -903,10 +935,8 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:29] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...):</span> layer "data" is not found in the object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:43:09] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-plt img"><img src="FeatureStatPlot-26.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span><span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -925,24 +955,21 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  plot.by <span class="op">=</span> <span class="st">"feature"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-02 16:14:29] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in FetchData.Assay5(object = object[[DefaultAssay(object = object)]],     vars = default.vars, cells = cells, layer = layer, ...):</span> layer "data" is not found in the object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-04-03 03:43:12] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-plt img"><img src="FeatureStatPlot-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">SetAssayData</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"scale.data"</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  new.data <span class="op">=</span> <span class="va">data</span> <span class="op">/</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> No feature overlap between existing object and new layer data</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different features in new layer data than already exists for scale.data</span>
 <span class="r-in"><span><span class="fu">FeatureStatPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Neurog3"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>,</span></span>
@@ -952,9 +979,11 @@ Default is <code>11</code>.</p></dd>
 <span class="r-in"><span>  same.y.lims <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  y.max <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-04-02 16:14:29] <span style="color: #0000BB;">"Neurog3"</span> and <span style="color: #0000BB;">"Rbp4"</span> are not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in ExpressionStatPlot(exp.data = exp.data, meta.data = meta.data,     stat.by = stat.by, group.by = group.by, split.by = split.by,     bg.by = bg.by, plot.by = "group", fill.by = fill.by, cells = cells,     keep_empty = keep_empty, individual = individual, plot_type = plot_type,     palette = palette, palcolor = palcolor, alpha = alpha, bg_palette = bg_palette,     bg_palcolor = bg_palcolor, bg_alpha = bg_alpha, add_box = add_box,     box_color = box_color, box_width = box_width, box_ptsize = box_ptsize,     add_point = add_point, pt.color = pt.color, pt.size = pt.size,     pt.alpha = pt.alpha, jitter.width = jitter.width, jitter.height = jitter.height,     add_trend = add_trend, trend_color = trend_color, trend_linewidth = trend_linewidth,     trend_ptsize = trend_ptsize, add_stat = add_stat, stat_color = stat_color,     stat_size = stat_size, stat_stroke = stat_stroke, stat_shape = stat_shape,     add_line = add_line, line_color = line_color, line_size = line_size,     line_type = line_type, cells.highlight = cells.highlight,     cols.highlight = cols.highlight, sizes.highlight = sizes.highlight,     alpha.highlight = alpha.highlight, calculate_coexp = calculate_coexp,     same.y.lims = same.y.lims, y.min = y.min, y.max = y.max,     y.trans = y.trans, y.nbreaks = y.nbreaks, sort = sort, stack = stack,     flip = flip, comparisons = comparisons, ref_group = ref_group,     pairwise_method = pairwise_method, multiplegroup_comparisons = multiplegroup_comparisons,     multiple_method = multiple_method, sig_label = sig_label,     sig_labelsize = sig_labelsize, aspect.ratio = aspect.ratio,     title = title, subtitle = subtitle, xlab = xlab, ylab = ylab,     legend.position = legend.position, legend.direction = legend.direction,     legend.title = legend.title, theme_use = theme_use, theme_args = theme_args,     force = force, seed = seed):</span> `stat.by` must be type of numeric variable</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="FeatureStatPlot-28.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

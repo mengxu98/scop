@@ -135,26 +135,24 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:44:40] Start standard processing workflow...
-#> ℹ [2026-04-02 16:44:41] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:44:41] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:44:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:44:43] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:44:43] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:44:43] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:44:44] Finished check
-#> ℹ [2026-04-02 16:44:44] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:44:44] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:44:48] Use stored estimated dimensions 1:50 for Standardpca
-#> ℹ [2026-04-02 16:44:48] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-02 16:44:48] Reorder clusters...
-#> ℹ [2026-04-02 16:44:48] Skip `log1p()` because `layer = data` is not "counts"
-#> ! [2026-04-02 16:44:48] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
-#> ! [2026-04-02 16:44:48] Error when performing `Seurat::FindClusters()`. Skip it
-#> ℹ [2026-04-02 16:44:48] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-02 16:44:48] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-04-02 16:44:51] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-04-02 16:44:55] Standard processing workflow completed
+#> ℹ [2026-04-03 04:31:31] Start standard processing workflow...
+#> ℹ [2026-04-03 04:31:31] Checking a list of <Seurat>...
+#> ! [2026-04-03 04:31:31] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 04:31:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:31:34] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:31:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 04:31:34] Number of available HVF: 2000
+#> ℹ [2026-04-03 04:31:35] Finished check
+#> ℹ [2026-04-03 04:31:35] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 04:31:35] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 04:31:36] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 04:31:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 04:31:36] Reorder clusters...
+#> ℹ [2026-04-03 04:31:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 04:31:36] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 04:31:36] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 04:31:41] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 04:31:46] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -164,13 +162,13 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   method = "AUCell"
 )
-#> ℹ [2026-04-02 16:44:55] Start metabolism pathway scoring
-#> ℹ [2026-04-02 16:44:55] Data type is raw counts
-#> ℹ [2026-04-02 16:44:55] Averaging expression by "CellType" ...
-#> ℹ [2026-04-02 16:44:55] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-04-02 16:44:55] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
-#> ℹ [2026-04-02 16:44:55] Total metabolism gene sets to score: 127
-#> Error in loadNamespace(x): there is no package called ‘AUCell’
+#> ℹ [2026-04-03 04:31:46] Start metabolism pathway scoring
+#> ℹ [2026-04-03 04:31:46] Data type is raw counts
+#> ℹ [2026-04-03 04:31:46] Averaging expression by "CellType" ...
+#> ℹ [2026-04-03 04:31:46] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-04-03 04:31:46] Using raw scMetabolism gene sets directly; `PrepareDB()` / BioMart-based ID rebuilding is skipped
+#> ℹ [2026-04-03 04:31:46] Total metabolism gene sets to score: 127
+#> ✔ [2026-04-03 04:31:47] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -179,5 +177,5 @@ ht <- MetabolismPlot(
   width = 1,
   height = 2
 )
-#> Error in MetabolismPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap",     topTerm = 10, width = 1, height = 2): Metabolism results not found. Please run RunMetabolism first
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
 ```

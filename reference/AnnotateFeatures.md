@@ -112,22 +112,21 @@ pancreas_sub <- AnnotateFeatures(
     "CSPA"
   )
 )
-#> ℹ [2026-04-02 15:23:58] Species: "Mus_musculus"
-#> ℹ [2026-04-02 15:23:58] Preparing database: TF
-#> ℹ [2026-04-02 15:24:03] Preparing database: CSPA
-#> Error in loadNamespace(name): there is no package called ‘openxlsx’
+#> ℹ [2026-04-03 02:58:01] Species: "Mus_musculus"
+#> ℹ [2026-04-03 02:58:01] Preparing database: TF
+#> ℹ [2026-04-03 02:58:13] Preparing database: CSPA
 head(
   GetFeaturesData(
     pancreas_sub
   )
 )
-#>               highly_variable_genes
-#> Xkr4                          False
-#> Mrpl15                        False
-#> Npbwr1                         <NA>
-#> 4732440D04Rik                 False
-#> Gm26901                       False
-#> Sntg1                          True
+#>               highly_variable_genes   TF CSPA
+#> Xkr4                          False <NA> <NA>
+#> Mrpl15                        False <NA> <NA>
+#> Npbwr1                         <NA> <NA> <NA>
+#> 4732440D04Rik                 False <NA> <NA>
+#> Gm26901                       False <NA> <NA>
+#> Sntg1                          True <NA> <NA>
 
 if (FALSE) { # \dontrun{
 # Annotate features using a GTF file

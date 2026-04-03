@@ -162,28 +162,24 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 15:27:31] Start standard processing workflow...
-#> ℹ [2026-04-02 15:27:32] Checking a list of <Seurat>...
-#> ! [2026-04-02 15:27:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 15:27:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:27:33] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:27:34] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 15:27:34] Number of available HVF: 2000
-#> ℹ [2026-04-02 15:27:34] Finished check
-#> ℹ [2026-04-02 15:27:34] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 15:27:35] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 15:27:39] Use stored estimated dimensions 1:50 for Standardpca
-#> Warning: Caught FutureLaunchError. Canceling all iterations ...
-#> ! [2026-04-02 15:27:39] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:27:39. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-8); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
-#> !                       
-#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
-#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-8 (‘future_lapply-1’)
-#> !                       
-#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
-#> !                       SequentialFuture:
-#> !                       Label: ‘future_lapply-1’
-#> !                       Expression:
-#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
+#> ℹ [2026-04-03 03:14:38] Start standard processing workflow...
+#> ℹ [2026-04-03 03:14:39] Checking a list of <Seurat>...
+#> ! [2026-04-03 03:14:39] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 03:14:39] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:14:41] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:14:41] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 03:14:41] Number of available HVF: 2000
+#> ℹ [2026-04-03 03:14:42] Finished check
+#> ℹ [2026-04-03 03:14:42] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 03:14:42] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 03:14:43] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 03:14:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 03:14:43] Reorder clusters...
+#> ℹ [2026-04-03 03:14:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 03:14:43] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 03:14:43] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 03:14:46] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 03:14:50] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -194,22 +190,20 @@ pancreas_sub <- CellScoring(
   method = "Seurat",
   name = "test"
 )
-#> ℹ [2026-04-02 15:27:39] Start cell scoring
-#> Warning: Layer ‘data’ is empty
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-04-02 15:27:40] Infinite values detected
-#> Warning: Layer ‘data’ is empty
-#> ! [2026-04-02 15:27:40] The following features were filtered because not found in the srt assay: "A" and "B"
-#> ℹ [2026-04-02 15:27:40] Number of feature lists to be scored: 0
-#> Warning: Layer ‘data’ is empty
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowMeans': subscript out of bounds
+#> ℹ [2026-04-03 03:14:50] Start cell scoring
+#> ℹ [2026-04-03 03:14:50] Data type is log-normalized
+#> ℹ [2026-04-03 03:14:50] Number of feature lists to be scored: 2
+#> ℹ [2026-04-03 03:14:50] Using 1 core
+#> ⠙ [2026-04-03 03:14:50] Running for 1 [1/2] ■■■■■■■■■■■■■■■■                  5…
+#> ✔ [2026-04-03 03:14:50] Completed 2 tasks in 140ms
+#> 
+#> ℹ [2026-04-03 03:14:50] Building results
+#> ✔ [2026-04-03 03:14:50] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
-#> Error in CellDimPlot(pancreas_sub, "test_classification"): "test_classification" is not in the meta.data of srt object
+
 
 FeatureDimPlot(pancreas_sub, "test_A")
-#> Error in DefaultReduction(srt): Unable to find any reductions
+
 
 if (FALSE) { # \dontrun{
 data(panc8_sub)
