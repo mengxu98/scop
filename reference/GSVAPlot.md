@@ -446,24 +446,24 @@ GSVAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-03 03:44:00] Start standard processing workflow...
-#> ℹ [2026-04-03 03:44:01] Checking a list of <Seurat>...
-#> ! [2026-04-03 03:44:01] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-03 03:44:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 03:44:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-03 03:44:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-03 03:44:03] Number of available HVF: 2000
-#> ℹ [2026-04-03 03:44:04] Finished check
-#> ℹ [2026-04-03 03:44:04] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-03 03:44:04] Perform pca linear dimension reduction
-#> ℹ [2026-04-03 03:44:05] Use stored estimated dimensions 1:12 for Standardpca
-#> ℹ [2026-04-03 03:44:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-03 03:44:05] Reorder clusters...
-#> ℹ [2026-04-03 03:44:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-03 03:44:05] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-03 03:44:05] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ℹ [2026-04-03 03:44:09] Perform umap nonlinear dimension reduction using Standardpca (1:12)
-#> ✔ [2026-04-03 03:44:13] Standard processing workflow completed
+#> ℹ [2026-04-03 09:21:01] Start standard processing workflow...
+#> ℹ [2026-04-03 09:21:01] Checking a list of <Seurat>...
+#> ! [2026-04-03 09:21:02] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 09:21:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 09:21:03] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 09:21:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 09:21:04] Number of available HVF: 2000
+#> ℹ [2026-04-03 09:21:04] Finished check
+#> ℹ [2026-04-03 09:21:04] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 09:21:05] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 09:21:05] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 09:21:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 09:21:06] Reorder clusters...
+#> ℹ [2026-04-03 09:21:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 09:21:06] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 09:21:06] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 09:21:10] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 09:21:13] Standard processing workflow completed
 pancreas_sub <- RunGSVA(
   pancreas_sub,
   db = "GO_BP",
@@ -472,14 +472,14 @@ pancreas_sub <- RunGSVA(
   method = "gsva",
   kcdf = "Gaussian"
 )
-#> ℹ [2026-04-03 03:44:13] Start GSVA analysis
-#> ℹ [2026-04-03 03:46:28] Averaging expression by "CellType" ...
-#> ℹ [2026-04-03 03:46:28] Aggregated expression matrix: 15998 genes x 5 groups
-#> ℹ [2026-04-03 03:46:28] Species: "Mus_musculus"
-#> ℹ [2026-04-03 03:46:28] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 03:34:12
-#> ℹ [2026-04-03 03:46:30] Processing database: "GO_BP" ...
-#> ℹ [2026-04-03 03:46:31] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
-#> ℹ [2026-04-03 03:46:34] Running GSVA for 5668 gene sets ...
+#> ℹ [2026-04-03 09:21:13] Start GSVA analysis
+#> ℹ [2026-04-03 09:23:24] Averaging expression by "CellType" ...
+#> ℹ [2026-04-03 09:23:24] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-04-03 09:23:24] Species: "Mus_musculus"
+#> ℹ [2026-04-03 09:23:24] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 09:10:33
+#> ℹ [2026-04-03 09:23:26] Processing database: "GO_BP" ...
+#> ℹ [2026-04-03 09:23:27] Initial overlap: 11182 genes out of 15998 expression genes and 16088 genes in gene sets
+#> ℹ [2026-04-03 09:23:29] Running GSVA for 5668 gene sets ...
 #> ℹ GSVA version 2.4.8
 #> ℹ Searching for rows with constant values
 #> ! 2 rows with constant values throughout the columns
@@ -492,8 +492,8 @@ pancreas_sub <- RunGSVA(
 #> ℹ GSVA dense (classical) algorithm
 #> ℹ Calculating GSVA scores
 #> ✔ Calculations finished
-#> ℹ [2026-04-03 03:48:06] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
-#> ✔ [2026-04-03 03:48:06] GSVA analysis done
+#> ℹ [2026-04-03 09:25:02] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-04-03 09:25:02] GSVA analysis done
 
 ht1 <- GSVAPlot(
   pancreas_sub,
@@ -553,7 +553,7 @@ GSVAPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ◌ [2026-04-03 03:48:14] Installing: shadowtext...
+#> ◌ [2026-04-03 09:25:10] Installing: shadowtext...
 #>  
 #> → Will install 2 packages.
 #> → All 2 packages (0 B) are cached.
@@ -562,8 +562,8 @@ GSVAPlot(
 #> ✔ All system requirements are already installed.
 #>   
 #> ℹ No downloads are needed, 2 pkgs are cached
-#> ✔ Got shadowtext 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (237.73 kB)
 #> ✔ Got prettydoc 0.4.1 (x86_64-pc-linux-gnu-ubuntu-24.04) (996.43 kB)
+#> ✔ Got shadowtext 0.1.6 (x86_64-pc-linux-gnu-ubuntu-24.04) (237.73 kB)
 #> ℹ Installing system requirements
 #> ℹ Executing `sudo sh -c apt-get -y update`
 #> Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
@@ -586,11 +586,11 @@ GSVAPlot(
 #> libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
 #> libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).
 #> libpng-dev is already the newest version (1.6.43-5ubuntu0.5).
-#> 0 upgraded, 0 newly installed, 0 to remove and 67 not upgraded.
-#> ✔ Installed prettydoc 0.4.1  (1s)
+#> 0 upgraded, 0 newly installed, 0 to remove and 82 not upgraded.
 #> ✔ Installed shadowtext 0.1.6  (1s)
-#> ✔ 1 pkg + 56 deps: kept 55, added 2, dld 2 (1.23 MB) [5.5s]
-#> ✔ [2026-04-03 03:48:19] shadowtext installed successfully
+#> ✔ Installed prettydoc 0.4.1  (1.1s)
+#> ✔ 1 pkg + 56 deps: kept 54, added 2, dld 2 (1.23 MB) [5.3s]
+#> ✔ [2026-04-03 09:25:15] shadowtext installed successfully
 
 
 GSVAPlot(
