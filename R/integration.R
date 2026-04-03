@@ -263,7 +263,10 @@ find_neighbors_and_clusters <- function(
       srt
     },
     error = function(error) {
-      log_message(error, message_type = "warning", verbose = verbose)
+      err_msg <- conditionMessage(error)
+      err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
+      err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+      log_message(err_msg, message_type = "warning", verbose = verbose)
       log_message(
         "Error when performing {.fn Seurat::FindClusters}. Skip this step",
         message_type = "warning",
@@ -338,11 +341,10 @@ run_nonlinear_reduction <- function(
       srt
     },
     error = function(error) {
-      log_message(
-        error,
-        message_type = "warning",
-        verbose = verbose
-      )
+      err_msg <- conditionMessage(error)
+      err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
+      err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+      log_message(err_msg, message_type = "warning", verbose = verbose)
       log_message(
         "Error when performing nonlinear dimension reduction. Skip this step",
         message_type = "warning",
