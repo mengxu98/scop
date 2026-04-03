@@ -434,6 +434,24 @@ get_top_markers_for_label <- function(de_df_marker, cluster_levels, nlabel, feat
   do.call(rbind, top_marker_list[!sapply(top_marker_list, is.null)])
 }
 
+add_volcano_plot_coords <- function(df, jitter_width = 0.2, jitter_height = 0.2, seed = 11) {
+  df[, "x_plot"] <- df[, "x"]
+  df[, "y_plot"] <- df[, "y"]
+
+  border_idx <- which(df[, "border"] & is.finite(df[, "x"]) & is.finite(df[, "y"]))
+  if (length(border_idx) == 0) {
+    return(df)
+  }
+
+  idx <- seq_along(border_idx)
+  x_offset <- ((((idx * 0.61803398875) + (seed * 0.01)) %% 1) - 0.5) * 2 * jitter_width
+  y_offset <- ((((idx * 0.41421356237) + (seed * 0.01)) %% 1) - 0.5) * 2 * jitter_height
+  df[border_idx, "x_plot"] <- df[border_idx, "x"] + x_offset
+  df[border_idx, "y_plot"] <- df[border_idx, "y"] + y_offset
+
+  df
+}
+
 #' @title DEtest Manhattan Plot
 #'
 #' @description
@@ -938,7 +956,8 @@ VolcanoPlot <- function(
     if (nrow(df) == 0) {
       next
     }
-    x_nudge <- diff(range(df$x)) * 0.05
+    df <- add_volcano_plot_coords(df = df, jitter_width = 0.2, jitter_height = 0.2, seed = 11)
+    x_nudge <- diff(range(df[, "x_plot"], na.rm = TRUE)) * 0.05
     df[, "label"] <- FALSE
     if (is.null(features_label)) {
       df[df[["y"]] >= 0, ][
@@ -952,55 +971,51 @@ VolcanoPlot <- function(
     } else {
       df[df[["gene"]] %in% features_label, "label"] <- TRUE
     }
-    jitter <- position_jitter(width = 0.2, height = 0.2, seed = 11)
     color_by <- ifelse(x_metric == "diff_pct", "avg_log2FC", "diff_pct")
     p <- ggplot() +
       geom_point(
         data = df[!df[["DE"]] & !df[["border"]], , drop = FALSE],
-        aes(x = x, y = y, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
         size = pt.size,
         alpha = pt.alpha
       ) +
       geom_point(
         data = df[!df[["DE"]] & df[["border"]], , drop = FALSE],
-        aes(x = x, y = y, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
         size = pt.size,
-        alpha = pt.alpha,
-        position = jitter
+        alpha = pt.alpha
       ) +
       geom_point(
         data = df[df[["DE"]] & !df[["border"]], , drop = FALSE],
-        aes(x = x, y = y),
+        aes(x = x_plot, y = y_plot),
         color = cols.highlight,
         size = sizes.highlight + stroke.highlight,
         alpha = alpha.highlight
       ) +
       geom_point(
         data = df[df[["DE"]] & df[["border"]], , drop = FALSE],
-        aes(x = x, y = y),
+        aes(x = x_plot, y = y_plot),
         color = cols.highlight,
         size = sizes.highlight + stroke.highlight,
-        alpha = alpha.highlight,
-        position = jitter
+        alpha = alpha.highlight
       ) +
       geom_point(
         data = df[df[["DE"]] & !df[["border"]], , drop = FALSE],
-        aes(x = x, y = y, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
         size = pt.size,
         alpha = pt.alpha
       ) +
       geom_point(
         data = df[df[["DE"]] & df[["border"]], , drop = FALSE],
-        aes(x = x, y = y, color = .data[[color_by]]),
+        aes(x = x_plot, y = y_plot, color = .data[[color_by]]),
         size = pt.size,
-        alpha = pt.alpha,
-        position = jitter
+        alpha = pt.alpha
       ) +
       geom_hline(yintercept = 0, color = "black", linetype = 1) +
       geom_vline(xintercept = 0, color = "grey", linetype = 2) +
       ggrepel::geom_text_repel(
         data = df[df[["label"]], , drop = FALSE],
-        aes(x = x, y = y, label = gene),
+        aes(x = x_plot, y = y_plot, label = gene),
         min.segment.length = 0,
         max.overlaps = 100,
         segment.colour = "grey40",
@@ -1009,7 +1024,7 @@ VolcanoPlot <- function(
         bg.r = label.bg.r,
         size = label.size,
         force = 20,
-        nudge_x = ifelse(df[df[["label"]], "y"] >= 0, -x_nudge, x_nudge)
+        nudge_x = ifelse(df[df[["label"]], "y_plot"] >= 0, -x_nudge, x_nudge)
       ) +
       labs(x = xlab, y = ylab) +
       scale_color_gradientn(
