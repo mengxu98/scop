@@ -43,9 +43,9 @@ ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 #> 2 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #> 3 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
 #>                                 comment  timestamp                       date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775187252  2026-04-03 03:34:12.02593
-#> 2        CSPA nterm:1|Mus_musculus-CSPA 1775185094 2026-04-03 02:58:14.068139
-#> 3   AnimalTFDB4 nterm:2|Mus_musculus-TF 1775185082  2026-04-03 02:58:01.96021
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775207434 2026-04-03 09:10:33.631413
+#> 2        CSPA nterm:1|Mus_musculus-CSPA 1775205562 2026-04-03 08:39:21.591587
+#> 3   AnimalTFDB4 nterm:2|Mus_musculus-TF 1775205549 2026-04-03 08:39:08.876754
 #>            db_version            db_name
 #> 1  3.22.0 nterm:15169 Mus_musculus-GO_BP
 #> 2        CSPA nterm:1  Mus_musculus-CSPA
@@ -61,8 +61,8 @@ ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 ListDB(species = "Mus_musculus", db = "GO_BP")
 #>                                                         identifier version
 #> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7
-#>                                 comment  timestamp                      date
-#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775187252 2026-04-03 03:34:12.02593
+#>                                 comment  timestamp                       date
+#> 1 3.22.0 nterm:15169|Mus_musculus-GO_BP 1775207434 2026-04-03 09:10:33.631413
 #>           db_version            db_name
 #> 1 3.22.0 nterm:15169 Mus_musculus-GO_BP
 #>                                                                    file

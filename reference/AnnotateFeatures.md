@@ -112,9 +112,9 @@ pancreas_sub <- AnnotateFeatures(
     "CSPA"
   )
 )
-#> ℹ [2026-04-03 02:58:01] Species: "Mus_musculus"
-#> ℹ [2026-04-03 02:58:01] Preparing database: TF
-#> ℹ [2026-04-03 02:58:13] Preparing database: CSPA
+#> ℹ [2026-04-03 08:39:08] Species: "Mus_musculus"
+#> ℹ [2026-04-03 08:39:08] Preparing database: TF
+#> ℹ [2026-04-03 08:39:20] Preparing database: CSPA
 head(
   GetFeaturesData(
     pancreas_sub
