@@ -86,7 +86,10 @@ RunDoubletCalling <- function(
         )
       },
       error = function(e) {
-        log_message(e, message_type = "error")
+        err_msg <- conditionMessage(e)
+        err_msg <- gsub("{", "{{", err_msg, fixed = TRUE)
+        err_msg <- gsub("}", "}}", err_msg, fixed = TRUE)
+        log_message(err_msg, message_type = "error")
       }
     )
     return(srt)
