@@ -256,69 +256,39 @@ DEtestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 15:29:57] Start standard processing workflow...
-#> ℹ [2026-04-02 15:29:57] Checking a list of <Seurat>...
-#> ! [2026-04-02 15:29:57] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 15:29:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:29:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:29:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 15:29:59] Number of available HVF: 2000
-#> ℹ [2026-04-02 15:30:00] Finished check
-#> ℹ [2026-04-02 15:30:00] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 15:30:00] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 15:30:05] Use stored estimated dimensions 1:50 for Standardpca
-#> Warning: Caught FutureLaunchError. Canceling all iterations ...
-#> ! [2026-04-02 15:30:05] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:30:05. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-12); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
-#> !                       
-#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
-#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-12 (‘future_lapply-1’)
-#> !                       
-#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
-#> !                       SequentialFuture:
-#> !                       Label: ‘future_lapply-1’
-#> !                       Expression:
-#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
+#> ℹ [2026-04-03 03:21:04] Start standard processing workflow...
+#> ℹ [2026-04-03 03:21:05] Checking a list of <Seurat>...
+#> ! [2026-04-03 03:21:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 03:21:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:21:07] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:21:07] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 03:21:07] Number of available HVF: 2000
+#> ℹ [2026-04-03 03:21:07] Finished check
+#> ℹ [2026-04-03 03:21:08] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 03:21:08] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 03:21:08] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 03:21:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 03:21:09] Reorder clusters...
+#> ℹ [2026-04-03 03:21:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 03:21:09] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 03:21:09] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 03:21:12] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 03:21:16] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> Warning: Layer ‘data’ is empty
-#> Warning: no non-missing arguments to min; returning Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> ! [2026-04-02 15:30:11] Infinite values detected
-#> ! [2026-04-02 15:30:11] Data in the 'data' layer is unknown. Please check the data type
-#> ℹ [2026-04-02 15:30:11] Start differential expression test
-#> ℹ [2026-04-02 15:30:11] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-02 15:30:11] Using 1 core
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> ⠙ [2026-04-02 15:30:11] Running for Ductal [1/5] ■■■■■■■                       …
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> ✔ [2026-04-02 15:30:11] Completed 5 tasks in 40ms
+#> ℹ [2026-04-03 03:21:16] Data type is log-normalized
+#> ℹ [2026-04-03 03:21:16] Start differential expression test
+#> ℹ [2026-04-03 03:21:16] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-03 03:21:16] Using 1 core
+#> ⠙ [2026-04-03 03:21:16] Running for Ductal [1/5] ■■■■■■■                       …
+#> ⠹ [2026-04-03 03:21:16] Running for Endocrine [3/5] ■■■■■■■■■■■■■■■■■■■        …
+#> ✔ [2026-04-03 03:21:16] Completed 5 tasks in 917ms
 #> 
-#> ℹ [2026-04-02 15:30:11] Building results
-#> ! [2026-04-02 15:30:11] Found 5 failed results
-#> ℹ [2026-04-02 15:30:11] ✖ Error details:
-#> ℹ                       ✖ "Ductal": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> ℹ                       ✖ "Ngn3-high-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> ℹ                       ✖ "Endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> ℹ                       ✖ "Ngn3-low-EP": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> ℹ                       ✖ "Pre-endocrine": error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-04-03 03:21:16] Building results
+#> ✔ [2026-04-03 03:21:17] Differential expression test completed
 
 DEtestPlot(
   pancreas_sub,
@@ -326,24 +296,21 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "manhattan"
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 DEtestPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "ring"
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Cannot find the DEtest result for the group "CellType". Perform
-#> `RunDEtest()` first
+
 
 de_results1 <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEtestPlot(
@@ -351,7 +318,7 @@ DEtestPlot(
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in DEtestPlot(res = de_results1, plot_type = "volcano", ncol = 2): argument "srt" is missing, with no default
+
 
 de_results2 <- Seurat::FindMarkers(
   pancreas_sub,
@@ -359,57 +326,24 @@ de_results2 <- Seurat::FindMarkers(
   ident.1 = "Ductal",
   ident.2 = "Endocrine"
 )
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
 DEtestPlot(
   res = de_results2,
   plot_type = "volcano"
 )
-#> Error: object 'de_results2' not found
+
 
 de_results3 <- Seurat::FindAllMarkers(
   pancreas_sub,
   group.by = "CellType"
 )
 #> Calculating cluster Ductal
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
 #> Calculating cluster Ngn3-high-EP
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
 #> Calculating cluster Endocrine
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
 #> Calculating cluster Ngn3-low-EP
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
 #> Calculating cluster Pre-endocrine
-#> Warning: No layers found matching search pattern provided
-#> Warning: Layer ‘data’ is empty
-#> Warning: Layer ‘data’ is empty
-#> Warning: No DE genes identified
-#> Warning: The following tests were not performed: 
-#> Warning: When testing Ductal versus all:
-#>  error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> Warning: When testing Ngn3-high-EP versus all:
-#>  error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> Warning: When testing Endocrine versus all:
-#>  error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> Warning: When testing Ngn3-low-EP versus all:
-#>  error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
-#> Warning: When testing Pre-endocrine versus all:
-#>  error in evaluating the argument 'x' in selecting a method for function 'rowSums': subscript out of bounds
 DEtestPlot(
   res = de_results3,
   plot_type = "volcano",
   ncol = 2
 )
-#> Error in get_de_data(srt, group.by, test.use, DE_threshold, res): Missing required column: "gene". Please provide gene names in a 'gene'
-#> column or as row names.
 ```

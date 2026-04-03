@@ -221,46 +221,37 @@ Enrichment result is a list with the following component:
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:40:11] Start standard processing workflow...
-#> ℹ [2026-04-02 16:40:12] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:40:12] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:40:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:40:14] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:40:14] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:40:14] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:40:14] Finished check
-#> ℹ [2026-04-02 16:40:15] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:40:15] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:40:19] Use stored estimated dimensions 1:50 for Standardpca
-#> ℹ [2026-04-02 16:40:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-02 16:40:19] Reorder clusters...
-#> ℹ [2026-04-02 16:40:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ! [2026-04-02 16:40:19] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
-#> ! [2026-04-02 16:40:19] Error when performing `Seurat::FindClusters()`. Skip it
-#> ℹ [2026-04-02 16:40:19] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-02 16:40:19] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-04-02 16:40:22] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-04-02 16:40:25] Standard processing workflow completed
+#> ℹ [2026-04-03 04:24:29] Start standard processing workflow...
+#> ℹ [2026-04-03 04:24:30] Checking a list of <Seurat>...
+#> ! [2026-04-03 04:24:30] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 04:24:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:24:32] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:24:32] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 04:24:32] Number of available HVF: 2000
+#> ℹ [2026-04-03 04:24:33] Finished check
+#> ℹ [2026-04-03 04:24:33] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 04:24:33] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 04:24:34] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 04:24:34] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 04:24:34] Reorder clusters...
+#> ℹ [2026-04-03 04:24:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 04:24:35] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 04:24:35] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 04:24:39] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 04:24:44] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-04-02 16:40:31] Data type is log-normalized
-#> ℹ [2026-04-02 16:40:31] Start differential expression test
-#> ℹ [2026-04-02 16:40:31] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-04-02 16:40:31] Using 1 core
-#> ⠙ [2026-04-02 16:40:31] Running for Ductal [1/5] ■■■■■■■                       …
-#> ✔ [2026-04-02 16:40:31] Completed 5 tasks in 647ms
+#> ℹ [2026-04-03 04:24:44] Data type is log-normalized
+#> ℹ [2026-04-03 04:24:44] Start differential expression test
+#> ℹ [2026-04-03 04:24:44] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-04-03 04:24:44] Using 1 core
+#> ⠙ [2026-04-03 04:24:44] Running for Ductal [1/5] ■■■■■■■                       …
+#> ✔ [2026-04-03 04:24:44] Completed 5 tasks in 785ms
 #> 
-#> ℹ [2026-04-02 16:40:31] Building results
-#> ! [2026-04-02 16:40:31] Found 5 failed results
-#> ℹ [2026-04-02 16:40:31] ✖ Error details:
-#> ℹ                       ✖ "Ductal": The total size of the 3 globals exported for future expression (‘FUN()’) is 556.27 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.94 MiB of class ‘function’), ‘data.use’ (4.32 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
-#> ℹ                       ✖ "Ngn3-high-EP": The total size of the 3 globals exported for future expression (‘FUN()’) is 551.18 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (548.54 MiB of class ‘function’), ‘data.use’ (2.63 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
-#> ℹ                       ✖ "Endocrine": The total size of the 3 globals exported for future expression (‘FUN()’) is 556.21 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.90 MiB of class ‘function’), ‘data.use’ (4.30 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
-#> ℹ                       ✖ "Ngn3-low-EP": The total size of the 3 globals exported for future expression (‘FUN()’) is 553.31 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (549.99 MiB of class ‘function’), ‘data.use’ (3.33 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
-#> ℹ                       ✖ "Pre-endocrine": The total size of the 3 globals exported for future expression (‘FUN()’) is 554.90 MiB. This exceeds the maximum allowed size 500.00 MiB per plan() argument 'maxSizeOfObjects'. This limit is set to protect against transfering too large objects to parallel workers by mistake, which may not be intended and could be costly. See help("future.globals.maxSize", package = "future") for how to adjust or remove the default threshold via an R option There are three globals: ‘FUN’ (551.03 MiB of class ‘function’), ‘data.use’ (3.87 MiB of class ‘S4’) and ‘j’ (133 bytes of class ‘numeric’)
-#> Error in `[.data.frame`(AllMarkers, , "group1"): undefined columns selected
+#> ℹ [2026-04-03 04:24:44] Building results
+#> ✔ [2026-04-03 04:24:45] Differential expression test completed
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
@@ -268,16 +259,26 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-02 16:40:31] Start Enrichment analysis
-#> Error in RunEnrichment(pancreas_sub, group.by = "CellType", DE_threshold = "p_val_adj < 0.05",     db = "GO_BP", species = "Mus_musculus"): Cannot find the DEtest result for the group "CellType". You may perform
-#> `RunDEtest()` first
+#> ℹ [2026-04-03 04:24:45] Start Enrichment analysis
+#> ℹ [2026-04-03 04:24:45] Species: "Mus_musculus"
+#> ℹ [2026-04-03 04:24:45] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 03:34:12
+#> ℹ [2026-04-03 04:24:46] Permform enrichment...
+#> ℹ [2026-04-03 04:24:46] Using 1 core
+#> ⠙ [2026-04-03 04:24:46] Running for 1 [1/5] ■■■■■■■                           2…
+#> ⠹ [2026-04-03 04:24:46] Running for 2 [2/5] ■■■■■■■■■■■■■                     4…
+#> ⠸ [2026-04-03 04:24:46] Running for 3 [3/5] ■■■■■■■■■■■■■■■■■■■               6…
+#> ⠼ [2026-04-03 04:24:46] Running for 4 [4/5] ■■■■■■■■■■■■■■■■■■■■■■■■■         8…
+#> ✔ [2026-04-03 04:24:46] Completed 5 tasks in 1m 14.5s
+#> 
+#> ℹ [2026-04-03 04:24:46] Building results
+#> ✔ [2026-04-03 04:26:01] Enrichment analysis done
 EnrichmentPlot(
   pancreas_sub,
   db = "GO_BP",
   group.by = "CellType",
   plot_type = "comparison"
 )
-#> Error in EnrichmentPlot(pancreas_sub, db = "GO_BP", group.by = "CellType",     plot_type = "comparison"): No enrichment result found. You may perform RunEnrichment first
+
 
 if (FALSE) { # \dontrun{
 pancreas_sub <- RunEnrichment(

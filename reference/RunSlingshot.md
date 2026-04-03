@@ -82,7 +82,8 @@ RunSlingshot(
 
 - ...:
 
-  Additional arguments to be passed to the slingshot::slingshot
+  Additional arguments to be passed to the
+  [slingshot::slingshot](https://rdrr.io/pkg/slingshot/man/slingshot.html)
   function.
 
 ## See also
@@ -96,38 +97,52 @@ RunSlingshot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:52:10] Start standard processing workflow...
-#> ℹ [2026-04-02 16:52:11] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:52:11] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:52:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:52:12] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:52:13] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:52:13] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:52:13] Finished check
-#> ℹ [2026-04-02 16:52:13] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:52:14] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:52:17] Use stored estimated dimensions 1:50 for Standardpca
-#> ℹ [2026-04-02 16:52:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-02 16:52:18] Reorder clusters...
-#> ℹ [2026-04-02 16:52:18] Skip `log1p()` because `layer = data` is not "counts"
-#> ! [2026-04-02 16:52:18] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
-#> ! [2026-04-02 16:52:18] Error when performing `Seurat::FindClusters()`. Skip it
-#> ℹ [2026-04-02 16:52:18] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-02 16:52:18] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-04-02 16:52:21] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-04-02 16:52:24] Standard processing workflow completed
+#> ℹ [2026-04-03 04:43:06] Start standard processing workflow...
+#> ℹ [2026-04-03 04:43:06] Checking a list of <Seurat>...
+#> ! [2026-04-03 04:43:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 04:43:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:43:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:43:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 04:43:09] Number of available HVF: 2000
+#> ℹ [2026-04-03 04:43:09] Finished check
+#> ℹ [2026-04-03 04:43:10] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 04:43:10] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 04:43:10] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 04:43:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 04:43:11] Reorder clusters...
+#> ℹ [2026-04-03 04:43:11] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 04:43:11] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 04:43:11] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 04:43:16] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 04:43:21] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "PCA"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -135,7 +150,7 @@ CellDimPlot(
   lineages = paste0("Lineage", 1:2),
   lineages_span = 0.1
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1): Lineage "Lineage1" is not in the meta.data of srt object
+
 
 # 3D lineage
 pancreas_sub <- RunSlingshot(
@@ -143,7 +158,6 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "StandardpcaUMAP3D"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
 CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -152,5 +166,4 @@ CellDimPlot(
   lineages_span = 0.1,
   lineages_trim = c(0.05, 0.95)
 )
-#> Error in CellDimPlot(pancreas_sub, group.by = "SubCellType", reduction = "UMAP",     lineages = paste0("Lineage", 1:2), lineages_span = 0.1, lineages_trim = c(0.05,         0.95)): Lineage "Lineage1" is not in the meta.data of srt object
 ```

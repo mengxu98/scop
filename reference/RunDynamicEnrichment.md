@@ -171,48 +171,55 @@ RunDynamicEnrichment(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:39:27] Start standard processing workflow...
-#> ℹ [2026-04-02 16:39:28] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:39:28] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:39:28] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:39:30] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:39:30] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:39:30] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:39:30] Finished check
-#> ℹ [2026-04-02 16:39:31] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:39:31] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:39:35] Use stored estimated dimensions 1:50 for Standardpca
-#> ℹ [2026-04-02 16:39:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-02 16:39:35] Reorder clusters...
-#> ℹ [2026-04-02 16:39:35] Skip `log1p()` because `layer = data` is not "counts"
-#> ! [2026-04-02 16:39:35] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
-#> ! [2026-04-02 16:39:35] Error when performing `Seurat::FindClusters()`. Skip it
-#> ℹ [2026-04-02 16:39:35] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-02 16:39:35] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-04-02 16:39:38] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-04-02 16:39:41] Standard processing workflow completed
+#> ℹ [2026-04-03 04:19:56] Start standard processing workflow...
+#> ℹ [2026-04-03 04:19:57] Checking a list of <Seurat>...
+#> ! [2026-04-03 04:19:57] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 04:19:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:19:59] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:19:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 04:20:00] Number of available HVF: 2000
+#> ℹ [2026-04-03 04:20:00] Finished check
+#> ℹ [2026-04-03 04:20:00] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 04:20:00] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 04:20:01] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 04:20:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 04:20:01] Reorder clusters...
+#> ℹ [2026-04-03 04:20:02] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 04:20:02] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 04:20:02] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 04:20:06] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 04:20:11] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "CellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = "Lineage1",
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-04-02 16:39:46] Start find dynamic features
-#> ℹ [2026-04-02 16:39:47] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 04:20:12] Start find dynamic features
+#> ℹ [2026-04-03 04:20:12] Data type is raw counts
+#> ℹ [2026-04-03 04:20:13] Number of candidate features (union): 200
+#> ℹ [2026-04-03 04:20:13] Data type is raw counts
+#> ℹ [2026-04-03 04:20:13] Calculating dynamic features for "Lineage1"...
+#> ✔ [2026-04-03 04:20:14] Find dynamic features done
 ht1 <- DynamicHeatmap(
   pancreas_sub,
   lineages = "Lineage1",
   cell_annotation = "CellType",
   n_split = 3
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = "Lineage1", cell_annotation = "CellType",     n_split = 3): Lineages: Lineage1 is not in the meta data of <Seurat>
+#> ℹ [2026-04-03 04:20:14] [1] 133 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Ins1,Ins2,Nnat,Iapp,Lrpprc,Npy,Chgb,Slc38a5,2810417H13Rik,Rbp4...
+#> ℹ [2026-04-03 04:20:15] 
+#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+
 
 pancreas_sub <- RunDynamicEnrichment(
   pancreas_sub,
@@ -221,8 +228,38 @@ pancreas_sub <- RunDynamicEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> Error in RunDynamicEnrichment(pancreas_sub, lineages = "Lineage1", score_method = "AUCell",     db = "GO_BP", species = "Mus_musculus"): "Lineage1" info not found in the srt object. Should perform
-#> `RunDynamicFeatures()` first
+#> ℹ [2026-04-03 04:20:16] Species: "Mus_musculus"
+#> ℹ [2026-04-03 04:20:16] Loading cached: GO_BP version: 3.22.0 nterm:15169 created: 2026-04-03 03:34:12
+#> ℹ [2026-04-03 04:20:18] Start cell scoring
+#> ℹ [2026-04-03 04:20:19] Data type is log-normalized
+#> ℹ [2026-04-03 04:20:20] Number of feature lists to be scored: 2736
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> Warning: Feature names cannot have underscores ('_'), replacing with dashes ('-')
+#> ✔ [2026-04-03 04:22:22] Cell scoring completed
+#> ℹ [2026-04-03 04:22:22] Start find dynamic features
+#> ℹ [2026-04-03 04:22:23] Data type is log-normalized
+#> ℹ [2026-04-03 04:22:23] Number of candidate features (union): 2736
+#> ℹ [2026-04-03 04:22:23] Data type is log-normalized
+#> ℹ [2026-04-03 04:22:23] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 04:22:23] Using 1 core
+#> ⠙ [2026-04-03 04:22:23] Running for GO-BP-2..deoxyribonucleotide.biosynthetic.p…
+#> ⠹ [2026-04-03 04:22:23] Running for GO-BP-cGAS.STING.signaling.pathway [208/273…
+#> ⠸ [2026-04-03 04:22:23] Running for GO-BP-cochlea.development [423/2736] ■■■■■■…
+#> ⠼ [2026-04-03 04:22:23] Running for GO-BP-gastrulation [633/2736] ■■■■■■■■     …
+#> ⠴ [2026-04-03 04:22:23] Running for GO-BP-lymph.node.development [849/2736] ■■■…
+#> ⠦ [2026-04-03 04:22:23] Running for GO-BP-negative.regulation.of.actin.filament…
+#> ⠧ [2026-04-03 04:22:23] Running for GO-BP-nephron.tubule.formation [1280/2736] …
+#> ⠇ [2026-04-03 04:22:23] Running for GO-BP-positive.regulation.of.behavior [1496…
+#> ⠏ [2026-04-03 04:22:23] Running for GO-BP-positive.regulation.of.reproductive.p…
+#> ⠋ [2026-04-03 04:22:23] Running for GO-BP-regulation.of.amine.metabolic.process…
+#> ⠙ [2026-04-03 04:22:23] Running for GO-BP-regulation.of.lipopolysaccharide.medi…
+#> ⠹ [2026-04-03 04:22:23] Running for GO-BP-regulation.of.stress.activated.MAPK.c…
+#> ⠸ [2026-04-03 04:22:23] Running for GO-BP-serotonin.transport [2553/2736] ■■■■■…
+#> ✔ [2026-04-03 04:22:23] Completed 2736 tasks in 38.5s
+#> 
+#> ℹ [2026-04-03 04:22:23] Building results
+#> ✔ [2026-04-03 04:23:02] Find dynamic features done
+#> ✔ [2026-04-03 04:23:02] Dynamic enrichment analysis completed
 ht2 <- DynamicHeatmap(
   pancreas_sub,
   assay = "GO_BP",
@@ -231,5 +268,11 @@ ht2 <- DynamicHeatmap(
   n_split = 3,
   split_method = "kmeans-peaktime"
 )
-#> Error in DynamicHeatmap(pancreas_sub, assay = "GO_BP", lineages = "Lineage1_GO_BP",     cell_annotation = "CellType", n_split = 3, split_method = "kmeans-peaktime"): Lineages: Lineage1_GO_BP is not in the meta data of <Seurat>
+#> ℹ [2026-04-03 04:23:02] [1] 1899 features from Lineage1_GO_BP passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       GO-BP-2..deoxyribonucleotide.biosynthetic.process,GO-BP-2..deoxyribonucleotide.metabolic.process,GO-BP-ADP.catabolic.process,GO-BP-ADP.metabolic.process,GO-BP-ATP.metabolic.process,GO-BP-ATP.synthesis.coupled.electron.transport,GO-BP-B.cell.activation,GO-BP-B.cell.apoptotic.process,GO-BP-B.cell.proliferation,GO-BP-CENP.A.containing.chromatin.assembly...
+#> ! [2026-04-03 04:23:02] The values in the 'counts' layer are non-integer. Set the library size to 1.
+#> ℹ [2026-04-03 04:23:03] 
+#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 ```

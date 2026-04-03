@@ -341,41 +341,33 @@ A ggplot, patchwork, or recorded plot object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 15:24:26] Start standard processing workflow...
-#> ℹ [2026-04-02 15:24:27] Checking a list of <Seurat>...
-#> ! [2026-04-02 15:24:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 15:24:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:24:29] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 15:24:29] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 15:24:29] Number of available HVF: 2000
-#> ℹ [2026-04-02 15:24:30] Finished check
-#> ℹ [2026-04-02 15:24:30] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 15:24:30] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 15:24:35] Use stored estimated dimensions 1:50 for Standardpca
-#> Warning: Caught FutureLaunchError. Canceling all iterations ...
-#> ! [2026-04-02 15:24:35] <FutureLaunchError: Caught an unexpected error of class FutureLaunchError when trying to launch future (‘future_lapply-1’) on backend of class SequentialFutureBackend. The reason was: future::evalFuture() failed on runnervmrg6be (pid 85355) at 2026-04-02T15:24:35. Using package 'future' v1.70.0. Possible other reasons: Failed to attach one or more future-backend packages: there is no package called ‘future’ [future <unnamed>; on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>] [future ‘future_lapply-1’ (4a75d434f7a9a2903adedbeee3372830-2); on 4a75d434f7a9a2903adedbeee3372830@runnervmrg6be<85355>]>
-#> !                       
-#> !                       Occurred on: 4a75d434f7a9a2903adedbeee3372830 [runnervmrg6be; pid 85355]
-#> !                       Future: 4a75d434f7a9a2903adedbeee3372830-2 (‘future_lapply-1’)
-#> !                       
-#> !                       DEBUG: BEGIN TROUBLESHOOTING HELP
-#> !                       SequentialFuture:
-#> !                       Label: ‘future_lapply-1’
-#> !                       Expression:
-#> Error in glue(str, .envir = .envir, .transformer = transformer, .cli = TRUE,     .trim = .trim): Expecting '}'
+#> ℹ [2026-04-03 03:01:45] Start standard processing workflow...
+#> ℹ [2026-04-03 03:01:45] Checking a list of <Seurat>...
+#> ! [2026-04-03 03:01:45] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 03:01:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:01:47] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 03:01:47] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 03:01:47] Number of available HVF: 2000
+#> ℹ [2026-04-03 03:01:48] Finished check
+#> ℹ [2026-04-03 03:01:48] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 03:01:49] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 03:01:49] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 03:01:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 03:01:50] Reorder clusters...
+#> ℹ [2026-04-03 03:01:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 03:01:50] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 03:01:50] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 03:01:52] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 03:01:54] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
-#> Error in object[[reduction]]: ‘Standardpca’ not found in this Seurat object
-#>  
 ct <- as.character(pancreas_sub$CellType)
 ct_medians <- tapply(pc1, ct, median)
-#> Error: object 'pc1' not found
 pancreas_sub$Condition <- ifelse(
   pc1 > ct_medians[ct],
   "ConditionA",
   "ConditionB"
 )
-#> Error: object 'pc1' not found
 
 pancreas_sub <- RunCellChat(
   pancreas_sub,
@@ -384,8 +376,28 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-02 15:24:35] Start CellChat analysis
-#> Error in RunCellChat(pancreas_sub, group.by = "CellType", group_column = "Condition",     group_cmp = list(c("ConditionA", "ConditionB")), species = "Mus_musculus"): "Condition" does not exist in <Seurat>
+#> ℹ [2026-04-03 03:01:54] Start CellChat analysis
+#> ℹ [2026-04-03 03:03:41] Processing condition: "ConditionA"
+#> Warning: The following arguments are not used: drop
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-03 03:03:42.955299]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-03 03:04:01.844747]"
+#> ℹ [2026-04-03 03:04:01] Processing condition: "ConditionB"
+#> Warning: The following arguments are not used: drop
+#> [1] "Create a CellChat object from a data matrix"
+#> Set cell identities for the new CellChat object 
+#> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine 
+#> The number of highly variable ligand-receptor pairs used for signaling inference is 601 
+#> triMean is used for calculating the average gene expression per cell group. 
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-04-03 03:04:03.045349]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-04-03 03:04:24.230429]"
+#> ℹ [2026-04-03 03:04:24] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
+#> ✔ [2026-04-03 03:04:24] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -396,8 +408,8 @@ CCCNetworkPlot(
   value = "count",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -408,8 +420,8 @@ CCCNetworkPlot(
   value = "weight",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -419,8 +431,8 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 12
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -434,8 +446,7 @@ CCCNetworkPlot(
   directed = TRUE,
   top_n = 3
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -445,8 +456,7 @@ CCCNetworkPlot(
   display_by = "interaction",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -456,8 +466,7 @@ CCCNetworkPlot(
   display_by = "interaction",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -467,8 +476,7 @@ CCCNetworkPlot(
   display_by = "aggregation",
   top_n = 20
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -480,8 +488,7 @@ CCCNetworkPlot(
   top_n = 20,
   label = TRUE
 )
-#> Error in get_dataset_object(srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -490,8 +497,8 @@ CCCNetworkPlot(
   plot_type = "pathway",
   signaling = "MK"
 )
-#> Error in get_dataset_object(srt = srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -501,8 +508,8 @@ CCCNetworkPlot(
   signaling = "MK",
   pairLR.use = "MDK_SDC1"
 )
-#> Error in get_dataset_object(srt = srt, condition = condition, dataset = dataset): Unable to determine which CellChat object to plot. Please specify
-#> `condition`
+
+
 
 CCCNetworkPlot(
   pancreas_sub,
@@ -511,5 +518,5 @@ CCCNetworkPlot(
   plot_type = "diff_network",
   measure = "count"
 )
-#> Error in .cc_get_cmp(srt = srt, condition = condition): Comparison "ConditionA_vs_ConditionB" not found in CellChat results
+
 ```

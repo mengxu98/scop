@@ -140,32 +140,38 @@ https://doi.org/10.1186/s13059-026-03994-3
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-02 16:39:47] Start standard processing workflow...
-#> ℹ [2026-04-02 16:39:48] Checking a list of <Seurat>...
-#> ! [2026-04-02 16:39:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-02 16:39:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:39:50] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-02 16:39:50] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-02 16:39:50] Number of available HVF: 2000
-#> ℹ [2026-04-02 16:39:50] Finished check
-#> ℹ [2026-04-02 16:39:51] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-02 16:39:51] Perform pca linear dimension reduction
-#> ℹ [2026-04-02 16:39:55] Use stored estimated dimensions 1:50 for Standardpca
-#> ℹ [2026-04-02 16:39:55] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-02 16:39:55] Reorder clusters...
-#> ℹ [2026-04-02 16:39:55] Skip `log1p()` because `layer = data` is not "counts"
-#> ! [2026-04-02 16:39:55] <packageNotFoundError in loadNamespace(x): there is no package called ‘proxyC’>
-#> ! [2026-04-02 16:39:55] Error when performing `Seurat::FindClusters()`. Skip it
-#> ℹ [2026-04-02 16:39:55] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-02 16:39:55] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ℹ [2026-04-02 16:39:59] Perform umap nonlinear dimension reduction using Standardpca (1:50)
-#> ✔ [2026-04-02 16:40:02] Standard processing workflow completed
+#> ℹ [2026-04-03 04:23:14] Start standard processing workflow...
+#> ℹ [2026-04-03 04:23:15] Checking a list of <Seurat>...
+#> ! [2026-04-03 04:23:15] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-03 04:23:15] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:23:17] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-03 04:23:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-03 04:23:18] Number of available HVF: 2000
+#> ℹ [2026-04-03 04:23:18] Finished check
+#> ℹ [2026-04-03 04:23:18] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-03 04:23:18] Perform pca linear dimension reduction
+#> ℹ [2026-04-03 04:23:19] Use stored estimated dimensions 1:12 for Standardpca
+#> ℹ [2026-04-03 04:23:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-03 04:23:19] Reorder clusters...
+#> ℹ [2026-04-03 04:23:20] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-03 04:23:20] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-03 04:23:20] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ℹ [2026-04-03 04:23:24] Perform umap nonlinear dimension reduction using Standardpca (1:12)
+#> ✔ [2026-04-03 04:23:29] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",
   reduction = "UMAP"
 )
-#> Error in loadNamespace(x): there is no package called ‘slingshot’
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 15 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+#> Warning: Removed 3 rows containing missing values or values outside the scale range
+#> (`geom_path()`).
+
 
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
@@ -173,18 +179,51 @@ pancreas_sub <- RunDynamicFeatures(
   n_candidates = 200,
   fit_method = "gam"
 )
-#> ℹ [2026-04-02 16:40:06] Start find dynamic features
-#> ℹ [2026-04-02 16:40:08] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 04:23:31] Start find dynamic features
+#> ℹ [2026-04-03 04:23:32] Data type is raw counts
+#> ℹ [2026-04-03 04:23:34] Number of candidate features (union): 223
+#> ℹ [2026-04-03 04:23:34] Data type is raw counts
+#> ℹ [2026-04-03 04:23:34] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 04:23:34] Using 1 core
+#> ⠙ [2026-04-03 04:23:34] Running for Ghrl [1/223] ■                             …
+#> ⠹ [2026-04-03 04:23:34] Running for Cdkn1a [12/223] ■■■                        …
+#> ⠸ [2026-04-03 04:23:34] Running for Igfbp2 [93/223] ■■■■■■■■■■■■■■             …
+#> ⠼ [2026-04-03 04:23:34] Running for Ube2c [170/223] ■■■■■■■■■■■■■■■■■■■■■■■■   …
+#> ✔ [2026-04-03 04:23:34] Completed 223 tasks in 8.5s
+#> 
+#> ℹ [2026-04-03 04:23:34] Building results
+#> ℹ [2026-04-03 04:23:43] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-03 04:23:43] Using 1 core
+#> ⠙ [2026-04-03 04:23:43] Running for Gadd45a [27/223] ■■■■■                     …
+#> ⠹ [2026-04-03 04:23:43] Running for Spc24 [99/223] ■■■■■■■■■■■■■■              …
+#> ⠸ [2026-04-03 04:23:43] Running for Hmmr [173/223] ■■■■■■■■■■■■■■■■■■■■■■■■    …
+#> ✔ [2026-04-03 04:23:43] Completed 223 tasks in 8.7s
+#> 
+#> ℹ [2026-04-03 04:23:43] Building results
+#> ✔ [2026-04-03 04:23:52] Find dynamic features done
 
 names(
   pancreas_sub@tools$DynamicFeatures_Lineage1
 )
-#> NULL
+#> [1] "DynamicFeatures" "raw_matrix"      "fitted_matrix"   "upr_matrix"     
+#> [5] "lwr_matrix"      "libsize"         "lineages"        "family"         
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
-#> NULL
+#>      features exp_ncells      r.sq  dev.expl peaktime  valleytime pvalue
+#> Ghrl     Ghrl        159 0.2808128 0.6151289 25.25569  0.09701269      0
+#> Gcg       Gcg        176 0.6329316 0.8037828 28.09067 15.22083623      0
+#> Iapp     Iapp        270 0.3098506 0.7603657 28.09067  0.09701269      0
+#> Pyy       Pyy        411 0.4122953 0.7180595 26.78263  0.09701269      0
+#> Rbp4     Rbp4        388 0.4207574 0.7013749 26.23850 13.92893485      0
+#> Chgb     Chgb        268 0.4884483 0.7313913 21.51067  0.09701269      0
+#>      padjust
+#> Ghrl       0
+#> Gcg        0
+#> Iapp       0
+#> Pyy        0
+#> Rbp4       0
+#> Chgb       0
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -192,9 +231,15 @@ ht <- DynamicHeatmap(
   n_split = 3,
   reverse_ht = "Lineage1"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     cell_annotation = "SubCellType", n_split = 3, reverse_ht = "Lineage1"): Lineages: Lineage1 is not in the meta data of <Seurat>
+#> ℹ [2026-04-03 04:23:52] [1] 173 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Ghrl,Gcg,Iapp,Pyy,Rbp4,Chgb,Lrpprc,Slc38a5,2810417H13Rik,Cdc20...
+#> ℹ [2026-04-03 04:23:53] 
+#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+
 ht$plot
-#> Error: object 'ht' not found
+
 
 DynamicPlot(
   pancreas_sub,
@@ -204,9 +249,35 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-02 16:40:08] Start find dynamic features
-#> ℹ [2026-04-02 16:40:09] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 04:23:55] Start find dynamic features
+#> ℹ [2026-04-03 04:23:57] Data type is raw counts
+#> ℹ [2026-04-03 04:23:57] Number of candidate features (union): 2
+#> ℹ [2026-04-03 04:23:58] Data type is raw counts
+#> ℹ [2026-04-03 04:23:58] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 04:23:58] Using 1 core
+#> ⠙ [2026-04-03 04:23:58] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-04-03 04:23:58] Completed 2 tasks in 141ms
+#> 
+#> ℹ [2026-04-03 04:23:58] Building results
+#> ✔ [2026-04-03 04:23:58] Find dynamic features done
+#> ℹ [2026-04-03 04:23:58] Start find dynamic features
+#> ℹ [2026-04-03 04:23:59] Data type is raw counts
+#> ℹ [2026-04-03 04:24:00] Number of candidate features (union): 2
+#> ℹ [2026-04-03 04:24:00] Data type is raw counts
+#> ℹ [2026-04-03 04:24:00] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-03 04:24:00] Using 1 core
+#> ⠙ [2026-04-03 04:24:00] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-04-03 04:24:00] Completed 2 tasks in 135ms
+#> 
+#> ℹ [2026-04-03 04:24:00] Building results
+#> ✔ [2026-04-03 04:24:00] Find dynamic features done
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+
 
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
@@ -214,13 +285,30 @@ pancreas_sub <- RunDynamicFeatures(
   n_candidates = 200,
   fit_method = "pretsa"
 )
-#> ℹ [2026-04-02 16:40:09] Start find dynamic features
-#> ℹ [2026-04-02 16:40:10] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 04:24:02] Start find dynamic features
+#> ℹ [2026-04-03 04:24:02] Data type is raw counts
+#> ℹ [2026-04-03 04:24:04] Number of candidate features (union): 223
+#> ℹ [2026-04-03 04:24:05] Data type is raw counts
+#> ℹ [2026-04-03 04:24:05] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 04:24:05] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-04-03 04:24:05] Find dynamic features done
 head(
   pancreas_sub@tools$DynamicFeatures_Lineage1$DynamicFeatures
 )
-#> NULL
+#>      features exp_ncells      r.sq  dev.expl peaktime  valleytime        pvalue
+#> Ghrl     Ghrl        159 0.1196995 0.1196995 28.09067  7.44754441  1.125033e-19
+#> Gcg       Gcg        176 0.5306269 0.5306269 28.09067  8.46663469 3.947382e-117
+#> Iapp     Iapp        270 0.6378814 0.6378814 28.09067  0.09701269 2.000605e-157
+#> Pyy       Pyy        411 0.6748659 0.6748659 28.09067 12.42896282 3.657064e-174
+#> Rbp4     Rbp4        388 0.6412010 0.6412010 28.09067 11.01057150 7.420358e-159
+#> Chgb     Chgb        268 0.4061405 0.4061405 24.64629  5.90494191  1.299702e-80
+#>            padjust
+#> Ghrl  1.475779e-19
+#> Gcg  1.354256e-116
+#> Iapp 1.538397e-156
+#> Pyy  5.825180e-173
+#> Rbp4 5.909785e-158
+#> Chgb  2.611112e-80
 ht <- DynamicHeatmap(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
@@ -228,9 +316,15 @@ ht <- DynamicHeatmap(
   n_split = 3,
   reverse_ht = "Lineage1"
 )
-#> Error in DynamicHeatmap(pancreas_sub, lineages = c("Lineage1", "Lineage2"),     cell_annotation = "SubCellType", n_split = 3, reverse_ht = "Lineage1"): Lineages: Lineage1 is not in the meta data of <Seurat>
+#> ℹ [2026-04-03 04:24:07] [1] 168 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Chgb,Gast,Lrpprc,Ppy,Slc38a5,2810417H13Rik...
+#> ℹ [2026-04-03 04:24:08] 
+#> ℹ                       The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ                       The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+
 ht$plot
-#> Error: object 'ht' not found
+
 
 DynamicPlot(
   pancreas_sub,
@@ -240,7 +334,32 @@ DynamicPlot(
   compare_lineages = TRUE,
   compare_features = FALSE
 )
-#> ℹ [2026-04-02 16:40:10] Start find dynamic features
-#> ℹ [2026-04-02 16:40:11] Data type is raw counts
-#> Error in subset(srt, cell = rownames(srt@meta.data)[is.finite(srt@meta.data[[l]])]): No cells found
+#> ℹ [2026-04-03 04:24:10] Start find dynamic features
+#> ℹ [2026-04-03 04:24:11] Data type is raw counts
+#> ℹ [2026-04-03 04:24:12] Number of candidate features (union): 2
+#> ℹ [2026-04-03 04:24:12] Data type is raw counts
+#> ℹ [2026-04-03 04:24:12] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-04-03 04:24:12] Using 1 core
+#> ⠙ [2026-04-03 04:24:12] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-04-03 04:24:12] Completed 2 tasks in 145ms
+#> 
+#> ℹ [2026-04-03 04:24:12] Building results
+#> ✔ [2026-04-03 04:24:12] Find dynamic features done
+#> ℹ [2026-04-03 04:24:12] Start find dynamic features
+#> ℹ [2026-04-03 04:24:14] Data type is raw counts
+#> ℹ [2026-04-03 04:24:14] Number of candidate features (union): 2
+#> ℹ [2026-04-03 04:24:15] Data type is raw counts
+#> ℹ [2026-04-03 04:24:15] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-04-03 04:24:15] Using 1 core
+#> ⠙ [2026-04-03 04:24:15] Running for Arxes1 [1/2] ■■■■■■■■■■■■■■■■              …
+#> ✔ [2026-04-03 04:24:15] Completed 2 tasks in 139ms
+#> 
+#> ℹ [2026-04-03 04:24:15] Building results
+#> ✔ [2026-04-03 04:24:15] Find dynamic features done
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's fill values.
 ```
