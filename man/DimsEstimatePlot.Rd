@@ -8,7 +8,7 @@ DimsEstimatePlot(
   srt,
   max_pcs = 50,
   variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
-  reduction = "pca",
+  reduction = NULL,
   palette = "Chinese",
   palcolor = NULL,
   aspect.ratio = NULL,
@@ -24,14 +24,16 @@ DimsEstimatePlot(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object with PCA reduction computed.}
+\item{srt}{A \code{Seurat} object with a PCA-like reduction computed.}
 
 \item{max_pcs}{Maximum number of PCs to visualize. Default is \code{50}.}
 
 \item{variance_thresholds}{Numeric vector of variance thresholds to mark.
 Default is \code{c(0.60, 0.70, 0.80, 0.90)}.}
 
-\item{reduction}{Reduction name to inspect. Default is \code{"pca"}.}
+\item{reduction}{Reduction name to inspect. Default is \code{NULL}, which
+automatically selects a PCA-like reduction via \code{\link[=DefaultReduction]{DefaultReduction()}} with
+\code{pattern = "pca"}.}
 
 \item{palette}{Palette used for the main curves. Default is \code{"Chinese"}.}
 
