@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams GraphPlot
+#' @inheritParams thisplot::GraphPlot
 #' @param lineages A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.
 #' @param trim A numeric vector of length 2 specifying the quantile range of lineages to include in the plot.
 #' @param span The span of the loess smoother.

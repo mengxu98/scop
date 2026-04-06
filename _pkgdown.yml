@@ -37,6 +37,7 @@ reference:
 - contents:
   - scop-package
   - scop_logo
+  - print.scop_logo
 
 - subtitle: "Package Management"
 - contents:
@@ -112,6 +113,7 @@ reference:
   - RunKNNPredict
   - RunScmap
   - RunSingleR
+  - TrainCellTypist
 
 - subtitle: "Differential Analysis"
 - contents:
@@ -200,7 +202,6 @@ reference:
   - FeatureHeatmap
   - FeatureCorPlot
   - FeatureStatPlot
-  - GraphPlot
   - GroupHeatmap
   - GSEAPlot
   - GSVAPlot
@@ -209,14 +210,10 @@ reference:
   - PAGAPlot
   - ProjectionPlot
   - ProportionTestPlot
+  - PseudotimeProjectionPlot
   - TACSPlot
   - VelocityPlot
   - VolcanoPlot
-
-- subtitle: "Plotting Functions"
-- contents:
-  - compute_velocity_on_grid
-  - print.scop_logo
 
 - subtitle: "SCExplorer"
 - contents:
