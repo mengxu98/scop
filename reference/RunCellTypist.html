@@ -38,7 +38,7 @@ on a Seurat object or AnnData object."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run CellTypist cell type annotation</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/RunCellTypist.R" class="external-link"><code>R/RunCellTypist.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/RunCellTypist.R" class="external-link"><code>R/RunCellTypist.R</code></a></small>
       <div class="d-none name"><code>RunCellTypist.Rd</code></div>
     </div>
 
@@ -101,6 +101,7 @@ Default is <code>data</code>.</p></dd>
 Supports three formats:</p><ol><li><p>Model name (e.g., <code>"Immune_All_Low.pkl"</code>): automatically searched in <code>~/.celltypist/data/models/</code></p></li>
 <li><p>Full path (contains <code>/</code>): use the provided path directly</p></li>
 <li><p><code>NULL</code>: use default model</p></li>
+<li><p>A summary list returned by <code><a href="TrainCellTypist.html">TrainCellTypist()</a></code>: use its <code>model_path</code></p></li>
 </ol></dd>
 
 
@@ -182,7 +183,7 @@ Default is <code>TRUE</code>.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="CellTypistModels.html">CellTypistModels</a>, <a href="RunSingleR.html">RunSingleR</a>, <a href="RunScmap.html">RunScmap</a></p></div>
+    <div class="dont-index"><p><a href="CellTypistModels.html">CellTypistModels</a>, <a href="TrainCellTypist.html">TrainCellTypist</a>, <a href="RunSingleR.html">RunSingleR</a>, <a href="RunScmap.html">RunScmap</a></p></div>
     </div>
 
     <div class="section level2">

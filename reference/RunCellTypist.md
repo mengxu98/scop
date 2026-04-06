@@ -61,6 +61,10 @@ RunCellTypist(
 
   3.  `NULL`: use default model
 
+  4.  A summary list returned by
+      [`TrainCellTypist()`](https://mengxu98.github.io/scop/reference/TrainCellTypist.md):
+      use its `model_path`
+
 - mode:
 
   Prediction mode: `"best match"` or `"prob match"`. Default is
@@ -134,6 +138,7 @@ argument.
 ## See also
 
 [CellTypistModels](https://mengxu98.github.io/scop/reference/CellTypistModels.md),
+[TrainCellTypist](https://mengxu98.github.io/scop/reference/TrainCellTypist.md),
 [RunSingleR](https://mengxu98.github.io/scop/reference/RunSingleR.md),
 [RunScmap](https://mengxu98.github.io/scop/reference/RunScmap.md)
 
