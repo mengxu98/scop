@@ -74,37 +74,37 @@
 #' )
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP"
+#'   reduction = "umap"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   group.by = "SubCellType"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "grid"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream",
 #'   streamline_color = "black"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream",
 #'   streamline_color = "black",
 #'   arrow_color = "red"
