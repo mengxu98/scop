@@ -177,7 +177,7 @@
 #'   p1,
 #'   height = 2,
 #'   raster = TRUE,
-#'   dpi = 30
+#'   dpi = 300
 #' )
 #'
 #' CellDimPlot(
