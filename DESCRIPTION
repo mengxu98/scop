@@ -32,7 +32,7 @@ Imports:
     methods,
     mgcv,
     Matrix,
-    Signac,
+    Signac (<= 1.16.0),
     Seurat,
     SeuratObject,
     thisplot (>= 0.3.7),
