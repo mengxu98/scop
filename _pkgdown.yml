@@ -37,6 +37,7 @@ reference:
 - contents:
   - scop-package
   - scop_logo
+  - print.scop_logo
 
 - subtitle: "Package Management"
 - contents:
@@ -212,11 +213,6 @@ reference:
   - TACSPlot
   - VelocityPlot
   - VolcanoPlot
-
-- subtitle: "Plotting Functions"
-- contents:
-  - compute_velocity_on_grid
-  - print.scop_logo
 
 - subtitle: "SCExplorer"
 - contents:
