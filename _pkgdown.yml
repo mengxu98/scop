@@ -113,6 +113,7 @@ reference:
   - RunKNNPredict
   - RunScmap
   - RunSingleR
+  - TrainCellTypist
 
 - subtitle: "Differential Analysis"
 - contents:
