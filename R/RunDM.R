@@ -24,20 +24,6 @@
 #'
 #' @rdname RunDM
 #' @export
-#'
-#' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- standard_scop(pancreas_sub)
-#' pancreas_sub <- RunDM(
-#'   object = pancreas_sub,
-#'   features = SeuratObject::VariableFeatures(pancreas_sub)
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   reduction = "dm"
-#' )
 RunDM <- function(object, ...) {
   UseMethod(generic = "RunDM", object = object)
 }

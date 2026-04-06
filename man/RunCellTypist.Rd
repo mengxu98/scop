@@ -44,6 +44,7 @@ Supports three formats:
 \item Model name (e.g., \code{"Immune_All_Low.pkl"}): automatically searched in \verb{~/.celltypist/data/models/}
 \item Full path (contains \code{/}): use the provided path directly
 \item \code{NULL}: use default model
+\item A summary list returned by \code{\link[=TrainCellTypist]{TrainCellTypist()}}: use its \code{model_path}
 }}
 
 \item{mode}{Prediction mode: \code{"best match"} or \code{"prob match"}.
@@ -131,5 +132,5 @@ pancreas_sub <- RunCellTypist(
 }
 }
 \seealso{
-\link{CellTypistModels}, \link{RunSingleR}, \link{RunScmap}
+\link{CellTypistModels}, \link{TrainCellTypist}, \link{RunSingleR}, \link{RunScmap}
 }

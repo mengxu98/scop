@@ -6,7 +6,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams GraphPlot
+#' @inheritParams thisplot::GraphPlot
 #' @param velocity Name of the velocity to use for plotting.
 #' Default is `"stochastic"`.
 #' @param plot_type Type of plot to create.
@@ -74,37 +74,37 @@
 #' )
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP"
+#'   reduction = "umap"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   group.by = "SubCellType"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "grid"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream",
 #'   streamline_color = "black"
 #' )
 #'
 #' VelocityPlot(
 #'   pancreas_sub,
-#'   reduction = "UMAP",
+#'   reduction = "umap",
 #'   plot_type = "stream",
 #'   streamline_color = "black",
 #'   arrow_color = "red"
@@ -481,128 +481,4 @@ VelocityPlot <- function(
         theme_layer
     )
   }
-}
-
-#' @title Compute velocity on grid
-#'
-#' @md
-#' @param x_emb A matrix of dimension n_obs x n_dim specifying the embedding coordinates of the cells.
-#' @param v_emb A matrix of dimension n_obs x n_dim specifying the velocity vectors of the cells.
-#' @param density A numeric value specifying the density of the grid points along each dimension.
-#' Default is `1`.
-#' @param smooth A numeric value specifying the smoothing factor for the velocity vectors.
-#' Default is `0.5`.
-#' @param n_neighbors A numeric value specifying the number of nearest neighbors for each grid point.
-#' Default is `ceiling(n_obs / 50)`.
-#' @param min_mass A numeric value specifying the minimum mass required for a grid point to be considered.
-#' Default is `1`.
-#' @param scale A numeric value specifying the scaling factor for the velocity vectors.
-#' Default is `1`.
-#' @param adjust_for_stream Whether to adjust the velocity vectors for streamlines.
-#' Default is `FALSE`.
-#' @param cutoff_perc A numeric value specifying the percentile cutoff for removing low-density grid points.
-#' Default is `5`.
-#'
-#' @references
-#' \url{https://github.com/theislab/scvelo/blob/master/scvelo/plotting/velocity_embedding_grid.py}
-#'
-#' @export
-compute_velocity_on_grid <- function(
-    x_emb,
-    v_emb,
-    density = 1,
-    smooth = 0.5,
-    n_neighbors = ceiling(n_obs / 50),
-    min_mass = 1,
-    scale = 1,
-    adjust_for_stream = FALSE,
-    cutoff_perc = 5) {
-  n_obs <- nrow(x_emb)
-  n_dim <- ncol(x_emb)
-
-  grs <- list()
-  for (dim_i in 1:n_dim) {
-    m1 <- min(x_emb[, dim_i], na.rm = TRUE)
-    m2 <- max(x_emb[, dim_i], na.rm = TRUE)
-    # m1 <- m1 - 0.01 * abs(m2 - m1)
-    # m2 <- m2 + 0.01 * abs(m2 - m1)
-    gr <- seq(m1, m2, length.out = ceiling(50 * density))
-    grs <- c(grs, list(gr))
-  }
-  x_grid <- as_matrix(expand.grid(grs))
-
-  d <- proxyC::dist(
-    x = SeuratObject::as.sparse(x_emb),
-    y = SeuratObject::as.sparse(x_grid),
-    method = "euclidean",
-    use_nan = TRUE
-  )
-  neighbors <- Matrix::t(
-    as_matrix(
-      apply(
-        d,
-        2,
-        function(x) {
-          order(x, decreasing = FALSE)[1:n_neighbors]
-        }
-      )
-    )
-  )
-  dists <- Matrix::t(
-    as_matrix(
-      apply(
-        d,
-        2,
-        function(x) {
-          x[order(x, decreasing = FALSE)[1:n_neighbors]]
-        }
-      )
-    )
-  )
-
-  weight <- stats::dnorm(
-    dists,
-    sd = mean(sapply(grs, function(g) g[2] - g[1])) * smooth
-  )
-  p_mass <- p_mass_v <- Matrix::rowSums(weight)
-  p_mass_v[p_mass_v < 1] <- 1
-
-  neighbors_emb <- array(
-    v_emb[neighbors, seq_len(ncol(v_emb))],
-    dim = c(dim(neighbors), dim(v_emb)[2])
-  )
-  v_grid <- apply((neighbors_emb * c(weight)), c(1, 3), sum)
-  v_grid <- v_grid / p_mass_v
-
-  if (isTRUE(adjust_for_stream)) {
-    x_grid <- matrix(
-      c(unique(x_grid[, 1]), unique(x_grid[, 2])),
-      nrow = 2,
-      byrow = TRUE
-    )
-    ns <- floor(sqrt(length(v_grid[, 1])))
-    v_grid <- reticulate::array_reshape(Matrix::t(v_grid), c(2, ns, ns))
-
-    mass <- sqrt(apply(v_grid**2, c(2, 3), sum))
-    min_mass <- 10**(min_mass - 6) # default min_mass = 1e-5
-    min_mass[min_mass > max(mass, na.rm = TRUE) * 0.9] <- max(
-      mass,
-      na.rm = TRUE
-    ) *
-      0.9
-    cutoff <- reticulate::array_reshape(mass, dim = c(ns, ns)) < min_mass
-
-    length <- Matrix::t(apply(apply(abs(neighbors_emb), c(1, 3), mean), 1, sum))
-    length <- reticulate::array_reshape(length, dim = c(ns, ns))
-    cutoff <- cutoff | length < stats::quantile(length, cutoff_perc / 100)
-    v_grid[1, , ][cutoff] <- NA
-  } else {
-    min_mass <- min_mass * stats::quantile(p_mass, 0.99) / 100
-    x_grid <- x_grid[p_mass > min_mass, ]
-    v_grid <- v_grid[p_mass > min_mass, ]
-    if (!is.null(scale)) {
-      v_grid <- v_grid * scale
-    }
-  }
-  return(list(x_grid = x_grid, v_grid = v_grid))
 }

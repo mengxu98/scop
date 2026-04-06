@@ -4,12 +4,14 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param reduction Name of the dimensional reduction to inspect.
+#' Default is `NULL`, which automatically selects a PCA-like reduction via
+#' [DefaultReduction()] with `pattern = "pca"`.
 #' @param reduction_method Optional reduction method name.
 #' When set to `"nmf"` or `"glmpca"`, all available dimensions will be retained.
 #' @param k Number of neighbors used by [intrinsicDimension::maxLikGlobalDimEst].
 #' Default is `20`.
 #' @param min_dims Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-#' Default is `10`.
+#' Default is `20`.
 #' @param fallback_max_dims Maximum number of dimensions kept when no valid estimate is available.
 #' Default is `50`.
 #' @param skip_first Whether to drop the first dimension from the returned result.
@@ -22,10 +24,10 @@
 #' @export
 RunDimsEstimate <- function(
   srt,
-  reduction,
+  reduction = NULL,
   reduction_method = NULL,
   k = 20L,
-  min_dims = 10L,
+  min_dims = 20L,
   fallback_max_dims = 50L,
   skip_first = FALSE,
   use_stored = TRUE,
@@ -38,16 +40,23 @@ RunDimsEstimate <- function(
     )
   }
   check_r("intrinsicDimension", verbose = FALSE)
-  if (!is.character(reduction) || length(reduction) != 1L) {
-    log_message(
-      "{.arg reduction} must be a single reduction name",
-      message_type = "error"
+  if (is.null(reduction)) {
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = "pca",
+      min_dim = 2L
     )
-  }
-  if (!reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {reduction}} is not in the reduction names",
-      message_type = "error"
+  } else {
+    if (!is.character(reduction) || length(reduction) != 1L) {
+      log_message(
+        "{.arg reduction} must be a single reduction name",
+        message_type = "error"
+      )
+    }
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = reduction,
+      min_dim = 2L
     )
   }
 
@@ -60,20 +69,35 @@ RunDimsEstimate <- function(
     )
   }
 
+  reduction_method <- tolower(reduction_method %||% reduction)
   dims_source <- NULL
   dims_use <- integer()
   if (isTRUE(use_stored)) {
-    dims_use <- dims_estimate_validate(
+    dims_use_stored <- dims_estimate_validate(
       dims_use = reduction_obj@misc[["dims_estimate"]],
       reduction_ncol = reduction_ncol,
       skip_first = skip_first
     )
-    if (length(dims_use) > 0L) {
-      dims_source <- "stored"
+    if (length(dims_use_stored) > 0L) {
+      dims_use <- dims_estimate_upgrade(
+        dims_use = dims_use_stored,
+        reduction_obj = reduction_obj,
+        reduction_ncol = reduction_ncol,
+        reduction_method = reduction_method,
+        min_dims = min_dims,
+        skip_first = skip_first
+      )
+      dims_source <- if (
+        length(dims_use) == length(dims_use_stored) &&
+        identical(dims_use, dims_use_stored)
+      ) {
+        "stored"
+      } else {
+        "stored_adjusted"
+      }
     }
   }
 
-  reduction_method <- tolower(reduction_method %||% "")
   if (is.null(dims_source)) {
     if (reduction_method %in% c("glmpca", "nmf")) {
       dims_use <- dims_estimate_validate(
@@ -104,8 +128,14 @@ RunDimsEstimate <- function(
       )
 
       if (!is.na(dim_est)) {
+        scree_lower_bound <- dims_estimate_scree_lower_bound(
+          stdev = reduction_obj@stdev,
+          max_pcs = min(50L, reduction_ncol),
+          skip_first = skip_first
+        )
         dims_use <- dims_estimate_validate(
           dims_use = seq_len(max(
+            scree_lower_bound,
             min(reduction_ncol, as.integer(min_dims)),
             ceiling(dim_est)
           )),
@@ -137,6 +167,11 @@ RunDimsEstimate <- function(
     if (dims_source == "stored") {
       log_message(
         "Use stored estimated dimensions {.val {min(dims_use)}}:{.val {max(dims_use)}} for {.pkg {reduction}}",
+        verbose = verbose
+      )
+    } else if (dims_source == "stored_adjusted") {
+      log_message(
+        "Use adjusted stored dimensions {.val {min(dims_use)}}:{.val {max(dims_use)}} for {.pkg {reduction}}",
         verbose = verbose
       )
     } else if (dims_source == "estimated") {
@@ -184,9 +219,86 @@ dims_estimate_fallback <- function(
   seq.int(lower_bound, min(reduction_ncol, fallback_max_dims))
 }
 
+dims_estimate_upgrade <- function(
+  dims_use,
+  reduction_obj,
+  reduction_ncol,
+  reduction_method = "",
+  min_dims = 10L,
+  skip_first = FALSE
+) {
+  lower_bound <- if (isTRUE(skip_first)) 2L else 1L
+  if (reduction_method %in% c("glmpca", "nmf")) {
+    return(seq.int(lower_bound, reduction_ncol))
+  }
+
+  target_max_dim <- max(
+    max(dims_use),
+    min(reduction_ncol, as.integer(min_dims)),
+    dims_estimate_scree_lower_bound(
+      stdev = reduction_obj@stdev,
+      max_pcs = min(50L, reduction_ncol),
+      skip_first = skip_first
+    )
+  )
+  dims_estimate_validate(
+    dims_use = seq_len(target_max_dim),
+    reduction_ncol = reduction_ncol,
+    skip_first = skip_first
+  )
+}
+
+dims_estimate_scree_lower_bound <- function(
+  stdev,
+  max_pcs = 50L,
+  skip_first = FALSE
+) {
+  lower_bound <- if (isTRUE(skip_first)) 2L else 1L
+  if (is.null(stdev) || length(stdev) == 0L) {
+    return(lower_bound)
+  }
+
+  stdev <- as.numeric(stdev)
+  stdev <- stdev[is.finite(stdev)]
+  if (length(stdev) == 0L) {
+    return(lower_bound)
+  }
+
+  max_pcs <- min(as.integer(max_pcs), length(stdev))
+  if (is.na(max_pcs) || max_pcs < lower_bound) {
+    return(lower_bound)
+  }
+
+  stdev_use <- stdev[seq_len(max_pcs)]
+  total_var <- sum(stdev_use^2)
+  if (!is.finite(total_var) || total_var <= 0) {
+    return(lower_bound)
+  }
+
+  pct_var <- stdev_use^2 / total_var * 100
+  broken_stick <- rev(cumsum(1 / seq_len(max_pcs))) / max_pcs * 100
+  broken_stick_hits <- which(pct_var >= broken_stick)
+  broken_stick_point <- if (length(broken_stick_hits) == 0L) {
+    lower_bound
+  } else {
+    max(broken_stick_hits)
+  }
+
+  elbow_point <- lower_bound
+  if (length(stdev_use) >= 3L) {
+    curvature <- diff(diff(stdev_use))
+    curvature_idx <- which.max(abs(curvature))[1]
+    if (!is.na(curvature_idx)) {
+      elbow_point <- max(lower_bound, curvature_idx + 2L)
+    }
+  }
+
+  max(lower_bound, broken_stick_point, elbow_point)
+}
+
 pc_selection_stats <- function(
   srt,
-  reduction = "pca",
+  reduction = NULL,
   max_pcs = 50,
   variance_thresholds = c(0.60, 0.70, 0.80, 0.90)
 ) {
@@ -196,10 +308,23 @@ pc_selection_stats <- function(
       message_type = "error"
     )
   }
-  if (!reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {reduction}} is not in the reduction names",
-      message_type = "error"
+  if (is.null(reduction)) {
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = "pca",
+      min_dim = 2L
+    )
+  } else {
+    if (!is.character(reduction) || length(reduction) != 1L) {
+      log_message(
+        "{.arg reduction} must be a single reduction name",
+        message_type = "error"
+      )
+    }
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = reduction,
+      min_dim = 2L
     )
   }
 
@@ -261,11 +386,13 @@ pc_selection_stats <- function(
 #' @title Dimension estimate diagnostic plot
 #'
 #' @md
-#' @param srt A `Seurat` object with PCA reduction computed.
+#' @param srt A `Seurat` object with a PCA-like reduction computed.
 #' @param max_pcs Maximum number of PCs to visualize. Default is `50`.
 #' @param variance_thresholds Numeric vector of variance thresholds to mark.
 #' Default is `c(0.60, 0.70, 0.80, 0.90)`.
-#' @param reduction Reduction name to inspect. Default is `"pca"`.
+#' @param reduction Reduction name to inspect. Default is `NULL`, which
+#' automatically selects a PCA-like reduction via [DefaultReduction()] with
+#' `pattern = "pca"`.
 #' @param palette Palette used for the main curves. Default is `"Chinese"`.
 #' @param palcolor Optional palette colors.
 #' @param aspect.ratio Aspect ratio of each panel. Default is `NULL`.
@@ -291,7 +418,7 @@ DimsEstimatePlot <- function(
   srt,
   max_pcs = 50,
   variance_thresholds = c(0.60, 0.70, 0.80, 0.90),
-  reduction = "pca",
+  reduction = NULL,
   palette = "Chinese",
   palcolor = NULL,
   aspect.ratio = NULL,
@@ -306,6 +433,25 @@ DimsEstimatePlot <- function(
   seed = 11
 ) {
   set.seed(seed)
+  if (is.null(reduction)) {
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = "pca",
+      min_dim = 2L
+    )
+  } else {
+    if (!is.character(reduction) || length(reduction) != 1L) {
+      log_message(
+        "{.arg reduction} must be a single reduction name",
+        message_type = "error"
+      )
+    }
+    reduction <- DefaultReduction(
+      srt = srt,
+      pattern = reduction,
+      min_dim = 2L
+    )
+  }
   stats_use <- pc_selection_stats(
     srt = srt,
     reduction = reduction,

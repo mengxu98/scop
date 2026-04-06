@@ -35,8 +35,8 @@ Imports:
     Signac,
     Seurat,
     SeuratObject,
-    thisplot (>= 0.3.6),
-    thisutils (>= 0.4.3),
+    thisplot (>= 0.3.7),
+    thisutils (>= 0.4.4),
     uwot
 Suggests:
     AnnotationDbi,

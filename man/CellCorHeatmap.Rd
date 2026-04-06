@@ -368,10 +368,7 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- CheckDataMerge(
-  panc8_sub,
-  batch = "tech"
-)[["srt_merge"]]
+panc8_sub <- standard_scop(panc8_sub)
 
 ht2 <- CellCorHeatmap(
   srt_query = pancreas_sub,

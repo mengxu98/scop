@@ -300,5 +300,5 @@ PAGAPlot(
 }
 }
 \seealso{
-\link{RunPAGA}, \link{CellDimPlot}, \link{GraphPlot}
+\link{RunPAGA}, \link{CellDimPlot}, \link[thisplot:GraphPlot]{thisplot::GraphPlot}
 }

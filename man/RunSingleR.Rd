@@ -40,9 +40,23 @@ Default is the default assay of the \code{srt_query} object.}
 \item{ref_assay}{A character vector specifying the assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
-\item{genes}{\code{"genes"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
+\item{genes}{A string containing \code{"de"}, indicating that markers should be calculated from \code{ref}.
+For back compatibility, other string values are allowed but will be ignored with a deprecation warning.
 
-\item{de.method}{\code{"de.method"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
+Alternatively, if \code{ref} is \emph{not} a list, \code{genes} can be either:
+\itemize{
+\item A list of lists of character vectors containing DE genes between pairs of labels.
+\item A list of character vectors containing marker genes for each label.
+}
+
+If \code{ref} \emph{is} a list, \code{genes} can be a list of length equal to \code{ref}.
+Each element of the list should be one of the two above choices described for non-list \code{ref},
+containing markers for labels in the corresponding entry of \code{ref}.}
+
+\item{de.method}{String specifying how DE genes should be detected between pairs of labels.
+Defaults to \code{"classic"}, which sorts genes by the log-fold changes and takes the top \code{de.n}.
+Other options are \code{"wilcox"} and \code{"t"}, see Details.
+Ignored if \code{genes} is a list of markers/DE genes.}
 
 \item{sd.thresh}{Deprecated and ignored.}
 
@@ -67,6 +81,11 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
+\value{
+An annotate \code{Seurat} object.
+The annotation results are stored in the \code{singler_annotation} column of the meta data,
+and the corresponding scores are stored in the \code{singler_score} column.
+}
 \description{
 Annotate single cells using SingleR
 }
@@ -84,12 +103,8 @@ panc8_sub <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-panc8_sub <- CheckDataMerge(
-  panc8_sub,
-  batch = "tech"
-)[["srt_merge"]]
+panc8_sub <- standard_scop(panc8_sub)
 
-# Annotation
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
 pancreas_sub <- RunSingleR(
@@ -100,7 +115,7 @@ pancreas_sub <- RunSingleR(
 )
 CellDimPlot(
   pancreas_sub,
-  group.by = c("singler_annotation", "CellType")
+  group.by = c("singler_annotation", "SubCellType")
 )
 
 pancreas_sub <- RunSingleR(
@@ -111,8 +126,29 @@ pancreas_sub <- RunSingleR(
 )
 CellDimPlot(
   pancreas_sub,
-  group.by = c("singler_annotation", "CellType")
+  group.by = c("singler_annotation", "SubCellType"),
+  label = TRUE
 )
+
+CellCorHeatmap(
+  pancreas_sub,
+  group.by = "singler_annotation",
+  assay = "RNA",
+  layer = "data",
+  method = "spearman"
+)
+
+ht1 <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  srt_ref = pancreas_sub,
+  query_group = "SubCellType",
+  cluster_rows = TRUE,
+  ref_group = "singler_annotation",
+  cluster_columns = TRUE,
+  width = 2,
+  height = 2
+)
+ht1$plot
 }
 \seealso{
 \link{RunKNNPredict}, \link{RunKNNMap}

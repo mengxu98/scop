@@ -6,12 +6,15 @@
 #' @inheritParams SingleR::trainSingleR
 #' @inheritParams thisutils::log_message
 #' @inheritParams thisutils::parallelize_fun
-#' @param genes `"genes"` parameter in [SingleR::SingleR] function.
-#' @param de.method `"de.method"` parameter in [SingleR::SingleR] function.
 #' @param quantile "quantile" parameter in [SingleR::SingleR] function.
 #' @param fine.tune `"fine.tune"` parameter in [SingleR::SingleR] function.
 #' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.
 #' @param prune `"prune"` parameter in [SingleR::SingleR] function.
+#'
+#' @return
+#' An annotate `Seurat` object.
+#' The annotation results are stored in the `singler_annotation` column of the meta data,
+#' and the corresponding scores are stored in the `singler_score` column.
 #'
 #' @seealso
 #' [RunKNNPredict], [RunKNNMap]
@@ -32,12 +35,8 @@
 #'   panc8_sub,
 #'   newnames = genenames
 #' )
-#' panc8_sub <- CheckDataMerge(
-#'   panc8_sub,
-#'   batch = "tech"
-#' )[["srt_merge"]]
+#' panc8_sub <- standard_scop(panc8_sub)
 #'
-#' # Annotation
 #' data(pancreas_sub)
 #' pancreas_sub <- standard_scop(pancreas_sub)
 #' pancreas_sub <- RunSingleR(
@@ -48,7 +47,7 @@
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
-#'   group.by = c("singler_annotation", "CellType")
+#'   group.by = c("singler_annotation", "SubCellType")
 #' )
 #'
 #' pancreas_sub <- RunSingleR(
@@ -59,27 +58,49 @@
 #' )
 #' CellDimPlot(
 #'   pancreas_sub,
-#'   group.by = c("singler_annotation", "CellType")
+#'   group.by = c("singler_annotation", "SubCellType"),
+#'   label = TRUE
 #' )
+#'
+#' CellCorHeatmap(
+#'   pancreas_sub,
+#'   group.by = "singler_annotation",
+#'   assay = "RNA",
+#'   layer = "data",
+#'   method = "spearman"
+#' )
+#'
+#' ht1 <- CellCorHeatmap(
+#'   srt_query = pancreas_sub,
+#'   srt_ref = pancreas_sub,
+#'   query_group = "SubCellType",
+#'   cluster_rows = TRUE,
+#'   ref_group = "singler_annotation",
+#'   cluster_columns = TRUE,
+#'   width = 2,
+#'   height = 2
+#' )
+#' ht1$plot
 RunSingleR <- function(
-    srt_query,
-    srt_ref,
-    query_group = NULL,
-    ref_group = NULL,
-    query_assay = "RNA",
-    ref_assay = "RNA",
-    genes = "de",
-    de.method = "wilcox",
-    sd.thresh = 1,
-    de.n = NULL,
-    aggr.ref = FALSE,
-    aggr.args = list(),
-    quantile = 0.8,
-    fine.tune = TRUE,
-    tune.thresh = 0.05,
-    prune = TRUE,
-    cores = 1,
-    verbose = TRUE) {
+  srt_query,
+  srt_ref,
+  query_group = NULL,
+  ref_group = NULL,
+  query_assay = "RNA",
+  ref_assay = "RNA",
+  genes = "de",
+  de.method = "wilcox",
+  sd.thresh = 1,
+  de.n = NULL,
+  aggr.ref = FALSE,
+  aggr.args = list(),
+  quantile = 0.8,
+  fine.tune = TRUE,
+  tune.thresh = 0.05,
+  prune = TRUE,
+  cores = 1,
+  verbose = TRUE
+) {
   log_message(
     "Start {.pkg SingleR} annotation",
     verbose = verbose
@@ -151,7 +172,10 @@ RunSingleR <- function(
     )
   )
   log_message("Detected {.arg srt_ref} data type: {.val {status_ref}}")
-  if (status_ref != status_query || any(status_query == "unknown", status_ref == "unknown")) {
+  if (
+    status_ref != status_query ||
+      any(status_query == "unknown", status_ref == "unknown")
+  ) {
     log_message(
       "Data type is unknown or different between {.arg srt_query} and {.arg srt_ref}",
       message_type = "warning",
@@ -255,7 +279,9 @@ RunSingleR <- function(
     cell_annotations <- character(length(sce_cluster_ids))
     for (cluster_id in names(cluster_to_cells)) {
       if (cluster_id %in% names(cluster_labels)) {
-        cell_annotations[cluster_to_cells[[cluster_id]]] <- cluster_labels[cluster_id]
+        cell_annotations[cluster_to_cells[[cluster_id]]] <- cluster_labels[
+          cluster_id
+        ]
       }
     }
 
@@ -264,7 +290,9 @@ RunSingleR <- function(
     for (cluster_id in names(cluster_to_cells)) {
       if (cluster_id %in% names(cluster_labels)) {
         annotation <- cluster_labels[cluster_id]
-        if (!is.na(annotation) && annotation %in% colnames(cluster_results$scores)) {
+        if (
+          !is.na(annotation) && annotation %in% colnames(cluster_results$scores)
+        ) {
           score <- cluster_results$scores[cluster_id, annotation]
           cell_scores[cluster_to_cells[[cluster_id]]] <- score
         }

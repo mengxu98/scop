@@ -17,3 +17,4 @@ tmaps
 test
 *.h5ad
 *.pyc
+.codex

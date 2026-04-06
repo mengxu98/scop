@@ -5,7 +5,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams GraphPlot
+#' @inheritParams thisplot::GraphPlot
 #' @param paga The PAGA result from the Seurat object.
 #' Default is `srt@misc$paga`.
 #' @param type The type of plot to generate.
@@ -16,7 +16,7 @@
 #' Default is `"PAGA"`.
 #'
 #' @seealso
-#' [RunPAGA], [CellDimPlot], [GraphPlot]
+#' [RunPAGA], [CellDimPlot], [thisplot::GraphPlot]
 #'
 #' @export
 #'

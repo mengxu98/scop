@@ -6,10 +6,10 @@
 \usage{
 RunDimsEstimate(
   srt,
-  reduction,
+  reduction = NULL,
   reduction_method = NULL,
   k = 20L,
-  min_dims = 10L,
+  min_dims = 20L,
   fallback_max_dims = 50L,
   skip_first = FALSE,
   use_stored = TRUE,
@@ -19,7 +19,9 @@ RunDimsEstimate(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{reduction}{Name of the dimensional reduction to inspect.}
+\item{reduction}{Name of the dimensional reduction to inspect.
+Default is \code{NULL}, which automatically selects a PCA-like reduction via
+\code{\link[=DefaultReduction]{DefaultReduction()}} with \code{pattern = "pca"}.}
 
 \item{reduction_method}{Optional reduction method name.
 When set to \code{"nmf"} or \code{"glmpca"}, all available dimensions will be retained.}
@@ -28,7 +30,7 @@ When set to \code{"nmf"} or \code{"glmpca"}, all available dimensions will be re
 Default is \code{20}.}
 
 \item{min_dims}{Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-Default is \code{10}.}
+Default is \code{20}.}
 
 \item{fallback_max_dims}{Maximum number of dimensions kept when no valid estimate is available.
 Default is \code{50}.}
