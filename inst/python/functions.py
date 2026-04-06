@@ -3529,22 +3529,183 @@ def WOT(
     return adata
 
 
-def CellTypistModels(on_the_fly=False, verbose=True):
+def TrainCellTypist(
+    adata=None,
+    h5ad=None,
+    labels=None,
+    genes=None,
+    transpose_input=False,
+    with_mean=True,
+    check_expression=True,
+    C=1.0,
+    solver=None,
+    max_iter=None,
+    n_jobs=1,
+    use_SGD=False,
+    alpha=0.0001,
+    use_GPU=False,
+    mini_batch=False,
+    batch_number=100,
+    batch_size=1000,
+    epochs=10,
+    balance_cell_type=False,
+    feature_selection=False,
+    top_genes=300,
+    date="",
+    details="",
+    url="",
+    source="",
+    version="",
+    model_path=None,
+    return_model=False,
+    verbose=True,
+):
     """
-    Get a list of all available CellTypist models.
+    Train a CellTypist model.
+    """
+    import os
+    import platform
 
-    Parameters
-    ----------
-    on_the_fly : bool
-        If True, only show downloaded models.
-        If False, show all available models (fetch list from server).
-    verbose : bool
-        Whether to show detailed information.
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["KMP_WARNINGS"] = "0"
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-    Returns
-    -------
-    pandas.DataFrame
-        A DataFrame containing model names and descriptions.
+    is_apple_silicon = platform.system() == "Darwin" and platform.machine() == "arm64"
+    if is_apple_silicon:
+        configure_apple_silicon_env(
+            scanpy_settings=True,
+            scanpy_verbosity=True,
+            verbose=verbose,
+        )
+
+    try:
+        import celltypist
+        import scanpy as sc
+    except ImportError as e:
+        log_message(
+            "{.pkg celltypist} import failed: {.val {e}}",
+            message_type="error",
+            verbose=verbose,
+        )
+        raise
+
+    if adata is None and h5ad is None:
+        raise ValueError("One of `adata` or `h5ad` must be provided")
+
+    if adata is None:
+        adata = sc.read(h5ad)
+
+    train_labels = labels
+    if isinstance(labels, str):
+        if labels not in adata.obs.columns:
+            raise ValueError(f"labels column '{labels}' not found in adata.obs")
+        train_labels = labels
+    elif labels is None:
+        raise ValueError("`labels` must be provided")
+
+    log_message(
+        "Training {.pkg CellTypist} model...",
+        message_type="running",
+        verbose=verbose,
+    )
+
+    kwargs = dict(
+        X=adata,
+        labels=train_labels,
+        genes=genes,
+        transpose_input=transpose_input,
+        with_mean=with_mean,
+        check_expression=check_expression,
+        C=C,
+        n_jobs=n_jobs,
+        use_SGD=use_SGD,
+        alpha=alpha,
+        use_GPU=use_GPU,
+        mini_batch=mini_batch,
+        batch_number=batch_number,
+        batch_size=batch_size,
+        epochs=epochs,
+        balance_cell_type=balance_cell_type,
+        feature_selection=feature_selection,
+        top_genes=top_genes,
+        date=date,
+        details=details,
+        url=url,
+        source=source,
+        version=version,
+    )
+
+    if solver is not None:
+        kwargs["solver"] = solver
+    if max_iter is not None:
+        kwargs["max_iter"] = max_iter
+
+    model = celltypist.train(**kwargs)
+
+    saved_path = None
+    if model_path:
+        model.write(model_path)
+        saved_path = os.path.expanduser(model_path)
+        log_message(
+            "Saved {.pkg CellTypist} model to {.file {%s}}" % saved_path,
+            message_type="success",
+            verbose=verbose,
+        )
+
+    if return_model:
+        return model
+
+    cell_types = []
+    features = []
+    description = None
+    try:
+        cell_types = list(model.cell_types)
+    except Exception:
+        pass
+    try:
+        features = list(model.features)
+    except Exception:
+        pass
+    try:
+        description = model.description
+    except Exception:
+        pass
+
+    return {
+        "model_path": saved_path,
+        "cell_types": cell_types,
+        "n_cell_types": len(cell_types),
+        "n_features": len(features),
+        "description": description,
+    }
+
+
+def CellTypistModels(
+    action="list",
+    on_the_fly=False,
+    model=None,
+    force_update=False,
+    cell_type=None,
+    top_n=10,
+    only_positive=True,
+    keep_cell_types=None,
+    exclude_cell_types=None,
+    output_model_path=None,
+    map_file=None,
+    sep=",",
+    convert_from=None,
+    convert_to=None,
+    unique_only=True,
+    collapse="average",
+    random_state=0,
+    verbose=True,
+):
+    """
+    Unified CellTypist model management.
     """
     import os
     import platform
@@ -3562,7 +3723,7 @@ def CellTypistModels(on_the_fly=False, verbose=True):
         configure_apple_silicon_env(verbose=verbose)
 
     try:
-        import celltypist
+        import pandas as pd
         from celltypist import models
     except ImportError as e:
         log_message(
@@ -3572,16 +3733,163 @@ def CellTypistModels(on_the_fly=False, verbose=True):
         )
         raise
 
-    try:
-        models_df = models.models_description(on_the_fly=on_the_fly)
-        return models_df
-    except Exception as e:
-        log_message(
-            "{.pkg celltypist} failed to get model list: {.val {e}}",
-            message_type="error",
-            verbose=verbose,
+    def list_local_models():
+        model_dir = os.path.expanduser(
+            os.path.join("~", ".celltypist", "data", "models")
         )
-        raise
+        if not os.path.isdir(model_dir):
+            return pd.DataFrame(columns=["model", "description", "source", "path"])
+
+        model_files = sorted(
+            [
+                file_name
+                for file_name in os.listdir(model_dir)
+                if file_name.endswith(".pkl")
+            ]
+        )
+        if not model_files:
+            return pd.DataFrame(columns=["model", "description", "source", "path"])
+
+        return pd.DataFrame(
+            {
+                "model": model_files,
+                "description": [None] * len(model_files),
+                "source": ["local"] * len(model_files),
+                "path": [os.path.join(model_dir, name) for name in model_files],
+            }
+        )
+
+    def resolve_model_reference(model_ref):
+        if model_ref is None:
+            return None
+        if os.path.isfile(os.path.expanduser(model_ref)):
+            return os.path.expanduser(model_ref)
+        return models.get_model_path(model_ref)
+
+    if action == "list":
+        try:
+            return models.models_description(on_the_fly=on_the_fly)
+        except Exception as e:
+            if (not on_the_fly) and (
+                "SSL module is not available" in str(e)
+                or "Can't connect to HTTPS URL" in str(e)
+            ):
+                log_message(
+                    "Unable to retrieve remote CellTypist model list because Python SSL support is unavailable. Falling back to downloaded models only.",
+                    message_type="warning",
+                    verbose=verbose,
+                )
+                return list_local_models()
+            log_message(
+                "{.pkg celltypist} failed to get model list: {.val {e}}",
+                message_type="error",
+                verbose=verbose,
+            )
+            raise
+
+    if action == "download":
+        models.download_models(force_update=force_update, model=model)
+        if model is None:
+            return models.models_description(on_the_fly=True)
+        model_names = [model] if isinstance(model, str) else list(model)
+        return pd.DataFrame(
+            {
+                "model": model_names,
+                "path": [models.get_model_path(name) for name in model_names],
+            }
+        )
+
+    if model is None:
+        raise ValueError("`model` must be provided for this action")
+
+    model_path = resolve_model_reference(model) if isinstance(model, str) else None
+    loaded_model = models.Model.load(model if model_path is None else model_path)
+
+    if action == "info":
+        description = None
+        try:
+            description = loaded_model.description
+        except Exception:
+            pass
+        return {
+            "model": model,
+            "path": model_path,
+            "description": description,
+            "cell_types": list(loaded_model.cell_types),
+            "features": list(loaded_model.features),
+            "n_cell_types": len(loaded_model.cell_types),
+            "n_features": len(loaded_model.features),
+        }
+
+    if action == "markers":
+        markers = loaded_model.extract_top_markers(
+            cell_type=cell_type,
+            top_n=top_n,
+            only_positive=only_positive,
+        )
+        return markers
+
+    if action == "subset":
+        if keep_cell_types is None and exclude_cell_types is None:
+            raise ValueError(
+                "`keep_cell_types` or `exclude_cell_types` must be provided for subset"
+            )
+
+        if keep_cell_types is not None and exclude_cell_types is not None:
+            raise ValueError(
+                "Use only one of `keep_cell_types` or `exclude_cell_types`"
+            )
+
+        target_path = output_model_path or model_path or model
+        loaded_model.subset(
+            keep_cell_types=keep_cell_types,
+            exclude_cell_types=exclude_cell_types,
+        )
+        loaded_model.write(target_path)
+        return {
+            "model": model,
+            "path": os.path.expanduser(target_path),
+            "cell_types": list(loaded_model.cell_types),
+            "n_cell_types": len(loaded_model.cell_types),
+        }
+
+    if action == "convert":
+        if map_file is None:
+            raise ValueError("`map_file` must be provided for convert")
+        target_path = output_model_path or model_path or model
+        loaded_model.convert(
+            map_file=map_file,
+            sep=sep,
+            convert_from=convert_from,
+            convert_to=convert_to,
+            unique_only=unique_only,
+            collapse=collapse,
+            random_state=random_state,
+        )
+        loaded_model.write(target_path)
+        return {
+            "model": model,
+            "path": os.path.expanduser(target_path),
+            "n_features": len(loaded_model.features),
+        }
+
+    if action == "delete":
+        delete_models = [model] if isinstance(model, str) else list(model)
+        removed = []
+        missing = []
+        for model_name in delete_models:
+            model_file = resolve_model_reference(model_name)
+            if model_file and os.path.exists(model_file):
+                os.remove(model_file)
+                removed.append(model_file)
+            else:
+                missing.append(model_name)
+        return {
+            "removed": removed,
+            "missing": missing,
+        }
+
+    raise ValueError(f"Unsupported action: {action}")
 
 
 def CellTypist(

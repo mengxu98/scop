@@ -35,21 +35,12 @@ PrepareEnv <- function(
     message_type = "running"
   )
 
-  env_cache <- getOption("scop_env_cache", default = NULL)
-  if (isTRUE(env_cache) && isFALSE(force)) {
-    log_message(
-      "{cli::col_green('Python environment completed')}\n",
-      "{cli::col_grey('Until next loading, the environment will be cached')}",
-      message_type = "success"
-    )
-    return(invisible(NULL))
-  }
-
   if (!is.null(envname)) {
     options(scop_envname = envname)
   }
 
   envname <- get_envname(envname)
+  pip_options <- normalize_cli_args(pip_options)
   requirements <- env_requirements(version = version)
   python_version <- requirements[["python"]]
 
@@ -64,6 +55,21 @@ PrepareEnv <- function(
       log_message("Auto-detecting conda...")
     }
     conda <- resolve_conda(conda)
+  }
+
+  cache_spec <- build_env_cache_spec(
+    envname = envname,
+    python_version = python_version,
+    conda = conda,
+    pip_options = pip_options
+  )
+  if (is_cached_env_valid(cache_spec) && isFALSE(force)) {
+    log_message(
+      "{cli::col_green('Python environment completed')}\n",
+      "{cli::col_grey('Until next loading, the environment will be cached')}",
+      message_type = "success"
+    )
+    return(invisible(NULL))
   }
 
   if (is.null(conda)) {
@@ -99,6 +105,12 @@ PrepareEnv <- function(
     if (is.null(conda)) {
       log_message("Installing miniconda...")
       conda <- install_miniconda2(miniconda_repo)
+      cache_spec <- build_env_cache_spec(
+        envname = envname,
+        python_version = python_version,
+        conda = conda,
+        pip_options = pip_options
+      )
     }
 
     log_message(
@@ -197,6 +209,13 @@ PrepareEnv <- function(
     )
   }
 
+  ensure_windows_scvi_support(
+    envname = envname,
+    conda = conda,
+    force = force,
+    pip_options = pip_options
+  )
+
   set_python_env(conda = conda, envname = envname)
 
   log_message(
@@ -207,7 +226,81 @@ PrepareEnv <- function(
 
   env_info(conda, envname)
 
-  options(scop_env_cache = TRUE)
+  set_env_cache(cache_spec, python)
+}
+
+normalize_cli_args <- function(args) {
+  if (length(args) == 0) {
+    return(character())
+  }
+
+  args <- unlist(args, use.names = FALSE)
+  if (length(args) == 1 && grepl("\\s", args)) {
+    args <- strsplit(args, "\\s+")[[1]]
+  }
+
+  args <- trimws(as.character(args))
+  args[nzchar(args)]
+}
+
+build_env_cache_spec <- function(envname, python_version, conda, pip_options) {
+  conda_path <- if (is.null(conda) || identical(conda, "")) {
+    NULL
+  } else {
+    normalizePath(conda, mustWork = FALSE)
+  }
+
+  list(
+    envname = get_envname(envname),
+    python_version = python_version,
+    conda = conda_path,
+    pip_options = normalize_cli_args(pip_options)
+  )
+}
+
+clear_env_cache <- function() {
+  options(scop_env_cache = NULL)
+  invisible(NULL)
+}
+
+set_env_cache <- function(spec, python = NULL) {
+  cache <- spec
+  if (!is.null(python) && nzchar(python) && file.exists(python)) {
+    cache[["python"]] <- normalizePath(python, mustWork = FALSE)
+  }
+  options(scop_env_cache = cache)
+  invisible(cache)
+}
+
+is_cached_env_valid <- function(spec) {
+  cache <- getOption("scop_env_cache", default = NULL)
+  required_fields <- c("envname", "python_version", "conda", "pip_options")
+
+  if (!is.list(cache) || !all(required_fields %in% names(cache))) {
+    return(FALSE)
+  }
+
+  if (
+    !identical(unname(cache[required_fields]), unname(spec[required_fields]))
+  ) {
+    return(FALSE)
+  }
+
+  if (is.null(spec[["conda"]]) || !file.exists(spec[["conda"]])) {
+    return(FALSE)
+  }
+
+  if (!env_exist(conda = spec[["conda"]], envname = spec[["envname"]])) {
+    return(FALSE)
+  }
+
+  python <- cache[["python"]] %||%
+    tryCatch(
+      conda_python(envname = spec[["envname"]], conda = spec[["conda"]]),
+      error = function(e) NULL
+    )
+
+  !is.null(python) && file.exists(python)
 }
 
 set_python_env <- function(conda, envname, verbose = TRUE) {
@@ -390,10 +483,10 @@ env_info <- function(conda, envname) {
 #' @export
 #' @examples
 #' env_requirements("3.10-1")
-env_requirements <- function(version = "3.10-1") {
+env_requirements <- function(version = "3.10-1", include_optional = FALSE) {
   version <- match.arg(
     version,
-    choices = c("3.8-1", "3.8-2", "3.9-1", "3.10-1", "3.11-1")
+    choices = c("3.10-1", "3.11-1")
   )
 
   tbb_install_method <- if (is_apple_silicon()) {
@@ -429,8 +522,6 @@ env_requirements <- function(version = "3.10-1") {
     "bbknn" = "pip",
     "scanorama" = "pip",
     "cellrank" = "pip",
-    "celltypist" = "pip",
-    "cellphonedb" = "pip",
     if (is_apple_silicon()) {
       c("llvm-openmp" = "conda")
     } else {
@@ -465,8 +556,6 @@ env_requirements <- function(version = "3.10-1") {
     "scanorama" = "scanorama==1.7.4",
     "scvi-tools" = "scvi-tools==1.2.1",
     "cellrank" = "cellrank==2.0.7",
-    "celltypist" = "celltypist",
-    "cellphonedb" = "cellphonedb==5.0.1",
     if (is_apple_silicon()) {
       c("llvm-openmp" = "llvm-openmp>=17")
     } else {
@@ -482,6 +571,22 @@ env_requirements <- function(version = "3.10-1") {
     package_aliases[["tbb"]] <- "pxr-tbb"
   }
 
+  if (isTRUE(include_optional)) {
+    optional_requirements <- optional_python_requirements()
+    package_install_methods <- c(
+      package_install_methods,
+      optional_requirements$install_methods
+    )
+    package_versions <- c(
+      package_versions,
+      optional_requirements$packages
+    )
+    package_aliases <- c(
+      package_aliases,
+      optional_requirements$package_aliases
+    )
+  }
+
   requirements <- list(
     python = version,
     packages = package_versions,
@@ -490,6 +595,28 @@ env_requirements <- function(version = "3.10-1") {
   )
 
   return(requirements)
+}
+
+optional_python_requirements <- function() {
+  list(
+    packages = c(
+      "celltypist" = "celltypist==1.7.1",
+      "cellphonedb" = "cellphonedb==5.0.1",
+      "magic-impute" = "magic-impute==3.0.0",
+      "scrublet" = "scrublet==0.2.3",
+      "doubletdetection" = "doubletdetection==4.3.0.post1",
+      "louvain" = "louvain==0.8.2"
+    ),
+    install_methods = c(
+      "celltypist" = "pip",
+      "cellphonedb" = "pip",
+      "magic-impute" = "pip",
+      "scrublet" = "pip",
+      "doubletdetection" = "pip",
+      "louvain" = "pip"
+    ),
+    package_aliases = list()
+  )
 }
 
 env_exist <- function(
@@ -690,42 +817,15 @@ install_uv <- function(
   pip_options = character()
 ) {
   log_message("Attempting to install uv...")
+  pip_options <- normalize_cli_args(pip_options)
 
+  python <- resolve_python_executable(
+    python = python,
+    envname = envname,
+    conda = conda,
+    error_message = "Python not found, cannot install uv"
+  )
   if (is.null(python)) {
-    if (!is.null(envname)) {
-      tryCatch(
-        {
-          python <- conda_python(envname = envname, conda = conda)
-        },
-        error = function(e) {
-          log_message(
-            "Failed to get Python path for environment {.file {envname}}: {.val {e$message}}",
-            message_type = "warning"
-          )
-        }
-      )
-    }
-
-    if (is.null(python)) {
-      python <- Sys.which("python3")
-      if (python == "" || !file.exists(python)) {
-        python <- Sys.which("python")
-      }
-      if (python == "" || !file.exists(python)) {
-        log_message(
-          "Python not found, cannot install uv",
-          message_type = "error"
-        )
-        return(NULL)
-      }
-    }
-  }
-
-  if (!file.exists(python)) {
-    log_message(
-      "Python executable not found: {.file {python}}",
-      message_type = "error"
-    )
     return(NULL)
   }
 
@@ -740,9 +840,6 @@ install_uv <- function(
     }
   }
   if (length(pip_options) > 0) {
-    if (length(pip_options) == 1 && grepl(" ", pip_options)) {
-      pip_options <- strsplit(pip_options, "\\s+")[[1]]
-    }
     install_cmd <- c(install_cmd, pip_options)
   }
   install_cmd <- c(install_cmd, "uv")
@@ -796,20 +893,18 @@ find_uv <- function(
   auto_install = TRUE,
   pip_options = character()
 ) {
+  pip_options <- normalize_cli_args(pip_options)
   uv <- Sys.which("uv")
   if (uv != "" && file.exists(uv)) {
     return(uv)
   }
 
   if (is.null(python)) {
-    if (!is.null(envname)) {
-      tryCatch(
-        {
-          python <- conda_python(envname = envname, conda = conda)
-        },
-        error = function(e) NULL
-      )
-    }
+    python <- resolve_python_executable(
+      envname = envname,
+      conda = conda,
+      error_if_missing = FALSE
+    )
   }
 
   if (!is.null(python) && file.exists(python)) {
@@ -951,72 +1046,14 @@ conda_install <- function(
   }
 
   if (pip) {
-    uv <- find_uv(
+    install_python_packages(
+      packages = packages,
       python = python,
       envname = envname,
       conda = conda,
-      auto_install = TRUE,
-      pip_options = pip_options
+      pip_options = pip_options,
+      pip_ignore_installed = pip_ignore_installed
     )
-
-    if (!is.null(uv)) {
-      log_message("Installing packages via {.pkg uv}...")
-
-      args <- c("pip", "install", "--python", python)
-
-      if (length(pip_options) > 0) {
-        if (length(pip_options) == 1 && grepl(" ", pip_options)) {
-          pip_options <- strsplit(pip_options, "\\s+")[[1]]
-        }
-        args <- c(args, pip_options)
-      }
-
-      if (pip_ignore_installed) {
-        args <- c(args, "--reinstall")
-      }
-
-      args <- c(args, packages)
-
-      if (uv == "python -m uv") {
-        args <- c("-m", "uv", args)
-        status <- system2t(python, shQuote(args))
-      } else {
-        status <- system2t(uv, shQuote(args))
-      }
-
-      if (status != 0L) {
-        log_message(
-          "{.pkg uv} installation failed [error code {.val {status}}], using {.pkg pip}",
-          message_type = "warning"
-        )
-        get_namespace_fun("reticulate", "pip_install")(
-          python = python,
-          packages = packages,
-          pip_options = pip_options,
-          ignore_installed = pip_ignore_installed,
-          conda = conda,
-          envname = envname
-        )
-      } else {
-        log_message(
-          "{.pkg uv} installation completed",
-          message_type = "success"
-        )
-      }
-    } else {
-      log_message(
-        "{.pkg uv} not available, using {.pkg pip}...",
-        message_type = "warning"
-      )
-      get_namespace_fun("reticulate", "pip_install")(
-        python = python,
-        packages = packages,
-        pip_options = pip_options,
-        ignore_installed = pip_ignore_installed,
-        conda = conda,
-        envname = envname
-      )
-    }
 
     return(invisible(packages))
   }
@@ -1060,6 +1097,216 @@ conda_install <- function(
   }
 
   invisible(packages)
+}
+
+resolve_python_executable <- function(
+  python = NULL,
+  envname = NULL,
+  conda = "auto",
+  error_if_missing = TRUE,
+  error_message = NULL
+) {
+  if (!is.null(python)) {
+    python <- normalizePath(python, mustWork = FALSE)
+    if (file.exists(python)) {
+      return(python)
+    }
+  }
+
+  if (!is.null(envname)) {
+    python <- tryCatch(
+      conda_python(envname = envname, conda = conda),
+      error = function(e) {
+        if (error_if_missing) {
+          log_message(
+            "Failed to get Python path for environment {.file {envname}}: {.val {e$message}}",
+            message_type = "warning"
+          )
+        }
+        NULL
+      }
+    )
+    if (!is.null(python) && file.exists(python)) {
+      return(normalizePath(python, mustWork = FALSE))
+    }
+  }
+
+  for (candidate in c(Sys.which("python3"), Sys.which("python"))) {
+    if (nzchar(candidate) && file.exists(candidate)) {
+      return(normalizePath(candidate, mustWork = FALSE))
+    }
+  }
+
+  if (error_if_missing) {
+    log_message(
+      error_message %||% "Python executable not found",
+      message_type = "error"
+    )
+  }
+
+  NULL
+}
+
+run_uv_command <- function(uv, python, args) {
+  system2t <- get_namespace_fun("reticulate", "system2t")
+
+  if (uv == "python -m uv") {
+    return(system2t(python, shQuote(c("-m", "uv", args))))
+  }
+
+  system2t(uv, shQuote(args))
+}
+
+run_pip_command <- function(python, args) {
+  system2t <- get_namespace_fun("reticulate", "system2t")
+  system2t(python, shQuote(c("-m", "pip", args)))
+}
+
+install_python_packages <- function(
+  packages,
+  python,
+  envname,
+  conda,
+  pip_options = character(),
+  pip_ignore_installed = FALSE
+) {
+  pip_options <- normalize_cli_args(pip_options)
+  uv <- find_uv(
+    python = python,
+    envname = envname,
+    conda = conda,
+    auto_install = TRUE,
+    pip_options = pip_options
+  )
+
+  if (!is.null(uv)) {
+    log_message("Installing packages via {.pkg uv}...")
+
+    args <- c("pip", "install")
+    if (uv != "python -m uv") {
+      args <- c(args, "--python", python)
+    }
+    if (length(pip_options) > 0) {
+      args <- c(args, pip_options)
+    }
+    if (pip_ignore_installed) {
+      args <- c(args, "--reinstall")
+    }
+    args <- c(args, packages)
+
+    status <- run_uv_command(uv, python, args)
+    if (status == 0L) {
+      log_message(
+        "{.pkg uv} installation completed",
+        message_type = "success"
+      )
+      return(invisible(TRUE))
+    }
+
+    log_message(
+      "{.pkg uv} installation failed [error code {.val {status}}], using {.pkg pip}",
+      message_type = "warning"
+    )
+  } else {
+    log_message(
+      "{.pkg uv} not available, using {.pkg pip}...",
+      message_type = "warning"
+    )
+  }
+
+  get_namespace_fun("reticulate", "pip_install")(
+    python = python,
+    packages = packages,
+    pip_options = pip_options,
+    ignore_installed = pip_ignore_installed,
+    conda = conda,
+    envname = envname
+  )
+
+  invisible(TRUE)
+}
+
+ensure_windows_scvi_support <- function(
+  envname,
+  conda,
+  force = FALSE,
+  pip_options = character()
+) {
+  if (!is_windows()) {
+    return(invisible(FALSE))
+  }
+
+  if (
+    !isTRUE(force) &&
+      isTRUE(exist_python_pkgs("jax==0.3.20", envname = envname, conda = conda))
+  ) {
+    return(invisible(TRUE))
+  }
+
+  python <- resolve_python_executable(
+    envname = envname,
+    conda = conda,
+    error_if_missing = FALSE
+  )
+  if (is.null(python)) {
+    return(invisible(FALSE))
+  }
+
+  pip_options <- normalize_cli_args(pip_options)
+  uv <- find_uv(
+    python = python,
+    envname = envname,
+    conda = conda,
+    auto_install = TRUE,
+    pip_options = pip_options
+  )
+
+  args <- c("pip", "install")
+  if (!is.null(uv) && uv != "python -m uv") {
+    args <- c(args, "--python", python)
+  }
+  args <- c(
+    args,
+    pip_options,
+    if (isTRUE(force)) "--reinstall",
+    "jax[cpu]==0.3.20",
+    "-f",
+    "https://whls.blob.core.windows.net/unstable/index.html",
+    "--use-deprecated",
+    "legacy-resolver"
+  )
+
+  if (!is.null(uv)) {
+    status <- run_uv_command(uv, python, args)
+  } else {
+    status <- run_pip_command(
+      python,
+      c(
+        "install",
+        pip_options,
+        if (isTRUE(force)) "--force-reinstall",
+        "jax[cpu]==0.3.20",
+        "-f",
+        "https://whls.blob.core.windows.net/unstable/index.html",
+        "--use-deprecated",
+        "legacy-resolver"
+      )
+    )
+  }
+
+  if (identical(status, 0L)) {
+    log_message(
+      "{.pkg jax[cpu]} installed successfully for Windows {.pkg scvi-tools} support",
+      message_type = "success"
+    )
+  } else {
+    log_message(
+      "Failed to install {.pkg jax[cpu]} for Windows {.pkg scvi-tools} support [error code {.val {status}}]",
+      message_type = "warning"
+    )
+  }
+
+  invisible(TRUE)
 }
 
 conda_python <- function(
@@ -1264,6 +1511,8 @@ RemoveEnv <- function(
   }
 
   if (result) {
+    clear_env_cache()
+    Sys.unsetenv("RETICULATE_PYTHON")
     log_message(
       "{.file {envname}} environment removed successfully",
       message_type = "success"
@@ -1388,21 +1637,4 @@ accept_conda_tos <- function(conda = "auto") {
   }
 
   return(invisible(TRUE))
-}
-
-is_linux <- function() {
-  identical(tolower(Sys.info()[["sysname"]]), "linux")
-}
-
-is_osx <- function() {
-  identical(tolower(Sys.info()[["sysname"]]), "darwin")
-}
-
-is_apple_silicon <- function() {
-  is_osx() &&
-    identical(tolower(Sys.info()[["machine"]]), "arm64")
-}
-
-is_windows <- function() {
-  identical(.Platform$OS.type, "windows")
 }
