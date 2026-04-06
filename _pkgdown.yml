@@ -200,7 +200,6 @@ reference:
   - FeatureHeatmap
   - FeatureCorPlot
   - FeatureStatPlot
-  - GraphPlot
   - GroupHeatmap
   - GSEAPlot
   - GSVAPlot
@@ -209,6 +208,7 @@ reference:
   - PAGAPlot
   - ProjectionPlot
   - ProportionTestPlot
+  - PseudotimeProjectionPlot
   - TACSPlot
   - VelocityPlot
   - VolcanoPlot
