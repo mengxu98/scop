@@ -1389,20 +1389,3 @@ accept_conda_tos <- function(conda = "auto") {
 
   return(invisible(TRUE))
 }
-
-is_linux <- function() {
-  identical(tolower(Sys.info()[["sysname"]]), "linux")
-}
-
-is_osx <- function() {
-  identical(tolower(Sys.info()[["sysname"]]), "darwin")
-}
-
-is_apple_silicon <- function() {
-  is_osx() &&
-    identical(tolower(Sys.info()[["machine"]]), "arm64")
-}
-
-is_windows <- function() {
-  identical(.Platform$OS.type, "windows")
-}
