@@ -6,7 +6,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams GraphPlot
+#' @inheritParams thisplot::GraphPlot
 #' @param velocity Name of the velocity to use for plotting.
 #' Default is `"stochastic"`.
 #' @param plot_type Type of plot to create.
