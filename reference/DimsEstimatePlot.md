@@ -9,7 +9,7 @@ DimsEstimatePlot(
   srt,
   max_pcs = 50,
   variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
-  reduction = "pca",
+  reduction = NULL,
   palette = "Chinese",
   palcolor = NULL,
   aspect.ratio = NULL,
@@ -29,7 +29,7 @@ DimsEstimatePlot(
 
 - srt:
 
-  A `Seurat` object with PCA reduction computed.
+  A `Seurat` object with a PCA-like reduction computed.
 
 - max_pcs:
 
@@ -42,7 +42,10 @@ DimsEstimatePlot(
 
 - reduction:
 
-  Reduction name to inspect. Default is `"pca"`.
+  Reduction name to inspect. Default is `NULL`, which automatically
+  selects a PCA-like reduction via
+  [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md)
+  with `pattern = "pca"`.
 
 - palette:
 

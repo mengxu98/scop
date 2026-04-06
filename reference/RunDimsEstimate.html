@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Estimate useful dimensions from a reduction</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/main/R/DimsEstimate.R" class="external-link"><code>R/DimsEstimate.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mengxu98/scop/blob/dev/R/DimsEstimate.R" class="external-link"><code>R/DimsEstimate.R</code></a></small>
       <div class="d-none name"><code>RunDimsEstimate.Rd</code></div>
     </div>
 
@@ -46,10 +46,10 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunDimsEstimate</span><span class="op">(</span></span>
 <span>  <span class="va">srt</span>,</span>
-<span>  <span class="va">reduction</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction_method <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">20L</span>,</span>
-<span>  min_dims <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  min_dims <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  fallback_max_dims <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  skip_first <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  use_stored <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -66,7 +66,9 @@
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Name of the dimensional reduction to inspect.</p></dd>
+<dd><p>Name of the dimensional reduction to inspect.
+Default is <code>NULL</code>, which automatically selects a PCA-like reduction via
+<code><a href="DefaultReduction.html">DefaultReduction()</a></code> with <code>pattern = "pca"</code>.</p></dd>
 
 
 <dt id="arg-reduction-method">reduction_method<a class="anchor" aria-label="anchor" href="#arg-reduction-method"></a></dt>
@@ -81,7 +83,7 @@ Default is <code>20</code>.</p></dd>
 
 <dt id="arg-min-dims">min_dims<a class="anchor" aria-label="anchor" href="#arg-min-dims"></a></dt>
 <dd><p>Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-Default is <code>10</code>.</p></dd>
+Default is <code>20</code>.</p></dd>
 
 
 <dt id="arg-fallback-max-dims">fallback_max_dims<a class="anchor" aria-label="anchor" href="#arg-fallback-max-dims"></a></dt>

@@ -7,6 +7,8 @@
   : Single-Cell Omics analysis Pipeline
 - [`scop_logo()`](https://mengxu98.github.io/scop/reference/scop_logo.md)
   : scop logo
+- [`print(`*`<scop_logo>`*`)`](https://mengxu98.github.io/scop/reference/print.scop_logo.md)
+  : print scop logo
 
 ### Package Management
 
@@ -313,8 +315,6 @@
   : Features correlation plot
 - [`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
   : Statistical plot of features
-- [`GraphPlot()`](https://mengxu98.github.io/scop/reference/GraphPlot.md)
-  : Graph Plot
 - [`GroupHeatmap()`](https://mengxu98.github.io/scop/reference/GroupHeatmap.md)
   : The Group Heatmap
 - [`GSEAPlot()`](https://mengxu98.github.io/scop/reference/GSEAPlot.md)
@@ -331,19 +331,14 @@
   : Projection Plot
 - [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
   : Proportion Test Plot
+- [`PseudotimeProjectionPlot()`](https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.md)
+  : Pseudotime Projection Plot
 - [`TACSPlot()`](https://mengxu98.github.io/scop/reference/TACSPlot.md)
   : Transcript-averaged cell scoring (TACS)
 - [`VelocityPlot()`](https://mengxu98.github.io/scop/reference/VelocityPlot.md)
   : Velocity Plot
 - [`VolcanoPlot()`](https://mengxu98.github.io/scop/reference/VolcanoPlot.md)
   : Volcano Plot
-
-### Plotting Functions
-
-- [`compute_velocity_on_grid()`](https://mengxu98.github.io/scop/reference/compute_velocity_on_grid.md)
-  : Compute velocity on grid
-- [`print(`*`<scop_logo>`*`)`](https://mengxu98.github.io/scop/reference/print.scop_logo.md)
-  : print scop logo
 
 ### SCExplorer
 
