@@ -50,6 +50,15 @@
 #' PseudotimeProjectionPlot(
 #'   pancreas_sub,
 #'   reduction = "UMAP",
+#'   group.by = "SubCellType",
+#'   time_key = "Lineage1",
+#'   method = "gradient",
+#'   plot_type = "raw"
+#' )
+#'
+#' PseudotimeProjectionPlot(
+#'   pancreas_sub,
+#'   reduction = "UMAP",
 #'   time_key = "Lineage1",
 #'   group.by = "SubCellType",
 #'   plot_type = "stream",
