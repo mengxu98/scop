@@ -1178,16 +1178,6 @@ scVI_integrate <- function(
     "leiden" = 4
   )
 
-  if (is_windows() && !exist_python_pkgs(packages = "scvi-tools")) {
-    suppressWarnings(
-      system2(
-        command = conda_python(),
-        args = "-m pip install jax[cpu]===0.3.20 -f https://whls.blob.core.windows.net/unstable/index.html --use-deprecated legacy-resolver",
-        stdout = TRUE
-      )
-    )
-  }
-
   PrepareEnv()
   check_python("scvi-tools")
   scvi <- reticulate::import("scvi")
