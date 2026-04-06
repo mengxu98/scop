@@ -142,6 +142,8 @@
   : Annotate single cells using scmap.
 - [`RunSingleR()`](https://mengxu98.github.io/scop/reference/RunSingleR.md)
   : Annotate single cells using SingleR
+- [`TrainCellTypist()`](https://mengxu98.github.io/scop/reference/TrainCellTypist.md)
+  : Train a CellTypist model
 
 ### Differential Analysis
 

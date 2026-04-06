@@ -284,24 +284,24 @@ A ggplot / patchwork object wrapping the ComplexHeatmap grob.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- standard_scop(pancreas_sub)
-#> ℹ [2026-04-06 03:43:05] Start standard processing workflow...
-#> ℹ [2026-04-06 03:43:06] Checking a list of <Seurat>...
-#> ! [2026-04-06 03:43:06] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-04-06 03:43:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 03:43:09] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-04-06 03:43:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-04-06 03:43:10] Number of available HVF: 2000
-#> ℹ [2026-04-06 03:43:10] Finished check
-#> ℹ [2026-04-06 03:43:11] Perform `Seurat::ScaleData()`
-#> ℹ [2026-04-06 03:43:11] Perform pca linear dimension reduction
-#> ℹ [2026-04-06 03:43:15] Use stored estimated dimensions 1:20 for Standardpca
-#> ℹ [2026-04-06 03:43:16] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-04-06 03:43:16] Reorder clusters...
-#> ℹ [2026-04-06 03:43:16] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-04-06 03:43:16] Perform umap nonlinear dimension reduction
-#> ℹ [2026-04-06 03:43:16] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ℹ [2026-04-06 03:43:18] Perform umap nonlinear dimension reduction using Standardpca (1:20)
-#> ✔ [2026-04-06 03:43:20] Standard processing workflow completed
+#> ℹ [2026-04-06 09:56:02] Start standard processing workflow...
+#> ℹ [2026-04-06 09:56:04] Checking a list of <Seurat>...
+#> ! [2026-04-06 09:56:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-04-06 09:56:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 09:56:06] Perform `Seurat::FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-04-06 09:56:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-04-06 09:56:08] Number of available HVF: 2000
+#> ℹ [2026-04-06 09:56:08] Finished check
+#> ℹ [2026-04-06 09:56:09] Perform `Seurat::ScaleData()`
+#> ℹ [2026-04-06 09:56:09] Perform pca linear dimension reduction
+#> ℹ [2026-04-06 09:56:14] Use stored estimated dimensions 1:20 for Standardpca
+#> ℹ [2026-04-06 09:56:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-04-06 09:56:15] Reorder clusters...
+#> ℹ [2026-04-06 09:56:15] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-04-06 09:56:15] Perform umap nonlinear dimension reduction
+#> ℹ [2026-04-06 09:56:15] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ℹ [2026-04-06 09:56:17] Perform umap nonlinear dimension reduction using Standardpca (1:20)
+#> ✔ [2026-04-06 09:56:20] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -319,8 +319,8 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-04-06 03:43:20] Start CellChat analysis
-#> ℹ [2026-04-06 03:46:05] Processing condition: "ConditionA"
+#> ℹ [2026-04-06 09:56:20] Start CellChat analysis
+#> ℹ [2026-04-06 09:59:33] Processing condition: "ConditionA"
 #> Warning: The following arguments are not used: drop
 #> Error in loadNamespace(x): there is no package called ‘CellChat’
 
